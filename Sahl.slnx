@@ -1,0 +1,9 @@
+<Solution>
+  <Project Path="BL/BL.csproj" />
+  <Project Path="Common/Common.csproj" />
+  <Project Path="DAL/DAL.csproj" />
+  <Project Path="Dashoard/Dashoard.csproj" Id="59725e33-9022-471b-b5fd-ef6cb04c676a" />
+  <Project Path="Domins/Domins.csproj" />
+  <Project Path="Sahl/Sahl.csproj" />
+  <Project Path="Shared/Shared.csproj" />
+</Solution>
