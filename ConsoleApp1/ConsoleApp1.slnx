@@ -1,6 +1,0 @@
-<Solution>
-  <Project Path="ConsoleApp1/ConsoleApp1.csproj" />
-  <Project Path="ConsoleAppMSTest/ConsoleAppMSTest.csproj" Id="25f5ad4f-66b1-4221-b074-597e4531022a" />
-  <Project Path="ConsoleAppNUnitTest/ConsoleAppNUnitTest.csproj" Id="861939cd-62dc-4ef8-8631-3737a029eb5d" />
-  <Project Path="ConsoleAppXUnit/ConsoleAppXUnit.csproj" Id="134d7fa3-0cc5-4586-8297-40ca839cdbb1" />
-</Solution>
