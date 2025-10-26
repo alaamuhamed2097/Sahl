@@ -1,5 +1,7 @@
 <Solution>
-  <Folder Name="/api-specs/" />
+  <Folder Name="/api-specs/">
+    <File Path="README.md" />
+  </Folder>
   <Folder Name="/business/" />
   <Folder Name="/scripts/" />
   <Folder Name="/src/" />
