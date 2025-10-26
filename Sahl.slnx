@@ -1,24 +1,24 @@
 <Solution>
   <Folder Name="/api-specs/">
-    <File Path="README.md" />
+    <File Path="api-specs/README.md" />
   </Folder>
   <Folder Name="/business/" />
   <Folder Name="/scripts/" />
   <Folder Name="/src/" />
   <Folder Name="/src/Core/">
-    <Project Path="BL/BL.csproj" />
-    <Project Path="Domins/Domins.csproj" />
+    <Project Path="src/Core/BL/BL.csproj" />
+    <Project Path="src/Core/Domins/Domins.csproj" />
   </Folder>
   <Folder Name="/src/Infrastructure/">
-    <Project Path="DAL/DAL.csproj" />
+    <Project Path="src/Infrastructure/DAL/DAL.csproj" />
   </Folder>
   <Folder Name="/src/Presentation/">
-    <Project Path="Api/Api.csproj" Id="c2a261fb-454b-4db9-a02f-8611a118ee4b" />
-    <Project Path="Dashoard/Dashoard.csproj" Id="89f81f4e-dffe-4219-85f3-efed57f32137" />
+    <Project Path="src/Presentation/Api/Api.csproj" Id="c2a261fb-454b-4db9-a02f-8611a118ee4b" />
+    <Project Path="src/Presentation/Dashoard/Dashoard.csproj" Id="89f81f4e-dffe-4219-85f3-efed57f32137" />
   </Folder>
   <Folder Name="/src/Shared/">
-    <Project Path="Common/Common.csproj" />
-    <Project Path="Shared/Shared.csproj" />
+    <Project Path="src/Shared/Common/Common.csproj" />
+    <Project Path="src/Shared/Shared/Shared.csproj" />
   </Folder>
   <Folder Name="/tests/" />
 </Solution>
