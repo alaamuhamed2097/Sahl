@@ -4,11 +4,88 @@
     <TargetFramework>net9.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+	  <ServiceWorkerAssetsManifest>service-worker-assets.js</ServiceWorkerAssetsManifest>
+
+	  <OutputType>Exe</OutputType>
+	  <RuntimeIdentifier>browser-wasm</RuntimeIdentifier>
+	  <SelfContained>true</SelfContained>
+
+	  <!-- ========== 🔥 Compression Settings ========== -->
+	  <BlazorEnableCompression>true</BlazorEnableCompression>
+	  <CompressionLevel>Optimal</CompressionLevel>
+
+	  <!-- ========== 🌍 Globalization Settings (Arabic/English Only) ========== -->
+	  <InvariantGlobalization>false</InvariantGlobalization>
+	  <BlazorWebAssemblyLoadAllGlobalizationData>false</BlazorWebAssemblyLoadAllGlobalizationData>
+	  <BlazorIcuDataMode>Custom</BlazorIcuDataMode>
+	  <BlazorWebAssemblyPreserveCollationData>false</BlazorWebAssemblyPreserveCollationData>
+
+	  <!-- ✅ TimeZone Support -->
+	  <BlazorEnableTimeZoneSupport>true</BlazorEnableTimeZoneSupport>
+
+	  <!-- ========== ✂️ Trimming Settings ========== -->
+	  <PublishTrimmed>true</PublishTrimmed>
+	  <!-- ⚠️ Use 'partial' for Resources (RESX) compatibility -->
+	  <TrimMode>partial</TrimMode>
+	  <EnableTrimAnalyzer>true</EnableTrimAnalyzer>
+	  <SuppressTrimAnalysisWarnings>false</SuppressTrimAnalysisWarnings>
+
+	  <!-- ⚡ Lazy Loading Support -->
+	  <BlazorWebAssemblyLazyLoad>true</BlazorWebAssemblyLazyLoad>
+
+	  <!-- ========== 🚀 AOT Compilation (Conditional) ========== -->
+	  <!-- Only enable AOT in Release builds to speed up Debug builds -->
+	  <RunAOTCompilation Condition="'$(Configuration)' == 'Release'">true</RunAOTCompilation>
+	  <WasmStripILAfterAOT Condition="'$(Configuration)' == 'Release'">true</WasmStripILAfterAOT>
+
+	  <!-- AOT Advanced Optimizations (Release only) -->
+	  <WasmEnableSIMD Condition="'$(Configuration)' == 'Release'">true</WasmEnableSIMD>
+	  <WasmEnableExceptionHandling Condition="'$(Configuration)' == 'Release'">true</WasmEnableExceptionHandling>
+
+	  <!-- ⚡ Additional AOT optimizations -->
+	  <WasmNativeStrip Condition="'$(Configuration)' == 'Release'">true</WasmNativeStrip>
+	  <WasmEnableWebCil Condition="'$(Configuration)' == 'Release'">true</WasmEnableWebCil>
+
+	  <!-- Optimize for size (use Oz instead of O3) -->
+	  <WasmCompileFlags Condition="'$(Configuration)' == 'Release'">-Oz</WasmCompileFlags>
+
+	  <!-- Enable link-time optimization -->
+	  <WasmBuildNative Condition="'$(Configuration)' == 'Release'">true</WasmBuildNative>
+
+	  <!-- ========== 🐛 Debug Settings ========== -->
+	  <DebuggerSupport Condition="'$(Configuration)' == 'Debug'">true</DebuggerSupport>
+	  <DebugType Condition="'$(Configuration)' == 'Debug'">portable</DebugType>
+	  <DebugSymbols Condition="'$(Configuration)' == 'Debug'">true</DebugSymbols>
+	  <WasmDebugLevel Condition="'$(Configuration)' == 'Debug'">-1</WasmDebugLevel>
+
+	  <!-- Disable AOT in Debug for faster builds -->
+	  <RunAOTCompilation Condition="'$(Configuration)' == 'Debug'">false</RunAOTCompilation>
   </PropertyGroup>
 
+  <!-- ========== 🌐 Supported Cultures (Arabic + English) ========== -->
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="9.0.9" />
-    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="9.0.9" PrivateAssets="all" />
+	  <SupportedCulture Include="ar" />
+	  <SupportedCulture Include="ar-EG" />
+	  <SupportedCulture Include="en" />
+	  <SupportedCulture Include="en-US" />
+  </ItemGroup>
+
+  <ItemGroup>
+	  <Compile Remove="wwwroot\uploads\**" />
+	  <Content Remove="wwwroot\uploads\**" />
+	  <EmbeddedResource Remove="wwwroot\uploads\**" />
+	  <None Remove="wwwroot\uploads\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+	  <Content Update="**\*.razor.css">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="9.0.10" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="9.0.10" PrivateAssets="all" />
   </ItemGroup>
 
 </Project>

@@ -1,4 +1,4 @@
-namespace Sahl
+namespace Api
 {
     public class WeatherForecast
     {
