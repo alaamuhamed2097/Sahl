@@ -1,4 +1,7 @@
 <Solution>
+  <Folder Name="/api-specs/" />
+  <Folder Name="/business/" />
+  <Folder Name="/scripts/" />
   <Folder Name="/src/" />
   <Folder Name="/src/Core/">
     <Project Path="BL/BL.csproj" />

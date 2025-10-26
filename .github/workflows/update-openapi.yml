@@ -1,0 +1,72 @@
+﻿name: Update OpenAPI Spec
+
+# 🔥 متى يشتغل الـ Workflow
+on:
+  push:
+    branches: 
+      - main      # أو master حسب الـ branch الرئيسي عندك
+      - develop   # اختياري
+    paths:
+      - 'src/Api/**'  # بس لما حد يعدل في الـ API
+
+  workflow_dispatch:  # عشان تقدر تشغله يدوي
+
+jobs:
+  update-openapi:
+    runs-on: ubuntu-latest
+    
+    steps:
+    # 1️⃣ تحميل الكود من GitHub
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+      
+    # 2️⃣ تنزيل .NET 9
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '9.0.x'
+        
+    # 3️⃣ استرجاع الـ Packages
+    - name: Restore dependencies
+      run: dotnet restore
+      
+    # 4️⃣ بناء المشروع
+    - name: Build API
+      run: dotnet build ./src/Api --no-restore -c Release
+      
+    # 5️⃣ تشغيل الـ API وتصدير OpenAPI
+    - name: Generate OpenAPI JSON
+      run: |
+        cd src/Api
+        
+        # تشغيل الـ API في الخلفية
+        dotnet run --no-build -c Release --urls=http://localhost:5000 &
+        API_PID=$!
+        
+        # انتظار الـ API تبدأ
+        echo "Waiting for API to start..."
+        sleep 15
+        
+        # تحميل OpenAPI JSON
+        echo "Downloading OpenAPI spec..."
+        curl -o ../../api-specs/swagger.json http://localhost:5000/openapi/v1.json
+        
+        # إيقاف الـ API
+        kill $API_PID
+        
+    # 6️⃣ رفع التحديثات على GitHub
+    - name: Commit and Push Changes
+      run: |
+        git config user.name "github-actions[bot]"
+        git config user.email "github-actions[bot]@users.noreply.github.com"
+        git add api-specs/swagger.json
+        
+        # بس لو فيه تغييرات
+        if git diff --staged --quiet; then
+          echo "No changes to commit"
+        else
+          git commit -m "🤖 Update OpenAPI spec [skip ci]"
+          git push
+        fi
