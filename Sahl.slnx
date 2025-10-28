@@ -14,7 +14,7 @@
   </Folder>
   <Folder Name="/src/Presentation/">
     <Project Path="src/Presentation/Api/Api.csproj" Id="c2a261fb-454b-4db9-a02f-8611a118ee4b" />
-    <Project Path="src/Presentation/Dashoard/Dashoard.csproj" Id="89f81f4e-dffe-4219-85f3-efed57f32137" />
+    <Project Path="src/Presentation/Dashboard/Dashboard.csproj" Id="89f81f4e-dffe-4219-85f3-efed57f32137" />
   </Folder>
   <Folder Name="/src/Shared/">
     <Project Path="src/Shared/Common/Common.csproj" />

@@ -6,10 +6,6 @@
     <ImplicitUsings>enable</ImplicitUsings>
 	  <ServiceWorkerAssetsManifest>service-worker-assets.js</ServiceWorkerAssetsManifest>
 
-	  <OutputType>Exe</OutputType>
-	  <RuntimeIdentifier>browser-wasm</RuntimeIdentifier>
-	  <SelfContained>true</SelfContained>
-
 	  <!-- ========== 🔥 Compression Settings ========== -->
 	  <BlazorEnableCompression>true</BlazorEnableCompression>
 	  <CompressionLevel>Optimal</CompressionLevel>
@@ -92,8 +88,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="9.0.10" />
-    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="9.0.10" PrivateAssets="all" />
+	  <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="9.0.0" />
+	  <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="9.0.0" PrivateAssets="all" />
   </ItemGroup>
 
   <ItemGroup>
