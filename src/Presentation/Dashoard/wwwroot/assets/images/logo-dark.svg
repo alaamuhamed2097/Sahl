@@ -1,0 +1,16 @@
+<svg width="89" height="22" viewBox="0 0 89 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+	<!-- New Icon: Better Shopping Cart with Rise Arrow -->
+	<g transform="translate(1 0)">
+		<!-- Cart handle -->
+		<path d="M1 3 L3.5 3 L5 14 L17 14" stroke="#39465C" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+		<!-- Cart basket (larger) -->
+		<path d="M5 5 L17 5 L16 14 L6 14 Z" fill="#ffffff" stroke="#39465C" stroke-width="1.5" stroke-linejoin="round"/>
+		<!-- Cart wheels (larger) -->
+		<circle cx="8" cy="18" r="1.5" fill="#39465C"/>
+		<circle cx="14" cy="18" r="1.5" fill="#39465C"/>
+		<!-- Rise Arrow inside cart (larger) -->
+		<path d="M11 12 V7 M11 7 L8.5 9.5 M11 7 L13.5 9.5" stroke="#FF9764" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+	</g>
+	<!-- RISEON text -->
+	<text x="24" y="16" font-family="Arial" font-size="14" font-weight="bold" fill="#39465C">RISEON</text>
+</svg>

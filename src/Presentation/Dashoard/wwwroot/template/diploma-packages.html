@@ -1,0 +1,130 @@
+<!-- This file contains the diploma packages page template -->
+<div class="dashboard">
+  <div class="breadcrumb">
+    <span data-i18n="breadcrumbHome">الرئيسية</span>
+    <i class="fas fa-chevron-left"></i>
+    <span class="breadcrumb-link" onclick="showPage('diplomas')">الدبلومات</span>
+    <i class="fas fa-chevron-left"></i>
+    <span class="breadcrumb-current" id="packagesBreadcrumb">باقات الدبلوم</span>
+  </div>
+
+  <div class="page-header">
+    <div>
+      <h1 class="page-title" id="packagesTitle">باقات الدبلوم</h1>
+      <p class="page-description" id="packagesDescription">
+        إدارة وعرض جميع باقات الدبلوم والعروض الخاصة بها
+      </p>
+    </div>
+    <div class="header-actions">
+      <button class="btn" id="addPackageBtn">
+        <i class="fas fa-plus"></i>
+        <span data-i18n="btnAddNew">إضافة باقة</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Metrics -->
+  <div class="metrics-grid">
+    <div class="metric-card">
+      <div class="metric-card-content">
+        <div class="metric-info">
+          <div class="metric-title">إجمالي الباقات</div>
+          <div class="metric-value" id="totalPackages">0</div>
+          <div class="metric-change positive">
+            <i class="fas fa-arrow-up"></i>
+            <span>12% من الشهر الماضي</span>
+          </div>
+        </div>
+        <div class="metric-icon gradient-primary">
+          <i class="fas fa-box"></i>
+        </div>
+      </div>
+    </div>
+
+    <div class="metric-card">
+      <div class="metric-card-content">
+        <div class="metric-info">
+          <div class="metric-title">الباقات النشطة</div>
+          <div class="metric-value" id="activePackages">0</div>
+          <div class="metric-change positive">
+            <i class="fas fa-arrow-up"></i>
+            <span>8% من الشهر الماضي</span>
+          </div>
+        </div>
+        <div class="metric-icon gradient-success">
+          <i class="fas fa-check-circle"></i>
+        </div>
+      </div>
+    </div>
+
+    <div class="metric-card">
+      <div class="metric-card-content">
+        <div class="metric-info">
+          <div class="metric-title">الباقات الافتراضية</div>
+          <div class="metric-value" id="defaultPackages">0</div>
+          <div class="metric-change positive">
+            <i class="fas fa-arrow-up"></i>
+            <span>5% من الشهر الماضي</span>
+          </div>
+        </div>
+        <div class="metric-icon gradient-orange">
+          <i class="fas fa-star"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Packages List -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title">
+        <i class="fas fa-list"></i>
+        <span>جميع الباقات</span>
+      </div>
+      <div class="view-options">
+        <button class="view-btn active" data-view="grid">
+          <i class="fas fa-th"></i>
+        </button>
+        <button class="view-btn" data-view="table">
+          <i class="fas fa-list"></i>
+        </button>
+      </div>
+    </div>
+    <div class="card-content">
+      <!-- Grid View -->
+      <div id="packagesGridView" class="packages-grid"></div>
+
+      <!-- Table View -->
+      <div id="packagesTableView" style="display: none">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>العنوان (عربي)</th>
+              <th>العنوان (إنجليزي)</th>
+              <th>الدبلوم</th>
+              <th>الترتيب</th>
+              <th>الخصم</th>
+              <th>الافتراضي</th>
+              <th>الحالة</th>
+              <th>الإجراءات</th>
+            </tr>
+          </thead>
+          <tbody id="packagesTableBody"></tbody>
+        </table>
+      </div>
+    </div>
+    <div class="pagination-container">
+      <div class="pagination-info" data-i18n="paginationInfo">
+        عرض 1 إلى 6 من 856 إدخال
+      </div>
+      <div class="pagination">
+        <button class="pagination-btn" disabled>
+          <i class="fas fa-chevron-right"></i>
+        </button>
+        <button class="pagination-btn">
+          <i class="fas fa-chevron-left"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

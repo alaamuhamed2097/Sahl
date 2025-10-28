@@ -3,30 +3,876 @@
 
 <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Dashoard</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimal-ui">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <base href="/" />
-    <link rel="stylesheet" href="lib/bootstrap/dist/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="css/app.css" />
-    <link rel="icon" type="image/png" href="favicon.png" />
-    <link href="Dashoard.styles.css" rel="stylesheet" />
+    <title>SAHL</title>
+
+    <link rel="icon" type="image/x-icon" href="/assets/images/favicon.svg" />
+
+    <!-- Critical Resource Hints for LCP Optimization -->
+    <link rel="dns-prefetch" href="//fonts.googleapis.com" />
+    <link rel="dns-prefetch" href="//cdnjs.cloudflare.com" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin />
+
+    <!-- LCP Critical: Preload hero logo with highest priority -->
+    <link rel="preload" href="/assets/images/logo-icon.svg" as="image" fetchpriority="high" />
+
+    <!-- Critical Path: Inline critical CSS for immediate rendering -->
+    <style>
+        /* Inline Critical CSS for LCP optimization */
+        .loading-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        }
+
+        .loading-logo-img {
+            width: 80px;
+            height: 80px;
+            margin-bottom: 20px;
+            animation: pulse 2s ease-in-out infinite alternate;
+        }
+
+        .loading-text {
+            font-size: 24px;
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 10px;
+            letter-spacing: 2px;
+        }
+
+        .loading-subtitle {
+            font-size: 14px;
+            color: rgba(255,255,255,0.8);
+            margin-bottom: 20px;
+        }
+
+        .progress-container {
+            width: 200px;
+            height: 4px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 2px;
+            overflow: hidden;
+            margin-bottom: 10px;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: #fff;
+            width: 0%;
+            transition: width 0.3s ease;
+            border-radius: 2px;
+        }
+
+        @keyframes pulse {
+            from {
+                transform: scale(1);
+            }
+
+            to {
+                transform: scale(1.05);
+            }
+        }
+
+        /* Hide app content until Blazor loads */
+        #blazor-app {
+            display: none;
+        }
+
+        body.loaded #loading-screen {
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.5s ease-out, visibility 0.5s ease-out;
+        }
+
+        body.loaded #blazor-app {
+            display: block;
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+    </style>
+
+    <!-- Critical CSS - Load synchronously for immediate render -->
+    <link rel="stylesheet" href="css/loader.min.css" media="all" />
+    <link rel="stylesheet" href="css/app.min.css" media="all" />
+    <link rel="stylesheet" href="assets/plugins/bootstrap/css/bootstrap.min.css" />
+
+    <!-- Preload critical JavaScript with high priority -->
+    <link rel="preload" href="_framework/blazor.webassembly.js" as="script" fetchpriority="high" />
+    <link rel="preload" href="Common/Scripts/ScriptLoader.min.js" as="script" fetchpriority="high" />
+    <!-- Preload jQuery early since many functions depend on it -->
+    <link rel="preload" href="assets/js/jQuery-3.3.1.min.js" as="script" fetchpriority="high" />
+
+    <!-- Preload Bootstrap JS since pcoded.min.js depends on it -->
+    <link rel="preload" href="assets/plugins/bootstrap/js/popper.min.js" as="script" />
+    <link rel="preload" href="assets/plugins/bootstrap/js/bootstrap.min.js" as="script" />
+
+    <!-- Preload localization script early -->
+    <link rel="preload" href="Common/language/localization.js" as="script" fetchpriority="high" />
+
+    <!-- Preload secondary CSS but load asynchronously -->
+    <link rel="preload" href="css/notification.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'" />
+    <link rel="preload" href="css/toastNotifications.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'" />
+    <link rel="preload" href="css/perfect-scrollbar.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'" />
+    <link rel="preload" href="assets/css/style.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'" />
+
+    <!-- Fallback for browsers that don't support preload -->
+    <noscript>
+        <link rel="stylesheet" href="css/notification.min.css" />
+        <link rel="stylesheet" href="css/toastNotifications.min.css" />
+        <link rel="stylesheet" href="css/perfect-scrollbar.min.css" />
+        <link rel="stylesheet" href="assets/css/style.min.css" />
+    </noscript>
+
+    <!-- Load font CSS asynchronously with low priority -->
+    <link rel="preload" href="assets/fonts/fontawesome/css/fontawesome-all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'" />
+    <link rel="preload" href="assets/fonts/material/css/materialdesignicons.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'" />
+    <link rel="preload" href="assets/plugins/animation/css/animate.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'" />
+    <!-- Critical JavaScript - Load immediately -->
+    <script>
+        // Performance monitoring for LCP optimization
+        window.performanceMetrics = {
+            startTime: performance.now(),
+            lcpCandidate: null,
+
+            // Track LCP candidates
+            observeLCP: function () {
+                if ('PerformanceObserver' in window) {
+                    const observer = new PerformanceObserver((list) => {
+                        const entries = list.getEntries();
+                        const lastEntry = entries[entries.length - 1];
+                        this.lcpCandidate = lastEntry;
+                        console.log('LCP candidate:', lastEntry.startTime + 'ms');
+                    });
+                    observer.observe({ entryTypes: ['largest-contentful-paint'] });
+                }
+            },
+
+            // Progress tracking for better UX
+            updateProgress: function (percentage) {
+                const progressBar = document.getElementById('progress-bar');
+                if (progressBar) {
+                    progressBar.style.width = percentage + '%';
+                }
+            }
+        };
+
+        // Start LCP observation immediately
+        window.performanceMetrics.observeLCP();
+
+        // Simulate loading progress for better UX
+        let progress = 0;
+        const progressInterval = setInterval(() => {
+            progress += Math.random() * 10;
+            if (progress > 90) progress = 90;
+            window.performanceMetrics.updateProgress(progress);
+        }, 100);
+
+        // Clear interval when Blazor starts
+        window.addEventListener('blazor-started', () => {
+            clearInterval(progressInterval);
+            window.performanceMetrics.updateProgress(100);
+        });
+    </script>
+
+    <script src="Common/Scripts/ScriptLoader.min.js"></script>
+
+    <!-- Load jQuery early - CRITICAL for menu functionality -->
+    <script src="assets/js/jQuery-3.3.1.min.js"></script>
+
+    <!-- Load Bootstrap dependencies BEFORE pcoded.min.js - CRITICAL FIX -->
+    <script src="assets/plugins/bootstrap/js/popper.min.js"></script>
+    <script src="assets/plugins/bootstrap/js/bootstrap.min.js"></script>
+
+    <!-- Load pcoded.min.js immediately after Bootstrap - CRITICAL for menu functionality -->
+    <script src="assets/js/pcoded.min.js"></script>
+
+    <script defer src="assets/js/perfect-scrollbar-1.4.0.min.js"></script>
+
+    <!-- Load localization early - CRITICAL for Blazor functionality -->
+    <script src="Common/language/localization.js"></script>
+
+    <!-- ✅ CRITICAL: Load localStorage helper for preferences -->
+    <script src="js/localStorage-helper.js"></script>
+
+    <!-- ✅ CRITICAL: Load HTTP Client helper for cookie-based authentication -->
+    <script src="js/httpClientHelper.js"></script>
 </head>
 
-<body>
+<body class="loading">
     <div id="app">
-        <svg class="loading-progress">
-            <circle r="40%" cx="50%" cy="50%" />
-            <circle r="40%" cx="50%" cy="50%" />
-        </svg>
-        <div class="loading-progress-text"></div>
+        <!-- Optimized loading screen for better LCP -->
+        <div class="loading-container" id="loading-screen">
+            <!-- LCP Optimized: Direct img tag with fetchpriority high -->
+            <img src="/assets/images/logo-icon.svg"
+                 alt="RISEON Logo"
+                 class="loading-logo-img"
+                 fetchpriority="high"
+                 width="80"
+                 height="80"
+                 decoding="sync"
+                 onload="this.style.opacity='1'" />
+            <div class="loading-text">RISEON</div>
+            <div class="loading-subtitle">جاري تحميل التطبيق<span class="loading-dots"></span></div>
+            <div class="progress-container">
+                <div class="progress-bar" id="progress-bar"></div>
+            </div>
+            <div class="loading-tip" id="loading-tip">يرجى الانتظار، جاري تحضير النظام...</div>
+            <div class="error-message" id="error-message" style="display: none;"></div>
+        </div>
+
+        <!-- Blazor app content -->
+        <div id="blazor-app"></div>
     </div>
 
-    <div id="blazor-error-ui">
-        An unhandled error has occurred.
-        <a href="." class="reload">Reload</a>
-        <span class="dismiss">🗙</span>
-    </div>
-    <script src="_framework/blazor.webassembly.js"></script>
+    <!-- Load Blazor WebAssembly with optimized loading -->
+    <script src="_framework/blazor.webassembly.js" autostart="false"></script>
+    <script>
+        // Debug timeout handler to prevent hanging in mono_wasm_fire_debugger_agent_message
+        if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+            // Override console.assert to prevent debugger hangs
+            const originalAssert = console.assert;
+            let debuggerHangTimeout = null;
+
+            console.assert = function (...args) {
+                // Clear any existing timeout
+                if (debuggerHangTimeout) {
+                    clearTimeout(debuggerHangTimeout);
+                }
+
+                // Set timeout to detect debugger hangs (5 seconds)
+                debuggerHangTimeout = setTimeout(() => {
+                    console.warn('Debugger agent may be hanging. Consider refreshing the page or disabling debugger.');
+                }, 5000);
+
+                // Call original assert
+                originalAssert.apply(console, args);
+
+                // Clear timeout after successful assert
+                setTimeout(() => {
+                    if (debuggerHangTimeout) {
+                        clearTimeout(debuggerHangTimeout);
+                        debuggerHangTimeout = null;
+                    }
+                }, 100);
+            };
+        }
+
+        // jQuery dependency tracker
+        window.jQueryReady = false;
+
+        // Localization dependency tracker
+        window.localizationReady = false;
+
+        // Check if jQuery is loaded
+        function checkjQueryLoaded() {
+            return typeof $ !== 'undefined' && typeof jQuery !== 'undefined';
+        }
+
+        // Check if localization is loaded
+        function checkLocalizationLoaded() {
+            return typeof localization !== 'undefined' && typeof localization.getCurrentLanguage === 'function';
+        }
+
+        // Wait for jQuery to be available
+        function waitForjQuery(callback) {
+            if (checkjQueryLoaded()) {
+                window.jQueryReady = true;
+                callback();
+            } else {
+                setTimeout(() => waitForjQuery(callback), 50);
+            }
+        }
+
+        // Wait for localization to be available
+        function waitForLocalization(callback) {
+            if (checkLocalizationLoaded()) {
+                window.localizationReady = true;
+                callback();
+            } else {
+                setTimeout(() => waitForLocalization(callback), 50);
+            }
+        }
+
+        // Wait for all dependencies
+        function waitForDependencies(callback) {
+            const checkAndProceed = () => {
+                if (checkjQueryLoaded() && checkLocalizationLoaded()) {
+                    window.jQueryReady = true;
+                    window.localizationReady = true;
+                    callback();
+                } else {
+                    setTimeout(checkAndProceed, 50);
+                }
+            };
+            checkAndProceed();
+        }
+
+        Blazor.start({
+            loadBootResource: function (type, name, defaultUri, integrity) {
+                // Optimize resource loading
+                if (type === 'dotnetjs') {
+                    return defaultUri + '?v=' + Date.now();
+                }
+                return defaultUri;
+            },
+            // Add debug configuration
+            circuit: {
+                reconnectionOptions: {
+                    maxRetries: 3,
+                    retryIntervalMilliseconds: 2000
+                }
+            }
+        }).then(() => {
+            // Blazor has started - hide loading screen
+            document.body.classList.add('loaded');
+            document.body.classList.remove('loading');
+
+            // Dispatch custom event for other scripts
+            window.dispatchEvent(new CustomEvent('blazor-started'));
+
+            // Wait for all dependencies before initializing critical features
+            waitForDependencies(() => {
+                initializeCriticalFeatures();
+            });
+        });
+    </script>
+
+    <!-- Deferred JavaScript - Load after Blazor initialization -->
+    <script>
+        // Load non-critical resources after Blazor starts
+        window.addEventListener('blazor-started', function () {
+            setTimeout(() => {
+                const deferredScripts = [
+                    'assets/plugins/sweetalert/js/sweetalert.min.js',
+                    'assets/js/pages/ac-alert.min.js'
+                ];
+
+                deferredScripts.forEach((src, index) => {
+                    setTimeout(() => {
+                        const script = document.createElement('script');
+                        script.src = src;
+                        script.async = true;
+                        document.head.appendChild(script);
+                    }, index * 50);
+                });
+            }, 500);
+        });
+    </script>
+
+    <!-- Service worker registration - Non-blocking -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function () {
+                navigator.serviceWorker.register('service-worker.js').catch(function (error) {
+                    console.log('Service worker registration failed:', error);
+                });
+            });
+        }
+    </script>
+
+    <script>
+        // Enhanced CSS Theme Loader for Blazor WebAssembly
+        window.ThemeManager = {
+            loadTheme: function (themeName) {
+                const themeFiles = {
+                    'layout-3': 'assets/css/layouts/layout-3.min.css',
+                    'layout-4': 'assets/css/layouts/layout-4.min.css',
+                    'layout-5': 'assets/css/layouts/layout-5.min.css',
+                    'layout-9': 'assets/css/layouts/layout-9.min.css',
+                    'layout-12': 'assets/css/layouts/layout-12.min.css',
+                    'dark': 'assets/css/layouts/dark.min.css',
+                    'rtl': 'assets/css/layouts/rtl.min.css',
+                    'landing': 'assets/css/layouts/landing.min.css'
+                };
+
+                if (themeFiles[themeName]) {
+                    this.loadCSS(themeFiles[themeName], 'theme-' + themeName);
+                }
+            },
+
+            loadPageStyle: function (pageName) {
+                const pageFiles = {
+                    'pages': 'assets/css/pages/pages.min.css',
+                    'gallery': 'assets/css/pages/gallery.min.css',
+                    'team-overview': 'css/team-overview.min.css'
+                };
+
+                if (pageFiles[pageName]) {
+                    this.loadCSS(pageFiles[pageName], 'page-' + pageName);
+                }
+            },
+
+            loadCSS: function (href, id) {
+                if (id && document.getElementById(id)) {
+                    document.getElementById(id).remove();
+                }
+
+                const link = document.createElement('link');
+                link.rel = 'stylesheet';
+                link.href = href;
+                if (id) link.id = id;
+
+                // Use requestIdleCallback for non-critical CSS
+                if ('requestIdleCallback' in window) {
+                    requestIdleCallback(() => {
+                        document.head.appendChild(link);
+                    });
+                } else {
+                    setTimeout(() => {
+                        document.head.appendChild(link);
+                    }, 0);
+                }
+            },
+
+            unloadTheme: function (themeName) {
+                const themeElement = document.getElementById('theme-' + themeName);
+                if (themeElement) {
+                    themeElement.remove();
+                }
+            }
+        };
+
+        // Enhanced Script Loader for Blazor Components
+        window.ComponentScriptLoader = {
+            loadedScripts: new Set(),
+
+            loadComponentScript: function (scriptName) {
+                if (this.loadedScripts.has(scriptName)) {
+                    return Promise.resolve();
+                }
+
+                const scriptFiles = {
+                    'charts': 'js/statistics-charts.min.js',
+                    'marketer-charts': 'js/marketer-statistics-charts.min.js',
+                    'text-editor': 'js/text-editor.min.js',
+                    'rich-text-editor': 'assets/js/rich-text-editor-helper.js',
+                    'data-tables': 'assets/js/pages/data-basic-custom.min.js',
+                    'data-source': 'assets/js/pages/data-source-custom.min.js',
+                    'data-plugin': 'assets/js/pages/data-plugin-custom.min.js',
+                    'statistics': 'assets/js/pages/statistic.min.js',
+                    'notifications': 'assets/js/pages/ac-notification.min.js',
+                    'widget-data': 'assets/js/pages/widget-data.min.js',
+                    'team-overview': 'scripts/team-overview.min.js',
+                    'grid-animation': 'assets/js/pages/grid-animation/main.min.js',
+                    'daterangepicker': 'assets/js/plugins/daterangepicker.min.js',
+                    'trumbowyg': 'assets/js/plugins/trumbowyg/trumbowyg.min.js',
+                    'error-page': 'assets/js/pages/error.min.js'
+                };
+
+                if (!scriptFiles[scriptName]) {
+                    return Promise.reject(new Error('Script not found: ' + scriptName));
+                }
+
+                return this.loadScript(scriptFiles[scriptName])
+                    .then(() => {
+                        this.loadedScripts.add(scriptName);
+                        console.log('Loaded component script:', scriptName);
+                    });
+            },
+
+            loadScript: function (src) {
+                return new Promise((resolve, reject) => {
+                    if (document.querySelector(`script[src="${src}"]`)) {
+                        resolve();
+                        return;
+                    }
+
+                    const script = document.createElement('script');
+                    script.src = src;
+                    script.async = true;
+                    script.onload = resolve;
+                    script.onerror = reject;
+                    document.head.appendChild(script);
+                });
+            }
+        };
+
+        // Optimized initialization function with dependency checks
+        function initializeCriticalFeatures() {
+            // Ensure all dependencies are loaded before proceeding
+            if (!checkjQueryLoaded()) {
+                console.warn('jQuery not loaded yet, waiting...');
+                waitForjQuery(initializeCriticalFeatures);
+                return;
+            }
+
+            if (!checkLocalizationLoaded()) {
+                console.warn('Localization not loaded yet, waiting...');
+                waitForLocalization(initializeCriticalFeatures);
+                return;
+            }
+
+            console.log('All dependencies loaded, initializing critical features...');
+
+            // Enhanced menu toggle for Blazor WebAssembly
+            $(document).off('click.blazor-enhanced').on('click.blazor-enhanced', '#mobile-collapse, #mobile-collapse1, .mobile-menu', function (e) {
+                e.preventDefault();
+                e.stopPropagation();
+
+                var vw = window.innerWidth || document.documentElement.clientWidth;
+
+                if (vw < 992) {
+                    var $navbar = $(".pcoded-navbar");
+                    var isOpen = $navbar.hasClass('mob-open');
+
+                    if (isOpen) {
+                        $navbar.removeClass('mob-open');
+                        $(this).removeClass('on');
+                        $(".mobile-menu").removeClass('on');
+                        $("#mobile-collapse, #mobile-collapse1").removeClass('on');
+                    } else {
+                        $navbar.addClass('mob-open');
+                        $(this).addClass('on');
+                        $(".mobile-menu").addClass('on');
+                        $("#mobile-collapse, #mobile-collapse1").addClass('on');
+                    }
+                }
+            });
+
+            // Initialize responsive navbar
+            var currentVw = window.innerWidth || document.documentElement.clientWidth;
+            var $navbar = $(".pcoded-navbar");
+
+            if (currentVw >= 992 && currentVw <= 1200) {
+                $navbar.addClass('navbar-collapsed');
+            } else if (currentVw >= 1200) {
+                $navbar.removeClass('navbar-collapsed');
+            }
+        }
+
+        // Initialize navigation helpers - with dependency checks
+        window.initializePcodedMenu = function () {
+            try {
+                // Wait for all dependencies if not loaded
+                if (!checkjQueryLoaded() || !checkLocalizationLoaded()) {
+                    console.warn('Dependencies not available for pcoded menu initialization, waiting...');
+                    waitForDependencies(() => {
+                        window.initializePcodedMenu();
+                    });
+                    return;
+                }
+
+                if (typeof $.fn.pcodedmenu === 'function' && $("#pcoded").length > 0) {
+                    $("#pcoded").pcodedmenu({
+                        MenuTrigger: 'click',
+                        SubMenuTrigger: 'click',
+                    });
+                }
+            } catch (error) {
+                console.error('Error initializing pcoded menu:', error);
+            }
+        };
+
+        window.clearAllActiveStates = function () {
+            if (!checkjQueryLoaded()) {
+                console.warn('jQuery not available for clearing active states');
+                return;
+            }
+            try {
+                $(".pcoded-navbar .pcoded-inner-navbar li").removeClass("active");
+                $(".pcoded-navbar .pcoded-inner-navbar .pcoded-hasmenu").removeClass("active pcoded-trigger");
+                $(".pcoded-navbar .nav-link").blur();
+            } catch (error) {
+                console.error('Error clearing active states:', error);
+            }
+        };
+
+        window.setActiveMenuItems = function () {
+            if (!checkjQueryLoaded()) {
+                console.warn('jQuery not available for setting active menu items');
+                return;
+            }
+            try {
+                var pageUrl = window.location.href.split(/[?#]/)[0];
+                $(".pcoded-navbar .pcoded-inner-navbar a").each(function () {
+                    if (this.href == pageUrl && $(this).attr('href') != "") {
+                        $(this).parent('li').addClass("active");
+                        if (!$('.pcoded-navbar').hasClass('theme-horizontal')) {
+                            $(this).parent('li').parent().parent('.pcoded-hasmenu').addClass("active").addClass("pcoded-trigger");
+                        }
+                    }
+                });
+            } catch (error) {
+                console.error('Error setting active menu items:', error);
+            }
+        };
+
+        // Initialize Perfect Scrollbar when needed
+        window.initializePerfectScrollbar = function (selector) {
+            if (typeof PerfectScrollbar === 'undefined') return;
+            try {
+                var element = document.querySelector('.' + selector);
+                if (element) {
+                    new PerfectScrollbar('.' + selector, {
+                        wheelSpeed: 0.5,
+                        swipeEasing: 0,
+                        suppressScrollX: true,
+                        wheelPropagation: 1,
+                        minScrollbarLength: 40,
+                    });
+                }
+            } catch (error) {
+                console.error('Error initializing perfect scrollbar:', error);
+            }
+        };
+
+        // Navigation scrollbar initialization
+        window.initializeNavScrollbar = function () {
+            if ('requestIdleCallback' in window) {
+                requestIdleCallback(() => {
+                    if (document.querySelector('.navbar-content') && typeof PerfectScrollbar !== 'undefined') {
+                        if (window.navScrollbar) {
+                            window.navScrollbar.destroy();
+                        }
+                        window.navScrollbar = new PerfectScrollbar('.navbar-content', {
+                            wheelSpeed: 0.5,
+                            swipeEasing: 0,
+                            suppressScrollX: true,
+                        });
+                    }
+                });
+            }
+        };
+
+        // Initialize navbar handler
+        window.navbarHandler = {
+            init: function () {
+                var navbarCollapse = document.getElementById("navbarSupportedContent");
+                if (!navbarCollapse) return;
+
+                var navList = navbarCollapse.querySelector("ul.navbar-nav");
+                if (!window.matchMedia("(max-width: 991.98px)").matches) {
+                    navList.style.display = "";
+                    return;
+                }
+
+                var isShown = navbarCollapse.classList.contains("show");
+                if (navList) {
+                    navList.style.display = isShown ? "" : "none";
+                }
+            }
+        };
+    </script>
+
+    <style>
+        /* Additional performance optimizations */
+        .pcoded-navbar .nav-link:focus,
+        .pcoded-navbar .nav-link:focus-visible {
+            outline: none !important;
+            box-shadow: none !important;
+        }
+
+        /* Optimize rendering performance */
+        .loading-container,
+        .loading-logo-img {
+            contain: layout style paint;
+            will-change: transform, opacity;
+        }
+
+        /* Prevent layout shifts */
+        img {
+            height: auto;
+            max-width: 100%;
+        }
+
+        /* Optimize font rendering */
+        body {
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            text-rendering: optimizeLegibility;
+        }
+
+        /* ==============================================
+           MOBILE HEADER - ICONS ON SAME LINE AS LOGO
+           ============================================== */
+
+        /* Compact header on mobile */
+        @media (max-width: 991.98px) {
+            /* Single-line header */
+            .pcoded-header {
+                min-height: 56px !important;
+                height: 56px !important;
+                padding: 0 !important;
+            }
+
+                /* m-header contains logo AND icons on mobile */
+                .pcoded-header .m-header {
+                    display: flex !important;
+                    align-items: center !important;
+                    justify-content: space-between !important;
+                    height: 56px !important;
+                    padding: 0 0.75rem !important;
+                    width: 100% !important;
+                    margin: 0px 20px;
+                }
+
+                    /* Smaller logo on mobile */
+                    .pcoded-header .m-header .b-brand {
+                        padding: 0 !important;
+                        display: flex !important;
+                        align-items: center !important;
+                    }
+
+                        .pcoded-header .m-header .b-brand img {
+                            max-height: 32px !important;
+                        }
+
+                /* Mobile menu button */
+                .pcoded-header .mobile-menu {
+                    width: 32px !important;
+                    height: 32px !important;
+                    margin-right: 0.5rem !important;
+                }
+
+                /* Icons container in m-header */
+                .pcoded-header .m-header > div:last-child {
+                    display: flex !important;
+                    align-items: center !important;
+                    gap: 0.25rem !important;
+                }
+
+                /* Mobile navbar-nav in m-header */
+                .pcoded-header .m-header .navbar-nav {
+                    display: flex !important;
+                    flex-direction: row !important;
+                    align-items: center !important;
+                    gap: 0.25rem !important;
+                    margin: 0 35px !important;
+                    padding: 0 !important;
+                    list-style: none !important;
+                }
+
+                    /* List items */
+                    .pcoded-header .m-header .navbar-nav > li {
+                        display: flex !important;
+                        align-items: center !important;
+                        margin: 35px 0 !important;
+                        padding: 0 !important;
+                    }
+
+                        /* Compact icon buttons in m-header */
+                        .pcoded-header .m-header .navbar-nav > li > a,
+                        .pcoded-header .m-header .navbar-nav > li > button,
+                        .pcoded-header .m-header .navbar-nav .dropdown-toggle {
+                            display: flex !important;
+                            align-items: center !important;
+                            justify-content: center !important;
+                            width: 36px !important;
+                            height: 36px !important;
+                            padding: 0 !important;
+                            color: #fff !important;
+                            background: transparent !important;
+                            border: none !important;
+                            margin: 0 !important;
+                            text-decoration: none !important;
+                        }
+
+                            /* Hover effect */
+                            .pcoded-header .m-header .navbar-nav > li > a:hover,
+                            .pcoded-header .m-header .navbar-nav > li > button:hover,
+                            .pcoded-header .m-header .navbar-nav .dropdown-toggle:hover {
+                                background: rgba(255, 255, 255, 0.1) !important;
+                                border-radius: 0.25rem !important;
+                            }
+
+                    /* Icons */
+                    .pcoded-header .m-header .navbar-nav i,
+                    .pcoded-header .m-header .navbar-nav .feather {
+                        display: block !important;
+                        font-size: 1.1rem !important;
+                        color: #fff !important;
+                        margin: 0 !important;
+                    }
+
+                    /* Dropdown menus */
+                    .pcoded-header .m-header .navbar-nav .dropdown-menu {
+                        position: absolute !important;
+                        right: 0 !important;
+                        left: auto !important;
+                        top: 100% !important;
+                        margin-top: 0.5rem !important;
+                    }
+
+                    /* Notification dropdown */
+                    .pcoded-header .m-header .navbar-nav .dropdown .notification {
+                        right: 0 !important;
+                        top: calc(100% + 0.5rem) !important;
+                    }
+
+                /* Hide desktop navbar on mobile */
+                .pcoded-header #navbarSupportedContent {
+                    display: none !important;
+                }
+        }
+
+        /* Desktop styles */
+        @media (min-width: 992px) {
+            .pcoded-header {
+                display: flex;
+                align-items: center;
+                min-height: 56px;
+            }
+
+                .pcoded-header .m-header {
+                    display: flex;
+                    align-items: center;
+                }
+
+                    /* Hide mobile icons on desktop */
+                    .pcoded-header .m-header > div:last-child {
+                        display: none !important;
+                    }
+
+                .pcoded-header #navbarSupportedContent {
+                    display: flex !important;
+                }
+
+                .pcoded-header .navbar-nav {
+                    display: flex;
+                    align-items: center;
+                }
+
+                    .pcoded-header .navbar-nav > li {
+                        display: flex;
+                        align-items: center;
+                        height: 56px;
+                    }
+
+                        .pcoded-header .navbar-nav > li > a,
+                        .pcoded-header .navbar-nav > li > button {
+                            display: flex;
+                            align-items: center;
+                            height: 100%;
+                        }
+
+            #b-brand {
+                display: none;
+            }
+
+            #mobile-collapse1 {
+                display: none !important;
+            }
+        }
+    </style>
 </body>
-
 </html>

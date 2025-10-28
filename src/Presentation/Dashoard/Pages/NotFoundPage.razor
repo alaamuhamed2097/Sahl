@@ -1,0 +1,174 @@
+﻿@page "/NotFoundPage/{Message}"
+@page "/NotFoundPage"
+@using Microsoft.AspNetCore.Components
+
+<PageTitle>Page Not Found</PageTitle>
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet" />
+
+<style>
+    .not-found-container {
+        min-height: 100vh;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    .not-found-card {
+        background: rgba(255, 255, 255, 0.95);
+        border-radius: 20px;
+        padding: 3rem;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        text-align: center;
+        max-width: 500px;
+        width: 90%;
+        position: relative;
+        overflow: hidden;
+        border-top: 4px solid #667eea;
+    }
+
+    .error-number {
+        font-size: 8rem;
+        font-weight: 900;
+        background: linear-gradient(45deg, #667eea, #764ba2);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        margin: 0;
+        line-height: 1;
+    }
+
+    .error-title {
+        color: #2d3748;
+        font-size: 1.5rem;
+        font-weight: 600;
+        margin: 1.5rem 0;
+    }
+
+    .error-message {
+        color: #718096;
+        font-size: 1.1rem;
+        margin-bottom: 2rem;
+        line-height: 1.6;
+    }
+
+    .home-btn {
+        background: linear-gradient(45deg, #667eea, #764ba2);
+        border: none;
+        color: white;
+        padding: 12px 30px;
+        font-size: 1.1rem;
+        font-weight: 600;
+        border-radius: 50px;
+        text-decoration: none;
+        display: inline-block;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+
+        .home-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+            color: white;
+            text-decoration: none;
+        }
+
+    .floating-shapes {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        z-index: -1;
+    }
+
+    .shape {
+        position: absolute;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 50%;
+    }
+
+        .shape:nth-child(1) {
+            width: 80px;
+            height: 80px;
+            top: 20%;
+            left: 10%;
+        }
+
+        .shape:nth-child(2) {
+            width: 60px;
+            height: 60px;
+            top: 60%;
+            right: 10%;
+        }
+
+        .shape:nth-child(3) {
+            width: 40px;
+            height: 40px;
+            bottom: 20%;
+            left: 20%;
+        }
+
+    .icon {
+        font-size: 4rem;
+        color: #667eea;
+        margin-bottom: 1rem;
+    }
+
+    @@media (max-width: 768px) {
+        .not-found-card {
+            padding: 2rem;
+            margin: 1rem;
+        }
+
+        .error-number {
+            font-size: 6rem;
+        }
+
+        .error-title {
+            font-size: 1.3rem;
+        }
+
+        .error-message {
+            font-size: 1rem;
+        }
+    }
+</style>
+
+<div class="not-found-container">
+    <div class="floating-shapes">
+        <div class="shape"></div>
+        <div class="shape"></div>
+        <div class="shape"></div>
+    </div>
+
+    <div class="not-found-card animate__animated animate__fadeInUp">
+        <div class="icon animate__animated animate__pulse animate__infinite">🔍</div>
+        <h1 class="error-number animate__animated animate__bounce">404</h1>
+        <h2 class="error-title">@GeneralResources.OopsPageNotFound</h2>
+
+        @if (string.IsNullOrEmpty(Message))
+        {
+            <p class="error-message">
+                @GeneralResources.PageNotFoundMessage
+            </p>
+        }
+        else
+        {
+            <p class="error-message">@Message</p>
+        }
+
+        <a href="/" class="home-btn animate__animated animate__fadeInUp animate__delay-1s">
+            @GeneralResources.BackToHome
+        </a>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public string? Message { get; set; }
+}

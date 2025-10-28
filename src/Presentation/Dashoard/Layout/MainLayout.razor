@@ -1,16 +1,143 @@
-﻿@inherits LayoutComponentBase
-<div class="page">
-    <div class="sidebar">
-        <NavMenu />
+﻿@using UI.Layout.Components
+@inherits LayoutComponentBase
+
+<NavMenu />
+<NotificationOverlay OnNotificationReceived="HandleNotificationChanged" />
+<!-- [ Header ] start -->
+<header class="navbar pcoded-header navbar-expand-lg navbar-light headerpos-fixed">
+    <div class="m-header">
+        <a class="mobile-menu" id="mobile-collapse1" href="javascript:void(0)"><span></span></a>
+        <a href="/" class="b-brand" id="b-brand">
+            <img src="assets/images/logo.svg" alt="" class="logo images" />
+            <img src="assets/images/logo-icon.svg" alt="" class="logo-thumb images" />
+        </a>
+        
+        <!-- Mobile Icons - Same line as logo -->
+        <div class="d-lg-none ms-auto d-flex align-items-center gap-2">
+            <ul class="navbar-nav d-flex flex-row align-items-center mb-0">
+                <!-- Language Switcher Button -->
+                <li>
+                    <button class="btn btn-link nav-link p-0" @onclick="ChangeLanguage" 
+                            title="@(ResourceManager.CurrentLanguage == Language.English ? GeneralResources.Arabic : GeneralResources.English)">
+                        <i class="feather icon-globe m-0"></i>
+                    </button>
+                </li>
+                <li>
+                    <Notifications NotificationsChanged="NotificationChanged" />
+                </li>
+                <li>
+                    <div class="dropdown drp-user">
+                        <a href="#" class="dropdown-toggle p-0" data-bs-toggle="dropdown"
+                           title="@GeneralResources.Settings">
+                            <i class="icon feather icon-settings m-0"></i>
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-end profile-notification">
+                            <div class="pro-head">
+                                <img src="@baseUrl/@UserImage"
+                                     class="img-radius"
+                                     alt="User-Profile-Image" />
+                                <span>@fullName</span>
+                            </div>
+                            <ul class="pro-body">
+                                <li>
+                                    <a href="/MarketerSettings" class="dropdown-item">
+                                        <i class="feather icon-settings mr-2"></i>@GeneralResources.Settings
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="/PersonalInfo" class="dropdown-item">
+                                        <i class="feather icon-user mr-2"></i>@UserResources.Profile
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item text-danger cursor-pointer" @onclick="()=> LogOut()">
+                                        <i class="feather icon-lock mr-2"></i> @UserResources.Signout
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+        </div>
     </div>
 
-    <main>
-        <div class="top-row px-4">
-            <a href="https://learn.microsoft.com/aspnet/core/" target="_blank">About</a>
-        </div>
+    <!-- Desktop navbar -->
+    <div class="navbar-collapse position-relative d-none d-lg-flex align-items-center" style="justify-content: space-between;" id="navbarSupportedContent">
+        <!-- Desktop: Show page title -->
+        <h4 class="ms-3 my-auto">
+            <i class="feather icon-home me-2"></i> @GeneralResources.Dashboard
+        </h4>
 
-        <article class="content px-4">
-            @Body
-        </article>
-    </main>
+        <ul class="navbar-nav d-flex flex-row align-items-center">
+            <!-- Language Switcher Button -->
+            <li>
+                <button class="btn btn-link nav-link p-0" @onclick="ChangeLanguage" 
+                        title="@(ResourceManager.CurrentLanguage == Language.English ? GeneralResources.Arabic : GeneralResources.English)">
+                    <i class="feather icon-globe m-0"></i>
+                    <span class="d-none d-lg-inline ms-2">@(ResourceManager.CurrentLanguage == Language.English ? GeneralResources.Arabic : GeneralResources.English)</span>
+                </button>
+            </li>
+            <li>
+                <Notifications NotificationsChanged="NotificationChanged" />
+            </li>
+            <li>
+                <div class="dropdown drp-user">
+                    <a href="#" class="dropdown-toggle p-0" data-bs-toggle="dropdown"
+                       title="@GeneralResources.Settings">
+                        <i class="icon feather icon-settings m-0"></i>
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-end profile-notification">
+                        <div class="pro-head">
+                            <img src="@baseUrl/@UserImage"
+                                 class="img-radius"
+                                 alt="User-Profile-Image" />
+                            <span>@fullName</span>
+                        </div>
+                        <ul class="pro-body">
+                            <li>
+                                <a href="/MarketerSettings" class="dropdown-item">
+                                    <i class="feather icon-settings mr-2"></i>@GeneralResources.Settings
+                                </a>
+                            </li>
+                            <li>
+                                <a href="/PersonalInfo" class="dropdown-item">
+                                    <i class="feather icon-user mr-2"></i>@UserResources.Profile
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item text-danger cursor-pointer" @onclick="()=> LogOut()">
+                                    <i class="feather icon-lock mr-2"></i> @UserResources.Signout
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </li>
+        </ul>
+    </div>
+</header>
+<!-- [ Header ] end -->
+<!-- [ Main Content ] start -->
+<div class="pcoded-main-container">
+	<div class="pcoded-wrapper">
+		<div class="pcoded-content">
+			<div class="pcoded-inner-content">
+				<div class="main-body">
+					<div class="page-wrapper">
+
+						@Body
+
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
 </div>
+<!-- [ Main Content ] end -->
+<!-- [ Floating Whatsapp ] start -->
+@* <div class="position-fixed bottom-0 end-0 m-4 rounded-pill bg-success text-white d-flex justify-content-center align-center"
+	 style="width: 50px; height: 50px; cursor: pointer; z-index:999">
+	<i class="fab fa-whatsapp fs-3 mt-2"></i>
+</div> *@
+<!-- [ Floating Whatsapp ] end -->

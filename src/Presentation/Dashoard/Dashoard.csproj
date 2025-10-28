@@ -78,6 +78,14 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Remove="Layout\MainLayout.razor.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Layout\MainLayout.razor.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
 	  <Content Update="**\*.razor.css">
 		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 	  </Content>
@@ -86,6 +94,10 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="9.0.10" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="9.0.10" PrivateAssets="all" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Shared\Shared\Shared.csproj" />
   </ItemGroup>
 
 </Project>

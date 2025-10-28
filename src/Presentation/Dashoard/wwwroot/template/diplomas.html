@@ -1,0 +1,135 @@
+<!-- This file contains the diplomas page template that will be loaded into the main page -->
+<div class="dashboard">
+  <div class="breadcrumb">
+    <span data-i18n="breadcrumbHome">الرئيسية</span>
+    <i class="fas fa-chevron-left"></i>
+    <span class="breadcrumb-current" data-i18n="navDiplomas">الدبلومات</span>
+  </div>
+
+  <div class="page-header">
+    <div>
+      <h1 class="page-title" data-i18n="navDiplomas">الدبلومات</h1>
+      <p class="page-description" data-i18n="diplomasDescription">
+        إدارة وعرض جميع الدبلومات في النظام
+      </p>
+    </div>
+    <div class="header-actions">
+      <button class="btn" id="filterDiplomasBtn">
+        <i class="fas fa-filter"></i>
+        <span data-i18n="btnFilter">تصفية</span>
+      </button>
+      <button class="btn btn-primary" id="addDiplomaBtn">
+        <i class="fas fa-plus"></i>
+        <span data-i18n="btnAddNew">إضافة دبلوم</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Metrics -->
+  <div class="metrics-grid">
+    <div class="metric-card">
+      <div class="metric-card-content">
+        <div class="metric-info">
+          <div class="metric-title" data-i18n="metricTotalDiplomas">
+            إجمالي الدبلومات
+          </div>
+          <div class="metric-value" id="totalDiplomas">0</div>
+          <div class="metric-change positive">
+            <i class="fas fa-arrow-up"></i>
+            <span data-i18n="metricDiplomasChange">24% من الشهر الماضي</span>
+          </div>
+        </div>
+        <div class="metric-icon gradient-primary">
+          <i class="fas fa-certificate"></i>
+        </div>
+      </div>
+    </div>
+
+    <div class="metric-card">
+      <div class="metric-card-content">
+        <div class="metric-info">
+          <div class="metric-title">الدبلومات النشطة</div>
+          <div class="metric-value" id="activeDiplomas">0</div>
+          <div class="metric-change positive">
+            <i class="fas fa-arrow-up"></i>
+            <span>18% من الشهر الماضي</span>
+          </div>
+        </div>
+        <div class="metric-icon gradient-success">
+          <i class="fas fa-check-circle"></i>
+        </div>
+      </div>
+    </div>
+
+    <div class="metric-card">
+      <div class="metric-card-content">
+        <div class="metric-info">
+          <div class="metric-title">الأكثر مبيعاً</div>
+          <div class="metric-value" id="bestSellerDiplomas">0</div>
+          <div class="metric-change positive">
+            <i class="fas fa-arrow-up"></i>
+            <span>5 من الأسبوع الماضي</span>
+          </div>
+        </div>
+        <div class="metric-icon gradient-orange">
+          <i class="fas fa-fire"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Diplomas List -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title">
+        <i class="fas fa-list"></i>
+        <span data-i18n="cardAllDiplomas">جميع الدبلومات</span>
+      </div>
+      <div class="view-options">
+        <button class="view-btn active" data-view="grid">
+          <i class="fas fa-th"></i>
+        </button>
+        <button class="view-btn" data-view="table">
+          <i class="fas fa-list"></i>
+        </button>
+      </div>
+    </div>
+    <div class="card-content">
+      <!-- Grid View -->
+      <div id="diplomasGridView" class="diplomas-grid"></div>
+
+      <!-- Table View -->
+      <div id="diplomasTableView" style="display: none">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>الصورة</th>
+              <th>العنوان (عربي)</th>
+              <th>العنوان (إنجليزي)</th>
+              <th>الكود</th>
+              <th>الأولوية</th>
+              <th>الحالة</th>
+              <th>الإجراءات</th>
+            </tr>
+          </thead>
+          <tbody id="diplomasTableBody"></tbody>
+        </table>
+      </div>
+    </div>
+    <div class="pagination-container">
+      <div class="pagination-info" data-i18n="paginationInfo">
+        عرض 1 إلى 6 من 856 إدخال
+      </div>
+      <div class="pagination">
+        <button class="pagination-btn" disabled>
+          <i class="fas fa-chevron-right"></i>
+        </button>
+        <button class="pagination-btn">
+          <i class="fas fa-chevron-left"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Add/Edit Diploma Modal (will be created dynamically) -->

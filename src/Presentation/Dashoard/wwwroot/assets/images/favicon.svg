@@ -1,0 +1,14 @@
+<svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+	<!-- Shopping Cart with Rise Arrow (Dark Mode) -->
+	<g transform="translate(1 1)">
+		<!-- Cart handle -->
+		<path d="M0 2 L2 2 L3 11 L14 11" stroke="#F5F5F5" stroke-width="1.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+		<!-- Cart basket -->
+		<path d="M3 3 L14 3 L13 11 L4 11 Z"  stroke="#F5F5F5" stroke-width="1.2" stroke-linejoin="round"/>
+		<!-- Cart wheels -->
+		<circle cx="6" cy="15" r="1.2" fill="#F5F5F5"/>
+		<circle cx="11" cy="15" r="1.2" fill="#F5F5F5"/>
+		<!-- Rise Arrow inside cart -->
+		<path d="M8.5 9 V5 M8.5 5 L6.5 7 M8.5 5 L10.5 7" stroke="#FF9764" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+	</g>
+</svg>
