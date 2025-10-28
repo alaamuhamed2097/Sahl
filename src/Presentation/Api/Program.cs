@@ -1,73 +1,172 @@
-﻿using Microsoft.OpenApi.Models;
+using Api.Extensions;
+using BL.GeneralService.Notification;
+using DAL.ApplicationContext;
+using Domains.Identity;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-builder.Services.AddControllers();
+// Configure Logging (Serilog)
+builder.Services.AddSerilogConfiguration(builder.Configuration);
+builder.Host.AddSerilogHost();
 
-// Configure OpenAPI
-builder.Services.AddOpenApi(options =>
-{
-    options.AddDocumentTransformer((document, context, cancellationToken) =>
-    {
-        document.Info = new OpenApiInfo
-        {
-            Title = "Your API",
-            Version = "v1",
-            Description = "API Documentation",
-            Contact = new OpenApiContact
-            {
-                Name = "Your Name",
-                Email = "your.email@example.com"
-            }
-        };
-        return Task.CompletedTask;
-    });
-});
+// Configure Database & Identity
+builder.Services.AddDatabaseConfiguration(builder.Configuration);
+
+// Configure Authentication (JWT)
+builder.Services.AddJwtAuthentication(builder.Configuration);
+
+// Configure AutoMapper
+builder.Services.AddAutoMapperConfiguration();
+
+// Configure Repository Services
+builder.Services.AddRepositoryServices();
+
+// Configure Business Services
+builder.Services.AddCmsServices();
+builder.Services.AddNotificationServices();
+builder.Services.AddUserManagementServices();
+builder.Services.AddLocationServices();
+builder.Services.AddGeneralServices();
+
+// Configure Infrastructure Services
+builder.Services.AddInfrastructureServices();
+
+// Configure Localization
+builder.Services.AddLocalizationConfiguration();
+
+// Configure MVC & Compression
+builder.Services.AddMvcConfiguration();
+builder.Services.AddCompressionConfiguration();
+
+// Configure CORS
+builder.Services.AddCorsConfiguration(builder.Environment);
+
+// Configure Swagger
+builder.Services.AddSwaggerConfiguration();
+builder.Services.AddHttpClient();
+
+// Configure Hangfire
+builder.Services.AddHangfireConfiguration(builder.Configuration);
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+// Configure middleware pipeline
+app.UseSwagger(options =>
+{
+    options.RouteTemplate = "openapi/{documentName}.json";
+});
+
 if (app.Environment.IsDevelopment())
 {
-    app.MapOpenApi(); // يولد الـ OpenAPI JSON على /openapi/v1.json
-
-    // 🔥 Add Swagger UI (Optional but recommended)
     app.UseSwaggerUI(options =>
     {
-        options.SwaggerEndpoint("/openapi/v1.json", "Your API v1");
-        options.RoutePrefix = "swagger"; // Access via /swagger
+        options.SwaggerEndpoint("/openapi/v1.json", "Sahl API v1");
+        options.RoutePrefix = "swagger";
+
+        app.MapGet("/", () => Results.Redirect("/swagger"))
+           .ExcludeFromDescription();
+
+        options.DefaultModelsExpandDepth(-1);
+        options.DocExpansion(Swashbuckle.AspNetCore.SwaggerUI.DocExpansion.None);
+        options.EnableDeepLinking();
+        options.DisplayRequestDuration();
+        options.EnableFilter();
+        options.ShowExtensions();
+        options.EnableValidator();
     });
 
-    // 🔥 Endpoint لتصدير OpenAPI JSON للـ api-specs folder
-    app.MapGet("/openapi/export", async (HttpContext context) =>
+    app.MapGet("/openapi/export", async context =>
     {
-        // Get OpenAPI document
-        var openApiJson = await context.Request.HttpContext
-            .RequestServices
-            .GetRequiredService<IHttpClientFactory>()
-            .CreateClient()
-            .GetStringAsync($"{context.Request.Scheme}://{context.Request.Host}/openapi/v1.json");
+        var httpClientFactory = context.RequestServices.GetRequiredService<IHttpClientFactory>();
+        var httpClient = httpClientFactory.CreateClient();
 
-        // Save to api-specs folder
-        var solutionRoot = Directory.GetParent(Directory.GetCurrentDirectory())?.Parent?.FullName;
-        var apiSpecsPath = Path.Combine(solutionRoot!, "api-specs");
-        Directory.CreateDirectory(apiSpecsPath);
+        var baseUrl = $"{context.Request.Scheme}://{context.Request.Host}";
+        var openApiUrl = $"{baseUrl}/openapi/v1.json";
 
-        var filePath = Path.Combine(apiSpecsPath, "swagger.json");
+        var openApiJson = await httpClient.GetStringAsync(openApiUrl);
+
+        var solutionRoot = Directory.GetParent(Directory.GetCurrentDirectory())?.Parent?.FullName
+                           ?? Directory.GetCurrentDirectory();
+        var specsPath = Path.Combine(solutionRoot, "api-specs");
+        Directory.CreateDirectory(specsPath);
+
+        var filePath = Path.Combine(specsPath, "swagger.json");
         await File.WriteAllTextAsync(filePath, openApiJson);
 
-        return Results.Ok(new
-        {
-            message = "OpenAPI JSON exported successfully",
-            path = filePath,
-            url = $"{context.Request.Scheme}://{context.Request.Host}/openapi/v1.json"
-        });
-    }).ExcludeFromDescription(); // Hide from OpenAPI docs
+        //return Results.Ok(new
+        //{
+        //    message = "OpenAPI JSON exported successfully",
+        //    path = filePath,
+        //    url = openApiUrl
+        //});
+    }).ExcludeFromDescription();
+}
+//else
+//{
+//    app.UseSwaggerUI(c =>
+//    {
+//        app.MapGet("/", () => Results.Redirect("/swagger"));
+//        c.DefaultModelsExpandDepth(-1);
+//        c.DocExpansion(Swashbuckle.AspNetCore.SwaggerUI.DocExpansion.None);
+//        c.EnableDeepLinking();
+//        c.DisplayRequestDuration();
+//        c.EnableFilter();
+//        c.ShowExtensions();
+//        c.EnableValidator();
+//    });
+//}
+
+// Middleware order
+app.UseStaticFiles();
+app.UseResponseCompression();
+app.UseHttpsRedirection();
+
+// Apply CORS policy
+app.UseCors("AllowAll");
+
+// Configure localization
+app.UseLocalizationConfiguration();
+
+app.UseRouting();
+
+// Authentication/Authorization
+app.UseAuthentication();
+app.UseAuthorization();
+
+// SignalR hub mapping
+app.MapHub<NotificationHub>("/notificationHub");
+
+app.MapControllers();
+
+// Apply migrations and seed data
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    var userManager = services.GetRequiredService<UserManager<ApplicationUser>>();
+    var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
+    var dbContext = services.GetRequiredService<ApplicationDbContext>();
+
+    // Apply migrations
+    await dbContext.Database.MigrateAsync();
+
+    // Seed data
+    await ContextConfigurations.SeedDataAsync(dbContext, userManager, roleManager);
 }
 
-app.UseHttpsRedirection();
-app.UseAuthorization();
-app.MapControllers();
+// Add debugging middleware for Swagger
+app.Use(async (context, next) =>
+{
+    if (context.Request.Path.StartsWithSegments("/swagger"))
+    {
+        Console.WriteLine($"Swagger request: {context.Request.Path}");
+    }
+    await next();
+});
+
+// Use the ClientIP middleware
+app.UseMiddleware<Api.Middleware.ClientIPMiddleware>();
 
 app.Run();

@@ -1,5 +1,4 @@
-﻿using Common.Enumerations;
-using Domains.Entities.Order;
+﻿using Common.Enumerations.User;
 using Microsoft.AspNetCore.Identity;
 
 namespace Domains.Identity
@@ -18,6 +17,6 @@ namespace Domains.Identity
         public DateTime? LastLoginDate { get; set; }
         public UserStateType UserState { get; set; }
 
-        public virtual HashSet<TbOrder> Orders { get; set; } = new HashSet<TbOrder>();
+        //public virtual HashSet<TbOrder> Orders { get; set; } = new HashSet<TbOrder>();
     }
 }

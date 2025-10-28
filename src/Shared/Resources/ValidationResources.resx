@@ -1,0 +1,828 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="ServiceIdRequired" xml:space="preserve">
+    <value>نوع الخدمة مطلوب.</value>
+  </data>
+  <data name="MaxLengthExceeded" xml:space="preserve">
+    <value>لا يمكن أن يتجاوز الحقل {0} حرف.</value>
+  </data>
+  <data name="InvalidFormat" xml:space="preserve">
+    <value>تنسيق الحقل غير صحيح.</value>
+  </data>
+  <data name="PropertyIdRequired" xml:space="preserve">
+    <value>الوحدة مطلوبة.</value>
+  </data>
+  <data name="AmenityIdRequired" xml:space="preserve">
+    <value>معرّف الميزة مطلوب.</value>
+  </data>
+  <data name="UserRequired" xml:space="preserve">
+    <value>المستخدم مطلوب.</value>
+  </data>
+  <data name="PathMaxLength" xml:space="preserve">
+    <value>المسار لا يمكن أن يتجاوز 500 حرف.</value>
+  </data>
+  <data name="FullNameRequired" xml:space="preserve">
+    <value>الاسم الكامل مطلوب.</value>
+  </data>
+  <data name="CountryCodeRequired" xml:space="preserve">
+    <value>رمز البلد مطلوب.</value>
+  </data>
+  <data name="SpecializationARRequired" xml:space="preserve">
+    <value>التخصص بالعربية مطلوب.</value>
+  </data>
+  <data name="MessageRequired" xml:space="preserve">
+    <value>الرسالة مطلوبة.</value>
+  </data>
+  <data name="MessageMaxLength" xml:space="preserve">
+    <value>الرسالة لا يمكن أن تتجاوز 1000 حرف.</value>
+  </data>
+  <data name="PackageRequired" xml:space="preserve">
+    <value>الباقة مطلوبة.</value>
+  </data>
+  <data name="NameEnRequired" xml:space="preserve">
+    <value>الاسم بالإنجليزية مطلوب.</value>
+  </data>
+  <data name="IconRequired" xml:space="preserve">
+    <value>الأيقونة مطلوبة.</value>
+  </data>
+  <data name="WhatsAppRequired" xml:space="preserve">
+    <value>رقم الواتساب مطلوب.</value>
+  </data>
+  <data name="EmailRequired" xml:space="preserve">
+    <value>البريد الإلكتروني مطلوب.</value>
+  </data>
+  <data name="EmailInvalid" xml:space="preserve">
+    <value>عنوان البريد الإلكتروني غير صحيح.</value>
+  </data>
+  <data name="FacebookInvalid" xml:space="preserve">
+    <value>رابط فيسبوك غير صحيح.</value>
+  </data>
+  <data name="LinkedInInvalid" xml:space="preserve">
+    <value>رابط لينكدإن غير صحيح.</value>
+  </data>
+  <data name="TwitterInvalid" xml:space="preserve">
+    <value>رابط تويتر غير صحيح.</value>
+  </data>
+  <data name="YouTubeInvalid" xml:space="preserve">
+    <value>رابط يوتيوب غير صحيح.</value>
+  </data>
+  <data name="InstagramInvalid" xml:space="preserve">
+    <value>رابط إنستغرام غير صحيح.</value>
+  </data>
+  <data name="WhatsAppInvalid" xml:space="preserve">
+    <value>رقم الواتساب غير صحيح.</value>
+  </data>
+  <data name="AddressLength" xml:space="preserve">
+    <value>العنوان يجب أن يكون بين 2 و 100 حرف.</value>
+  </data>
+  <data name="NameEnLength" xml:space="preserve">
+    <value>اسم (إنجليزي) يجب أن يكون بين 2 و 100 حرف.</value>
+  </data>
+  <data name="IconLength" xml:space="preserve">
+    <value>الأيقونة يجب أن تكون بين 2 و 50 حرف.</value>
+  </data>
+  <data name="FullNameLength" xml:space="preserve">
+    <value>الاسم الكامل يجب أن يكون بين 2 و 100 حرف.</value>
+  </data>
+  <data name="CountryCodeLength" xml:space="preserve">
+    <value>رمز البلد يجب أن يكون بين 1 و 5 أحرف.</value>
+  </data>
+  <data name="MobileLength" xml:space="preserve">
+    <value>رقم الهاتف المحمول يجب أن يكون بين 10 و 15 حرف.</value>
+  </data>
+  <data name="MobileFormat" xml:space="preserve">
+    <value>رقم الهاتف المحمول ليس بتنسيق صحيح.</value>
+  </data>
+  <data name="CountryIdRequired" xml:space="preserve">
+    <value>الدولة مطلوبة.</value>
+  </data>
+  <data name="LogoRequired" xml:space="preserve">
+    <value>الشعار مطلوب.</value>
+  </data>
+  <data name="LogoLength" xml:space="preserve">
+    <value>رابط الشعار لا يمكن أن يتجاوز 500 حرف.</value>
+  </data>
+  <data name="PhoneRequired" xml:space="preserve">
+    <value>رقم الهاتف مطلوب.</value>
+  </data>
+  <data name="PhoneLength" xml:space="preserve">
+    <value>رقم الهاتف يجب أن يكون بين 10 و 15 حرف.</value>
+  </data>
+  <data name="EmailFormat" xml:space="preserve">
+    <value>تنسيق البريد الإلكتروني غير صحيح</value>
+  </data>
+  <data name="TitleEnRequired" xml:space="preserve">
+    <value>العنوان الإنجليزي مطلوب.</value>
+  </data>
+  <data name="TitleEnLength" xml:space="preserve">
+    <value>العنوان الإنجليزي يجب أن يكون بين {0} و {1} حرف.</value>
+  </data>
+  <data name="TitleArRequired" xml:space="preserve">
+    <value>العنوان العربي مطلوب.</value>
+  </data>
+  <data name="TitleArLength" xml:space="preserve">
+    <value>العنوان العربي يجب أن يكون بين {0} و {1} حرف.</value>
+  </data>
+  <data name="DescriptionEnRequired" xml:space="preserve">
+    <value>الوصف الإنجليزي مطلوب.</value>
+  </data>
+  <data name="ShortDescriptionEnLength" xml:space="preserve">
+    <value>الوصف القصير الإنجليزي يجب أن يكون بين 10 و 1000 حرف.</value>
+  </data>
+  <data name="DescriptionArRequired" xml:space="preserve">
+    <value>الوصف العربي مطلوب.</value>
+  </data>
+  <data name="ShortDescriptionArLength" xml:space="preserve">
+    <value>الوصف القصير العربي يجب أن يكون بين 10 و 1000 حرف.</value>
+  </data>
+  <data name="PriceRequired" xml:space="preserve">
+    <value>السعر مطلوب.</value>
+  </data>
+  <data name="PriceRange" xml:space="preserve">
+    <value>يجب أن يكون السعر عددًا إيجابيًا.</value>
+  </data>
+  <data name="SalesPriceRequired" xml:space="preserve">
+    <value>سعر البيع مطلوب.</value>
+  </data>
+  <data name="SalesPriceRange" xml:space="preserve">
+    <value>يجب أن يكون سعر البيع عددًا إيجابيًا.</value>
+  </data>
+  <data name="LengthRequired" xml:space="preserve">
+    <value>الطول مطلوب.</value>
+  </data>
+  <data name="LengthRange" xml:space="preserve">
+    <value>يجب أن يكون الطول عددًا صحيحًا إيجابيًا.</value>
+  </data>
+  <data name="WidthRequired" xml:space="preserve">
+    <value>العرض مطلوب.</value>
+  </data>
+  <data name="WidthRange" xml:space="preserve">
+    <value>يجب أن يكون العرض عددًا صحيحًا إيجابيًا.</value>
+  </data>
+  <data name="DeliveryYearRequired" xml:space="preserve">
+    <value>سنة التسليم مطلوبة.</value>
+  </data>
+  <data name="DeliveryYearRange" xml:space="preserve">
+    <value>سنة التسليم يجب أن تكون بين 1900 و 2100.</value>
+  </data>
+  <data name="FinishingStatusRequired" xml:space="preserve">
+    <value>حالة التشطيب مطلوبة.</value>
+  </data>
+  <data name="FinishingStatusRange" xml:space="preserve">
+    <value>يجب أن تكون حالة التشطيب عددًا صحيحًا إيجابيًا.</value>
+  </data>
+  <data name="BedroomsRequired" xml:space="preserve">
+    <value>عدد غرف النوم مطلوب.</value>
+  </data>
+  <data name="BedroomsRange" xml:space="preserve">
+    <value>يجب أن يكون عدد غرف النوم عددًا صحيحًا إيجابيًا.</value>
+  </data>
+  <data name="BathroomsRequired" xml:space="preserve">
+    <value>عدد الحمامات مطلوب.</value>
+  </data>
+  <data name="BathroomsRange" xml:space="preserve">
+    <value>يجب أن يكون عدد الحمامات عددًا صحيحًا إيجابيًا.</value>
+  </data>
+  <data name="BuiltUpAreaRequired" xml:space="preserve">
+    <value>مساحة البناء مطلوبة.</value>
+  </data>
+  <data name="BuiltUpAreaRange" xml:space="preserve">
+    <value>يجب أن تكون مساحة البناء عددًا إيجابيًا.</value>
+  </data>
+  <data name="LandAreaRequired" xml:space="preserve">
+    <value>مساحة الأرض مطلوبة.</value>
+  </data>
+  <data name="LandAreaRange" xml:space="preserve">
+    <value>يجب أن تكون مساحة الأرض عددًا إيجابيًا.</value>
+  </data>
+  <data name="MasterPlanImageRequired" xml:space="preserve">
+    <value>صورة المخطط الرئيسي مطلوبة.</value>
+  </data>
+  <data name="MasterPlanImageLength" xml:space="preserve">
+    <value>رابط صورة المخطط الرئيسي لا يمكن أن يتجاوز 500 حرف.</value>
+  </data>
+  <data name="FloorPlanImageRequired" xml:space="preserve">
+    <value>صورة المخطط الطابقي مطلوبة.</value>
+  </data>
+  <data name="FloorPlanImageLength" xml:space="preserve">
+    <value>رابط صورة المخطط الطابقي لا يمكن أن يتجاوز 500 حرف.</value>
+  </data>
+  <data name="SaleTypeRequired" xml:space="preserve">
+    <value>نوع البيع مطلوب.</value>
+  </data>
+  <data name="SaleTypeRange" xml:space="preserve">
+    <value>يجب أن يكون نوع البيع عددًا صحيحًا إيجابيًا.</value>
+  </data>
+  <data name="DeveloperIdRequired" xml:space="preserve">
+    <value>المطور مطلوب.</value>
+  </data>
+  <data name="PaymentPlanIdRequired" xml:space="preserve">
+    <value>خطة الدفع مطلوبة.</value>
+  </data>
+  <data name="LongitudeRange" xml:space="preserve">
+    <value>خط الطول يجب أن يكون بين -180 و 180.</value>
+  </data>
+  <data name="LatitudeRange" xml:space="preserve">
+    <value>خط العرض يجب أن يكون بين -90 و 90.</value>
+  </data>
+  <data name="TypeRequired" xml:space="preserve">
+    <value>النوع مطلوب.</value>
+  </data>
+  <data name="TypeRange" xml:space="preserve">
+    <value>يجب أن يكون النوع عددًا صحيحًا موجبًا.</value>
+  </data>
+  <data name="ContentRequired" xml:space="preserve">
+    <value>المحتوى مطلوب.</value>
+  </data>
+  <data name="ContentArLength" xml:space="preserve">
+    <value>المحتوى العربي يجب أن يكون بين 10 و 5000 حرف.</value>
+  </data>
+  <data name="ContentEnRequired" xml:space="preserve">
+    <value>المحتوى الإنجليزي مطلوب.</value>
+  </data>
+  <data name="ContentEnLength" xml:space="preserve">
+    <value>المحتوى الإنجليزي يجب أن يكون بين 10 و 5000 حرف.</value>
+  </data>
+  <data name="DownPaymentPercentageRequired" xml:space="preserve">
+    <value>نسبة الدفع المقدم مطلوبة.</value>
+  </data>
+  <data name="DownPaymentPercentageRange" xml:space="preserve">
+    <value>يجب أن تكون نسبة الدفع المقدم بين 0 و 100.</value>
+  </data>
+  <data name="ReceiptPaymentPercentageRange" xml:space="preserve">
+    <value>يجب أن تكون نسبة الدفع بالاستلام بين 0 و 100.</value>
+  </data>
+  <data name="YearsToReceiveRequired" xml:space="preserve">
+    <value>سنوات الاستلام مطلوبة.</value>
+  </data>
+  <data name="YearsToReceiveRange" xml:space="preserve">
+    <value>يجب أن تكون سنوات الاستلام بين 1 و 100.</value>
+  </data>
+  <data name="CompoundIdRequired" xml:space="preserve">
+    <value>المجمع مطلوب.</value>
+  </data>
+  <data name="StartDateRequired" xml:space="preserve">
+    <value>تاريخ البدء مطلوب.</value>
+  </data>
+  <data name="EndDateRequired" xml:space="preserve">
+    <value>تاريخ الانتهاء مطلوب.</value>
+  </data>
+  <data name="PhaseIdRequired" xml:space="preserve">
+    <value>المرحلة مطلوبة.</value>
+  </data>
+  <data name="PropertyTypeIdRequired" xml:space="preserve">
+    <value>نوع الوحدة مطلوب.</value>
+  </data>
+  <data name="LongitudeRequired" xml:space="preserve">
+    <value>خط الطول مطلوب.</value>
+  </data>
+  <data name="LatitudeRequired" xml:space="preserve">
+    <value>خط العرض مطلوب.</value>
+  </data>
+  <data name="ImageLength" xml:space="preserve">
+    <value>رابط الصورة لا يمكن أن يتجاوز 500 حرف.</value>
+  </data>
+  <data name="ImageRequired" xml:space="preserve">
+    <value>الصورة مطلوبة.</value>
+  </data>
+  <data name="ImagesRequired" xml:space="preserve">
+    <value>يجب أن تكون هناك صورة واحدة على الأقل.</value>
+  </data>
+  <data name="IssueRequired" xml:space="preserve">
+    <value>المشكلة مطلوبة.</value>
+  </data>
+  <data name="IssueLength" xml:space="preserve">
+    <value>المشكلة يجب أن يكون بين 2 و 100 حرف.</value>
+  </data>
+  <data name="MobileRequired" xml:space="preserve">
+    <value>رقم الهاتف مطلوب.</value>
+  </data>
+  <data name="SpecializationENRequired" xml:space="preserve">
+    <value>التخصص بالإنجليزية مطلوب.</value>
+  </data>
+  <data name="NameArLength" xml:space="preserve">
+    <value>اسم (عربي) يجب أن يكون بين 2 و 100 حرف.</value>
+  </data>
+  <data name="NameArRequired" xml:space="preserve">
+    <value>الاسم بالعربية مطلوب.</value>
+  </data>
+  <data name="DescriptionEnLength" xml:space="preserve">
+    <value>الوصف الإنجليزي يجب أن يكون بين 10 و 1000 حرف.</value>
+  </data>
+  <data name="DescriptionLength" xml:space="preserve">
+    <value>الوصف يجب أن يكون بين 10 و 1000 حرف.</value>
+  </data>
+  <data name="ShortDescriptionArRequired" xml:space="preserve">
+    <value>الوصف القصير العربي مطلوب.</value>
+  </data>
+  <data name="ShortDescriptionEnRequired" xml:space="preserve">
+    <value>الوصف القصير الإنجليزي مطلوب.</value>
+  </data>
+  <data name="ContentArRequired" xml:space="preserve">
+    <value>المحتوى العربي مطلوب.</value>
+  </data>
+  <data name="StartTimeMustBeSelected" xml:space="preserve">
+    <value>يجب اختيار وقت البداية.</value>
+  </data>
+  <data name="GenderRequired" xml:space="preserve">
+    <value>النوع مطوب.</value>
+  </data>
+  <data name="RobotValidate" xml:space="preserve">
+    <value>يرجى التحقق من أنك لست روبوتًا.</value>
+  </data>
+  <data name="InvalidLink" xml:space="preserve">
+    <value>رابط غير صحيح.</value>
+  </data>
+  <data name="AreaIdRequired" xml:space="preserve">
+    <value>المنطقة مطلوبة.</value>
+  </data>
+  <data name="CityIdRequired" xml:space="preserve">
+    <value>المدينة مطلوبة.</value>
+  </data>
+  <data name="ServiceRequired" xml:space="preserve">
+    <value>الخدمة مطلوبة.</value>
+  </data>
+  <data name="PriceMustBeAdded" xml:space="preserve">
+    <value>يجب اضافة السعر.</value>
+  </data>
+  <data name="ServiceCountRequired" xml:space="preserve">
+    <value>عدد الخدمات مطلوب.</value>
+  </data>
+  <data name="CarShapeRequired" xml:space="preserve">
+    <value>شكل السيارة مطلوب.</value>
+  </data>
+  <data name="AddressRequired" xml:space="preserve">
+    <value>العنوان مطلوب.</value>
+  </data>
+  <data name="ContentMustBeAdded" xml:space="preserve">
+    <value>يجب اضافة محتوى.</value>
+  </data>
+  <data name="PathRequired" xml:space="preserve">
+    <value>المسار مطلوب.</value>
+  </data>
+  <data name="FieldRequired" xml:space="preserve">
+    <value>هذا الحقل مطلوب .</value>
+  </data>
+  <data name="InvalidPhoneNumber" xml:space="preserve">
+    <value>رقم الهاتف المقدم غير صالح للبلد المحدد.</value>
+  </data>
+  <data name="InvalidNationalId" xml:space="preserve">
+    <value>الرقم القومى المقدم غير صالح للبلد المحدد.</value>
+  </data>
+  <data name="OutOfMaxLength" xml:space="preserve">
+    <value>يجب أن يكون طول هذا الحقل على الأكثر {1} حرفًا</value>
+  </data>
+  <data name="ValueCannotBeNullOrEmpty" xml:space="preserve">
+    <value>لا يمكن أن تكون القيمة فارغة .</value>
+  </data>
+  <data name="EntityNotFound" xml:space="preserve">
+    <value> {0} لم يتم العثور على .</value>
+  </data>
+  <data name="Done" xml:space="preserve">
+    <value>تمت</value>
+  </data>
+  <data name="SaveSuccess" xml:space="preserve">
+    <value>تم الحفظ بنجاح.</value>
+  </data>
+  <data name="Failed" xml:space="preserve">
+    <value>فشل</value>
+  </data>
+  <data name="ConfirmPrompt" xml:space="preserve">
+    <value>هل أنت متأكد ؟</value>
+  </data>
+  <data name="DeleteWarning" xml:space="preserve">
+    <value>بمجرد الحذف ، لن تتمكن من استرداده !!</value>
+  </data>
+  <data name="DeleteSuccess" xml:space="preserve">
+    <value>تم الحذف بنجاح.</value>
+  </data>
+  <data name="LoadDataFailed" xml:space="preserve">
+    <value> . فشل أثناء تحميل البيانات</value>
+  </data>
+  <data name="UnexpectedError" xml:space="preserve">
+    <value>حدث خطأ غير متوقع :</value>
+  </data>
+  <data name="NoChangesToSave" xml:space="preserve">
+    <value>لا توجد تغييرات لحفظها.</value>
+  </data>
+  <data name="Error" xml:space="preserve">
+    <value>حدث خطأ ما </value>
+  </data>
+  <data name="SaveEntityError" xml:space="preserve">
+    <value>{0} حدث خطأ أثناء حفظ</value>
+  </data>
+  <data name="DeleteEntityError" xml:space="preserve">
+    <value>{0} حدث خطأ أثناء حذف </value>
+  </data>
+  <data name="PageNumberGreaterThanZero" xml:space="preserve">
+    <value>يجب أن يكون رقم الصفحة أكبر من صفر </value>
+  </data>
+  <data name="PageSizeRange" xml:space="preserve">
+    <value>يجب أن يكون حجم الصفحة بين 1 و 100 </value>
+  </data>
+  <data name="RetrievedSuccessfully" xml:space="preserve">
+    <value>تم استرجاع {0} بنجاح</value>
+  </data>
+  <data name="CurrentStateValidation" xml:space="preserve">
+    <value>أختر الحالة الحالية للحساب (نشط او غير نشط).</value>
+  </data>
+  <data name="ErrorProcessingImage" xml:space="preserve">
+    <value>. حدث خطأ أثناء معالجة الصورة</value>
+  </data>
+  <data name="ImageSizeLimitExceeded" xml:space="preserve">
+    <value>لا يمكن أن يتجاوز حجم ملف الصورة {0} ميغابايت </value>
+  </data>
+  <data name="MaxImageUploadLimit" xml:space="preserve">
+    <value>يمكنك رفع عدد أقصاه {0} من الصور. </value>
+  </data>
+  <data name="InvalidImageFormat" xml:space="preserve">
+    <value>الصيغة غير مسموحة، الصيغ المسموحة: JPG, JPEG, PNG </value>
+  </data>
+  <data name="UploadImageMessage" xml:space="preserve">
+    <value>الرجاء تحميل صورة.</value>
+  </data>
+  <data name="NotValidImage" xml:space="preserve">
+    <value>ليست صورة صالحة</value>
+  </data>
+  <data name="MaximumOf" xml:space="preserve">
+    <value>الحد الأقصى</value>
+  </data>
+  <data name="MaxFileSize" xml:space="preserve">
+    <value>الحجم الأقصى للملف</value>
+  </data>
+  <data name="MaxFiles" xml:space="preserve">
+    <value>الحد الأقصى للملفات</value>
+  </data>
+  <data name="ImagesAllowed" xml:space="preserve">
+    <value>الصور المسموح بها</value>
+  </data>
+  <data name="NoImagesYet" xml:space="preserve">
+    <value>لم تتم إضافة صور بعد</value>
+  </data>
+  <data name="ErrorProcessingFile" xml:space="preserve">
+    <value>خطأ في معالجة الملف</value>
+  </data>
+  <data name="DateTimeFormat" xml:space="preserve">
+    <value>صيغة التاريخ غير صحيحة.</value>
+  </data>
+  <data name="PositiveRange" xml:space="preserve">
+    <value>القيمة يجب أن تكون موجبة.</value>
+  </data>
+  <data name="PleaseFixValidationErrors" xml:space="preserve">
+    <value>يرجى تصحيح أخطاء التحقق.</value>
+  </data>
+  <data name="ValidationError" xml:space="preserve">
+    <value>حدث خطأ أو أكثر في التحقق.</value>
+  </data>
+  <data name="NationalIdImageFiles_MinLength" xml:space="preserve">
+    <value>يرجى رفع صور الجهتين الأمامية والخلفية من بطاقة هويتك أو جواز سفرك.</value>
+  </data>
+  <data name="NationalIdImageFiles_MaxLength" xml:space="preserve">
+    <value>يمكنك رفع صورتين فقط: واحدة للجهة الأمامية وواحدة للجهة الخلفية من بطاقة الهوية.</value>
+  </data>
+  <data name="NameFormat" xml:space="preserve">
+    <value>يجب ان يحتوي الاسم علي حروف فقط</value>
+  </data>
+  <data name="NameLength" xml:space="preserve">
+    <value> الاسم يجب أن يكون بين {2} و {1} حرف</value>
+  </data>
+  <data name="EmailLength" xml:space="preserve">
+    <value>الايميل يجب أن يكون بين {2} و {1} حرف</value>
+  </data>
+  <data name="PasswordRequired" xml:space="preserve">
+    <value>يرجى إدخال كلمة المرور</value>
+  </data>
+  <data name="ZipCodeLength" xml:space="preserve">
+    <value> الرمز البريدي يجب أن يكون بين {2} و {1} رقم</value>
+  </data>
+  <data name="NationalIdNumberLength" xml:space="preserve">
+    <value> رقم الهوية يجب أن يكون بين {2} و {1} رقم</value>
+  </data>
+  <data name="RightPVEqualLeftPV" xml:space="preserve">
+    <value>اليمنى مساوية لليسرى PVs يجب أن تكون  </value>
+  </data>
+  <data name="DescriptionArLength" xml:space="preserve">
+    <value>الوصف العربي يجب أن يكون بين 10 و 1000 حرف.</value>
+  </data>
+  <data name="OutOfRange" xml:space="preserve">
+    <value>يجب أن تكون القيمة بين {1} و {2}.</value>
+  </data>
+  <data name="InvalidLoginAttempt" xml:space="preserve">
+    <value>محاولة تسجيل دخول غير صالحة</value>
+  </data>
+  <data name="EmailOrMobileRequired" xml:space="preserve">
+    <value>البريد الإلكتروني أو رقم الجوال مطلوب.</value>
+  </data>
+  <data name="PasswordResetCodeSent" xml:space="preserve">
+    <value>تم إرسال رمز إعادة تعيين كلمة المرور.</value>
+  </data>
+  <data name="PasswordResetCodeFailed" xml:space="preserve">
+    <value>فشل في إرسال رمز إعادة تعيين كلمة المرور.</value>
+  </data>
+  <data name="PasswordResetFailed" xml:space="preserve">
+    <value>فشل في إعادة تعيين كلمة المرور.</value>
+  </data>
+  <data name="PasswordResetSuccess" xml:space="preserve">
+    <value>تم إعادة تعيين كلمة المرور بنجاح.</value>
+  </data>
+  <data name="ActivationCodeVerified" xml:space="preserve">
+    <value>تم التحقق من رمز التفعيل بنجاح.</value>
+  </data>
+  <data name="MarketersInGiftRange" xml:space="preserve">
+    <value>لابد أن يكون هناك مسوّق واحد على الأقل.</value>
+  </data>
+  <data name="UserNameLength" xml:space="preserve">
+    <value>أسم المستخدم يجب أن يكون بين {2} و {1} حرف</value>
+  </data>
+  <data name="GiftCannotBeDeleted" xml:space="preserve">
+    <value>هناك مسوّق سحب الهدية؛ لا يمكن حذف الهدية.</value>
+  </data>
+  <data name="ErrorProcessingEvent" xml:space="preserve">
+    <value>حدث خطأ اثناء حفظ ال event</value>
+  </data>
+  <data name="CodeNotFound" xml:space="preserve">
+    <value>هذا الكود غير موجود</value>
+  </data>
+  <data name="RecruitmentLinkLimit" xml:space="preserve">
+    <value>هذا الرابط قد تم استخدامه من قبل. الحد الأقصى المسموح به هو مرة واحدة.</value>
+  </data>
+  <data name="EndDateMustInFutureOrPresent" xml:space="preserve">
+    <value>يجب أن يكون تاريخ الانتهاء في الحاضر أو ​​المستقبل</value>
+  </data>
+  <data name="EndDateMustAfterStartDate" xml:space="preserve">
+    <value>يجب أن يكون تاريخ النهاية بعد تاريخ البدء.</value>
+  </data>
+  <data name="CannotEditSratrtDate" xml:space="preserve">
+    <value>يمكنك الاحتفاظ بتاريخ البدء الأصلي أو تحديد تاريخ مستقبلي، ولكن لا يمكنك تحديد تاريخ سابق.</value>
+  </data>
+  <data name="CannotEditEndDate" xml:space="preserve">
+    <value>يمكنك الاحتفاظ بتاريخ الانتهاء الأصلي أو تحديد تاريخ مستقبلي، ولكن لا يمكنك تحديد تاريخ سابق.</value>
+  </data>
+  <data name="EndTimeMustAfterStartTime" xml:space="preserve">
+    <value>وقت الانتهاء يجب أن يكون بعد وقت البدء</value>
+  </data>
+  <data name="MinLengthError" xml:space="preserve">
+    <value>يجب أن يكون طول هذا الحقل على الأقل {1} أحرف</value>
+  </data>
+  <data name="CodeOrPathCodeRequired" xml:space="preserve">
+    <value>يجب إدخال الكود أو كود المسار.</value>
+  </data>
+  <data name="LinkNotFound" xml:space="preserve">
+    <value>لم يتم العثور على رابط الدعوة.</value>
+  </data>
+  <data name="PathCodeMustBeOdd" xml:space="preserve">
+    <value> يجب أن يحتوي كود المسار على عدد فردي من الأرقام.</value>
+  </data>
+  <data name="PathCodeInvalidFormat" xml:space="preserve">
+    <value>يجب أن يحتوي كود المسار على الرقمين 1 و 2 فقط.</value>
+  </data>
+  <data name="OnlyChildrenLinksAllowed" xml:space="preserve">
+    <value>يُسمح بإنشاء روابط دعوة للأبناء فقط، وليس للآباء.</value>
+  </data>
+  <data name="PathCodeAlreadyHasMarketer" xml:space="preserve">
+    <value>هذا الكود مرتبط بالفعل بمسوق.</value>
+  </data>
+  <data name="PathCodeMissingParent" xml:space="preserve">
+    <value>يجب أن يكون هناك كود مسار صالح للأب.</value>
+  </data>
+  <data name="TreeMustBeBalanced" xml:space="preserve">
+    <value>لا يمكن أن يكون لدى الوالد طفلان على نفس الجانب بينما الجانب الآخر فارغ. يجب أن تظل الشجرة متوازنة.</value>
+  </data>
+  <data name="MaxChildrenLimitReached" xml:space="preserve">
+    <value>يمكن أن يكون للوالد كحد أقصى أربعة رموز مسار فرعية.</value>
+  </data>
+  <data name="CreationFailed" xml:space="preserve">
+    <value>فشل في إنشاء رابط الدعوة. حاول مرة أخرى.</value>
+  </data>
+  <data name="AccountTypeNotFound" xml:space="preserve">
+    <value>نوع الحساب هذا غير موجود.</value>
+  </data>
+  <data name="ErrorwhileGettingData" xml:space="preserve">
+    <value>خطأ أثناء الحصول على البيانات</value>
+  </data>
+  <data name="NewPassAndConfirmPassNotMatch" xml:space="preserve">
+    <value>كلمة المرور الجديدة والتأكيد لا يتطابقان.</value>
+  </data>
+  <data name="PlaceIsNotEmpty" xml:space="preserve">
+    <value>هذا المكان لم يعد متاحًا. يرجى طلب رابط آخر من المسوق.</value>
+  </data>
+  <data name="StartDateMustInFutureOrPresent" xml:space="preserve">
+    <value>يجب أن يكون تاريخ البدأ في الحاضر أو ​​المستقبل</value>
+  </data>
+  <data name="CannotDeleteEvent" xml:space="preserve">
+    <value>لا يمكن حذف هذا الحدث لأن المشاركين مسجلون بالفعل.</value>
+  </data>
+  <data name="UserNotActive" xml:space="preserve">
+    <value>حساب المستخدم غير مفعل</value>
+  </data>
+  <data name="InvalidAccountType" xml:space="preserve">
+    <value>نوع الحساب غير صالح أو مفقود</value>
+  </data>
+  <data name="ExceededWithdrawalLimit" xml:space="preserve">
+    <value>مبلغ السحب تجاوز الحد المسموح</value>
+  </data>
+  <data name="RecruitedMarketersNotMet" xml:space="preserve">
+    <value>لم يتم استيفاء عدد المسوقين المطلوبين</value>
+  </data>
+  <data name="DirectSaleTargetNotReached" xml:space="preserve">
+    <value>لم يتم الوصول إلى هدف المبيعات المباشرة</value>
+  </data>
+  <data name="UserActive" xml:space="preserve">
+    <value>حساب المستخدم مفعل</value>
+  </data>
+  <data name="ValidAccountType" xml:space="preserve">
+    <value>نوع الحساب صالح</value>
+  </data>
+  <data name="WithdrawalLimitNotReached" xml:space="preserve">
+    <value>لم يتم الوصول إلى حد السحب</value>
+  </data>
+  <data name="RecruitedMarketersTargetMet" xml:space="preserve">
+    <value>تم استيفاء عدد المسوقين المطلوب</value>
+  </data>
+  <data name="DirectSaleTargetReached" xml:space="preserve">
+    <value>تم الوصول إلى هدف المبيعات المباشرة</value>
+  </data>
+  <data name="ResetPassword_VerificationCode" xml:space="preserve">
+    <value>يجب أن يحتوي على 6 أرقام فقط</value>
+  </data>
+  <data name="InvalidZipCode" xml:space="preserve">
+    <value>الرقم البريدي يجب أن يحتوي على أحرف فقط.</value>
+  </data>
+  <data name="RecruitTwoMarketers" xml:space="preserve">
+    <value>برجاء تجنيد مسوقين اثنين.</value>
+  </data>
+  <data name="AchieveSalesTarget" xml:space="preserve">
+    <value>برجاء تحقيق مبيعات بقيمة 10,000.</value>
+  </data>
+  <data name="AllowedFormats" xml:space="preserve">
+    <value>الصيغ المسموحه</value>
+  </data>
+  <data name="MaxSize" xml:space="preserve">
+    <value>أكبر حجم</value>
+  </data>
+	<data name="event.not_found" xml:space="preserve">
+  <value>لم يتم العثور على الحدث.</value>
+</data>
+	<data name="event.already_started" xml:space="preserve">
+  <value>هذا الحدث قد بدأ بالفعل.</value>
+</data>
+	<data name="event.fully_booked" xml:space="preserve">
+  <value>عذراً، الحدث مكتمل العدد.</value>
+</data>
+	<data name="event.no_discount_available" xml:space="preserve">
+  <value>لا توجد خصومات متاحة لهذا الحدث.</value>
+</data>
+
+	<data name="event.already_booked" xml:space="preserve">
+  <value>لقد قمت بحجز هذا الحدث من قبل.</value>
+</data>
+	<data name="event.booking_not_found" xml:space="preserve">
+  <value>لم يتم العثور على الحجز.</value>
+</data>
+	<data name="event.too_many_attempts" xml:space="preserve">
+  <value>عدد محاولات كثيرة، حاول مرة أخرى لاحقاً.</value>
+</data>
+	<data name="event.booking_update_failed" xml:space="preserve">
+  <value>فشل في تحديث الحجز.</value>
+</data>
+
+	<data name="event.invalid_promo_code" xml:space="preserve">
+  <value>كود الخصم الذي أدخلته غير صحيح.</value>
+</data>
+	<data name="event.invalid_coupon_code" xml:space="preserve">
+  <value>كود الكوبون الذي أدخلته غير صحيح.</value>
+</data>
+
+	<data name="event.invalid_payment_method" xml:space="preserve">
+  <value>طريقة الدفع غير صحيحة.</value>
+</data>
+	<data name="event.cash_payment_not_allowed" xml:space="preserve">
+  <value>الدفع نقداً غير مسموح لهذا الحدث.</value>
+</data>
+	<data name="event.payment_activation_failed" xml:space="preserve">
+  <value>فشل في تفعيل الدفع.</value>
+</data>
+	<data name="event.payment_confirmation_failed" xml:space="preserve">
+  <value>فشل في تأكيد الدفع.</value>
+</data>
+	<data name="String1" xml:space="preserve">
+    <value />
+  </data>
+</root>
