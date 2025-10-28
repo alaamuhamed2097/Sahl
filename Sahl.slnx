@@ -18,6 +18,7 @@
   </Folder>
   <Folder Name="/src/Shared/">
     <Project Path="src/Shared/Common/Common.csproj" />
+    <Project Path="src/Shared/Resources/Resources.csproj" />
     <Project Path="src/Shared/Shared/Shared.csproj" />
   </Folder>
   <Folder Name="/tests/" />

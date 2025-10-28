@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+<Project Sdk="Microsoft.NET.Sdk.Web">
 
 	<PropertyGroup>
 		<TargetFramework>net9.0</TargetFramework>
@@ -12,8 +12,32 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+		<PackageReference Include="Hangfire.AspNetCore" Version="1.8.21" />
+		<PackageReference Include="Hangfire.Core" Version="1.8.21">
+			<TreatAsUsed>true</TreatAsUsed>
+		</PackageReference>
+		<PackageReference Include="Hangfire.SqlServer" Version="1.8.21" />
+		<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="9.0.10" />
+		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="9.0.10" />
 		<PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.10" />
-		<PackageReference Include="Swashbuckle.AspNetCore.SwaggerUI" Version="9.0.6" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.10">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+			<TreatAsUsed>true</TreatAsUsed>
+		</PackageReference>
+		<PackageReference Include="Microsoft.Extensions.Configuration" Version="9.0.10">
+			<TreatAsUsed>true</TreatAsUsed>
+		</PackageReference>
+		<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.10">
+			<TreatAsUsed>true</TreatAsUsed>
+		</PackageReference>
+		<PackageReference Include="Swashbuckle.AspNetCore" Version="9.0.6" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\..\Core\BL\BL.csproj" />
+	  <ProjectReference Include="..\..\Infrastructure\DAL\DAL.csproj" />
+	  <ProjectReference Include="..\..\Shared\Common\Common.csproj" />
 	</ItemGroup>
 
 </Project>

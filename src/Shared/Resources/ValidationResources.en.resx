@@ -1,0 +1,829 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="ServiceIdRequired" xml:space="preserve">
+    <value>Service Type is required.</value>
+  </data>
+  <data name="MaxLengthExceeded" xml:space="preserve">
+    <value>The field cannot exceed {0} characters.</value>
+  </data>
+  <data name="InvalidFormat" xml:space="preserve">
+    <value>The field format is invalid.</value>
+  </data>
+  <data name="PropertyIdRequired" xml:space="preserve">
+    <value>Property is required.</value>
+  </data>
+  <data name="AmenityIdRequired" xml:space="preserve">
+    <value>AmenityId is required.</value>
+  </data>
+  <data name="UserRequired" xml:space="preserve">
+    <value>user is required.</value>
+  </data>
+  <data name="PathMaxLength" xml:space="preserve">
+    <value>Path cannot exceed 500 characters.</value>
+  </data>
+  <data name="FullNameRequired" xml:space="preserve">
+    <value>FullName is required.</value>
+  </data>
+  <data name="CountryCodeRequired" xml:space="preserve">
+    <value>CountryCode is required.</value>
+  </data>
+  <data name="SpecializationARRequired" xml:space="preserve">
+    <value>Specialization in Arabic is required.</value>
+  </data>
+  <data name="MessageRequired" xml:space="preserve">
+    <value>Message is required.</value>
+  </data>
+  <data name="MessageMaxLength" xml:space="preserve">
+    <value>Message cannot exceed 1000 characters.</value>
+  </data>
+  <data name="PackageRequired" xml:space="preserve">
+    <value>Package is required.</value>
+  </data>
+  <data name="NameEnRequired" xml:space="preserve">
+    <value>English Name is required.</value>
+  </data>
+  <data name="IconRequired" xml:space="preserve">
+    <value>Icon is required.</value>
+  </data>
+  <data name="WhatsAppRequired" xml:space="preserve">
+    <value>WhatsApp is required.</value>
+  </data>
+  <data name="EmailRequired" xml:space="preserve">
+    <value>Email is required.</value>
+  </data>
+  <data name="EmailInvalid" xml:space="preserve">
+    <value>The email address is not valid.</value>
+  </data>
+  <data name="FacebookInvalid" xml:space="preserve">
+    <value>Facebook URL is not valid.</value>
+  </data>
+  <data name="LinkedInInvalid" xml:space="preserve">
+    <value>LinkedIn URL is not valid.</value>
+  </data>
+  <data name="TwitterInvalid" xml:space="preserve">
+    <value>Twitter URL is not valid.</value>
+  </data>
+  <data name="YouTubeInvalid" xml:space="preserve">
+    <value>YouTube URL is not valid.</value>
+  </data>
+  <data name="InstagramInvalid" xml:space="preserve">
+    <value>Instagram URL is not valid.</value>
+  </data>
+  <data name="WhatsAppInvalid" xml:space="preserve">
+    <value>WhatsApp number is not valid.</value>
+  </data>
+  <data name="AddressLength" xml:space="preserve">
+    <value>Address must be between 2 and 100 characters.</value>
+  </data>
+  <data name="NameEnLength" xml:space="preserve">
+    <value>Name (English) must be between 2 and 100 characters.</value>
+  </data>
+  <data name="IconLength" xml:space="preserve">
+    <value>Icon must be between 2 and 50 characters.</value>
+  </data>
+  <data name="FullNameLength" xml:space="preserve">
+    <value>Full name must be between 2 and 100 characters.</value>
+  </data>
+  <data name="CountryCodeLength" xml:space="preserve">
+    <value>Country code must be between 1 and 5 characters.</value>
+  </data>
+  <data name="MobileLength" xml:space="preserve">
+    <value>Mobile number must be between 10 and 15 characters.</value>
+  </data>
+  <data name="MobileFormat" xml:space="preserve">
+    <value>Mobile number is not in a valid format.</value>
+  </data>
+  <data name="CountryIdRequired" xml:space="preserve">
+    <value>Country is required.</value>
+  </data>
+  <data name="LogoRequired" xml:space="preserve">
+    <value>Logo is required.</value>
+  </data>
+  <data name="LogoLength" xml:space="preserve">
+    <value>Logo URL cannot be longer than 500 characters.</value>
+  </data>
+  <data name="PhoneRequired" xml:space="preserve">
+    <value>Phone number is required.</value>
+  </data>
+  <data name="PhoneLength" xml:space="preserve">
+    <value>Phone number must be between 10 and 15 characters.</value>
+  </data>
+  <data name="EmailFormat" xml:space="preserve">
+    <value>Email format is incorrect</value>
+  </data>
+  <data name="TitleEnRequired" xml:space="preserve">
+    <value>English title is required.</value>
+  </data>
+  <data name="TitleEnLength" xml:space="preserve">
+    <value>English title must be between {0} and {1} characters.</value>
+  </data>
+  <data name="TitleArRequired" xml:space="preserve">
+    <value>Arabic title is required.</value>
+  </data>
+  <data name="TitleArLength" xml:space="preserve">
+    <value>Arabic title must be between {0} and {1} characters.</value>
+  </data>
+  <data name="DescriptionEnRequired" xml:space="preserve">
+    <value>English description is required.</value>
+  </data>
+  <data name="ShortDescriptionEnLength" xml:space="preserve">
+    <value>English short description must be between 10 and 1000 characters.</value>
+  </data>
+  <data name="DescriptionArRequired" xml:space="preserve">
+    <value>Arabic description is required.</value>
+  </data>
+  <data name="ShortDescriptionArLength" xml:space="preserve">
+    <value>Arabic short description must be between 10 and 1000 characters.</value>
+  </data>
+  <data name="PriceRequired" xml:space="preserve">
+    <value>Price is required.</value>
+  </data>
+  <data name="PriceRange" xml:space="preserve">
+    <value>Price must be a positive number.</value>
+  </data>
+  <data name="SalesPriceRequired" xml:space="preserve">
+    <value>Sales price is required.</value>
+  </data>
+  <data name="SalesPriceRange" xml:space="preserve">
+    <value>Sales price must be a positive number.</value>
+  </data>
+  <data name="LengthRequired" xml:space="preserve">
+    <value>Length is required.</value>
+  </data>
+  <data name="LengthRange" xml:space="preserve">
+    <value>Length must be a positive integer.</value>
+  </data>
+  <data name="WidthRequired" xml:space="preserve">
+    <value>Width is required.</value>
+  </data>
+  <data name="WidthRange" xml:space="preserve">
+    <value>Width must be a positive integer.</value>
+  </data>
+  <data name="DeliveryYearRequired" xml:space="preserve">
+    <value>Delivery year is required.</value>
+  </data>
+  <data name="DeliveryYearRange" xml:space="preserve">
+    <value>Delivery year must be between 1900 and 2100.</value>
+  </data>
+  <data name="FinishingStatusRequired" xml:space="preserve">
+    <value>Finishing status is required.</value>
+  </data>
+  <data name="FinishingStatusRange" xml:space="preserve">
+    <value>Finishing status must be a positive integer.</value>
+  </data>
+  <data name="BedroomsRequired" xml:space="preserve">
+    <value>Number of bedrooms is required.</value>
+  </data>
+  <data name="BedroomsRange" xml:space="preserve">
+    <value>Number of bedrooms must be a positive integer.</value>
+  </data>
+  <data name="BathroomsRequired" xml:space="preserve">
+    <value>Number of bathrooms is required.</value>
+  </data>
+  <data name="BathroomsRange" xml:space="preserve">
+    <value>Number of bathrooms must be a positive integer.</value>
+  </data>
+  <data name="BuiltUpAreaRequired" xml:space="preserve">
+    <value>Built-up area is required.</value>
+  </data>
+  <data name="BuiltUpAreaRange" xml:space="preserve">
+    <value>Built-up area must be a positive number.</value>
+  </data>
+  <data name="LandAreaRequired" xml:space="preserve">
+    <value>Land area is required.</value>
+  </data>
+  <data name="LandAreaRange" xml:space="preserve">
+    <value>Land area must be a positive number.</value>
+  </data>
+  <data name="MasterPlanImageRequired" xml:space="preserve">
+    <value>Master plan image is required.</value>
+  </data>
+  <data name="MasterPlanImageLength" xml:space="preserve">
+    <value>Master plan image URL cannot be longer than 500 characters.</value>
+  </data>
+  <data name="FloorPlanImageRequired" xml:space="preserve">
+    <value>Floor plan image is required.</value>
+  </data>
+  <data name="FloorPlanImageLength" xml:space="preserve">
+    <value>Floor plan image URL cannot be longer than 500 characters.</value>
+  </data>
+  <data name="SaleTypeRequired" xml:space="preserve">
+    <value>Sale type is required.</value>
+  </data>
+  <data name="SaleTypeRange" xml:space="preserve">
+    <value>Sale type must be a positive integer.</value>
+  </data>
+  <data name="DeveloperIdRequired" xml:space="preserve">
+    <value>Developer is required.</value>
+  </data>
+  <data name="PaymentPlanIdRequired" xml:space="preserve">
+    <value>Payment Plan is required.</value>
+  </data>
+  <data name="LongitudeRange" xml:space="preserve">
+    <value>Longitude must be between -180 and 180.</value>
+  </data>
+  <data name="LatitudeRange" xml:space="preserve">
+    <value>Latitude must be between -90 and 90.</value>
+  </data>
+  <data name="TypeRequired" xml:space="preserve">
+    <value>Type is required.</value>
+  </data>
+  <data name="TypeRange" xml:space="preserve">
+    <value>Type must be a positive integer.</value>
+  </data>
+  <data name="ContentRequired" xml:space="preserve">
+    <value>content is required.</value>
+  </data>
+  <data name="ContentArLength" xml:space="preserve">
+    <value>Arabic content must be between 10 and 5000 characters.</value>
+  </data>
+  <data name="ContentEnRequired" xml:space="preserve">
+    <value>English content is required.</value>
+  </data>
+  <data name="ContentEnLength" xml:space="preserve">
+    <value>English content must be between 10 and 5000 characters.</value>
+  </data>
+  <data name="DownPaymentPercentageRequired" xml:space="preserve">
+    <value>Down payment percentage is required.</value>
+  </data>
+  <data name="DownPaymentPercentageRange" xml:space="preserve">
+    <value>Down payment percentage must be between 0 and 100.</value>
+  </data>
+  <data name="ReceiptPaymentPercentageRange" xml:space="preserve">
+    <value>Receipt payment percentage must be between 0 and 100.</value>
+  </data>
+  <data name="YearsToReceiveRequired" xml:space="preserve">
+    <value>Years to receive is required.</value>
+  </data>
+  <data name="YearsToReceiveRange" xml:space="preserve">
+    <value>Years to receive must be between 1 and 100.</value>
+  </data>
+  <data name="CompoundIdRequired" xml:space="preserve">
+    <value>Compound is required.</value>
+  </data>
+  <data name="StartDateRequired" xml:space="preserve">
+    <value>Start date is required.</value>
+  </data>
+  <data name="EndDateRequired" xml:space="preserve">
+    <value>End date is required.</value>
+  </data>
+  <data name="PhaseIdRequired" xml:space="preserve">
+    <value>Phase is required.</value>
+  </data>
+  <data name="PropertyTypeIdRequired" xml:space="preserve">
+    <value>Property type is required.</value>
+  </data>
+  <data name="LongitudeRequired" xml:space="preserve">
+    <value>Longitude is required.</value>
+  </data>
+  <data name="LatitudeRequired" xml:space="preserve">
+    <value>Latitude is required.</value>
+  </data>
+  <data name="ImageLength" xml:space="preserve">
+    <value>Image URL cannot be longer than 500 characters.</value>
+  </data>
+  <data name="ImageRequired" xml:space="preserve">
+    <value>Image is required.</value>
+  </data>
+  <data name="ImagesRequired" xml:space="preserve">
+    <value>At least one image is required.</value>
+  </data>
+  <data name="IssueRequired" xml:space="preserve">
+    <value>Issue is required.</value>
+  </data>
+  <data name="IssueLength" xml:space="preserve">
+    <value>Issue must be between 2 and 100 characters.</value>
+  </data>
+  <data name="MobileRequired" xml:space="preserve">
+    <value>Mobile is required.</value>
+  </data>
+  <data name="SpecializationENRequired" xml:space="preserve">
+    <value>Specialization in English is required.</value>
+  </data>
+  <data name="NameArLength" xml:space="preserve">
+    <value>Name (Arabic) must be between 2 and 100 characters.</value>
+  </data>
+  <data name="NameArRequired" xml:space="preserve">
+    <value>Arabic Name is required.</value>
+  </data>
+  <data name="DescriptionEnLength" xml:space="preserve">
+    <value>English description must be between 10 and 1000 characters.</value>
+  </data>
+  <data name="DescriptionLength" xml:space="preserve">
+    <value>Description must be between 10 and 1000 characters.</value>
+  </data>
+  <data name="ShortDescriptionArRequired" xml:space="preserve">
+    <value>Arabic short description is required.</value>
+  </data>
+  <data name="ShortDescriptionEnRequired" xml:space="preserve">
+    <value>English short description is required.</value>
+  </data>
+  <data name="ContentArRequired" xml:space="preserve">
+    <value>Arabic content is required.</value>
+  </data>
+  <data name="StartTimeMustBeSelected" xml:space="preserve">
+    <value>Start Time must be selected.</value>
+  </data>
+  <data name="GenderRequired" xml:space="preserve">
+    <value>Gender is requierd.</value>
+  </data>
+  <data name="RobotValidate" xml:space="preserve">
+    <value>Please verify that you are not a robot.</value>
+  </data>
+  <data name="InvalidLink" xml:space="preserve">
+    <value>URL is not valid.</value>
+  </data>
+  <data name="AreaIdRequired" xml:space="preserve">
+    <value>Area is required.</value>
+  </data>
+  <data name="CityIdRequired" xml:space="preserve">
+    <value>City is required.</value>
+  </data>
+  <data name="ServiceRequired" xml:space="preserve">
+    <value>Service is required.</value>
+  </data>
+  <data name="PriceMustBeAdded" xml:space="preserve">
+    <value>Price must be added.</value>
+  </data>
+  <data name="ServiceCountRequired" xml:space="preserve">
+    <value>Services Count is required.</value>
+  </data>
+  <data name="CarShapeRequired" xml:space="preserve">
+    <value>Car Shape is required.</value>
+  </data>
+  <data name="AddressRequired" xml:space="preserve">
+    <value>Address is required.</value>
+  </data>
+  <data name="ContentMustBeAdded" xml:space="preserve">
+    <value>Content must be added.</value>
+  </data>
+  <data name="PathRequired" xml:space="preserve">
+    <value>Path is required.</value>
+  </data>
+  <data name="FieldRequired" xml:space="preserve">
+    <value>This field is required .</value>
+  </data>
+  <data name="InvalidPhoneNumber" xml:space="preserve">
+    <value>The provided phone number is not valid for the selected country.</value>
+  </data>
+  <data name="InvalidNationalId" xml:space="preserve">
+    <value>The provided national ID is not valid for the selected country.</value>
+  </data>
+  <data name="OutOfMaxLength" xml:space="preserve">
+    <value>This field must be at most {1} characters long.</value>
+  </data>
+  <data name="ValueCannotBeNullOrEmpty" xml:space="preserve">
+    <value>Value cannot be null or empty.</value>
+  </data>
+  <data name="EntityNotFound" xml:space="preserve">
+    <value>{0} not found.</value>
+  </data>
+  <data name="Done" xml:space="preserve">
+    <value>Done</value>
+  </data>
+  <data name="SaveSuccess" xml:space="preserve">
+    <value>It saved successfully.</value>
+  </data>
+  <data name="Failed" xml:space="preserve">
+    <value>Failed!</value>
+  </data>
+  <data name="ConfirmPrompt" xml:space="preserve">
+    <value>Are you sure ?</value>
+  </data>
+  <data name="DeleteWarning" xml:space="preserve">
+    <value>Once deleted, you cannot recover this !!</value>
+  </data>
+  <data name="DeleteSuccess" xml:space="preserve">
+    <value>It deleted successfully.</value>
+  </data>
+  <data name="LoadDataFailed" xml:space="preserve">
+    <value>Failed while loading data .</value>
+  </data>
+  <data name="UnexpectedError" xml:space="preserve">
+    <value>An unexpected error occurred :</value>
+  </data>
+  <data name="NoChangesToSave" xml:space="preserve">
+    <value>There are no changes to save.</value>
+  </data>
+  <data name="Error" xml:space="preserve">
+    <value>An error has occurred </value>
+  </data>
+  <data name="SaveEntityError" xml:space="preserve">
+    <value>Error while saving {0}</value>
+  </data>
+  <data name="DeleteEntityError" xml:space="preserve">
+    <value>Error while deleting {0}</value>
+  </data>
+  <data name="PageNumberGreaterThanZero" xml:space="preserve">
+    <value>Page number must be greater than zero.</value>
+  </data>
+  <data name="PageSizeRange" xml:space="preserve">
+    <value>Page size must be between 1 and 100. </value>
+  </data>
+  <data name="RetrievedSuccessfully" xml:space="preserve">
+    <value>{0} retrieved successfully.</value>
+  </data>
+  <data name="CurrentStateValidation" xml:space="preserve">
+    <value>Select the Account's current state (e.g., Active or Inactive)</value>
+  </data>
+  <data name="ErrorProcessingImage" xml:space="preserve">
+    <value>An error occurred while processing the image.</value>
+  </data>
+  <data name="ImageSizeLimitExceeded" xml:space="preserve">
+    <value>The image file size cannot exceed {0} MB. </value>
+  </data>
+  <data name="MaxImageUploadLimit" xml:space="preserve">
+    <value>You can upload a maximum of {0} images. </value>
+  </data>
+  <data name="InvalidImageFormat" xml:space="preserve">
+    <value>Invalid format. Allowed formats: JPG, JPEG, PNG. </value>
+  </data>
+  <data name="UploadImageMessage" xml:space="preserve">
+    <value>Please upload an image.</value>
+  </data>
+  <data name="NotValidImage" xml:space="preserve">
+    <value>is not a valid image</value>
+  </data>
+  <data name="MaximumOf" xml:space="preserve">
+    <value>Maximum of</value>
+  </data>
+  <data name="MaxFileSize" xml:space="preserve">
+    <value>Max file size</value>
+  </data>
+  <data name="MaxFiles" xml:space="preserve">
+    <value>Max files</value>
+  </data>
+  <data name="ImagesAllowed" xml:space="preserve">
+    <value>images allowed</value>
+  </data>
+  <data name="NoImagesYet" xml:space="preserve">
+    <value>NoImagesYet</value>
+  </data>
+  <data name="ErrorProcessingFile" xml:space="preserve">
+    <value>Error processing file</value>
+  </data>
+  <data name="DateTimeFormat" xml:space="preserve">
+    <value>The date format is incorrect.</value>
+  </data>
+  <data name="PositiveRange" xml:space="preserve">
+    <value>The value must be positive.</value>
+  </data>
+  <data name="PleaseFixValidationErrors" xml:space="preserve">
+    <value>Please fix the validation errors.</value>
+  </data>
+  <data name="ValidationError" xml:space="preserve">
+    <value>One or more validation errors occurred.</value>
+  </data>
+  <data name="NationalIdImageFiles_MinLength" xml:space="preserve">
+    <value>Please upload both front and back images of  your ID or your passport.</value>
+  </data>
+  <data name="NationalIdImageFiles_MaxLength" xml:space="preserve">
+    <value>You can only upload 2 images: one for the front and one for the back of the ID.</value>
+  </data>
+  <data name="NameFormat" xml:space="preserve">
+    <value>The name must contain only letters.</value>
+  </data>
+  <data name="NameLength" xml:space="preserve">
+    <value>The name must be between {2} and {1} characters.</value>
+  </data>
+  <data name="EmailLength" xml:space="preserve">
+    <value>The Email must be between {2} and {1} characters.</value>
+  </data>
+  <data name="PasswordRequired" xml:space="preserve">
+    <value>Please enter your password</value>
+  </data>
+  <data name="ZipCodeLength" xml:space="preserve">
+    <value>The zipcode must be between {2} and {1} numbers.</value>
+  </data>
+  <data name="NationalIdNumberLength" xml:space="preserve">
+    <value>The zipcode must be between {2} and {1} numbers.</value>
+  </data>
+  <data name="RightPVEqualLeftPV" xml:space="preserve">
+    <value>RightPVs must equal LeftPVs </value>
+  </data>
+  <data name="DescriptionArLength" xml:space="preserve">
+    <value>Arabic description must be between 10 and 1000 characters.</value>
+  </data>
+  <data name="OutOfRange" xml:space="preserve">
+    <value>The value must be between {1} and {2}. </value>
+  </data>
+  <data name="InvalidLoginAttempt" xml:space="preserve">
+    <value>Invalid login attempt</value>
+  </data>
+  <data name="EmailOrMobileRequired" xml:space="preserve">
+    <value>Email or mobile is required.</value>
+  </data>
+  <data name="PasswordResetCodeSent" xml:space="preserve">
+    <value>Password reset code has been sent.</value>
+  </data>
+  <data name="PasswordResetCodeFailed" xml:space="preserve">
+    <value>Failed to send password reset code.</value>
+  </data>
+  <data name="PasswordResetFailed" xml:space="preserve">
+    <value>Failed to reset password.</value>
+  </data>
+  <data name="PasswordResetSuccess" xml:space="preserve">
+    <value>Password has been reset successfully.</value>
+  </data>
+  <data name="ActivationCodeVerified" xml:space="preserve">
+    <value>Activation code verified successfully.</value>
+  </data>
+  <data name="MarketersInGiftRange" xml:space="preserve">
+    <value>There must be at least one marketer.</value>
+  </data>
+  <data name="UserNameLength" xml:space="preserve">
+    <value>The UserName must be between {2} and {1} characters.</value>
+  </data>
+  <data name="GiftCannotBeDeleted" xml:space="preserve">
+    <value>There is a marketer who withdrew the gift; the gift cannot be deleted.</value>
+  </data>
+  <data name="ErrorProcessingEvent" xml:space="preserve">
+    <value>An error while saving event</value>
+  </data>
+  <data name="CodeNotFound" xml:space="preserve">
+    <value>This code does not exist</value>
+  </data>
+  <data name="RecruitmentLinkLimit" xml:space="preserve">
+    <value>This link has already been used before. The maximum allowed usage is one time</value>
+  </data>
+  <data name="EndDateMustInFutureOrPresent" xml:space="preserve">
+    <value>End date must be in the present or future</value>
+  </data>
+  <data name="EndDateMustAfterStartDate" xml:space="preserve">
+    <value>End date must be after the start date.</value>
+  </data>
+  <data name="CannotEditSratrtDate" xml:space="preserve">
+    <value>You can keep your original start date or select a future date, but cannot select a past date.</value>
+  </data>
+  <data name="CannotEditEndDate" xml:space="preserve">
+    <value>You can keep your original end date or select a future date, but cannot select a past date.</value>
+  </data>
+  <data name="EndTimeMustAfterStartTime" xml:space="preserve">
+    <value>End time must be after start tme</value>
+  </data>
+  <data name="MinLengthError" xml:space="preserve">
+    <value>This field must be at least {1} characters long.</value>
+  </data>
+  <data name="CodeOrPathCodeRequired" xml:space="preserve">
+    <value>The code or path code is required.</value>
+  </data>
+  <data name="LinkNotFound" xml:space="preserve">
+    <value>The recruitment link could not be found.</value>
+  </data>
+  <data name="PathCodeMustBeOdd" xml:space="preserve">
+    <value>The path code must contain an odd number of digits.</value>
+  </data>
+  <data name="PathCodeInvalidFormat" xml:space="preserve">
+    <value>The path code must contain only the digits 1 and 2.</value>
+  </data>
+  <data name="OnlyChildrenLinksAllowed" xml:space="preserve">
+    <value>You can only create recruitment links for children, not parents.</value>
+  </data>
+  <data name="PathCodeAlreadyHasMarketer" xml:space="preserve">
+    <value>This path code already has an associated marketer.</value>
+  </data>
+  <data name="PathCodeMissingParent" xml:space="preserve">
+    <value>A valid parent path code is required.</value>
+  </data>
+  <data name="TreeMustBeBalanced" xml:space="preserve">
+    <value>A parent cannot have two children on one side while the other side is empty. The binary tree must remain balanced.</value>
+  </data>
+  <data name="MaxChildrenLimitReached" xml:space="preserve">
+    <value>A parent can have a maximum of four child path codes. </value>
+  </data>
+  <data name="CreationFailed" xml:space="preserve">
+    <value>Failed to create the recruitment link. Please try again. </value>
+  </data>
+  <data name="AccountTypeNotFound" xml:space="preserve">
+    <value>This account type does not exist.</value>
+  </data>
+  <data name="ErrorwhileGettingData" xml:space="preserve">
+    <value>Error while Getting Data</value>
+  </data>
+  <data name="NewPassAndConfirmPassNotMatch" xml:space="preserve">
+    <value>The new password and confirmation do not match.</value>
+  </data>
+  <data name="PlaceIsNotEmpty" xml:space="preserve">
+    <value>This place is no longer available. Please request another link from the marketer.</value>
+  </data>
+  <data name="StartDateMustInFutureOrPresent" xml:space="preserve">
+    <value>Start date must be in the present or future</value>
+  </data>
+  <data name="CannotDeleteEvent" xml:space="preserve">
+    <value>This event cannot be deleted because participants are already registered.</value>
+  </data>
+  <data name="UserNotActive" xml:space="preserve">
+    <value>User account is not active</value>
+  </data>
+  <data name="InvalidAccountType" xml:space="preserve">
+    <value>Invalid or missing account type</value>
+  </data>
+  <data name="ExceededWithdrawalLimit" xml:space="preserve">
+    <value>Withdrawal amount exceeds the allowed limit</value>
+  </data>
+  <data name="RecruitedMarketersNotMet" xml:space="preserve">
+    <value>Required number of recruited marketers not met</value>
+  </data>
+  <data name="DirectSaleTargetNotReached" xml:space="preserve">
+    <value>Direct sales target amount not reached</value>
+  </data>
+  <data name="UserActive" xml:space="preserve">
+    <value>User is active</value>
+  </data>
+  <data name="ValidAccountType" xml:space="preserve">
+    <value>Valid account type</value>
+  </data>
+  <data name="WithdrawalLimitNotReached" xml:space="preserve">
+    <value>Withdrawal limit not reached</value>
+  </data>
+  <data name="RecruitedMarketersTargetMet" xml:space="preserve">
+    <value>Recruited marketers target met</value>
+  </data>
+  <data name="DirectSaleTargetReached" xml:space="preserve">
+    <value>Direct sales target reached</value>
+  </data>
+  <data name="ResetPassword_VerificationCode" xml:space="preserve">
+    <value>Must contain exactly 6 digits only</value>
+  </data>
+  <data name="InvalidZipCode" xml:space="preserve">
+    <value>The postal code must contain letters only.</value>
+  </data>
+  <data name="RecruitTwoMarketers" xml:space="preserve">
+    <value>Please recruit two marketers.</value>
+  </data>
+  <data name="AchieveSalesTarget" xml:space="preserve">
+    <value>Please achieve sales worth 10,000.</value>
+  </data>
+  <data name="AllowedFormats" xml:space="preserve">
+    <value>AllowedFormats</value>
+  </data>
+  <data name="MaxSize" xml:space="preserve">
+    <value>MaxSize</value>
+  </data>
+	<data name="event.not_found" xml:space="preserve">
+  <value>Event not found.</value>
+</data>
+	<data name="event.already_started" xml:space="preserve">
+  <value>This event has already started.</value>
+</data>
+	<data name="event.fully_booked" xml:space="preserve">
+  <value>Sorry, this event is fully booked.</value>
+</data>
+	<data name="event.no_discount_available" xml:space="preserve">
+  <value>No discounts are available for this event.</value>
+</data>
+
+	<data name="event.already_booked" xml:space="preserve">
+  <value>You have already booked this event.</value>
+</data>
+	<data name="event.booking_not_found" xml:space="preserve">
+  <value>Booking not found.</value>
+</data>
+	<data name="event.too_many_attempts" xml:space="preserve">
+  <value>Too many attempts, please try again later.</value>
+</data>
+	<data name="event.booking_update_failed" xml:space="preserve">
+  <value>Failed to update your booking.</value>
+</data>
+
+	<data name="event.invalid_promo_code" xml:space="preserve">
+  <value>The promo code you entered is invalid.</value>
+</data>
+	<data name="event.invalid_coupon_code" xml:space="preserve">
+  <value>The coupon code you entered is invalid.</value>
+</data>
+
+	<data name="event.invalid_payment_method" xml:space="preserve">
+  <value>Invalid payment method.</value>
+</data>
+	<data name="event.cash_payment_not_allowed" xml:space="preserve">
+  <value>Cash payment is not allowed for this event.</value>
+</data>
+	<data name="event.payment_activation_failed" xml:space="preserve">
+  <value>Payment activation failed.</value>
+</data>
+	<data name="event.payment_confirmation_failed" xml:space="preserve">
+  <value>Payment confirmation failed.</value>
+</data>
+	<assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <data name="String1" type="System.Resources.ResXNullRef, System.Windows.Forms">
+    <value />
+  </data>
+</root>

@@ -1,0 +1,982 @@
+{
+  "AF": {
+    "Code": "AF",
+    "Name": "Afghanistan",
+    "IsMiddleEast": false
+  },
+  "AL": {
+    "Code": "AL",
+    "Name": "Albania",
+    "IsMiddleEast": false
+  },
+  "DZ": {
+    "Code": "DZ",
+    "Name": "Algeria",
+    "IsMiddleEast": false
+  },
+  "AD": {
+    "Code": "AD",
+    "Name": "Andorra",
+    "IsMiddleEast": false
+  },
+  "AO": {
+    "Code": "AO",
+    "Name": "Angola",
+    "IsMiddleEast": false
+  },
+  "AG": {
+    "Code": "AG",
+    "Name": "Antigua and Barbuda",
+    "IsMiddleEast": false
+  },
+  "AR": {
+    "Code": "AR",
+    "Name": "Argentina",
+    "IsMiddleEast": false
+  },
+  "AM": {
+    "Code": "AM",
+    "Name": "Armenia",
+    "IsMiddleEast": false
+  },
+  "AU": {
+    "Code": "AU",
+    "Name": "Australia",
+    "IsMiddleEast": false
+  },
+  "AT": {
+    "Code": "AT",
+    "Name": "Austria",
+    "IsMiddleEast": false
+  },
+  "AZ": {
+    "Code": "AZ",
+    "Name": "Azerbaijan",
+    "IsMiddleEast": false
+  },
+  "BS": {
+    "Code": "BS",
+    "Name": "Bahamas",
+    "IsMiddleEast": false
+  },
+  "BH": {
+    "Code": "BH",
+    "Name": "Bahrain",
+    "IsMiddleEast": true
+  },
+  "BD": {
+    "Code": "BD",
+    "Name": "Bangladesh",
+    "IsMiddleEast": false
+  },
+  "BB": {
+    "Code": "BB",
+    "Name": "Barbados",
+    "IsMiddleEast": false
+  },
+  "BY": {
+    "Code": "BY",
+    "Name": "Belarus",
+    "IsMiddleEast": false
+  },
+  "BE": {
+    "Code": "BE",
+    "Name": "Belgium",
+    "IsMiddleEast": false
+  },
+  "BZ": {
+    "Code": "BZ",
+    "Name": "Belize",
+    "IsMiddleEast": false
+  },
+  "BJ": {
+    "Code": "BJ",
+    "Name": "Benin",
+    "IsMiddleEast": false
+  },
+  "BT": {
+    "Code": "BT",
+    "Name": "Bhutan",
+    "IsMiddleEast": false
+  },
+  "BO": {
+    "Code": "BO",
+    "Name": "Bolivia",
+    "IsMiddleEast": false
+  },
+  "BA": {
+    "Code": "BA",
+    "Name": "Bosnia and Herzegovina",
+    "IsMiddleEast": false
+  },
+  "BW": {
+    "Code": "BW",
+    "Name": "Botswana",
+    "IsMiddleEast": false
+  },
+  "BR": {
+    "Code": "BR",
+    "Name": "Brazil",
+    "IsMiddleEast": false
+  },
+  "BN": {
+    "Code": "BN",
+    "Name": "Brunei",
+    "IsMiddleEast": false
+  },
+  "BG": {
+    "Code": "BG",
+    "Name": "Bulgaria",
+    "IsMiddleEast": false
+  },
+  "BF": {
+    "Code": "BF",
+    "Name": "Burkina Faso",
+    "IsMiddleEast": false
+  },
+  "BI": {
+    "Code": "BI",
+    "Name": "Burundi",
+    "IsMiddleEast": false
+  },
+  "CV": {
+    "Code": "CV",
+    "Name": "Cabo Verde",
+    "IsMiddleEast": false
+  },
+  "KH": {
+    "Code": "KH",
+    "Name": "Cambodia",
+    "IsMiddleEast": false
+  },
+  "CM": {
+    "Code": "CM",
+    "Name": "Cameroon",
+    "IsMiddleEast": false
+  },
+  "CA": {
+    "Code": "CA",
+    "Name": "Canada",
+    "IsMiddleEast": false
+  },
+  "CF": {
+    "Code": "CF",
+    "Name": "Central African Republic",
+    "IsMiddleEast": false
+  },
+  "TD": {
+    "Code": "TD",
+    "Name": "Chad",
+    "IsMiddleEast": false
+  },
+  "CL": {
+    "Code": "CL",
+    "Name": "Chile",
+    "IsMiddleEast": false
+  },
+  "CN": {
+    "Code": "CN",
+    "Name": "China",
+    "IsMiddleEast": false
+  },
+  "CO": {
+    "Code": "CO",
+    "Name": "Colombia",
+    "IsMiddleEast": false
+  },
+  "KM": {
+    "Code": "KM",
+    "Name": "Comoros",
+    "IsMiddleEast": true
+  },
+  "CD": {
+    "Code": "CD",
+    "Name": "Democratic Republic of the Congo",
+    "IsMiddleEast": false
+  },
+  "CG": {
+    "Code": "CG",
+    "Name": "Republic of the Congo",
+    "IsMiddleEast": false
+  },
+  "CR": {
+    "Code": "CR",
+    "Name": "Costa Rica",
+    "IsMiddleEast": false
+  },
+  "HR": {
+    "Code": "HR",
+    "Name": "Croatia",
+    "IsMiddleEast": false
+  },
+  "CU": {
+    "Code": "CU",
+    "Name": "Cuba",
+    "IsMiddleEast": false
+  },
+  "CY": {
+    "Code": "CY",
+    "Name": "Cyprus",
+    "IsMiddleEast": true
+  },
+  "CZ": {
+    "Code": "CZ",
+    "Name": "Czech Republic",
+    "IsMiddleEast": false
+  },
+  "CI": {
+    "Code": "CI",
+    "Name": "Côte d'Ivoire",
+    "IsMiddleEast": false
+  },
+  "DK": {
+    "Code": "DK",
+    "Name": "Denmark",
+    "IsMiddleEast": false
+  },
+  "DJ": {
+    "Code": "DJ",
+    "Name": "Djibouti",
+    "IsMiddleEast": true
+  },
+  "DM": {
+    "Code": "DM",
+    "Name": "Dominica",
+    "IsMiddleEast": false
+  },
+  "DO": {
+    "Code": "DO",
+    "Name": "Dominican Republic",
+    "IsMiddleEast": false
+  },
+  "EC": {
+    "Code": "EC",
+    "Name": "Ecuador",
+    "IsMiddleEast": false
+  },
+  "EG": {
+    "Code": "EG",
+    "Name": "Egypt",
+    "IsMiddleEast": true
+  },
+  "SV": {
+    "Code": "SV",
+    "Name": "El Salvador",
+    "IsMiddleEast": false
+  },
+  "GQ": {
+    "Code": "GQ",
+    "Name": "Equatorial Guinea",
+    "IsMiddleEast": false
+  },
+  "ER": {
+    "Code": "ER",
+    "Name": "Eritrea",
+    "IsMiddleEast": true
+  },
+  "EE": {
+    "Code": "EE",
+    "Name": "Estonia",
+    "IsMiddleEast": false
+  },
+  "SZ": {
+    "Code": "SZ",
+    "Name": "Eswatini",
+    "IsMiddleEast": false
+  },
+  "ET": {
+    "Code": "ET",
+    "Name": "Ethiopia",
+    "IsMiddleEast": false
+  },
+  "FJ": {
+    "Code": "FJ",
+    "Name": "Fiji",
+    "IsMiddleEast": false
+  },
+  "FI": {
+    "Code": "FI",
+    "Name": "Finland",
+    "IsMiddleEast": false
+  },
+  "FR": {
+    "Code": "FR",
+    "Name": "France",
+    "IsMiddleEast": false
+  },
+  "GA": {
+    "Code": "GA",
+    "Name": "Gabon",
+    "IsMiddleEast": false
+  },
+  "GM": {
+    "Code": "GM",
+    "Name": "Gambia",
+    "IsMiddleEast": false
+  },
+  "GE": {
+    "Code": "GE",
+    "Name": "Georgia",
+    "IsMiddleEast": false
+  },
+  "DE": {
+    "Code": "DE",
+    "Name": "Germany",
+    "IsMiddleEast": false
+  },
+  "GH": {
+    "Code": "GH",
+    "Name": "Ghana",
+    "IsMiddleEast": false
+  },
+  "GR": {
+    "Code": "GR",
+    "Name": "Greece",
+    "IsMiddleEast": false
+  },
+  "GD": {
+    "Code": "GD",
+    "Name": "Grenada",
+    "IsMiddleEast": false
+  },
+  "GT": {
+    "Code": "GT",
+    "Name": "Guatemala",
+    "IsMiddleEast": false
+  },
+  "GN": {
+    "Code": "GN",
+    "Name": "Guinea",
+    "IsMiddleEast": false
+  },
+  "GW": {
+    "Code": "GW",
+    "Name": "Guinea-Bissau",
+    "IsMiddleEast": false
+  },
+  "GY": {
+    "Code": "GY",
+    "Name": "Guyana",
+    "IsMiddleEast": false
+  },
+  "HT": {
+    "Code": "HT",
+    "Name": "Haiti",
+    "IsMiddleEast": false
+  },
+  "HN": {
+    "Code": "HN",
+    "Name": "Honduras",
+    "IsMiddleEast": false
+  },
+  "HU": {
+    "Code": "HU",
+    "Name": "Hungary",
+    "IsMiddleEast": false
+  },
+  "IS": {
+    "Code": "IS",
+    "Name": "Iceland",
+    "IsMiddleEast": false
+  },
+  "IN": {
+    "Code": "IN",
+    "Name": "India",
+    "IsMiddleEast": false
+  },
+  "ID": {
+    "Code": "ID",
+    "Name": "Indonesia",
+    "IsMiddleEast": false
+  },
+  "IR": {
+    "Code": "IR",
+    "Name": "Iran",
+    "IsMiddleEast": true
+  },
+  "IQ": {
+    "Code": "IQ",
+    "Name": "Iraq",
+    "IsMiddleEast": true
+  },
+  "IE": {
+    "Code": "IE",
+    "Name": "Ireland",
+    "IsMiddleEast": false
+  },
+  "IL": {
+    "Code": "IL",
+    "Name": "Israel",
+    "IsMiddleEast": true
+  },
+  "IT": {
+    "Code": "IT",
+    "Name": "Italy",
+    "IsMiddleEast": false
+  },
+  "JM": {
+    "Code": "JM",
+    "Name": "Jamaica",
+    "IsMiddleEast": false
+  },
+  "JP": {
+    "Code": "JP",
+    "Name": "Japan",
+    "IsMiddleEast": false
+  },
+  "JO": {
+    "Code": "JO",
+    "Name": "Jordan",
+    "IsMiddleEast": true
+  },
+  "KZ": {
+    "Code": "KZ",
+    "Name": "Kazakhstan",
+    "IsMiddleEast": false
+  },
+  "KE": {
+    "Code": "KE",
+    "Name": "Kenya",
+    "IsMiddleEast": false
+  },
+  "KI": {
+    "Code": "KI",
+    "Name": "Kiribati",
+    "IsMiddleEast": false
+  },
+  "KP": {
+    "Code": "KP",
+    "Name": "North Korea",
+    "IsMiddleEast": false
+  },
+  "KR": {
+    "Code": "KR",
+    "Name": "South Korea",
+    "IsMiddleEast": false
+  },
+  "KW": {
+    "Code": "KW",
+    "Name": "Kuwait",
+    "IsMiddleEast": true
+  },
+  "KG": {
+    "Code": "KG",
+    "Name": "Kyrgyzstan",
+    "IsMiddleEast": false
+  },
+  "LA": {
+    "Code": "LA",
+    "Name": "Laos",
+    "IsMiddleEast": false
+  },
+  "LV": {
+    "Code": "LV",
+    "Name": "Latvia",
+    "IsMiddleEast": false
+  },
+  "LB": {
+    "Code": "LB",
+    "Name": "Lebanon",
+    "IsMiddleEast": true
+  },
+  "LS": {
+    "Code": "LS",
+    "Name": "Lesotho",
+    "IsMiddleEast": false
+  },
+  "LR": {
+    "Code": "LR",
+    "Name": "Liberia",
+    "IsMiddleEast": false
+  },
+  "LY": {
+    "Code": "LY",
+    "Name": "Libya",
+    "IsMiddleEast": true
+  },
+  "LI": {
+    "Code": "LI",
+    "Name": "Liechtenstein",
+    "IsMiddleEast": false
+  },
+  "LT": {
+    "Code": "LT",
+    "Name": "Lithuania",
+    "IsMiddleEast": false
+  },
+  "LU": {
+    "Code": "LU",
+    "Name": "Luxembourg",
+    "IsMiddleEast": false
+  },
+  "MG": {
+    "Code": "MG",
+    "Name": "Madagascar",
+    "IsMiddleEast": false
+  },
+  "MW": {
+    "Code": "MW",
+    "Name": "Malawi",
+    "IsMiddleEast": false
+  },
+  "MY": {
+    "Code": "MY",
+    "Name": "Malaysia",
+    "IsMiddleEast": false
+  },
+  "MV": {
+    "Code": "MV",
+    "Name": "Maldives",
+    "IsMiddleEast": false
+  },
+  "ML": {
+    "Code": "ML",
+    "Name": "Mali",
+    "IsMiddleEast": false
+  },
+  "MT": {
+    "Code": "MT",
+    "Name": "Malta",
+    "IsMiddleEast": false
+  },
+  "MH": {
+    "Code": "MH",
+    "Name": "Marshall Islands",
+    "IsMiddleEast": false
+  },
+  "MR": {
+    "Code": "MR",
+    "Name": "Mauritania",
+    "IsMiddleEast": true
+  },
+  "MU": {
+    "Code": "MU",
+    "Name": "Mauritius",
+    "IsMiddleEast": false
+  },
+  "MX": {
+    "Code": "MX",
+    "Name": "Mexico",
+    "IsMiddleEast": false
+  },
+  "FM": {
+    "Code": "FM",
+    "Name": "Micronesia",
+    "IsMiddleEast": false
+  },
+  "MD": {
+    "Code": "MD",
+    "Name": "Moldova",
+    "IsMiddleEast": false
+  },
+  "MC": {
+    "Code": "MC",
+    "Name": "Monaco",
+    "IsMiddleEast": false
+  },
+  "MN": {
+    "Code": "MN",
+    "Name": "Mongolia",
+    "IsMiddleEast": false
+  },
+  "ME": {
+    "Code": "ME",
+    "Name": "Montenegro",
+    "IsMiddleEast": false
+  },
+  "MA": {
+    "Code": "MA",
+    "Name": "Morocco",
+    "IsMiddleEast": false
+  },
+  "MZ": {
+    "Code": "MZ",
+    "Name": "Mozambique",
+    "IsMiddleEast": false
+  },
+  "MM": {
+    "Code": "MM",
+    "Name": "Myanmar",
+    "IsMiddleEast": false
+  },
+  "NA": {
+    "Code": "NA",
+    "Name": "Namibia",
+    "IsMiddleEast": false
+  },
+  "NR": {
+    "Code": "NR",
+    "Name": "Nauru",
+    "IsMiddleEast": false
+  },
+  "NP": {
+    "Code": "NP",
+    "Name": "Nepal",
+    "IsMiddleEast": false
+  },
+  "NL": {
+    "Code": "NL",
+    "Name": "Netherlands",
+    "IsMiddleEast": false
+  },
+  "NZ": {
+    "Code": "NZ",
+    "Name": "New Zealand",
+    "IsMiddleEast": false
+  },
+  "NI": {
+    "Code": "NI",
+    "Name": "Nicaragua",
+    "IsMiddleEast": false
+  },
+  "NE": {
+    "Code": "NE",
+    "Name": "Niger",
+    "IsMiddleEast": false
+  },
+  "NG": {
+    "Code": "NG",
+    "Name": "Nigeria",
+    "IsMiddleEast": false
+  },
+  "MK": {
+    "Code": "MK",
+    "Name": "North Macedonia",
+    "IsMiddleEast": false
+  },
+  "NO": {
+    "Code": "NO",
+    "Name": "Norway",
+    "IsMiddleEast": false
+  },
+  "OM": {
+    "Code": "OM",
+    "Name": "Oman",
+    "IsMiddleEast": true
+  },
+  "PK": {
+    "Code": "PK",
+    "Name": "Pakistan",
+    "IsMiddleEast": false
+  },
+  "PW": {
+    "Code": "PW",
+    "Name": "Palau",
+    "IsMiddleEast": false
+  },
+  "PS": {
+    "Code": "PS",
+    "Name": "Palestine",
+    "IsMiddleEast": true
+  },
+  "PA": {
+    "Code": "PA",
+    "Name": "Panama",
+    "IsMiddleEast": false
+  },
+  "PG": {
+    "Code": "PG",
+    "Name": "Papua New Guinea",
+    "IsMiddleEast": false
+  },
+  "PY": {
+    "Code": "PY",
+    "Name": "Paraguay",
+    "IsMiddleEast": false
+  },
+  "PE": {
+    "Code": "PE",
+    "Name": "Peru",
+    "IsMiddleEast": false
+  },
+  "PH": {
+    "Code": "PH",
+    "Name": "Philippines",
+    "IsMiddleEast": false
+  },
+  "PL": {
+    "Code": "PL",
+    "Name": "Poland",
+    "IsMiddleEast": false
+  },
+  "PT": {
+    "Code": "PT",
+    "Name": "Portugal",
+    "IsMiddleEast": false
+  },
+  "QA": {
+    "Code": "QA",
+    "Name": "Qatar",
+    "IsMiddleEast": true
+  },
+  "RO": {
+    "Code": "RO",
+    "Name": "Romania",
+    "IsMiddleEast": false
+  },
+  "RU": {
+    "Code": "RU",
+    "Name": "Russia",
+    "IsMiddleEast": false
+  },
+  "RW": {
+    "Code": "RW",
+    "Name": "Rwanda",
+    "IsMiddleEast": false
+  },
+  "KN": {
+    "Code": "KN",
+    "Name": "Saint Kitts and Nevis",
+    "IsMiddleEast": false
+  },
+  "LC": {
+    "Code": "LC",
+    "Name": "Saint Lucia",
+    "IsMiddleEast": false
+  },
+  "VC": {
+    "Code": "VC",
+    "Name": "Saint Vincent and the Grenadines",
+    "IsMiddleEast": false
+  },
+  "WS": {
+    "Code": "WS",
+    "Name": "Samoa",
+    "IsMiddleEast": false
+  },
+  "SM": {
+    "Code": "SM",
+    "Name": "San Marino",
+    "IsMiddleEast": false
+  },
+  "ST": {
+    "Code": "ST",
+    "Name": "Sao Tome and Principe",
+    "IsMiddleEast": false
+  },
+  "SA": {
+    "Code": "SA",
+    "Name": "Saudi Arabia",
+    "IsMiddleEast": true
+  },
+  "SN": {
+    "Code": "SN",
+    "Name": "Senegal",
+    "IsMiddleEast": false
+  },
+  "RS": {
+    "Code": "RS",
+    "Name": "Serbia",
+    "IsMiddleEast": false
+  },
+  "SC": {
+    "Code": "SC",
+    "Name": "Seychelles",
+    "IsMiddleEast": false
+  },
+  "SL": {
+    "Code": "SL",
+    "Name": "Sierra Leone",
+    "IsMiddleEast": false
+  },
+  "SG": {
+    "Code": "SG",
+    "Name": "Singapore",
+    "IsMiddleEast": false
+  },
+  "SK": {
+    "Code": "SK",
+    "Name": "Slovakia",
+    "IsMiddleEast": false
+  },
+  "SI": {
+    "Code": "SI",
+    "Name": "Slovenia",
+    "IsMiddleEast": false
+  },
+  "SB": {
+    "Code": "SB",
+    "Name": "Solomon Islands",
+    "IsMiddleEast": false
+  },
+  "SO": {
+    "Code": "SO",
+    "Name": "Somalia",
+    "IsMiddleEast": true
+  },
+  "ZA": {
+    "Code": "ZA",
+    "Name": "South Africa",
+    "IsMiddleEast": false
+  },
+  "SS": {
+    "Code": "SS",
+    "Name": "South Sudan",
+    "IsMiddleEast": true
+  },
+  "ES": {
+    "Code": "ES",
+    "Name": "Spain",
+    "IsMiddleEast": false
+  },
+  "LK": {
+    "Code": "LK",
+    "Name": "Sri Lanka",
+    "IsMiddleEast": false
+  },
+  "SD": {
+    "Code": "SD",
+    "Name": "Sudan",
+    "IsMiddleEast": true
+  },
+  "SR": {
+    "Code": "SR",
+    "Name": "Suriname",
+    "IsMiddleEast": false
+  },
+  "SE": {
+    "Code": "SE",
+    "Name": "Sweden",
+    "IsMiddleEast": false
+  },
+  "CH": {
+    "Code": "CH",
+    "Name": "Switzerland",
+    "IsMiddleEast": false
+  },
+  "SY": {
+    "Code": "SY",
+    "Name": "Syria",
+    "IsMiddleEast": true
+  },
+  "TW": {
+    "Code": "TW",
+    "Name": "Taiwan",
+    "IsMiddleEast": false
+  },
+  "TJ": {
+    "Code": "TJ",
+    "Name": "Tajikistan",
+    "IsMiddleEast": false
+  },
+  "TZ": {
+    "Code": "TZ",
+    "Name": "Tanzania",
+    "IsMiddleEast": false
+  },
+  "TH": {
+    "Code": "TH",
+    "Name": "Thailand",
+    "IsMiddleEast": false
+  },
+  "TL": {
+    "Code": "TL",
+    "Name": "Timor-Leste",
+    "IsMiddleEast": false
+  },
+  "TG": {
+    "Code": "TG",
+    "Name": "Togo",
+    "IsMiddleEast": false
+  },
+  "TO": {
+    "Code": "TO",
+    "Name": "Tonga",
+    "IsMiddleEast": false
+  },
+  "TT": {
+    "Code": "TT",
+    "Name": "Trinidad and Tobago",
+    "IsMiddleEast": false
+  },
+  "TN": {
+    "Code": "TN",
+    "Name": "Tunisia",
+    "IsMiddleEast": true
+  },
+  "TR": {
+    "Code": "TR",
+    "Name": "Turkey",
+    "IsMiddleEast": true
+  },
+  "TM": {
+    "Code": "TM",
+    "Name": "Turkmenistan",
+    "IsMiddleEast": false
+  },
+  "TV": {
+    "Code": "TV",
+    "Name": "Tuvalu",
+    "IsMiddleEast": false
+  },
+  "UG": {
+    "Code": "UG",
+    "Name": "Uganda",
+    "IsMiddleEast": false
+  },
+  "UA": {
+    "Code": "UA",
+    "Name": "Ukraine",
+    "IsMiddleEast": false
+  },
+  "AE": {
+    "Code": "AE",
+    "Name": "United Arab Emirates",
+    "IsMiddleEast": true
+  },
+  "GB": {
+    "Code": "GB",
+    "Name": "United Kingdom",
+    "IsMiddleEast": false
+  },
+  "US": {
+    "Code": "US",
+    "Name": "United States",
+    "IsMiddleEast": false
+  },
+  "UY": {
+    "Code": "UY",
+    "Name": "Uruguay",
+    "IsMiddleEast": false
+  },
+  "UZ": {
+    "Code": "UZ",
+    "Name": "Uzbekistan",
+    "IsMiddleEast": false
+  },
+  "VU": {
+    "Code": "VU",
+    "Name": "Vanuatu",
+    "IsMiddleEast": false
+  },
+  "VA": {
+    "Code": "VA",
+    "Name": "Vatican City",
+    "IsMiddleEast": false
+  },
+  "VE": {
+    "Code": "VE",
+    "Name": "Venezuela",
+    "IsMiddleEast": false
+  },
+  "VN": {
+    "Code": "VN",
+    "Name": "Vietnam",
+    "IsMiddleEast": false
+  },
+  "YE": {
+    "Code": "YE",
+    "Name": "Yemen",
+    "IsMiddleEast": true
+  },
+  "ZM": {
+    "Code": "ZM",
+    "Name": "Zambia",
+    "IsMiddleEast": false
+  },
+  "ZW": {
+    "Code": "ZW",
+    "Name": "Zimbabwe",
+    "IsMiddleEast": false
+  }
+}
