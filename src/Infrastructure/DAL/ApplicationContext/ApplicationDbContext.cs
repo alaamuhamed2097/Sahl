@@ -1,5 +1,6 @@
 ﻿using Domains.Entities.Base;
 using Domains.Identity;
+using Domins.Entities.Category;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
@@ -14,15 +15,19 @@ namespace DAL.ApplicationContext
 
         #region Tables
 
-       
+        public DbSet<TbCategory> TbCategories { get; set; }
+        public DbSet<TbCategoryAttribute> TbCategoryAttributes { get; set; }
+        public DbSet<TbAttribute> TbAttributes { get; set; }
+        public DbSet<TbAttributeOption> TbAttributeOptions { get; set; }
+
         #endregion
 
         #region Views
-        
+
         #endregion
 
         #region Stored Procedures
-        
+
         #endregion
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -64,16 +69,16 @@ namespace DAL.ApplicationContext
             #endregion
 
             #region Tables
-            
+
 
             #endregion
 
             #region Views
-            
+
             #endregion
 
             #region Stored Procedures
-            
+
             #endregion
         }
     }

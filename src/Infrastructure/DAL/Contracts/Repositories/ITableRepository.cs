@@ -1,5 +1,6 @@
 ﻿using DAL.ResultModels;
 using Domains.Entities.Base;
+using System.Linq.Expressions;
 
 namespace DAL.Contracts.Repositories
 {
@@ -23,5 +24,13 @@ namespace DAL.Contracts.Repositories
         Task<bool> HardDeleteAsync(Guid id);
         Task<bool> AddRangeAsync(IEnumerable<T> entities, Guid userId);
         Task<bool> SaveChangeAsync();
+
+        Task<bool> SaveAsyncWithoutId(T model, Guid userId);
+        Task<(bool Success, int UpdatedCount)> UpdateBulkFieldsAsync(
+            Dictionary<Guid, Dictionary<string, object>> entityFieldValues,
+            Guid updaterId);
+        Task<(bool Success, int DeletedCount)> BulkHardDeleteByIdsAsync(IEnumerable<Guid> ids);
+
+        IQueryable<T> GetWithInclude(Expression<Func<T, object>> include);
     }
 }

@@ -777,53 +777,53 @@
   <data name="MaxSize" xml:space="preserve">
     <value>MaxSize</value>
   </data>
-	<data name="event.not_found" xml:space="preserve">
-  <value>Event not found.</value>
-</data>
-	<data name="event.already_started" xml:space="preserve">
-  <value>This event has already started.</value>
-</data>
-	<data name="event.fully_booked" xml:space="preserve">
-  <value>Sorry, this event is fully booked.</value>
-</data>
-	<data name="event.no_discount_available" xml:space="preserve">
-  <value>No discounts are available for this event.</value>
-</data>
-
-	<data name="event.already_booked" xml:space="preserve">
-  <value>You have already booked this event.</value>
-</data>
-	<data name="event.booking_not_found" xml:space="preserve">
-  <value>Booking not found.</value>
-</data>
-	<data name="event.too_many_attempts" xml:space="preserve">
-  <value>Too many attempts, please try again later.</value>
-</data>
-	<data name="event.booking_update_failed" xml:space="preserve">
-  <value>Failed to update your booking.</value>
-</data>
-
-	<data name="event.invalid_promo_code" xml:space="preserve">
-  <value>The promo code you entered is invalid.</value>
-</data>
-	<data name="event.invalid_coupon_code" xml:space="preserve">
-  <value>The coupon code you entered is invalid.</value>
-</data>
-
-	<data name="event.invalid_payment_method" xml:space="preserve">
-  <value>Invalid payment method.</value>
-</data>
-	<data name="event.cash_payment_not_allowed" xml:space="preserve">
-  <value>Cash payment is not allowed for this event.</value>
-</data>
-	<data name="event.payment_activation_failed" xml:space="preserve">
-  <value>Payment activation failed.</value>
-</data>
-	<data name="event.payment_confirmation_failed" xml:space="preserve">
-  <value>Payment confirmation failed.</value>
-</data>
-	<assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <data name="event.not_found" xml:space="preserve">
+    <value>Event not found.</value>
+  </data>
+  <data name="event.already_started" xml:space="preserve">
+    <value>This event has already started.</value>
+  </data>
+  <data name="event.fully_booked" xml:space="preserve">
+    <value>Sorry, this event is fully booked.</value>
+  </data>
+  <data name="event.no_discount_available" xml:space="preserve">
+    <value>No discounts are available for this event.</value>
+  </data>
+  <data name="event.already_booked" xml:space="preserve">
+    <value>You have already booked this event.</value>
+  </data>
+  <data name="event.booking_not_found" xml:space="preserve">
+    <value>Booking not found.</value>
+  </data>
+  <data name="event.too_many_attempts" xml:space="preserve">
+    <value>Too many attempts, please try again later.</value>
+  </data>
+  <data name="event.booking_update_failed" xml:space="preserve">
+    <value>Failed to update your booking.</value>
+  </data>
+  <data name="event.invalid_promo_code" xml:space="preserve">
+    <value>The promo code you entered is invalid.</value>
+  </data>
+  <data name="event.invalid_coupon_code" xml:space="preserve">
+    <value>The coupon code you entered is invalid.</value>
+  </data>
+  <data name="event.invalid_payment_method" xml:space="preserve">
+    <value>Invalid payment method.</value>
+  </data>
+  <data name="event.cash_payment_not_allowed" xml:space="preserve">
+    <value>Cash payment is not allowed for this event.</value>
+  </data>
+  <data name="event.payment_activation_failed" xml:space="preserve">
+    <value>Payment activation failed.</value>
+  </data>
+  <data name="event.payment_confirmation_failed" xml:space="preserve">
+    <value>Payment confirmation failed.</value>
+  </data>
+  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
   <data name="String1" type="System.Resources.ResXNullRef, System.Windows.Forms">
     <value />
+  </data>
+  <data name="CategoryHasChild" xml:space="preserve">
+    <value>This category contains subcategories and cannot be deleted.</value>
   </data>
 </root>
