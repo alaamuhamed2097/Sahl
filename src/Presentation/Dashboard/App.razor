@@ -1,12 +1,28 @@
-﻿<Router AppAssembly="@typeof(App).Assembly">
-    <Found Context="routeData">
-        <RouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)" />
-        <FocusOnNavigate RouteData="@routeData" Selector="h1" />
-    </Found>
-    <NotFound>
-        <PageTitle>Not found</PageTitle>
-        <LayoutView Layout="@typeof(MainLayout)">
-            <p role="alert">Sorry, there's nothing at this address.</p>
-        </LayoutView>
-    </NotFound>
-</Router>
+﻿@using Dashboard.Pages.Auth
+<CascadingAuthenticationState>
+    <Router AppAssembly="@typeof(Program).Assembly">
+        <Found Context="routeData">
+            @if (routeData.PageType == typeof(Login))
+            { 
+                <RouteView RouteData="@routeData" DefaultLayout="null" />
+             } 
+            else
+            {
+                @if (isLoading)
+                {
+                    <div style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center;">
+                        @GeneralResources.Loading...
+                    </div>
+                }
+                else if (isAuthorized)
+                {
+                    <RouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)" />
+                }
+             } 
+        </Found>
+        <NotFound>
+            <h3>الصفحة غير موجودة!</h3>
+        </NotFound>
+    </Router>
+</CascadingAuthenticationState>
+

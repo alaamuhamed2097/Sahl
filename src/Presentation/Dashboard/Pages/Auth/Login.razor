@@ -1,0 +1,69 @@
+﻿@page "/login"
+@using Resources.Enumerations
+
+@if (ResourceManager.CurrentLanguage == Language.Arabic)
+{
+    <style>
+        .checkbox input[type=checkbox] + .cr:before {
+            margin-right: 0 !important;
+            margin-left: 10px !important;
+        }
+    </style>
+}
+
+<div class="auth-wrapper" dir="@(ResourceManager.CurrentLanguage == Language.Arabic ? "rtl" : "ltr")">
+    <div class="auth-content container">
+        <div class="card">
+            <div class="row align-items-center">
+                <div class="col-md-6 d-none d-md-block">
+                    <img src="assets/images/auth/Login.svg" alt="Login" class="img-fluid" />
+                </div>
+                <div class="col-md-6">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-center">
+                            <img src="assets/images/logo.svg" alt="logo" class="img-fluid mb-4" />
+                        </div>
+                        <h4 class="mb-3 f-w-400 text-center">
+                            @UserResources.LoginPageTitle <span class="text-c-blue">SAHL</span>
+                        </h4>
+
+                        <EditForm Model="_model" OnValidSubmit="HandleValidSubmit">
+                            <DataAnnotationsValidator />
+
+                            <div class="form-group mb-2">
+                                <label class="form-label">@FormResources.Email</label>
+                                <InputText type="email" class="form-control" placeholder="@UserResources.EmailPlaceholder" @bind-Value="_model.Email" />
+                                <ValidationMessage For="@(() => _model.Email)" />
+                            </div>
+
+                            <div class="form-group mb-3">
+                                <label class="form-label">@UserResources.PasswordLabel</label>
+                                <InputText type="password" class="form-control" placeholder="@UserResources.PasswordPlaceholder" @bind-Value="_model.Password" />
+                                <ValidationMessage For="@(() => _model.Password)" />
+                            </div>
+
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <div class="form-group">
+                                    <div class="checkbox checkbox-primary d-inline">
+                                        <InputCheckbox @bind-Value="_model.RememberMe" id="checkbox-fill-a1" />
+                                        <label for="checkbox-fill-a1" class="cr">@UserResources.KeepMeSignedIn</label>
+                                    </div>
+                                </div>
+                                <p class="mb-2">
+                                    <a href="/forgot-password" class="f-w-400">@UserResources.ForgotPassword</a>
+                                </p>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary mb-4 btf w-100">@UserResources.LoginButton</button>
+
+                            @if (!string.IsNullOrEmpty(_errorMessage))
+                            {
+                                <div class="alert alert-danger mt-2">@_errorMessage</div>
+                            }
+                        </EditForm>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

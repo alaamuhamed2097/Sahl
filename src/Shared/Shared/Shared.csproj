@@ -7,9 +7,15 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Attributes\" />
-    <Folder Include="Parameters\" />
-    <Folder Include="Policy\" />
+    <Compile Remove="Attributes\**" />
+    <Compile Remove="Parameters\**" />
+    <Compile Remove="Policy\**" />
+    <EmbeddedResource Remove="Attributes\**" />
+    <EmbeddedResource Remove="Parameters\**" />
+    <EmbeddedResource Remove="Policy\**" />
+    <None Remove="Attributes\**" />
+    <None Remove="Parameters\**" />
+    <None Remove="Policy\**" />
   </ItemGroup>
 
   <ItemGroup>

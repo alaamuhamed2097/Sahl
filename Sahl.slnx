@@ -4,6 +4,9 @@
   </Folder>
   <Folder Name="/business/" />
   <Folder Name="/scripts/" />
+  <Folder Name="/Solution Items/">
+    <File Path="global.json" />
+  </Folder>
   <Folder Name="/src/" />
   <Folder Name="/src/Core/">
     <Project Path="src/Core/BL/BL.csproj" />
@@ -14,7 +17,7 @@
   </Folder>
   <Folder Name="/src/Presentation/">
     <Project Path="src/Presentation/Api/Api.csproj" Id="c2a261fb-454b-4db9-a02f-8611a118ee4b" />
-    <Project Path="src/Presentation/Dashboard/Dashboard.csproj" Id="89f81f4e-dffe-4219-85f3-efed57f32137" />
+    <Project Path="src/Presentation/Dashboard/Dashboard.csproj" Id="b44acce3-3e0b-4bb7-a8e3-e8f76ba6d53c" />
   </Folder>
   <Folder Name="/src/Shared/">
     <Project Path="src/Shared/Common/Common.csproj" />

@@ -1,0 +1,133 @@
+﻿@page "/"
+@attribute [Authorize(Roles = "Admin,Vendor")]
+@using Common.Enumerations.User
+@using Microsoft.AspNetCore.Components.Web.Virtualization
+<PageTitle>@GeneralResources.Home</PageTitle>
+
+<!-- [ breadcrumb ] start -->
+<div class="page-header">
+	<div class="page-block">
+		<div class="row align-items-center">
+			<div class="col-md-12">
+				<div class="page-header-title">
+					<h5>@GeneralResources.Home</h5>
+				</div>
+				<ul class="breadcrumb">
+					<li class="breadcrumb-item">
+						<a href="index.html">
+							<i class="feather icon-home"></i>
+						</a>
+					</li>
+					<li class="breadcrumb-item"><a href="#!">@GeneralResources.Analytics</a></li>
+				</ul>
+			</div>
+		</div>
+	</div>
+</div>
+<!-- [ breadcrumb ] end -->
+
+<!-- Loading Skeleton -->
+@if (isInitialLoading)
+{
+    <div class="loading-skeleton">
+        <div class="row g-3">
+            <div class="col-lg-3 col-md-6">
+                <div class="card skeleton-card">
+                    <div class="card-body">
+                        <div class="skeleton-avatar"></div>
+                        <div class="skeleton-text skeleton-title"></div>
+                        <div class="skeleton-text skeleton-subtitle"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <div class="card skeleton-card">
+                    <div class="card-body">
+                        <div class="skeleton-avatar"></div>
+                        <div class="skeleton-text skeleton-title"></div>
+                        <div class="skeleton-text skeleton-subtitle"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <div class="card skeleton-card">
+                    <div class="card-body">
+                        <div class="skeleton-avatar"></div>
+                        <div class="skeleton-text skeleton-title"></div>
+                        <div class="skeleton-text skeleton-subtitle"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <div class="card skeleton-card">
+                    <div class="card-body">
+                        <div class="skeleton-avatar"></div>
+                        <div class="skeleton-text skeleton-title"></div>
+                        <div class="skeleton-text skeleton-subtitle"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+else
+{
+    <!-- [ Main Content ] start -->
+    
+    <!-- Vendor Section -->
+    <AuthorizeView Roles="@nameof(UserRole.Vendor)">
+        <Authorized>
+            @if (shouldShowVendorStats)
+            {
+                @if (loadVendorWidget)
+                {
+                    <LazyComponent>
+                        <Dashboard.Components.Statistics.VendorStatisticsWidget />
+                    </LazyComponent>
+                }
+                else
+                {
+                    <div class="text-center p-4">
+                        <button class="btn btn-primary" @onclick="LoadVendorWidget">
+                            <i class="fas fa-chart-bar me-2"></i>
+                            Load Dashboard Statistics
+                        </button>
+                    </div>
+                }
+            }
+            else if (!gotTargetAccountType)
+            {
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle me-2"></i>
+                    Redirecting to account setup...
+                </div>
+            }
+        </Authorized>
+    </AuthorizeView>
+
+    <!-- Admin Section -->
+    <AuthorizeView Roles="@nameof(UserRole.Admin)">
+        <Authorized>
+            @if (loadAdminWidget)
+            {
+                <LazyComponent>
+                    <Dashboard.Components.Statistics.AdminStatisticsWidget />
+                </LazyComponent>
+            }
+            else
+            {
+                <div class="text-center p-4">
+                    <button class="btn btn-primary" @onclick="LoadAdminWidget">
+                        <i class="fas fa-chart-line me-2"></i>
+                        Load Admin Dashboard
+                    </button>
+                </div>
+            }
+        </Authorized>
+    </AuthorizeView>
+    
+    <!-- [ Main Content ] end -->
+}
+
+<link href="/css/home-lazy-loading.min.css" rel="stylesheet" />
+
