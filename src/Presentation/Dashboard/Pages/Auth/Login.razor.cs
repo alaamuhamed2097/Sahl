@@ -1,9 +1,14 @@
 ﻿using Dashboard.Contracts.General;
 using Dashboard.Models;
 using Microsoft.AspNetCore.Components;
+using Microsoft.JSInterop;
+using Resources;
+using Resources.Enumerations;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Dashboard.Pages.Auth
 {
+    [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)]
     public partial class Login : ComponentBase
     {
         private readonly LoginRequestModel _model = new();
@@ -16,8 +21,40 @@ namespace Dashboard.Pages.Auth
         [Inject]
         private IAuthenticationService AuthenticationService { get; set; } = null!;
 
+        [Inject]
+        private IJSRuntime JSRuntime { get; set; } = null!;
+
         [Parameter]
         public string? ReturnUrl { get; set; }
+
+        public Login()
+        {
+        }
+
+        protected void HandleForgetPassword()
+        {
+            // Navigate to forget password page or show modal
+            NavigationManager.NavigateTo("/forget-password");
+        }
+
+        protected override async Task OnInitializedAsync()
+        {
+            await InitializeLanguageFromStorage();
+        }
+
+        private async Task InitializeLanguageFromStorage()
+        {
+            try
+            {
+                var lang = await JSRuntime.InvokeAsync<string>("localization.getCurrentLanguage");
+                ResourceManager.CurrentLanguage = lang.StartsWith("ar") ? Language.Arabic : Language.English;
+            }
+            catch
+            {
+                // Fallback to English if localStorage is not available
+                ResourceManager.CurrentLanguage = Language.English;
+            }
+        }
 
         private async Task HandleValidSubmit()
         {
@@ -26,25 +63,36 @@ namespace Dashboard.Pages.Auth
 
             _isSubmitting = true;
             _errorMessage = string.Empty;
+            StateHasChanged();
 
             try
             {
-                var result = await AuthenticationService.Login(
-                    _model);
+                Console.WriteLine("[Login] Starting login process...");
+                var result = await AuthenticationService.Login(_model);
 
-                if (result.Success)
+                if (result.Success && result.Data != null)
                 {
-                    var redirectUrl = string.IsNullOrEmpty(ReturnUrl) ? "/" : ReturnUrl;
+                    Console.WriteLine("[Login] Login successful");
+
+                    // ? Wait for auth state to propagate
+                    await Task.Delay(150);
+
+                    // Determine redirect URL
+                    var redirectUrl = string.Empty;
+                    redirectUrl = string.IsNullOrEmpty(ReturnUrl) ? "/" : ReturnUrl;
+
+                    Console.WriteLine($"[Login] Redirecting to: {redirectUrl}");
+
+                    // ? Don't use forceLoad - prevents auth state reset
                     NavigationManager.NavigateTo(redirectUrl, forceLoad: false);
                     return;
                 }
 
-                _errorMessage = result.Message ?? "Invalid login attempt";
+                _errorMessage = result.Message == "User not found." ? UserResources.UserNotFound : result.Message;
             }
             catch (Exception ex)
             {
-                _errorMessage = "An unexpected error occurred during login";
-                // In production, log this error (e.g., ILogger)
+                _errorMessage = NotifiAndAlertsResources.SomethingWentWrong;
                 Console.Error.WriteLine($"Login error: {ex}");
             }
             finally

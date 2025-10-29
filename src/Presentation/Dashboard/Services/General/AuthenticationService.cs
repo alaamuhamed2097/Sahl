@@ -1,12 +1,12 @@
 ﻿using Blazored.LocalStorage;
 using Dashboard.Constants;
+using Dashboard.Contracts.General;
+using Dashboard.Models;
+using Dashboard.Providers;
 using Shared.DTOs.User;
 using Shared.GeneralModels;
 using Shared.GeneralModels.ResultModels;
 using System.IdentityModel.Tokens.Jwt;
-using Dashboard.Contracts.General;
-using Dashboard.Models;
-using Dashboard.Providers;
 
 namespace Dashboard.Services.General
 {
@@ -28,7 +28,7 @@ namespace Dashboard.Services.General
 
         public async Task<ResponseModel<SignInResult>> Login(LoginRequestModel model)
         {
-            var response = await _apiService.PostAsync<LoginRequestModel, SignInResult>(ApiEndpoints.Auth.EmailLogin, model);
+            var response = await _apiService.PostAsync<LoginRequestModel, SignInResult>(ApiEndpoints.Auth.Login, model);
             if (response.Success)
             {
                 await _localStorage.SetItemAsync("token", response.Data.Token);
@@ -44,13 +44,13 @@ namespace Dashboard.Services.General
 
         public async Task Logout()
         {
-            var response = await _apiService.GetAsync<string>(ApiEndpoints.Auth.LogOut);
-            if (response.Success)
-            {
-                await _localStorage.RemoveItemAsync("token");
-                await _localStorage.RemoveItemAsync("refreshToken");
-                await _authStateProvider.LoggedOut();
-            }
+            //var response = await _apiService.GetAsync<string>(ApiEndpoints.Auth.LogOut);
+            //if (response.Success)
+            //{
+            await _localStorage.RemoveItemAsync("token");
+            await _localStorage.RemoveItemAsync("refreshToken");
+            await _authStateProvider.LoggedOut();
+            //}
         }
 
         /// <summary>
@@ -83,7 +83,7 @@ namespace Dashboard.Services.General
 
         public async Task<bool> TryRefreshTokenAsync()
         {
-            var refreshToken = await _localStorage.GetItemAsync<string>("refreshToken"); 
+            var refreshToken = await _localStorage.GetItemAsync<string>("refreshToken");
             if (string.IsNullOrWhiteSpace(refreshToken))
                 return false;
 

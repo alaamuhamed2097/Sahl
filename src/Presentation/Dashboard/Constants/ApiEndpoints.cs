@@ -4,8 +4,7 @@
     {
         public static class Auth
         {
-            public const string EmailLogin = "api/Auth/email-login";
-            public const string LogOut = "api/Auth/admin-logout";
+            public const string Login = "api/Auth/login";
         }
 
         public static class Token
