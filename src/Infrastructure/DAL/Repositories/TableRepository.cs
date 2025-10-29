@@ -4,6 +4,7 @@ using DAL.Exceptions;
 using DAL.Models;
 using DAL.ResultModels;
 using Domains.Entities.Base;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
 using System.Linq.Expressions;
@@ -641,6 +642,184 @@ namespace DAL.Repositories
                 HandleException(nameof(AddRangeAsync), $"Error occurred while adding multiple entities of type {typeof(T).Name}.", ex);
                 throw;
             }
+        }
+
+        /// <summary>
+        /// Saves or updates an entity based on its key asynchronously.
+        /// </summary>
+        public async Task<bool> SaveAsyncWithoutId(T model, Guid userId)
+        {
+            try
+            {
+                if (model.Id == Guid.Empty)
+                {
+                    var createResult = await CreateAsync(model, userId);
+                    return createResult.Success;
+                }
+                else
+                {
+                    var updateResult = await UpdateAsync(model, userId);
+                    return updateResult.Success;
+                }
+
+            }
+            catch (Exception ex)
+            {
+                HandleException(nameof(SaveAsync), $"Error occurred while saving or updating an entity of type {typeof(T).Name}.", ex);
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Updates multiple entities with different values for the same field in a single SQL call.
+        /// OPTIMIZED for scenarios where each entity gets a unique value (like unique serials).
+        /// SECURE VERSION - Protected against SQL injection.
+        /// </summary>
+        public async Task<(bool Success, int UpdatedCount)> UpdateBulkFieldsAsync(
+            Dictionary<Guid, Dictionary<string, object>> entityFieldValues,
+            Guid updaterId)
+        {
+            try
+            {
+                if (!entityFieldValues?.Any() == true) return (false, 0);
+
+                // SECURITY: Validate field names against entity properties
+                var entityType = _dbContext.Model.FindEntityType(typeof(T));
+                var validColumns = entityType.GetProperties()
+                    .Select(p => p.GetColumnName())
+                    .ToHashSet(StringComparer.OrdinalIgnoreCase);
+
+                var allFields = entityFieldValues.SelectMany(x => x.Value.Keys).Distinct();
+                var invalidFields = allFields.Where(field => !validColumns.Contains(field)).ToList();
+                if (invalidFields.Any())
+                {
+                    throw new ArgumentException($"Invalid field names: {string.Join(", ", invalidFields)}");
+                }
+
+                // SECURITY: Use parameterized queries and safe column name construction
+                var tableName = entityType.GetTableName();
+                var schemaName = entityType.GetSchema();
+                var fullTableName = string.IsNullOrEmpty(schemaName) ?
+                    $"[{tableName}]" :
+                    $"[{schemaName}].[{tableName}]";
+
+                // Build CASE statements for each field
+                var setClauses = new List<string>();
+                var parameters = new List<SqlParameter>();
+                var paramIndex = 0;
+
+                foreach (var fieldName in allFields)
+                {
+                    var caseStatements = new List<string>();
+
+                    foreach (var entityValue in entityFieldValues)
+                    {
+                        if (entityValue.Value.TryGetValue(fieldName, out var value))
+                        {
+                            caseStatements.Add($"WHEN @id{paramIndex} THEN @value{paramIndex}");
+                            parameters.Add(new SqlParameter($"@id{paramIndex}", entityValue.Key));
+                            parameters.Add(new SqlParameter($"@value{paramIndex}", value ?? DBNull.Value));
+                            paramIndex++;
+                        }
+                    }
+
+                    if (caseStatements.Any())
+                    {
+                        var caseClause = string.Join(" ", caseStatements);
+                        setClauses.Add($"[{fieldName}] = CASE [Id] {caseClause} END");
+                    }
+                }
+
+                var entityIds = entityFieldValues.Keys.ToList();
+                var idParams = string.Join(", ", entityIds.Select((_, i) => $"@entityId{i}"));
+
+                // Add entity ID parameters for WHERE clause
+                for (int i = 0; i < entityIds.Count; i++)
+                {
+                    parameters.Add(new SqlParameter($"@entityId{i}", entityIds[i]));
+                }
+
+                var setClause = string.Join(", ", setClauses);
+
+                var sql = $@"
+            UPDATE {fullTableName} 
+            SET {setClause},
+                [UpdatedDateUtc] = @UpdatedDateUtc,
+                [UpdatedBy] = @UpdatedBy
+            WHERE [Id] IN ({idParams})";
+
+                // Add metadata parameters
+                parameters.Add(new SqlParameter("@UpdatedDateUtc", DateTime.UtcNow));
+                parameters.Add(new SqlParameter("@UpdatedBy", updaterId));
+
+                var updatedCount = await _dbContext.Database.ExecuteSqlRawAsync(sql, parameters.ToArray());
+                return (updatedCount > 0, updatedCount);
+            }
+            catch (Exception ex)
+            {
+                HandleException(nameof(UpdateBulkFieldsAsync), $"Error occurred while bulk updating fields with different values for entities of type {typeof(T).Name}.", ex);
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Simple bulk hard delete by IDs - no caching, no metadata complexity
+        /// </summary>
+        public async Task<(bool Success, int DeletedCount)> BulkHardDeleteByIdsAsync(IEnumerable<Guid> ids)
+        {
+            var idList = ids?.ToList();
+            try
+            {
+                if (idList?.Any() != true) return (false, 0);
+
+                // Get table name directly from EF Core
+                var entityType = _dbContext.Model.FindEntityType(typeof(T));
+                var tableName = entityType.GetTableName();
+                var schemaName = entityType.GetSchema();
+                var fullTableName = string.IsNullOrEmpty(schemaName) ? $"[{tableName}]" : $"[{schemaName}].[{tableName}]";
+
+                // Process in chunks to avoid parameter limits
+                const int chunkSize = 1000;
+                var totalDeleted = 0;
+
+                for (int i = 0; i < idList.Count; i += chunkSize)
+                {
+                    var chunk = idList.Skip(i).Take(chunkSize).ToList();
+                    var chunkResult = await ExecuteHardDeleteChunk(chunk, fullTableName);
+                    totalDeleted += chunkResult.DeletedCount;
+                }
+
+                return (totalDeleted > 0, totalDeleted);
+            }
+            catch (Exception ex)
+            {
+                HandleException(nameof(BulkHardDeleteByIdsAsync),
+                    $"Error occurred while bulk hard deleting {idList?.Count} entities .", ex);
+                throw;
+            }
+        }
+
+        public IQueryable<T> GetWithInclude(Expression<Func<T, object>> include)
+        {
+            return _dbContext.Set<T>().Include(include);
+        }
+
+        /// <summary>
+        /// Execute hard delete for a chunk of IDs
+        /// </summary>
+        private async Task<(bool Success, int DeletedCount)> ExecuteHardDeleteChunk(List<Guid> ids, string fullTableName)
+        {
+            var idParams = string.Join(", ", ids.Select((_, i) => $"@id{i}"));
+            var sql = $"DELETE FROM {fullTableName} WHERE [Id] IN ({idParams})";
+
+            var parameters = new SqlParameter[ids.Count];
+            for (int i = 0; i < ids.Count; i++)
+            {
+                parameters[i] = new SqlParameter($"@id{i}", ids[i]);
+            }
+
+            var deletedCount = await _dbContext.Database.ExecuteSqlRawAsync(sql, parameters);
+            return (deletedCount >= 0, deletedCount);
         }
 
         private void HandleException(string methodName, string message, Exception ex)

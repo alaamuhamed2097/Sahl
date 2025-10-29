@@ -777,52 +777,52 @@
   <data name="MaxSize" xml:space="preserve">
     <value>أكبر حجم</value>
   </data>
-	<data name="event.not_found" xml:space="preserve">
-  <value>لم يتم العثور على الحدث.</value>
-</data>
-	<data name="event.already_started" xml:space="preserve">
-  <value>هذا الحدث قد بدأ بالفعل.</value>
-</data>
-	<data name="event.fully_booked" xml:space="preserve">
-  <value>عذراً، الحدث مكتمل العدد.</value>
-</data>
-	<data name="event.no_discount_available" xml:space="preserve">
-  <value>لا توجد خصومات متاحة لهذا الحدث.</value>
-</data>
-
-	<data name="event.already_booked" xml:space="preserve">
-  <value>لقد قمت بحجز هذا الحدث من قبل.</value>
-</data>
-	<data name="event.booking_not_found" xml:space="preserve">
-  <value>لم يتم العثور على الحجز.</value>
-</data>
-	<data name="event.too_many_attempts" xml:space="preserve">
-  <value>عدد محاولات كثيرة، حاول مرة أخرى لاحقاً.</value>
-</data>
-	<data name="event.booking_update_failed" xml:space="preserve">
-  <value>فشل في تحديث الحجز.</value>
-</data>
-
-	<data name="event.invalid_promo_code" xml:space="preserve">
-  <value>كود الخصم الذي أدخلته غير صحيح.</value>
-</data>
-	<data name="event.invalid_coupon_code" xml:space="preserve">
-  <value>كود الكوبون الذي أدخلته غير صحيح.</value>
-</data>
-
-	<data name="event.invalid_payment_method" xml:space="preserve">
-  <value>طريقة الدفع غير صحيحة.</value>
-</data>
-	<data name="event.cash_payment_not_allowed" xml:space="preserve">
-  <value>الدفع نقداً غير مسموح لهذا الحدث.</value>
-</data>
-	<data name="event.payment_activation_failed" xml:space="preserve">
-  <value>فشل في تفعيل الدفع.</value>
-</data>
-	<data name="event.payment_confirmation_failed" xml:space="preserve">
-  <value>فشل في تأكيد الدفع.</value>
-</data>
-	<data name="String1" xml:space="preserve">
+  <data name="event.not_found" xml:space="preserve">
+    <value>لم يتم العثور على الحدث.</value>
+  </data>
+  <data name="event.already_started" xml:space="preserve">
+    <value>هذا الحدث قد بدأ بالفعل.</value>
+  </data>
+  <data name="event.fully_booked" xml:space="preserve">
+    <value>عذراً، الحدث مكتمل العدد.</value>
+  </data>
+  <data name="event.no_discount_available" xml:space="preserve">
+    <value>لا توجد خصومات متاحة لهذا الحدث.</value>
+  </data>
+  <data name="event.already_booked" xml:space="preserve">
+    <value>لقد قمت بحجز هذا الحدث من قبل.</value>
+  </data>
+  <data name="event.booking_not_found" xml:space="preserve">
+    <value>لم يتم العثور على الحجز.</value>
+  </data>
+  <data name="event.too_many_attempts" xml:space="preserve">
+    <value>عدد محاولات كثيرة، حاول مرة أخرى لاحقاً.</value>
+  </data>
+  <data name="event.booking_update_failed" xml:space="preserve">
+    <value>فشل في تحديث الحجز.</value>
+  </data>
+  <data name="event.invalid_promo_code" xml:space="preserve">
+    <value>كود الخصم الذي أدخلته غير صحيح.</value>
+  </data>
+  <data name="event.invalid_coupon_code" xml:space="preserve">
+    <value>كود الكوبون الذي أدخلته غير صحيح.</value>
+  </data>
+  <data name="event.invalid_payment_method" xml:space="preserve">
+    <value>طريقة الدفع غير صحيحة.</value>
+  </data>
+  <data name="event.cash_payment_not_allowed" xml:space="preserve">
+    <value>الدفع نقداً غير مسموح لهذا الحدث.</value>
+  </data>
+  <data name="event.payment_activation_failed" xml:space="preserve">
+    <value>فشل في تفعيل الدفع.</value>
+  </data>
+  <data name="event.payment_confirmation_failed" xml:space="preserve">
+    <value>فشل في تأكيد الدفع.</value>
+  </data>
+  <data name="String1" xml:space="preserve">
     <value />
+  </data>
+  <data name="CategoryHasChild" xml:space="preserve">
+    <value>هذه الفئة تحتوي على فئات فرعية ولا يمكن حذفها.</value>
   </data>
 </root>
