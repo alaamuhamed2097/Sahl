@@ -1,4 +1,5 @@
-﻿using Dashboard.Models;
+﻿using Dashboard.Contracts.General;
+using Dashboard.Models;
 using Microsoft.AspNetCore.Components;
 
 namespace Dashboard.Pages.Auth
@@ -12,8 +13,8 @@ namespace Dashboard.Pages.Auth
         [Inject]
         private NavigationManager NavigationManager { get; set; } = null!;
 
-        //[Inject]
-        //private IAuthenticationService AuthenticationService { get; set; } = null!;
+        [Inject]
+        private IAuthenticationService AuthenticationService { get; set; } = null!;
 
         [Parameter]
         public string? ReturnUrl { get; set; }
@@ -28,17 +29,17 @@ namespace Dashboard.Pages.Auth
 
             try
             {
-                //var result = await AuthenticationService.Login(
-                //    _model);
+                var result = await AuthenticationService.Login(
+                    _model);
 
-                //if (result.Success)
-                //{
-                //    var redirectUrl = string.IsNullOrEmpty(ReturnUrl) ? "/" : ReturnUrl;
-                //    NavigationManager.NavigateTo(redirectUrl, forceLoad: false);
-                //    return;
-                //}
+                if (result.Success)
+                {
+                    var redirectUrl = string.IsNullOrEmpty(ReturnUrl) ? "/" : ReturnUrl;
+                    NavigationManager.NavigateTo(redirectUrl, forceLoad: false);
+                    return;
+                }
 
-                //_errorMessage = result.Message ?? "Invalid login attempt";
+                _errorMessage = result.Message ?? "Invalid login attempt";
             }
             catch (Exception ex)
             {
@@ -50,11 +51,6 @@ namespace Dashboard.Pages.Auth
             {
                 _isSubmitting = false;
             }
-        }
-
-        private void HandleInvalidSubmit()
-        {
-            _errorMessage = "Please correct the validation errors";
         }
     }
 }

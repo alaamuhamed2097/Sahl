@@ -1,0 +1,272 @@
+[
+  {
+    "outputFileName": "wwwroot/css/app.min.css",
+    "inputFiles": [
+      "wwwroot/css/app.css"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/assets/css/style.min.css",
+    "inputFiles": [
+      "wwwroot/assets/css/style.css"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/css/perfect-scrollbar.min.css",
+    "inputFiles": [
+      "wwwroot/css/perfect-scrollbar.css"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/css/notification.min.css",
+    "inputFiles": [
+      "wwwroot/css/notification.css"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/css/loader.min.css",
+    "inputFiles": [
+      "wwwroot/css/loader.css"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/css/toastNotifications.min.css",
+    "inputFiles": [
+      "wwwroot/css/toastNotifications.css"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/assets/css/layouts/layout-3.min.css",
+    "inputFiles": [
+      "wwwroot/assets/css/layouts/layout-3.css"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/assets/css/layouts/layout-4.min.css",
+    "inputFiles": [
+      "wwwroot/assets/css/layouts/layout-4.css"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/assets/css/layouts/layout-5.min.css",
+    "inputFiles": [
+      "wwwroot/assets/css/layouts/layout-5.css"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/assets/css/layouts/layout-9.min.css",
+    "inputFiles": [
+      "wwwroot/assets/css/layouts/layout-9.css"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/assets/css/layouts/layout-12.min.css",
+    "inputFiles": [
+      "wwwroot/assets/css/layouts/layout-12.css"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/assets/css/layouts/rtl.min.css",
+    "inputFiles": [
+      "wwwroot/assets/css/layouts/rtl.css"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/assets/css/layouts/dark.min.css",
+    "inputFiles": [
+      "wwwroot/assets/css/layouts/dark.css"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/assets/css/layouts/landing.min.css",
+    "inputFiles": [
+      "wwwroot/assets/css/layouts/landing.css"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/assets/css/pages/pages.min.css",
+    "inputFiles": [
+      "wwwroot/assets/css/pages/pages.css"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/assets/css/pages/gallery.min.css",
+    "inputFiles": [
+      "wwwroot/assets/css/pages/gallery.css"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/assets/js/pages/ac-alert.min.js",
+    "inputFiles": [
+      "wwwroot/assets/js/pages/ac-alert.js"
+    ],
+    "sourceMap": true
+  },
+  {
+    "outputFileName": "wwwroot/assets/js/pages/statistic.min.js",
+    "inputFiles": [
+      "wwwroot/assets/js/pages/statistic.js"
+    ],
+    "sourceMap": true
+  },
+  {
+    "outputFileName": "wwwroot/assets/js/pages/ac-notification.min.js",
+    "inputFiles": [
+      "wwwroot/assets/js/pages/ac-notification.js"
+    ],
+    "sourceMap": true
+  },
+  {
+    "outputFileName": "wwwroot/assets/js/pages/widget-data.min.js",
+    "inputFiles": [
+      "wwwroot/assets/js/pages/widget-data.js"
+    ],
+    "sourceMap": true
+  },
+  {
+    "outputFileName": "wwwroot/assets/js/pcoded.min.js",
+    "inputFiles": [
+      "wwwroot/assets/js/pcoded.js"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/assets/js/analytics.min.js",
+    "inputFiles": [
+      "wwwroot/assets/js/analytics.js"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/assets/js/pages/error.min.js",
+    "inputFiles": [
+      "wwwroot/assets/js/pages/error.js"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/assets/js/pages/data-basic-custom.min.js",
+    "inputFiles": [
+      "wwwroot/assets/js/pages/data-basic-custom.js"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/assets/js/pages/data-source-custom.min.js",
+    "inputFiles": [
+      "wwwroot/assets/js/pages/data-source-custom.js"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/assets/js/pages/data-plugin-custom.min.js",
+    "inputFiles": [
+      "wwwroot/assets/js/pages/data-plugin-custom.js"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/assets/js/pages/grid-animation/main.min.js",
+    "inputFiles": [
+      "wwwroot/assets/js/pages/grid-animation/main.js"
+    ],
+    "sourceMap": true
+  },
+  {
+    "outputFileName": "wwwroot/Common/Scripts/ScriptLoader.min.js",
+    "inputFiles": [
+      "wwwroot/Common/Scripts/ScriptLoader.js"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/assets/js/plugins/daterangepicker.min.js",
+    "inputFiles": [
+      "wwwroot/assets/js/plugins/daterangepicker.js"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/assets/js/plugins/trumbowyg/trumbowyg.min.js",
+    "inputFiles": [
+      "wwwroot/assets/js/plugins/trumbowyg/trumbowyg.js"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/assets/js/plugins/tinymce/tinymce.min.js",
+    "inputFiles": [
+      "wwwroot/assets/js/plugins/tinymce/tinymce.js"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/assets/js/plugins/tinymce/jquery.tinymce.min.js",
+    "inputFiles": [
+      "wwwroot/assets/js/plugins/tinymce/jquery.tinymce.js"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/assets/js/plugins/tinymce/themes/silver/index.min.js",
+    "inputFiles": [
+      "wwwroot/assets/js/plugins/tinymce/themes/silver/index.js"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/assets/js/plugins/tinymce/plugins/advlist/plugin.min.js",
+    "inputFiles": [
+      "wwwroot/assets/js/plugins/tinymce/plugins/advlist/plugin.js"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/assets/js/plugins/tinymce/plugins/paste/plugin.min.js",
+    "inputFiles": [
+      "wwwroot/assets/js/plugins/tinymce/plugins/paste/plugin.js"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/assets/js/plugins/tinymce/plugins/textpattern/plugin.min.js",
+    "inputFiles": [
+      "wwwroot/assets/js/plugins/tinymce/plugins/textpattern/plugin.js"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/assets/js/plugins/tinymce/plugins/lists/plugin.min.js",
+    "inputFiles": [
+      "wwwroot/assets/js/plugins/tinymce/plugins/lists/plugin.js"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/assets/js/plugins/tinymce/plugins/image/plugin.min.js",
+    "inputFiles": [
+      "wwwroot/assets/js/plugins/tinymce/plugins/image/plugin.js"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/assets/js/plugins/tinymce/plugins/media/plugin.min.js",
+    "inputFiles": [
+      "wwwroot/assets/js/plugins/tinymce/plugins/media/plugin.js"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/assets/js/plugins/tinymce/plugins/link/plugin.min.js",
+    "inputFiles": [
+      "wwwroot/assets/js/plugins/tinymce/plugins/link/plugin.js"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/assets/js/plugins/tinymce/plugins/fullscreen/plugin.min.js",
+    "inputFiles": [
+      "wwwroot/assets/js/plugins/tinymce/plugins/fullscreen/plugin.js"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/assets/js/plugins/tinymce/plugins/codesample/plugin.min.js",
+    "inputFiles": [
+      "wwwroot/assets/js/plugins/tinymce/plugins/codesample/plugin.js"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/assets/js/plugins/tinymce/plugins/fullpage/plugin.min.js",
+    "inputFiles": [
+      "wwwroot/assets/js/plugins/tinymce/plugins/fullpage/plugin.js"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/assets/js/plugins/summernote/lang/summernote-ro-RO.min.js",
+    "inputFiles": [
+      "wwwroot/assets/js/plugins/summernote/lang/summernote-ro-RO.js"
+    ],
+    "sourceMap": true
+  }
+]

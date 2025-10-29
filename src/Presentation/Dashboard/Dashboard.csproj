@@ -1,23 +1,135 @@
 <Project Sdk="Microsoft.NET.Sdk.BlazorWebAssembly">
 
-  <PropertyGroup>
-    <TargetFramework>net9.0</TargetFramework>
-    <Nullable>enable</Nullable>
-    <ImplicitUsings>enable</ImplicitUsings>
-  </PropertyGroup>
+	<PropertyGroup>
+		<TargetFramework>net9.0</TargetFramework>
+		<Nullable>enable</Nullable>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<ServiceWorkerAssetsManifest>service-worker-assets.js</ServiceWorkerAssetsManifest>
 
-  <ItemGroup>
-    <PackageReference Include="Blazored.LocalStorage" Version="4.5.0" />
-    <PackageReference Include="Blazored.Toast" Version="4.2.1" />
-    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="9.0.10" />
-    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Authentication" Version="9.0.10" />
-    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="9.0.10" PrivateAssets="all" />
-  </ItemGroup>
+		<OutputType>Exe</OutputType>
+		<RuntimeIdentifier>browser-wasm</RuntimeIdentifier>
+		<SelfContained>true</SelfContained>
 
-  <ItemGroup>
-    <ProjectReference Include="..\..\Shared\Common\Common.csproj" />
-    <ProjectReference Include="..\..\Shared\Resources\Resources.csproj" />
-    <ProjectReference Include="..\..\Shared\Shared\Shared.csproj" />
-  </ItemGroup>
+		<!-- ========== 🔥 Compression Settings ========== -->
+		<BlazorEnableCompression>true</BlazorEnableCompression>
+		<CompressionLevel>Optimal</CompressionLevel>
+
+		<!-- ========== 🌍 Globalization Settings (Arabic/English Only) ========== -->
+		<InvariantGlobalization>false</InvariantGlobalization>
+		<BlazorWebAssemblyLoadAllGlobalizationData>false</BlazorWebAssemblyLoadAllGlobalizationData>
+		<BlazorIcuDataMode>Custom</BlazorIcuDataMode>
+		<BlazorWebAssemblyPreserveCollationData>false</BlazorWebAssemblyPreserveCollationData>
+
+		<!-- ✅ TimeZone Support -->
+		<BlazorEnableTimeZoneSupport>true</BlazorEnableTimeZoneSupport>
+
+		<!-- ========== ✂️ Trimming Settings ========== -->
+		<PublishTrimmed>true</PublishTrimmed>
+		<!-- ⚠️ Use 'partial' for Resources (RESX) compatibility -->
+		<TrimMode>partial</TrimMode>
+		<EnableTrimAnalyzer>true</EnableTrimAnalyzer>
+		<SuppressTrimAnalysisWarnings>false</SuppressTrimAnalysisWarnings>
+
+		<!-- ⚡ Lazy Loading Support -->
+		<BlazorWebAssemblyLazyLoad>true</BlazorWebAssemblyLazyLoad>
+
+		<!-- ========== 🚀 AOT Compilation (Conditional) ========== -->
+		<!-- Only enable AOT in Release builds to speed up Debug builds -->
+		<RunAOTCompilation Condition="'$(Configuration)' == 'Release'">true</RunAOTCompilation>
+		<WasmStripILAfterAOT Condition="'$(Configuration)' == 'Release'">true</WasmStripILAfterAOT>
+
+		<!-- AOT Advanced Optimizations (Release only) -->
+		<WasmEnableSIMD Condition="'$(Configuration)' == 'Release'">true</WasmEnableSIMD>
+		<WasmEnableExceptionHandling Condition="'$(Configuration)' == 'Release'">true</WasmEnableExceptionHandling>
+
+		<!-- ⚡ Additional AOT optimizations -->
+		<WasmNativeStrip Condition="'$(Configuration)' == 'Release'">true</WasmNativeStrip>
+		<WasmEnableWebCil Condition="'$(Configuration)' == 'Release'">true</WasmEnableWebCil>
+
+		<!-- Optimize for size (use Oz instead of O3) -->
+		<WasmCompileFlags Condition="'$(Configuration)' == 'Release'">-Oz</WasmCompileFlags>
+
+		<!-- Enable link-time optimization -->
+		<WasmBuildNative Condition="'$(Configuration)' == 'Release'">true</WasmBuildNative>
+
+		<!-- ========== 🐛 Debug Settings ========== -->
+		<DebuggerSupport Condition="'$(Configuration)' == 'Debug'">true</DebuggerSupport>
+		<DebugType Condition="'$(Configuration)' == 'Debug'">portable</DebugType>
+		<DebugSymbols Condition="'$(Configuration)' == 'Debug'">true</DebugSymbols>
+		<WasmDebugLevel Condition="'$(Configuration)' == 'Debug'">-1</WasmDebugLevel>
+
+		<!-- Disable AOT in Debug for faster builds -->
+		<RunAOTCompilation Condition="'$(Configuration)' == 'Debug'">false</RunAOTCompilation>
+	</PropertyGroup>
+
+	<!-- ========== 🌐 Supported Cultures (Arabic + English) ========== -->
+	<ItemGroup>
+		<SupportedCulture Include="ar" />
+		<SupportedCulture Include="ar-EG" />
+		<SupportedCulture Include="en" />
+		<SupportedCulture Include="en-US" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Content Update="**\*.razor.css">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Blazored.LocalStorage" Version="4.5.0" />
+		<PackageReference Include="Blazored.Toast" Version="4.2.1" />
+		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="9.0.10" />
+		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Authentication" Version="9.0.10" />
+		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="9.0.10" PrivateAssets="all" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\..\Shared\Common\Common.csproj" />
+		<ProjectReference Include="..\..\Shared\Resources\Resources.csproj" />
+		<ProjectReference Include="..\..\Shared\Shared\Shared.csproj" />
+	</ItemGroup>
+
+	<!-- ========== ⚡ Lazy Loading Configuration ========== -->
+	<!-- 
+		⚠️ WARNING: Only assemblies that are ACTUALLY in your published output can be lazy-loaded.
+		To see available assemblies, check: bin\Release\net9.0\publish\wwwroot\_framework\
+		
+		Common candidates for lazy loading:
+		- Third-party libraries used in specific features
+		- Large System assemblies used rarely
+		
+		DO NOT lazy load assemblies that:
+		- Are used at application startup
+		- Are already trimmed away (not in published output)
+		- Are needed for core functionality
+	-->
+	<ItemGroup>
+		<!-- Example: Uncomment and add your assemblies here if needed -->
+		<!-- <BlazorWebAssemblyLazyLoad Include="YourLibrary.dll" /> -->
+
+		<!-- ⚠️ DO NOT lazy load these - needed at startup: -->
+		<!-- - Microsoft.AspNetCore.SignalR.Client (if used in startup) -->
+		<!-- - Resources.dll (needed for localization) -->
+		<!-- - Shared.dll & Common.dll (core business logic) -->
+		<!-- - Blazored.Toast (UI feedback) -->
+		<!-- - System.IdentityModel.Tokens.Jwt (authentication) -->
+	</ItemGroup>
+
+	<!-- ========== 🛡️ Trimming Protection ========== -->
+	<ItemGroup>
+		<!-- Protect assemblies that use reflection or dynamic code -->
+		<TrimmerRootAssembly Include="Resources" />
+		<TrimmerRootAssembly Include="UI" />
+		<TrimmerRootAssembly Include="Shared" />
+		<TrimmerRootAssembly Include="Common" />
+		<TrimmerRootAssembly Include="System.Linq.Expressions" />
+		<TrimmerRootAssembly Include="System.IdentityModel.Tokens.Jwt" />
+	</ItemGroup>
+
+	<!-- ========== 🔧 Service Worker ========== -->
+	<ItemGroup>
+		<ServiceWorker Include="wwwroot\service-worker.js" PublishedContent="wwwroot\service-worker.published.js" />
+	</ItemGroup>
 
 </Project>

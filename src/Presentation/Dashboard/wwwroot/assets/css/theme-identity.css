@@ -1,0 +1,79 @@
+/* Theme Identity for Sahel (???)
+ Adds CSS variables and light overrides to reflect the brand colors provided.
+*/
+:root{
+ --primary: #0EA5E9; /* Sky Blue */
+ --primary-dark: #0369A1;
+ --primary-light: #7DD3FC;
+
+ --success: #10B981; /* Emerald Green */
+ --success-dark: #059669;
+
+ --neutral-dark: #1F2937; /* Dark Gray */
+ --neutral-medium: #6B7280; /* Medium Gray */
+ --neutral-light: #F3F4F6; /* Light Gray */
+ --white: #FFFFFF;
+
+ --accent-warning: #F59E0B; /* Amber */
+ --accent-error: #EF4444; /* Red */
+ --accent-info: #3B82F6; /* Blue */
+}
+
+/* Core text & background */
+body{
+ color: var(--neutral-medium) !important;
+ background: var(--neutral-light) !important;
+}
+
+h1,h2,h3,h4,h5,h6{
+ color: var(--neutral-dark) !important;
+}
+
+/* Links */
+a, .nav-link{ color: var(--primary) !important; }
+a:hover{ color: var(--primary-dark) !important; }
+
+/* Buttons */
+.btn-primary{
+ background-color: var(--primary) !important;
+ border-color: var(--primary) !important;
+ color: var(--white) !important;
+}
+.btn-primary:hover{ background-color: var(--primary-dark) !important; border-color: var(--primary-dark) !important; }
+
+.btn-success{
+ background-color: var(--success) !important;
+ border-color: var(--success-dark) !important;
+ color: var(--white) !important;
+}
+
+/* Navbar / header brand */
+.navbar-brand, .b-brand .b-bg{ background: transparent !important; }
+.pcoded-header{ background: var(--white) !important; }
+
+/* Sidebar (pcoded-navbar) primary tone */
+.pcoded-navbar.navbar-blue, .pcoded-navbar.navbar-gradient-blue{ background: linear-gradient(-45deg, var(--primary), var(--primary-dark)) !important; }
+.pcoded-navbar a, .pcoded-navbar .pcoded-inner-navbar li a{ color: #fff !important; }
+
+/* Cards */
+.card{ background: var(--white) !important; box-shadow:02px6px rgba(31,41,55,0.04) !important; }
+
+/* Prices and success emphasis */
+.price, .text-price{ color: var(--success-dark) !important; font-weight:600; }
+
+/* Alerts */
+.alert-warning{ background: rgba(245,158,11,0.08); color: var(--accent-warning) !important; border-color: rgba(245,158,11,0.12) !important; }
+.alert-danger{ background: rgba(239,68,68,0.06); color: var(--accent-error) !important; border-color: rgba(239,68,68,0.12) !important; }
+.alert-info{ background: rgba(59,130,246,0.06); color: var(--accent-info) !important; border-color: rgba(59,130,246,0.12) !important; }
+
+/* Utility helpers */
+.text-primary{ color: var(--primary) !important; }
+.bg-primary{ background: var(--primary) !important; color: var(--white) !important; }
+.text-success{ color: var(--success) !important; }
+.bg-success{ background: var(--success) !important; color: var(--white) !important; }
+
+/* Ensure loader and critical elements maintain contrast */
+.loading-text{ color: var(--white) !important; }
+
+/* Small accessibility tweak for focus outlines using brand */
+:focus{ outline-color: var(--primary) !important; }
