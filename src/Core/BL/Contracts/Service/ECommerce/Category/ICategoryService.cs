@@ -12,7 +12,7 @@ namespace BL.Contracts.Service.ECommerce.Category
         Task<PaginatedDataModel<CategoryDto>> GetPage(BaseSearchCriteriaModel criteriaModel);
         Task<IEnumerable<MainCategoryDto>> GetMainCategoriesAsync();
         Task<IEnumerable<CategoryPreviewDto>> GetPreviewedCategories(bool isFeaturedCategory, bool isParent);
-        //Task<IEnumerable<VwCategoryItemsDto>> GetHomeCategories(string userId);
+        Task<IEnumerable<VwCategoryItemsDto>> GetHomeCategories(string userId);
         Task<List<CategoryTreeDto>> BuildCategoryTree();
         Task<bool> Save(CategoryDto dto, Guid userId);
         Task<bool> UpdateSerialsAsync(Dictionary<Guid, string> serialAssignments, Guid userId);

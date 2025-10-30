@@ -1,6 +1,6 @@
 using Common.Enumerations.FieldType;
 using Dashboard.Constants;
-using Dashboard.Constants.ECommerce.Category;
+using Dashboard.Contracts.ECommerce.Category;
 using Microsoft.AspNetCore.Components;
 using Resources;
 using Shared.DTOs.ECommerce.Category;

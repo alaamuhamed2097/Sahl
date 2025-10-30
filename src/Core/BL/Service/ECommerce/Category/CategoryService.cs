@@ -5,10 +5,13 @@ using BL.Service.Base;
 using DAL.Contracts.UnitOfWork;
 using DAL.Models;
 using Domins.Entities.Category;
+using Domins.Entities.Item;
 using Domins.Views;
+using Domins.Views.Category;
 using Resources;
 using Shared.DTOs.ECommerce;
 using Shared.DTOs.ECommerce.Category;
+using Shared.DTOs.ECommerce.Item;
 using Shared.GeneralModels.SearchCriteriaModels;
 using Shared.Helpers;
 using System.ComponentModel.DataAnnotations;
@@ -427,37 +430,37 @@ namespace BL.Service.ECommerce.Category
                 string deletedTreeViewSerial = entity.TreeViewSerial;
                 Guid? parentId = entity.ParentId;
 
-                //// Check if the item exists
-                //var categoryItemsEntities = _categoryUnitOfWork.TableRepository<TbItem>().Get(i => i.CategoryId == id && i.CurrentState == 1);
-                //var categoryItems = _mapper.MapList<TbItem, ItemDto>(categoryItemsEntities);
+                // Check if the item exists
+                var categoryItemsEntities = _categoryUnitOfWork.TableRepository<TbItem>().Get(i => i.CategoryId == id && i.CurrentState == 1);
+                var categoryItems = _mapper.MapList<TbItem, ItemDto>(categoryItemsEntities);
 
-                //// Prevent deletion if category is in use by items
-                //if (categoryItems != null && categoryItems.Any())
-                //{
-                //    _categoryUnitOfWork.Rollback();
-                //    var itemTitles = categoryItems.Select(i => i.Title).Take(5).ToList();
-                //    var formattedTitles = string.Join(", ", itemTitles);
-                //    string errorMessage;
-                //    if (itemTitles.Count >= 5)
-                //    {
-                //        errorMessage = string.Format(
-                //            NotifiAndAlertsResources.EntityCannotBeDeletedInUse,
-                //            ECommerceResources.Category,
-                //            ECommerceResources.Adverts,
-                //            formattedTitles
-                //            ) + "...";
-                //    }
-                //    else
-                //    {
-                //        errorMessage = string.Format(
-                //            NotifiAndAlertsResources.EntityCannotBeDeletedInUse,
-                //            ECommerceResources.Category,
-                //            ECommerceResources.Adverts,
-                //            formattedTitles);
-                //    }
-                //    errors.Add(errorMessage);
-                //    return (false, errors);
-                //}
+                // Prevent deletion if category is in use by items
+                if (categoryItems != null && categoryItems.Any())
+                {
+                    _categoryUnitOfWork.Rollback();
+                    var itemTitles = categoryItems.Select(i => i.Title).Take(5).ToList();
+                    var formattedTitles = string.Join(", ", itemTitles);
+                    string errorMessage;
+                    if (itemTitles.Count >= 5)
+                    {
+                        errorMessage = string.Format(
+                            NotifiAndAlertsResources.EntityCannotBeDeletedInUse,
+                            ECommerceResources.Category,
+                            ECommerceResources.Adverts,
+                            formattedTitles
+                            ) + "...";
+                    }
+                    else
+                    {
+                        errorMessage = string.Format(
+                            NotifiAndAlertsResources.EntityCannotBeDeletedInUse,
+                            ECommerceResources.Category,
+                            ECommerceResources.Adverts,
+                            formattedTitles);
+                    }
+                    errors.Add(errorMessage);
+                    return (false, errors);
+                }
 
                 var hasChild = _categoryUnitOfWork.TableRepository<TbCategory>()
                     .Get(x => x.ParentId == id && x.CurrentState == 1).Any();
@@ -531,7 +534,7 @@ namespace BL.Service.ECommerce.Category
         {
             try
             {
-                // Parents Categotries
+                ////Parents Categotries
                 //var categories = _categoryUnitOfWork.TableRepository<TbCategory>()
                 //    .Get(c => c.CurrentState == 1 && (c.ParentId == null || c.ParentId == Guid.Empty) &&
                 //        (!isFeaturedCategory || c.IsFeaturedCategory)).ToList();
@@ -556,44 +559,44 @@ namespace BL.Service.ECommerce.Category
                 throw new Exception(string.Format(ValidationResources.UnexpectedError, ECommerceResources.Category), ex);
             }
         }
-        //public async Task<IEnumerable<VwCategoryItemsDto>> GetHomeCategories(string userId)
-        //{
-        //    try
-        //    {
+        public async Task<IEnumerable<VwCategoryItemsDto>> GetHomeCategories(string userId)
+        {
+            try
+            {
 
-        //        var vwCategoryWithItems = await _categoryUnitOfWork.Repository<VwCategoryItems>().GetAsync(x => x.IsHomeCategory);
+                var vwCategoryWithItems = await _categoryUnitOfWork.Repository<VwCategoryItems>().GetAsync(x => x.IsHomeCategory);
 
-        //        if (vwCategoryWithItems == null)
-        //            throw new Exception(string.Format(ValidationResources.EntityNotFound, ECommerceResources.Category));
+                if (vwCategoryWithItems == null)
+                    throw new Exception(string.Format(ValidationResources.EntityNotFound, ECommerceResources.Category));
 
-        //        var categories = _mapper.MapList<VwCategoryItems, VwCategoryItemsDto>(vwCategoryWithItems);
+                var categories = _mapper.MapList<VwCategoryItems, VwCategoryItemsDto>(vwCategoryWithItems);
 
-        //        if (categories == null || !categories.Any())
-        //            return new List<VwCategoryItemsDto>();
-        //        foreach (var category in categories)
-        //        {
-        //            if (category.Items != null && category.Items.Any())
-        //            {
-        //                category.Items = category.Items
-        //                    .OrderByDescending(i => i.CreatedDateUtc)
-        //                    .Take(10)
-        //                    .ToList();
-        //            }
-        //        }
-        //        foreach (var category in categories)
-        //        {
-        //            foreach (var item in category.Items)
-        //            {
-        //                item.CurrencyInfo = await _userCurrencyService.GetCurrencyInfo(item.ItemCurrencyId, item.Price.Value, item.PriceRequired, userId);
-        //            }
-        //        }
-        //        return categories.OrderBy(c => c.TreeViewSerial, new TreeViewSerialComparer());
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        throw new Exception(ValidationResources.UnexpectedError, ex);
-        //    }
-        //}
+                if (categories == null || !categories.Any())
+                    return new List<VwCategoryItemsDto>();
+                foreach (var category in categories)
+                {
+                    if (category.Items != null && category.Items.Any())
+                    {
+                        category.Items = category.Items
+                            .OrderByDescending(i => i.CreatedDateUtc)
+                            .Take(10)
+                            .ToList();
+                    }
+                }
+                foreach (var category in categories)
+                {
+                    foreach (var item in category.Items)
+                    {
+                        //item.CurrencyInfo = await _userCurrencyService.GetCurrencyInfo(item.ItemCurrencyId, item.Price.Value, item.PriceRequired, userId);
+                    }
+                }
+                return categories.OrderBy(c => c.TreeViewSerial, new TreeViewSerialComparer());
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ValidationResources.UnexpectedError, ex);
+            }
+        }
         public async Task<List<CategoryTreeDto>> BuildCategoryTree()
         {
             var categoriesWithAttributes = await _categoryUnitOfWork.Repository<VwCategoryWithAttributes>().GetAllAsync();

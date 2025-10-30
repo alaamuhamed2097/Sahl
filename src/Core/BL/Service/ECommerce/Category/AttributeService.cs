@@ -5,10 +5,12 @@ using DAL.Contracts.UnitOfWork;
 using DAL.Models;
 using DAL.ResultModels;
 using Domins.Entities.Category;
+using Domins.Entities.Item;
 using Domins.Views.Category;
 using Resources;
 using Shared.DTOs.ECommerce;
 using Shared.DTOs.ECommerce.Category;
+using Shared.DTOs.ECommerce.Item;
 using Shared.GeneralModels.SearchCriteriaModels;
 using Shared.ResultModels;
 using System.Linq.Expressions;
@@ -154,10 +156,10 @@ namespace BL.Service.ECommerce.Category
                 var categoryEntities = await _attributeUnitOfWork.TableRepository<TbCategory>().GetAsync(i => categoriesIds.Contains(i.Id) && i.CurrentState == 1);
                 var categories = _mapper.MapList<TbCategory, CategoryDto>(categoryEntities);
 
-                //var itemAttributeEntities = await _attributeUnitOfWork.TableRepository<TbItemAttribute>().GetAsync(i => i.AttributeId == id && i.CurrentState == 1);
-                //var itemsIds = itemAttributeEntities.Select(ci => ci.ItemId).ToList();
-                //var itemEntities = await _attributeUnitOfWork.TableRepository<TbItem>().GetAsync(i => itemsIds.Contains(i.Id) && i.CurrentState == 1);
-                //var items = _mapper.MapList<TbItem, ItemDto>(itemEntities);
+                var itemAttributeEntities = await _attributeUnitOfWork.TableRepository<TbItemAttribute>().GetAsync(i => i.AttributeId == id && i.CurrentState == 1);
+                var itemsIds = itemAttributeEntities.Select(ci => ci.ItemId).ToList();
+                var itemEntities = await _attributeUnitOfWork.TableRepository<TbItem>().GetAsync(i => itemsIds.Contains(i.Id) && i.CurrentState == 1);
+                var items = _mapper.MapList<TbItem, ItemDto>(itemEntities);
 
                 if (categories != null && categories.Any())
                 {
@@ -184,30 +186,30 @@ namespace BL.Service.ECommerce.Category
                     errors.Add(errorMessage);
                 }
 
-                //if (items != null && items.Any())
-                //{
-                //    var itemsTitles = items.Select(i => i.Title).Take(5).ToList(); // Take up to 5 to avoid long messages
-                //    var formattedTitles = string.Join(", ", itemsTitles);
-                //    string errorMessage;
-                //    if (itemsTitles.Count >= 5)
-                //    {
-                //        errorMessage = string.Format(
-                //            NotifiAndAlertsResources.EntityCannotBeDeletedInUse,
-                //            ECommerceResources.Attribute,
-                //            ECommerceResources.Adverts,
-                //            formattedTitles
-                //            ) + "...";
-                //    }
-                //    else
-                //    {
-                //        errorMessage = string.Format(
-                //            NotifiAndAlertsResources.EntityCannotBeDeletedInUse,
-                //            ECommerceResources.Attribute,
-                //            ECommerceResources.Adverts,
-                //            formattedTitles);
-                //    }
-                //    errors.Add(errorMessage);
-                //}
+                if (items != null && items.Any())
+                {
+                    var itemsTitles = items.Select(i => i.Title).Take(5).ToList(); // Take up to 5 to avoid long messages
+                    var formattedTitles = string.Join(", ", itemsTitles);
+                    string errorMessage;
+                    if (itemsTitles.Count >= 5)
+                    {
+                        errorMessage = string.Format(
+                            NotifiAndAlertsResources.EntityCannotBeDeletedInUse,
+                            ECommerceResources.Attribute,
+                            ECommerceResources.Adverts,
+                            formattedTitles
+                            ) + "...";
+                    }
+                    else
+                    {
+                        errorMessage = string.Format(
+                            NotifiAndAlertsResources.EntityCannotBeDeletedInUse,
+                            ECommerceResources.Attribute,
+                            ECommerceResources.Adverts,
+                            formattedTitles);
+                    }
+                    errors.Add(errorMessage);
+                }
 
                 if (errors.Any())
                     return new DeleteResult() { Success = false, Errors = errors };
