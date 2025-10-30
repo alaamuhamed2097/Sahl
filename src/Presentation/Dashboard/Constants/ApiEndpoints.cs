@@ -29,7 +29,6 @@
             public const string Search = "api/Item/search";
         }
 
-
         public static class Attribute
         {
             public const string Get = "api/Attribute";
@@ -42,6 +41,7 @@
         {
             public const string Get = "api/Category";
             public const string Save = "api/Category/save";
+            public const string ChangeTreeViewSerials = "api/Category/changeTreeViewSerials";
             public const string Delete = "api/Category/delete";
             public const string Search = "api/Category/search";
         }
