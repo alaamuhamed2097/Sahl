@@ -82,6 +82,7 @@
 		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="9.0.10" />
 		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Authentication" Version="9.0.10" />
 		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="9.0.10" PrivateAssets="all" />
+		<PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="9.0.10" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -104,6 +105,20 @@
 		- Are already trimmed away (not in published output)
 		- Are needed for core functionality
 	-->
+	<ItemGroup><!-- Example: Uncomment and add your assemblies here if needed -->
+		<!-- <BlazorWebAssemblyLazyLoad Include="YourLibrary.dll" /> -->
+
+		<!-- ⚠️ DO NOT lazy load these - needed at startup: -->
+		<!-- - Microsoft.AspNetCore.SignalR.Client (if used in startup) -->
+		<!-- - Resources.dll (needed for localization) -->
+		<!-- - Shared.dll & Common.dll (core business logic) -->
+		<!-- - Blazored.Toast (UI feedback) -->
+		<!-- - System.IdentityModel.Tokens.Jwt (authentication) -->
+	
+	  <Folder Include="Components\" />
+	
+	  <Folder Include="Handlers\" />
+	</ItemGroup>
 
 	<!-- ========== 🛡️ Trimming Protection ========== -->
 	<ItemGroup>

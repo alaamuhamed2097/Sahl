@@ -140,9 +140,3 @@ window.httpClientHelper = {
         }
     }
 };
-
-// Log initialization
-console.log('[HttpClientHelper] Initialized');
-console.log('[HttpClientHelper] Initial cookies:', document.cookie);
-console.log('[HttpClientHelper] Initial auth state:', localStorage.getItem('isAuthenticated'));
-console.log('[HttpClientHelper] Initial auth token:', localStorage.getItem('authToken') ? 'present' : 'not found');
