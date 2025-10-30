@@ -1,0 +1,153 @@
+﻿@page "/notifications"
+
+<div class="notifications-dropdown">
+    <div class="notifications-header d-flex justify-content-between align-items-center p-3">
+        <div>
+            <h6 class="mb-0">@GeneralResources.Notifications</h6>
+            <small class="text-muted">
+                @if (unReadCount > 0)
+                {
+                    <span>@unReadCount @GeneralResources.Unread</span>
+                }
+                else
+                {
+                    <span>@GeneralResources.AllRead</span>
+                }
+                <span class="mx-1">•</span>
+                <span>@totalCount @GeneralResources.Total</span>
+            </small>
+        </div>
+        <div class="notification-actions">
+            @if (unReadCount > 0)
+            {
+                <button class="btn btn-sm btn-outline-primary me-2" @onclick="MarkAllNotificationAsReadAsync">
+                    <i class="fas fa-check-double"></i>
+                    @ActionsResources.MarkAllAsRead
+                </button>
+            }
+            <button class="btn btn-sm btn-outline-secondary" @onclick="RefreshNotificationsAsync">
+                <i class="fas fa-sync-alt"></i>
+                @ActionsResources.Refresh
+            </button>
+        </div>
+    </div>
+
+    <div id="notifications-content-@ComponentId" class="notifications-content" style="max-height: auto; overflow-y: auto;">
+        @if (UserNotifications?.Any() == true)
+        {
+            <div class="notifications-list">
+                @foreach (var notification in UserNotifications)
+                {
+                    <div class="notification-item unread p-3 border-bottom">
+                        <div class="d-flex">
+                            <div class="notification-icon me-3">
+                                @if (!notification.IsRead)
+                                {
+                                    <div class="unread-indicator bg-primary rounded-circle" style="width: 8px; height: 8px;"></div>
+                                }
+                            </div>
+                            <div class="notification-content flex-grow-1">
+                                <h6 class="notification-title mb-1 ">
+                                    @notification.Title
+                                </h6>
+                                <p class="notification-description mb-1 small ">
+                                    @notification.Description
+                                </p>
+                                <small class="notification-time text-muted">
+                                        @notification.TimeAgo
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+
+            @* Loading indicator *@
+            @if (IsLoading)
+            {
+                <div class="loading-indicator text-center p-3">
+                    <div class="spinner-border spinner-border-sm me-2" role="status">
+                        <span class="visually-hidden">@GeneralResources.Loading</span>
+                    </div>
+                    <span class="small text-muted">@GeneralResources.Loading...</span>
+                </div>
+            }
+
+            @* End of data indicator *@
+            @if (!HasMoreData && !IsLoading && UserNotifications.Count > 0)
+            {
+                <div class="end-of-data text-center p-3">
+                    <small class="text-muted">@GeneralResources.NoMoreNotifications</small>
+                </div>
+            }
+        }
+        else if (!IsLoading)
+        {
+            <div class="no-notifications text-center p-4">
+                <i class="fas fa-bell-slash fa-2x text-muted mb-3"></i>
+                <p class="text-muted mb-0">@GeneralResources.NoNotifications</p>
+            </div>
+        }
+        else
+        {
+            @* Initial loading state *@
+            <div class="initial-loading text-center p-4">
+                <div class="spinner-border me-2" role="status">
+                    <span class="visually-hidden">@GeneralResources.Loading</span>
+                </div>
+                <p class="text-muted mb-0">@GeneralResources.Loading...</p>
+            </div>
+        }
+    </div>
+</div>
+
+<style>
+    .notification-item {
+        cursor: pointer;
+        transition: background-color 0.2s ease;
+    }
+
+        .notification-item:hover {
+            background-color: rgba(0, 123, 255, 0.05);
+        }
+
+        .notification-item.unread {
+            background-color: rgba(0, 123, 255, 0.02);
+            border-left: 3px solid var(--bs-primary);
+        }
+
+        .notification-item.read {
+            opacity: 0.8;
+        }
+
+    .unread-indicator {
+        margin-top: 6px;
+    }
+
+    .loading-indicator,
+    .end-of-data {
+        border-top: 1px solid var(--bs-border-color);
+    }
+
+    .notifications-content {
+        scrollbar-width: thin;
+        scrollbar-color: rgba(0, 0, 0, 0.2) transparent;
+    }
+
+        .notifications-content::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .notifications-content::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .notifications-content::-webkit-scrollbar-thumb {
+            background-color: rgba(0, 0, 0, 0.2);
+            border-radius: 3px;
+        }
+
+            .notifications-content::-webkit-scrollbar-thumb:hover {
+                background-color: rgba(0, 0, 0, 0.3);
+            }
+</style>

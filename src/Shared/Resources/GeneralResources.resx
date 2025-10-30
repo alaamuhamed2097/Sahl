@@ -1146,4 +1146,10 @@
   <data name="MinWithdrawalPointsHelpText" xml:space="preserve">
     <value>الحد الادنى لي سحب النقاط</value>
   </data>
+  <data name="UnreadNotifications" xml:space="preserve">
+    <value>الإشعارات غير المقروءة</value>
+  </data>
+  <data name="Total" xml:space="preserve">
+    <value>الإجمالي</value>
+  </data>
 </root>

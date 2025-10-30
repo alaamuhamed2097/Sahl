@@ -1,0 +1,62 @@
+﻿<div class="dropdown">
+    <a class="dropdown-toggle position-relative" data-bs-toggle="dropdown">
+        <i class="icon feather icon-bell"></i>
+        @if (UserNotifications != null && UnReadCount > 0)
+        {
+            <span class="position-sticky top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                @UnReadCount
+                <span class="visually-hidden">@GeneralResources.UnreadNotifications</span>
+            </span>
+        }
+    </a>
+    <div class="dropdown-menu dropdown-menu-end notification">
+        <div class="noti-head">
+            <h6 class="d-inline-block m-b-0">@GeneralResources.Notifications</h6>
+            <div class="float-end cursor-pointer">
+                <a @onclick="()=> MarkAllNotificationAsReadAsync()" class="m-r-10 ">@ActionsResources.MarkAllAsRead</a>
+            </div>
+        </div>
+        <div class="noti-body ps ps--active-y" id="notification-body-@ComponentId">
+                @if (UserNotifications != null && UserNotifications.Count() > 0)
+                {
+                    @foreach (var group in GroupedNotifications)
+                    {
+                      <ul class="notification-group">
+                            <div class="notification-group-header">@group.Key</div>
+                            @foreach (var notification in group)
+                            {
+                                <li class="notification @(notification.IsRead? "read": "unread")">
+                                    <div class="d-flex" @onclick="()=> MarkNotificationAsReadAsync(notification)">
+                                        <img class="img-radius"
+                                             src="assets/images/user/avatar-1.jpg"
+                                             alt="Generic placeholder image" />
+                                        <div class="flex-grow-1">
+                                            <p>
+                                                <strong>@notification.Title</strong>
+                                                <span class="n-time text-muted">
+                                                    <i class="icon feather icon-clock m-r-10"></i>
+                                                    @notification.TimeAgo
+                                                </span>
+                                            </p>
+                                            <p class="text-truncate mb-0" title="@notification.Description">@notification.Description</p>
+                                        </div>
+                                    </div>
+                                </li>
+                            }
+                          
+                      </ul>
+                    }
+                }
+                else
+                {
+                    <li class="text-center">
+                        @NotifiAndAlertsResources.NoDataFound
+                    </li>
+                }
+        </div>
+        <div class="noti-footer">
+            <a class="cursor-pointer" @onclick="()=>ShowAllNotifications()">@ActionsResources.ShowAll</a>
+        </div>
+        @* <NotificationsDetails  OnNotificationRead="HandleNotificationRead" /> *@
+    </div>
+</div>

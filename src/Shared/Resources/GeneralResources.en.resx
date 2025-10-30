@@ -1146,4 +1146,10 @@
   <data name="MinWithdrawalPointsHelpText" xml:space="preserve">
     <value>Minimum withdrawal points</value>
   </data>
+  <data name="UnreadNotifications" xml:space="preserve">
+    <value>Unread Notifications</value>
+  </data>
+  <data name="Total" xml:space="preserve">
+    <value>Total</value>
+  </data>
 </root>

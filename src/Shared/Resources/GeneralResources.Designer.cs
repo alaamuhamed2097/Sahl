@@ -19,7 +19,7 @@ namespace Resources {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "17.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "18.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     public class GeneralResources {
@@ -543,6 +543,15 @@ namespace Resources {
         public static string ChangeAccountPassword {
             get {
                 return ResourceManager.GetString("ChangeAccountPassword", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to تغيير اللغة.
+        /// </summary>
+        public static string ChangeLanguage {
+            get {
+                return ResourceManager.GetString("ChangeLanguage", resourceCulture);
             }
         }
         
@@ -2635,6 +2644,15 @@ namespace Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to الإجمالي.
+        /// </summary>
+        public static string Total {
+            get {
+                return ResourceManager.GetString("Total", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to يجب ألا تتجاوز معدلات العمولة الإجمالية استدامة الأعمال.
         /// </summary>
         public static string TotalCommissionRatesShouldNotExceed {
@@ -2730,6 +2748,15 @@ namespace Resources {
         public static string Unread {
             get {
                 return ResourceManager.GetString("Unread", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to الإشعارات غير المقروءة.
+        /// </summary>
+        public static string UnreadNotifications {
+            get {
+                return ResourceManager.GetString("UnreadNotifications", resourceCulture);
             }
         }
         

@@ -115,8 +115,6 @@
 		<!-- - Blazored.Toast (UI feedback) -->
 		<!-- - System.IdentityModel.Tokens.Jwt (authentication) -->
 	
-	  <Folder Include="Components\" />
-	
 	  <Folder Include="Handlers\" />
 	</ItemGroup>
 
