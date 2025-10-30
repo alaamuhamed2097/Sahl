@@ -1,0 +1,266 @@
+﻿@page "/category"
+@page "/category/{Id:guid}"
+
+<div class="container-fluid p-0">
+    <div class="card shadow-sm border-0">
+        <div class="card-header bg-primary text-white py-3">
+            <h5 class="modal-title mb-0 fw-semibold">
+                @(Model.Id == Guid.Empty ? ActionsResources.Add : ActionsResources.Edit) @ECommerceResources.Category
+            </h5>
+        </div>
+        <EditForm Model="@Model" OnValidSubmit="Save">
+            <DataAnnotationsValidator />
+            <div class="card-body p-4">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>@FormResources.ArabicTitle <span class="text-danger">*</span></label>
+                            <InputText type="text" placeholder="@($"{FormResources.Write} {FormResources.ArabicTitle}")" class="form-control" @bind-Value="Model.TitleAr" />
+                            <ValidationMessage For="@(() => Model.TitleAr)" />
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>@FormResources.EnglishTitle <span class="text-danger">*</span></label>
+                            <InputText type="text" placeholder="@($"{FormResources.Write} {FormResources.EnglishTitle}")" class="form-control" @bind-Value="Model.TitleEn" />
+                            <ValidationMessage For="@(() => Model.TitleEn)" />
+                        </div>
+                    </div>
+                </div>
+                <div class="row mt-3">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>@ECommerceResources.Category</label>
+                            <select id="parentCategorySelect"
+                                    class="form-control select2-parent select2-bootstrap"
+                                    value="@(Model.ParentId.ToString() ?? Guid.Empty.ToString())"
+                                    @onchange="OnParentCategoryChanged">
+                                <option value="@Guid.Empty.ToString()">@($"{FormResources.Select} {ECommerceResources.CategoryParent}")</option>
+                                @foreach (var item in parents.Where(p => p.Id != Model.Id))
+                                {
+                                    <option value="@item.Id.ToString()" selected="@(Model.ParentId == item.Id)">@item.Title</option>
+                                }
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-6 pt-3 ">
+                       <div class="row mb-2">
+                            <div class="col-md-6 d-flex justify-content-between align-items-center" style="min-width:150px;">
+                                <div class="form-check form-switch d-flex justify-content-between align-items-center" style="gap:50px;">
+                                    <label class="form-check-label m-0">@ECommerceResources.IsMainCategory</label>
+                                    <InputCheckbox class="form-check-input cursor-pointer" type="checkbox" @bind-value="Model.IsMainCategory" style="transform: scale(1.2);" />
+                                </div>
+                            </div>
+                            <div class="col-md-6 d-flex justify-content-between align-items-center" style="min-width:150px;">
+                                <div class="form-check form-switch d-flex justify-content-between align-items-center" style="gap:50px;">
+                                    <label class="form-check-label m-0">@ECommerceResources.IsHomeCategory</label>
+                                    <InputCheckbox class="form-check-input cursor-pointer" type="checkbox" @bind-value="Model.IsHomeCategory" style="transform: scale(1.2);" />
+                                </div>
+                            </div>
+                       </div>
+                        <div class="row">
+                            <div class="col-md-6 d-flex justify-content-between align-items-center" style="min-width:150px;">
+                                <div class="form-check form-switch d-flex justify-content-between align-items-center" style="gap:50px;">
+                                    <label class="form-check-label m-0">@ECommerceResources.IsFeaturedCategory</label>
+                                    <InputCheckbox class="form-check-input cursor-pointer" @bind-Value="Model.IsFeaturedCategory" style="transform: scale(1.2);" />
+                                </div>
+                            </div>
+                            <div class="col-md-6 d-flex justify-content-between align-items-center" style="min-width:150px;">
+                            <div class="form-check form-switch d-flex justify-content-between align-items-center" style="gap:50px;">
+                                <label class="form-check-label m-0">@ECommerceResources.PriceRequired</label>
+                                <InputCheckbox class="form-check-input cursor-pointer" @bind-Value="Model.PriceRequired" style="transform: scale(1.2);" />
+                            </div>
+                        </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row mt-3">
+                    <div class="col-md-6 mt-3">
+                        <div class="form-group">
+                            <label>@FormResources.Image</label>
+                            <div class="form-file ">
+                                <InputFile class="form-control" aria-label="file example" OnChange="HandleSelectedImage" accept="image/*"
+                                           placeholder="@(FormResources.Select + ' ' + @FormResources.Image)" />
+                                <div class="invalid-feedback"></div>
+                                <ValidationMessage For="@(() => Model.ImageUrl)" />
+                            </div>
+                            @if (!string.IsNullOrEmpty(previewImageUrl))
+                            {
+                                <img src="@previewImageUrl" alt="Preview" class="img-thumbnail mt-2" style="width:200px;" />
+                            }
+                            else if (!string.IsNullOrEmpty(Model.ImageUrl))
+                            {
+                                <img src="@baseUrl/@Model.ImageUrl" alt="Preview" class="img-thumbnail mt-2" style="width:200px;" />
+                            }
+                        </div>
+                    </div>
+                    <div class="col-md-6 mt-3">
+                        <div class="form-group">
+                            <label>
+                                @FormResources.Icon @if(Model.IsMainCategory) {
+                                <span class="text-danger">*</span>
+                                                                }
+                            </label>
+                            <div class="form-file ">
+                                <InputFile class="form-control" aria-label="file example" OnChange="HandleIconUpload" accept="image/*"
+                                           placeholder="@(FormResources.Select + ' ' + @FormResources.Icon)" />
+                                <div class="invalid-feedback"></div>
+                                <ValidationMessage For="@(() => Model.Icon)" />
+                            </div>
+                            @if (!string.IsNullOrEmpty(previewIconUrl))
+                            {
+                                <img src="@previewIconUrl" alt="Preview" class="img-thumbnail mt-2" style="width:200px;" />
+                            }
+                            else if (!string.IsNullOrEmpty(Model.Icon))
+                            {
+                                <img src="@baseUrl/@Model.Icon" alt="Preview" class="img-thumbnail mt-2" style="width:200px;" />
+                            }
+                        </div>
+                    </div>
+                </div>
+                @* <div class="row align-items-center">
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">@FormResources.DisplayOrder</label>
+                        <div class="input-group">
+                            <InputNumber class="form-control"
+                                         @bind-Value="Model.DisplayOrder"
+                                         @onchange="OnDisplayOrderChanged"
+                                         min="1" />
+                        </div>
+                        <small class="text-muted">@FormResources.DisplayOrderHint</small>
+                    </div>
+                    @if (Model.Id != Guid.Empty)
+                    {
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-semibold">@ECommerceResources.CurrentPosition</label>
+                            <div class="alert alert-info py-2 mb-0">
+                                <i class="feather icon-info me-1"></i>
+                                @string.Format(FormResources.DisplayOrderStatus, Model.DisplayOrder, AllCategories.Count)
+                            </div>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="col-md-6 mt-2">
+                            <div class="alert alert-success py-2 mb-0">
+                                <i class="feather icon-info me-1"></i>
+                                @string.Format(FormResources.NewEntityOrderInfo, Model.DisplayOrder, ECommerceResources.Category)
+                            </div>
+                        </div>
+                    }
+                </div> *@
+                <!-- Attributes Section -->
+                <div class="row mt-4">
+                    <div class="col-md-12">
+                        <div class="border p-3 rounded-3">
+                            <h6 class="fw-semibold mb-3 text-primary">
+                                <i class="feather icon-list me-2"></i> @ECommerceResources.Attributes
+                            </h6>
+                            @if (Model.CategoryAttributes != null && Model.CategoryAttributes.Any())
+                            {
+                                @foreach (var (con, index) in Model.CategoryAttributes.OrderBy(c => c.DisplayOrder).Select((item, i) => (item, i)))
+                                {
+                                    <div class="row p-2 align-items-center justify-content-between m-2 border rounded attribute-row" @key="con.GetHashCode()">
+                                        <!-- Display Order Controls -->
+                                        <div class="col-md-1 d-flex align-items-center justify-content-center">
+                                            <div class="d-flex align-items-center gap-2">
+                                                <span class="fw-bold text-muted" style="font-size: 14px; min-width: 25px; text-align: center;">
+                                                    #@con.DisplayOrder
+                                                </span>
+                                                <div class="d-flex flex-column gap-1">
+                                                    <button type="button"
+                                                            class="btn btn-outline-secondary btn-sm p-1 d-flex align-items-center justify-content-center"
+                                                            style="width: 28px; height: 24px; font-size: 12px;"
+                                                            disabled="@(!CanMoveUp(index))"
+                                                            @onclick="() => MoveAttributeUp(index)"
+                                                            title="@FormResources.MoveUp">
+                                                        <i class="feather m-0 icon-chevron-up" style="width: 14px; height: 14px;"></i>
+                                                    </button>
+                                                    <button type="button"
+                                                            class="btn btn-outline-secondary btn-sm p-1 d-flex align-items-center justify-content-center"
+                                                            style="width: 28px; height: 24px; font-size: 12px;"
+                                                            disabled="@(!CanMoveDown(index))"
+                                                            @onclick="() => MoveAttributeDown(index)"
+                                                            title="@FormResources.MoveDown">
+                                                        <i class="feather m-0 icon-chevron-down" style="width: 14px; height: 14px;"></i>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <!-- Attribute Selection -->
+                                        <div class="col-md-3 text-center">
+                                            <select class="form-control select2-attribute select2-bootstrap"
+                                                    id="attributeSelect_@index"
+                                                    value="@con.AttributeId.ToString()"
+                                                    @onchange="@((e) => OnAttributeChanged(e, con))">
+                                                <option value="@Guid.Empty.ToString()">@($"{FormResources.Select} {ECommerceResources.Attribute}")</option>
+                                                @foreach (var attr in availableAttributes)
+                                                {
+                                                    <option value="@attr.Id.ToString()" selected="@(con.AttributeId == attr.Id)">@attr.Title</option>
+                                                }
+                                            </select>
+                                        </div>
+                                        <!-- Is Required Switch -->
+                                        <div class="col-md-3" style="min-width:150px;">
+                                            <div class="form-check form-switch d-flex justify-content-evenly align-items-center">
+                                                <label class="form-check-label m-0" for="@($"attrIsRequired_{index}")">@ECommerceResources.IsRequired</label>
+                                                <InputCheckbox class="form-check-input cursor-pointer"
+                                                               type="checkbox"
+                                                               id="@($"attrIsRequired_{index}")"
+                                                               @bind-value="con.IsRequired"
+                                                               style="transform: scale(1.2);" />
+                                            </div>
+                                        </div>
+                                        <!-- Affects Pricing Switch -->
+                                        <div class="col-md-3" style="min-width:150px;">
+                                            <div class="form-check form-switch d-flex justify-content-evenly align-items-center">
+                                                <label class="form-check-label m-0" for="@($"attrIsAffectPrice_{index}")">@ECommerceResources.IsAffectPrice</label>
+                                                <InputCheckbox class="form-check-input cursor-pointer"
+                                                               type="checkbox"
+                                                               id="@($"attrIsAffectPrice_{index}")"
+                                                               @bind-Value="con.AffectsPricing"
+                                                               style="transform: scale(1.2);" />
+                                            </div>
+                                        </div>
+                                        <!-- Delete Button -->
+                                        <div class="col-md-2 d-flex justify-content-center align-content-center">
+                                            <button type="button" class="btn btn-danger btn-sm mx-1" title="@ActionsResources.Delete" @onclick="() => RemoveAttribute(index)">
+                                                <i class="feather icon-trash-2 m-0"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                }
+                            }
+                            else
+                            {
+                                <div class="text-center text-muted py-3">
+                                    <i class="feather icon-info me-2"></i>
+                                    @ECommerceResources.NoAttributesAdded
+                                </div>
+                            }
+                            <button type="button" @onclick="AddNewAttribute" class="btn btn-outline-primary btn-sm mt-2">
+                                <i class="feather icon-plus me-1"></i> @ECommerceResources.AddAttribute
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer bg-light py-3 d-flex justify-content-end gap-2">
+                <button type="button" class="btn btn-secondary px-4" data-dismiss="modal" @onclick="CloseModal">
+                    @ActionsResources.Cancel
+                </button>
+                <button type="submit" class="btn btn-success px-4" disabled="@IsSaving">
+                    @if (IsSaving)
+                    {
+                        <span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
+                        <span class="sr-only">@GeneralResources.Loading ...</span>
+                    }
+                    else
+                    {
+                        <span>@ActionsResources.Save</span>
+                    }
+                </button>
+            </div>
+        </EditForm>
+    </div>
+</div>

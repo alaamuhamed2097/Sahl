@@ -693,4 +693,10 @@
   <data name="AddressInformation" xml:space="preserve">
     <value>معلومات العنوان</value>
   </data>
+  <data name="MoveUp" xml:space="preserve">
+    <value>نقل الي الاعلى</value>
+  </data>
+  <data name="MoveDown" xml:space="preserve">
+    <value>نقل الي الأسفل</value>
+  </data>
 </root>

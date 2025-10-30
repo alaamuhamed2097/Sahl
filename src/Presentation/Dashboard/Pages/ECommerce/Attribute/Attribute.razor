@@ -1,0 +1,165 @@
+﻿@page "/attribute"
+@page "/attribute/{Id:guid}"
+@using Common.Enumerations.FieldType
+
+<div class="container-fluid p-0">
+    <div class="card shadow-sm border-0">
+        <div class="card-header bg-primary text-white py-3">
+            <h5 class="modal-title mb-0 fw-semibold">
+                @(Model.Id == Guid.Empty ? ActionsResources.Add : ActionsResources.Edit)
+            </h5>
+        </div>
+        <EditForm Model="@Model" OnValidSubmit="Save">
+            <DataAnnotationsValidator />
+            <div class="card-body p-4">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>@FormResources.ArabicTitle</label>
+                            <InputText type="text" placeholder="@($"{FormResources.Write} {FormResources.ArabicTitle}")" class="form-control" @bind-Value="Model.TitleAr" />
+                            <ValidationMessage For="@(() => Model.TitleAr)" />
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>@FormResources.EnglishTitle</label>
+                            <InputText type="text" placeholder="@($"{FormResources.Write} {FormResources.EnglishTitle}")" class="form-control" @bind-Value="Model.TitleEn" />
+                            <ValidationMessage For="@(() => Model.TitleEn)" />
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row mt-3">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>@ECommerceResources.FieldType</label>
+                            <InputSelect class="form-select px-3" @bind-Value="fieldType"
+                                         @onchange="() => StateHasChanged()">
+                                <option selected disabled value="@(0)">@ActionsResources.Select @ECommerceResources.FieldType</option>
+                                @foreach (var type in fieldTypes)
+                                {
+                                    <option value="@type">
+                                        @(type switch
+                                        {
+                                            FieldType.Text => ECommerceResources.Text,
+                                            FieldType.IntegerNumber => ECommerceResources.IntegerNumber,
+                                            FieldType.DecimalNumber => ECommerceResources.DecimalNumber,
+                                            FieldType.Date => ECommerceResources.Date,
+                                            FieldType.CheckBox => ECommerceResources.CheckBox,
+                                            FieldType.List => ECommerceResources.List,
+                                            FieldType.MultiSelectList => ECommerceResources.MultiSelectList,
+                                            _ => type.ToString()
+                                        })
+                                </option>
+                                                                }
+                            </InputSelect>
+                            <ValidationMessage For="@(() => Model.FieldType)" />
+                        </div>
+                    </div>
+                    @if (Model.FieldType == FieldType.Date ||
+                                        Model.FieldType == FieldType.DecimalNumber ||
+                                        Model.FieldType == FieldType.IntegerNumber)
+                    {
+                        <div class="col-md-6 pt-3 d-flex justify-content-between align-items-center">
+                            <div class="col-md-4 d-flex justify-content-evenly align-items-center" style="min-width:150px;">
+                                <div class="form-check form-switch d-flex justify-content-between align-items-center" style="gap:50px;">
+                                    <label class="form-check-label m-0">@ECommerceResources.IsRangeFieldType</label>
+                                    <InputCheckbox class="form-check-input cursor-pointer" type="checkbox" @bind-value="Model.IsRangeFieldType" style="transform: scale(1.2);" />
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+
+                <!-- Attributes options section -->
+                @if (Model.FieldType == FieldType.MultiSelectList || Model.FieldType == FieldType.List && Model.AttributeOptions != null)
+                {
+                    <div class="row mt-4">
+                        <div class="col-12">
+                            <div class="border p-3 rounded-3">
+                                <h6 class="fw-semibold mb-3 text-primary">
+                                    <i class="feather icon-list-check me-2"></i> @FormResources.Options
+                                </h6>
+                                @if (Model.AttributeOptions != null && Model.AttributeOptions.Any())
+                                {
+                                    @foreach (var (con, index) in Model.AttributeOptions.OrderBy(c => c.DisplayOrder).Select((item, i) => (item, i)))
+                                    {
+                                        <div class="row g-2 align-items-center mb-3" @key="con.GetHashCode()">
+                                            <!-- Display Order Controls -->
+                                            <div class="col-md-1 d-flex align-items-center justify-content-center mt-3">
+                                                <div class="d-flex align-items-center gap-2 mt-2">
+                                                    <span class="fw-bold text-muted" style="font-size: 14px; min-width: 25px; text-align: center;">
+                                                        #@con.DisplayOrder
+                                                    </span>
+                                                    <div class="d-flex flex-column gap-1">
+                                                        <button type="button"
+                                                                class="btn btn-outline-secondary btn-sm p-1 d-flex align-items-center justify-content-center"
+                                                                style="width: 28px; height: 24px; font-size: 12px;"
+                                                                disabled="@(!CanMoveUp(index))"
+                                                                @onclick="() => MoveAttributeOptionUp(index)"
+                                                                title="@FormResources.MoveUp">
+                                                            <i class="feather m-0 icon-chevron-up" style="width: 14px; height: 14px;"></i>
+                                                        </button>
+                                                        <button type="button"
+                                                                class="btn btn-outline-secondary btn-sm p-1 d-flex align-items-center justify-content-center"
+                                                                style="width: 28px; height: 24px; font-size: 12px;"
+                                                                disabled="@(!CanMoveDown(index))"
+                                                                @onclick="() => MoveAttributeOptionDown(index)"
+                                                                title="@FormResources.MoveDown">
+                                                            <i class="feather m-0 icon-chevron-down" style="width: 14px; height: 14px;"></i>
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <!-- Arabic Title -->
+                                            <div class="col-md-4">
+                                                <label class="form-label small text-muted mb-1">@FormResources.ArabicTitle</label>
+                                                <input type="text" class="form-control" @bind-value="con.TitleAr" />
+                                            </div>
+                                            <!-- English Title -->
+                                            <div class="col-md-4">
+                                                <label class="form-label small text-muted mb-1">@FormResources.EnglishTitle</label>
+                                                <input type="text" class="form-control" @bind-value="con.TitleEn" />
+                                            </div>
+                                            <!-- Delete Button -->
+                                            <div class="col-md-2 d-flex justify-content-center align-content-center me-4 mt-4">
+                                                <button type="button" class="btn btn-danger btn-sm mt-3 " title="@ActionsResources.Delete" @onclick="() => RemoveOption(index)">
+                                                    <i class="feather icon-trash-2 m-0"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    }
+                                }
+                                else
+                                {
+                                    <div class="text-center text-muted py-3">
+                                        <i class="feather icon-info me-2"></i>
+                                        @NotifiAndAlertsResources.NoDataFound
+                                    </div>
+                                }
+                                <button type="button" @onclick="AddNewOption" class="btn btn-outline-primary btn-sm mt-2">
+                                    <i class="feather icon-plus me-1"></i> @ActionsResources.Add
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+            <div class="card-footer bg-light py-3 d-flex justify-content-end gap-2">
+                <button type="button" class="btn btn-secondary px-4" data-dismiss="modal" @onclick="CloseModal">
+                    @ActionsResources.Cancel
+                </button>
+                <button type="submit" class="btn btn-success px-4" disabled="@isSaving">
+                    @if (isSaving)
+                    {
+                        <span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
+                    }
+                    else
+                    {
+                        <span>@ActionsResources.Save</span>
+                    }
+                </button>
+            </div>
+        </EditForm>
+    </div>
+</div>

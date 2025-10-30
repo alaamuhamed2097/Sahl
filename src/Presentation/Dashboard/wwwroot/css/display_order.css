@@ -1,0 +1,26 @@
+﻿/*display_order.css*/
+
+.attribute-row {
+    transition: all 0.3s ease;
+    border: 2px solid #dee2e6 !important;
+}
+
+    .attribute-row:hover {
+/*        border-color: #0d6efd !important;*/
+        box-shadow: 0 2px 4px rgba(13, 110, 253, 0.1);
+    }
+
+.btn-outline-secondary:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.btn-outline-secondary:not(:disabled) {
+    background-color: #0d6efd;
+    border-color: #0d6efd;
+    color: white;
+}
+
+.cursor-pointer {
+    cursor: pointer;
+}

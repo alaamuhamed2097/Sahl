@@ -1,4 +1,4 @@
-﻿using Domains.Entities.Base;
+using Domains.Entities.Base;
 using System.ComponentModel.DataAnnotations;
 
 namespace Domins.Entities.Category
@@ -35,7 +35,7 @@ namespace Domins.Entities.Category
         public string? Icon { get; set; }
         [MaxLength(200)]
         public string? ImageUrl { get; set; }
-        public virtual ICollection<TbCategoryAttribute> CategoryAttributes { get; set; }
+        public virtual ICollection<TbCategoryAttribute> CategoryAttributes { get; set; } = new HashSet<TbCategoryAttribute>();
         //public virtual ICollection<TbItem> Items { get; set; }
     }
 }

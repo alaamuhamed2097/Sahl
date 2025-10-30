@@ -507,4 +507,7 @@
   <data name="Info" xml:space="preserve">
     <value>Info</value>
   </data>
+  <data name="EntityCannotBeDeletedInUse" xml:space="preserve">
+    <value>This {0} cannot be deleted because it is used by the following {1}: {2}</value>
+  </data>
 </root>

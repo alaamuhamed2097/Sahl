@@ -1,6 +1,8 @@
 ﻿using Domains.Entities.Base;
 using Domains.Identity;
 using Domins.Entities.Category;
+using Domins.Views;
+using Domins.Views.Category;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
@@ -23,6 +25,9 @@ namespace DAL.ApplicationContext
         #endregion
 
         #region Views
+
+        public DbSet<VwCategoryWithAttributes> VwCategoryWithAttributes { get; set; }
+        public DbSet<VwAttributeWithOptions> VwAttributeWithOptions { get; set; }
 
         #endregion
 
@@ -74,6 +79,9 @@ namespace DAL.ApplicationContext
             #endregion
 
             #region Views
+
+            modelBuilder.Entity<VwCategoryWithAttributes>().HasNoKey().ToView("VwCategoryWithAttributes");
+            modelBuilder.Entity<VwAttributeWithOptions>().HasNoKey().ToView("VwAttributeWithOptions");
 
             #endregion
 

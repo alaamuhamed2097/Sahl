@@ -9,6 +9,7 @@ namespace BL.Mapper
         {
             ConfigureUserMappings();
             ConfigureNotificationMappings();
+            ConfigureECommerceMapping();
         }
     }
 }

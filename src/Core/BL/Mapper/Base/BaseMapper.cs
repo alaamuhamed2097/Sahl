@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using BL.Contracts.IMapper;
 
 namespace BL.Mapper.Base

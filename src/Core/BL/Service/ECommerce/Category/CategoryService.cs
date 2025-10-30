@@ -295,6 +295,7 @@ namespace BL.Service.ECommerce.Category
                     {
                         await ShiftDisplayOrderForInsertAsync(dto.DisplayOrder, userId);
                     }
+
                     entity = _mapper.MapModel<CategoryDto, TbCategory>(dto);
                 }
                 else

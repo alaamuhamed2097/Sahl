@@ -340,6 +340,15 @@ namespace Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to لا يمكن حذف {0} لأنه مستخدم من قبل {1} التالية: {2}.
+        /// </summary>
+        public static string EntityCannotBeDeletedInUse {
+            get {
+                return ResourceManager.GetString("EntityCannotBeDeletedInUse", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to خطأ.
         /// </summary>
         public static string Error {

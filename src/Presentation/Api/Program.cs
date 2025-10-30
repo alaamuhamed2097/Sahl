@@ -4,7 +4,6 @@ using DAL.ApplicationContext;
 using Domains.Identity;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -30,6 +29,9 @@ builder.Services.AddNotificationServices();
 builder.Services.AddUserManagementServices();
 builder.Services.AddLocationServices();
 builder.Services.AddGeneralServices();
+
+// Configure E-Commerce Services
+builder.Services.AddECommerceConfiguration(builder.Configuration);
 
 // Configure Infrastructure Services
 builder.Services.AddInfrastructureServices();

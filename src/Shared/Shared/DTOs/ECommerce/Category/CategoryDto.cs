@@ -44,6 +44,6 @@ namespace Shared.DTOs.ECommerce
 
         public DateTime CreatedDateUtc { get; set; }
 
-        public List<CategoryAttributeDto>? CategoryAttributes { get; set; } = new();
+        public List<CategoryAttributeDto>? CategoryAttributes { get; set; }
     }
 }

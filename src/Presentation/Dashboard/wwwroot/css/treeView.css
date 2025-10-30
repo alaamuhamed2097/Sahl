@@ -1,0 +1,444 @@
+﻿/* Enhanced Tree Structure Styles with Continuous Vertical Lines */
+.tree-node-wrapper {
+    position: relative;
+    margin: 0;
+    padding: 0;
+}
+
+.tree-lines {
+    position: absolute;
+    top: 0;
+    height: 100%;
+    pointer-events: none;
+    z-index: 1;
+    width: 100%;
+}
+/* LTR Mode Positioning */
+.ltr .tree-lines {
+    left: 0;
+}
+/* RTL Mode Positioning */
+.rtl .tree-lines {
+    right: 0;
+}
+/* Continuous Vertical Lines */
+.vertical-line {
+    position: absolute;
+    width: 2px;
+    background: #6c757d;
+    top: 0;
+    z-index: 1;
+    transition: background 0.3s ease;
+}
+    /* Parent level lines that continue through descendants */
+    .vertical-line.continues {
+        height: calc(100% + 16px); /* Extends to connect with next sibling */
+    }
+/* Calculate position based on the parent level */
+.ltr .vertical-line {
+    left: calc(var(--parent-level, var(--level)) * 100px + 15px);
+}
+
+.rtl .vertical-line {
+    right: calc(var(--parent-level, var(--level)) * 100px + 15px);
+}
+/* Current node's vertical connector */
+.vertical-line-current {
+    position: absolute;
+    width: 2px;
+    background: #6c757d;
+    top: 0;
+    z-index: 2;
+    transition: background 0.3s ease;
+}
+
+    .vertical-line-current.has-siblings {
+        height: 100%; /* Full height when node has siblings below */
+    }
+
+    .vertical-line-current.last-child {
+        height: 50%; /* Half height when it's the last child */
+    }
+
+.ltr .vertical-line-current {
+    left: calc(var(--level) * 100px + 15px);
+}
+
+.rtl .vertical-line-current {
+    right: calc(var(--level) * 100px + 15px);
+}
+/* Horizontal connector to node */
+.horizontal-line {
+    position: absolute;
+    height: 2px;
+    background: #6c757d;
+    top: 50%;
+    width: 30px;
+    transform: translateY(-1px);
+    z-index: 2;
+    transition: background 0.3s ease;
+}
+
+.ltr .horizontal-line {
+    left: calc(var(--level) * 100px + 15px);
+}
+
+.rtl .horizontal-line {
+    right: calc(var(--level) * 100px + 15px);
+}
+/* Tree container */
+.tree-container {
+    position: relative;
+    overflow: visible;
+    padding: 20px;
+}
+/* Node content positioning */
+.tree-node-content {
+    position: relative;
+    z-index: 3;
+    margin: 8px 0;
+    min-height: 70px;
+    display: flex;
+    align-items: center;
+}
+
+.node-box {
+    background: #ffffff;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    min-height: 60px;
+    width: 380px;
+    max-width: 380px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: relative;
+    transition: all 0.3s ease;
+    overflow: hidden;
+    box-sizing: border-box;
+    padding: 12px;
+}
+
+    .node-box:hover {
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+        border-color: #007bff;
+        transform: translateY(-1px);
+    }
+/* TEXT OVERFLOW FIXES */
+.node-info {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    margin-right: 12px;
+    max-width: calc(100% - 50px);
+}
+
+    .node-info h6 {
+        margin-bottom: 2px;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+        hyphens: auto;
+        line-height: 1.2;
+        max-height: 2.4em;
+        overflow: hidden;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        text-overflow: ellipsis;
+        font-size: 0.95rem;
+    }
+
+    .node-info small {
+        display: block;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 100%;
+        font-size: 0.8rem;
+    }
+/* Expand/Collapse button */
+.expand-btn {
+    width: 32px;
+    height: 32px;
+    min-width: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: all 0.3s ease;
+    border: 1px solid currentColor;
+    flex-shrink: 0;
+}
+
+    .expand-btn:hover {
+        transform: scale(1.1);
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    }
+/* Node actions */
+.node-actions {
+    flex-shrink: 0;
+    display: flex;
+    gap: 4px;
+    min-width: 80px;
+    justify-content: flex-end;
+}
+
+    .node-actions .btn {
+        min-width: 36px;
+        width: 36px;
+        height: 36px;
+        padding: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+    }
+/* Root node special styling */
+.tree-node-wrapper[style*="--level: 0"] .node-box {
+    border-left: 4px solid #007bff;
+    background: linear-gradient(135deg, #f8f9ff 0%, #ffffff 100%);
+}
+/* Connection dots at line intersections */
+.horizontal-line::before {
+    content: '';
+    position: absolute;
+    width: 6px;
+    height: 6px;
+    background: #6c757d;
+    border-radius: 50%;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 3;
+    transition: background 0.3s ease;
+}
+
+.ltr .horizontal-line::before {
+    left: 0;
+}
+
+.rtl .horizontal-line::before {
+    right: 0;
+}
+
+.horizontal-line::after {
+    content: '';
+    position: absolute;
+    width: 6px;
+    height: 6px;
+    background: #6c757d;
+    border-radius: 50%;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 3;
+    transition: background 0.3s ease;
+}
+
+.ltr .horizontal-line::after {
+    right: 0;
+}
+
+.rtl .horizontal-line::after {
+    left: 0;
+}
+/* Improved line continuity for nested levels */
+.tree-node-wrapper:not(:last-child) > .tree-lines > .vertical-line-current::after {
+    content: '';
+    position: absolute;
+    width: 2px;
+    background: #6c757d;
+    height: calc(100% + 16px);
+    bottom: -8px;
+    left: 0;
+    z-index: 1;
+    transition: background 0.3s ease;
+}
+/* CONSISTENT HOVER EFFECTS - All lines change to the same color */
+.tree-node-wrapper:hover .vertical-line,
+.tree-node-wrapper:hover .vertical-line.continues,
+.tree-node-wrapper:hover .vertical-line-current,
+.tree-node-wrapper:hover .horizontal-line,
+.tree-node-wrapper:hover .vertical-line-current::after {
+    background: #007bff !important;
+}
+
+    .tree-node-wrapper:hover .horizontal-line::before,
+    .tree-node-wrapper:hover .horizontal-line::after {
+        background: #007bff !important;
+    }
+/* Level-based color coding for better visual hierarchy */
+.tree-node-wrapper[style*="--level: 1"] .node-box {
+    border-left: 3px solid #28a745;
+}
+
+.tree-node-wrapper[style*="--level: 2"] .node-box {
+    border-left: 3px solid #ffc107;
+}
+
+.tree-node-wrapper[style*="--level: 3"] .node-box {
+    border-left: 3px solid #dc3545;
+}
+
+.tree-node-wrapper[style*="--level: 4"] .node-box {
+    border-left: 3px solid #6f42c1;
+}
+/* Smooth animations */
+.tree-node-wrapper {
+    transition: all 0.3s ease;
+}
+
+.tree-lines * {
+    transition: background 0.3s ease;
+}
+/* Ensure proper z-index stacking */
+.tree-lines {
+    z-index: 1;
+}
+
+    .tree-lines * {
+        z-index: inherit;
+    }
+
+.tree-node-content {
+    z-index: 3;
+}
+
+.node-box {
+    z-index: 4;
+}
+/* RTL specific text handling */
+.rtl .node-info {
+    text-align: right;
+    margin-left: 12px;
+    margin-right: 0;
+    max-width: calc(100% - 50px);
+}
+
+    .rtl .node-info h6 {
+        direction: rtl;
+    }
+
+.rtl .node-actions {
+    justify-content: flex-start;
+}
+/* Reorder Controls Styles */
+.reorder-controls {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    margin-right: 8px;
+}
+
+    .reorder-controls .btn {
+        width: 24px;
+        height: 24px;
+        padding: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 4px;
+        margin: 1px 0;
+        opacity: 0.7;
+        transition: all 0.2s ease;
+        background-color: #f8f9fa;
+        border: 1px solid #dee2e6;
+    }
+
+        .reorder-controls .btn:hover {
+            opacity: 1;
+            transform: scale(1.1);
+            background-color: #e9ecef;
+            border-color: #adb5bd;
+        }
+
+        .reorder-controls .btn:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+            transform: none;
+            background-color: #f8f9fa;
+            border-color: #dee2e6;
+        }
+
+        .reorder-controls .btn i {
+            font-size: 12px;
+            color: #495057;
+        }
+
+        .reorder-controls .btn:disabled i {
+            color: #adb5bd;
+        }
+/* Mobile responsive adjustments */
+@media (max-width: 768px) {
+    .ltr .vertical-line,
+    .ltr .vertical-line-current,
+    .ltr .horizontal-line {
+        left: calc(var(--level) * 25px + 10px);
+    }
+
+    .rtl .vertical-line,
+    .rtl .vertical-line-current,
+    .rtl .horizontal-line {
+        right: calc(var(--level) * 25px + 10px);
+    }
+
+    .horizontal-line {
+        width: 20px;
+    }
+
+    .node-box {
+        width: 280px;
+        max-width: 280px;
+        min-height: 50px;
+        padding: 10px;
+    }
+
+    .tree-node-content {
+        margin: 6px 0;
+        min-height: 56px;
+    }
+
+    .node-info {
+        margin-right: 8px;
+        max-width: calc(100% - 100px);
+    }
+
+        .node-info h6 {
+            font-size: 0.85rem;
+            max-height: 2.2em;
+        }
+
+        .node-info small {
+            font-size: 0.7rem;
+        }
+
+    .node-actions {
+        min-width: 70px;
+    }
+
+        .node-actions .btn {
+            min-width: 30px;
+            width: 30px;
+            height: 30px;
+        }
+
+    .rtl .node-info {
+        margin-left: 8px;
+        margin-right: 0;
+        max-width: calc(100% - 100px);
+    }
+    /* Mobile reorder controls */
+    .reorder-controls {
+        margin-right: 4px;
+    }
+
+        .reorder-controls .btn {
+            width: 20px;
+            height: 20px;
+        }
+
+            .reorder-controls .btn i {
+                font-size: 10px;
+            }
+}

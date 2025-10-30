@@ -435,4 +435,7 @@
   <data name="CompleteProfile" xml:space="preserve">
     <value>إكمال الملف الشخصي</value>
   </data>
+  <data name="ExpandAll" xml:space="preserve">
+    <value>فتح الكل</value>
+  </data>
 </root>

@@ -435,4 +435,7 @@
   <data name="CompleteProfile" xml:space="preserve">
     <value>Complete Profile</value>
   </data>
+  <data name="ExpandAll" xml:space="preserve">
+    <value>Expand All</value>
+  </data>
 </root>
