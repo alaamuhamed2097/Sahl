@@ -1,7 +1,7 @@
 using Shared.DTOs.ECommerce;
 using Shared.GeneralModels;
 
-namespace Dashboard.Constants.ECommerce.Category
+namespace Dashboard.Contracts.ECommerce.Category
 {
     public interface ICategoryService
     {

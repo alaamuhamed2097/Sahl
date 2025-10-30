@@ -1,5 +1,6 @@
 ﻿using Common.Enumerations.FieldType;
 using Domains.Entities.Base;
+using Domins.Entities.Item;
 using System.ComponentModel.DataAnnotations;
 
 namespace Domins.Entities.Category
@@ -25,6 +26,6 @@ namespace Domins.Entities.Category
 
         public virtual ICollection<TbAttributeOption> AttributeOptions { get; set; }
 
-        //public virtual ICollection<TbItemAttribute> ItemAttributes { get; set; }
+        public virtual ICollection<TbItemAttribute> ItemAttributes { get; set; }
     }
 }

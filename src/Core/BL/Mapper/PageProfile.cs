@@ -2,7 +2,7 @@ using AutoMapper;
 using Domains.Entities.Page;
 using Shared.DTOs.Page;
 
-namespace BL.MappingProfiles
+namespace BL.Mapper
 {
     public class PageProfile : Profile
     {

@@ -1,5 +1,5 @@
 using Dashboard.Constants;
-using Dashboard.Constants.ECommerce.Category;
+using Dashboard.Contracts.ECommerce.Category;
 using Dashboard.Contracts.General;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;

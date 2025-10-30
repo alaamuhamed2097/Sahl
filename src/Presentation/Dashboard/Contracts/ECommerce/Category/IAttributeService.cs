@@ -2,7 +2,7 @@ using Shared.DTOs.ECommerce.Category;
 using Shared.GeneralModels;
 using Shared.ResultModels;
 
-namespace Dashboard.Constants.ECommerce.Category
+namespace Dashboard.Contracts.ECommerce.Category
 {
     public interface IAttributeService
     {
