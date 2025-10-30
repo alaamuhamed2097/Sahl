@@ -1,10 +1,13 @@
 ﻿using Api.Controllers.Base;
 using BL.Contracts.GeneralService.CMS;
+using Domains.Identity;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Resources;
 using Shared.DTOs.User;
 using Shared.GeneralModels;
+using System.Security.Claims;
 
 namespace Api.Controllers.User
 {
@@ -13,11 +16,14 @@ namespace Api.Controllers.User
     public class UserAuthenticationController : BaseController
     {
         private readonly IUserAuthenticationService _userAuthenticationService;
+        private readonly UserManager<ApplicationUser> _userManager;
 
         public UserAuthenticationController(IUserAuthenticationService userAuthenticationService,
+            UserManager<ApplicationUser> userManager,
             Serilog.ILogger logger) : base(logger)
         {
             _userAuthenticationService = userAuthenticationService;
+            _userManager = userManager;
         }
 
         /// <summary>
@@ -52,7 +58,7 @@ namespace Api.Controllers.User
                 return Ok(new ResponseModel<object>
                 {
                     Success = false,
-                    Message =  result.Message ?? ValidationResources.PasswordResetCodeFailed
+                    Message = result.Message ?? ValidationResources.PasswordResetCodeFailed
                 });
             }
             catch (Exception ex)
@@ -133,6 +139,67 @@ namespace Api.Controllers.User
             }
             catch (Exception ex)
             {
+                return HandleException(ex);
+            }
+        }
+
+        /// <summary>
+        /// Gets the current user's information including roles (for authentication state).
+        /// Used by Blazor WASM to build authentication claims.
+        /// </summary>
+        [HttpGet("userinfo")]
+        [Authorize]
+        [ProducesResponseType(typeof(ResponseModel<UserInfoDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ResponseModel<string>), StatusCodes.Status401Unauthorized)]
+        public async Task<IActionResult> GetUserInfo()
+        {
+            try
+            {
+                var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+                if (string.IsNullOrEmpty(userId))
+                {
+                    return Unauthorized(new ResponseModel<UserInfoDto>
+                    {
+                        Success = false,
+                        Message = "User not authenticated"
+                    });
+                }
+
+                // Get user from database
+                var user = await _userManager.FindByIdAsync(userId);
+                if (user == null)
+                {
+                    return Unauthorized(new ResponseModel<UserInfoDto>
+                    {
+                        Success = false,
+                        Message = "User not found"
+                    });
+                }
+
+                // Get user roles
+                var roles = await _userManager.GetRolesAsync(user);
+
+                // Create response DTO
+                var userInfo = new UserInfoDto
+                {
+                    UserId = user.Id,
+                    UserName = user.UserName,
+                    Email = user.Email,
+                    FullName = $"{user.FirstName} {user.LastName}".Trim(),
+                    ProfileImagePath = user.ProfileImagePath,
+                    Roles = roles.ToList()
+                };
+
+                return Ok(new ResponseModel<UserInfoDto>
+                {
+                    Success = true,
+                    Data = userInfo
+                });
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex, "Error getting user info");
                 return HandleException(ex);
             }
         }

@@ -1,27 +1,34 @@
-﻿@using Dashboard.Pages.Auth
+﻿@using Shared.DTOs.ECommerce
+@using Shared.DTOs.User
+@using Dashboard.Pages
+@using Dashboard.Pages.Auth
+@using Dashboard.Providers
 <CascadingAuthenticationState>
     <Router AppAssembly="@typeof(Program).Assembly">
         <Found Context="routeData">
             @if (routeData.PageType == typeof(Login))
-            { 
+            {
                 <RouteView RouteData="@routeData" DefaultLayout="null" />
-             } 
+            }
             else
             {
-                @if (isLoading)
-                {
-                    <div style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center;">
-                        @GeneralResources.Loading...
-                    </div>
-                }
-                else if (isAuthorized)
-                {
-                    <RouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)" />
-                }
-             } 
+                <RouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)" />
+           @*      <AuthorizeRouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)">
+                    <Authorizing>
+                        <div class="d-flex justify-content-center align-items-center vh-100">
+                            <p class="fs-4">@GeneralResources.Loading...</p>
+                        </div>
+                    </Authorizing>
+                    <NotAuthorized>
+                        <RedirectToLoginComponent />
+                    </NotAuthorized>
+                </AuthorizeRouteView> *@
+            }
         </Found>
         <NotFound>
-            <h3>الصفحة غير موجودة!</h3>
+            <LayoutView Layout="@typeof(MainLayout)">
+                <h3>@NotifiAndAlertsResources.PageNotFound</h3>
+            </LayoutView>
         </NotFound>
     </Router>
 </CascadingAuthenticationState>

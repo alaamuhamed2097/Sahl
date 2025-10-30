@@ -111,5 +111,3 @@ if (typeof module !== 'undefined' && module.exports) {
         localStorageHelper: window.localStorageHelper
     };
 }
-
-console.log('localStorage helper loaded successfully');

@@ -1,8 +1,6 @@
 ﻿using Dashboard.Contracts.General;
-using Dashboard.Contracts.Handlers;
-using Dashboard.Handlers;
 using Dashboard.Providers;
-using Dashboard.Services.General;
+using Dashboard.Services.CMS;
 using Microsoft.AspNetCore.Components.Authorization;
 
 namespace Dashboard.Extensions
@@ -14,10 +12,11 @@ namespace Dashboard.Extensions
             // ✅ UPDATED: Use cookie-based authentication providers
             services.AddAuthorizationCore();
 
-            services.AddScoped<ApiAuthenticationStateProvider>();
-            services.AddScoped<AuthenticationStateProvider, ApiAuthenticationStateProvider>();
-            services.AddScoped<IApiStatusHandler, ApiStatusHandler>();
-            services.AddScoped<IAuthenticationService, AuthenticationService>();
+            services.AddScoped<CookieAuthenticationStateProvider>();
+            services.AddScoped<AuthenticationStateProvider>(provider =>
+                provider.GetRequiredService<CookieAuthenticationStateProvider>());
+
+            services.AddScoped<IAuthenticationService, CookieAuthenticationService>();
 
             return services;
         }

@@ -1,5 +1,4 @@
-﻿using Blazored.LocalStorage;
-using Blazored.Toast;
+﻿using Blazored.Toast;
 using Dashboard.Configuration;
 using Dashboard.Contracts.General;
 using Dashboard.Services.General;
@@ -19,11 +18,11 @@ namespace Dashboard.Extensions
             // CookieApiService uses IJSRuntime to call JavaScript fetch, NOT HttpClient
 
             // Register CookieApiService with IJSRuntime (NOT HttpClient)
-            services.AddScoped<IApiService, ApiService>();
+            services.AddScoped<IApiService, CookieApiService>();
 
             // Service For Toast
             services.AddBlazoredToast();
-            services.AddBlazoredLocalStorage();
+
             services.AddAuthorizationCore();
 
             services.AddSingleton<LanguageService>();
