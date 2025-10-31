@@ -49,6 +49,7 @@ namespace Resources
             UserResources.Culture = culture;
             ValidationResources.Culture = culture;
             NotifiAndAlertsResources.Culture = culture;
+            ECommerceResources.Culture = culture;
         }
 
         public static void ChangeLanguage()

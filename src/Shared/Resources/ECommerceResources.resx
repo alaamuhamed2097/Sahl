@@ -351,9 +351,6 @@
   <data name="MinLimitPVs" xml:space="preserve">
     <value>الحد الأدنى لـ PVs   </value>
   </data>
-  <data name="BinaryCommissionStart" xml:space="preserve">
-    <value>  بداية ال Binary Commission    </value>
-  </data>
   <data name="EquivalentDollars" xml:space="preserve">
     <value>القيمة المكافئة بالدولار </value>
   </data>
@@ -387,12 +384,6 @@
   <data name="StartingPVsValuePlaceHolder" xml:space="preserve">
     <value>أدخل قيمة PVs الابتدائية</value>
   </data>
-  <data name="Benefits" xml:space="preserve">
-    <value>الفوائد</value>
-  </data>
-  <data name="BinaryCommissions" xml:space="preserve">
-    <value>العمولات الثنائية</value>
-  </data>
   <data name="PVValidationMessage" xml:space="preserve">
     <value>يرجى إدخال قيم صحيحة لليسار، اليمين والدولار.</value>
   </data>
@@ -424,195 +415,189 @@
     <value>كلمة المرور غير صالحة.</value>
   </data>
   <data name="IsMainCategory" xml:space="preserve">
-  <value> ضمن القائمة الرئيسية</value>
-</data>
+    <value> ضمن القائمة الرئيسية</value>
+  </data>
   <data name="IsFeaturedCategory" xml:space="preserve">
-  <value>ضمن التصنيف المميز</value>
-</data>
+    <value>ضمن التصنيف المميز</value>
+  </data>
   <data name="CurrentPosition" xml:space="preserve">
-  <value>الموضع الحالي</value>
-</data>
+    <value>الموضع الحالي</value>
+  </data>
   <data name="Level" xml:space="preserve">
-  <value>المستوى</value>
-</data>
+    <value>المستوى</value>
+  </data>
   <data name="RootCategory" xml:space="preserve">
-  <value>الفئة الجذرية</value>
-</data>
+    <value>الفئة الجذرية</value>
+  </data>
   <data name="TreeView" xml:space="preserve">
-  <value>عرض الشجرة</value>
-</data>
+    <value>عرض الشجرة</value>
+  </data>
   <data name="ListView" xml:space="preserve">
-  <value>عرض القائمة</value>
-</data>
+    <value>عرض القائمة</value>
+  </data>
   <data name="ConditionName" xml:space="preserve">
-  <value>اسم الحالة</value>
-</data>
+    <value>اسم الحالة</value>
+  </data>
   <data name="ItemConditions" xml:space="preserve">
-  <value>حالات العنصر</value>
-</data>
+    <value>حالات العنصر</value>
+  </data>
   <data name="ItemCondition" xml:space="preserve">
-  <value>حالة العنصر</value>
-</data>
+    <value>حالة العنصر</value>
+  </data>
   <data name="Pending" xml:space="preserve">
-  <value>قيد الانتظار</value>
-</data>
+    <value>قيد الانتظار</value>
+  </data>
   <data name="Rejected" xml:space="preserve">
-  <value>مرفوض</value>
-</data>
+    <value>مرفوض</value>
+  </data>
   <data name="Accepted" xml:space="preserve">
-  <value>مقبول</value>
-</data>
+    <value>مقبول</value>
+  </data>
   <data name="Active" xml:space="preserve">
-  <value>نشط</value>
-</data>
+    <value>نشط</value>
+  </data>
   <data name="InActive" xml:space="preserve">
-  <value>غير نشط</value>
-</data>
+    <value>غير نشط</value>
+  </data>
   <data name="Waitingforapproved" xml:space="preserve">
-  <value>بانتظار الموافقة</value>
-</data>
+    <value>بانتظار الموافقة</value>
+  </data>
   <data name="Expired" xml:space="preserve">
-  <value>منتهي</value>
-</data>
+    <value>منتهي</value>
+  </data>
   <data name="Sold" xml:space="preserve">
-  <value>مباع</value>
-</data>
+    <value>مباع</value>
+  </data>
   <data name="Refused" xml:space="preserve">
-  <value>مرفوض</value>
-</data>
+    <value>مرفوض</value>
+  </data>
   <data name="SellerInformation" xml:space="preserve">
-  <value>معلومات البائع</value>
-</data>
+    <value>معلومات البائع</value>
+  </data>
   <data name="AdditionalContactMethods" xml:space="preserve">
-  <value>طرق تواصل إضافية</value>
-</data>
+    <value>طرق تواصل إضافية</value>
+  </data>
   <data name="MainCurrency" xml:space="preserve">
-  <value>العملة الرئيسية</value>
-</data>
+    <value>العملة الرئيسية</value>
+  </data>
   <data name="Currencies" xml:space="preserve">
-  <value>العملات</value>
-</data>
+    <value>العملات</value>
+  </data>
   <data name="Advertisers" xml:space="preserve">
-  <value>المُعلنين</value>
-</data>
+    <value>المُعلنين</value>
+  </data>
   <data name="Advertiser" xml:space="preserve">
-  <value>مُعلن</value>
-</data>
-    <data name="AdvertiseConditions" xml:space="preserve">
-  <value>حالات الإعلان</value>
-</data>
-<data name="AdvertiseControl" xml:space="preserve">
-  <value>التحكم في الإعلانات</value>
-</data>
+    <value>مُعلن</value>
+  </data>
+  <data name="AdvertiseConditions" xml:space="preserve">
+    <value>حالات الإعلان</value>
+  </data>
+  <data name="AdvertiseControl" xml:space="preserve">
+    <value>التحكم في الإعلانات</value>
+  </data>
   <data name="MainBanners" xml:space="preserve">
-  <value>البنرات الرئيسية</value>
-</data>
+    <value>البنرات الرئيسية</value>
+  </data>
   <data name="MainBanner" xml:space="preserve">
-  <value>البنر الرئيسي</value>
-</data>
-	<data name="AdvertViews" xml:space="preserve">
-  <value>مشاهدات الإعلان</value>
-</data>
-	<data name="Adverts" xml:space="preserve">
-  <value>الإعلانات</value>
-</data>
-	<data name="Advert" xml:space="preserve">
-  <value>الإعلان</value>
-</data>
-	<data name="ItemCurrency" xml:space="preserve">
-  <value>عملة العنصر</value>
-</data>
-	<data name="IsHomeCategory" xml:space="preserve">
-  <value>ضمن الصفحة الرئيسية</value>
-</data>
-	<data name="Range" xml:space="preserve">
-  <value>مدى</value>
-</data>
-	<data name="AdvertiserType" xml:space="preserve">
-  <value>نوع المعلن</value>
-</data>
-	<data name="RegularAdvertiser" xml:space="preserve">
-  <value>معلن عادي</value>
-</data>
-	<data name="BusinessAdvertiser" xml:space="preserve">
-  <value>معلن تجاري</value>
-</data>
-	<data name="VerifiedAdvertiser" xml:space="preserve">
-  <value>معلن موثق</value>
-</data>
-	<data name="FeaturedAdvertiser" xml:space="preserve">
-  <value>معلن مميز</value>
-</data>
-<data name="VerifiedAndFeaturedAdvertisers" xml:space="preserve">
-  <value>المعلنون الموثقون والمميزون</value>
-</data>
-<data name="VerifiedAdvertisers" xml:space="preserve">
-  <value>المعلنون الموثقون</value>
-</data>
-<data name="FeaturedAdvertisers" xml:space="preserve">
-  <value>المعلنون المميزون</value>
-</data>
-<data name="BusinessAdvertisers" xml:space="preserve">
-  <value>المعلنون التجاريون</value>
-</data>
-<data name="RegularAdvertisers" xml:space="preserve">
-  <value>المعلنون العاديون</value>
-</data>
-<data name="AllAdvertiserTypes" xml:space="preserve">
-  <value>جميع أنواع المعلنين</value>
-</data>
-	<data name="IsFeaturedAdvertiser" xml:space="preserve">
-  <value>معلن مميز</value>
-</data>
-	<data name="IsVerifiedAdvertiser" xml:space="preserve">
-  <value>معلن موثق</value>
-</data>
-	<data name="NoAttributesAdded" xml:space="preserve">
+    <value>البنر الرئيسي</value>
+  </data>
+  <data name="AdvertViews" xml:space="preserve">
+    <value>مشاهدات الإعلان</value>
+  </data>
+  <data name="Adverts" xml:space="preserve">
+    <value>الإعلانات</value>
+  </data>
+  <data name="Advert" xml:space="preserve">
+    <value>الإعلان</value>
+  </data>
+  <data name="ItemCurrency" xml:space="preserve">
+    <value>عملة العنصر</value>
+  </data>
+  <data name="IsHomeCategory" xml:space="preserve">
+    <value>ضمن الصفحة الرئيسية</value>
+  </data>
+  <data name="Range" xml:space="preserve">
+    <value>مدى</value>
+  </data>
+  <data name="AdvertiserType" xml:space="preserve">
+    <value>نوع المعلن</value>
+  </data>
+  <data name="RegularAdvertiser" xml:space="preserve">
+    <value>معلن عادي</value>
+  </data>
+  <data name="VerifiedAdvertiser" xml:space="preserve">
+    <value>معلن موثق</value>
+  </data>
+  <data name="FeaturedAdvertiser" xml:space="preserve">
+    <value>معلن مميز</value>
+  </data>
+  <data name="VerifiedAndFeaturedAdvertisers" xml:space="preserve">
+    <value>المعلنون الموثقون والمميزون</value>
+  </data>
+  <data name="VerifiedAdvertisers" xml:space="preserve">
+    <value>المعلنون الموثقون</value>
+  </data>
+  <data name="FeaturedAdvertisers" xml:space="preserve">
+    <value>المعلنون المميزون</value>
+  </data>
+  <data name="BusinessAdvertisers" xml:space="preserve">
+    <value>المعلنون التجاريون</value>
+  </data>
+  <data name="RegularAdvertisers" xml:space="preserve">
+    <value>المعلنون العاديون</value>
+  </data>
+  <data name="AllAdvertiserTypes" xml:space="preserve">
+    <value>جميع أنواع المعلنين</value>
+  </data>
+  <data name="IsFeaturedAdvertiser" xml:space="preserve">
+    <value>معلن مميز</value>
+  </data>
+  <data name="IsVerifiedAdvertiser" xml:space="preserve">
+    <value>معلن موثق</value>
+  </data>
+  <data name="NoAttributesAdded" xml:space="preserve">
     <value>لم يتم إضافة أي خصائص بعد</value>
-</data>
-	<data name="IsRangeFieldType" xml:space="preserve">
-  <value>نوع الحقل بنطاق</value>
-</data>
-	<data name="SpecializationName" xml:space="preserve">
-  <value>اسم التخصص</value>
-</data>
-	<data name="Specializations" xml:space="preserve">
-  <value>التخصصات</value>
-</data>
-	<data name="Specialization" xml:space="preserve">
-  <value>التخصص</value>
-</data>
-	<data name="EnglishSpecializationName" xml:space="preserve">
-  <value>اسم التخصص باللغة الإنجليزية</value>
-</data>
-	<data name="ArabicSpecializationName" xml:space="preserve">
-  <value>اسم التخصص باللغة العربية</value>
-</data>
-	<data name="PendingRequests" xml:space="preserve">
-  <value>الإعلانات المعلقة</value>
-</data>
-	<data name="TotalAdverts" xml:space="preserve">
-  <value>إجمالي الإعلانات</value>
-</data>
-	<data name="DateRange" xml:space="preserve">
-  <value>( {0} ) : ( {1} ) ( {2} أيام )</value>
-</data>
-	<data name="BannerDuration" xml:space="preserve">
-  <value>مدة الإعلان</value>
-</data>
-	<data name="RecommendedLengthRangeShort" xml:space="preserve">
-  <value>الطول الموصى به: {0}-{1} حرفًا. الحالي</value>
-</data>
-<data name="CurrencyInformation" xml:space="preserve">
-  <value>معلومات العملة</value>
-</data>
-<data name="BusinessProfile" xml:space="preserve">
-  <value>الملف التجاري</value>
-</data>
-	<data name="AdvertiserProfile" xml:space="preserve">
-  <value>ملف المعلن</value>
-</data>
-<data name="PriceRequired" xml:space="preserve">
-  <value>السعر مطلوب</value>
-</data>
+  </data>
+  <data name="IsRangeFieldType" xml:space="preserve">
+    <value>نوع الحقل بنطاق</value>
+  </data>
+  <data name="SpecializationName" xml:space="preserve">
+    <value>اسم التخصص</value>
+  </data>
+  <data name="Specializations" xml:space="preserve">
+    <value>التخصصات</value>
+  </data>
+  <data name="Specialization" xml:space="preserve">
+    <value>التخصص</value>
+  </data>
+  <data name="EnglishSpecializationName" xml:space="preserve">
+    <value>اسم التخصص باللغة الإنجليزية</value>
+  </data>
+  <data name="ArabicSpecializationName" xml:space="preserve">
+    <value>اسم التخصص باللغة العربية</value>
+  </data>
+  <data name="PendingRequests" xml:space="preserve">
+    <value>الإعلانات المعلقة</value>
+  </data>
+  <data name="TotalAdverts" xml:space="preserve">
+    <value>إجمالي الإعلانات</value>
+  </data>
+  <data name="DateRange" xml:space="preserve">
+    <value>( {0} ) : ( {1} ) ( {2} أيام )</value>
+  </data>
+  <data name="RecommendedLengthRangeShort" xml:space="preserve">
+    <value>الطول الموصى به: {0}-{1} حرفًا. الحالي</value>
+  </data>
+  <data name="CurrencyInformation" xml:space="preserve">
+    <value>معلومات العملة</value>
+  </data>
+  <data name="BusinessProfile" xml:space="preserve">
+    <value>الملف التجاري</value>
+  </data>
+  <data name="AdvertiserProfile" xml:space="preserve">
+    <value>ملف المعلن</value>
+  </data>
+  <data name="PriceRequired" xml:space="preserve">
+    <value>السعر مطلوب</value>
+  </data>
 </root>

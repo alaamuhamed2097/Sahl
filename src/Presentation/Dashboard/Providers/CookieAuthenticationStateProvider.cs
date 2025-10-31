@@ -35,12 +35,9 @@ namespace Dashboard.Providers
 
         public override async Task<AuthenticationState> GetAuthenticationStateAsync()
         {
-            Console.WriteLine("[AuthStateProvider] GetAuthenticationStateAsync called");
-
             // Check cache first (outside semaphore for quick return)
             if (_cachedAuthState != null && DateTime.Now - _lastAuthCheck < _cacheTimeout)
             {
-                Console.WriteLine($"[AuthStateProvider] Using cached state (age: {(DateTime.Now - _lastAuthCheck).TotalSeconds:F1}s)");
                 return _cachedAuthState;
             }
 
@@ -52,27 +49,21 @@ namespace Dashboard.Providers
                 // Double-check cache after acquiring semaphore
                 if (_cachedAuthState != null && DateTime.Now - _lastAuthCheck < _cacheTimeout)
                 {
-                    Console.WriteLine($"[AuthStateProvider] Using cached state after semaphore (age: {(DateTime.Now - _lastAuthCheck).TotalSeconds:F1}s)");
                     return _cachedAuthState;
                 }
-
-                Console.WriteLine("[AuthStateProvider] Performing fresh auth check");
 
                 // ? PROPER FIX: Check authentication by calling API with cookies
                 // The browser automatically sends HTTP-only cookies with this request
                 var userInfoUrl = $"{_baseUrl}{ApiEndpoints.UserAuthentication.UserInfo}";
-                Console.WriteLine($"[AuthStateProvider] Fetching user info from: {userInfoUrl}");
 
                 var userInfoResponse = await FetchWithCredentialsAsync(userInfoUrl, "GET");
 
                 if (userInfoResponse.Ok)
                 {
-                    Console.WriteLine("[AuthStateProvider] User info fetched successfully");
                     var userInfoJson = userInfoResponse.Body;
 
                     if (string.IsNullOrWhiteSpace(userInfoJson))
                     {
-                        Console.WriteLine("[AuthStateProvider] Empty response body");
                         var anonymousState = CreateAnonymousState();
                         UpdateCache(anonymousState);
                         return anonymousState;
@@ -85,9 +76,6 @@ namespace Dashboard.Providers
 
                     if (userInfo?.Success == true && userInfo.Data != null)
                     {
-                        Console.WriteLine($"[AuthStateProvider] Creating auth state for user: {userInfo.Data.UserName}");
-                        Console.WriteLine($"[AuthStateProvider] User roles: {string.Join(", ", userInfo.Data.Roles ?? new List<string>())}");
-
                         var claims = CreateClaimsFromUserInfo(userInfo.Data);
                         var identity = new ClaimsIdentity(claims, "cookie");
                         var user = new ClaimsPrincipal(identity);
@@ -105,13 +93,7 @@ namespace Dashboard.Providers
                         return authState;
                     }
                 }
-                else
-                {
-                    Console.WriteLine($"[AuthStateProvider] Failed to fetch user info: {userInfoResponse.Status} {userInfoResponse.StatusText}");
-                }
 
-                // Not authenticated - clear any stale localStorage flags
-                Console.WriteLine("[AuthStateProvider] User not authenticated, returning anonymous state");
                 try
                 {
                     await _jsRuntime.InvokeVoidAsync("httpClientHelper.setAuthState", false);
@@ -137,7 +119,6 @@ namespace Dashboard.Providers
 
         public async Task MarkUserAsAuthenticated()
         {
-            Console.WriteLine("[AuthStateProvider] MarkUserAsAuthenticated called - clearing cache");
             // Clear cache immediately to force fresh auth state check
             _cachedAuthState = null;
             _lastAuthCheck = DateTime.MinValue;
@@ -154,7 +135,6 @@ namespace Dashboard.Providers
 
         public async Task MarkUserAsLoggedOut()
         {
-            Console.WriteLine("[AuthStateProvider] MarkUserAsLoggedOut called");
             try
             {
                 var logoutUrl = $"{_baseUrl}api/Auth/logout";
@@ -188,12 +168,10 @@ namespace Dashboard.Providers
         {
             _cachedAuthState = authState;
             _lastAuthCheck = DateTime.Now;
-            Console.WriteLine($"[AuthStateProvider] Cache updated, isAuthenticated: {authState.User.Identity?.IsAuthenticated}");
         }
 
         private async Task NotifyAuthenticationStateChanged()
         {
-            Console.WriteLine("[AuthStateProvider] Notifying authentication state changed");
             var authState = await GetAuthenticationStateAsync();
             NotifyAuthenticationStateChanged(Task.FromResult(authState));
         }
@@ -215,12 +193,7 @@ namespace Dashboard.Providers
                 foreach (var role in userInfo.Roles)
                 {
                     claims.Add(new Claim(ClaimTypes.Role, role));
-                    Console.WriteLine($"[AuthStateProvider] Added role claim: {role}");
                 }
-            }
-            else
-            {
-                Console.WriteLine("[AuthStateProvider] ? WARNING: User has no roles!");
             }
 
             return claims;
@@ -232,7 +205,6 @@ namespace Dashboard.Providers
             {
                 var authState = await GetAuthenticationStateAsync();
                 var isAuth = authState.User.Identity?.IsAuthenticated ?? false;
-                Console.WriteLine($"[AuthStateProvider] IsAuthenticatedAsync: {isAuth}");
                 return isAuth;
             }
             catch (Exception ex)
@@ -246,8 +218,6 @@ namespace Dashboard.Providers
         {
             try
             {
-                Console.WriteLine($"[AuthStateProvider] FetchWithCredentialsAsync: {method} {url}");
-
                 var result = await _jsRuntime.InvokeAsync<FetchResponse>(
                     "httpClientHelper.fetchWithCredentials",
                     url,
@@ -255,8 +225,6 @@ namespace Dashboard.Providers
                     body,
                     null
                 );
-
-                Console.WriteLine($"[AuthStateProvider] Fetch completed: ok={result.Ok}, status={result.Status}");
 
                 return result;
             }

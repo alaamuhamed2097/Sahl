@@ -114,6 +114,12 @@
                             </a>
                             <ul class="pcoded-submenu" style="display: @(IsSubmenuOpen("ecommerce") ? "block" : "none")">
                                 <li class="nav-item">
+                                    <NavLink href="/attributes" class="nav-link">
+                                        <span class="pcoded-micon"><i class="fas fa-sliders-h"></i></span>
+                                        <span class="pcoded-mtext">@ECommerceResources.Attributes</span>
+                                    </NavLink>
+                                </li>
+                                <li class="nav-item">
                                     <NavLink href="/categories" class="nav-link" onclick="closeNavMenu()">
                                         <span class="pcoded-micon"><i class="fas fa-tags"></i></span>
                                         <span class="pcoded-mtext">@ECommerceResources.Categories</span>
@@ -142,12 +148,6 @@
                                         <span class="pcoded-micon"><i class="fas fa-truck"></i></span>
                                         <span class="pcoded-mtext">@ECommerceResources.ShippingCompanies</span>
                                     </NavLink>
-                                </li>
-                                <li class="nav-item">
-                                    <a href="https://riseon-demo-jade.vercel.app" target="_blank" class="nav-link">
-                                        <span class="pcoded-micon"><i class="fas fa-store"></i></span>
-                                        <span class="pcoded-mtext">@ECommerceResources.ECommerceWebsite</span>
-                                    </a>
                                 </li> *@
                             </ul>
                         </li>
@@ -291,44 +291,21 @@
                         </li> *@
 
                         <!-- 📦 Orders & Rewards -->
-                        <li data-username="Vendor-orders-rewards" class="nav-item pcoded-hasmenu @(IsSubmenuOpen("Vendor-orders-rewards") ? "pcoded-trigger" : "")">
+                      @*   <li data-username="Vendor-orders-rewards" class="nav-item pcoded-hasmenu @(IsSubmenuOpen("Vendor-orders-rewards") ? "pcoded-trigger" : "")">
                             <a href="javascript:void(0)" class="nav-link" @onclick="@(() => ToggleSubmenu("Vendor-orders-rewards"))">
                                 <span class="pcoded-micon"><i class="fas fa-box-open"></i></span>
                                 <span class="pcoded-mtext">@GeneralResources.OrdersAndRewards</span>
                                 <span class="pcoded-mcaret"></span>
                             </a>
                             <ul class="pcoded-submenu" style="display: @(IsSubmenuOpen("Vendor-orders-rewards") ? "block" : "none")">
-                             @*  <li class="nav-item">
+                              <li class="nav-item">
                                     <NavLink href="/VendorOrders" class="nav-link" onclick="closeNavMenu()">
                                         <span class="pcoded-micon"><i class="fas fa-dolly-flatbed"></i></span>
                                         <span class="pcoded-mtext">@ECommerceResources.Orders</span>
                                     </NavLink>
-                                </li> *@
-                            </ul>
-                        </li>
-
-                        <!-- 💳 Wallet & Payments -->
-                        <li data-username="Vendor-wallet-payments" class="nav-item pcoded-hasmenu @(IsSubmenuOpen("Vendor-wallet-payments") ? "pcoded-trigger" : "")">
-                            <a href="javascript:void(0)" class="nav-link" @onclick="@(() => ToggleSubmenu("Vendor-wallet-payments"))">
-                                <span class="pcoded-micon"><i class="fas fa-credit-card"></i></span>
-                                <span class="pcoded-mtext">@GeneralResources.WalletAndPayments</span>
-                                <span class="pcoded-mcaret"></span>
-                            </a>
-                            <ul class="pcoded-submenu" style="display: @(IsSubmenuOpen("Vendor-wallet-payments") ? "block" : "none")">
-                                <li class="nav-item">
-                                    <NavLink href="/walletinfo" class="nav-link" onclick="closeNavMenu()">
-                                        <span class="pcoded-micon"><i class="fas fa-wallet"></i></span>
-                                        <span class="pcoded-mtext">@GeneralResources.WalletInformation</span>
-                                    </NavLink>
-                                </li>
-                                <li class="nav-item">
-                                    <NavLink href="/VendorPaymentMethods" class="nav-link" onclick="closeNavMenu()">
-                                        <span class="pcoded-micon"><i class="fas fa-credit-card"></i></span>
-                                        <span class="pcoded-mtext">@GeneralResources.PaymentMethods</span>
-                                    </NavLink>
                                 </li>
                             </ul>
-                        </li>
+                        </li> *@
 
                         <!-- 👤 Account & Settings -->
                         <li data-username="Vendor-account-settings" class="nav-item pcoded-hasmenu @(IsSubmenuOpen("Vendor-account-settings") ? "pcoded-trigger" : "")">

@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimal-ui">
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <base href="/" />
-    <title>سهل | Sahel</title>
+    <title>سهل | Sahl</title>
 
     <link rel="icon" type="image/x-icon" href="/assets/images/favicon.svg" />
 
@@ -161,7 +161,6 @@
                         const entries = list.getEntries();
                         const lastEntry = entries[entries.length - 1];
                         this.lcpCandidate = lastEntry;
-                        console.log('LCP candidate:', lastEntry.startTime + 'ms');
                     });
                     observer.observe({ entryTypes: ['largest-contentful-paint'] });
                 }
@@ -227,14 +226,14 @@
         <div class="loading-container" id="loading-screen">
             <!-- LCP Optimized: Direct img tag with fetchpriority high -->
             <img src="/assets/images/logo-icon.svg"
-                 alt="سهل | Sahel Logo"
+                 alt="سهل | Sahl Logo"
                  class="loading-logo-img"
                  fetchpriority="high"
                  width="80"
                  height="80"
                  decoding="sync"
                  onload="this.style.opacity='1'" />
-            <div class="loading-text">سهل | Sahel</div>
+            <div class="loading-text">سهل | Sahl</div>
             <div class="loading-subtitle">جاري تحميل التطبيق<span class="loading-dots"></span></div>
             <div class="progress-container">
                 <div class="progress-bar" id="progress-bar"></div>
@@ -525,8 +524,6 @@
                 return;
             }
 
-            console.log('All dependencies loaded, initializing critical features...');
-
             // Enhanced menu toggle for Blazor WebAssembly
             $(document).off('click.blazor-enhanced').on('click.blazor-enhanced', '#mobile-collapse, #mobile-collapse1, .mobile-menu', function (e) {
                 e.preventDefault();
@@ -783,7 +780,6 @@
                             width: 36px !important;
                             height: 36px !important;
                             padding: 0 !important;
-                            color: #fff !important;
                             background: transparent !important;
                             border: none !important;
                             margin: 0 !important;
@@ -876,6 +872,158 @@
                 display: none !important;
             }
         }
+
+        /* ==============================================
+       MOBILE HEADER FIX - SHOW ICONS
+       ============================================== */
+        @media (max-width: 991.98px) {
+            /* Force show mobile header icons */
+            .pcoded-header .m-header > div:last-child {
+                display: flex !important;
+                align-items: center !important;
+                gap: 8px !important;
+            }
+
+            /* Mobile navbar in header */
+            .pcoded-header .m-header .navbar-nav {
+                display: flex !important;
+                flex-direction: row !important;
+                align-items: center !important;
+                gap: 8px !important;
+                margin: 0 !important;
+                padding: 0 !important;
+            }
+
+                /* Mobile nav items */
+                .pcoded-header .m-header .navbar-nav > li {
+                    display: flex !important;
+                    align-items: center !important;
+                    margin: 0 !important;
+                }
+
+                    /* Mobile icons styling */
+                    .pcoded-header .m-header .navbar-nav > li > a,
+                    .pcoded-header .m-header .navbar-nav > li > button {
+                        display: flex !important;
+                        align-items: center !important;
+                        justify-content: center !important;
+                        width: 40px !important;
+                        height: 40px !important;
+                        padding: 0 !important;
+                        color: var(--neutral-dark) !important;
+                        background: transparent !important;
+                        border: none !important;
+                        border-radius: var(--radius-sm) !important;
+                        transition: var(--transition-fast);
+                    }
+
+                        .pcoded-header .m-header .navbar-nav > li > a:hover,
+                        .pcoded-header .m-header .navbar-nav > li > button:hover {
+                            background: var(--neutral-lighter) !important;
+                            color: var(--primary) !important;
+                        }
+
+                /* Icon sizes */
+                .pcoded-header .m-header .navbar-nav i,
+                .pcoded-header .m-header .navbar-nav .feather {
+                    font-size: 20px !important;
+                    color: inherit !important;
+                }
+
+            /* Language dropdown on mobile */
+            .pcoded-header .m-header .dropdown-toggle {
+                width: auto !important;
+                padding: 8px 12px !important;
+                border: 1.5px solid var(--neutral-light) !important;
+                border-radius: var(--radius-sm) !important;
+                color: var(--neutral-dark) !important;
+                font-size: 14px !important;
+            }
+        }
+
+        /* ==============================================
+       LOADING SCREEN - BRAND COLORS
+       ============================================== */
+        .loading-container {
+            background: linear-gradient(135deg, #0EA5E9 0%, #0369A1 100%) !important;
+        }
+
+        .loading-logo-img {
+            filter: drop-shadow(0 4px 12px rgba(255, 255, 255, 0.3));
+        }
+
+        .loading-text {
+            color: #FFFFFF !important;
+            font-family: 'Cairo', 'Tajawal', sans-serif !important;
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .loading-subtitle {
+            color: rgba(255, 255, 255, 0.9) !important;
+        }
+
+        .progress-container {
+            background: rgba(255, 255, 255, 0.2) !important;
+        }
+
+        .progress-bar {
+            background: #FFFFFF !important;
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+        }
+
+        .loading-tip {
+            color: rgba(255, 255, 255, 0.85) !important;
+            font-size: 13px;
+            margin-top: 10px;
+        }
+
+        /* ==============================================
+       HEADER COLORS - CONSISTENT WITH THEME
+       ============================================== */
+        .pcoded-header {
+            background: #FFFFFF !important;
+            box-shadow: 0 2px 8px rgba(15, 23, 42, 0.08) !important;
+            border-bottom: 1px solid #E2E8F0 !important;
+        }
+
+            /* Header icons colors */
+            .pcoded-header .navbar-nav > li > a,
+            .pcoded-header .navbar-nav > li > button,
+            .pcoded-header .dropdown-toggle {
+                color: #334155 !important; /* var(--neutral-dark) */
+            }
+
+                .pcoded-header .navbar-nav > li > a:hover,
+                .pcoded-header .navbar-nav > li > button:hover,
+                .pcoded-header .dropdown-toggle:hover {
+                    color: #0EA5E9 !important; /* var(--primary) */
+                    background: #F1F5F9 !important; /* var(--neutral-lighter) */
+                }
+
+            /* Language dropdown */
+            .pcoded-header .dropdown-toggle {
+                border: 1.5px solid #E2E8F0 !important; /* var(--neutral-light) */
+                background: transparent !important;
+            }
+
+                .pcoded-header .dropdown-toggle:hover {
+                    border-color: #0EA5E9 !important; /* var(--primary) */
+                    background: #E0F2FE !important; /* var(--primary-lighter) */
+                }
+
+        /* Mobile menu button */
+        .mobile-menu,
+        #mobile-collapse,
+        #mobile-collapse1 {
+            color: #334155 !important;
+        }
+
+            .mobile-menu:hover,
+            #mobile-collapse:hover,
+            #mobile-collapse1:hover {
+                color: #0EA5E9 !important;
+                background: #F1F5F9 !important;
+            }
     </style>
 </body>
 </html>

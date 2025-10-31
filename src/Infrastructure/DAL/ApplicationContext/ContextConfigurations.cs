@@ -8,7 +8,7 @@ namespace DAL.ApplicationContext
     public class ContextConfigurations
     {
         private static readonly string seedAdminEmail = "admin@gmail.com";
-        private static readonly string seedCustomerEmail = "customer@gmail.com";
+        private static readonly string seedVendorEmail = "vendor@gmail.com";
 
         public static void Configure(ModelBuilder modelBuilder)
         {
@@ -34,9 +34,9 @@ namespace DAL.ApplicationContext
                 await roleManager.CreateAsync(new IdentityRole("Admin"));
             }
 
-            if (!await roleManager.RoleExistsAsync("Customer"))
+            if (!await roleManager.RoleExistsAsync("Vendor"))
             {
-                await roleManager.CreateAsync(new IdentityRole("Customer"));
+                await roleManager.CreateAsync(new IdentityRole("Vendor"));
             }
         }
 
@@ -56,7 +56,7 @@ namespace DAL.ApplicationContext
                     EmailConfirmed = true,
                     FirstName = "Admin",
                     LastName = "Eladmin",
-                    ProfileImagePath = "uploads/Images/default.png",
+                    ProfileImagePath = "uploads/Images/ProfileImages/default.png",
                     PhoneNumber = "1234560",
                     PhoneCode = "+20",
                     CreatedBy = Guid.Empty,
@@ -68,21 +68,21 @@ namespace DAL.ApplicationContext
                 await userManager.AddToRoleAsync(adminUser, "Admin");
             }
 
-            // Ensure customer user exists
-            var customerEmail = seedCustomerEmail;
-            var customerUser = await userManager.FindByEmailAsync(customerEmail);
-            if (customerUser == null)
+            // Ensure Vendor user exists
+            var VendorEmail = seedVendorEmail;
+            var VendorUser = await userManager.FindByEmailAsync(VendorEmail);
+            if (VendorUser == null)
             {
                 var id = Guid.NewGuid().ToString();
-                customerUser = new ApplicationUser
+                VendorUser = new ApplicationUser
                 {
                     Id = id,
-                    UserName = customerEmail,
-                    Email = customerEmail,
+                    UserName = VendorEmail,
+                    Email = VendorEmail,
                     EmailConfirmed = true,
-                    FirstName = "Customer",
-                    LastName = "ElCustomer",
-                    ProfileImagePath = "uploads/Images/default.png",
+                    FirstName = "Vendor",
+                    LastName = "ElVendor",
+                    ProfileImagePath = "uploads/Images/ProfileImages/default.png",
                     PhoneNumber = "1234560",
                     PhoneCode = "+20",
                     CreatedBy = Guid.Empty,
@@ -90,8 +90,8 @@ namespace DAL.ApplicationContext
                     LastLoginDate = null,
                     UserState = UserStateType.Active
                 };
-                var result = await userManager.CreateAsync(customerUser, "customer123456");
-                await userManager.AddToRoleAsync(customerUser, "Customer");
+                var result = await userManager.CreateAsync(VendorUser, "Vendor123456");
+                await userManager.AddToRoleAsync(VendorUser, "Vendor");
             }
         }
     }

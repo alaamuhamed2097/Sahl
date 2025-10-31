@@ -2561,8 +2561,8 @@ label {
     top: 0;
     background: #fff;
     color: rgba(57, 70, 92, 0.8);
-    width: calc(100% - 264px);
-    margin-left: 264px;
+    width: calc(100% - 280px);
+    margin-left: 280px;
     transition: all 0.3s ease-in-out;
     box-shadow: 0 1px 0 0 #e2e5e8;
 }
@@ -3010,7 +3010,7 @@ label {
     z-index: 1029;
     position: absolute;
     transition: all 0.3s ease-in-out;
-    width: 264px;
+    width: 300px;
     height: 100%;
     top: 0;
     background: #39465c;
@@ -3035,7 +3035,7 @@ label {
         background: #39465c;
         height: 64px;
         text-align: center;
-        width: 264px;
+        width: 280px;
         margin-right: 0;
         padding: 10px 25px;
         transition: all 0.3s ease-in-out;
@@ -3385,11 +3385,11 @@ label {
         }
 
         .pcoded-navbar.navbar-collapsed:hover {
-            width: 264px !important;
+            width: 280px !important;
         }
 
             .pcoded-navbar.navbar-collapsed:hover .header-logo {
-                width: 264px;
+                width: 280px;
             }
 
                 .pcoded-navbar.navbar-collapsed:hover .header-logo img {
@@ -3561,7 +3561,7 @@ label {
     float: unset;
     right: 0;
     top: 0;
-    margin-left: 264px;
+    margin-left: 280px;
     min-height: 100vh;
     transition: all 0.3s ease-in-out;
 }
@@ -3665,7 +3665,7 @@ label {
         }
 
     .pcoded-navbar {
-        margin-left: -264px;
+        margin-left: -280px;
         position: absolute;
         height: 100%;
         box-shadow: none;

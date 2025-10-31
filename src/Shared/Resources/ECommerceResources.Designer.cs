@@ -19,7 +19,7 @@ namespace Resources {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "17.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "18.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     public class ECommerceResources {
@@ -322,47 +322,11 @@ namespace Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to مدة الإعلان.
-        /// </summary>
-        public static string BannerDuration {
-            get {
-                return ResourceManager.GetString("BannerDuration", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to الفوائد.
-        /// </summary>
-        public static string Benefits {
-            get {
-                return ResourceManager.GetString("Benefits", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to يرجى إدخال نص الميزة باللغة العربية والإنجليزية..
         /// </summary>
         public static string BenefitValidationMessage {
             get {
                 return ResourceManager.GetString("BenefitValidationMessage", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to العمولات الثنائية.
-        /// </summary>
-        public static string BinaryCommissions {
-            get {
-                return ResourceManager.GetString("BinaryCommissions", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to   بداية ال Binary Commission    .
-        /// </summary>
-        public static string BinaryCommissionStart {
-            get {
-                return ResourceManager.GetString("BinaryCommissionStart", resourceCulture);
             }
         }
         
@@ -381,15 +345,6 @@ namespace Resources {
         public static string BonusPerMonth {
             get {
                 return ResourceManager.GetString("BonusPerMonth", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to معلن تجاري.
-        /// </summary>
-        public static string BusinessAdvertiser {
-            get {
-                return ResourceManager.GetString("BusinessAdvertiser", resourceCulture);
             }
         }
         

@@ -15,6 +15,11 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>CurrencyResources.resx</DependentUpon>
     </Compile>
+    <Compile Update="ECommerceResources.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>ECommerceResources.resx</DependentUpon>
+    </Compile>
     <Compile Update="FormResources.Designer.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
@@ -44,11 +49,6 @@
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
       <DependentUpon>ValidationResources.resx</DependentUpon>
-    </Compile>
-    <Compile Update="ECommerceResources.Designer.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>ECommerceResources.resx</DependentUpon>
     </Compile>
     <Compile Update="BrandResources.Designer.cs">
       <DesignTime>True</DesignTime>
@@ -115,5 +115,11 @@
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>OrderCompletionResources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <AdditionalFiles Remove="C:\Users\alaam\AppData\Roaming\SonarLint for Visual Studio\.global\csharp\SonarLint.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <AdditionalFiles Remove="C:\Users\alaam\AppData\Roaming\SonarLint for Visual Studio\.global\csharp\SonarLint.xml" />
   </ItemGroup>
 </Project>

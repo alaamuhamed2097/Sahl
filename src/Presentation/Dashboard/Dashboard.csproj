@@ -37,6 +37,8 @@
 		<!-- Only enable AOT in Release builds to speed up Debug builds -->
 		<RunAOTCompilation Condition="'$(Configuration)' == 'Release'">true</RunAOTCompilation>
 		<WasmStripILAfterAOT Condition="'$(Configuration)' == 'Release'">true</WasmStripILAfterAOT>
+		<WasmEnableLegacyJsInterop>false</WasmEnableLegacyJsInterop>
+		<DebuggerSupport>false</DebuggerSupport>
 
 		<!-- AOT Advanced Optimizations (Release only) -->
 		<WasmEnableSIMD Condition="'$(Configuration)' == 'Release'">true</WasmEnableSIMD>

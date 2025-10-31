@@ -6,6 +6,12 @@
     ]
   },
   {
+    "outputFileName": "wwwroot/css/home-lazy-loading.min.css",
+    "inputFiles": [
+      "wwwroot/css/home-lazy-loading.css"
+    ]
+  },
+  {
     "outputFileName": "wwwroot/assets/css/style.min.css",
     "inputFiles": [
       "wwwroot/assets/css/style.css"

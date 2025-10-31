@@ -33,7 +33,6 @@ namespace Dashboard.Services.Notification
 
                 if (!authState.User.Identity?.IsAuthenticated ?? true)
                 {
-                    Console.WriteLine("User not authenticated, cannot connect to SignalR hub");
                     return;
                 }
 
@@ -50,14 +49,11 @@ namespace Dashboard.Services.Notification
 
                 _hubConnection.On<string, string>("ReceiveNotification", (title, message) =>
                 {
-                    Console.WriteLine($"Notification received: {title} - {message}");
                     OnNotificationReceived?.Invoke(title, message);
                 });
 
                 _hubConnection.Closed += async (error) =>
                 {
-                    Console.WriteLine($"SignalR connection closed: {error?.Message}");
-
                     // Attempt to reconnect after a delay
                     await Task.Delay(5000);
                     await StartAsync();
@@ -65,20 +61,17 @@ namespace Dashboard.Services.Notification
 
                 _hubConnection.Reconnecting += error =>
                 {
-                    Console.WriteLine($"SignalR reconnecting: {error?.Message}");
                     return Task.CompletedTask;
                 };
 
                 _hubConnection.Reconnected += connectionId =>
                 {
-                    Console.WriteLine($"SignalR reconnected: {connectionId}");
                     return Task.CompletedTask;
                 };
 
                 try
                 {
                     await _hubConnection.StartAsync();
-                    Console.WriteLine($"SignalR Connected: {_hubConnection.State}");
                 }
                 catch (Exception ex)
                 {
@@ -122,7 +115,6 @@ namespace Dashboard.Services.Notification
 
                 if (!authState.User.Identity?.IsAuthenticated ?? true)
                 {
-                    Console.WriteLine("User not authenticated");
                     return null;
                 }
 
@@ -131,7 +123,6 @@ namespace Dashboard.Services.Notification
                           ?? authState.User.FindFirst("sub")?.Value
                           ?? authState.User.FindFirst("userId")?.Value;
 
-                Console.WriteLine($"Current User ID: {userId}");
                 return userId;
             }
             catch (Exception ex)

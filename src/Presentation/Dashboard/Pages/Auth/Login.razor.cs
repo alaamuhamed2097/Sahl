@@ -67,21 +67,16 @@ namespace Dashboard.Pages.Auth
 
             try
             {
-                Console.WriteLine("[Login] Starting login process...");
                 var result = await AuthenticationService.Login(_model);
 
                 if (result.Success && result.Data != null)
                 {
-                    Console.WriteLine("[Login] Login successful");
-
                     // ? Wait for auth state to propagate
                     await Task.Delay(150);
 
                     // Determine redirect URL
                     var redirectUrl = string.Empty;
                     redirectUrl = string.IsNullOrEmpty(ReturnUrl) ? "/" : ReturnUrl;
-
-                    Console.WriteLine($"[Login] Redirecting to: {redirectUrl}");
 
                     // ? Don't use forceLoad - prevents auth state reset
                     NavigationManager.NavigateTo(redirectUrl, forceLoad: false);

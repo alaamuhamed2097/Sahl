@@ -16,9 +16,6 @@ window.httpClientHelper = {
     // Fetch with credentials to ensure cookies are sent
     fetchWithCredentials: async function (url, method, body, headers) {
         try {
-            console.log(`[HttpClientHelper] ${method} ${url}`);
-            console.log(`[HttpClientHelper] Current cookies:`, document.cookie);
-
             // ? Get token from localStorage
             const token = this.getAuthToken();
             
@@ -36,9 +33,6 @@ window.httpClientHelper = {
             // ? Add Bearer token if available
             if (token) {
                 options.headers['Authorization'] = `Bearer ${token}`;
-                console.log('[HttpClientHelper] ? Bearer token added to request');
-            } else {
-                console.log('[HttpClientHelper] ? No Bearer token found in localStorage');
             }
 
             // Add body if provided (for POST, PUT, etc.)
@@ -46,19 +40,11 @@ window.httpClientHelper = {
                 options.body = JSON.stringify(body);
             }
 
-            console.log(`[HttpClientHelper] Fetch options:`, { ...options, body: body ? 'present' : 'none' });
-
             const response = await fetch(url, options);
             const responseText = await response.text();
 
-            console.log(`[HttpClientHelper] Response: ${response.status} ${response.statusText}`);
-            console.log(`[HttpClientHelper] After request cookies:`, document.cookie);
-
             // ? Check if we got set-cookie headers (for debugging - won't work with HttpOnly cookies)
             const setCookieHeader = response.headers.get('set-cookie');
-            if (setCookieHeader) {
-                console.log(`[HttpClientHelper] Set-Cookie header found:`, setCookieHeader);
-            }
 
             return {
                 ok: response.ok,
@@ -86,7 +72,6 @@ window.httpClientHelper = {
             // Instead, we check localStorage for auth state flag
             const hasAuthState = localStorage.getItem('isAuthenticated') === 'true';
             
-            console.log(`[HttpClientHelper] Has auth state: ${hasAuthState}`);
             return hasAuthState;
         } catch (error) {
             console.error('[HttpClientHelper] Error checking cookie:', error);
@@ -96,7 +81,6 @@ window.httpClientHelper = {
 
     // Check all cookies (for debugging)
     checkCookies: function () {
-        console.log('[HttpClientHelper] Current cookies:', document.cookie);
         return document.cookie;
     },
 
@@ -105,10 +89,8 @@ window.httpClientHelper = {
         try {
             if (isAuthenticated) {
                 localStorage.setItem('isAuthenticated', 'true');
-                console.log('[HttpClientHelper] ? Auth state set to true');
             } else {
                 localStorage.removeItem('isAuthenticated');
-                console.log('[HttpClientHelper] ? Auth state cleared');
             }
         } catch (error) {
             console.error('[HttpClientHelper] Error setting auth state:', error);
@@ -119,7 +101,6 @@ window.httpClientHelper = {
     checkAuthState: function () {
         try {
             const isAuth = localStorage.getItem('isAuthenticated') === 'true';
-            console.log('[HttpClientHelper] Auth state:', isAuth);
             return isAuth;
         } catch (error) {
             console.error('[HttpClientHelper] Error checking auth state:', error);
@@ -132,9 +113,6 @@ window.httpClientHelper = {
         try {
             localStorage.removeItem('isAuthenticated');
             localStorage.removeItem('authToken'); // ? Also clear token
-            // Note: We can't clear HttpOnly cookies from JavaScript
-            // The logout endpoint on the server must do that
-            console.log('[HttpClientHelper] Auth data cleared from localStorage');
         } catch (error) {
             console.error('[HttpClientHelper] Error clearing auth data:', error);
         }

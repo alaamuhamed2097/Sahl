@@ -31,8 +31,6 @@ namespace Dashboard.Services.CMS
 
         public async Task<ResponseModel<SignInResult>> Login(LoginRequestModel model)
         {
-            Console.WriteLine("[CookieAuthService] Starting login process...");
-
             // Convert LoginRequestModel to the DTO expected by the API
             var loginDto = new IdentifierLoginDto
             {
@@ -44,19 +42,14 @@ namespace Dashboard.Services.CMS
                 ApiEndpoints.Auth.Login,
                 loginDto);
 
-            Console.WriteLine($"[CookieAuthService] Login API response: Success={response.Success}");
-
             if (response.Success && response.Data != null)
             {
-                Console.WriteLine("[CookieAuthService] Login successful, updating auth state...");
-
                 // ? CRITICAL FIX: Store token in localStorage for Bearer authentication
                 if (!string.IsNullOrEmpty(response.Data.Token))
                 {
                     try
                     {
                         await _jsRuntime.InvokeVoidAsync("localStorage.setItem", "authToken", response.Data.Token);
-                        Console.WriteLine("[CookieAuthService] ? Token stored in localStorage");
                     }
                     catch (Exception ex)
                     {
@@ -66,7 +59,6 @@ namespace Dashboard.Services.CMS
 
                 // Notify auth state provider
                 await _authStateProvider.MarkUserAsAuthenticated();
-                Console.WriteLine("[CookieAuthService] ? Authentication state provider notified");
 
                 return new ResponseModel<SignInResult>
                 {
@@ -76,7 +68,6 @@ namespace Dashboard.Services.CMS
                 };
             }
 
-            Console.WriteLine($"[CookieAuthService] Login failed: {response.Message}");
             return new ResponseModel<SignInResult>
             {
                 Success = false,
@@ -86,13 +77,10 @@ namespace Dashboard.Services.CMS
 
         public async Task Logout()
         {
-            Console.WriteLine("[CookieAuthService] Starting logout...");
-
             // Clear token from localStorage
             try
             {
                 await _jsRuntime.InvokeVoidAsync("localStorage.removeItem", "authToken");
-                Console.WriteLine("[CookieAuthService] ? Token removed from localStorage");
             }
             catch (Exception ex)
             {
@@ -101,7 +89,6 @@ namespace Dashboard.Services.CMS
 
             // The API will clear the cookies
             await _authStateProvider.MarkUserAsLoggedOut();
-            Console.WriteLine("[CookieAuthService] ? Logout complete");
         }
 
         /// <summary>
@@ -110,7 +97,6 @@ namespace Dashboard.Services.CMS
         public async Task<bool> IsAuthenticatedAsync()
         {
             var result = await _authStateProvider.IsAuthenticatedAsync();
-            Console.WriteLine($"[CookieAuthService] IsAuthenticatedAsync result: {result}");
             return result;
         }
 
@@ -118,8 +104,6 @@ namespace Dashboard.Services.CMS
         {
             try
             {
-                Console.WriteLine("[CookieAuthService] Attempting token refresh...");
-
                 // Call the API to refresh the token
                 // The refresh token cookie will be sent automatically
                 var response = await _apiService.PostAsync<object, object>(
@@ -129,13 +113,11 @@ namespace Dashboard.Services.CMS
 
                 if (response.Success)
                 {
-                    Console.WriteLine("[CookieAuthService] ? Token refreshed successfully");
                     // New token is set in cookie by the API
                     await _authStateProvider.MarkUserAsAuthenticated();
                     return true;
                 }
 
-                Console.WriteLine("[CookieAuthService] ? Token refresh failed, logging out");
                 await Logout(); // If refresh failed, log out user
                 return false;
             }
