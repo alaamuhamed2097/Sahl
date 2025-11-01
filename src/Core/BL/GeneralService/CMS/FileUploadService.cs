@@ -62,7 +62,7 @@ namespace BL.GeneralService.CMS
             await File.WriteAllBytesAsync(filePath, fileBytes);
 
             var finalPath = Path.Combine("uploads", folderName, uniqueFileName);
-            return finalPath.Replace('\\','/');
+            return finalPath.Replace('\\', '/');
         }
 
         public bool IsValidFile(IFormFile file)

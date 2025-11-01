@@ -1,16 +1,9 @@
-﻿using Azure.Core;
-using BL.Contracts.GeneralService.Notification;
-using DAL.Contracts.UnitOfWork;
+﻿using BL.Contracts.GeneralService.Notification;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
 using Resources;
 using Shared.GeneralModels;
 using Shared.GeneralModels.Parameters.Notification;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace BL.GeneralService.Notification
 {

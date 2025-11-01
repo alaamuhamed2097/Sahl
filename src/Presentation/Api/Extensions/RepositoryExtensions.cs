@@ -13,11 +13,11 @@ namespace Api.Extensions
         {
             // Unit of Work pattern
             services.AddScoped<IUnitOfWork, UnitOfWork>();
-            
+
             // Generic repositories
             services.AddScoped(typeof(ITableRepository<>), typeof(TableRepository<>));
             services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
-            
+
             // Base mapper
             services.AddScoped(typeof(IBaseMapper), typeof(BaseMapper));
 

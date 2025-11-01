@@ -1,6 +1,5 @@
 // File: Middleware/ClientIPMiddleware.cs
 using Api.Extensions;
-using Microsoft.AspNetCore.Http;
 
 namespace Api.Middleware
 {

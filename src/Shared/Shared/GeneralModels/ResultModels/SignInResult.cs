@@ -1,9 +1,4 @@
-﻿using Resources;
-using Resources.Enumerations;
-using Shared.DTOs.User;
-using System.ComponentModel.DataAnnotations;
-
-namespace Shared.GeneralModels.ResultModels
+﻿namespace Shared.GeneralModels.ResultModels
 {
     public class SignInResult : OperationResult
     {

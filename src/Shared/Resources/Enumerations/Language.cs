@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Resources.Enumerations
+﻿namespace Resources.Enumerations
 {
     public enum Language
     {

@@ -5,7 +5,7 @@ using Shared.ResultModels;
 
 namespace BL.Contracts.GeneralService.Notification
 {
-    public interface IUserNotificationService 
+    public interface IUserNotificationService
     {
         UserNotificationResult<PaginatedDataModel<UserNotificationRequest>> GetPage(BaseSearchCriteriaModel criteriaModel, string userId);
         UserNotificationResult<IEnumerable<UserNotificationRequest>> GetAll(string userId);

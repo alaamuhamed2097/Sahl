@@ -120,7 +120,7 @@ namespace Bl.GeneralService.Notification
             return await _smsProvider.SendAsync(smsRequest);
         }
 
-        private async Task<ResponseModel<object>> SendSignalRNotificationAsync(NotificationRequest request )
+        private async Task<ResponseModel<object>> SendSignalRNotificationAsync(NotificationRequest request)
         {
             var templateAr = await _templateService.GetTemplateAsync(
                             request.CustomTemplate, request.Channel, request.Type);
@@ -134,7 +134,7 @@ namespace Bl.GeneralService.Notification
             var titleEn = !string.IsNullOrEmpty(request.Title) ? request.Title : templateEn.Title;
             titleEn = _templateService.ProcessTemplate(titleEn, request.Parameters);
 
-            var template = ResourceManager.CurrentLanguage == Language.Arabic ? templateAr:templateEn;
+            var template = ResourceManager.CurrentLanguage == Language.Arabic ? templateAr : templateEn;
             var body = ResourceManager.CurrentLanguage == Language.Arabic ? bodyAr : bodyEn;
             var title = ResourceManager.CurrentLanguage == Language.Arabic ? titleAr : titleEn;
 

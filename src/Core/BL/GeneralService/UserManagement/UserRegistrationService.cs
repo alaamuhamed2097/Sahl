@@ -2,7 +2,6 @@ using BL.Contracts.GeneralService.CMS;
 using BL.Contracts.GeneralService.UserManagement;
 using BL.Contracts.IMapper;
 using Common.Enumerations.User;
-using DAL.Contracts.UnitOfWork;
 using Domains.Identity;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -418,7 +417,7 @@ namespace BL.GeneralService.UserManagement
         //        await _marketerUnitOfWork.BeginTransactionAsync();
 
         //        // Update ApplicationUser information
-                
+
         //        // Verify old password before allowing changes
         //        var passwordCheck = await _userManager.CheckPasswordAsync(applicationUser, profileDto.OldPassword);
         //        if (!passwordCheck)

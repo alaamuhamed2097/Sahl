@@ -1,8 +1,3 @@
-using Resources;
-using Resources.Enumerations;
-using Microsoft.AspNetCore.Localization;
-using System.Globalization;
-
 namespace Api.Extensions
 {
     public static class InfrastructureExtensions

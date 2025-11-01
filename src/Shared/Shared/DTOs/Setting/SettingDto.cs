@@ -4,6 +4,6 @@ namespace Shared.DTOs.Setting
 {
     public class SettingDto : BaseSeoDto
     {
-        
+
     }
 }

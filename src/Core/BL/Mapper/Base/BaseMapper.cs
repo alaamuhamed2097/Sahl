@@ -14,9 +14,9 @@ namespace BL.Mapper.Base
 
         public TDestination MapModel<TSource, TDestination>(TSource source)
         {
-            try 
+            try
             {
-            return _mapper.Map<TDestination>(source);
+                return _mapper.Map<TDestination>(source);
             }
             catch (AutoMapperMappingException ex)
             {
@@ -32,7 +32,7 @@ namespace BL.Mapper.Base
         {
             try
             {
-               return _mapper.Map<IEnumerable<TDestination>>(source);
+                return _mapper.Map<IEnumerable<TDestination>>(source);
             }
             catch (AutoMapperMappingException ex)
             {

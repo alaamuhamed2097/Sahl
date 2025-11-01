@@ -1,12 +1,12 @@
 ﻿using BL.Contracts.GeneralService.Notification;
 using BL.GeneralService.Notification;
+using Common.Enumerations.User;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using Resources;
 using Shared.GeneralModels;
 using Shared.GeneralModels.Parameters.Notification;
-using Common.Enumerations.User;
 
 namespace Api.Controllers.Notification
 {
@@ -24,10 +24,10 @@ namespace Api.Controllers.Notification
         }
 
         [HttpPost("send")]
-        [Authorize(Roles =nameof(UserRole.Admin))]
+        [Authorize(Roles = nameof(UserRole.Admin))]
         public async Task<IActionResult> SendNotification([FromBody] NotificationRequest request)
         {
-          var result = await _notificationService.SendNotificationAsync(request);
+            var result = await _notificationService.SendNotificationAsync(request);
             if (!result.Success)
             {
                 return BadRequest(new ResponseModel<object>
@@ -36,7 +36,7 @@ namespace Api.Controllers.Notification
                     Message = result.Message
                 });
             }
-            return Ok(new ResponseModel<object> 
+            return Ok(new ResponseModel<object>
             {
                 Success = true,
                 Message = NotifiAndAlertsResources.NotificationSentSuccessfully,

@@ -2,7 +2,6 @@
 using Serilog;
 using Shared.GeneralModels;
 using Shared.GeneralModels.Parameters.Notification;
-using System.Threading.Tasks;
 
 namespace Bl.GeneralService.Notification
 {

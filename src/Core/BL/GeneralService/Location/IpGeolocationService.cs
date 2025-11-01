@@ -135,7 +135,7 @@ namespace BL.GeneralService.Location
 
                 if (_configuration.GetValue<bool>("MaxMind:EnableLogging", false))
                 {
-                    _logger.LogDebug("IP {IpAddress} resolved to {Country}, {City}", 
+                    _logger.LogDebug("IP {IpAddress} resolved to {Country}, {City}",
                         ipAddress, result.CountryName, result.City);
                 }
 

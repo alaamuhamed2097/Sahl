@@ -3,9 +3,7 @@ using Common.Enumerations.Notification;
 using Microsoft.AspNetCore.Hosting;
 using Serilog;
 using Shared.GeneralModels.Parameters.Notification;
-using System.IO;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace Bl.GeneralService.Notification
 {
@@ -81,8 +79,8 @@ namespace Bl.GeneralService.Notification
                 Channel = channel,
                 Type = type,
                 Content = content,
-                Subject = GetSubject(type,language),
-                Title = GetTitle(type,language)
+                Subject = GetSubject(type, language),
+                Title = GetTitle(type, language)
             };
         }
 
@@ -132,6 +130,6 @@ namespace Bl.GeneralService.Notification
             _ => language == "ar" ? "إشعار عام" : type.ToString().Replace('_', ' ')
         };
 
-        private string GetTitle(NotificationType type,string language) => GetSubject(type, language);
+        private string GetTitle(NotificationType type, string language) => GetSubject(type, language);
     }
 }

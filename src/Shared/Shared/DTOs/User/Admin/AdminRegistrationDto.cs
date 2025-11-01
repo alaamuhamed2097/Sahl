@@ -1,5 +1,4 @@
 ﻿using Resources;
-using Shared.DTOs.Base;
 using System.ComponentModel.DataAnnotations;
 
 namespace Shared.DTOs.User.Admin
@@ -17,7 +16,7 @@ namespace Shared.DTOs.User.Admin
         public string LastName { get; set; } = null!;
 
         [Required(ErrorMessageResourceName = "FieldRequired", ErrorMessageResourceType = typeof(ValidationResources))]
-        [StringLength(100, MinimumLength =5, ErrorMessageResourceName = "EmailLength", ErrorMessageResourceType = typeof(ValidationResources))]
+        [StringLength(100, MinimumLength = 5, ErrorMessageResourceName = "EmailLength", ErrorMessageResourceType = typeof(ValidationResources))]
         [EmailAddress(ErrorMessageResourceName = "EmailFormat", ErrorMessageResourceType = typeof(ValidationResources))]
         public string Email { get; set; } = null!;
 

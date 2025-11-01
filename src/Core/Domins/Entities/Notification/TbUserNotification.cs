@@ -1,6 +1,5 @@
 ﻿using Domains.Entities.Base;
 using Domains.Identity;
-using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -17,7 +16,7 @@ namespace Domains.Entities.Notification
         public Guid NotificationId { get; set; }
 
         [Required]
-        public bool IsRead { get; set; } = false; 
+        public bool IsRead { get; set; } = false;
 
         public virtual ApplicationUser User { get; set; }
         public virtual TbNotification TbNotification { get; set; }

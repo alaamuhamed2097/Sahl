@@ -121,7 +121,7 @@ namespace BL.GeneralService.UserManagement
 
             return await _userManager.IsInRoleAsync(user, role);
         }
-        
+
         public async Task<bool> Delete(Guid id, Guid updatorId)
         {
             if (!_userManager.Users.Any(u => u.Id == updatorId.ToString()))

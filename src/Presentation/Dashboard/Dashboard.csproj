@@ -62,7 +62,6 @@
 
 		<!-- Disable AOT in Debug for faster builds -->
 		<RunAOTCompilation Condition="'$(Configuration)' == 'Debug'">false</RunAOTCompilation>
-		<SonarQubeExclude>True</SonarQubeExclude>
 	</PropertyGroup>
 
 	<!-- ========== 🌐 Supported Cultures (Arabic + English) ========== -->
