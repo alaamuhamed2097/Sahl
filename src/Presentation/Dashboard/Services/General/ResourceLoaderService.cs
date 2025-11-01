@@ -1,6 +1,6 @@
-﻿using Microsoft.AspNetCore.Components;
+﻿using Dashboard.Contracts.General;
+using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
-using Dashboard.Contracts.General;
 
 namespace Dashboard.Services.General
 {

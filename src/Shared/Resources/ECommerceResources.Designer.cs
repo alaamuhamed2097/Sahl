@@ -1114,6 +1114,15 @@ namespace Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to أدخل سعر المنتج.
+        /// </summary>
+        public static string PricePlaceHolder {
+            get {
+                return ResourceManager.GetString("PricePlaceHolder", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to السعر مطلوب.
         /// </summary>
         public static string PriceRequired {
@@ -1128,6 +1137,24 @@ namespace Resources {
         public static string Product {
             get {
                 return ResourceManager.GetString("Product", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to أسم المنتج بالعربي.
+        /// </summary>
+        public static string ProductNameAr {
+            get {
+                return ResourceManager.GetString("ProductNameAr", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to أسم المنتج بالانجليزي.
+        /// </summary>
+        public static string ProductNameEn {
+            get {
+                return ResourceManager.GetString("ProductNameEn", resourceCulture);
             }
         }
         
@@ -1164,6 +1191,15 @@ namespace Resources {
         public static string Quantity {
             get {
                 return ResourceManager.GetString("Quantity", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to أدخل الكمية المتاحة.
+        /// </summary>
+        public static string QuantityPlaceHolder {
+            get {
+                return ResourceManager.GetString("QuantityPlaceHolder", resourceCulture);
             }
         }
         

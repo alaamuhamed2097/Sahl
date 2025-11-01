@@ -1,6 +1,4 @@
 ﻿using Dashboard.Contracts.General;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace Dashboard.Services.General
 {

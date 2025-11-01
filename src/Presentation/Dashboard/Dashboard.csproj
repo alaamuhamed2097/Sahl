@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk.BlazorWebAssembly">
 
 	<PropertyGroup>
-		<TargetFramework>net9.0</TargetFramework>
+		<TargetFramework>net10.0</TargetFramework>
 		<Nullable>enable</Nullable>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<ServiceWorkerAssetsManifest>service-worker-assets.js</ServiceWorkerAssetsManifest>
@@ -62,6 +62,7 @@
 
 		<!-- Disable AOT in Debug for faster builds -->
 		<RunAOTCompilation Condition="'$(Configuration)' == 'Debug'">false</RunAOTCompilation>
+		<SonarQubeExclude>True</SonarQubeExclude>
 	</PropertyGroup>
 
 	<!-- ========== 🌐 Supported Cultures (Arabic + English) ========== -->
@@ -79,12 +80,9 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Blazored.LocalStorage" Version="4.5.0" />
-		<PackageReference Include="Blazored.Toast" Version="4.2.1" />
-		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="9.0.10" />
-		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Authentication" Version="9.0.10" />
-		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="9.0.10" PrivateAssets="all" />
-		<PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="9.0.10" />
+		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="10.0.0-rc.2.25502.107" />
+		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Authentication" Version="10.0.0-rc.2.25502.107" />
+		<PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.14.0" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -107,7 +105,8 @@
 		- Are already trimmed away (not in published output)
 		- Are needed for core functionality
 	-->
-	<ItemGroup><!-- Example: Uncomment and add your assemblies here if needed -->
+	<ItemGroup>
+		<!-- Example: Uncomment and add your assemblies here if needed -->
 		<!-- <BlazorWebAssemblyLazyLoad Include="YourLibrary.dll" /> -->
 
 		<!-- ⚠️ DO NOT lazy load these - needed at startup: -->
@@ -116,15 +115,15 @@
 		<!-- - Shared.dll & Common.dll (core business logic) -->
 		<!-- - Blazored.Toast (UI feedback) -->
 		<!-- - System.IdentityModel.Tokens.Jwt (authentication) -->
-	
-	  <Folder Include="Handlers\" />
+
+		<Folder Include="Handlers\" />
 	</ItemGroup>
 
 	<!-- ========== 🛡️ Trimming Protection ========== -->
 	<ItemGroup>
 		<!-- Protect assemblies that use reflection or dynamic code -->
 		<TrimmerRootAssembly Include="Resources" />
-		<TrimmerRootAssembly Include="UI" />
+		<TrimmerRootAssembly Include="Dashboard" />
 		<TrimmerRootAssembly Include="Shared" />
 		<TrimmerRootAssembly Include="Common" />
 		<TrimmerRootAssembly Include="System.Linq.Expressions" />
@@ -134,6 +133,9 @@
 	<!-- ========== 🔧 Service Worker ========== -->
 	<ItemGroup>
 		<ServiceWorker Include="wwwroot\service-worker.js" PublishedContent="wwwroot\service-worker.published.js" />
+	</ItemGroup>
+	<ItemGroup>
+	  <AdditionalFiles Remove="C:\Users\alaam\AppData\Roaming\SonarLint for Visual Studio\.global\csharp\SonarLint.xml" />
 	</ItemGroup>
 
 </Project>

@@ -11,7 +11,7 @@ namespace Api.Extensions
                     // Policy for Blazor Dashboard
                     options.AddPolicy("AllowBlazorWasm", policy =>
                     {
-                        policy.WithOrigins("https://localhost:7049", "https://localhost:7251")
+                        policy.WithOrigins("https://localhost:7049", "https://localhost:7251", "https://sahl.itlegend.net")
                               .AllowAnyHeader()
                               .AllowAnyMethod()
                               .AllowCredentials();

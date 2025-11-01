@@ -1,0 +1,71 @@
+﻿@using Common.Enumerations
+@using Common.Enumerations.FieldType
+@using Common.Enumerations.User
+@using Resources
+@using Shared.DTOs.ECommerce
+@using Shared.DTOs.ECommerce.Item
+@using Shared.DTOs.User
+@attribute [Authorize(Roles = nameof(UserRole.Admin))]
+<div class="card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h5 class="mb-0 text-primary">@ECommerceResources.AttributeCombinations <span class="text-danger">*</span></h5>
+    </div>
+    <div class="card-body">
+        @if (Combinations.Any())
+        {
+            <div class="table-responsive">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>@ECommerceResources.Attributes</th>
+                            <th>@FormResources.Price</th>
+                            <th>@ECommerceResources.Quantity</th>
+                            <th>@FormResources.Image</th>
+                            <th>@FormResources.Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var combination in Combinations)
+                        {
+                            <tr>
+                                <td>
+                                    @GetCombinationAttributesDisplay(combination.AttributeIds)
+                                </td>
+                                <td>
+                                    <InputNumber class="form-control"
+                                                 @bind-Value="combination.FinalPrice" />
+                                </td>
+                                <td>
+                                    <InputNumber class="form-control"
+                                                 @bind-Value="combination.Quantity" />
+                                </td>
+                                <td>
+                                    <InputFile class="form-control"
+                                               OnChange="@(e => HandleCombinationImageUpload(e, combination))"
+                                               accept="image/*" />
+                                    @if (!string.IsNullOrEmpty(combination.Image))
+                                    {
+                                        <img src="@combination.Image" class="img-thumbnail mt-2" style="max-height: 50px;" />
+                                    }
+                                </td>
+                                <td>
+                                    <button type="button" class="btn btn-sm btn-danger"
+                                            @onclick="() => RemoveCombination(combination)">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+        else
+        {
+            <div class="text-center py-4 text-muted">
+                <i class="fas fa-list-alt fa-3x mb-3"></i>
+                <p>@NotifiAndAlertsResources.NoAttributeCombinations</p>
+            </div>
+        }
+    </div>
+</div>

@@ -600,4 +600,16 @@
   <data name="PriceRequired" xml:space="preserve">
     <value>Price Required</value>
   </data>
+  <data name="PricePlaceHolder" xml:space="preserve">
+    <value>Enter product price</value>
+  </data>
+  <data name="QuantityPlaceHolder" xml:space="preserve">
+    <value>Enter available quantity</value>
+  </data>
+  <data name="ProductNameEn" xml:space="preserve">
+    <value>English product name</value>
+  </data>
+  <data name="ProductNameAr" xml:space="preserve">
+    <value>Arabic product name</value>
+  </data>
 </root>

@@ -1,0 +1,222 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="BrandManagement" xml:space="preserve">
+    <value>Brand Management</value>
+  </data>
+  <data name="Brands" xml:space="preserve">
+    <value>Brands</value>
+  </data>
+  <data name="Brand" xml:space="preserve">
+    <value>Brand</value>
+  </data>
+  <data name="BrandName" xml:space="preserve">
+    <value>Brand Name</value>
+  </data>
+  <data name="BrandLogo" xml:space="preserve">
+    <value>Brand Logo</value>
+  </data>
+  <data name="LogoPath" xml:space="preserve">
+    <value>Logo Path</value>
+  </data>
+  <data name="WebsiteUrl" xml:space="preserve">
+    <value>Website URL</value>
+  </data>
+  <data name="IsFavorite" xml:space="preserve">
+    <value>Is Favorite</value>
+  </data>
+  <data name="DisplayOrder" xml:space="preserve">
+    <value>Display Order</value>
+  </data>
+  <data name="AddBrand" xml:space="preserve">
+    <value>Add Brand</value>
+  </data>
+  <data name="EditBrand" xml:space="preserve">
+    <value>Edit Brand</value>
+  </data>
+  <data name="DeleteBrand" xml:space="preserve">
+    <value>Delete Brand</value>
+  </data>
+  <data name="ToggleFavorite" xml:space="preserve">
+    <value>Toggle Favorite</value>
+  </data>
+  <data name="FavoriteBrands" xml:space="preserve">
+    <value>Favorite Brands</value>
+  </data>
+  <data name="BrandsWithWebsite" xml:space="preserve">
+    <value>Brands with Website</value>
+  </data>
+  <data name="RecentBrands" xml:space="preserve">
+    <value>Recent Brands</value>
+  </data>
+  <data name="AllBrands" xml:space="preserve">
+    <value>All Brands</value>
+  </data>
+  <data name="NoBrandsFound" xml:space="preserve">
+    <value>No brands found</value>
+  </data>
+  <data name="BrandSavedSuccessfully" xml:space="preserve">
+    <value>Brand saved successfully</value>
+  </data>
+  <data name="BrandDeletedSuccessfully" xml:space="preserve">
+    <value>Brand deleted successfully</value>
+  </data>
+  <data name="BrandFavoriteUpdated" xml:space="preserve">
+    <value>Brand favorite status updated</value>
+  </data>
+  <data name="BrandDeleteConfirmation" xml:space="preserve">
+    <value>Are you sure you want to delete this brand?</value>
+  </data>
+  <data name="FavoriteStatusUpdatedSuccessfully" xml:space="preserve">
+    <value>Favorite status updated successfully</value>
+  </data>
+  <data name="FailedToUpdateFavoriteStatus" xml:space="preserve">
+    <value>Failed to update favorite status</value>
+  </data>
+  <data name="ErrorUpdatingFavoriteStatus" xml:space="preserve">
+    <value>Error occurred while updating favorite status</value>
+  </data>
+  <data name="MarkAsFavorite" xml:space="preserve">
+    <value>Mark as Favorite</value>
+  </data>
+  <data name="LogoPreview" xml:space="preserve">
+    <value>Logo Preview</value>
+  </data>
+  <data name="UnableToLoadImage" xml:space="preserve">
+    <value>Unable to load image from specified path</value>
+  </data>
+  <data name="LogoPathDescription" xml:space="preserve">
+    <value>Path to the brand logo image</value>
+  </data>
+  <data name="WebsiteUrlPlaceholder" xml:space="preserve">
+    <value>https://example.com</value>
+  </data>
+  <data name="TitleEn" xml:space="preserve">
+    <value>English Title</value>
+  </data>
+  <data name="TitleAr" xml:space="preserve">
+    <value>Arabic Title</value>
+  </data>
+  <data name="DescriptionEn" xml:space="preserve">
+    <value>English Description</value>
+  </data>
+  <data name="DescriptionAr" xml:space="preserve">
+    <value>Arabic Description</value>
+  </data>
+</root>

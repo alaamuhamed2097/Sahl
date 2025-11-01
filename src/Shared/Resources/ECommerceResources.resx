@@ -600,4 +600,16 @@
   <data name="PriceRequired" xml:space="preserve">
     <value>السعر مطلوب</value>
   </data>
+  <data name="PricePlaceHolder" xml:space="preserve">
+    <value>أدخل سعر المنتج</value>
+  </data>
+  <data name="QuantityPlaceHolder" xml:space="preserve">
+    <value>أدخل الكمية المتاحة</value>
+  </data>
+  <data name="ProductNameEn" xml:space="preserve">
+    <value>أسم المنتج بالانجليزي</value>
+  </data>
+  <data name="ProductNameAr" xml:space="preserve">
+    <value>أسم المنتج بالعربي</value>
+  </data>
 </root>

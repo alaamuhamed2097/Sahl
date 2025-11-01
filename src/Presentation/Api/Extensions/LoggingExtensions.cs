@@ -29,7 +29,7 @@ namespace Api.Extensions
                 .MinimumLevel.Override("Microsoft.Hosting.Lifetime", Serilog.Events.LogEventLevel.Information)
                 .MinimumLevel.Override("Hangfire", Serilog.Events.LogEventLevel.Warning)
                 .Enrich.FromLogContext()
-                .Enrich.WithProperty("Application", "MultiLevelMarketing")
+                .Enrich.WithProperty("Application", "Sahl")
                 .WriteTo.Console(
                     outputTemplate: "[{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj} {Properties:j}{NewLine}{Exception}")
                 .WriteTo.MSSqlServer(

@@ -1,0 +1,104 @@
+﻿@using Common.Enumerations
+@using Common.Enumerations.FieldType
+@using Common.Enumerations.User
+@using Resources
+@using Shared.DTOs.ECommerce
+@using Shared.DTOs.ECommerce.Item
+@using Shared.DTOs.User
+@attribute [Authorize(Roles = nameof(UserRole.Admin))]
+@if (CategoryAttributes.Any())
+{
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5 class="mb-0 text-primary">@ECommerceResources.ItemAttributes<span class="text-danger">*</span></h5>
+        </div>
+        <div class="card-body">
+            @foreach (var _attribute in CategoryAttributes)
+            {
+                var attributeEntry = ItemAttributes.FirstOrDefault(a => a.AttributeId == _attribute.Id);
+                if (attributeEntry == null)
+                {
+                    attributeEntry = new ItemAttributeDto
+                        {
+                            AttributeId = _attribute.Id,
+                            Value = string.Empty
+                        };
+                    ItemAttributes.Add(attributeEntry);
+                }
+
+                <div class="row align-items-center mb-3">
+                    <div class="col-md-10">
+                        <label class="form-label">@_attribute.Title</label>
+                        <div>
+                            @if (_attribute.FieldType == FieldType.Text)
+                            {
+                                <InputText class="form-control"
+                                           @bind-Value="attributeEntry.Value"
+                                           placeholder="@($"{FormResources.Write} {_attribute.Title}")" />
+                            }
+                            else if (_attribute.FieldType == FieldType.IntegerNumber)
+                            {
+                                int? intValue = int.TryParse(attributeEntry.Value, out var val) ? val : null;
+                                <InputNumber TValue="int?" class="form-control"
+                                             Value="intValue"
+                                             ValueChanged="@((int? v) => attributeEntry.Value = v?.ToString())"
+                                             ValueExpression="@(() => intValue)"
+                                             placeholder="@($"{FormResources.Write} {_attribute.Title}")" />
+                            }
+                            else if (_attribute.FieldType == FieldType.DecimalNumber)
+                            {
+                                decimal? decValue = decimal.TryParse(attributeEntry.Value, out var val) ? val : null;
+                                <InputNumber TValue="decimal?" class="form-control"
+                                             step="0.01"
+                                             Value="decValue"
+                                             ValueChanged="@((decimal? v) => attributeEntry.Value = v?.ToString())"
+                                             ValueExpression="@(() => decValue)"
+                                             placeholder="@($"{FormResources.Write} {_attribute.Title}")" />
+                            }
+                            else if (_attribute.FieldType == FieldType.DateTime)
+                            {
+                                DateTime? dateVal = DateTime.TryParse(attributeEntry.Value, out var val) ? val : null;
+                                <InputDate TValue="DateTime?" class="form-control"
+                                           Value="dateVal"
+                                           ValueChanged="@((DateTime? v) => attributeEntry.Value = v?.ToString("yyyy-MM-dd"))"
+                                           ValueExpression="@(() => dateVal)"
+                                           placeholder="@($"{FormResources.Write} {_attribute.Title}")" />
+                            }
+                            else if (_attribute.FieldType == FieldType.CheckBox)
+                            {
+                                bool isChecked = bool.TryParse(attributeEntry.Value, out var val) && val;
+                                <div class="form-check">
+                                    <InputCheckbox class="form-check-input"
+                                                   Value="isChecked"
+                                                   ValueChanged="@((bool v) => attributeEntry.Value = v.ToString())"
+                                                   ValueExpression="@(() => isChecked)" />
+                                    <label class="form-check-label">@_attribute.Title</label>
+                                </div>
+                            }
+                            else if (_attribute.FieldType == FieldType.List || _attribute.FieldType == FieldType.MultiSelectList)
+                            {
+                                <InputSelect class="form-select"
+                                             @bind-Value="attributeEntry.Value">
+                                    <option value="">@FormResources.Select</option>
+                                    @if (_attribute.AttributeOptions != null)
+                                    {
+                                        @foreach (var option in _attribute.AttributeOptions)
+                                        {
+                                            <option value="@option.AttributeId">@option.Title</option>
+                                        }
+                                    }
+                                </InputSelect>
+                            }
+                        </div>
+                    </div>
+                    <div class="col-md-2 text-end mt-4">
+                        <button type="button" class="btn btn-outline-danger"
+                                @onclick="() => RemoveAttribute(_attribute.Id)">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+}

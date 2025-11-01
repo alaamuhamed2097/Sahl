@@ -1,8 +1,8 @@
 using Dashboard.Constants;
-using Shared.DTOs.Setting;
-using Shared.GeneralModels;
 using Dashboard.Contracts.General;
 using Dashboard.Contracts.Setting;
+using Shared.DTOs.Setting;
+using Shared.GeneralModels;
 
 namespace Dashboard.Services.Setting
 {

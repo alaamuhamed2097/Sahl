@@ -1,7 +1,7 @@
+using Dashboard.Models.pagintion;
 using Shared.DTOs.Page;
 using Shared.GeneralModels;
 using Shared.GeneralModels.SearchCriteriaModels;
-using Dashboard.Models.pagintion;
 
 namespace Dashboard.Contracts.Page
 {

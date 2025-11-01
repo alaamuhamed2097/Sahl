@@ -13,7 +13,7 @@ namespace Dashboard.Extensions
     {
         public static IServiceCollection AddGeneralServices(this IServiceCollection services)
         {
-            services.AddScoped<INotificationService, NotificationService>();
+            // services.AddScoped<INotificationService, NotificationService>();
             services.AddScoped<INotificationStateService, NotificationStateService>();
             services.AddScoped<IUserNotificationService, UserNotificationService>();
             services.AddScoped<ISettingService, SettingService>();
