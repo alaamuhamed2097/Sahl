@@ -3,7 +3,7 @@ using Microsoft.JSInterop;
 using Resources;
 using Shared.DTOs.ECommerce;
 using Shared.DTOs.ECommerce.Views;
-using UI.Contracts.Items;
+using Dashboard.Contracts.Items;
 
 namespace Dashboard.Pages.Catalog.Units
 {

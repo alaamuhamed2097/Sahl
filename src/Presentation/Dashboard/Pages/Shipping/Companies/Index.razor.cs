@@ -2,8 +2,8 @@
 using Resources;
 using Shared.DTOs.ECommerce;
 using Shared.GeneralModels;
-using UI.Constants;
-using UI.Contracts;
+using Dashboard.Constants;
+using Dashboard.Contracts;
 
 namespace Dashboard.Pages.Shipping.Companies
 {

@@ -1,4 +1,7 @@
-﻿using Blazored.Toast.Services;
+﻿using Dashboard.Configuration;
+using Dashboard.Contracts;
+using Dashboard.Contracts.General;
+using Dashboard.Services.General;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.Extensions.Options;
@@ -6,12 +9,6 @@ using Microsoft.JSInterop;
 using Resources;
 using Resources.Enumerations;
 using Shared.DTOs.ECommerce;
-using System.Buffers.Text;
-using UI.Configuration;
-using UI.Contracts;
-using UI.Contracts.General;
-using UI.Services;
-using UI.Services.General;
 
 namespace Dashboard.Pages.Shipping.Companies
 {
@@ -45,7 +42,7 @@ namespace Dashboard.Pages.Shipping.Companies
         {
             if (firstRender)
             {
-                    ResourceLoaderService.LoadScript("Common/imageHandler/imageHandler.js");
+                ResourceLoaderService.LoadScript("Common/imageHandler/imageHandler.js");
             }
             return Task.CompletedTask;
         }
@@ -170,7 +167,7 @@ namespace Dashboard.Pages.Shipping.Companies
                         }
                     }
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
                     await ShowErrorNotification(
                     NotifiAndAlertsResources.Error,
@@ -180,7 +177,7 @@ namespace Dashboard.Pages.Shipping.Companies
 
                 }
             }
-            catch(Exception ex) 
+            catch (Exception ex)
             {
                 await ShowErrorNotification(
                 NotifiAndAlertsResources.Error,

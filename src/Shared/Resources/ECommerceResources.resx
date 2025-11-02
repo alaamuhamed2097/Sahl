@@ -666,4 +666,46 @@
   <data name="SelectValidDeliveryDate" xml:space="preserve">
     <value>يرجى اختيار تاريخ تسليم صالح.</value>
   </data>
+  <data name="UnitPrice" xml:space="preserve">
+    <value>سعر الوحدة</value>
+  </data>
+  <data name="SubTotal" xml:space="preserve">
+    <value>الإجمالي الفرعي</value>
+  </data>
+  <data name="Shipping" xml:space="preserve">
+    <value>قيد الشحن</value>
+  </data>
+  <data name="InProgress" xml:space="preserve">
+    <value>قيد التنفيذ</value>
+  </data>
+  <data name="Delivered" xml:space="preserve">
+    <value>تم التسليم</value>
+  </data>
+  <data name="MoveToInProgress" xml:space="preserve">
+    <value>نقل إلى قيد المعالجة</value>
+  </data>
+  <data name="MoveToShipping" xml:space="preserve">
+    <value>نقل إلى الشحن</value>
+  </data>
+  <data name="MoveToDelivered" xml:space="preserve">
+    <value>نقل إلى تم التسليم</value>
+  </data>
+  <data name="ShippingCompany" xml:space="preserve">
+    <value>شركة الشحن</value>
+  </data>
+  <data name="ExpectedDelivery" xml:space="preserve">
+    <value>موعد التسليم المتوقع</value>
+  </data>
+  <data name="SuccessfullyDelivered" xml:space="preserve">
+    <value>تم التسليم بنجاح</value>
+  </data>
+  <data name="CustomerType" xml:space="preserve">
+    <value>نوع العميل</value>
+  </data>
+  <data name="CustomerName" xml:space="preserve">
+    <value>اسم العميل</value>
+  </data>
+  <data name="PaymentStatus" xml:space="preserve">
+    <value>حالة الدفع</value>
+  </data>
 </root>

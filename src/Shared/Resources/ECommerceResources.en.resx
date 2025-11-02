@@ -666,4 +666,46 @@
   <data name="SelectValidDeliveryDate" xml:space="preserve">
     <value>Please select a valid delivery date.</value>
   </data>
+  <data name="UnitPrice" xml:space="preserve">
+    <value>Unit Price</value>
+  </data>
+  <data name="SubTotal" xml:space="preserve">
+    <value>SubTotal</value>
+  </data>
+  <data name="Shipping" xml:space="preserve">
+    <value>Shipping</value>
+  </data>
+  <data name="InProgress" xml:space="preserve">
+    <value>In Progress</value>
+  </data>
+  <data name="Delivered" xml:space="preserve">
+    <value>Delivered</value>
+  </data>
+  <data name="MoveToInProgress" xml:space="preserve">
+    <value>Move to In Progress</value>
+  </data>
+  <data name="MoveToShipping" xml:space="preserve">
+    <value>Move to Shipping</value>
+  </data>
+  <data name="MoveToDelivered" xml:space="preserve">
+    <value>Move to Delivered</value>
+  </data>
+  <data name="ShippingCompany" xml:space="preserve">
+    <value>Shipping Company</value>
+  </data>
+  <data name="ExpectedDelivery" xml:space="preserve">
+    <value>Expected Delivery</value>
+  </data>
+  <data name="SuccessfullyDelivered" xml:space="preserve">
+    <value>Successfully Delivered</value>
+  </data>
+  <data name="CustomerType" xml:space="preserve">
+    <value>Customer Type</value>
+  </data>
+  <data name="CustomerName" xml:space="preserve">
+    <value>Customer Name</value>
+  </data>
+  <data name="PaymentStatus" xml:space="preserve">
+    <value>Payment Status</value>
+  </data>
 </root>
