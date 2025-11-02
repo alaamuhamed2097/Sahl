@@ -114,12 +114,6 @@
                             </a>
                             <ul class="pcoded-submenu" style="display: @(IsSubmenuOpen("ecommerce") ? "block" : "none")">
                                 <li class="nav-item">
-                                    <NavLink href="/attributes" class="nav-link">
-                                        <span class="pcoded-micon"><i class="fas fa-sliders-h"></i></span>
-                                        <span class="pcoded-mtext">@ECommerceResources.Attributes</span>
-                                    </NavLink>
-                                </li>
-                                <li class="nav-item">
                                     <NavLink href="/categories" class="nav-link" onclick="closeNavMenu()">
                                         <span class="pcoded-micon"><i class="fas fa-tags"></i></span>
                                         <span class="pcoded-mtext">@ECommerceResources.Categories</span>
@@ -131,12 +125,25 @@
                                         <span class="pcoded-mtext">@ECommerceResources.Products</span>
                                     </NavLink>
                                 </li>
-                               @*  <li class="nav-item">
+                               <li class="nav-item">
                                     <NavLink href="/brands" class="nav-link" onclick="closeNavMenu()">
                                         <span class="pcoded-micon"><i class="fas fa-tags"></i></span>
                                         <span class="pcoded-mtext">@BrandResources.Brands</span>
                                     </NavLink>
                                 </li>
+                                <li class="nav-item">
+                                    <NavLink href="/attributes" class="nav-link">
+                                        <span class="pcoded-micon"><i class="fas fa-sliders-h"></i></span>
+                                        <span class="pcoded-mtext">@ECommerceResources.Attributes</span>
+                                    </NavLink>
+                                </li>
+                                <li class="nav-item">
+                                    <NavLink href="/units" class="nav-link">
+                                        <span class="pcoded-micon"><i class="fas fa-cube"></i></span>
+                                        <span class="pcoded-mtext">@ECommerceResources.Units</span>
+                                    </NavLink>
+                                </li>
+                                @*
                                 <li class="nav-item">
                                     <NavLink href="/orders" class="nav-link" onclick="closeNavMenu()">
                                         <span class="pcoded-micon"><i class="fas fa-dolly-flatbed"></i></span>
