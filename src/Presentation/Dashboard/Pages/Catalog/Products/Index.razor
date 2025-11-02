@@ -1,6 +1,8 @@
 @page "/catalog/products"
 @page "/products"
 
+@inherits BaseListPage<ItemDto>
+
 @using Common.Enumerations
 @using Common.Enumerations.FieldType
 @using Common.Enumerations.User
@@ -8,7 +10,6 @@
 @using Shared.DTOs.ECommerce.Item
 @using Shared.DTOs.User
 @attribute [Authorize(Roles = nameof(UserRole.Admin))]
-@inherits BaseListPage<ItemDto>
 
 <PageTitle>@ECommerceResources.Products</PageTitle>
 

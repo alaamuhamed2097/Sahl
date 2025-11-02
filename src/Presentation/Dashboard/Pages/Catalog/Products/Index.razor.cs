@@ -8,7 +8,7 @@ using Shared.GeneralModels;
 
 namespace Dashboard.Pages.Catalog.Products
 {
-    public partial class Items : BaseListPage<ItemDto>
+    public partial class Index : BaseListPage<ItemDto>
     {
         protected override string EntityName { get; } = ECommerceResources.Products;
         protected override string AddRoute { get; } = "/product";

@@ -2,6 +2,7 @@
 @page "/units"
 
 @using Common.Enumerations.User
+@using Shared.DTOs.ECommerce.Unit
 @attribute [Authorize(Roles = nameof(UserRole.Admin))]
 @inherits BaseListPage<UnitDto>
 

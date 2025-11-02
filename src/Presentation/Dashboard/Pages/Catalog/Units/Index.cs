@@ -7,7 +7,7 @@ using Shared.GeneralModels;
 
 namespace Dashboard.Pages.Catalog.Units
 {
-    public partial class Units : BaseListPage<UnitDto>
+    public partial class Index : BaseListPage<UnitDto>
     {
         protected override string EntityName { get; } = ECommerceResources.Units;
         protected override string AddRoute { get; } = "/unit";

@@ -1,5 +1,5 @@
-﻿using BL.Attributes;
-using Resources;
+﻿using Resources;
+using Shared.Attributes;
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 

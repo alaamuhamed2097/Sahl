@@ -1,3 +1,4 @@
+using Dashboard.Contracts.Brand;
 using Microsoft.AspNetCore.Components;
 using Resources;
 using Shared.DTOs.Brand;
@@ -5,7 +6,7 @@ using Shared.GeneralModels;
 
 namespace Dashboard.Pages.Catalog.Brands
 {
-    public partial class Brands : BaseListPage<BrandDto>
+    public partial class Index : BaseListPage<BrandDto>
     {
         [Inject] private IBrandService BrandService { get; set; } = null!;
 
