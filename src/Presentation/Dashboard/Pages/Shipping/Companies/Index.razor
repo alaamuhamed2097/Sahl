@@ -2,6 +2,7 @@
 @page "/shipping"
 
 @using Common.Enumerations.User
+@using Shared.DTOs.ECommerce
 @inherits BaseListPage<ShippingCompanyDto>
 @attribute [Authorize(Roles = nameof(UserRole.Admin))]
 <PageTitle>@ECommerceResources.ShippingCompanies</PageTitle>

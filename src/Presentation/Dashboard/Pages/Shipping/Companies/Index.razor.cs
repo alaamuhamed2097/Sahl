@@ -7,7 +7,7 @@ using Dashboard.Contracts;
 
 namespace Dashboard.Pages.Shipping.Companies
 {
-    public partial class ShippingCompanies : BaseListPage<ShippingCompanyDto>
+    public partial class Index : BaseListPage<ShippingCompanyDto>
     {
         protected override string EntityName { get; } = "ShippingCompany";
         protected override string AddRoute { get; } = "/ShippingCompany";
