@@ -367,6 +367,15 @@ namespace Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to تم الإلغاء.
+        /// </summary>
+        public static string Canceled {
+            get {
+                return ResourceManager.GetString("Canceled", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to فئات.
         /// </summary>
         public static string Categories {
@@ -979,6 +988,15 @@ namespace Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to نوع القائمة.
+        /// </summary>
+        public static string ListType {
+            get {
+                return ResourceManager.GetString("ListType", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to عرض القائمة.
         /// </summary>
         public static string ListView {
@@ -1267,6 +1285,15 @@ namespace Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to مدفوع.
+        /// </summary>
+        public static string Paid {
+            get {
+                return ResourceManager.GetString("Paid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to معرف الوالد.
         /// </summary>
         public static string ParentId {
@@ -1384,6 +1411,15 @@ namespace Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to اكواد الخصم.
+        /// </summary>
+        public static string PromoCodes {
+            get {
+                return ResourceManager.GetString("PromoCodes", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to يرجى إدخال قيم صحيحة لليسار، اليمين والدولار..
         /// </summary>
         public static string PVValidationMessage {
@@ -1447,6 +1483,24 @@ namespace Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to الاسترجاعات.
+        /// </summary>
+        public static string Refunds {
+            get {
+                return ResourceManager.GetString("Refunds", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to حالة الاسترجاع.
+        /// </summary>
+        public static string RefundStatus {
+            get {
+                return ResourceManager.GetString("RefundStatus", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to مرفوض.
         /// </summary>
         public static string Refused {
@@ -1479,6 +1533,15 @@ namespace Resources {
         public static string Rejected {
             get {
                 return ResourceManager.GetString("Rejected", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to تم الإرجاع.
+        /// </summary>
+        public static string Returned {
+            get {
+                return ResourceManager.GetString("Returned", resourceCulture);
             }
         }
         
@@ -1533,6 +1596,24 @@ namespace Resources {
         public static string Shipping {
             get {
                 return ResourceManager.GetString("Shipping", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to رسوم الشحن.
+        /// </summary>
+        public static string ShippingAmount {
+            get {
+                return ResourceManager.GetString("ShippingAmount", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to شركات الشحن.
+        /// </summary>
+        public static string ShippingCompanies {
+            get {
+                return ResourceManager.GetString("ShippingCompanies", resourceCulture);
             }
         }
         

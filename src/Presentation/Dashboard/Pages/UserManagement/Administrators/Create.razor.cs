@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Components;
+﻿using Dashboard.Contracts.User;
+using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 using Resources;
 using Shared.DTOs.User.Admin;

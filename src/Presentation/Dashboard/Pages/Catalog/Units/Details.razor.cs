@@ -1,19 +1,18 @@
+using Dashboard.Contracts.ECommerce.Item;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 using Resources;
-using Shared.DTOs.ECommerce;
-using Shared.DTOs.ECommerce.Views;
-using Dashboard.Contracts.Items;
+using Shared.DTOs.ECommerce.Unit;
 
 namespace Dashboard.Pages.Catalog.Units
 {
-    public partial class Unit 
+    public partial class Details
     {
         protected bool isSaving { get; set; }
-        protected UnitDto Model { get; set; } = new() { ConversionUnitsFrom = new() ,ConversionUnitsTo =new() };
+        protected UnitDto Model { get; set; } = new() { ConversionUnitsFrom = new(), ConversionUnitsTo = new() };
         protected IEnumerable<UnitDto> AvailableUnits { get; set; } = Enumerable.Empty<UnitDto>();
-       
-        [Parameter] public Guid Id { get; set; } 
+
+        [Parameter] public Guid Id { get; set; }
 
         [Inject] protected IUnitService UnitService { get; set; } = null!;
         [Inject] protected IJSRuntime JSRuntime { get; set; } = null!;
@@ -34,7 +33,7 @@ namespace Dashboard.Pages.Catalog.Units
 
         protected async Task LoadUnits()
         {
-            var result  =await UnitService.GetAllAsync();
+            var result = await UnitService.GetAllAsync();
             if (result.Success)
             {
                 AvailableUnits = result.Data ?? Enumerable.Empty<UnitDto>();
@@ -73,7 +72,7 @@ namespace Dashboard.Pages.Catalog.Units
             }
             finally
             {
-               await CloseModal();
+                await CloseModal();
             }
         }
 
@@ -120,7 +119,7 @@ namespace Dashboard.Pages.Catalog.Units
 
         protected async Task CloseModal()
         {
-           Navigation.NavigateTo("/units");
+            Navigation.NavigateTo("/units");
         }
         private void AddNewConversionUnitFrom()
         {
@@ -128,7 +127,7 @@ namespace Dashboard.Pages.Catalog.Units
             Model.ConversionUnitsFrom ??= new List<ConversionUnitDto>();
             Model.ConversionUnitsFrom.Add(new ConversionUnitDto
             {
-                ConversionUnitId =  Guid.Empty,
+                ConversionUnitId = Guid.Empty,
                 ConversionFactor = (double)1m
             });
             StateHasChanged();
@@ -160,7 +159,7 @@ namespace Dashboard.Pages.Catalog.Units
             Model.ConversionUnitsTo ??= new List<ConversionUnitDto>();
             Model.ConversionUnitsTo.Add(new ConversionUnitDto
             {
-                ConversionUnitId =  Guid.Empty,
+                ConversionUnitId = Guid.Empty,
                 ConversionFactor = (double)1m
             });
             StateHasChanged();

@@ -708,4 +708,31 @@
   <data name="PaymentStatus" xml:space="preserve">
     <value>حالة الدفع</value>
   </data>
+  <data name="Canceled" xml:space="preserve">
+    <value>تم الإلغاء</value>
+  </data>
+  <data name="Returned" xml:space="preserve">
+    <value>تم الإرجاع</value>
+  </data>
+  <data name="Paid" xml:space="preserve">
+    <value>مدفوع</value>
+  </data>
+  <data name="ListType" xml:space="preserve">
+    <value>نوع القائمة</value>
+  </data>
+  <data name="Refunds" xml:space="preserve">
+    <value>الاسترجاعات</value>
+  </data>
+  <data name="RefundStatus" xml:space="preserve">
+    <value>حالة الاسترجاع</value>
+  </data>
+  <data name="ShippingCompanies" xml:space="preserve">
+    <value>شركات الشحن</value>
+  </data>
+  <data name="PromoCodes" xml:space="preserve">
+    <value>اكواد الخصم</value>
+  </data>
+  <data name="ShippingAmount" xml:space="preserve">
+    <value>رسوم الشحن</value>
+  </data>
 </root>

@@ -1,25 +1,25 @@
-﻿using Microsoft.AspNetCore.Components;
+﻿using Dashboard.Constants;
+using Dashboard.Contracts;
+using Microsoft.AspNetCore.Components;
 using Resources;
 using Shared.DTOs.ECommerce;
 using Shared.GeneralModels;
-using Dashboard.Constants;
-using Dashboard.Contracts;
 
 namespace Dashboard.Pages.Shipping.Companies
 {
-    public partial class ShippingCompanies : BaseListPage<ShippingCompanyDto>
+    public partial class Index : BaseListPage<ShippingCompanyDto>
     {
         protected override string EntityName { get; } = "ShippingCompany";
         protected override string AddRoute { get; } = "/ShippingCompany";
         protected override string EditRouteTemplate { get; } = $"/ShippingCompany/{{id}}";
         protected override string SearchEndpoint { get; } = ApiEndpoints.ShippingCompany.Search;
         protected override Dictionary<string, Func<ShippingCompanyDto, object>> ExportColumns { get; }
-            = new Dictionary<string, Func<ShippingCompanyDto, object>>
-            {
-                [ECommerceResources.Name] = x => x.Name,
-                [FormResources.PhoneNumber] = x => $"{x.PhoneCode}{x.PhoneNumber}",
-                [FormResources.Logo] = x => x.LogoImagePath
-            };
+   = new Dictionary<string, Func<ShippingCompanyDto, object>>
+   {
+       [ECommerceResources.Name] = x => x.Name,
+       [FormResources.PhoneNumber] = x => $"{x.PhoneCode}{x.PhoneNumber}",
+       [FormResources.Logo] = x => x.LogoImagePath
+   };
 
         [Inject] protected IShippingCompanyService ShippingCompanyService { get; set; } = null!;
 
