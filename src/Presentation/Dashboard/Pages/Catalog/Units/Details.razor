@@ -2,6 +2,7 @@
 @page "/units/{id:guid?}"
 
 @using Common.Enumerations.User
+@using Shared.DTOs.ECommerce.Unit
 @attribute [Authorize(Roles = nameof(UserRole.Admin))]
 
 <PageTitle>@ECommerceResources.Units</PageTitle>

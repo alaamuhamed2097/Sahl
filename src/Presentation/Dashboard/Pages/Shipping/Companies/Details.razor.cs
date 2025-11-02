@@ -12,7 +12,7 @@ using Shared.DTOs.ECommerce;
 
 namespace Dashboard.Pages.Shipping.Companies
 {
-    public partial class ShippingCompany
+    public partial class Details
     {
         private bool isSaving { get; set; }
         protected string baseUrl = string.Empty;

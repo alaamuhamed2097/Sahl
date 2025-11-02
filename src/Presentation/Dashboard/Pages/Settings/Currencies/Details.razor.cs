@@ -1,3 +1,4 @@
+using Dashboard.Contracts.Currency;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 using Resources;

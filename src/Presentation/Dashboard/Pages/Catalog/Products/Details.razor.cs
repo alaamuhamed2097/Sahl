@@ -17,7 +17,7 @@ using Shared.DTOs.Media;
 
 namespace Dashboard.Pages.Catalog.Products
 {
-    public partial class Item
+    public partial class Details
     {
         // Constants
         protected const long MaxFileSize = 10 * 1024 * 1024; // 10MB

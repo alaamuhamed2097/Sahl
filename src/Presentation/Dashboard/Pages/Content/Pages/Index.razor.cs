@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Components;
+﻿using Dashboard.Contracts.Page;
+using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 using Shared.DTOs.Page;
 using Shared.GeneralModels;

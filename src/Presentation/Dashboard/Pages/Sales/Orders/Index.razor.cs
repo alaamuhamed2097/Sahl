@@ -1,11 +1,11 @@
+using Common.Enumerations.Order;
+using Common.Enumerations.Payment;
+using Dashboard.Constants;
+using Dashboard.Contracts.Order;
 using Microsoft.AspNetCore.Components;
 using Resources;
 using Shared.DTOs.ECommerce;
-using Common.Enumerations.Payment;
 using Shared.GeneralModels;
-using Dashboard.Constants;
-using Dashboard.Contracts.Order;
-using Common.Enumerations.Order;
 
 namespace Dashboard.Pages.Sales.Orders
 {
