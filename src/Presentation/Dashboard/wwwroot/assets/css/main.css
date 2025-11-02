@@ -1,0 +1,184 @@
+/* ===================================
+   SAHL DASHBOARD - MAIN CSS
+   Modern Modular Architecture
+   =================================== */
+
+/* ===================================
+CRITICAL CSS - LOADED INLINE
+   =================================== */
+
+/* 1. CSS Custom Properties */
+@import './base/variables.css';
+
+/* 2. CSS Reset and Normalize */
+@import './base/reset.css';
+
+/* 3. Typography */
+@import './base/typography.css';
+
+/* 4. Utility Classes */
+@import './base/utilities.css';
+
+/* ===================================
+   LAYOUT STYLES
+   =================================== */
+
+/* Header and Navigation */
+@import './layout/header.css';
+
+/* Sidebar Navigation */
+@import './layout/sidebar.css';
+
+/* Main Content Area */
+@import './layout/main.css';
+
+/* ===================================
+   COMPONENT STYLES
+   =================================== */
+
+/* Loading Screen (Critical) */
+@import './components/loading.css';
+
+/* Buttons */
+@import './components/buttons.css';
+
+/* Forms and Inputs */
+@import './components/forms.css';
+
+/* Cards */
+@import './components/cards.css';
+
+/* Tables */
+@import './components/tables.css';
+
+/* Alerts and Notifications */
+@import './components/alerts.css';
+
+/* Badges and Labels */
+@import './components/badges.css';
+
+/* Breadcrumbs */
+@import './components/breadcrumbs.css';
+
+/* Progress Bars and Indicators */
+@import './components/progress.css';
+
+/* Dropdown Menus (to be created) */
+/* @import './components/dropdowns.css'; */
+
+/* Modal Dialogs (to be created) */
+/* @import './components/modals.css'; */
+
+/* Tab Components (to be created) */
+/* @import './components/tabs.css'; */
+
+/* Dashboard Widgets (to be created) */
+/* @import './components/widgets.css'; */
+
+/* ===================================
+   PAGE SPECIFIC STYLES
+   =================================== */
+
+/* Dashboard Pages */
+@import './pages/dashboard.css';
+
+/* Authentication Pages */
+@import './pages/auth.css';
+
+/* Error Pages */
+@import './pages/error.css';
+
+/* ===================================
+   PLUGIN OVERRIDES (to be created)
+   =================================== */
+
+/* Date Picker Customizations */
+/* @import './plugins/datepicker.css'; */
+
+/* Select2 Customizations */
+/* @import './plugins/select2.css'; */
+
+/* Wizard Component Customizations */
+/* @import './plugins/wizard.css'; */
+
+/* Chart Library Customizations */
+/* @import './plugins/charts.css'; */
+
+/* ===================================
+   THEME VARIATIONS (to be created)
+   =================================== */
+
+/* Light Theme (Default) */
+/* @import './themes/light.css'; */
+
+/* Dark Theme */
+/* @import './themes/dark.css'; */
+
+/* RTL Support */
+/* @import './themes/rtl.css'; */
+
+/* ===================================
+   RESPONSIVE DESIGN
+   =================================== */
+
+/* Mobile First Approach */
+@media (min-width: 576px) {
+/* Small devices and up */
+}
+
+@media (min-width: 768px) {
+  /* Medium devices and up */
+}
+
+@media (min-width: 992px) {
+  /* Large devices and up */
+}
+
+@media (min-width: 1200px) {
+  /* Extra large devices and up */
+}
+
+@media (min-width: 1400px) {
+  /* XXL devices and up */
+}
+
+/* ===================================
+   PERFORMANCE OPTIMIZATIONS
+   =================================== */
+
+/* Hardware acceleration for critical animations */
+.pcoded-navbar,
+.pcoded-header {
+  will-change: transform;
+  transform: translateZ(0);
+}
+
+/* Optimize font rendering */
+body {
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Critical resource hints */
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+/* ===================================
+   DEBUGGING UTILITIES (Development Only)
+   =================================== */
+
+/*
+Remove in production build:
+
+.debug-borders * {
+  outline: 1px solid red;
+}
+
+.debug-spacing * {
+  background-color: rgba(255, 0, 0, 0.1);
+}
+*/

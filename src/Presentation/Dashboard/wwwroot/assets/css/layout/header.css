@@ -1,0 +1,605 @@
+/* ===================================
+   HEADER LAYOUT AND NAVIGATION
+   Clean professional header design for Sahl Dashboard
+   =================================== */
+
+/* ===================================
+   BASE HEADER STYLES
+   =================================== */
+
+.pcoded-header {
+  position: relative;
+  display: flex;
+  align-items: center;
+  min-height: var(--header-height);
+  width: calc(100% - var(--sidebar-width));
+  margin-left: var(--sidebar-width);
+  padding: 0;
+  background: var(--white);
+  color: var(--neutral-dark);
+  box-shadow: var(--shadow-sm);
+  border-bottom: 1px solid var(--neutral-light);
+  z-index: var(--z-sticky);
+  transition: var(--transition-normal);
+}
+
+/* ===================================
+   BRAND/LOGO SECTION
+   =================================== */
+
+.pcoded-header .b-brand {
+  display: flex;
+  align-items: center;
+  padding: var(--space-2) 0;
+  text-decoration: none;
+  transition: var(--transition-fast);
+}
+
+.pcoded-header .b-brand:hover {
+  transform: scale(1.05);
+}
+
+.pcoded-header .b-brand img {
+  height: 32px;
+  width: auto;
+  object-fit: contain;
+}
+
+.pcoded-header .b-brand .b-title {
+margin-left: var(--space-3);
+  font-weight: var(--font-semibold);
+  color: var(--neutral-darker);
+  font-size: var(--text-lg);
+  font-family: var(--font-arabic);
+}
+
+/* ===================================
+   NAVIGATION CONTAINER
+   =================================== */
+
+.pcoded-header .navbar-nav {
+  display: flex;
+  align-items: center;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  gap: var(--space-2);
+}
+
+.pcoded-header .navbar-nav > li {
+  display: flex;
+  align-items: center;
+}
+
+/* ===================================
+   NAVIGATION ITEMS
+   =================================== */
+
+.pcoded-header .navbar-nav > li > a,
+.pcoded-header .navbar-nav > li > button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  background: transparent;
+  border: none;
+  border-radius: var(--radius-sm);
+  color: var(--neutral-dark);
+  text-decoration: none;
+  transition: var(--transition-fast);
+  cursor: pointer;
+}
+
+.pcoded-header .navbar-nav > li > a:hover,
+.pcoded-header .navbar-nav > li > button:hover {
+  background: var(--neutral-lighter);
+  color: var(--primary);
+  transform: translateY(-1px);
+}
+
+.pcoded-header .navbar-nav > li > a:focus-visible,
+.pcoded-header .navbar-nav > li > button:focus-visible {
+  box-shadow: 0 0 0 2px var(--primary-200);
+}
+
+/* ===================================
+   ICONS
+   =================================== */
+
+.pcoded-header i,
+.pcoded-header .feather,
+.pcoded-header svg {
+  width: 20px;
+  height: 20px;
+  font-size: 20px;
+  color: inherit;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ===================================
+   LANGUAGE DROPDOWN
+   =================================== */
+
+.pcoded-header .dropdown-toggle {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-4);
+  background: transparent;
+  border: 2px solid var(--neutral-light);
+  border-radius: var(--radius-sm);
+  color: var(--neutral-dark);
+  font-weight: var(--font-medium);
+  transition: var(--transition-fast);
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.pcoded-header .dropdown-toggle:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+  background: var(--primary-lighter);
+}
+
+.pcoded-header .dropdown-toggle:focus-visible {
+  box-shadow: 0 0 0 2px var(--primary-200);
+}
+
+/* Remove default Bootstrap dropdown arrow */
+.pcoded-header .dropdown-toggle::after {
+  display: none;
+}
+
+/* ===================================
+   NOTIFICATION BADGES
+   =================================== */
+
+.pcoded-header .notification-badge,
+.pcoded-header .label {
+  position: absolute;
+  top: 6px;
+  left: 6px;
+  background: var(--danger);
+  color: var(--white);
+  border-radius: var(--radius-full);
+  padding: 2px 6px;
+  font-size: 10px;
+  font-weight: var(--font-semibold);
+  min-width: 18px;
+  text-align: center;
+  line-height: 1.2;
+  z-index: 1;
+}
+
+/* ===================================
+   DROPDOWN MENUS
+   =================================== */
+
+.pcoded-header .dropdown-menu {
+  border: 1px solid var(--neutral-light);
+  box-shadow: var(--shadow-lg);
+  border-radius: var(--radius-md);
+  padding: var(--space-2);
+  min-width: 200px;
+  margin-top: var(--space-2);
+  background: var(--white);
+  z-index: var(--z-dropdown);
+}
+
+.pcoded-header .dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-sm);
+  color: var(--neutral-dark);
+  text-decoration: none;
+  transition: var(--transition-fast);
+  font-weight: var(--font-medium);
+}
+
+.pcoded-header .dropdown-item:hover {
+  background: var(--primary-lighter);
+  color: var(--primary-dark);
+}
+
+.pcoded-header .dropdown-item.text-danger {
+  color: var(--danger);
+}
+
+.pcoded-header .dropdown-item.text-danger:hover {
+  background: var(--danger-100);
+  color: var(--danger);
+}
+
+/* ===================================
+   PROFILE DROPDOWN
+   =================================== */
+
+.pcoded-header .pro-head {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  background: var(--neutral-lightest);
+  border-bottom: 1px solid var(--neutral-light);
+  border-radius: var(--radius-md) var(--radius-md) 0 0;
+}
+
+.pcoded-header .pro-head img {
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-full);
+  border: 2px solid var(--primary-lighter);
+  object-fit: cover;
+}
+
+.pcoded-header .pro-head span {
+  font-weight: var(--font-semibold);
+  color: var(--neutral-darker);
+  font-size: var(--text-base);
+}
+
+.pcoded-header .pro-body {
+  padding: var(--space-2);
+  margin: 0;
+  list-style: none;
+}
+
+/* ===================================
+   MOBILE MENU BUTTON
+   =================================== */
+
+.pcoded-header .mobile-menu,
+.pcoded-header #mobile-collapse,
+.pcoded-header #mobile-collapse1 {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  background: transparent;
+  border: none;
+  border-radius: var(--radius-sm);
+  color: var(--neutral-dark);
+  transition: var(--transition-fast);
+  cursor: pointer;
+}
+
+.pcoded-header .mobile-menu:hover,
+.pcoded-header #mobile-collapse:hover,
+.pcoded-header #mobile-collapse1:hover {
+  background: var(--neutral-lighter);
+  color: var(--primary);
+}
+
+/* ===================================
+   SEARCH COMPONENT
+   =================================== */
+
+.pcoded-header .main-search {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.pcoded-header .main-search .input-group {
+  background: transparent;
+  border: none;
+  transition: var(--transition-normal);
+}
+
+.pcoded-header .main-search .form-control {
+  background: transparent;
+  border: none;
+  padding: 0;
+  font-size: var(--text-sm);
+  color: var(--neutral-dark);
+  width: 0;
+  transition: var(--transition-normal);
+}
+
+.pcoded-header .main-search .search-btn {
+  background: transparent;
+  border: none;
+  padding: var(--space-2);
+  border-radius: var(--radius-sm);
+  color: var(--neutral-dark);
+  transition: var(--transition-fast);
+}
+
+.pcoded-header .main-search .search-btn:hover {
+  background: var(--neutral-lighter);
+  color: var(--primary);
+}
+
+.pcoded-header .main-search.open .input-group {
+  background: var(--white);
+  border: 1px solid var(--neutral-light);
+  border-radius: var(--radius-md);
+  padding: var(--space-1) var(--space-3);
+  box-shadow: var(--shadow-sm);
+}
+
+.pcoded-header .main-search.open .form-control {
+  width: 200px;
+  padding: var(--space-2);
+}
+
+.pcoded-header .main-search.open .search-btn {
+  background: var(--primary);
+  color: var(--white);
+  margin-left: var(--space-2);
+}
+
+/* ===================================
+   PAGE TITLE
+   =================================== */
+
+.pcoded-header .page-title {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--text-lg);
+  font-weight: var(--font-semibold);
+  color: var(--neutral-darker);
+  margin: 0;
+}
+
+.pcoded-header .page-title i {
+  color: var(--primary);
+  font-size: var(--text-xl);
+}
+
+/* ===================================
+   RESPONSIVE DESIGN
+   =================================== */
+
+/* Desktop Layout */
+@media (min-width: 992px) {
+  .pcoded-header .m-header {
+    display: none;
+  }
+  
+  .pcoded-header #navbarSupportedContent {
+  display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    padding: 0 var(--space-6);
+  }
+  
+  .pcoded-header .navbar-nav {
+    gap: var(--space-2);
+  }
+  
+  .pcoded-header .navbar-nav > li > button,
+  .pcoded-header .navbar-nav > li > a {
+    gap: var(--space-2);
+    padding: var(--space-2) var(--space-3);
+    width: auto;
+    white-space: nowrap;
+  }
+  
+  /* Show text on desktop */
+  .pcoded-header .navbar-nav span:not(.badge):not(.visually-hidden) {
+  display: inline;
+  }
+}
+
+/* Mobile Layout */
+@media (max-width: 991.98px) {
+  .pcoded-header {
+    width: 100%;
+    margin-left: 0;
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+    color: var(--white);
+    min-height: var(--header-mobile-height);
+  }
+  
+  .pcoded-header .m-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    height: var(--header-mobile-height);
+    padding: 0 var(--space-4);
+    gap: var(--space-3);
+  }
+  
+  /* Mobile menu button */
+  .pcoded-header .mobile-menu,
+  .pcoded-header #mobile-collapse1 {
+    order: 1;
+    color: var(--white);
+  }
+  
+  .pcoded-header .mobile-menu:hover,
+  .pcoded-header #mobile-collapse1:hover {
+ background: rgba(255, 255, 255, 0.1);
+    color: var(--white);
+  }
+  
+  /* Hamburger icon */
+  .pcoded-header .mobile-menu span,
+  .pcoded-header #mobile-collapse1 span {
+    display: block;
+    width: 18px;
+    height: 2px;
+    background: currentColor;
+    position: relative;
+    transition: var(--transition-fast);
+  }
+  
+  .pcoded-header .mobile-menu span::before,
+  .pcoded-header .mobile-menu span::after,
+  .pcoded-header #mobile-collapse1 span::before,
+  .pcoded-header #mobile-collapse1 span::after {
+    content: '';
+    display: block;
+    width: 18px;
+    height: 2px;
+    background: currentColor;
+    position: absolute;
+    left: 0;
+    transition: var(--transition-fast);
+  }
+  
+  .pcoded-header .mobile-menu span::before,
+  .pcoded-header #mobile-collapse1 span::before {
+    top: -6px;
+  }
+  
+  .pcoded-header .mobile-menu span::after,
+  .pcoded-header #mobile-collapse1 span::after {
+    bottom: -6px;
+  }
+  
+  /* Logo center */
+  .pcoded-header .m-header .b-brand {
+    order: 2;
+    flex-shrink: 0;
+  }
+  
+  .pcoded-header .m-header .b-brand img {
+    max-height: 32px;
+    filter: brightness(0) invert(1);
+  }
+  
+  /* Mobile icons container */
+  .pcoded-header .m-header .d-lg-none {
+    order: 3;
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+  margin-left: auto;
+  }
+  
+  .pcoded-header .m-header .navbar-nav {
+  display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: var(--space-2);
+  }
+  
+  .pcoded-header .m-header .navbar-nav > li > button,
+  .pcoded-header .m-header .navbar-nav > li > a {
+    color: var(--white);
+  }
+  
+  .pcoded-header .m-header .navbar-nav > li > button:hover,
+  .pcoded-header .m-header .navbar-nav > li > a:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--white);
+  }
+  
+  /* Hide text on mobile - show only icons */
+  .pcoded-header .m-header .navbar-nav span:not(.badge):not(.visually-hidden) {
+    display: none;
+  }
+  
+  /* Hide desktop navbar on mobile */
+  .pcoded-header #navbarSupportedContent {
+    display: none;
+  }
+}
+
+/* Tablet optimizations */
+@media (max-width: 768px) {
+  .pcoded-header .m-header {
+ padding: 0 var(--space-3);
+  }
+  
+  .pcoded-header .m-header .navbar-nav {
+    gap: var(--space-1);
+  }
+}
+
+/* ===================================
+   COLLAPSED SIDEBAR STATE
+   =================================== */
+
+.sidebar-collapsed .pcoded-header {
+  width: calc(100% - var(--sidebar-collapsed-width));
+  margin-left: var(--sidebar-collapsed-width);
+}
+
+/* ===================================
+   FIXED HEADER
+   =================================== */
+
+.pcoded-header.headerpos-fixed {
+  position: fixed;
+  top: 0;
+  z-index: var(--z-fixed);
+}
+
+.pcoded-header.headerpos-fixed ~ .pcoded-main-container {
+  padding-top: var(--header-height);
+}
+
+@media (max-width: 991.98px) {
+  .pcoded-header.headerpos-fixed ~ .pcoded-main-container {
+    padding-top: var(--header-mobile-height);
+  }
+}
+
+/* ===================================
+   THEME VARIANTS
+   =================================== */
+
+/* Dark header variant */
+.pcoded-header.header-dark {
+  background: linear-gradient(135deg, var(--neutral-darkest) 0%, var(--neutral-darker) 100%);
+  color: var(--white);
+}
+
+.pcoded-header.header-dark .dropdown-toggle,
+.pcoded-header.header-dark .navbar-nav > li > a,
+.pcoded-header.header-dark .navbar-nav > li > button {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.pcoded-header.header-dark .dropdown-toggle:hover,
+.pcoded-header.header-dark .navbar-nav > li > a:hover,
+.pcoded-header.header-dark .navbar-nav > li > button:hover {
+  color: var(--white);
+  background: rgba(255, 255, 255, 0.1);
+}
+
+/* Primary header variant */
+.pcoded-header.header-primary {
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+  color: var(--white);
+}
+
+/* ===================================
+   ACCESSIBILITY
+   =================================== */
+
+/* High contrast mode */
+@media (prefers-contrast: high) {
+  .pcoded-header {
+    border-bottom-width: 2px;
+  }
+  
+  .pcoded-header .dropdown-toggle {
+    border-width: 3px;
+  }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .pcoded-header *,
+  .pcoded-header *::before,
+  .pcoded-header *::after {
+ animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

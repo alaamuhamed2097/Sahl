@@ -1,0 +1,718 @@
+/* ===================================
+   BUTTON COMPONENTS
+   Modern button system with variants and states
+   =================================== */
+
+/* ===================================
+   BASE BUTTON STYLES
+   =================================== */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  padding: var(--btn-padding-y) var(--btn-padding-x);
+  font-family: inherit;
+  font-size: var(--text-sm);
+  font-weight: var(--font-medium);
+  line-height: 1.5;
+  text-align: center;
+  text-decoration: none;
+  white-space: nowrap;
+  vertical-align: middle;
+  user-select: none;
+  border: 2px solid transparent;
+  border-radius: var(--btn-radius);
+  background: transparent;
+  cursor: pointer;
+  transition: var(--transition-fast);
+  position: relative;
+  overflow: hidden;
+  /* Prevent layout shift */
+  min-height: 44px;
+}
+
+.btn:focus-visible {
+  outline: 2px solid var(--primary-300);
+  outline-offset: 2px;
+}
+
+.btn:disabled,
+.btn.disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* Icon handling */
+.btn i,
+.btn .feather,
+.btn svg {
+  width: 18px;
+  height: 18px;
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+/* Remove margin when icon is alone */
+.btn i:only-child,
+.btn .feather:only-child,
+.btn svg:only-child {
+  margin: 0;
+}
+
+/* ===================================
+   BUTTON SIZES
+   =================================== */
+
+.btn-xs {
+  padding: var(--space-1) var(--space-3);
+  font-size: var(--text-xs);
+  min-height: 28px;
+}
+
+.btn-xs i,
+.btn-xs .feather,
+.btn-xs svg {
+  width: 14px;
+  height: 14px;
+  font-size: 14px;
+}
+
+.btn-sm {
+  padding: var(--space-2) var(--space-4);
+  font-size: var(--text-xs);
+  min-height: 36px;
+}
+
+.btn-sm i,
+.btn-sm .feather,
+.btn-sm svg {
+  width: 16px;
+  height: 16px;
+  font-size: 16px;
+}
+
+.btn-lg {
+  padding: var(--space-4) var(--space-8);
+  font-size: var(--text-base);
+  min-height: 52px;
+}
+
+.btn-lg i,
+.btn-lg .feather,
+.btn-lg svg {
+  width: 20px;
+height: 20px;
+  font-size: 20px;
+}
+
+.btn-xl {
+  padding: var(--space-5) var(--space-10);
+  font-size: var(--text-lg);
+  min-height: 60px;
+}
+
+.btn-xl i,
+.btn-xl .feather,
+.btn-xl svg {
+  width: 24px;
+  height: 24px;
+  font-size: 24px;
+}
+
+/* ===================================
+   PRIMARY BUTTON
+   =================================== */
+
+.btn-primary {
+  color: var(--white);
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-600) 100%);
+  border-color: var(--primary);
+  box-shadow: 0 2px 4px rgba(14, 165, 233, 0.2);
+}
+
+.btn-primary:hover {
+  background: linear-gradient(135deg, var(--primary-600) 0%, var(--primary-700) 100%);
+  border-color: var(--primary-600);
+  box-shadow: 0 4px 8px rgba(14, 165, 233, 0.3);
+  transform: translateY(-1px);
+}
+
+.btn-primary:active {
+  background: var(--primary-700);
+  border-color: var(--primary-700);
+  box-shadow: 0 2px 4px rgba(14, 165, 233, 0.4);
+  transform: translateY(0);
+}
+
+/* ===================================
+   SECONDARY BUTTON
+   =================================== */
+
+.btn-secondary {
+  color: var(--neutral-dark);
+  background: var(--white);
+  border-color: var(--neutral-light);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.btn-secondary:hover {
+  color: var(--neutral-darker);
+  background: var(--gray-50);
+  border-color: var(--gray-300);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+  transform: translateY(-1px);
+}
+
+.btn-secondary:active {
+  background: var(--gray-100);
+  border-color: var(--gray-400);
+  transform: translateY(0);
+}
+
+/* ===================================
+   SUCCESS BUTTON
+ =================================== */
+
+.btn-success {
+  color: var(--white);
+  background: linear-gradient(135deg, var(--success) 0%, var(--success-600) 100%);
+  border-color: var(--success);
+  box-shadow: 0 2px 4px rgba(16, 185, 129, 0.2);
+}
+
+.btn-success:hover {
+  background: linear-gradient(135deg, var(--success-600) 0%, var(--success-700) 100%);
+  border-color: var(--success-600);
+  box-shadow: 0 4px 8px rgba(16, 185, 129, 0.3);
+  transform: translateY(-1px);
+}
+
+.btn-success:active {
+  background: var(--success-700);
+  border-color: var(--success-700);
+  transform: translateY(0);
+}
+
+/* ===================================
+   WARNING BUTTON
+   =================================== */
+
+.btn-warning {
+  color: var(--white);
+  background: linear-gradient(135deg, var(--warning) 0%, var(--warning-600) 100%);
+  border-color: var(--warning);
+  box-shadow: 0 2px 4px rgba(245, 158, 11, 0.2);
+}
+
+.btn-warning:hover {
+  background: linear-gradient(135deg, var(--warning-600) 0%, var(--warning-700) 100%);
+  border-color: var(--warning-600);
+  box-shadow: 0 4px 8px rgba(245, 158, 11, 0.3);
+  transform: translateY(-1px);
+}
+
+.btn-warning:active {
+  background: var(--warning-700);
+  border-color: var(--warning-700);
+  transform: translateY(0);
+}
+
+/* ===================================
+   DANGER BUTTON
+   =================================== */
+
+.btn-danger {
+  color: var(--white);
+  background: linear-gradient(135deg, var(--danger) 0%, var(--danger-600) 100%);
+  border-color: var(--danger);
+  box-shadow: 0 2px 4px rgba(239, 68, 68, 0.2);
+}
+
+.btn-danger:hover {
+  background: linear-gradient(135deg, var(--danger-600) 0%, var(--danger-700) 100%);
+  border-color: var(--danger-600);
+  box-shadow: 0 4px 8px rgba(239, 68, 68, 0.3);
+  transform: translateY(-1px);
+}
+
+.btn-danger:active {
+  background: var(--danger-700);
+  border-color: var(--danger-700);
+  transform: translateY(0);
+}
+
+/* ===================================
+   INFO BUTTON
+   =================================== */
+
+.btn-info {
+  color: var(--white);
+  background: linear-gradient(135deg, var(--info) 0%, var(--info-600) 100%);
+  border-color: var(--info);
+  box-shadow: 0 2px 4px rgba(59, 130, 246, 0.2);
+}
+
+.btn-info:hover {
+  background: linear-gradient(135deg, var(--info-600) 0%, var(--info-700) 100%);
+  border-color: var(--info-600);
+  box-shadow: 0 4px 8px rgba(59, 130, 246, 0.3);
+  transform: translateY(-1px);
+}
+
+.btn-info:active {
+  background: var(--info-700);
+  border-color: var(--info-700);
+  transform: translateY(0);
+}
+
+/* ===================================
+   LIGHT BUTTON
+   =================================== */
+
+.btn-light {
+  color: var(--neutral-dark);
+  background: var(--gray-50);
+  border-color: var(--gray-200);
+}
+
+.btn-light:hover {
+  color: var(--neutral-darker);
+  background: var(--gray-100);
+  border-color: var(--gray-300);
+  transform: translateY(-1px);
+}
+
+.btn-light:active {
+  background: var(--gray-200);
+  border-color: var(--gray-400);
+  transform: translateY(0);
+}
+
+/* ===================================
+   DARK BUTTON
+   =================================== */
+
+.btn-dark {
+  color: var(--white);
+  background: linear-gradient(135deg, var(--gray-800) 0%, var(--gray-900) 100%);
+  border-color: var(--gray-800);
+}
+
+.btn-dark:hover {
+  background: linear-gradient(135deg, var(--gray-900) 0%, var(--black) 100%);
+  border-color: var(--gray-900);
+  transform: translateY(-1px);
+}
+
+.btn-dark:active {
+  background: var(--black);
+  border-color: var(--black);
+  transform: translateY(0);
+}
+
+/* ===================================
+ OUTLINE BUTTON VARIANTS
+   =================================== */
+
+.btn-outline-primary {
+  color: var(--primary);
+  background: transparent;
+  border-color: var(--primary);
+}
+
+.btn-outline-primary:hover {
+  color: var(--white);
+  background: var(--primary);
+  border-color: var(--primary);
+}
+
+.btn-outline-secondary {
+  color: var(--gray-600);
+  background: transparent;
+  border-color: var(--gray-300);
+}
+
+.btn-outline-secondary:hover {
+  color: var(--white);
+  background: var(--gray-600);
+  border-color: var(--gray-600);
+}
+
+.btn-outline-success {
+  color: var(--success);
+  background: transparent;
+  border-color: var(--success);
+}
+
+.btn-outline-success:hover {
+  color: var(--white);
+  background: var(--success);
+  border-color: var(--success);
+}
+
+.btn-outline-warning {
+  color: var(--warning);
+  background: transparent;
+  border-color: var(--warning);
+}
+
+.btn-outline-warning:hover {
+  color: var(--white);
+  background: var(--warning);
+  border-color: var(--warning);
+}
+
+.btn-outline-danger {
+  color: var(--danger);
+  background: transparent;
+  border-color: var(--danger);
+}
+
+.btn-outline-danger:hover {
+  color: var(--white);
+  background: var(--danger);
+  border-color: var(--danger);
+}
+
+.btn-outline-info {
+  color: var(--info);
+  background: transparent;
+  border-color: var(--info);
+}
+
+.btn-outline-info:hover {
+  color: var(--white);
+  background: var(--info);
+  border-color: var(--info);
+}
+
+.btn-outline-light {
+  color: var(--gray-600);
+  background: transparent;
+  border-color: var(--gray-300);
+}
+
+.btn-outline-light:hover {
+  color: var(--gray-900);
+  background: var(--gray-100);
+  border-color: var(--gray-300);
+}
+
+.btn-outline-dark {
+  color: var(--gray-800);
+  background: transparent;
+  border-color: var(--gray-800);
+}
+
+.btn-outline-dark:hover {
+  color: var(--white);
+  background: var(--gray-800);
+  border-color: var(--gray-800);
+}
+
+/* ===================================
+   GHOST BUTTON VARIANTS
+   =================================== */
+
+.btn-ghost {
+  background: transparent;
+  border-color: transparent;
+  color: var(--neutral-dark);
+}
+
+.btn-ghost:hover {
+  background: var(--gray-100);
+  color: var(--neutral-darker);
+}
+
+.btn-ghost-primary {
+  background: transparent;
+  border-color: transparent;
+  color: var(--primary);
+}
+
+.btn-ghost-primary:hover {
+  background: var(--primary-50);
+  color: var(--primary-700);
+}
+
+/* ===================================
+   SOFT BUTTON VARIANTS
+   =================================== */
+
+.btn-soft-primary {
+  color: var(--primary-700);
+  background: var(--primary-100);
+  border-color: var(--primary-200);
+}
+
+.btn-soft-primary:hover {
+  color: var(--primary-800);
+  background: var(--primary-200);
+  border-color: var(--primary-300);
+}
+
+.btn-soft-success {
+  color: var(--success-700);
+  background: var(--success-100);
+  border-color: var(--success-200);
+}
+
+.btn-soft-success:hover {
+  color: var(--success-800);
+  background: var(--success-200);
+  border-color: var(--success-300);
+}
+
+.btn-soft-warning {
+  color: var(--warning-700);
+  background: var(--warning-100);
+  border-color: var(--warning-200);
+}
+
+.btn-soft-warning:hover {
+  color: var(--warning-800);
+  background: var(--warning-200);
+  border-color: var(--warning-300);
+}
+
+.btn-soft-danger {
+  color: var(--danger-700);
+  background: var(--danger-100);
+  border-color: var(--danger-200);
+}
+
+.btn-soft-danger:hover {
+color: var(--danger-800);
+  background: var(--danger-200);
+border-color: var(--danger-300);
+}
+
+/* ===================================
+   BUTTON SHAPES
+   =================================== */
+
+.btn-circle {
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border-radius: var(--radius-full);
+}
+
+.btn-circle.btn-sm {
+  width: 36px;
+  height: 36px;
+}
+
+.btn-circle.btn-lg {
+  width: 52px;
+  height: 52px;
+}
+
+.btn-pill {
+  border-radius: var(--radius-full);
+  padding-left: var(--space-6);
+  padding-right: var(--space-6);
+}
+
+.btn-square {
+  border-radius: 0;
+}
+
+/* ===================================
+   BUTTON GROUPS
+   =================================== */
+
+.btn-group {
+  display: inline-flex;
+  vertical-align: middle;
+}
+
+.btn-group > .btn {
+  position: relative;
+  flex: 1 1 auto;
+  border-radius: 0;
+  margin-left: -2px;
+}
+
+.btn-group > .btn:first-child {
+margin-left: 0;
+  border-top-left-radius: var(--btn-radius);
+  border-bottom-left-radius: var(--btn-radius);
+}
+
+.btn-group > .btn:last-child {
+  border-top-right-radius: var(--btn-radius);
+  border-bottom-right-radius: var(--btn-radius);
+}
+
+.btn-group > .btn:hover,
+.btn-group > .btn:focus,
+.btn-group > .btn:active {
+  z-index: 1;
+}
+
+/* ===================================
+   LOADING STATE
+   =================================== */
+
+.btn-loading {
+  position: relative;
+  pointer-events: none;
+}
+
+.btn-loading::after {
+  content: '';
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  top: 50%;
+  left: 50%;
+  margin-left: -8px;
+  margin-top: -8px;
+  border: 2px solid transparent;
+  border-top-color: currentColor;
+  border-radius: var(--radius-full);
+  animation: btn-loading-spin 1s linear infinite;
+}
+
+@keyframes btn-loading-spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.btn-loading .btn-text {
+  opacity: 0;
+}
+
+/* ===================================
+   FLOATING ACTION BUTTON
+   =================================== */
+
+.btn-fab {
+  position: fixed;
+  width: 56px;
+  height: 56px;
+  border-radius: var(--radius-full);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  z-index: var(--z-50);
+  transition: var(--transition-normal);
+}
+
+.btn-fab:hover {
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+  transform: translateY(-2px);
+}
+
+.btn-fab-bottom-right {
+  bottom: var(--space-6);
+  right: var(--space-6);
+}
+
+.btn-fab-bottom-left {
+  bottom: var(--space-6);
+  left: var(--space-6);
+}
+
+/* ===================================
+   RESPONSIVE DESIGN
+   =================================== */
+
+@media (max-width: 768px) {
+  .btn {
+    min-height: 48px; /* Larger touch targets on mobile */
+  }
+  
+  .btn-lg {
+    min-height: 56px;
+  }
+  
+  .btn-fab {
+  width: 64px;
+    height: 64px;
+    bottom: var(--space-4);
+    right: var(--space-4);
+  }
+  
+  /* Stack button groups vertically on mobile */
+  .btn-group-mobile-stack {
+    flex-direction: column;
+  }
+  
+  .btn-group-mobile-stack > .btn {
+    margin-left: 0;
+    margin-top: -2px;
+  }
+  
+  .btn-group-mobile-stack > .btn:first-child {
+    border-radius: var(--btn-radius) var(--btn-radius) 0 0;
+  }
+  
+  .btn-group-mobile-stack > .btn:last-child {
+    border-radius: 0 0 var(--btn-radius) var(--btn-radius);
+  }
+}
+
+/* ===================================
+   ACCESSIBILITY
+   =================================== */
+
+/* High contrast mode */
+@media (prefers-contrast: high) {
+  .btn {
+    border-width: 3px;
+  }
+  
+  .btn-ghost,
+  .btn-ghost-primary {
+    border: 2px solid currentColor;
+  }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .btn {
+    transition: none;
+  }
+  
+  .btn:hover {
+    transform: none;
+  }
+  
+  .btn-loading::after {
+    animation: none;
+}
+  
+  .btn-fab:hover {
+    transform: none;
+  }
+}
+
+/* Focus styles for keyboard navigation */
+.btn:focus-visible {
+  box-shadow: 0 0 0 3px var(--primary-200);
+}
+
+/* ===================================
+   PRINT STYLES
+   =================================== */
+
+@media print {
+  .btn {
+    background: transparent !important;
+    color: var(--black) !important;
+    border: 1px solid var(--black) !important;
+    box-shadow: none !important;
+  }
+  
+  .btn-fab {
+    display: none !important;
+  }
+}

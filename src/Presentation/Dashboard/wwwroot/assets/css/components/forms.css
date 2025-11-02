@@ -1,0 +1,592 @@
+/* ===================================
+   FORM COMPONENTS
+   Modern form controls and input styles
+   =================================== */
+
+/* ===================================
+   BASE FORM STYLES
+   =================================== */
+
+.form-control {
+  display: block;
+  width: 100%;
+  padding: var(--input-padding-y) var(--input-padding-x);
+  font-size: var(--text-sm);
+  font-weight: var(--font-normal);
+  line-height: 1.5;
+  color: var(--neutral-dark);
+  background: var(--white);
+  background-clip: padding-box;
+  border: 2px solid var(--neutral-light);
+  border-radius: var(--input-radius);
+  transition: var(--transition-fast);
+min-height: 44px;
+}
+
+.form-control:focus {
+  color: var(--neutral-darker);
+  background: var(--white);
+  border-color: var(--primary);
+  outline: 0;
+  box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.1);
+}
+
+.form-control:disabled,
+.form-control[readonly] {
+  background: var(--gray-50);
+  color: var(--gray-600);
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.form-control::placeholder {
+  color: var(--gray-500);
+  opacity: 1;
+}
+
+/* ===================================
+   FORM CONTROL SIZES
+   =================================== */
+
+.form-control-sm {
+  min-height: 36px;
+  padding: var(--space-2) var(--space-3);
+  font-size: var(--text-xs);
+}
+
+.form-control-lg {
+  min-height: 52px;
+  padding: var(--space-4) var(--space-5);
+  font-size: var(--text-base);
+}
+
+/* ===================================
+   FORM GROUPS
+   =================================== */
+
+.form-group {
+  margin-bottom: var(--space-5);
+}
+
+.form-group:last-child {
+  margin-bottom: 0;
+}
+
+.form-label {
+  display: inline-block;
+  margin-bottom: var(--space-2);
+  font-weight: var(--font-medium);
+  color: var(--neutral-dark);
+  font-size: var(--text-sm);
+}
+
+.form-label.required::after {
+  content: '*';
+  color: var(--danger);
+  margin-left: var(--space-1);
+}
+
+/* ===================================
+   FORM TEXT AND HELP
+   =================================== */
+
+.form-text {
+  margin-top: var(--space-1);
+  font-size: var(--text-xs);
+  color: var(--gray-600);
+  line-height: 1.4;
+}
+
+.form-help {
+  font-size: var(--text-xs);
+  color: var(--gray-500);
+  margin-top: var(--space-1);
+}
+
+/* ===================================
+   VALIDATION STATES
+   =================================== */
+
+.form-control.is-valid {
+  border-color: var(--success);
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'%3e%3cpath fill='%2310b981' d='m2.3 6.73.8-.77 1.6 1.6-3.4-3.4.8-.77L8 8z'/%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right var(--space-3) center;
+  background-size: 16px;
+  padding-right: var(--space-10);
+}
+
+.form-control.is-valid:focus {
+  border-color: var(--success);
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+}
+
+.valid-feedback {
+  display: block;
+  width: 100%;
+  margin-top: var(--space-1);
+  font-size: var(--text-xs);
+  color: var(--success);
+}
+
+.form-control.is-invalid {
+  border-color: var(--danger);
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12' width='12' height='12' fill='none' stroke='%23ef4444'%3e%3ccircle cx='6' cy='6' r='4.5'/%3e%3cpath d='m5.8 4.6 2.4 2.4M8.2 4.6l-2.4 2.4'/%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right var(--space-3) center;
+  background-size: 16px;
+  padding-right: var(--space-10);
+}
+
+.form-control.is-invalid:focus {
+  border-color: var(--danger);
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+}
+
+.invalid-feedback {
+  display: block;
+  width: 100%;
+  margin-top: var(--space-1);
+  font-size: var(--text-xs);
+  color: var(--danger);
+}
+
+/* ===================================
+   INPUT GROUPS
+   =================================== */
+
+.input-group {
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: stretch;
+  width: 100%;
+}
+
+.input-group > .form-control {
+  position: relative;
+  flex: 1 1 auto;
+  width: 1%;
+  min-width: 0;
+  margin-bottom: 0;
+}
+
+.input-group-prepend,
+.input-group-append {
+  display: flex;
+}
+
+.input-group-prepend .input-group-text,
+.input-group-append .input-group-text {
+  display: flex;
+  align-items: center;
+  padding: var(--input-padding-y) var(--input-padding-x);
+  margin-bottom: 0;
+  font-size: var(--text-sm);
+  font-weight: var(--font-normal);
+  line-height: 1.5;
+  color: var(--gray-600);
+  text-align: center;
+  white-space: nowrap;
+  background: var(--gray-50);
+  border: 2px solid var(--neutral-light);
+  border-radius: var(--input-radius);
+}
+
+.input-group-prepend .input-group-text {
+  border-right: 0;
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+.input-group-append .input-group-text {
+  border-left: 0;
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+}
+
+.input-group-prepend + .form-control {
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+  border-left: 0;
+}
+
+.input-group .form-control + .input-group-append .input-group-text {
+  border-left: 0;
+}
+
+/* ===================================
+   FLOATING LABELS
+   =================================== */
+
+.form-floating {
+  position: relative;
+}
+
+.form-floating > .form-control {
+  height: 56px;
+  padding: var(--space-4) var(--space-3) var(--space-2);
+}
+
+.form-floating > label {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  padding: var(--space-4) var(--space-3);
+  pointer-events: none;
+  border: 2px solid transparent;
+  transform-origin: 0 0;
+  transition: opacity 0.1s ease-in-out, transform 0.1s ease-in-out;
+  color: var(--gray-600);
+}
+
+.form-floating > .form-control:focus ~ label,
+.form-floating > .form-control:not(:placeholder-shown) ~ label {
+  opacity: 0.65;
+  transform: scale(0.85) translateY(-14px) translateX(2px);
+  color: var(--primary);
+}
+
+/* ===================================
+   CHECKBOXES AND RADIOS
+   =================================== */
+
+.form-check {
+  display: block;
+  min-height: 24px;
+  padding-left: var(--space-6);
+  margin-bottom: var(--space-3);
+}
+
+.form-check-input {
+  width: 20px;
+  height: 20px;
+  margin-top: 2px;
+  margin-left: calc(-1 * var(--space-6));
+  vertical-align: top;
+  background: var(--white);
+  border: 2px solid var(--gray-300);
+  appearance: none;
+  color-adjust: exact;
+  transition: var(--transition-fast);
+  cursor: pointer;
+}
+
+.form-check-input[type="checkbox"] {
+  border-radius: var(--radius-sm);
+}
+
+.form-check-input[type="radio"] {
+  border-radius: var(--radius-full);
+}
+
+.form-check-input:active {
+  filter: brightness(90%);
+}
+
+.form-check-input:focus {
+  border-color: var(--primary);
+  outline: 0;
+  box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.1);
+}
+
+.form-check-input:checked {
+  background-color: var(--primary);
+  border-color: var(--primary);
+}
+
+.form-check-input:checked[type="checkbox"] {
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='white'%3e%3cpath fill-rule='evenodd' d='M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z' clip-rule='evenodd'/%3e%3c/svg%3e");
+}
+
+.form-check-input:checked[type="radio"] {
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='2' fill='white'/%3e%3c/svg%3e");
+}
+
+.form-check-input:indeterminate {
+  background-color: var(--primary);
+  border-color: var(--primary);
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='white'%3e%3cpath fill-rule='evenodd' d='M4 10a1 1 0 011-1h8a1 1 0 110 2H5a1 1 0 01-1-1z' clip-rule='evenodd'/%3e%3c/svg%3e");
+}
+
+.form-check-input:disabled {
+  pointer-events: none;
+  filter: none;
+  opacity: 0.5;
+}
+
+.form-check-label {
+  color: var(--neutral-dark);
+  cursor: pointer;
+  font-size: var(--text-sm);
+}
+
+/* ===================================
+   CUSTOM CHECKBOXES AND RADIOS
+   =================================== */
+
+.form-switch {
+  padding-left: var(--space-10);
+}
+
+.form-switch .form-check-input {
+  width: 40px;
+  margin-left: calc(-1 * var(--space-10));
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='3' fill='rgba%280,0,0,.25%29'/%3e%3c/svg%3e");
+  background-position: left center;
+  border-radius: var(--radius-full);
+  transition: background-position 0.15s ease-in-out;
+}
+
+.form-switch .form-check-input:focus {
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='3' fill='rgba%280,0,0,.25%29'/%3e%3c/svg%3e");
+}
+
+.form-switch .form-check-input:checked {
+  background-position: right center;
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='3' fill='white'/%3e%3c/svg%3e");
+}
+
+/* ===================================
+   SELECT ELEMENTS
+   =================================== */
+
+.form-select {
+  display: block;
+  width: 100%;
+  padding: var(--input-padding-y) var(--space-8) var(--input-padding-y) var(--input-padding-x);
+  font-size: var(--text-sm);
+  font-weight: var(--font-normal);
+  line-height: 1.5;
+  color: var(--neutral-dark);
+  background: var(--white) url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23666' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m1 6 7 7 7-7'/%3e%3c/svg%3e") no-repeat right var(--space-3) center/16px 12px;
+  border: 2px solid var(--neutral-light);
+  border-radius: var(--input-radius);
+  transition: var(--transition-fast);
+  appearance: none;
+  min-height: 44px;
+}
+
+.form-select:focus {
+  border-color: var(--primary);
+  outline: 0;
+  box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.1);
+}
+
+.form-select:disabled {
+  background: var(--gray-50);
+  color: var(--gray-600);
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.form-select-sm {
+  min-height: 36px;
+  padding: var(--space-2) var(--space-6) var(--space-2) var(--space-3);
+  font-size: var(--text-xs);
+}
+
+.form-select-lg {
+  min-height: 52px;
+  padding: var(--space-4) var(--space-10) var(--space-4) var(--space-5);
+  font-size: var(--text-base);
+}
+
+/* ===================================
+   TEXTAREA
+ =================================== */
+
+textarea.form-control {
+  min-height: 100px;
+  resize: vertical;
+}
+
+textarea.form-control-sm {
+  min-height: 80px;
+}
+
+textarea.form-control-lg {
+  min-height: 120px;
+}
+
+/* ===================================
+   FILE INPUT
+   =================================== */
+
+.form-control[type="file"] {
+  overflow: hidden;
+}
+
+.form-control[type="file"]:not(:disabled):not([readonly]) {
+  cursor: pointer;
+}
+
+.form-control[type="file"]:focus {
+  border-color: var(--primary);
+}
+
+/* ===================================
+   RANGE INPUT
+   =================================== */
+
+.form-range {
+  width: 100%;
+  height: 24px;
+padding: 0;
+  background: transparent;
+  appearance: none;
+}
+
+.form-range:focus {
+  outline: 0;
+}
+
+.form-range:focus::-webkit-slider-thumb {
+  box-shadow: 0 0 0 1px var(--white), 0 0 0 3px rgba(14, 165, 233, 0.2);
+}
+
+.form-range::-webkit-slider-track {
+  width: 100%;
+  height: 6px;
+  cursor: pointer;
+  background: var(--gray-200);
+  border-radius: var(--radius-full);
+  border: 0;
+}
+
+.form-range::-webkit-slider-thumb {
+  height: 20px;
+width: 20px;
+  border-radius: var(--radius-full);
+  background: var(--primary);
+  cursor: pointer;
+  appearance: none;
+  border: 0;
+  transition: var(--transition-fast);
+}
+
+.form-range::-webkit-slider-thumb:hover {
+  background: var(--primary-600);
+  transform: scale(1.1);
+}
+
+.form-range::-moz-range-track {
+  width: 100%;
+  height: 6px;
+  cursor: pointer;
+  background: var(--gray-200);
+  border-radius: var(--radius-full);
+  border: 0;
+}
+
+.form-range::-moz-range-thumb {
+  height: 20px;
+  width: 20px;
+  border-radius: var(--radius-full);
+  background: var(--primary);
+  cursor: pointer;
+  border: 0;
+}
+
+/* ===================================
+   FORM LAYOUTS
+   =================================== */
+
+.form-inline {
+  display: flex;
+  flex-flow: row wrap;
+  align-items: center;
+}
+
+.form-inline .form-group {
+  margin-right: var(--space-4);
+  margin-bottom: 0;
+}
+
+.form-row {
+  display: flex;
+  flex-wrap: wrap;
+  margin-right: calc(-1 * var(--space-3));
+  margin-left: calc(-1 * var(--space-3));
+}
+
+.form-row > .col,
+.form-row > [class*="col-"] {
+  padding-right: var(--space-3);
+  padding-left: var(--space-3);
+}
+
+/* ===================================
+   ACCESSIBILITY
+   =================================== */
+
+/* High contrast mode */
+@media (prefers-contrast: high) {
+  .form-control,
+  .form-select {
+    border-width: 3px;
+  }
+  
+  .form-check-input {
+    border-width: 3px;
+  }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .form-control,
+  .form-select,
+  .form-check-input,
+  .form-switch .form-check-input {
+    transition: none;
+  }
+}
+
+/* ===================================
+   RESPONSIVE DESIGN
+   =================================== */
+
+@media (max-width: 768px) {
+  .form-control,
+  .form-select {
+    min-height: 48px; /* Larger touch targets on mobile */
+  }
+  
+  .form-control-sm,
+  .form-select-sm {
+    min-height: 40px;
+  }
+  
+  .form-control-lg,
+  .form-select-lg {
+    min-height: 56px;
+  }
+  
+  .form-inline {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .form-inline .form-group {
+    margin-right: 0;
+    margin-bottom: var(--space-3);
+  }
+}
+
+/* ===================================
+   PRINT STYLES
+   =================================== */
+
+@media print {
+  .form-control,
+  .form-select {
+    background: var(--white) !important;
+    border: 1px solid var(--black) !important;
+    box-shadow: none !important;
+  }
+  
+  .form-check-input {
+    border: 1px solid var(--black) !important;
+  }
+}

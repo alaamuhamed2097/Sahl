@@ -1,0 +1,525 @@
+/* ===================================
+   ERROR PAGE STYLES
+   404, 500, maintenance, and other error pages
+ =================================== */
+
+/* ===================================
+   ERROR LAYOUT
+   =================================== */
+
+.error-container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, var(--gray-50) 0%, var(--gray-100) 100%);
+  padding: var(--space-6);
+  text-align: center;
+}
+
+.error-content {
+  max-width: 600px;
+  width: 100%;
+  animation: error-fade-in 0.8s ease-out;
+}
+
+@keyframes error-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+transform: translateY(0);
+  }
+}
+
+/* ===================================
+   ERROR ILLUSTRATION
+   =================================== */
+
+.error-illustration {
+  margin-bottom: var(--space-8);
+  position: relative;
+}
+
+.error-code {
+  font-size: clamp(4rem, 12vw, 10rem);
+  font-weight: var(--font-black);
+  color: var(--primary);
+  line-height: 0.9;
+  margin: 0;
+  text-shadow: 0 4px 12px rgba(14, 165, 233, 0.2);
+  position: relative;
+}
+
+.error-code::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 120%;
+  height: 120%;
+  background: radial-gradient(circle, rgba(14, 165, 233, 0.1) 0%, transparent 70%);
+  z-index: -1;
+  border-radius: var(--radius-full);
+}
+
+/* ===================================
+   ERROR MESSAGE
+   =================================== */
+
+.error-title {
+  font-size: var(--text-3xl);
+  font-weight: var(--font-bold);
+  color: var(--neutral-darker);
+  margin-bottom: var(--space-4);
+  line-height: 1.2;
+}
+
+.error-message {
+  font-size: var(--text-lg);
+  color: var(--gray-600);
+  margin-bottom: var(--space-8);
+  line-height: 1.6;
+  max-width: 500px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* ===================================
+   ERROR ACTIONS
+   =================================== */
+
+.error-actions {
+  display: flex;
+  gap: var(--space-4);
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-bottom: var(--space-8);
+}
+
+.error-actions .btn {
+  min-width: 140px;
+  padding: var(--space-3) var(--space-6);
+  font-weight: var(--font-semibold);
+}
+
+.error-actions .btn-primary {
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-600) 100%);
+  border: none;
+  box-shadow: 0 4px 12px rgba(14, 165, 233, 0.3);
+}
+
+.error-actions .btn-primary:hover {
+  background: linear-gradient(135deg, var(--primary-600) 0%, var(--primary-700) 100%);
+  box-shadow: 0 6px 16px rgba(14, 165, 233, 0.4);
+  transform: translateY(-2px);
+}
+
+.error-actions .btn-outline-secondary {
+  border-color: var(--gray-300);
+  color: var(--gray-700);
+}
+
+.error-actions .btn-outline-secondary:hover {
+  background: var(--gray-100);
+  border-color: var(--gray-400);
+  color: var(--gray-800);
+}
+
+/* ===================================
+   ERROR DETAILS
+   =================================== */
+
+.error-details {
+  background: var(--white);
+  border: 1px solid var(--neutral-light);
+  border-radius: var(--radius-lg);
+  padding: var(--space-6);
+  margin-top: var(--space-8);
+  box-shadow: var(--shadow-sm);
+  text-align: left;
+}
+
+.error-details-title {
+  font-size: var(--text-lg);
+  font-weight: var(--font-semibold);
+  color: var(--neutral-darker);
+  margin-bottom: var(--space-4);
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.error-details-content {
+  background: var(--gray-50);
+  border-radius: var(--radius-md);
+  padding: var(--space-4);
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  color: var(--gray-700);
+  overflow-x: auto;
+  white-space: pre-wrap;
+}
+
+/* ===================================
+   ERROR TYPES
+   =================================== */
+
+/* 404 Error */
+.error-404 .error-code {
+  color: var(--warning);
+  text-shadow: 0 4px 12px rgba(245, 158, 11, 0.2);
+}
+
+.error-404 .error-code::before {
+  background: radial-gradient(circle, rgba(245, 158, 11, 0.1) 0%, transparent 70%);
+}
+
+/* 500 Error */
+.error-500 .error-code {
+color: var(--danger);
+  text-shadow: 0 4px 12px rgba(239, 68, 68, 0.2);
+}
+
+.error-500 .error-code::before {
+  background: radial-gradient(circle, rgba(239, 68, 68, 0.1) 0%, transparent 70%);
+}
+
+/* 403 Error */
+.error-403 .error-code {
+  color: var(--warning);
+  text-shadow: 0 4px 12px rgba(245, 158, 11, 0.2);
+}
+
+.error-403 .error-code::before {
+  background: radial-gradient(circle, rgba(245, 158, 11, 0.1) 0%, transparent 70%);
+}
+
+/* Maintenance */
+.error-maintenance .error-code {
+  color: var(--info);
+  text-shadow: 0 4px 12px rgba(59, 130, 246, 0.2);
+}
+
+.error-maintenance .error-code::before {
+  background: radial-gradient(circle, rgba(59, 130, 246, 0.1) 0%, transparent 70%);
+}
+
+/* ===================================
+   ANIMATED ELEMENTS
+   =================================== */
+
+.error-floating {
+  position: relative;
+  animation: error-float 3s ease-in-out infinite;
+}
+
+@keyframes error-float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+  transform: translateY(-10px);
+  }
+}
+
+.error-pulse {
+  animation: error-pulse 2s ease-in-out infinite;
+}
+
+@keyframes error-pulse {
+  0%, 100% {
+ opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+/* ===================================
+   SEARCH SUGGESTIONS
+   =================================== */
+
+.error-search {
+  margin-top: var(--space-6);
+  padding: var(--space-6);
+  background: var(--white);
+  border: 1px solid var(--neutral-light);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+}
+
+.error-search-title {
+  font-size: var(--text-lg);
+  font-weight: var(--font-semibold);
+  color: var(--neutral-darker);
+  margin-bottom: var(--space-4);
+  text-align: center;
+}
+
+.error-search-form {
+  display: flex;
+  gap: var(--space-3);
+  max-width: 400px;
+  margin: 0 auto var(--space-6);
+}
+
+.error-search-input {
+  flex: 1;
+  padding: var(--space-3) var(--space-4);
+  border: 2px solid var(--gray-200);
+  border-radius: var(--radius-md);
+  font-size: var(--text-base);
+  transition: var(--transition-fast);
+}
+
+.error-search-input:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.1);
+  outline: none;
+}
+
+.error-search-btn {
+  padding: var(--space-3) var(--space-5);
+  background: var(--primary);
+  color: var(--white);
+  border: none;
+  border-radius: var(--radius-md);
+  font-weight: var(--font-medium);
+  cursor: pointer;
+  transition: var(--transition-fast);
+}
+
+.error-search-btn:hover {
+  background: var(--primary-600);
+transform: translateY(-1px);
+}
+
+/* ===================================
+   QUICK LINKS
+   =================================== */
+
+.error-quick-links {
+  margin-top: var(--space-4);
+}
+
+.error-quick-links-title {
+  font-size: var(--text-base);
+  font-weight: var(--font-medium);
+  color: var(--neutral-dark);
+  margin-bottom: var(--space-3);
+  text-align: center;
+}
+
+.error-quick-links-list {
+  display: flex;
+  justify-content: center;
+  gap: var(--space-4);
+  flex-wrap: wrap;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.error-quick-links-item {
+  margin: 0;
+}
+
+.error-quick-links-item a {
+  color: var(--primary);
+  text-decoration: none;
+  font-size: var(--text-sm);
+  font-weight: var(--font-medium);
+  transition: var(--transition-fast);
+}
+
+.error-quick-links-item a:hover {
+  color: var(--primary-700);
+  text-decoration: underline;
+}
+
+/* ===================================
+   CONTACT SUPPORT
+   =================================== */
+
+.error-support {
+  margin-top: var(--space-8);
+  padding: var(--space-6);
+  background: var(--white);
+  border: 1px solid var(--neutral-light);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  text-align: center;
+}
+
+.error-support-title {
+  font-size: var(--text-lg);
+  font-weight: var(--font-semibold);
+  color: var(--neutral-darker);
+  margin-bottom: var(--space-3);
+}
+
+.error-support-text {
+  color: var(--gray-600);
+  margin-bottom: var(--space-4);
+}
+
+.error-support-contact {
+  display: flex;
+  justify-content: center;
+  gap: var(--space-4);
+  flex-wrap: wrap;
+}
+
+.error-support-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+color: var(--primary);
+  text-decoration: none;
+  font-weight: var(--font-medium);
+  transition: var(--transition-fast);
+}
+
+.error-support-item:hover {
+  color: var(--primary-700);
+}
+
+.error-support-icon {
+  width: 20px;
+  height: 20px;
+  font-size: 18px;
+}
+
+/* ===================================
+   RESPONSIVE DESIGN
+ =================================== */
+
+@media (max-width: 768px) {
+  .error-container {
+    padding: var(--space-4);
+  }
+  
+  .error-code {
+    font-size: clamp(3rem, 15vw, 6rem);
+  }
+  
+  .error-title {
+    font-size: var(--text-2xl);
+  }
+  
+  .error-message {
+    font-size: var(--text-base);
+  }
+  
+  .error-actions {
+ flex-direction: column;
+    align-items: center;
+  }
+  
+  .error-actions .btn {
+    width: 100%;
+    max-width: 300px;
+  }
+  
+  .error-search-form {
+    flex-direction: column;
+  }
+  
+  .error-quick-links-list {
+    flex-direction: column;
+  gap: var(--space-2);
+  }
+  
+  .error-support-contact {
+    flex-direction: column;
+  }
+  
+.error-details {
+    padding: var(--space-4);
+    margin-top: var(--space-6);
+  }
+}
+
+@media (max-width: 480px) {
+  .error-container {
+    padding: var(--space-3);
+  }
+  
+  .error-content {
+    margin-bottom: var(--space-4);
+  }
+  
+  .error-search,
+  .error-support,
+  .error-details {
+    padding: var(--space-4);
+  }
+}
+
+/* ===================================
+   ACCESSIBILITY
+   =================================== */
+
+/* High contrast mode */
+@media (prefers-contrast: high) {
+  .error-details {
+    border-width: 2px;
+  }
+  
+  .error-search,
+  .error-support {
+    border-width: 2px;
+  }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .error-content {
+    animation: none;
+  }
+  
+  .error-floating,
+  .error-pulse {
+    animation: none;
+  }
+  
+  .error-actions .btn:hover,
+  .error-search-btn:hover {
+    transform: none;
+  }
+}
+
+/* Focus management */
+.error-search-input:focus,
+.error-search-btn:focus {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
+/* ===================================
+   PRINT STYLES
+   =================================== */
+
+@media print {
+  .error-container {
+  background: var(--white);
+    padding: 0;
+  }
+  
+  .error-details,
+  .error-search,
+  .error-support {
+    border: 1px solid var(--black);
+    box-shadow: none;
+  }
+  
+  .error-actions,
+  .error-search-form,
+  .error-support-contact {
+    display: none;
+  }
+}
