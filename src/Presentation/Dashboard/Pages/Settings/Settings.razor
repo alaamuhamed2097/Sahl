@@ -1,0 +1,778 @@
+@page "/settings"
+@page "/settings/general"
+
+@using Common.Enumerations
+@using Common.Enumerations.User
+@using Microsoft.AspNetCore.Authorization
+@using Resources
+@using Shared.DTOs.Setting
+@using Dashboard.Contracts.Setting
+@attribute [Authorize(Roles = nameof(UserRole.Admin))]
+
+<PageTitle>@GeneralResources.Settings</PageTitle>
+
+<div class="container-fluid p-0">
+    <div class="card shadow-sm border-0">
+        <div class="card-header">
+            <div class="d-flex justify-content-between align-items-center">
+                <h4 class="mb-0">
+                    <i class="fas fa-cog me-2"></i>
+                    @GeneralResources.Settings
+                </h4>
+                <div class="d-flex gap-2">
+                    <button type="button" class="btn btn-outline-secondary" @onclick="ResetToDefaults" disabled="@IsSaving">
+                        <i class="fas fa-undo me-2"></i>
+                        @GeneralResources.ResetToDefaults
+                    </button>
+                    <button type="submit" form="settingsForm" class="btn btn-success" disabled="@IsSaving">
+                        @if (IsSaving)
+                        {
+                            <span class="spinner-border spinner-border-sm me-2"></span>
+                            @GeneralResources.Saving
+                        }
+                        else
+                        {
+                            <i class="fas fa-save me-2"></i>
+                            @ActionsResources.Save
+                        }
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        @if (!string.IsNullOrEmpty(ErrorMessage))
+        {
+            <div class="alert alert-danger mx-3 mt-3">
+                <i class="fas fa-exclamation-triangle me-2"></i>
+                @ErrorMessage
+            </div>
+        }
+
+        @if (!string.IsNullOrEmpty(SuccessMessage))
+        {
+            <div class="alert alert-success mx-3 mt-3">
+                <i class="fas fa-check-circle me-2"></i>
+                @SuccessMessage
+            </div>
+        }
+
+        @if (IsLoading)
+        {
+            <div class="card-body text-center">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">@GeneralResources.Loading...</span>
+                </div>
+                <p class="mt-3">@GeneralResources.LoadingSettings</p>
+            </div>
+        }
+        else
+        {
+            <EditForm Model="@Model" id="settingsForm" OnValidSubmit="SaveSettings">
+                <DataAnnotationsValidator />
+
+                <div class="card-body">
+                    <!-- Enhanced Settings Navigation Tabs with Error Indicators -->
+                    <ul class="nav nav-tabs mb-4" id="settingsTabs" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="@GetTabClass("contact")"
+                                    @onclick='() => SetActiveTab("contact")' type="button">
+                                <i class="fas fa-envelope me-2"></i>
+                                @GeneralResources.ContactInformation
+                                @if (tabValidationErrors.ContainsKey("contact") && tabValidationErrors["contact"])
+                                {
+                                    <span class="error-indicator ms-2">
+                                        <i class="fas fa-exclamation-circle"></i>
+                                    </span>
+                                }
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="@GetTabClass("social")"
+                                    @onclick='() => SetActiveTab("social")' type="button">
+                                <i class="fas fa-share-alt me-2"></i>
+                                @GeneralResources.SocialMedia
+                                @if (tabValidationErrors.ContainsKey("social") && tabValidationErrors["social"])
+                                {
+                                    <span class="error-indicator ms-2">
+                                        <i class="fas fa-exclamation-circle"></i>
+                                    </span>
+                                }
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="@GetTabClass("business")"
+                                    @onclick='() => SetActiveTab("business")' type="button">
+                                <i class="fas fa-chart-line me-2"></i>
+                                @GeneralResources.BusinessSettings
+                                @if (tabValidationErrors.ContainsKey("business") && tabValidationErrors["business"])
+                                {
+                                    <span class="error-indicator ms-2">
+                                        <i class="fas fa-exclamation-circle"></i>
+                                    </span>
+                                }
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="@GetTabClass("seo")"
+                                    @onclick='() => SetActiveTab("seo")' type="button">
+                                <i class="fas fa-search me-2"></i>
+                                @GeneralResources.SEOSettings
+                                @if (tabValidationErrors.ContainsKey("seo") && tabValidationErrors["seo"])
+                                {
+                                    <span class="error-indicator ms-2">
+                                        <i class="fas fa-exclamation-circle"></i>
+                                    </span>
+                                }
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="@GetTabClass("banner")"
+                                    @onclick='() => SetActiveTab("banner")' type="button">
+                                <i class="fas fa-image me-2"></i>
+                                @GeneralResources.MainBannerSettings
+                                @if (tabValidationErrors.ContainsKey("banner") && tabValidationErrors["banner"])
+                                {
+                                    <span class="error-indicator ms-2">
+                                        <i class="fas fa-exclamation-circle"></i>
+                                    </span>
+                                }
+                            </button>
+                        </li>
+                    </ul>
+
+                    <!-- Tab Content -->
+                    <div class="tab-content">
+                        <!-- Contact Information Tab -->
+                        <div class="@($"tab-pane {(ActiveTab == "contact" ? "show active" : "")}")" id="contact">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="card border-0 bg-light h-100">
+                                        <div class="card-header bg-transparent">
+                                            <h6 class="mb-0">
+                                                <i class="fas fa-phone me-2"></i>
+                                                @GeneralResources.ContactDetails
+                                            </h6>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="row">
+                                                <div class="col-md-3">
+                                                    <div class="form-group mb-3">
+                                                        <label class="form-label">@GeneralResources.Code *</label>
+                                                        <select class="form-control country-code-select px-2 text-center"
+                                                                @bind="Model.PhoneCode"
+                                                                @bind:after="OnPhoneCodeChanged"
+                                                                aria-label="@GeneralResources.Code">
+                                                            @if (countries != null)
+                                                            {
+                                                                <optgroup label="@ECommerceResources.Countries">
+                                                                    @foreach (var country in countries)
+                                                                    {
+                                                                        <option value="@country.PhoneCode">
+                                                                            @country.Flag @country.PhoneCode @(ResourceManager.CurrentLanguage == Language.Arabic ? country.NameAr : country.NameEn)
+                                                                        </option>
+                                                                    }
+                                                                </optgroup>
+                                                            }
+                                                            else
+                                                            {
+                                                                <option value="">@GeneralResources.Loading...</option>
+                                                            }
+                                                        </select>
+                                                        <ValidationMessage For="@(() => Model.PhoneCode)" />
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-9">
+                                                    <div class="form-group mb-3">
+                                                        <label class="form-label">@FormResources.PhoneNumber *</label>
+                                                        <InputText type="tel"
+                                                                   placeholder="@GetPhoneNumberPlaceholder()"
+                                                                   class="@GetPhoneInputClass()"
+                                                                   @bind-Value="Model.Phone"
+                                                                   @oninput="@(e => OnPhoneNumberInput(e))"
+                                                                   @onblur="ValidatePhoneNumber" />
+                                                        <ValidationMessage For="@(() => Model.Phone)" />
+                                                        @if (!string.IsNullOrEmpty(phoneFormatExample))
+                                                        {
+                                                            <div class="form-text">
+                                                                @FormResources.Format: @selectedCountry?.PhoneCode @phoneFormatExample
+                                                            </div>
+                                                        }
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="form-group mb-3">
+                                                <label class="form-label">@FormResources.Email *</label>
+                                                <InputText type="email" class="form-control" @bind-Value="Model.Email"
+                                                           @oninput="@(e => OnEmailInput(e))" placeholder="contact@company.com" />
+                                                <ValidationMessage For="@(() => Model.Email)" />
+                                            </div>
+
+                                            <div class="form-group mb-3">
+                                                <label class="form-label">@FormResources.Address *</label>
+                                                <InputTextArea class="form-control" rows="3" @bind-Value="Model.Address"
+                                                               @oninput="@(e => OnAddressInput(e))"
+                                                               placeholder="Company address..." />
+                                                <ValidationMessage For="@(() => Model.Address)" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <div class="card border-0 bg-light h-100">
+                                        <div class="card-header bg-transparent">
+                                            <h6 class="mb-0">
+                                                <i class="fab fa-whatsapp me-2"></i>
+                                                @GeneralResources.WhatsAppSettings
+                                            </h6>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="row">
+                                                <div class="col-md-3">
+                                                    <div class="form-group mb-3">
+                                                        <label class="form-label">@GeneralResources.WhatsAppCode</label>
+                                                        <select class="form-control country-code-select px-2 text-center"
+                                                                @bind="Model.WhatsAppCode"
+                                                                @bind:after="OnWhatsAppCodeChanged"
+                                                                aria-label="@GeneralResources.WhatsAppCode">
+                                                            @if (countries != null)
+                                                            {
+                                                                <optgroup label="@ECommerceResources.Countries">
+                                                                    @foreach (var country in countries)
+                                                                    {
+                                                                        <option value="@country.PhoneCode">
+                                                                            @country.Flag @country.PhoneCode @(ResourceManager.CurrentLanguage == Language.Arabic ? country.NameAr : country.NameEn)
+                                                                        </option>
+                                                                    }
+                                                                </optgroup>
+                                                            }
+                                                            else
+                                                            {
+                                                                <option value="">@GeneralResources.Loading...</option>
+                                                            }
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-9">
+                                                    <div class="form-group mb-3">
+                                                        <label class="form-label">@GeneralResources.WhatsAppNumber</label>
+                                                        <InputText type="tel"
+                                                                   placeholder="@GetPhoneNumberPlaceholder(true)"
+                                                                   class="@GetPhoneInputClass(true)"
+                                                                   @bind-Value="Model.WhatsAppNumber"
+                                                                   @oninput="@(e => OnPhoneNumberInput(e, true))"
+                                                                   @onblur="ValidateWhatsAppNumber" />
+                                                        @if (!string.IsNullOrEmpty(whatsAppFormatExample))
+                                                        {
+                                                            <div class="form-text">
+                                                                @FormResources.Format: @selectedWhatsAppCountry?.PhoneCode @whatsAppFormatExample
+                                                            </div>
+                                                        }
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="alert alert-info">
+                                                <small>
+                                                    <i class="fas fa-info-circle me-2"></i>
+                                                    @GeneralResources.WhatsAppIntegrationNote
+                                                </small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Social Media Tab -->
+                        <div class="@($"tab-pane {(ActiveTab == "social" ? "show active" : "")}")" id="social">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group mb-3">
+                                        <label class="form-label">
+                                            <i class="fab fa-facebook text-primary me-2"></i>
+                                            @GeneralResources.FacebookURL
+                                        </label>
+                                        <InputText type="url" class="form-control" @bind-Value="Model.FacebookUrl"
+                                                   @oninput="@(e => OnSocialUrlInput(e, "facebook"))"
+                                                   placeholder="https://facebook.com/yourpage" />
+                                        <ValidationMessage For="@(() => Model.FacebookUrl)" />
+                                    </div>
+
+                                    <div class="form-group mb-3">
+                                        <label class="form-label">
+                                            <i class="fab fa-twitter text-info me-2"></i>
+                                            @GeneralResources.TwitterURL
+                                        </label>
+                                        <InputText type="url" class="form-control" @bind-Value="Model.TwitterUrl"
+                                                   @oninput="@(e => OnSocialUrlInput(e, "twitter"))"
+                                                   placeholder="https://twitter.com/yourhandle" />
+                                        <ValidationMessage For="@(() => Model.TwitterUrl)" />
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <div class="form-group mb-3">
+                                        <label class="form-label">
+                                            <i class="fab fa-instagram text-danger me-2"></i>
+                                            @GeneralResources.InstagramURL
+                                        </label>
+                                        <InputText type="url" class="form-control" @bind-Value="Model.InstagramUrl"
+                                                   @oninput="@(e => OnSocialUrlInput(e, "instagram"))"
+                                                   placeholder="https://instagram.com/yourprofile" />
+                                        <ValidationMessage For="@(() => Model.InstagramUrl)" />
+                                    </div>
+
+                                    <div class="form-group mb-3">
+                                        <label class="form-label">
+                                            <i class="fab fa-linkedin text-primary me-2"></i>
+                                            @GeneralResources.LinkedInURL
+                                        </label>
+                                        <InputText type="url" class="form-control" @bind-Value="Model.LinkedInUrl"
+                                                   @oninput="@(e => OnSocialUrlInput(e, "linkedin"))"
+                                                   placeholder="https://linkedin.com/company/yourcompany" />
+                                        <ValidationMessage For="@(() => Model.LinkedInUrl)" />
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="alert alert-warning">
+                                <h6><i class="fas fa-exclamation-triangle me-2"></i>@GeneralResources.SocialMediaGuidelines</h6>
+                                <ul class="mb-0">
+                                    <li>@GeneralResources.EnsureURLsAreCompleteAndFormatted</li>
+                                    <li>@GeneralResources.TestLinksBeforeSaving</li>
+                                    <li>@GeneralResources.SocialMediaLinksWillAppear</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!-- Business Settings Tab -->
+                        <div class="@($"tab-pane {(ActiveTab == "business" ? "show active" : "")}")" id="business">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="card border-0 bg-light">
+                                        <div class="card-header bg-transparent">
+                                            <h6 class="mb-0">
+                                                <i class="fas fa-percentage me-2"></i>
+                                                @GeneralResources.CommissionRates
+                                            </h6>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="form-group mb-3">
+                                                <label class="form-label">@GeneralResources.Level1CommissionPercentage *</label>
+                                                <div class="input-group">
+                                                    <InputNumber class="form-control" @bind-Value="Model.Level1Percentage"
+                                                                 min="0" max="100" step="0.1" />
+                                                    <span class="input-group-text">%</span>
+                                                </div>
+                                                <ValidationMessage For="@(() => Model.Level1Percentage)" />
+                                                <small class="form-text text-muted">@GeneralResources.CommissionForDirectReferrals</small>
+                                            </div>
+
+                                            <div class="form-group mb-3">
+                                                <label class="form-label">@GeneralResources.Level2CommissionPercentage *</label>
+                                                <div class="input-group">
+                                                    <InputNumber class="form-control" @bind-Value="Model.Level2Percentage"
+                                                                 min="0" max="100" step="0.1" />
+                                                    <span class="input-group-text">%</span>
+                                                </div>
+                                                <ValidationMessage For="@(() => Model.Level2Percentage)" />
+                                                <small class="form-text text-muted">@GeneralResources.CommissionForSecondLevelReferrals</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <div class="card border-warning">
+                                        <div class="card-header bg-warning bg-opacity-10">
+                                            <h6 class="mb-0 text-warning">
+                                                <i class="fas fa-exclamation-triangle me-2"></i>
+                                                @GeneralResources.ImportantNotice
+                                            </h6>
+                                        </div>
+                                        <div class="card-body">
+                                            <p><strong>@GeneralResources.CommissionRateGuidelines:</strong></p>
+                                            <ul>
+                                                <li>@GeneralResources.RatesAppliedToNewTransactions</li>
+                                                <li>@GeneralResources.ChangesAffectFutureCommissions</li>
+                                                <li>@GeneralResources.TotalCommissionRatesShouldNotExceed</li>
+                                                <li>@GeneralResources.ConsiderMarketStandards</li>
+                                            </ul>
+
+                                            <div class="mt-3 p-3 bg-info bg-opacity-10 rounded">
+                                                <strong>@GeneralResources.CurrentTotal: @((Model.Level1Percentage + Model.Level2Percentage).ToString("F1"))%</strong>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row mt-3">
+                                <!-- Withdrawal Limit Row -->
+                                <div class="col-md-6">
+                                    <div class="card border-0 bg-light">
+                                        <div class="card-header bg-transparent">
+                                            <h6 class="mb-0">
+                                                <i class="fas fa-money-bill me-2"></i>
+                                                @GeneralResources.WithdrawalLimitLabel
+                                            </h6>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="form-group mb-0">
+                                                <label class="form-label">@GeneralResources.WithdrawalLimitLabel</label>
+                                                <div class="input-group">
+                                                    <span class="input-group-text"><i class="fas fa-money-bill"></i></span>
+                                                    <InputNumber class="form-control" @bind-Value="Model.WithdrawalLimit"
+                                                                 min="0" step="0.1" />
+                                                </div>
+                                                <ValidationMessage For="@(() => Model.WithdrawalLimit)" />
+                                                <small class="form-text text-muted">@GeneralResources.WithdrawalLimitHelpText</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Withdrawal Fee Persentage -->
+                                <div class="col-md-6">
+                                    <div class="card border-0 bg-light">
+                                        <div class="card-header bg-transparent">
+                                            <h6 class="mb-0">
+                                                <i class="fas fa-money-bill me-2"></i>
+                                                @GeneralResources.WithdrawalFeeLabel
+                                            </h6>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="form-group mb-0">
+                                                <label class="form-label">@GeneralResources.WithdrawalFeeLabel</label>
+                                                <div class="input-group">
+                                                    <span class="input-group-text"><i class="fas fa-money-bill"></i></span>
+                                                    <InputNumber class="form-control" @bind-Value="Model.WithdrawalFeePersentage"
+                                                                 min="0" step="0.1" max="100"/>
+                                                </div>
+                                                <ValidationMessage For="@(() => Model.WithdrawalLimit)" />
+                                                <small class="form-text text-muted">@GeneralResources.WithdrawalFeeHelpText</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row mt-3">
+                                <!-- Shipping Amount -->
+                                <div class="col-md-6">
+                                    <div class="card border-0 bg-light">
+                                        <div class="card-header bg-transparent">
+                                            <h6 class="mb-0">
+                                                <i class="fas fa-truck me-2"></i>
+                                                @ECommerceResources.ShippingAmount
+                                            </h6>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="form-group mb-0">
+                                                <label class="form-label">@ECommerceResources.ShippingAmount</label>
+                                                <div class="input-group">
+                                                    <span class="input-group-text"><i class="fas fa-truck"></i></span>
+                                                    <InputNumber class="form-control" @bind-Value="Model.ShippingAmount"
+                                                                 min="0" step="0.1" />
+                                                    <span class="input-group-text">$</span>
+                                                </div>
+                                                <ValidationMessage For="@(() => Model.ShippingAmount)" />
+                                                <small class="form-text text-muted">@GeneralResources.ShippingAmountHelpText</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Order Tax Amount -->
+                                <div class="col-md-6">
+                                    <div class="card border-0 bg-light">
+                                        <div class="card-header bg-transparent">
+                                            <h6 class="mb-0">
+                                                <i class="fas fa-file-invoice-dollar me-2"></i>
+                                                @ECommerceResources.OrderTaxAmount
+                                            </h6>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="form-group mb-0">
+                                                <label class="form-label">@ECommerceResources.OrderTaxAmount</label>
+                                                <div class="input-group">
+                                                    <span class="input-group-text"><i class="fas fa-file-invoice-dollar me-2"></i></span>
+                                                    <InputNumber class="form-control" @bind-Value="Model.OrderTaxPercentage"
+                                                                 min="0" step="0.1" />
+                                                    <span class="input-group-text">%</span>
+                                                </div>
+                                                <ValidationMessage For="@(() => Model.OrderTaxPercentage)" />
+                                                <small class="form-text text-muted">@GeneralResources.OrderTaxPercentageHelpText</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row mt-3">
+                                <!-- Order Extra Cost -->
+                                <div class="col-md-6">
+                                    <div class="card border-0 bg-light">
+                                        <div class="card-header bg-transparent">
+                                            <h6 class="mb-0">
+                                                <i class="fas fa-file-invoice-dollar me-2"></i>
+                                                @ECommerceResources.OrderExtraCost
+                                            </h6>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="form-group mb-0">
+                                                <label class="form-label">@ECommerceResources.OrderExtraCost</label>
+                                                <div class="input-group">
+                                                    <span class="input-group-text"><i class="fas fa-file-invoice-dollar me-2"></i></span>
+                                                    <InputNumber class="form-control" @bind-Value="Model.OrderExtraCost"
+                                                                 min="0" step="0.1" />
+                                                    <span class="input-group-text">$</span>
+                                                </div>
+                                                <ValidationMessage For="@(() => Model.OrderExtraCost)" />
+                                                <small class="form-text text-muted">@GeneralResources.OrderExtraCostHelpText</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <!-- SEO Settings Tab -->
+                        <div class="@($"tab-pane {(ActiveTab == "seo" ? "show active" : "")}")" id="seo">
+                            <div class="row">
+                                <div class="col-md-8">
+                                    <div class="form-group mb-3">
+                                        <label class="form-label">@FormResources.SEOTitle *</label>
+                                        <InputText class="form-control" @bind-Value="Model.SEOTitle"
+                                                   @oninput="@(e => OnSEOInput(e, "title"))"
+                                                   placeholder="Your Company Name - Industry Leader" />
+                                        <ValidationMessage For="@(() => Model.SEOTitle)" />
+                                        <small class="form-text text-muted">
+                                            @GeneralResources.RecommendedLength50to60Characters <span class="@GetCharacterCountClass(Model.SEOTitle?.Length ?? 0, 60)">@(Model.SEOTitle?.Length ?? 0)</span>
+                                        </small>
+                                    </div>
+
+                                    <div class="form-group mb-3">
+                                        <label class="form-label">@FormResources.SEODescription *</label>
+                                        <InputTextArea class="form-control" rows="4" @bind-Value="Model.SEODescription"
+                                                       @oninput="@(e => OnSEOInput(e, "description"))"
+                                                       placeholder="Describe your company and services in a compelling way that will appear in search results..." />
+                                        <ValidationMessage For="@(() => Model.SEODescription)" />
+                                        <small class="form-text text-muted">
+                                            @GeneralResources.RecommendedLength150to160Characters <span class="@GetCharacterCountClass(Model.SEODescription?.Length ?? 0, 160)">@(Model.SEODescription?.Length ?? 0)</span>
+                                        </small>
+                                    </div>
+
+                                    <div class="form-group mb-3">
+                                        <label class="form-label">@FormResources.SEOMetaTags</label>
+                                        <InputText class="form-control" @bind-Value="Model.SEOMetaTags"
+                                                   @oninput="@(e => OnSEOInput(e, "metatags"))"
+                                                   placeholder="business, services, company, industry" />
+                                        <ValidationMessage For="@(() => Model.SEOMetaTags)" />
+                                        <small class="form-text text-muted">@GeneralResources.CommaSeparatedKeywords</small>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-4">
+                                    <div class="card border-0 bg-light">
+                                        <div class="card-header bg-transparent">
+                                            <h6 class="mb-0">
+                                                <i class="fas fa-lightbulb me-2"></i>
+                                                @GeneralResources.SEOTips
+                                            </h6>
+                                        </div>
+                                        <div class="card-body">
+                                            <ul class="list-unstyled">
+                                                <li class="mb-2">
+                                                    <i class="fas fa-check text-success me-2"></i>
+                                                    @GeneralResources.UseRelevantKeywordsNaturally
+                                                </li>
+                                                <li class="mb-2">
+                                                    <i class="fas fa-check text-success me-2"></i>
+                                                    @GeneralResources.KeepTitlesUnder60Characters
+                                                </li>
+                                                <li class="mb-2">
+                                                    <i class="fas fa-check text-success me-2"></i>
+                                                    @GeneralResources.MakeDescriptionsCompelling
+                                                </li>
+                                                <li class="mb-2">
+                                                    <i class="fas fa-check text-success me-2"></i>
+                                                    @GeneralResources.IncludeYourMainServices
+                                                </li>
+                                                <li class="mb-2">
+                                                    <i class="fas fa-check text-success me-2"></i>
+                                                    @GeneralResources.UpdateRegularlyForBestResults
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Banner Settings Tab -->
+                        <div class="@($"tab-pane {(ActiveTab == "banner" ? "show active" : "")}")" id="banner">
+                            <div class="row">
+                                <div class="col-md-8">
+                                    <div class="card border-0 bg-light">
+                                        <div class="card-header bg-transparent">
+                                            <h6 class="mb-0">
+                                                <i class="fas fa-image me-2"></i>
+                                                @GeneralResources.MainBanner
+                                            </h6>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="form-group mb-3">
+                                                <label class="form-label">@GeneralResources.MainBanner:</label>
+                                                <InputFile class="form-control"
+                                                           OnChange="HandleSelectedBannerImage"
+                                                           accept="image/*" />
+                                                <ValidationMessage For="@(() => Model.Base64Image)" />
+
+                                                @if (!string.IsNullOrEmpty(previewBannerUrl))
+                                                {
+                                                    <div class="position-relative d-inline-block mt-3">
+                                                        <img src="@previewBannerUrl" class="img-thumbnail" style="max-width: 400px; max-height: 200px; object-fit: cover;" />
+                                                        <button type="button" class="btn-close position-absolute top-0 end-0 m-1"
+                                                                style="background-color: white; border-radius: 50%; padding: 8px;"
+                                                                @onclick="RemoveSelectedBannerImage"
+                                                                title="Remove selected image"></button>
+                                                    </div>
+                                                }
+                                                else if (!string.IsNullOrEmpty(Model.MainBannerPath) && !Model.IsBannerDeleted)
+                                                {
+                                                    <div class="position-relative d-inline-block mt-3">
+                                                        <img src="@baseUrl/@Model.MainBannerPath" class="img-thumbnail" style="max-width: 400px; max-height: 200px; object-fit: cover;" />
+                                                        <button type="button" class="btn btn-sm btn-danger position-absolute top-0 end-0 m-1"
+                                                                @onclick="DeleteExistingBannerImage"
+                                                                title="Delete current banner">
+                                                            <i class="fas fa-trash"></i>
+                                                        </button>
+                                                    </div>
+                                                }
+                                                else if (Model.IsBannerDeleted)
+                                                {
+                                                    <div class="alert alert-info mt-3">
+                                                        <i class="fas fa-info-circle me-2"></i>
+                                                        The current banner will be deleted when you save the settings.
+                                                        <button type="button" class="btn btn-sm btn-outline-primary ms-2" @onclick="UndoBannerDeletion">
+                                                            <i class="fas fa-undo me-1"></i>
+                                                            Undo
+                                                        </button>
+                                                    </div>
+                                                }
+                                            </div>
+
+                                            <div class="alert alert-warning">
+                                                <h6><i class="fas fa-exclamation-triangle me-2"></i>@GeneralResources.BannerImageGuidelines</h6>
+                                                <ul class="mb-0">
+                                                    <li>@GeneralResources.Banner_MaxFileSize</li>
+                                                    <li>@GeneralResources.Banner_SupportedFormats</li>
+                                                    <li>@GeneralResources.Banner_HighQualityAdvice</li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-4">
+                                    <div class="card border-0 bg-light">
+                                        <div class="card-header bg-transparent">
+                                            <h6 class="mb-0">
+                                                <i class="fas fa-lightbulb me-2"></i>
+                                                @GeneralResources.BannerTips
+                                            </h6>
+                                        </div>
+                                        <div class="card-body">
+                                            <ul class="list-unstyled">
+                                                <li class="mb-2">
+                                                    <i class="fas fa-check text-success me-2"></i>
+                                                    @GeneralResources.BannerTip_CompellingVisuals
+                                                </li>
+                                                <li class="mb-2">
+                                                    <i class="fas fa-check text-success me-2"></i>
+                                                    @GeneralResources.BannerTip_ReadableText
+                                                </li>
+                                                <li class="mb-2">
+                                                    <i class="fas fa-check text-success me-2"></i>
+                                                    @GeneralResources.BannerTip_KeepContentAway
+                                                </li>
+                                                <li class="mb-2">
+                                                    <i class="fas fa-check text-success me-2"></i>
+                                                    @GeneralResources.BannerTip_TestAppearance
+                                                </li>
+                                                <li class="mb-2">
+                                                    <i class="fas fa-check text-success me-2"></i>
+                                                    @GeneralResources.BannerTip_UpdateSeasonally
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </EditForm>
+        }
+    </div>
+</div>
+
+<style>
+    .nav-tabs .nav-link {
+        border-radius: 0.5rem 0.5rem 0 0;
+        border: 1px solid transparent;
+        margin-right: 2px;
+        position: relative;
+    }
+
+        .nav-tabs .nav-link.active {
+            background-color: #f8f9fa;
+            border-color: #dee2e6 #dee2e6 #f8f9fa;
+        }
+
+        .nav-tabs .nav-link.tab-with-errors {
+            border-color: #dc3545;
+            color: #dc3545;
+        }
+
+            .nav-tabs .nav-link.tab-with-errors.active {
+                background-color: #f8d7da;
+                border-color: #dc3545 #dc3545 #f8d7da;
+            }
+
+    .error-indicator {
+        color: #dc3545;
+        font-size: 0.8em;
+    }
+
+    .country-code-select {
+        font-size: 0.9em;
+    }
+
+    .phone-number-input.is-valid {
+        border-color: #198754;
+    }
+
+    .phone-number-input.is-invalid {
+        border-color: #dc3545;
+    }
+
+    .character-count-good {
+        color: #28a745;
+        font-weight: bold;
+    }
+
+    .character-count-warning {
+        color: #ffc107;
+        font-weight: bold;
+    }
+
+    .character-count-danger {
+        color: #dc3545;
+        font-weight: bold;
+    }
+</style>

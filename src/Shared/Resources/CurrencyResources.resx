@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="xml:space" type="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="CurrencyManagement" xml:space="preserve">
+    <value>إدارة العملات</value>
+  </data>
+  <data name="UpdateRates" xml:space="preserve">
+    <value>تحديث الأسعار</value>
+  </data>
+  <data name="Symbol" xml:space="preserve">
+    <value>الرمز</value>
+  </data>
+  <data name="Code" xml:space="preserve">
+    <value>الكود</value>
+  </data>
+  <data name="ExchangeRate" xml:space="preserve">
+    <value>سعر الصرف</value>
+  </data>
+  <data name="Base" xml:space="preserve">
+    <value>أساسي</value>
+  </data>
+  <data name="Active" xml:space="preserve">
+    <value>نشط</value>
+  </data>
+  <data name="Inactive" xml:space="preserve">
+    <value>غير نشط</value>
+  </data>
+  <data name="SetAsBase" xml:space="preserve">
+    <value>تعيين كأساسي</value>
+  </data>
+  <data name="SetBaseCurrency" xml:space="preserve">
+    <value>تعيين العملة الأساسية</value>
+  </data>
+  <data name="SetBaseCurrencyConfirmation" xml:space="preserve">
+    <value>هل تريد بالتأكيد تعيين {0} كعملة أساسية؟ سيتم تحديث جميع أسعار الصرف.</value>
+  </data>
+  <data name="YesSetAsBase" xml:space="preserve">
+    <value>نعم، عين كأساسي</value>
+  </data>
+  <data name="BaseCurrencyUpdatedSuccessfully" xml:space="preserve">
+    <value>تم تحديث العملة الأساسية بنجاح</value>
+  </data>
+  <data name="FailedToSetBaseCurrency" xml:space="preserve">
+    <value>فشل في تعيين العملة الأساسية</value>
+  </data>
+  <data name="ExchangeRatesUpdatedSuccessfully" xml:space="preserve">
+    <value>تم تحديث أسعار الصرف بنجاح</value>
+  </data>
+  <data name="FailedToUpdateExchangeRates" xml:space="preserve">
+    <value>فشل في تحديث أسعار الصرف</value>
+  </data>
+  <data name="CannotDeleteBaseCurrency" xml:space="preserve">
+    <value>لا يمكن حذف العملة الأساسية. يرجى تعيين عملة أخرى كأساسية أولاً.</value>
+  </data>
+  <data name="CurrencyCode" xml:space="preserve">
+    <value>رمز العملة (ISO)</value>
+  </data>
+  <data name="CurrencySymbol" xml:space="preserve">
+    <value>رمز العملة</value>
+  </data>
+  <data name="EnglishName" xml:space="preserve">
+    <value>الاسم بالإنجليزية</value>
+  </data>
+  <data name="ArabicName" xml:space="preserve">
+    <value>الاسم بالعربية</value>
+  </data>
+  <data name="CountryCode" xml:space="preserve">
+    <value>رمز الدولة</value>
+  </data>
+  <data name="BaseCurrencyRateAlwaysOne" xml:space="preserve">
+    <value>سعر العملة الأساسية دائماً 1.0</value>
+  </data>
+  <data name="RateRelativeToBaseCurrency" xml:space="preserve">
+    <value>السعر نسبة للعملة الأساسية</value>
+  </data>
+  <data name="ThreeLetterISOCurrencyCode" xml:space="preserve">
+    <value>رمز عملة ISO من 3 أحرف</value>
+  </data>
+  <data name="TwoLetterCountryCode" xml:space="preserve">
+    <value>رمز دولة من حرفين (اختياري)</value>
+  </data>
+  <data name="Currency" xml:space="preserve">
+    <value>العملة</value>
+  </data>
+</root>

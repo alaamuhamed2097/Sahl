@@ -64,6 +64,13 @@
 		<RunAOTCompilation Condition="'$(Configuration)' == 'Debug'">false</RunAOTCompilation>
 	</PropertyGroup>
 
+	<ItemGroup>
+	  <Compile Remove="Handlers\**" />
+	  <Content Remove="Handlers\**" />
+	  <EmbeddedResource Remove="Handlers\**" />
+	  <None Remove="Handlers\**" />
+	</ItemGroup>
+
 	<!-- ========== 🌐 Supported Cultures (Arabic + English) ========== -->
 	<ItemGroup>
 		<SupportedCulture Include="ar" />
@@ -104,19 +111,6 @@
 		- Are already trimmed away (not in published output)
 		- Are needed for core functionality
 	-->
-	<ItemGroup>
-		<!-- Example: Uncomment and add your assemblies here if needed -->
-		<!-- <BlazorWebAssemblyLazyLoad Include="YourLibrary.dll" /> -->
-
-		<!-- ⚠️ DO NOT lazy load these - needed at startup: -->
-		<!-- - Microsoft.AspNetCore.SignalR.Client (if used in startup) -->
-		<!-- - Resources.dll (needed for localization) -->
-		<!-- - Shared.dll & Common.dll (core business logic) -->
-		<!-- - Blazored.Toast (UI feedback) -->
-		<!-- - System.IdentityModel.Tokens.Jwt (authentication) -->
-
-		<Folder Include="Handlers\" />
-	</ItemGroup>
 
 	<!-- ========== 🛡️ Trimming Protection ========== -->
 	<ItemGroup>

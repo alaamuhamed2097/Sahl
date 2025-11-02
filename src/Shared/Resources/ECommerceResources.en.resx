@@ -612,4 +612,58 @@
   <data name="ProductNameAr" xml:space="preserve">
     <value>Arabic product name</value>
   </data>
+  <data name="Orders" xml:space="preserve">
+    <value>Orders</value>
+  </data>
+  <data name="Order" xml:space="preserve">
+    <value>Order</value>
+  </data>
+  <data name="OrderStatus" xml:space="preserve">
+    <value>Order Status</value>
+  </data>
+  <data name="OrderDate" xml:space="preserve">
+    <value>Order Date</value>
+  </data>
+  <data name="OrderID" xml:space="preserve">
+    <value>Order ID</value>
+  </data>
+  <data name="OrderDetails" xml:space="preserve">
+    <value>Order Details</value>
+  </data>
+  <data name="NewOrder" xml:space="preserve">
+    <value>New Order</value>
+  </data>
+  <data name="OrderMustBeInProgress" xml:space="preserve">
+    <value>Order must be in progress first.</value>
+  </data>
+  <data name="OrderMustBeAccepted" xml:space="preserve">
+    <value>Order must be accepted first.</value>
+  </data>
+  <data name="TotalOrders" xml:space="preserve">
+    <value>Total orders</value>
+  </data>
+  <data name="TotalOrdersCount" xml:space="preserve">
+    <value>Total Orders Count</value>
+  </data>
+  <data name="OrderStatusDistribution" xml:space="preserve">
+    <value>Order Status Distribution</value>
+  </data>
+  <data name="CompletedOrders" xml:space="preserve">
+    <value>Completed Orders</value>
+  </data>
+  <data name="DirectSaleOrders" xml:space="preserve">
+    <value>Direct Sale Orders</value>
+  </data>
+  <data name="OrderTaxAmount" xml:space="preserve">
+    <value>Order Tax Percentage</value>
+  </data>
+  <data name="OrderExtraCost" xml:space="preserve">
+    <value>Order Extra Cost</value>
+  </data>
+  <data name="SelectShippingCompany" xml:space="preserve">
+    <value>Please select a shipping company.</value>
+  </data>
+  <data name="SelectValidDeliveryDate" xml:space="preserve">
+    <value>Please select a valid delivery date.</value>
+  </data>
 </root>

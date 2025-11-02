@@ -1,0 +1,463 @@
+@page "/catalog/products/{id:guid?}"
+@page "/products/{id:guid?}"
+
+@using Common.Enumerations.User
+@attribute [Authorize(Roles = nameof(UserRole.Admin))]
+<PageTitle>@ECommerceResources.Product</PageTitle>
+
+<div class="container-fluid p-0">
+    <div class="card shadow-sm border-0">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h4 class="modal-title">
+                @(Model.Id == Guid.Empty ? ActionsResources.Add : ActionsResources.Edit) @ECommerceResources.Product
+            </h4>
+        </div>
+
+        <EditForm Model="@Model" OnValidSubmit="Save">
+            <DataAnnotationsValidator />
+
+            <div class="card-body p-4">
+                <div class="accordion" id="productAccordion">
+                    <!-- Basic Information Section -->
+                    <div class="card mb-3">
+                        <div class="card-header" id="headingBasicInfo">
+                            <h5 class="mb-0">
+                                <a href="#!" data-bs-toggle="collapse" data-bs-target="#collapseBasicInfo"
+                                   aria-expanded="true" aria-controls="collapseBasicInfo" class="text-primary">
+                                    @FormResources.BasicInformation
+                                </a>
+                            </h5>
+                        </div>
+                        <div id="collapseBasicInfo" class="collapse show" aria-labelledby="headingBasicInfo"
+                             data-bs-parent="#productAccordion">
+                            <div class="card-body">
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label>@ECommerceResources.ProductNameAr <span class="text-danger">*</span></label>
+                                            <InputText type="text" placeholder="@($"{FormResources.Write} {ECommerceResources.ProductNameAr}")" class="form-control" @bind-Value="Model.TitleAr" />
+                                            <ValidationMessage For="@(() => Model.TitleAr)" />
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label>@ECommerceResources.ProductNameEn <span class="text-danger">*</span></label>
+                                            <InputText type="text" placeholder="@($"{FormResources.Write} {ECommerceResources.ProductNameEn}")" class="form-control" @bind-Value="Model.TitleEn" />
+                                            <ValidationMessage For="@(() => Model.TitleEn)" />
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label>@FormResources.ArabicShortDescription <span class="text-danger">*</span></label>
+                                            <InputTextArea class="form-control" placeholder="@($"{FormResources.Write} {FormResources.ArabicShortDescription}")" @bind-Value="Model.ShortDescriptionAr" rows="3" />
+                                            <ValidationMessage For="@(() => Model.ShortDescriptionAr)" />
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label>@FormResources.EnglishShortDescription <span class="text-danger">*</span></label>
+                                            <InputTextArea class="form-control" placeholder="@($"{FormResources.Write} {FormResources.EnglishShortDescription}")" @bind-Value="Model.ShortDescriptionEn" rows="3" />
+                                            <ValidationMessage For="@(() => Model.ShortDescriptionEn)" />
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label>@FormResources.ArabicDescription <span class="text-danger">*</span></label>
+                                            <InputTextArea class="form-control" placeholder="@($"{FormResources.Write} {FormResources.ArabicDescription}")" @bind-Value="Model.DescriptionAr" rows="5" />
+                                            <ValidationMessage For="@(() => Model.DescriptionAr)" />
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label>@FormResources.EnglishDescription <span class="text-danger">*</span></label>
+                                            <InputTextArea class="form-control" placeholder="@($"{FormResources.Write} {FormResources.EnglishDescription}")" @bind-Value="Model.DescriptionEn" rows="5" />
+                                            <ValidationMessage For="@(() => Model.DescriptionEn)" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- SEO Section -->
+                    <div class="card mb-3">
+                        <div class="card-header" id="headingSEO">
+                            <h5 class="mb-0">
+                                <a href="#!" class="collapsed text-primary" data-bs-toggle="collapse"
+                                   data-bs-target="#collapseSEO" aria-expanded="false" aria-controls="collapseSEO">
+                                    @FormResources.SEO
+                                </a>
+                            </h5>
+                        </div>
+                        <div id="collapseSEO" class="collapse" aria-labelledby="headingSEO"
+                             data-bs-parent="#productAccordion">
+                            <div class="card-body">
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label>@FormResources.SEOTitle <span class="text-danger">*</span></label>
+                                            <InputText type="text" placeholder="@($"{FormResources.Write} {FormResources.SEOTitle}")" class="form-control" @bind-Value="Model.SEOTitle" />
+                                            <ValidationMessage For="@(() => Model.SEOTitle)" />
+                                            <small class="text-muted">@FormResources.SEOTitleHint</small>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label>@FormResources.SEODescription <span class="text-danger">*</span></label>
+                                            <InputTextArea class="form-control" placeholder="@($"{FormResources.Write} {FormResources.SEODescription}")" @bind-Value="Model.SEODescription" rows="3" />
+                                            <ValidationMessage For="@(() => Model.SEODescription)" />
+                                            <small class="text-muted">@FormResources.SEODescriptionHint</small>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-12">
+                                        <div class="form-group">
+                                            <label>@FormResources.SEOMetaTags <span class="text-danger">*</span></label>
+                                            <InputTextArea class="form-control" placeholder="@($"{FormResources.Write} {FormResources.SEOMetaTags} (e.g. products, online store, items)")" @bind-Value="Model.SEOMetaTags" rows="2" />
+                                            <ValidationMessage For="@(() => Model.SEOMetaTags)" />
+                                            <small class="text-muted">@FormResources.SEOMetaTagsHint</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Classification Section -->
+                    <div class="card mb-3">
+                        <div class="card-header" id="headingClassification">
+                            <h5 class="mb-0">
+                                <a href="#!" class="collapsed text-primary" data-bs-toggle="collapse"
+                                   data-bs-target="#collapseClassification" aria-expanded="false"
+                                   aria-controls="collapseClassification">
+                                    @ECommerceResources.Classification
+                                </a>
+                            </h5>
+                        </div>
+                        <div id="collapseClassification" class="collapse" aria-labelledby="headingClassification"
+                             data-bs-parent="#productAccordion">
+                            <div class="card-body">
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label>@ECommerceResources.Category <span class="text-danger">*</span></label>
+                                            <InputSelect class="form-control"
+                                                         @bind-Value="Model.CategoryId"
+                                                         @bind-Value:after="HandleCategoryChange">
+                                                <option value="">@FormResources.Select</option>
+                                                @foreach (var category in categories)
+                                                {
+                                                    <option value="@category.Id">@category.Title</option>
+                                                }
+                                            </InputSelect>
+                                            <ValidationMessage For="@(() => Model.CategoryId)" />
+                                            @if (!fieldValidation["CategoryId"] && showValidationErrors)
+                                            {
+                                                <div class="invalid-feedback d-block">
+                                                    @ValidationResources.FieldRequired
+                                                </div>
+                                            }
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label>@BrandResources.Brand <span class="text-danger">*</span></label>
+                                            <InputSelect class="form-control" @bind-Value="Model.BrandId">
+                                                <option value="">@FormResources.Select</option>
+                                                @foreach (var brand in brands)
+                                                {
+                                                    <option value="@brand.Id">@brand.Name</option>
+                                                }
+                                            </InputSelect>
+                                            <ValidationMessage For="@(() => Model.BrandId)" />
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label>@ECommerceResources.Unit <span class="text-danger">*</span></label>
+                                            <InputSelect class="form-control" @bind-Value="Model.UnitId">
+                                                <option value="">@FormResources.Select</option>
+                                                @foreach (var unit in units)
+                                                {
+                                                    <option value="@unit.Id">@unit.Title</option>
+                                                }
+                                            </InputSelect>
+                                            <ValidationMessage For="@(() => Model.UnitId)" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Inventory Section -->
+                    <div class="card mb-3">
+                        <div class="card-header" id="headingInventory">
+                            <h5 class="mb-0">
+                                <a href="#!" class="collapsed text-primary" data-bs-toggle="collapse"
+                                   data-bs-target="#collapseInventory" aria-expanded="false"
+                                   aria-controls="collapseInventory">
+                                    @ECommerceResources.Inventory
+                                </a>
+                            </h5>
+                        </div>
+                        <div id="collapseInventory" class="collapse" aria-labelledby="headingInventory"
+                             data-bs-parent="#productAccordion">
+                            <div class="card-body">
+                                <div class="row g-3">
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label>@ECommerceResources.StockStatus</label>
+                                            <div class="form-check form-switch">
+                                                <InputCheckbox class="form-check-input input-primary custom-control-input" type="checkbox" role="switch" @bind-Value="Model.StockStatus" />
+                                                <label class="form-check-label">@(Model.StockStatus? ECommerceResources.InStock: ECommerceResources.OutOfStock)</label>
+                                            </div>
+                                            <ValidationMessage For="@(() => Model.StockStatus)" />
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label>@ECommerceResources.Quantity</label>
+                                            <InputNumber class="form-control" min="0" placeholder="@ECommerceResources.QuantityPlaceHolder" @bind-Value="Model.Quantity" />
+                                            <ValidationMessage For="@(() => Model.Quantity)" />
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label>@FormResources.Price</label>
+                                            <InputNumber class="form-control" min="0" placeholder="@ECommerceResources.PricePlaceHolder" @bind-Value="Model.Price" />
+                                            <ValidationMessage For="@(() => Model.Price)" />
+                                        </div>
+                                    </div>                                  
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Media Section -->
+                    <div class="card mb-3">
+                        <div class="card-header" id="headingMedia">
+                            <h5 class="mb-0">
+                                <a href="#!" class="collapsed text-primary" data-bs-toggle="collapse"
+                                   data-bs-target="#collapseMedia" aria-expanded="false"
+                                   aria-controls="collapseMedia">
+                                    @GeneralResources.Media
+                                </a>
+                            </h5>
+                        </div>
+                        <div id="collapseMedia" class="collapse" aria-labelledby="headingMedia"
+                             data-bs-parent="#productAccordion">
+                            <div class="card-body">
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label>@ECommerceResources.ThumbnailImage <span class="text-danger">*</span></label>
+                                            <InputFile class="form-control" OnChange="HandleThumbnailUpload" accept="image/*" />
+                                            <ValidationMessage For="@(() => Model.ThumbnailImage)" />
+                                            @if (!string.IsNullOrEmpty(Model.ThumbnailImage))
+                                            {
+                                                <div class="mt-2 position-relative">
+                                                    <img src="@GetImageSourceForDisplay(Model.ThumbnailImage)" alt="Thumbnail" class="img-thumbnail" style="height: 150px;" />
+                                                    <button type="button" class="btn btn-sm btn-danger position-absolute top-0 end-0 m-1" @onclick="RemoveThumbnail">
+                                                        <i class="fas fa-times"></i>
+                                                    </button>
+                                                </div>
+                                            }
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label>@FormResources.VideoProvider</label>
+                                            <InputSelect class="form-control" @bind-Value="Model.VideoProviderId">
+                                                <option value="">@FormResources.Select</option>
+                                                @foreach (var provider in videoProviders)
+                                                {
+                                                    <option value="@provider.Id">@provider.TitleAr</option>
+                                                }
+                                            </InputSelect>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <label>@FormResources.VideoLink</label>
+                                            <InputText type="url" class="form-control" placeholder="@($"{FormResources.Write} {FormResources.VideoLink}")" @bind-Value="Model.VideoLink" />
+                                            <ValidationMessage For="@(() => Model.VideoLink)" />
+                                        </div>
+                                    </div>
+
+                                    <!-- Product Images Gallery -->
+                                    <div class="col-12">
+                                        <div class="card mt-3">
+                                            <div class="card-header d-flex justify-content-between align-items-center">
+                                                <h5 class="mb-0 text-primary">@GeneralResources.Images <span class="text-danger">*</span></h5>
+                                                <div>
+                                                    <small class="text-muted">@Model.Images.Count @($"/ {MaxImageCount}")</small>
+                                                </div>
+                                            </div>
+                                            <div class="card-body">
+                                                <!-- Image Upload Section -->
+                                                <div class="mb-4">
+                                                    <InputFile class="form-control" OnChange="HandleImageUpload" multiple accept="image/*"
+                                                               disabled="@(Model.Images.Count >= MaxImageCount)" />
+                                                    <small class="text-muted">@ValidationResources.MaxFileSize: @(MaxFileSize / 1024 / 1024)MB, @ValidationResources.MaxFiles: @MaxImageCount</small>
+                                                    <ValidationMessage For="@(() => Model.Images)" />
+
+                                                    @if (isProcessing)
+                                                    {
+                                                        <div class="progress mt-2">
+                                                            <div class="progress-bar" role="progressbar" style="width: @processingProgress%;"
+                                                                 aria-valuenow="@processingProgress" aria-valuemin="0" aria-valuemax="100">
+                                                                @processingProgress%
+                                                            </div>
+                                                        </div>
+                                                    }
+                                                </div>
+
+                                                <!-- Image Gallery -->
+                                                @if (Model.Images.Any())
+                                                {
+                                                    <div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 g-4">
+                                                        @foreach (var image in Model.Images)
+                                                        {
+                                                            <div class="col">
+                                                                <div class="card h-100 position-relative">
+                                                                    <img src="@GetImageSourceForDisplay(image.Path)" class="card-img-top" alt="Product image" style="max-height: 200px; object-fit: cover;">
+                                                                    <button type="button" @onclick="() => DeleteImage(image)"
+                                                                            class="btn btn-sm btn-danger position-absolute top-0 end-0 m-1">
+                                                                        <i class="fas fa-trash"></i>
+                                                                    </button>
+                                                                </div>
+                                                            </div>
+                                                        }
+                                                    </div>
+                                                }
+                                                else
+                                                {
+                                                    <div class="text-center py-4 text-muted">
+                                                        <i class="fas fa-images fa-3x mb-3"></i>
+                                                        <p>@ValidationResources.NoImagesYet</p>
+                                                    </div>
+                                                }
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Attributes Section (Commented Out in Original) -->
+                    @* <div class="card mb-3">
+                        <div class="card-header" id="headingAttributes">
+                            <h5 class="mb-0">
+                                <a href="#!" class="collapsed text-primary" data-bs-toggle="collapse" 
+                                   data-bs-target="#collapseAttributes" aria-expanded="false" 
+                                   aria-controls="collapseAttributes">
+                                    @ECommerceResources.Attributes
+                                </a>
+                            </h5>
+                        </div>
+                        <div id="collapseAttributes" class="collapse" aria-labelledby="headingAttributes" 
+                             data-bs-parent="#productAccordion">
+                            <div class="card-body">
+                                @if (Model.CategoryId != Guid.Empty)
+                                {
+                                    <ItemAttributesSection CategoryAttributes="categoryAttributes"
+                                                       ItemAttributes="Model.ItemAttributes"
+                                                       OnRemoveAttribute="RemoveAttribute" />
+
+                                    <h6 class="mb-3 text-primary">@FormResources.Price</h6>
+                                    <div class="card">
+                                        <div class="card-header d-flex justify-content-between align-items-center">
+                                            <h5 class="mb-0 text-primary">@ECommerceResources.AttributeCombinations <span class="text-danger">*</span></h5>
+                                        </div>
+                                        <div class="card-body">
+                                            @if (Model.ItemAttributeCombinationPricings.Any())
+                                            {
+                                                <div class="table-responsive">
+                                                    <table class="table table-bordered">
+                                                        <thead>
+                                                            <tr>
+                                                                <th>@ECommerceResources.Attributes</th>
+                                                                <th>@FormResources.Price</th>
+                                                                <th>@ECommerceResources.Quantity</th>
+                                                                <th>@FormResources.Image</th>
+                                                                <th>@GeneralUIResources.Actions</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            @foreach (var combination in Model.ItemAttributeCombinationPricings)
+                                                            {
+                                                                <tr>
+                                                                    <td>
+                                                                        @GetCombinationAttributesDisplay(combination.AttributeIds)
+                                                                    </td>
+                                                                    <td>
+                                                                        <InputNumber class="form-control"
+                                                                                     @bind-Value="combination.FinalPrice" />
+                                                                    </td>
+                                                                    <td>
+                                                                        <InputNumber class="form-control"
+                                                                                     @bind-Value="combination.Quantity" />
+                                                                    </td>
+                                                                    <td>
+                                                                        <InputFile class="form-control"
+                                                                                   OnChange="@(e => HandleCombinationImageUpload(e, combination))"
+                                                                                   accept="image/*" />
+                                                                        @if (!string.IsNullOrEmpty(combination.Image))
+                                                                        {
+                                                                            <img src="@combination.Image" class="img-thumbnail mt-2" style="max-height: 50px;" />
+                                                                        }
+                                                                    </td>
+                                                                    <td>
+                                                                        <button type="button" class="btn btn-sm btn-danger"
+                                                                                @onclick="() => RemoveCombination(combination)">
+                                                                            <i class="fas fa-trash"></i>
+                                                                        </button>
+                                                                    </td>
+                                                                </tr>
+                                                            }
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            }
+                                            else
+                                            {
+                                                <div class="text-center py-4 text-muted">
+                                                    <i class="fas fa-list-alt fa-3x mb-3"></i>
+                                                    <p>@NotifiAndAlertsResources.NoAttributeCombinations</p>
+                                                </div>
+                                            }
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    </div> *@
+                </div>
+            </div>
+
+            <div class="card-footer bg-light py-3 d-flex justify-content-between">
+                <button type="button" class="btn btn-secondary px-4" @onclick="CloseModal">
+                    @ActionsResources.Cancel
+                </button>
+                <button type="submit" class="btn btn-success px-4" disabled="@isSaving">
+                    @if (isSaving)
+                    {
+                        <span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
+                    }
+                    @ActionsResources.Save
+                </button>
+            </div>
+        </EditForm>
+    </div>
+</div>

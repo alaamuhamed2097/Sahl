@@ -612,4 +612,58 @@
   <data name="ProductNameAr" xml:space="preserve">
     <value>أسم المنتج بالعربي</value>
   </data>
+  <data name="Orders" xml:space="preserve">
+    <value>الطلبات</value>
+  </data>
+  <data name="Order" xml:space="preserve">
+    <value>الطلب</value>
+  </data>
+  <data name="OrderStatus" xml:space="preserve">
+    <value>حالة الطلب</value>
+  </data>
+  <data name="OrderDate" xml:space="preserve">
+    <value>تاريخ الطلب</value>
+  </data>
+  <data name="OrderID" xml:space="preserve">
+    <value>رقم الطلب</value>
+  </data>
+  <data name="OrderDetails" xml:space="preserve">
+    <value>تفاصيل الطلب</value>
+  </data>
+  <data name="NewOrder" xml:space="preserve">
+    <value>طلب جديد</value>
+  </data>
+  <data name="OrderMustBeInProgress" xml:space="preserve">
+    <value>يجب أن يكون الطلب قيد التنفيذ أولاً.</value>
+  </data>
+  <data name="OrderMustBeAccepted" xml:space="preserve">
+    <value>يجب قبول الطلب أولاً.</value>
+  </data>
+  <data name="TotalOrders" xml:space="preserve">
+    <value>إجمالي الطلبات</value>
+  </data>
+  <data name="TotalOrdersCount" xml:space="preserve">
+    <value>إجمالي عدد الطلبات</value>
+  </data>
+  <data name="OrderStatusDistribution" xml:space="preserve">
+    <value>توزيع حالات الطلب</value>
+  </data>
+  <data name="CompletedOrders" xml:space="preserve">
+    <value>الاوردارات المكتمله</value>
+  </data>
+  <data name="DirectSaleOrders" xml:space="preserve">
+    <value>طلبات البيع المباشر</value>
+  </data>
+  <data name="OrderTaxAmount" xml:space="preserve">
+    <value>نسبة ضريبة الطلب</value>
+  </data>
+  <data name="OrderExtraCost" xml:space="preserve">
+    <value>تكلفة إضافية للطلب</value>
+  </data>
+  <data name="SelectShippingCompany" xml:space="preserve">
+    <value>يرجى اختيار شركة الشحن.</value>
+  </data>
+  <data name="SelectValidDeliveryDate" xml:space="preserve">
+    <value>يرجى اختيار تاريخ تسليم صالح.</value>
+  </data>
 </root>

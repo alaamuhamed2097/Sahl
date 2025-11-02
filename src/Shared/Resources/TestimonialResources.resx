@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  
+  <!-- Testimonial Management Resources -->
+  <data name="TestimonialManagement" xml:space="preserve">
+    <value>إدارة شهادات العملاء</value>
+  </data>
+  <data name="Testimonials" xml:space="preserve">
+    <value>شهادات العملاء</value>
+  </data>
+  <data name="Testimonial" xml:space="preserve">
+    <value>شهادة العميل</value>
+  </data>
+  <data name="CustomerName" xml:space="preserve">
+    <value>اسم العميل</value>
+  </data>
+  <data name="CustomerTitle" xml:space="preserve">
+    <value>منصب العميل</value>
+  </data>
+  <data name="CustomerPhoto" xml:space="preserve">
+    <value>صورة العميل</value>
+  </data>
+  <data name="CustomerImagePath" xml:space="preserve">
+    <value>مسار صورة العميل</value>
+  </data>
+  <data name="TestimonialText" xml:space="preserve">
+    <value>نص الشهادة</value>
+  </data>
+  <data name="DisplayOrder" xml:space="preserve">
+    <value>ترتيب العرض</value>
+  </data>
+  <data name="AddTestimonial" xml:space="preserve">
+    <value>إضافة شهادة</value>
+  </data>
+  <data name="EditTestimonial" xml:space="preserve">
+    <value>تعديل الشهادة</value>
+  </data>
+  <data name="DeleteTestimonial" xml:space="preserve">
+    <value>حذف الشهادة</value>
+  </data>
+  <data name="PreviewTestimonial" xml:space="preserve">
+    <value>معاينة الشهادة</value>
+  </data>
+  <data name="TestimonialPreview" xml:space="preserve">
+    <value>معاينة شهادة العميل</value>
+  </data>
+  <data name="TestimonialsWithImages" xml:space="preserve">
+    <value>الشهادات مع الصور</value>
+  </data>
+  <data name="RecentTestimonials" xml:space="preserve">
+    <value>الشهادات الحديثة</value>
+  </data>
+  <data name="AllTestimonials" xml:space="preserve">
+    <value>جميع الشهادات</value>
+  </data>
+  <data name="NoTestimonialsFound" xml:space="preserve">
+    <value>لم يتم العثور على شهادات</value>
+  </data>
+  <data name="TestimonialSavedSuccessfully" xml:space="preserve">
+    <value>تم حفظ الشهادة بنجاح</value>
+  </data>
+  <data name="TestimonialDeletedSuccessfully" xml:space="preserve">
+    <value>تم حذف الشهادة بنجاح</value>
+  </data>
+  <data name="TestimonialDeleteConfirmation" xml:space="preserve">
+    <value>هل أنت متأكد من حذف هذه الشهادة؟</value>
+  </data>
+  <data name="TestimonialPreviewFailed" xml:space="preserve">
+    <value>فشل في معاينة الشهادة</value>
+  </data>
+
+</root>

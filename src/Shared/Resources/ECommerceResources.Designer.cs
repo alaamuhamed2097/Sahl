@@ -457,6 +457,15 @@ namespace Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to الاوردارات المكتمله.
+        /// </summary>
+        public static string CompletedOrders {
+            get {
+                return ResourceManager.GetString("CompletedOrders", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to اسم الحالة.
         /// </summary>
         public static string ConditionName {
@@ -588,6 +597,15 @@ namespace Resources {
         public static string Description {
             get {
                 return ResourceManager.GetString("Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to طلبات البيع المباشر.
+        /// </summary>
+        public static string DirectSaleOrders {
+            get {
+                return ResourceManager.GetString("DirectSaleOrders", resourceCulture);
             }
         }
         
@@ -1033,6 +1051,15 @@ namespace Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to طلب جديد.
+        /// </summary>
+        public static string NewOrder {
+            get {
+                return ResourceManager.GetString("NewOrder", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to لا توجد خصائص متاحة.
         /// </summary>
         public static string NoAttributes {
@@ -1056,6 +1083,105 @@ namespace Resources {
         public static string NoPaymentMethodsAvailable {
             get {
                 return ResourceManager.GetString("NoPaymentMethodsAvailable", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to الطلب.
+        /// </summary>
+        public static string Order {
+            get {
+                return ResourceManager.GetString("Order", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to تاريخ الطلب.
+        /// </summary>
+        public static string OrderDate {
+            get {
+                return ResourceManager.GetString("OrderDate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to تفاصيل الطلب.
+        /// </summary>
+        public static string OrderDetails {
+            get {
+                return ResourceManager.GetString("OrderDetails", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to تكلفة إضافية للطلب.
+        /// </summary>
+        public static string OrderExtraCost {
+            get {
+                return ResourceManager.GetString("OrderExtraCost", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to رقم الطلب.
+        /// </summary>
+        public static string OrderID {
+            get {
+                return ResourceManager.GetString("OrderID", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to يجب قبول الطلب أولاً..
+        /// </summary>
+        public static string OrderMustBeAccepted {
+            get {
+                return ResourceManager.GetString("OrderMustBeAccepted", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to يجب أن يكون الطلب قيد التنفيذ أولاً..
+        /// </summary>
+        public static string OrderMustBeInProgress {
+            get {
+                return ResourceManager.GetString("OrderMustBeInProgress", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to الطلبات.
+        /// </summary>
+        public static string Orders {
+            get {
+                return ResourceManager.GetString("Orders", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to حالة الطلب.
+        /// </summary>
+        public static string OrderStatus {
+            get {
+                return ResourceManager.GetString("OrderStatus", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to توزيع حالات الطلب.
+        /// </summary>
+        public static string OrderStatusDistribution {
+            get {
+                return ResourceManager.GetString("OrderStatusDistribution", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to نسبة ضريبة الطلب.
+        /// </summary>
+        public static string OrderTaxAmount {
+            get {
+                return ResourceManager.GetString("OrderTaxAmount", resourceCulture);
             }
         }
         
@@ -1294,6 +1420,24 @@ namespace Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to يرجى اختيار شركة الشحن..
+        /// </summary>
+        public static string SelectShippingCompany {
+            get {
+                return ResourceManager.GetString("SelectShippingCompany", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to يرجى اختيار تاريخ تسليم صالح..
+        /// </summary>
+        public static string SelectValidDeliveryDate {
+            get {
+                return ResourceManager.GetString("SelectValidDeliveryDate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to معلومات البائع.
         /// </summary>
         public static string SellerInformation {
@@ -1452,6 +1596,24 @@ namespace Resources {
         public static string TotalAdverts {
             get {
                 return ResourceManager.GetString("TotalAdverts", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to إجمالي الطلبات.
+        /// </summary>
+        public static string TotalOrders {
+            get {
+                return ResourceManager.GetString("TotalOrders", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to إجمالي عدد الطلبات.
+        /// </summary>
+        public static string TotalOrdersCount {
+            get {
+                return ResourceManager.GetString("TotalOrdersCount", resourceCulture);
             }
         }
         

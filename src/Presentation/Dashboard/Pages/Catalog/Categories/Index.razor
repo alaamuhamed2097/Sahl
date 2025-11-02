@@ -1,0 +1,506 @@
+@page "/catalog/categories"
+@page "/categories"
+
+<PageTitle>@ECommerceResources.Categories</PageTitle>
+<div class="container-fluid p-0">
+    <div class="card shadow-sm border-0">
+        <div class="card-header bg-primary text-white py-3 d-flex justify-content-between align-items-center d-none d-md-flex">
+            <h5 class="mb-0 fw-semibold">@GeneralResources.Categories</h5>
+            <div class="d-flex gap-2">
+                <!-- Collapse/Expand All Buttons (only show in tree view) -->
+                @if (isTreeView)
+                {
+                    <button class="btn btn-secondary rounded-pill px-3 shadow-sm" @onclick="CollapseAll">
+                        <i class="fas fa-minus-square me-2"></i>
+                        <span class="fw-bold">@ActionsResources.CollapseAll</span>
+                    </button>
+                    <button class="btn btn-outline-light rounded-pill px-3 shadow-sm" @onclick="ExpandAll">
+                        <i class="fas fa-plus-square me-2"></i>
+                        <span class="fw-bold">@ActionsResources.ExpandAll</span>
+                    </button>
+                }
+                <!-- View Toggle Button -->
+                <button class="btn @(isTreeView ? "btn-warning" : "btn-info") rounded-pill px-3 shadow-sm" @onclick="ToggleView">
+                    <i class="@(isTreeView ? "fas fa-list" : "fas fa-sitemap") me-2"></i>
+                    <span class="fw-bold">@(isTreeView ? $"{ECommerceResources.ListView}" : $"{ECommerceResources.TreeView}")</span>
+                </button>
+                <button class="btn btn-success rounded-pill px-3 shadow-sm" @onclick="Add">
+                    <i class="feather icon-plus-circle me-2"></i>
+                    <span class="fw-bold">@ActionsResources.Add</span>
+                </button>
+            </div>
+        </div>
+        <!-- Mobile Header -->
+        <div class="card-header bg-primary text-white py-2 d-md-none">
+            <div class="d-flex flex-column gap-2">
+                <h6 class="mb-2 fw-semibold fs-6 text-center">@GeneralResources.Categories</h6>
+                <!-- Action Buttons Row -->
+                <div class="d-flex justify-content-center gap-2 mb-2">
+                    @if (isTreeView)
+                    {
+                        <button class="btn btn-outline-light btn-sm rounded-pill px-2 py-1" @onclick="CollapseAll" style="min-width: 70px;">
+                            <i class="fas fa-minus-square d-block mx-auto mb-1" style="font-size: 16px;"></i>
+                            <small class="d-block" style="font-size: 10px;">@ActionsResources.Collapse</small>
+                        </button>
+                        <button class="btn btn-outline-light btn-sm rounded-pill px-2 py-1" @onclick="ExpandAll" style="min-width: 70px;">
+                            <i class="fas fa-plus-square d-block mx-auto mb-1" style="font-size: 16px;"></i>
+                            <small class="d-block" style="font-size: 10px;">@ActionsResources.Expand</small>
+                        </button>
+                    }
+                    <button class="btn @(isTreeView ? "btn-warning" : "btn-info") btn-sm rounded-pill px-2 py-1" @onclick="ToggleView" style="min-width: 70px;">
+                        <i class="@(isTreeView ? "fas fa-list" : "fas fa-sitemap") d-block mx-auto mb-1" style="font-size: 16px;"></i>
+                        <small class="d-block" style="font-size: 10px;">@(isTreeView ? $"{ECommerceResources.ListView}" : $"{ECommerceResources.TreeView}")</small>
+                    </button>
+                    <button class="btn btn-success btn-sm rounded-pill px-2 py-1" @onclick="Add" style="min-width: 70px;">
+                        <i class="feather icon-plus-circle d-block mx-auto mb-1" style="font-size: 16px;"></i>
+                        <small class="d-block" style="font-size: 10px;">@ActionsResources.Add</small>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="card-body p-4">
+            <div class="dt-responsive">
+                @if (!isTreeView)
+                {
+                    <!-- Filtration start -->
+                    <div class="d-flex flex-wrap align-items-center gap-3 mb-3">
+                        <EditForm Model="searchModel" OnSubmit="@Search">
+                            <!-- Search Box -->
+                            <div class="input-group rounded-3 border" style="width: 170px; height: 38px;">
+                                <InputText @bind-Value="searchModel.SearchTerm"
+                                           id="searchInput"
+                                           class="form-control rounded-end-3 text-center border-0"
+                                           placeholder="@ActionsResources.Search"
+                                           style="height: 38px;" />
+                                <button type="submit"
+                                        class="btn btn-danger rounded-start-3 d-flex align-items-center justify-content-center border-0"
+                                        style="width: 40px; height: 38px;">
+                                    <i class="fas fa-search text-white m-0"></i>
+                                </button>
+                            </div>
+                        </EditForm>
+                        <div class="d-flex align-items-center gap-2">
+                            <label class="form-label fw-semibold mb-0">@ActionsResources.Show</label>
+                            <select class="form-select rounded-3 shadow-sm border-light text-primary fw-bold text-center"
+                                    style="width: 100px; height: 38px; padding-right: 16px;"
+                                    @onchange="OnPageSizeChanged">
+                                <option value="10">10</option>
+                                <option value="15">15</option>
+                                <option value="20">20</option>
+                                <option value="30">30</option>
+                            </select>
+                        </div>
+                    </div>
+                }
+                <!-- Tree View -->
+                @if (isTreeView)
+                {
+                    <div class="tree-view-container">
+                        <!-- Desktop Tree View with Drag & Drop -->
+                        <div class="@(IsRTL ? "rtl" : "ltr") tree-container border rounded-3 overflow-visible d-none d-md-block p-4 bg-white">
+                            @if (treeNodes != null && treeNodes.Any())
+                            {
+                                @foreach (var node in treeNodes)
+                                {
+                                    @RenderTreeNodeVisual(node, true)
+                                }
+                            }
+                            else
+                            {
+                                <div class="text-center p-4">
+                                    <p class="text-muted">@NotifiAndAlertsResources.NoDataFound</p>
+                                </div>
+                            }
+                        </div>
+                        <!-- Mobile Tree View (Separate Code) -->
+                        <div class="d-md-none">
+                            @if (treeNodes != null && treeNodes.Any())
+                            {
+                                @foreach (var node in treeNodes)
+                                {
+                                    @RenderMobileTreeNode(node)
+                                }
+                            }
+                            else
+                            {
+                                <div class="text-center p-4">
+                                    <p class="text-muted">@NotifiAndAlertsResources.NoDataFound</p>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    <!-- Regular List View -->
+                    <!-- Desktop Responsive Table Container (Original Code) -->
+                    <div class="table-responsive border rounded-3 overflow-hidden d-none d-md-block">
+                        <table class="table table-hover mb-0">
+                            <thead class="bg-light">
+                                <tr>
+                                    <th class="text-center p-3 align-middle">@ECommerceResources.Title</th>
+                                    <th class="text-center p-3 align-middle" style="width: 200px;">@ECommerceResources.Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (ListCategories != null)
+                                {
+                                    @foreach (var item in ListCategories)
+                                    {
+                                        <tr class="align-middle">
+                                            <td class="text-center p-3">@item.Title</td>
+                                            <td class="text-center p-3">
+                                                <button class="btn btn-primary btn-sm mx-1" title="@ActionsResources.Edit" @onclick="() => Edit(item)">
+                                                    <i class="fas fa-pencil-alt m-0"></i>
+                                                </button>
+                                                <button class="btn btn-danger btn-sm mx-1" title="@ActionsResources.Delete" @onclick="() => Delete(item.Id)">
+                                                    <i class="feather icon-trash-2 m-0"></i>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    }
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                    <!-- Mobile View (Separate Cards) -->
+                    <div class="d-md-none">
+                        @if (ListCategories != null)
+                        {
+                            @foreach (var item in ListCategories)
+                            {
+                                <div class="card mb-2 border-0 shadow-sm">
+                                    <div class="card-body p-3">
+                                        <div class="d-flex justify-content-between align-items-start mb-2">
+                                            <div class="flex-grow-1 me-2">
+                                                <h6 class="mb-1 fw-bold text-primary">@item.Title</h6>
+                                            </div>
+                                            <div class="d-flex gap-1">
+                                                <button class="btn btn-primary btn-sm" title="@ActionsResources.Edit" @onclick="() => Edit(item)">
+                                                    <i class="fas fa-pencil-alt m-0" style="font-size: 12px;"></i>
+                                                </button>
+                                                <button class="btn btn-danger btn-sm" title="@ActionsResources.Delete" @onclick="() => Delete(item.Id)">
+                                                    <i class="feather icon-trash-2 m-0" style="font-size: 12px;"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                        @if (item.CategoryAttributes != null && item.CategoryAttributes.Count > 0)
+                                        {
+                                            <div class="mb-2">
+                                                <small class="text-muted d-block mb-1">@ECommerceResources.Attributes:</small>
+                                                <div class="d-flex flex-wrap gap-1">
+                                                    @foreach (var attr in item.CategoryAttributes.Take(3))
+                                                    {
+                                                        <span class="badge bg-primary small">@attr.Title</span>
+                                                    }
+                                                    @if (item.CategoryAttributes.Count > 3)
+                                                    {
+                                                        <span class="badge bg-secondary small">+@(item.CategoryAttributes.Count - 3) more</span>
+                                                    }
+                                                </div>
+                                            </div>
+                                        }
+                                    </div>
+                                </div>
+                            }
+                        }
+                    </div>
+                    <!-- Desktop Pagination (Original Code) -->
+                    <div class="d-flex justify-content-between mt-3 d-none d-md-flex" dir="ltr">
+                        <div class="d-flex align-items-center just flex-end">
+                            <span class="text-muted">
+                                @string.Format(ActionsResources.ShowingEntries, ((CurrentPage - 1) * searchModel.PageSize + 1), Math.Min(CurrentPage * searchModel.PageSize, TotalPages), TotalPages)
+                            </span>
+                        </div>
+                        <nav>
+                            <ul class="pagination mb-0">
+                                <!-- First Button -->
+                                <li class="page-item @(CurrentPage == 1 ? "disabled" : "")">
+                                    <a class="page-link" @onclick="() => GoToPage(1)" title="@ActionsResources.First">
+                                        <i class="fas fa-angle-double-left"></i>
+                                    </a>
+                                </li>
+                                <!-- Previous Button -->
+                                <li class="page-item @(CurrentPage == 1 ? "disabled" : "")">
+                                    <a class="page-link" @onclick="() => GoToPage(CurrentPage - 1)">
+                                        @ActionsResources.Previous
+                                    </a>
+                                </li>
+                                <!-- Dynamic Page Numbers -->
+                                @{
+                                    const int maxVisiblePages = 5;
+                                    int startPage = Math.Max(1, CurrentPage - 2);
+                                    int endPage = Math.Min(TotalPages, startPage + maxVisiblePages - 1);
+                                    if (endPage - startPage + 1 < maxVisiblePages)
+                                    {
+                                        startPage = Math.Max(1, endPage - maxVisiblePages + 1);
+                                    }
+                                }
+                                @if (startPage > 1)
+                                {
+                                    <li class="page-item disabled">
+                                        <a class="page-link">...</a>
+                                    </li>
+                                }
+                                @for (int pag = startPage; pag <= endPage; pag++)
+                                {
+                                    // Capture the loop variable in a local variable
+                                    int pageNumber = pag;
+                                    <li class="page-item @(pag == CurrentPage ? "active" : "")">
+                                        <a class="page-link" @onclick="() => GoToPage(pageNumber)">@pag</a>
+                                    </li>
+                                }
+                                @if (endPage < TotalPages)
+                                {
+                                    <li class="page-item disabled">
+                                        <a class="page-link">...</a>
+                                    </li>
+                                }
+                                <!-- Next Button -->
+                                <li class="page-item @(CurrentPage == TotalPages ? "disabled" : "")">
+                                    <a class="page-link" @onclick="() => GoToPage(CurrentPage + 1)">
+                                        @ActionsResources.Next
+                                    </a>
+                                </li>
+                                <!-- Last Button -->
+                                <li class="page-item @(CurrentPage == TotalPages ? "disabled" : "")">
+                                    <a class="page-link" @onclick="() => GoToPage(TotalPages)" title="@ActionsResources.Last">
+                                        <i class="fas fa-angle-double-right"></i>
+                                    </a>
+                                </li>
+                            </ul>
+                        </nav>
+                    </div>
+                    <!-- Mobile Pagination (Separate Code) -->
+                    <div class="d-flex flex-column flex-sm-row justify-content-between align-items-center mt-3 gap-2 d-md-none" dir="ltr">
+                        <div class="text-center text-sm-start">
+                            <span class="text-muted small">
+                                @string.Format(ActionsResources.ShowingEntries, ((CurrentPage - 1) * searchModel.PageSize + 1), Math.Min(CurrentPage * searchModel.PageSize, TotalPages), TotalPages)
+                            </span>
+                        </div>
+                        <nav>
+                            <ul class="pagination mb-0 pagination-sm">
+                                <!-- Previous Button -->
+                                <li class="page-item @(CurrentPage == 1 ? "disabled" : "")">
+                                    <a class="page-link" @onclick="() => GoToPage(CurrentPage - 1)">
+                                        <i class="fas fa-chevron-left"></i>
+                                    </a>
+                                </li>
+                                <!-- Dynamic Page Numbers (Mobile Optimized) -->
+                                @{
+                                    int mobileMaxPages = 3;
+                                    int mobileStartPage = Math.Max(1, CurrentPage - 1);
+                                    int mobileEndPage = Math.Min(TotalPages, mobileStartPage + mobileMaxPages - 1);
+                                    if (mobileEndPage - mobileStartPage + 1 < mobileMaxPages)
+                                    {
+                                        mobileStartPage = Math.Max(1, mobileEndPage - mobileMaxPages + 1);
+                                    }
+                                }
+                                @for (int pag = mobileStartPage; pag <= mobileEndPage; pag++)
+                                {
+                                    int pageNumber = pag;
+                                    <li class="page-item @(pag == CurrentPage ? "active" : "")">
+                                        <a class="page-link" @onclick="() => GoToPage(pageNumber)">@pag</a>
+                                    </li>
+                                }
+                                <!-- Next Button -->
+                                <li class="page-item @(CurrentPage == TotalPages ? "disabled" : "")">
+                                    <a class="page-link" @onclick="() => GoToPage(CurrentPage + 1)">
+                                        <i class="fas fa-chevron-right"></i>
+                                    </a>
+                                </li>
+                            </ul>
+                        </nav>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+@code {
+    // Enhanced Desktop Tree Rendering Code with Arrow Controls
+    // Replace the RenderTreeNodeVisual method with this version
+    private RenderFragment RenderTreeNodeVisual(CategoryTreeNode node, bool isRoot = false, bool isLast = false, List<bool> parentLines = null) => __builder =>
+    {
+        if (parentLines == null) parentLines = new List<bool>();
+        <div class="tree-node-wrapper" style="position: relative; --level: @parentLines.Count;">
+            <!-- Tree Lines (Keep exactly as is) -->
+            @if (!isRoot)
+            {
+                <div class="tree-lines">
+                    <!-- Render all parent vertical lines that should continue -->
+                    @for (int i = 0; i < parentLines.Count; i++)
+                    {
+                        @if (parentLines[i])  // Draw vertical line if parent level continues
+                        {
+                            <div class="vertical-line continues" style="--level: @i; --parent-level: @i;"></div>
+                        }
+                    }
+                    <!-- Current level vertical connector -->
+                    <div class="vertical-line-current @(isLast ? "last-child" : "has-siblings")" style="--level: @parentLines.Count;"></div>
+                    <!-- Horizontal connector to this node -->
+                    <div class="horizontal-line" style="--level: @parentLines.Count;"></div>
+                </div>
+            }
+            <!-- Node Content with Arrow Controls -->
+            <div class="tree-node-content" style="@GetNodeContentStyle(isRoot, parentLines.Count)">
+                <div class="node-box d-flex align-items-center justify-content-between p-3 mb-2 border rounded shadow-sm bg-white">
+                    <!-- Arrow Controls (Replace Drag Handle) -->
+                    <div class="reorder-controls d-flex flex-column me-2">
+                        <button class="btn btn-sm btn-outline-secondary p-1 @(!CanMoveUp(node.Category) ? "disabled" : "")"
+                                title="@FormResources.MoveUp"
+                                disabled="@(!CanMoveUp(node.Category))"
+                                @onclick="() => MoveUp(node.Category)"
+                                @onclick:stopPropagation="true">
+                            <i class="fas fa-chevron-up m-0" style="font-size: 12px;"></i>
+                        </button>
+                        <button class="btn btn-sm btn-outline-secondary p-1 mt-1 @(!CanMoveDown(node.Category) ? "disabled" : "")"
+                                title="@FormResources.MoveDown"
+                                disabled="@(!CanMoveDown(node.Category))"
+                                @onclick="() => MoveDown(node.Category)"
+                                @onclick:stopPropagation="true">
+                            <i class="fas fa-chevron-down m-0" style="font-size: 12px;"></i>
+                        </button>
+                    </div>
+                    <!-- Content aligned based on direction -->
+                    <div class="d-flex align-items-center flex-grow-1">
+                        @if (HasChildren(node))
+                        {
+                            <button class="btn btn-sm btn-outline-primary me-3 expand-btn"
+                                    @onclick="() => ToggleExpansion(node.Category.Id)">
+                                <i class="fas @(IsExpanded(node.Category.Id) ? "fa-minus" : "fa-plus") me-0"></i>
+                            </button>
+                        }
+                        else
+                        {
+                            <div class="me-3" style="width: 31px;"></div>
+                        }
+                        <div class="node-info" style="@(IsRTL ? "text-align: right;" : "text-align: left;")">
+                            <h6 class="mb-0 fw-bold @(isRoot ? "text-primary" : "text-dark")" title="@node.Category.Title">
+                                @node.Category.Title
+                                <!-- <small class="text-muted ms-2">[Serial: node.Category.TreeViewSerial]</small> -->
+                            </h6>
+                            <small class="text-muted">@(isRoot? ECommerceResources.RootCategory: $"{ECommerceResources.Level} {node.Level}")</small>
+                        </div>
+                    </div>
+                    <!-- Actions -->
+                    <div class="node-actions d-flex justify-content-center align-item-center">
+                        <button class="btn btn-primary btn-sm mx-1" title="@ActionsResources.Edit" @onclick="() => Edit(node.Category)">
+                            <i class="fas fa-pencil-alt m-0"></i>
+                        </button>
+                        <button class="btn btn-danger btn-sm mx-1" title="@ActionsResources.Delete" @onclick="() => Delete(node.Category.Id)">
+                            <i class="feather icon-trash-2 m-0"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <!-- Child Nodes -->
+            @if (HasChildren(node) && IsExpanded(node.Category.Id))
+            {
+                var children = node.Children!.ToList();
+                for (int i = 0; i < children.Count; i++)
+                {
+                    var child = children[i];
+                    var isLastChild = i == children.Count - 1;
+                    var newParentLines = new List<bool>(parentLines);
+                    // Critical fix: Add the current level's continuation status
+                    if (!isRoot)
+                    {
+                        newParentLines.Add(!isLast);
+                    }
+                    @RenderTreeNodeVisual(child, false, isLastChild, newParentLines)
+                }
+            }
+        </div>
+    };
+    // Replace the RenderMobileTreeNode method with this version
+    private RenderFragment RenderMobileTreeNode(CategoryTreeNode node) => __builder =>
+    {
+        <div class="mobile-tree-node mb-2" style="margin-left: @(node.Level * 20)px;">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body p-3">
+                    <div class="d-flex align-items-center justify-content-between mb-2">
+                        <div class="d-flex align-items-center">
+                            <!-- Arrow Controls for Mobile -->
+                            <div class="reorder-controls d-flex me-2">
+                                <button class="btn btn-sm btn-outline-secondary p-1 @(!CanMoveUp(node.Category) ? "disabled" : "")"
+                                        title="Move Up"
+                                        disabled="@(!CanMoveUp(node.Category))"
+                                        @onclick="() => MoveUp(node.Category)"
+                                        @onclick:stopPropagation="true">
+                                    <i class="fas fa-chevron-up m-0" style="font-size: 10px;"></i>
+                                </button>
+                                <button class="btn btn-sm btn-outline-secondary p-1 ms-1 @(!CanMoveDown(node.Category) ? "disabled" : "")"
+                                        title="Move Down"
+                                        disabled="@(!CanMoveDown(node.Category))"
+                                        @onclick="() => MoveDown(node.Category)"
+                                        @onclick:stopPropagation="true">
+                                    <i class="fas fa-chevron-down m-0" style="font-size: 10px;"></i>
+                                </button>
+                            </div>
+                            @if (HasChildren(node))
+                            {
+                                <button class="btn btn-sm btn-outline-primary me-2"
+                                        @onclick="() => ToggleExpansion(node.Category.Id)">
+                                    <i class="fas @(IsExpanded(node.Category.Id) ? "fa-minus" : "fa-plus") m-0"></i>
+                                </button>
+                            }
+                            else
+                            {
+                                <div class="me-2" style="width: 31px;"></div>
+                            }
+                            <div>
+                                <h6 class="mb-0 fw-bold @(node.Level == 0 ? "text-primary" : "")">
+                                    @node.Category.Title
+                                    <!-- <small class="text-muted">[S:node.Category.TreeViewSerial]</small> -->
+                                </h6>
+                                @if (node.Level == 0)
+                                {
+                                    <small class="text-muted">@ECommerceResources.RootCategory</small>
+                                }
+                                else
+                                {
+                                    <small class="text-muted">@ECommerceResources.Level @node.Level</small>
+                                }
+                            </div>
+                        </div>
+                        <div class="d-flex gap-1">
+                            <button class="btn btn-primary btn-sm" title="@ActionsResources.Edit" @onclick="() => Edit(node.Category)">
+                                <i class="fas fa-pencil-alt m-0" style="font-size: 12px;"></i>
+                            </button>
+                            <button class="btn btn-danger btn-sm" title="@ActionsResources.Delete" @onclick="() => Delete(node.Category.Id)">
+                                <i class="feather icon-trash-2 m-0" style="font-size: 12px;"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            @if (HasChildren(node) && IsExpanded(node.Category.Id))
+            {
+                @foreach (var child in node.Children!)
+                {
+                    @RenderMobileTreeNode(child)
+                }
+            }
+        </div>
+    };
+    private string GetNodeContentStyle(bool isRoot, int level)
+    {
+        // Increased spacing for better line visibility
+        var margin = (isRoot ? 0 : (level * 100) + 50);
+        return IsRTL
+            ? $"margin-right: {margin}px; margin-left: 0;"
+            : $"margin-left: {margin}px; margin-right: 0;";
+    }
+    private string GetRowBackgroundColor(int level)
+    {
+        return level switch
+        {
+            0 => "#f8f9fa",      // Light gray for root
+            1 => "#e3f2fd",      // Light blue for level 1
+            2 => "#f3e5f5",      // Light purple for level 2
+            3 => "#e8f5e8",      // Light green for level 3
+            _ => "#fff3e0"       // Light orange for deeper levels
+        };
+    }
+}

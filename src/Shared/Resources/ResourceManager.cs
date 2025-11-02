@@ -51,6 +51,8 @@ namespace Resources
             NotifiAndAlertsResources.Culture = culture;
             ECommerceResources.Culture = culture;
             BrandResources.Culture = culture;
+            CurrencyResources.Culture = culture;
+            TestimonialResources.Culture = culture;
         }
 
         public static void ChangeLanguage()

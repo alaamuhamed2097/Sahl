@@ -1,0 +1,142 @@
+﻿@page "/content/pages/{id:guid?}"
+@page "/pages/{id:guid?}"
+
+@using Common.Enumerations
+@using Common.Enumerations.User
+@using Microsoft.AspNetCore.Authorization
+@using Resources
+@using Dashboard.Components.Forms
+@attribute [Authorize(Roles = nameof(UserRole.Admin))]
+
+<PageTitle>@ActionsResources.Edit @GeneralResources.Page</PageTitle>
+
+<div class="container-fluid p-0">
+    <div class="card shadow-sm border-0">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h4 class="mb-0">
+                📄 @ActionsResources.Edit @GeneralResources.Page - @Model.Title
+            </h4>
+        </div>
+        <EditForm Model="@Model" OnValidSubmit="Save">
+            <DataAnnotationsValidator />
+            <div class="card-body p-4">
+                @if (!string.IsNullOrEmpty(ErrorMessage))
+                {
+                    <div class="alert alert-danger">@ErrorMessage</div>
+                }
+                @if (!string.IsNullOrEmpty(SuccessMessage))
+                {
+                    <div class="alert alert-success">@SuccessMessage</div>
+                }
+
+                @if (PageId == Guid.Empty)
+                {
+                    <div class="alert alert-warning">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        @GeneralResources.AccessDeniedEditPages
+                    </div>
+                }
+                else
+                {
+                    <div class="row">
+                        <!-- Basic Information -->
+                        <div class="col-md-6">
+                            <div class="form-group mb-3">
+                                <label class="form-label">@FormResources.ArabicTitle *</label>
+                                <InputText class="@("form-control " + GetValidationClass(nameof(Model.TitleAr)))"
+                                           @bind-Value="Model.TitleAr" />
+                                <ValidationMessage For="@(() => Model.TitleAr)" />
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group mb-3">
+                                <label class="form-label">@FormResources.EnglishTitle *</label>
+                                <InputText class="@("form-control " + GetValidationClass(nameof(Model.TitleEn)))"
+                                           @bind-Value="Model.TitleEn" />
+                                <ValidationMessage For="@(() => Model.TitleEn)" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Short Descriptions -->
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group mb-3">
+                                <label class="form-label">@FormResources.ArabicShortDescription *</label>
+                                <InputTextArea class="form-control" rows="3" @bind-Value="Model.ShortDescriptionAr" />
+                                <ValidationMessage For="@(() => Model.ShortDescriptionAr)" />
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group mb-3">
+                                <label class="form-label">@FormResources.EnglishShortDescription *</label>
+                                <InputTextArea class="form-control" rows="3" @bind-Value="Model.ShortDescriptionEn" />
+                                <ValidationMessage For="@(() => Model.ShortDescriptionEn)" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Enhanced Content Editors -->
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group mb-3">
+                                <label class="form-label">@FormResources.ArabicContent *</label>
+                                <RichTextEditor @bind-Value="Model.ContentAr" 
+                                                Placeholder="أدخل المحتوى العربي..." 
+                                                Height="500"
+                                                EnableImageUpload="true"
+                                                EnableVideoEmbed="true"
+                                                EnableCodeEditor="true"
+                                                EnableSpellCheck="true"
+                                                EnableWordCount="true"
+                                                EnableCharCount="true"
+                                                EnablePreview="true"
+                                                EnableFullscreen="true"
+                                                Theme="silver"
+                                                Language="ar"
+                                                MaxCharCount="10000" />
+                                <ValidationMessage For="@(() => Model.ContentAr)" />
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group mb-3">
+                                <label class="form-label">@FormResources.EnglishContent *</label>
+                                <RichTextEditor @bind-Value="Model.ContentEn" 
+                                                Placeholder="Enter English content..." 
+                                                Height="500"
+                                                EnableImageUpload="true"
+                                                EnableVideoEmbed="true"
+                                                EnableCodeEditor="true"
+                                                EnableSpellCheck="true"
+                                                EnableWordCount="true"
+                                                EnableCharCount="true"
+                                                EnablePreview="true"
+                                                EnableFullscreen="true"
+                                                Theme="silver"
+                                                Language="en"
+                                                MaxCharCount="10000" />
+                                <ValidationMessage For="@(() => Model.ContentEn)" />
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+            <div class="card-footer bg-light py-3 d-flex justify-content-end gap-2">
+                <button type="button" class="btn btn-secondary px-4" @onclick="Cancel">
+                    @ActionsResources.Cancel
+                </button>
+                @if (PageId != Guid.Empty)
+                {
+                    <button type="submit" class="btn btn-success px-4" disabled="@IsSaving">
+                        @if (IsSaving)
+                        {
+                            <span class="spinner-border spinner-border-sm me-1"></span>
+                        }
+                        <i class="fas fa-save me-2"></i>
+                        @ActionsResources.Save
+                    </button>
+                }
+            </div>
+        </EditForm>
+    </div>
+</div>

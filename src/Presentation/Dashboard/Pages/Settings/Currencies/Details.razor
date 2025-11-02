@@ -1,0 +1,202 @@
+@page "/settings/currencies/{id:guid?}"
+
+@using Common.Enumerations
+@using Common.Enumerations.User
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.Forms
+@using Resources
+@using Shared.DTOs.Currency
+@attribute [Authorize(Roles = nameof(UserRole.Admin))]
+
+<PageTitle>@CurrencyResources.CurrencyManagement</PageTitle>
+
+<div class="container-fluid p-0">
+    <div class="card shadow-sm border-0">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h4 class="modal-title">
+                @(Model.Id == Guid.Empty ? ActionsResources.Add : ActionsResources.Edit) @CurrencyResources.Currency
+            </h4>
+        </div>
+
+        <EditForm Model="@Model" OnValidSubmit="Save">
+            <DataAnnotationsValidator />
+
+            <div class="card-body p-4">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>@CurrencyResources.CurrencyCode</label>
+                            <InputText type="text" placeholder="e.g., USD, EUR, GBP" 
+                                       class="form-control text-uppercase" 
+                                       @bind-Value="Model.Code" 
+                                       maxlength="3" />
+                            <ValidationMessage For="@(() => Model.Code)" />
+                            <small class="form-text text-muted">@CurrencyResources.ThreeLetterISOCurrencyCode</small>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>@CurrencyResources.CurrencySymbol</label>
+                            <InputText type="text" placeholder="e.g., $, €, £" 
+                                       class="form-control" 
+                                       @bind-Value="Model.Symbol" 
+                                       maxlength="5" />
+                            <ValidationMessage For="@(() => Model.Symbol)" />
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>@CurrencyResources.EnglishName</label>
+                            <InputText type="text" placeholder="e.g., US Dollar" 
+                                       class="form-control" 
+                                       @bind-Value="Model.NameEn" />
+                            <ValidationMessage For="@(() => Model.NameEn)" />
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>@CurrencyResources.ArabicName</label>
+                            <InputText type="text" placeholder="e.g., دولار أمريكي" 
+                                       class="form-control" 
+                                       @bind-Value="Model.NameAr" />
+                            <ValidationMessage For="@(() => Model.NameAr)" />
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>@CurrencyResources.ExchangeRate</label>
+                            <InputNumber class="form-control" 
+                                         @bind-Value="Model.ExchangeRate" 
+                                         min="0.0001" 
+                                         step="0.0001" 
+                                         disabled="@Model.IsBaseCurrency" />
+                            <ValidationMessage For="@(() => Model.ExchangeRate)" />
+                            <small class="form-text text-muted">
+                                @if (Model.IsBaseCurrency)
+                                {
+                                    <span>@CurrencyResources.BaseCurrencyRateAlwaysOne</span>
+                                }
+                                else
+                                {
+                                    <span>@CurrencyResources.RateRelativeToBaseCurrency</span>
+                                }
+                            </small>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>@CurrencyResources.CountryCode</label>
+                            <InputText type="text" placeholder="e.g., US, GB, EU" 
+                                       class="form-control text-uppercase" 
+                                       @bind-Value="Model.CountryCode" 
+                                       maxlength="2" />
+                            <small class="form-text text-muted">@CurrencyResources.TwoLetterCountryCode</small>
+                        </div>
+                    </div>
+
+                    <div class="col-12">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <div class="form-check">
+                                    <InputCheckbox class="form-check-input" 
+                                                   @bind-Value="Model.IsActive" 
+                                                   id="isActive" />
+                                    <label class="form-check-label" for="isActive">
+                                        Active Currency
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-check">
+                                    <InputCheckbox class="form-check-input" 
+                                                   @bind-Value="Model.IsBaseCurrency" 
+                                                   @onchange="OnBaseCurrencyChanged"
+                                                   id="isBaseCurrency" />
+                                    <label class="form-check-label" for="isBaseCurrency">
+                                        Base Currency
+                                    </label>
+                                    <small class="form-text text-muted d-block">
+                                        Only one currency can be the base currency
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Preview Section -->
+                    @if (!string.IsNullOrEmpty(Model.Code) && !string.IsNullOrEmpty(Model.Symbol))
+                    {
+                        <div class="col-12">
+                            <div class="card bg-light">
+                                <div class="card-body">
+                                    <h6 class="card-title">Preview</h6>
+                                    <div class="d-flex align-items-center gap-3">
+                                        <div class="currency-preview">
+                                            <span class="currency-symbol">@Model.Symbol</span>
+                                            <strong>@Model.Code</strong>
+                                        </div>
+                                        <div>
+                                            <div>@Model.NameEn</div>
+                                            <div class="text-muted">@Model.NameAr</div>
+                                        </div>
+                                        @if (Model.IsBaseCurrency)
+                                        {
+                                            <span class="badge bg-primary">Base Currency</span>
+                                        }
+                                        <span class="badge @(Model.IsActive ? "bg-success" : "bg-secondary")">
+                                            @(Model.IsActive ? @GeneralResources.Active : @GeneralResources.Inactive)
+                                        </span>
+                                    </div>
+                                    <div class="mt-2">
+                                        <small class="text-muted">
+                                            Sample: @Model.Symbol@(1234.56m.ToString("N2")) (@Model.Code)
+                                        </small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <div class="card-footer bg-light py-3 d-flex justify-content-end gap-2">
+                <button type="button" class="btn btn-secondary px-4" @onclick="CloseModal">
+                    @ActionsResources.Cancel
+                </button>
+                <button type="submit" class="btn btn-success px-4" disabled="@isSaving">
+                    @if (isSaving)
+                    {
+                        <span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
+                    }
+                    @ActionsResources.Save
+                </button>
+            </div>
+        </EditForm>
+    </div>
+</div>
+
+<style>
+    .currency-symbol {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 40px;
+        height: 40px;
+        background: #007bff;
+        color: white;
+        border-radius: 50%;
+        font-size: 1.2rem;
+        margin-right: 10px;
+    }
+
+    .currency-preview {
+        display: flex;
+        align-items: center;
+    }
+</style>

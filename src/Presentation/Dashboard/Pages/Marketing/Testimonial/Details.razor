@@ -1,0 +1,142 @@
+﻿@page "/marketing/testimonials/{id:guid?}"
+@page "/testimonials/{id:guid?}"
+
+@using Common.Enumerations
+@using Common.Enumerations.User
+@using Microsoft.AspNetCore.Authorization
+@using Resources
+@using Shared.DTOs.Testimonial
+@using global::Shared.GeneralModels
+@attribute [Authorize(Roles = nameof(UserRole.Admin))]
+@inherits ComponentBase
+
+<PageTitle>@(TestimonialId == Guid.Empty ? TestimonialResources.AddTestimonial : TestimonialResources.EditTestimonial)</PageTitle>
+
+<div class="container-fluid p-0">
+    <div class="card shadow-sm border-0">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h4 class="mb-0">
+                💬 @(TestimonialId == Guid.Empty ? TestimonialResources.AddTestimonial : TestimonialResources.EditTestimonial)
+            </h4>
+            <button class="btn btn-secondary" @onclick="CloseModal">
+                <i class="fas fa-times me-2"></i>
+                @ActionsResources.Cancel
+            </button>
+        </div>
+        <EditForm Model="@model" OnValidSubmit="Save">
+            <DataAnnotationsValidator />
+            <div class="card-body p-4">
+                @if (!string.IsNullOrEmpty(errorMessage))
+                {
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        @errorMessage
+                        <button type="button" class="btn-close" @onclick="() => errorMessage = string.Empty"></button>
+                    </div>
+                }
+                @if (!string.IsNullOrEmpty(successMessage))
+                {
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        <i class="fas fa-check-circle me-2"></i>
+                        @successMessage
+                        <button type="button" class="btn-close" @onclick="() => successMessage = string.Empty"></button>
+                    </div>
+                }
+
+                <div class="row">
+                    <!-- Customer Information -->
+                    <div class="col-md-6">
+                        <div class="form-group mb-3">
+                            <label class="form-label fw-semibold">
+                                @TestimonialResources.CustomerName <span class="text-danger">*</span>
+                            </label>
+                            <InputText class="form-control" @bind-Value="model.CustomerName"
+                                       placeholder="@string.Format(FormResources.Placeholder, TestimonialResources.CustomerName)" />
+                            <ValidationMessage For="@(() => model.CustomerName)" />
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group mb-3">
+                            <label class="form-label fw-semibold">
+                                @TestimonialResources.CustomerTitle <span class="text-danger">*</span>
+                            </label>
+                            <InputText class="form-control" @bind-Value="model.CustomerTitle"
+                                       placeholder="@string.Format(FormResources.Placeholder, TestimonialResources.CustomerTitle)" />
+                            <ValidationMessage For="@(() => model.CustomerTitle)" />
+                        </div>
+                    </div>
+
+                    <!-- Customer Image Upload -->
+                    <div class="col-md-8">
+                        <div class="form-group mb-3">
+                            <label class="form-label fw-semibold">
+                                @TestimonialResources.CustomerPhoto <span class="text-danger">*</span>
+                            </label>
+                            <InputFile class="form-control"
+                                       OnChange="HandleSelectedImage"
+                                       accept="image/*" />
+
+                            @if (!string.IsNullOrEmpty(previewImageUrl))
+                            {
+                                <div class="position-relative d-inline-block mt-2">
+                                    <img src="@previewImageUrl" class="img-thumbnail rounded-circle" style="max-width: 200px; max-height: 200px; object-fit: cover;" />
+                                    <button type="button" class="btn-close position-absolute top-0 end-0"
+                                            style="background-color: white;" @onclick="RemoveSelectedImage"></button>
+                                </div>
+                            }
+                            else if (!string.IsNullOrEmpty(model.CustomerImagePath))
+                            {
+                                <img src="@baseUrl/@model.CustomerImagePath" class="img-thumbnail rounded-circle mt-2" style="max-width: 200px; max-height: 200px; object-fit: cover;" />
+                            }
+
+                            <small class="form-text text-muted mt-1 d-block">
+                                JPEG, PNG, GIF, WebP (@ValidationResources.MaxFileSize: 5MB)
+                            </small>
+                            <ValidationMessage For="@(() => model.Base64Image)" />
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group mb-3">
+                            <label class="form-label fw-semibold">@TestimonialResources.DisplayOrder</label>
+                            <InputNumber class="form-control" @bind-Value="model.DisplayOrder" readonly="true" />
+                            <small class="form-text text-muted">@GeneralResources.AutoGenerated</small>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Testimonial Text -->
+                <div class="row">
+                    <div class="col-12">
+                        <div class="form-group mb-3">
+                            <label class="form-label fw-semibold">
+                                @TestimonialResources.TestimonialText <span class="text-danger">*</span>
+                            </label>
+                            <InputTextArea class="form-control" rows="6" @bind-Value="model.TestimonialText"
+                                           placeholder="@string.Format(FormResources.Placeholder, TestimonialResources.TestimonialText)" />
+                            <ValidationMessage For="@(() => model.TestimonialText)" />
+                            <small class="form-text text-muted">@TestimonialResources.TestimonialText</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer bg-light py-3 d-flex justify-content-end gap-2">
+                <button type="button" class="btn btn-secondary px-4" @onclick="CloseModal" disabled="@isSaving">
+                    <i class="fas fa-times me-2"></i>
+                    @ActionsResources.Cancel
+                </button>
+                <button type="submit" class="btn btn-success px-4" disabled="@isSaving">
+                    @if (isSaving)
+                    {
+                        <span class="spinner-border spinner-border-sm me-2"></span>
+                        <span class="sr-only">@FormResources.Saving...</span>
+                    }
+                    else
+                    {
+                        <i class="fas fa-save me-2"></i>
+                    }
+                    @ActionsResources.Save
+                </button>
+            </div>
+        </EditForm>
+    </div>
+</div>

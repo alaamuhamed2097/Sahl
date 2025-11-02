@@ -1,4 +1,7 @@
 ﻿@page "/"
+@page "/home"
+@page "/dashboard"
+
 @attribute [Authorize(Roles = "Admin,Vendor")]
 @using Common.Enumerations.User
 @using Microsoft.AspNetCore.Components.Web.Virtualization
