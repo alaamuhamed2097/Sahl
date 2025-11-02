@@ -1152,4 +1152,7 @@
   <data name="Total" xml:space="preserve">
     <value>الإجمالي</value>
   </data>
+  <data name="Content" xml:space="preserve">
+    <value>المحتوى</value>
+  </data>
 </root>

@@ -1,4 +1,5 @@
-﻿using Dashboard.Contracts.General;
+﻿using Dashboard.Contracts.CMS;
+using Dashboard.Contracts.General;
 using Dashboard.Models;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;

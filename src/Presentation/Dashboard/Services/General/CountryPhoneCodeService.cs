@@ -301,11 +301,63 @@ namespace Dashboard.Services.General
                 .OrderBy(c => lang == "ar" ? c.NameAr : c.NameEn);
         }
 
+        public IEnumerable<CountryInfo> GetFallbackCountries()
+        {
+            return new[]
+            {
+        // Arab Countries
+        new CountryInfo("Egypt", "مصر", "+20", "🇪🇬", "### ### ####"),
+        new CountryInfo("Saudi Arabia", "المملكة العربية السعودية", "+966", "🇸🇦", "## ### ####"),
+        new CountryInfo("United Arab Emirates", "الإمارات العربية المتحدة", "+971", "🇦🇪", "## ### ####"),
+        new CountryInfo("Iraq", "العراق", "+964", "🇮🇶", "### ### ####"),
+        new CountryInfo("Algeria", "الجزائر", "+213", "🇩🇿", "## ### ####"),
+        new CountryInfo("Morocco", "المغرب", "+212", "🇲🇦", "## #######"),
+        new CountryInfo("Sudan", "السودان", "+249", "🇸🇩", "## ### ####"),
+        new CountryInfo("Jordan", "الأردن", "+962", "🇯🇴", "## ### ####"),
+        new CountryInfo("Lebanon", "لبنان", "+961", "🇱🇧", "## ### ###"),
+        new CountryInfo("Libya", "ليبيا", "+218", "🇱🇾", "## ### ####"),
+        new CountryInfo("Tunisia", "تونس", "+216", "🇹🇳", "## ### ###"),
+        new CountryInfo("Oman", "عمان", "+968", "🇴🇲", "#### ####"),
+        new CountryInfo("Kuwait", "الكويت", "+965", "🇰🇼", "#### ####"),
+        new CountryInfo("Qatar", "قطر", "+974", "🇶🇦", "#### ####"),
+        new CountryInfo("Bahrain", "البحرين", "+973", "🇧🇭", "#### ####"),
+        new CountryInfo("Yemen", "اليمن", "+967", "🇾🇪", "### ### ###"),
+        new CountryInfo("Syria", "سوريا", "+963", "🇸🇾", "### ### ###"),
+        new CountryInfo("Palestine", "فلسطين", "+970", "🇵🇸", "## ### ####"),
+        new CountryInfo("Mauritania", "موريتانيا", "+222", "🇲🇷", "## ## ####"),
+        new CountryInfo("Somalia", "الصومال", "+252", "🇸🇴", "## ### ###"),
+        new CountryInfo("Djibouti", "جيبوتي", "+253", "🇩🇯", "## ## ## ##"),
+        new CountryInfo("Comoros", "جزر القمر", "+269", "🇰🇲", "### ####"),
+        // Other Popular Countries
+        new CountryInfo("United States", "الولايات المتحدة", "+1", "🇺🇸", "(###) ###-####"),
+        new CountryInfo("United Kingdom", "المملكة المتحدة", "+44", "🇬🇧", "## #### ####"),
+        new CountryInfo("Germany", "ألمانيا", "+49", "🇩🇪", "### ### ####"),
+        new CountryInfo("France", "فرنسا", "+33", "🇫🇷", "## ## ## ## ##"),
+        new CountryInfo("Italy", "إيطاليا", "+39", "🇮🇹", "### ### ####"),
+        new CountryInfo("Spain", "إسبانيا", "+34", "🇪🇸", "### ### ###"),
+        new CountryInfo("Netherlands", "هولندا", "+31", "🇳🇱", "## ### ####"),
+        new CountryInfo("Japan", "اليابان", "+81", "🇯🇵", "##-####-####"),
+        new CountryInfo("Australia", "أستراليا", "+61", "🇦🇺", "#### ### ###"),
+        new CountryInfo("Canada", "كندا", "+1", "🇨🇦", "(###) ###-####"),
+        new CountryInfo("China", "الصين", "+86", "🇨🇳", "### #### ####"),
+        new CountryInfo("India", "الهند", "+91", "🇮🇳", "#### ### ###"),
+        new CountryInfo("Brazil", "البرازيل", "+55", "🇧🇷", "## #####-####"),
+        new CountryInfo("Russia", "روسيا", "+7", "🇷🇺", "### ###-##-##"),
+        new CountryInfo("Turkey", "تركيا", "+90", "🇹🇷", "### ### ####"),
+        new CountryInfo("South Korea", "كوريا الجنوبية", "+82", "🇰🇷", "##-####-####")
+    };
+        }
+
         private string GetLanguage(string language)
         {
             return (language?.ToLowerInvariant() == "ar" ? "ar" : "en") ?? _defaultLanguage;
         }
     }
 
-    public record CountryInfo(string NameEn, string NameAr, string PhoneCode, string Flag, string Format);
+    public record CountryInfo(
+        string NameEn,
+        string NameAr,
+        string PhoneCode,
+        string Flag,
+        string Format);
 }

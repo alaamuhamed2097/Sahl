@@ -4,7 +4,7 @@ using Shared.DTOs.ECommerce.Item;
 
 namespace Dashboard.Pages.Catalog.Products.Components
 {
-    public partial class ItemAttributesSection
+    public partial class AttributesSection
     {
         [Parameter]
         public List<CategoryAttributeDto> CategoryAttributes { get; set; } = new();

@@ -5,7 +5,7 @@ using Shared.DTOs.ECommerce.Item;
 
 namespace Dashboard.Pages.Catalog.Products.Components
 {
-    public partial class ItemAttributeCombinations
+    public partial class AttributeCombinations
     {
         [Parameter]
         public List<ItemAttributeCombinationPricingDto> Combinations { get; set; } = new();

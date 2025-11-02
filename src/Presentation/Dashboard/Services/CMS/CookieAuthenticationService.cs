@@ -1,4 +1,5 @@
 using Dashboard.Constants;
+using Dashboard.Contracts.CMS;
 using Dashboard.Contracts.General;
 using Dashboard.Models;
 using Dashboard.Providers;

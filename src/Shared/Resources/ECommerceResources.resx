@@ -735,4 +735,7 @@
   <data name="ShippingAmount" xml:space="preserve">
     <value>رسوم الشحن</value>
   </data>
+  <data name="Payments" xml:space="preserve">
+    <value>طرق الدفع</value>
+  </data>
 </root>
