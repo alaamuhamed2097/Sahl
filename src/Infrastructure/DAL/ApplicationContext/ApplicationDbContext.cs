@@ -9,6 +9,7 @@ using Domins.Views;
 using Domins.Views.Category;
 using Domins.Views.Item;
 using Domins.Views.Unit;
+using Domins.Views.UserNotification;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
@@ -77,6 +78,7 @@ namespace DAL.ApplicationContext
         // Item Related Views
         public DbSet<VwItem> VwItems { get; set; }
         public DbSet<VwUnitWithConversionsUnits> VwUnitWithConversionsUnits { get; set; }
+        public DbSet<VwUserNotification> VwUserNotifications { get; set; }
 
         #endregion
 
@@ -363,6 +365,7 @@ namespace DAL.ApplicationContext
             modelBuilder.Entity<VwItem>().HasNoKey().ToView("VwItems");
             modelBuilder.Entity<VwUnitWithConversionsUnits>().HasNoKey().ToView("VwUnitWithConversionsUnits");
 
+            modelBuilder.Entity<VwUserNotification>().HasNoKey().ToView("VwUserNotifications");
             #endregion
 
             #region Stored Procedures

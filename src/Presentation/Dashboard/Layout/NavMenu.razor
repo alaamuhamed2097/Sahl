@@ -1,6 +1,7 @@
 ﻿@using Common.Enumerations
 @using Common.Enumerations.FieldType
 @using Common.Enumerations.User
+@using Microsoft.AspNetCore.Components.Authorization
 @using Shared.DTOs.ECommerce
 @using Shared.DTOs.User
 
@@ -12,9 +13,9 @@
                 <img src="assets/images/logo.svg" alt="" class="logo images" />
                 <img src="assets/images/logo-icon.svg" alt="" class="logo-thumb images" />
             </a>
-            <a class="@MobileMenuClass" id="mobile-collapse">
+            @* <a class="@MobileMenuClass" id="mobile-collapse">
                 <span></span>
-            </a>
+            </a> *@
         </div>
         <div class="navbar-content scroll-div ps ps--active-y"
              id="layout-sidenav-@ComponentId"

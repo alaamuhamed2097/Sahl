@@ -3,11 +3,13 @@ using BL.Contracts.IMapper;
 using DAL.Contracts.UnitOfWork;
 using DAL.Models;
 using Domains.Entities.Notification;
+using Domins.Views.UserNotification;
 using Resources;
 using Serilog;
 using Shared.GeneralModels.Parameters.Notification;
 using Shared.GeneralModels.SearchCriteriaModels;
 using Shared.ResultModels;
+using System.Linq.Expressions;
 
 namespace BL.GeneralService.Notification
 {
@@ -24,67 +26,61 @@ namespace BL.GeneralService.Notification
         }
         public UserNotificationResult<PaginatedDataModel<UserNotificationRequest>> GetPage(BaseSearchCriteriaModel criteriaModel, string userId)
         {
-            //if (criteriaModel == null)
-            //    throw new ArgumentNullException(nameof(criteriaModel));
+            if (criteriaModel == null)
+                throw new ArgumentNullException(nameof(criteriaModel));
 
-            //if (criteriaModel.PageNumber < 1)
-            //    throw new ArgumentOutOfRangeException(nameof(criteriaModel.PageNumber), ValidationResources.PageNumberGreaterThanZero);
+            if (criteriaModel.PageNumber < 1)
+                throw new ArgumentOutOfRangeException(nameof(criteriaModel.PageNumber), ValidationResources.PageNumberGreaterThanZero);
 
-            //if (criteriaModel.PageSize < 1 || criteriaModel.PageSize > 100)
-            //    throw new ArgumentOutOfRangeException(nameof(criteriaModel.PageSize), ValidationResources.PageSizeRange);
+            if (criteriaModel.PageSize < 1 || criteriaModel.PageSize > 100)
+                throw new ArgumentOutOfRangeException(nameof(criteriaModel.PageSize), ValidationResources.PageSizeRange);
 
-            //// Base filter for active entities
-            //Expression<Func<VwUserNotification, bool>> filter = x => x.UserId == userId;
+            // Base filter for active entities
+            Expression<Func<VwUserNotification, bool>> filter = x => x.UserId == userId;
 
-            //// Apply search term if provided
-            //if (!string.IsNullOrWhiteSpace(criteriaModel.SearchTerm))
-            //{
-            //    string searchTerm = criteriaModel.SearchTerm.Trim().ToLower();
-            //    filter = x => (x.TitleAr != null && x.TitleAr.ToLower().Contains(searchTerm)) ||
-            //                 (x.TitleEn != null && x.TitleEn.ToLower().Contains(searchTerm)) ||
-            //                 (x.DescriptionAr != null && x.DescriptionAr.ToLower().Contains(searchTerm)) ||
-            //                 (x.DescriptionEn != null && x.DescriptionEn.ToLower().Contains(searchTerm));
-            //}
+            // Apply search term if provided
+            if (!string.IsNullOrWhiteSpace(criteriaModel.SearchTerm))
+            {
+                string searchTerm = criteriaModel.SearchTerm.Trim().ToLower();
+                filter = x => (x.TitleAr != null && x.TitleAr.ToLower().Contains(searchTerm)) ||
+                             (x.TitleEn != null && x.TitleEn.ToLower().Contains(searchTerm)) ||
+                             (x.DescriptionAr != null && x.DescriptionAr.ToLower().Contains(searchTerm)) ||
+                             (x.DescriptionEn != null && x.DescriptionEn.ToLower().Contains(searchTerm));
+            }
 
-            //var entitiesList = _userNotificationUnitOfWork.Repository<VwUserNotification>().GetPage(
-            //    criteriaModel.PageNumber,
-            //    criteriaModel.PageSize,
-            //    filter, orderBy: q => q.OrderByDescending(n => n.CreatedDateUtc));
-            //var userNotifications = _userNotificationUnitOfWork.TableRepository<TbUserNotification>().Get(n => n.UserId == userId);
-            //var unReadCount = userNotifications.Count(n => n.IsRead == false);
-            //var totalCount = userNotifications.Count();
-            //var dtoList = _mapper.MapList<VwUserNotification, UserNotificationRequest>(entitiesList.Items);
+            var entitiesList = _userNotificationUnitOfWork.Repository<VwUserNotification>().GetPage(
+                criteriaModel.PageNumber,
+                criteriaModel.PageSize,
+                filter, orderBy: q => q.OrderByDescending(n => n.CreatedDateUtc));
+            var userNotifications = _userNotificationUnitOfWork.TableRepository<TbUserNotification>().Get(n => n.UserId == userId);
+            var unReadCount = userNotifications.Count(n => n.IsRead == false);
+            var totalCount = userNotifications.Count();
+            var dtoList = _mapper.MapList<VwUserNotification, UserNotificationRequest>(entitiesList.Items);
 
-            //return new UserNotificationResult<PaginatedDataModel<UserNotificationRequest>>()
-            //{
-            //    Value = new PaginatedDataModel<UserNotificationRequest>(dtoList, entitiesList.TotalRecords),
-            //    UnReadCount = unReadCount,
-            //    TotalCount = totalCount
-            //};
-
-            throw new NotImplementedException();
+            return new UserNotificationResult<PaginatedDataModel<UserNotificationRequest>>()
+            {
+                Value = new PaginatedDataModel<UserNotificationRequest>(dtoList, entitiesList.TotalRecords),
+                UnReadCount = unReadCount,
+                TotalCount = totalCount
+            };
         }
         public UserNotificationResult<IEnumerable<UserNotificationRequest>> GetAll(string userId)
         {
-            //var allUserNotifications = _userNotificationUnitOfWork.Repository<VwUserNotification>().Get(n => n.UserId == userId);
-            //var userNotifications = allUserNotifications.OrderByDescending(n => n.CreatedDateUtc).Take(10);
-            //var unReadCount = allUserNotifications.Count(n => n.IsRead == false);
-            //var totalCount = allUserNotifications.Count();
-            //return new UserNotificationResult<IEnumerable<UserNotificationRequest>>()
-            //{
-            //    Value = _mapper.MapList<VwUserNotification, UserNotificationRequest>(userNotifications),
-            //    UnReadCount = unReadCount,
-            //    TotalCount = totalCount
-            //};
-
-            throw new NotImplementedException();
+            var allUserNotifications = _userNotificationUnitOfWork.Repository<VwUserNotification>().Get(n => n.UserId == userId);
+            var userNotifications = allUserNotifications.OrderByDescending(n => n.CreatedDateUtc).Take(10);
+            var unReadCount = allUserNotifications.Count(n => n.IsRead == false);
+            var totalCount = allUserNotifications.Count();
+            return new UserNotificationResult<IEnumerable<UserNotificationRequest>>()
+            {
+                Value = _mapper.MapList<VwUserNotification, UserNotificationRequest>(userNotifications),
+                UnReadCount = unReadCount,
+                TotalCount = totalCount
+            };
         }
         public UserNotificationRequest FindById(Guid Id)
         {
-            //var userNotification = _userNotificationUnitOfWork.Repository<VwUserNotification>().Find(n => n.Id == Id);
-            //return _mapper.MapModel<VwUserNotification, UserNotificationRequest>(userNotification);
-
-            throw new NotImplementedException();
+            var userNotification = _userNotificationUnitOfWork.Repository<VwUserNotification>().Find(n => n.Id == Id);
+            return _mapper.MapModel<VwUserNotification, UserNotificationRequest>(userNotification);
         }
         public async Task<bool> Save(UserNotificationRequest dto, Guid userId)
         {

@@ -2927,7 +2927,6 @@ label {
     justify-content: center;
     width: 37px;
     height: 64px;
-    position: absolute;
     right: 0;
     top: 0;
     padding: 0 10px;
@@ -3648,10 +3647,10 @@ label {
                 margin-left: 20px;
             }
 
-                .pcoded-header .m-header .b-brand img {
+             /*   .pcoded-header .m-header .b-brand img {
                     filter: brightness(0) invert(1);
                 }
-
+*/
             .pcoded-header .m-header .mobile-menu {
                 right: 20px;
             }
@@ -3752,7 +3751,7 @@ label {
     }
 
     .pcoded-header .dropdown .dropdown-menu {
-        width: 95%;
+        width: 90%;
         margin-left: auto;
         margin-right: auto;
         left: 0;
