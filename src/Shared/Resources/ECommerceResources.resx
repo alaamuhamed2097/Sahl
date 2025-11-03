@@ -738,4 +738,7 @@
   <data name="Payments" xml:space="preserve">
     <value>طرق الدفع</value>
   </data>
+  <data name="Currency" xml:space="preserve">
+    <value>عمله</value>
+  </data>
 </root>
