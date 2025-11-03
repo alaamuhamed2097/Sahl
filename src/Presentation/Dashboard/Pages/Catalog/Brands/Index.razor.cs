@@ -12,8 +12,8 @@ namespace Dashboard.Pages.Catalog.Brands
 
         // Abstract properties implementation
         protected override string EntityName => BrandResources.BrandManagement;
-        protected override string AddRoute => $"/catalog/brands/{Guid.Empty}";
-        protected override string EditRouteTemplate => "/catalog/brands/{id}";
+        protected override string AddRoute => $"/brand";
+        protected override string EditRouteTemplate => "/brand/{id}";
         protected override string SearchEndpoint => "api/Brand/search";
 
         // Export columns configuration

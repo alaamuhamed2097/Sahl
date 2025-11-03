@@ -10,8 +10,8 @@ namespace Dashboard.Pages.Catalog.Units
     public partial class Index : BaseListPage<UnitDto>
     {
         protected override string EntityName { get; } = ECommerceResources.Units;
-        protected override string AddRoute { get; } = $"/catalog/units/{Guid.Empty}";
-        protected override string EditRouteTemplate { get; } = "/catalog/units/{id}";
+        protected override string AddRoute { get; } = $"/catalog/unit";
+        protected override string EditRouteTemplate { get; } = "/catalog/unit/{id}";
         protected override string SearchEndpoint { get; } = ApiEndpoints.Unit.Search;
         protected override Dictionary<string, Func<UnitDto, object>> ExportColumns { get; }
         = new Dictionary<string, Func<UnitDto, object>>

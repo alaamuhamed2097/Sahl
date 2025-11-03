@@ -256,8 +256,10 @@ namespace BL.Services.Items
                 var item = FindById(id);
                 if (item == null) return null;
 
-                var (targetCurrency, baseCurrency) = await _locationBasedCurrencyService.GetCurrencyInfoAsync(applyConversion ? clientIp : "0");
-                return await _locationBasedCurrencyService.ApplyCurrencyConversionAsync(item, baseCurrency?.Code, targetCurrency?.Code);
+                //var (targetCurrency, baseCurrency) = await _locationBasedCurrencyService.GetCurrencyInfoAsync(applyConversion ? clientIp : "0");
+                //return await _locationBasedCurrencyService.ApplyCurrencyConversionAsync(item, baseCurrency?.Code, targetCurrency?.Code);
+
+                return item;
             }
             catch (Exception ex)
             {
@@ -290,10 +292,12 @@ namespace BL.Services.Items
                 var result = GetPage(criteriaModel);
                 if (result?.Items?.Any() != true) return result;
 
-                var (targetCurrency, baseCurrency) = await _locationBasedCurrencyService.GetCurrencyInfoAsync(applyConversion ? clientIp : "0");
-                var convertedItems = await _locationBasedCurrencyService.ApplyCurrencyConversionAsync(result.Items, baseCurrency?.Code, targetCurrency?.Code);
+                //var (targetCurrency, baseCurrency) = await _locationBasedCurrencyService.GetCurrencyInfoAsync(applyConversion ? clientIp : "0");
+                //var convertedItems = await _locationBasedCurrencyService.ApplyCurrencyConversionAsync(result.Items, baseCurrency?.Code, targetCurrency?.Code);
 
-                return new PaginatedDataModel<VwItemDto>(convertedItems, result.TotalRecords);
+                //return new PaginatedDataModel<VwItemDto>(convertedItems, result.TotalRecords);
+
+                return new PaginatedDataModel<VwItemDto>(result.Items, result.TotalRecords);
             }
             catch (Exception ex)
             {

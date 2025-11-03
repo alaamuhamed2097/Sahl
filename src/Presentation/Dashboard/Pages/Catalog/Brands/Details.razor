@@ -1,5 +1,5 @@
-@page "/catalog/brands/{id:guid?}"
-@page "/brands/{id:guid?}"
+@page "/brand"
+@page "/brand/{id:guid}"
 
 @using Common.Enumerations.User
 @attribute [Authorize(Roles = nameof(UserRole.Admin))]

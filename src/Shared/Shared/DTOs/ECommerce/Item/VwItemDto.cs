@@ -38,12 +38,12 @@ namespace Shared.DTOs.ECommerce.Item
         public string CategoryTitle
         => ResourceManager.CurrentLanguage == Language.Arabic ? CategoryTitleAr : CategoryTitleEn;
 
-        public string UnitNameAr { get; set; } = string.Empty;
-        public string UnitNameEn { get; set; } = string.Empty;
+        public string UnitTitleAr { get; set; } = string.Empty;
+        public string UnitTitleEn { get; set; } = string.Empty;
 
         [JsonIgnore]
-        public string UnitName
-        => ResourceManager.CurrentLanguage == Language.Arabic ? UnitNameAr : UnitNameEn;
+        public string UnitTitle
+        => ResourceManager.CurrentLanguage == Language.Arabic ? UnitTitleAr : UnitTitleEn;
 
         public string? VideoLink { get; set; }
         public string ThumbnailImage { get; set; } = string.Empty;
