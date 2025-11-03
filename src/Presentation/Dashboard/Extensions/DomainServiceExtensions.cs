@@ -1,5 +1,6 @@
 ﻿using Dashboard.Contracts;
 using Dashboard.Contracts.Brand;
+using Dashboard.Contracts.Currency;
 using Dashboard.Contracts.ECommerce.Category;
 using Dashboard.Contracts.ECommerce.Item;
 using Dashboard.Contracts.General;
@@ -8,6 +9,7 @@ using Dashboard.Contracts.Order;
 using Dashboard.Contracts.User;
 using Dashboard.Services;
 using Dashboard.Services.Brand;
+using Dashboard.Services.Currency;
 using Dashboard.Services.ECommerce.Category;
 using Dashboard.Services.ECommerce.Item;
 using Dashboard.Services.General;
@@ -36,6 +38,8 @@ namespace Dashboard.Extensions
             services.AddScoped<IShippingCompanyService, ShippingCompanyService>();
 
             services.AddScoped<ICountryPhoneCodeService, CountryPhoneCodeService>();
+
+            services.AddScoped<ICurrencyService, CurrencyService>();
 
             return services;
         }

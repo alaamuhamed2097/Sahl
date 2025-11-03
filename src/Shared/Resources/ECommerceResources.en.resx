@@ -738,4 +738,7 @@
   <data name="Payments" xml:space="preserve">
     <value>Payments</value>
   </data>
+  <data name="Currency" xml:space="preserve">
+    <value>Currency</value>
+  </data>
 </root>
