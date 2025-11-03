@@ -4,11 +4,13 @@ using BL.Contracts.Service.Currency;
 using BL.Contracts.Service.ECommerce.Category;
 using BL.Contracts.Service.ECommerce.Item;
 using BL.Contracts.Service.ECommerce.Unit;
+using BL.Contracts.Service.ShippingCompny;
 using BL.GeneralService.Location;
 using BL.Service.Brand;
 using BL.Service.Currency;
 using BL.Service.ECommerce.Category;
 using BL.Service.ECommerce.Unit;
+using BL.Service.ShippingCompany;
 using BL.Services.Items;
 
 namespace Api.Extensions
@@ -34,6 +36,8 @@ namespace Api.Extensions
             services.AddScoped<ICurrencyService, CurrencyService>();
             services.AddScoped<ICurrencyConversionFactory, CurrencyConversionFactory>();
             services.AddScoped<ILocationBasedCurrencyService, LocationBasedCurrencyService>();
+
+            services.AddScoped<IShippingCompanyService, ShippingCompanyService>();
 
             return services;
         }

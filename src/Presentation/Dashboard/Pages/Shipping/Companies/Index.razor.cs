@@ -10,7 +10,7 @@ namespace Dashboard.Pages.Shipping.Companies
     public partial class Index : BaseListPage<ShippingCompanyDto>
     {
         protected override string EntityName { get; } = "ShippingCompany";
-        protected override string AddRoute { get; } = $"/shipping/company/{Guid.Empty}";
+        protected override string AddRoute { get; } = $"/shipping/company";
         protected override string EditRouteTemplate { get; } = "/shipping/company/{id}";
         protected override string SearchEndpoint { get; } = ApiEndpoints.ShippingCompany.Search;
         protected override Dictionary<string, Func<ShippingCompanyDto, object>> ExportColumns { get; }

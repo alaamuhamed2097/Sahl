@@ -197,7 +197,7 @@ namespace Dashboard.Pages.Shipping.Companies
 
         protected async Task CloseModal()
         {
-            Navigation.NavigateTo("/ShippingCompanies", true);
+            Navigation.NavigateTo("/shipping/companies", true);
         }
 
         private async Task ShowErrorNotification(string title, string message)
