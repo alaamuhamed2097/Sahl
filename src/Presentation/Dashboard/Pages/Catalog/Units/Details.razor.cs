@@ -23,6 +23,7 @@ namespace Dashboard.Pages.Catalog.Units
         {
             await LoadUnits();
         }
+
         protected override void OnParametersSet()
         {
             if (Id != Guid.Empty)
@@ -39,10 +40,10 @@ namespace Dashboard.Pages.Catalog.Units
                 AvailableUnits = result.Data ?? Enumerable.Empty<UnitDto>();
                 StateHasChanged();
             }
-            else
-            {
-                await JSRuntime.InvokeVoidAsync("swal", ValidationResources.Failed, NotifiAndAlertsResources.FailedToRetrieveData, "error");
-            }
+            //else
+            //{
+            //    await JSRuntime.InvokeVoidAsync("swal", ValidationResources.Failed, NotifiAndAlertsResources.FailedToRetrieveData, "error");
+            //}
         }
 
         protected async Task Save()
@@ -121,6 +122,7 @@ namespace Dashboard.Pages.Catalog.Units
         {
             Navigation.NavigateTo("/units");
         }
+
         private void AddNewConversionUnitFrom()
         {
             var available = AvailableUnits ?? Enumerable.Empty<UnitDto>();
@@ -153,6 +155,7 @@ namespace Dashboard.Pages.Catalog.Units
                 }
             }
         }
+
         private void AddNewConversionUnitTo()
         {
             var available = AvailableUnits ?? Enumerable.Empty<UnitDto>();

@@ -226,7 +226,7 @@ namespace Dashboard.Pages.Catalog.Brands
 
         protected async Task CloseModal()
         {
-            Navigation.NavigateTo("/Brands", true);
+            Navigation.NavigateTo("/brands", true);
         }
 
         private async Task ShowErrorNotification(string title, string message)

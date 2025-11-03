@@ -208,11 +208,11 @@ namespace Dashboard.Pages.Catalog.Categories
         }
         protected async Task Add()
         {
-            Navigation.NavigateTo($"/catalog/categories/{Guid.Empty}");
+            Navigation.NavigateTo($"/category");
         }
         protected async Task Edit(CategoryDto item)
         {
-            Navigation.NavigateTo($"/catalog/categories/{item.Id}");
+            Navigation.NavigateTo($"/category/{item.Id}");
         }
         protected async Task LoadListCategories()
         {
