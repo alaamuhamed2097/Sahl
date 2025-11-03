@@ -47,7 +47,7 @@ namespace DAL.Migrations
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.Sql(@"DROP VIEW [dbo].[VwUserNotifications]");
+            migrationBuilder.Sql(@"DROP VIEW IF EXISTS [dbo].[VwUserNotifications]");
         }
     }
 }

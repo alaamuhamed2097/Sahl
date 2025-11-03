@@ -12,13 +12,13 @@ namespace DAL.ApplicationContext
 
             // Navigate to the Api project directory to find appsettings.json
             var basePath = Path.Combine(Directory.GetCurrentDirectory(), "..", "..", "Presentation", "Api");
-            
+
             // If the path doesn't exist (e.g., running from a different directory), try alternative paths
             if (!Directory.Exists(basePath))
             {
                 basePath = Path.Combine(Directory.GetCurrentDirectory(), "src", "Presentation", "Api");
             }
-            
+
             if (!Directory.Exists(basePath))
             {
                 // Fallback to searching from solution root

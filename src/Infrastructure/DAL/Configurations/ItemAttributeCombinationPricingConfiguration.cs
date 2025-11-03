@@ -1,0 +1,41 @@
+using Domins.Entities.Item;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
+
+namespace DAL.Configurations
+{
+    /// <summary>
+    /// Entity configuration for TbItemAttributeCombinationPricing
+    /// </summary>
+    public class ItemAttributeCombinationPricingConfiguration : IEntityTypeConfiguration<TbItemAttributeCombinationPricing>
+    {
+        public void Configure(EntityTypeBuilder<TbItemAttributeCombinationPricing> entity)
+        {
+            // Property configurations
+            entity.Property(e => e.AttributeIds)
+          .IsRequired()
+              .HasMaxLength(500);
+
+            entity.Property(e => e.FinalPrice)
+            .IsRequired()
+        .HasColumnType("decimal(18,2)");
+
+            entity.Property(e => e.Image)
+     .HasMaxLength(200);
+
+            // Indexes
+            entity.HasIndex(e => e.AttributeIds)
+         .IsUnique(false);
+
+            entity.HasIndex(e => e.FinalPrice)
+         .IsUnique(false);
+
+            // Relationships
+            entity.HasOne(icp => icp.Item)
+            .WithMany(i => i.ItemAttributeCombinationPricings)
+        .HasForeignKey(icp => icp.ItemId)
+       .HasConstraintName("FK_TbItemAttributeCombinationPricings_TbItems_ItemId")
+          .OnDelete(DeleteBehavior.Cascade);
+        }
+    }
+}

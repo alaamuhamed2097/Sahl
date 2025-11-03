@@ -54,7 +54,7 @@ namespace DAL.UnitOfWork
             {
                 _transaction = await _context.Database.BeginTransactionAsync();
             }
-            
+
             ++transactionsCount;
             return _transaction;
         }
