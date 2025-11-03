@@ -270,76 +270,7 @@
                     </div>
                 </div>
 
-                <!-- DESKTOP PAGINATION (Original - Unchanged) -->
-                <div class="d-none d-lg-flex justify-content-between mt-3" dir="ltr">
-                    <div class="d-flex align-items-center just flex-end">
-                        <span class="text-muted">
-                            @string.Format(ActionsResources.ShowingEntries, ((currentPage - 1) * searchModel.PageSize + 1), Math.Min(currentPage * searchModel.PageSize, totalRecords), totalRecords)
-                        </span>
-                    </div>
-                    <nav>
-                        <ul class="pagination mb-0">
-                            <!-- First Button -->
-                            <li class="page-item @(currentPage == 1 ? "disabled" : "")">
-                                <a class="page-link" @onclick="() => GoToPage(1)" title="@ActionsResources.First">
-                                    <i class="fas fa-angle-double-left"></i>
-                                </a>
-                            </li>
-
-                            <!-- Previous Button -->
-                            <li class="page-item @(currentPage == 1 ? "disabled" : "")">
-                                <a class="page-link" @onclick="() => GoToPage(currentPage - 1)">
-                                    @ActionsResources.Previous
-                                </a>
-                            </li>
-                            <!-- Dynamic Page Numbers -->
-                            @{
-                                const int maxVisiblePages = 5;
-                                int startPage = Math.Max(1, currentPage - 2);
-                                int endPage = Math.Min(totalPages, startPage + maxVisiblePages - 1);
-                                if (endPage - startPage + 1 < maxVisiblePages)
-                                {
-                                    startPage = Math.Max(1, endPage - maxVisiblePages + 1);
-                                }
-                            }
-                            @if (startPage > 1)
-                            {
-                                <li class="page-item disabled">
-                                    <a class="page-link">...</a>
-                                </li>
-                            }
-                            @for (int pag = startPage; pag <= endPage; pag++)
-                            {
-                                // Capture the loop variable in a local variable
-                                int pageNumber = pag;
-                                <li class="page-item @(pag == currentPage ? "active" : "")">
-                                    <a class="page-link" @onclick="() => GoToPage(pageNumber)">@pag</a>
-                                </li>
-                            }
-                            @if (endPage < totalPages)
-                            {
-                                <li class="page-item disabled">
-                                    <a class="page-link">...</a>
-                                </li>
-                            }
-                            <!-- Next Button -->
-                            <li class="page-item @(currentPage == totalPages ? "disabled" : "")">
-                                <a class="page-link" @onclick="() => GoToPage(currentPage + 1)">
-                                    @ActionsResources.Next
-                                </a>
-                            </li>
-
-                            <!-- Last Button -->
-                            <li class="page-item @(currentPage == totalPages ? "disabled" : "")">
-                                <a class="page-link" @onclick="() => GoToPage(totalPages)" title="@ActionsResources.Last">
-                                    <i class="fas fa-angle-double-right"></i>
-                                </a>
-                            </li>
-                        </ul>
-                    </nav>
-                </div>
-
-                <!-- MOBILE-OPTIMIZED PAGINATION (New) -->
+                            <!-- MOBILE-OPTIMIZED PAGINATION (New) -->
                 <div class="d-lg-none d-flex flex-column flex-sm-row justify-content-between align-items-center mt-3 gap-2" dir="ltr">
                     <!-- Results Info -->
                     <div class="text-center text-sm-start">

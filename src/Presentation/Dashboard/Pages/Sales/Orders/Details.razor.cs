@@ -1,14 +1,14 @@
 using Common.Enumerations.Order;
 using Dashboard.Configuration;
+using Dashboard.Contracts;
 using Dashboard.Contracts.General;
+using Dashboard.Contracts.Order;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Options;
 using Microsoft.JSInterop;
 using Resources;
 using Shared.DTOs.ECommerce;
 using Shared.DTOs.ECommerce.Order;
-using Dashboard.Contracts;
-using Dashboard.Contracts.Order;
 
 namespace Dashboard.Pages.Sales.Orders
 {

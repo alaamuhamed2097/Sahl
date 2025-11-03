@@ -1,9 +1,9 @@
-﻿using Microsoft.AspNetCore.Components;
+﻿using Dashboard.Contracts;
+using Dashboard.Contracts.General;
+using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 using Resources;
 using Shared.DTOs.ECommerce.PromoCode;
-using Dashboard.Contracts;
-using Dashboard.Contracts.General;
 
 namespace Dashboard.Pages.Sales.PromoCodes
 {

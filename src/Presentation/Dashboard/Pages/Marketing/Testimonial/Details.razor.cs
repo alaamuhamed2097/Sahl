@@ -1,12 +1,12 @@
-﻿using Microsoft.AspNetCore.Components;
+﻿using Dashboard.Configuration;
+using Dashboard.Contracts.General;
+using Dashboard.Contracts.Testimonial;
+using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.Extensions.Options;
 using Microsoft.JSInterop;
 using Resources;
 using Shared.DTOs.Testimonial;
-using Dashboard.Configuration;
-using Dashboard.Contracts.General;
-using Dashboard.Contracts.Testimonial;
 
 namespace Dashboard.Pages.Marketing.Testimonial
 {

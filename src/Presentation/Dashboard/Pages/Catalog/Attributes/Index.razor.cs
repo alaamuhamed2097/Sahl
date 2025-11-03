@@ -13,8 +13,8 @@ namespace Dashboard.Pages.Catalog.Attributes
         [Inject] protected IAttributeService AttributeService { get; set; } = null!;
 
         protected override string EntityName { get; } = "Attributes";
-        protected override string AddRoute { get; } = "/attribute";
-        protected override string EditRouteTemplate { get; } = $"/attribute/{{id}}";
+        protected override string AddRoute { get; } = $"/catalog/attributes/{Guid.Empty}";
+        protected override string EditRouteTemplate { get; } = "/catalog/attributes/{id}";
         protected override string SearchEndpoint { get; } = ApiEndpoints.Attribute.Search;
         protected override Dictionary<string, Func<AttributeDto, object>> ExportColumns { get; }
      = new Dictionary<string, Func<AttributeDto, object>>

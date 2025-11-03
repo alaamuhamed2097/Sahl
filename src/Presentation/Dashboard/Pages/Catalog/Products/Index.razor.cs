@@ -11,8 +11,8 @@ namespace Dashboard.Pages.Catalog.Products
     public partial class Index : BaseListPage<ItemDto>
     {
         protected override string EntityName { get; } = ECommerceResources.Products;
-        protected override string AddRoute { get; } = "/product";
-        protected override string EditRouteTemplate { get; } = $"/product/{{id}}";
+        protected override string AddRoute { get; } = $"/catalog/products/{Guid.Empty}";
+        protected override string EditRouteTemplate { get; } = "/catalog/products/{id}";
         protected override string SearchEndpoint { get; } = ApiEndpoints.Item.Search;
         protected override Dictionary<string, Func<ItemDto, object>> ExportColumns { get; }
         = new Dictionary<string, Func<ItemDto, object>>

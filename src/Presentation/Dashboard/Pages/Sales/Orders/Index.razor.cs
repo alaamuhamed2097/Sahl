@@ -13,8 +13,8 @@ namespace Dashboard.Pages.Sales.Orders
     {
         private static int iterator = 0;
         protected override string EntityName { get; } = ECommerceResources.Orders;
-        protected override string AddRoute { get; } = "/order";
-        protected override string EditRouteTemplate { get; } = $"/order/{{id}}";
+        protected override string AddRoute { get; } = $"/sales/orders/{Guid.Empty}";
+        protected override string EditRouteTemplate { get; } = "/sales/orders/{id}";
         protected override string SearchEndpoint { get; } = ApiEndpoints.Order.Search;
         protected override Dictionary<string, Func<OrderDto, object>> ExportColumns { get; } =
      new Dictionary<string, Func<OrderDto, object>>

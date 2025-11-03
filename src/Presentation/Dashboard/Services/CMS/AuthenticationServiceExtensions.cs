@@ -10,11 +10,11 @@ namespace Dashboard.Services.CMS
         {
             // ✅ UPDATED: Use cookie-based authentication providers
             services.AddAuthorizationCore();
-            
+
             services.AddScoped<CookieAuthenticationStateProvider>();
             services.AddScoped<AuthenticationStateProvider>(provider =>
                 provider.GetRequiredService<CookieAuthenticationStateProvider>());
-            
+
             services.AddScoped<IAuthenticationService, CookieAuthenticationService>();
 
             return services;

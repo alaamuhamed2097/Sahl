@@ -1,3 +1,7 @@
+using Dashboard.Configuration;
+using Dashboard.Contracts.General;
+using Dashboard.Contracts.Setting;
+using Dashboard.Services.General;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.Extensions.Options;
@@ -6,10 +10,6 @@ using Resources;
 using Resources.Enumerations;
 using Resources.Services;
 using Shared.DTOs.Setting;
-using Dashboard.Configuration;
-using Dashboard.Contracts.General;
-using Dashboard.Contracts.Setting;
-using Dashboard.Services.General;
 
 namespace Dashboard.Pages.Settings
 {

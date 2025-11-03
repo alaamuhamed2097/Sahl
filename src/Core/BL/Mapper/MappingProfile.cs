@@ -9,7 +9,9 @@ namespace BL.Mapper
         {
             ConfigureUserMappings();
             ConfigureNotificationMappings();
-            ConfigureECommerceMapping();
+            ConfigureCategoryMappings();
+            ConfigureAttributeMappings();
+            ConfigureUnitMappings();
             ConfigureItemMappings();
             ConfigureCurrencyMappings();
             ConfigureBrandMapping();

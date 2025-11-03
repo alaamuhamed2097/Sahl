@@ -1,5 +1,4 @@
 ﻿using Shared.DTOs.ECommerce;
-using Shared.DTOs.User;
 using Shared.GeneralModels;
 
 namespace Dashboard.Contracts

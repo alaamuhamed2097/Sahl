@@ -1,17 +1,17 @@
-﻿using Microsoft.AspNetCore.Components;
+﻿using Dashboard.Constants;
+using Dashboard.Contracts;
+using Microsoft.AspNetCore.Components;
 using Resources;
 using Shared.DTOs.ECommerce.PromoCode;
 using Shared.GeneralModels;
-using Dashboard.Constants;
-using Dashboard.Contracts;
 
 namespace Dashboard.Pages.Sales.PromoCodes
 {
     public partial class Index : BaseListPage<PromoCodeDto>
     {
         protected override string EntityName { get; } = FormResources.PromoCodes;
-        protected override string AddRoute { get; } = "/promoCode";
-        protected override string EditRouteTemplate { get; } = $"/promoCode/{{id}}";
+        protected override string AddRoute { get; } = $"/sales/promocodes/{Guid.Empty}";
+        protected override string EditRouteTemplate { get; } = "/sales/promocodes/{id}";
         protected override string SearchEndpoint { get; } = ApiEndpoints.PromoCode.Search;
         protected override Dictionary<string, Func<PromoCodeDto, object>> ExportColumns { get; }
         = new Dictionary<string, Func<PromoCodeDto, object>>

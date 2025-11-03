@@ -1,9 +1,9 @@
-﻿using Microsoft.AspNetCore.Components;
+﻿using Dashboard.Contracts.Testimonial;
+using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
+using Resources;
 using Shared.DTOs.Testimonial;
 using Shared.GeneralModels;
-using Dashboard.Contracts.Testimonial;
-using Resources;
 
 namespace Dashboard.Pages.Marketing.Testimonial
 {
@@ -13,8 +13,8 @@ namespace Dashboard.Pages.Marketing.Testimonial
 
         // Abstract properties implementation
         protected override string EntityName => "Testimonials";
-        protected override string AddRoute => "/testimonial-modal";
-        protected override string EditRouteTemplate => "/testimonial-modal/{id}";
+        protected override string AddRoute => $"/marketing/testimonials/{Guid.Empty}";
+        protected override string EditRouteTemplate => "/marketing/testimonials/{id}";
         protected override string SearchEndpoint => "api/Testimonial/search";
 
         // Export columns configuration
@@ -79,7 +79,7 @@ namespace Dashboard.Pages.Marketing.Testimonial
             try
             {
                 var customerImageSrc = GetImageSourceForDisplay(testimonial.CustomerImagePath);
-                
+
                 var testimonialHtml = $@"
                     <div class='row'>
                         <div class='col-md-3 text-center'>

@@ -1,8 +1,8 @@
+using Dashboard.Contracts.Currency;
 using Microsoft.AspNetCore.Components;
 using Resources;
 using Shared.DTOs.Currency;
 using Shared.GeneralModels;
-using Dashboard.Contracts.Currency;
 
 namespace Dashboard.Pages.Settings.Currencies
 {
@@ -26,8 +26,8 @@ namespace Dashboard.Pages.Settings.Currencies
 
         // Properties to match the BaseListPage pattern
         protected override string EntityName => CurrencyResources.CurrencyManagement;
-        protected override string AddRoute => "/currencyModal";
-        protected override string EditRouteTemplate => "/currencyModal/{id}";
+        protected override string AddRoute => $"/settings/currencies/{Guid.Empty}";
+        protected override string EditRouteTemplate => "/settings/currencies/{id}";
         protected override string SearchEndpoint => "api/Currency/search";
 
         protected override Dictionary<string, Func<CurrencyDto, object>> ExportColumns => new()

@@ -1,7 +1,7 @@
-﻿using Shared.DTOs.ECommerce;
+﻿using Dashboard.Models.pagintion;
+using Shared.DTOs.ECommerce;
 using Shared.GeneralModels;
 using Shared.GeneralModels.SearchCriteriaModels;
-using Dashboard.Models.pagintion;
 
 namespace Dashboard.Contracts.Order
 {

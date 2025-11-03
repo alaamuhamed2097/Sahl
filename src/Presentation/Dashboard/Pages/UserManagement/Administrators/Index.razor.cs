@@ -11,8 +11,8 @@ namespace Dashboard.Pages.UserManagement.Administrators
     public partial class Index : BaseListPage<AdminProfileDto>
     {
         protected override string EntityName { get; } = ECommerceResources.Admins;
-        protected override string AddRoute { get; } = "/addAdmin";
-        protected override string EditRouteTemplate { get; } = $"/editAdmin/{{id}}";
+        protected override string AddRoute { get; } = "/users/administrators/create";
+        protected override string EditRouteTemplate { get; } = "/users/administrators/edit/{id}";
         protected override string SearchEndpoint { get; } = ApiEndpoints.Admin.Search;
         protected override Dictionary<string, Func<AdminProfileDto, object>> ExportColumns { get; }
         = new Dictionary<string, Func<AdminProfileDto, object>>

@@ -19,48 +19,48 @@
                 <!-- Name Fields -->
                 <div class="row">
                     <div class="col-md-6 mb-3">
-                        <label class="form-label">@FormResources.NameEn:</label>
-                        <InputText class="form-control" @bind-Value="Model.NameEn"
-                                   placeholder="@String.Format(FormResources.Placeholder, FormResources.NameEn)" />
-                        <ValidationMessage For="@(() => Model.NameEn)" />
-                    </div>
-                    <div class="col-md-6 mb-3">
                         <label class="form-label">@FormResources.NameAr:</label>
                         <InputText class="form-control" @bind-Value="Model.NameAr"
                                    placeholder="@String.Format(FormResources.Placeholder, FormResources.NameAr)" />
                         <ValidationMessage For="@(() => Model.NameAr)" />
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">@FormResources.NameEn:</label>
+                        <InputText class="form-control" @bind-Value="Model.NameEn"
+                                   placeholder="@String.Format(FormResources.Placeholder, FormResources.NameEn)" />
+                        <ValidationMessage For="@(() => Model.NameEn)" />
                     </div>
                 </div>
 
                 <!-- Title Fields -->
                 <div class="row">
                     <div class="col-md-6 mb-3">
-                        <label class="form-label">@BrandResources.TitleEn:</label>
-                        <InputText class="form-control" @bind-Value="Model.TitleEn"
-                                   placeholder="@String.Format(FormResources.Placeholder, BrandResources.TitleEn)" />
-                        <ValidationMessage For="@(() => Model.TitleEn)" />
-                    </div>
-                    <div class="col-md-6 mb-3">
                         <label class="form-label">@BrandResources.TitleAr:</label>
                         <InputText class="form-control" @bind-Value="Model.TitleAr"
                                    placeholder="@String.Format(FormResources.Placeholder, BrandResources.TitleAr)" />
                         <ValidationMessage For="@(() => Model.TitleAr)" />
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">@BrandResources.TitleEn:</label>
+                        <InputText class="form-control" @bind-Value="Model.TitleEn"
+                                   placeholder="@String.Format(FormResources.Placeholder, BrandResources.TitleEn)" />
+                        <ValidationMessage For="@(() => Model.TitleEn)" />
                     </div>
                 </div>
 
                 <!-- Description Fields -->
                 <div class="row">
                     <div class="col-md-6 mb-3">
-                        <label class="form-label">@BrandResources.DescriptionEn:</label>
-                        <InputTextArea class="form-control" @bind-Value="Model.DescriptionEn" rows="3"
-                                       placeholder="@String.Format(FormResources.Placeholder, BrandResources.DescriptionEn)" />
-                        <ValidationMessage For="@(() => Model.DescriptionEn)" />
-                    </div>
-                    <div class="col-md-6 mb-3">
                         <label class="form-label">@BrandResources.DescriptionAr:</label>
                         <InputTextArea class="form-control" @bind-Value="Model.DescriptionAr" rows="3"
                                        placeholder="@String.Format(FormResources.Placeholder, BrandResources.DescriptionAr)" />
                         <ValidationMessage For="@(() => Model.DescriptionAr)" />
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">@BrandResources.DescriptionEn:</label>
+                        <InputTextArea class="form-control" @bind-Value="Model.DescriptionEn" rows="3"
+                                       placeholder="@String.Format(FormResources.Placeholder, BrandResources.DescriptionEn)" />
+                        <ValidationMessage For="@(() => Model.DescriptionEn)" />
                     </div>
                 </div>
 

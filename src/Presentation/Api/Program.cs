@@ -51,7 +51,7 @@ builder.Services.AddSwaggerConfiguration();
 builder.Services.AddHttpClient();
 
 // Configure Hangfire
-builder.Services.AddHangfireConfiguration(builder.Configuration);
+//builder.Services.AddHangfireConfiguration(builder.Configuration);
 
 var app = builder.Build();
 

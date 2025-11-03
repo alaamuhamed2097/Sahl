@@ -12,8 +12,8 @@ namespace Dashboard.Pages.Content.Pages
 
         // Abstract properties implementation
         protected override string EntityName => "Pages";
-        protected override string AddRoute => "/static-page-modal";
-        protected override string EditRouteTemplate => "/static-page-modal/{id}";
+        protected override string AddRoute => $"/content/pages/{Guid.Empty}";
+        protected override string EditRouteTemplate => "/content/pages/{id}";
         protected override string SearchEndpoint => "api/Page/search";
 
         // Export columns configuration

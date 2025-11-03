@@ -1,11 +1,8 @@
+using Common.Enumerations;
+using Dashboard.Contracts.Page;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 using Shared.DTOs.Page;
-using Shared.GeneralModels;
-using Dashboard.Contracts.Page;
-using Resources;
-using System.ComponentModel.DataAnnotations;
-using Common.Enumerations;
 
 namespace Dashboard.Pages.Content.Pages
 {
@@ -99,12 +96,12 @@ namespace Dashboard.Pages.Content.Pages
                 Model.UpdatedDateUtc = DateTime.UtcNow;
 
                 var result = await PageService.SaveAsync(Model);
-                
+
                 if (result.Success)
                 {
                     SuccessMessage = "Page updated successfully";
                     await JSRuntime.InvokeVoidAsync("console.log", "Page updated successfully");
-                    
+
                     // Redirect after a short delay
                     await Task.Delay(1500);
                     Navigation.NavigateTo("/pages");

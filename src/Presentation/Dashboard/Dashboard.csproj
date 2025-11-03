@@ -1,14 +1,10 @@
 <Project Sdk="Microsoft.NET.Sdk.BlazorWebAssembly">
 
 	<PropertyGroup>
-		<TargetFramework>net10.0</TargetFramework>
+		<TargetFramework>net9.0</TargetFramework>
 		<Nullable>enable</Nullable>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<ServiceWorkerAssetsManifest>service-worker-assets.js</ServiceWorkerAssetsManifest>
-
-		<OutputType>Exe</OutputType>
-		<RuntimeIdentifier>browser-wasm</RuntimeIdentifier>
-		<SelfContained>true</SelfContained>
 
 		<!-- ========== 🔥 Compression Settings ========== -->
 		<BlazorEnableCompression>true</BlazorEnableCompression>
@@ -38,7 +34,6 @@
 		<RunAOTCompilation Condition="'$(Configuration)' == 'Release'">true</RunAOTCompilation>
 		<WasmStripILAfterAOT Condition="'$(Configuration)' == 'Release'">true</WasmStripILAfterAOT>
 		<WasmEnableLegacyJsInterop>false</WasmEnableLegacyJsInterop>
-		<DebuggerSupport>false</DebuggerSupport>
 
 		<!-- AOT Advanced Optimizations (Release only) -->
 		<WasmEnableSIMD Condition="'$(Configuration)' == 'Release'">true</WasmEnableSIMD>
@@ -86,8 +81,9 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="10.0.0-rc.2.25502.107" />
-		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Authentication" Version="10.0.0-rc.2.25502.107" />
+		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="9.0.10" />
+		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Authentication" Version="9.0.10" />
+		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="9.0.10" />
 		<PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.14.0" />
 	</ItemGroup>
 
