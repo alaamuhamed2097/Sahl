@@ -1,8 +1,10 @@
 ﻿using Dashboard.Contracts.Brand;
+using Dashboard.Contracts.Currency;
 using Dashboard.Contracts.ECommerce.Category;
 using Dashboard.Contracts.ECommerce.Item;
 using Dashboard.Contracts.General;
 using Dashboard.Services.Brand;
+using Dashboard.Services.Currency;
 using Dashboard.Services.ECommerce.Category;
 using Dashboard.Services.ECommerce.Item;
 using Dashboard.Services.General;
@@ -22,6 +24,8 @@ namespace Dashboard.Extensions
             services.AddScoped<IUnitService, UnitService>();
 
             services.AddScoped<IBrandService, BrandService>();
+
+            services.AddScoped<ICurrencyService, CurrencyService>();
 
             return services;
         }

@@ -15,7 +15,7 @@
         <div class="card-header d-flex justify-content-between align-items-center">
             <h4 class="mb-3">💰 @CurrencyResources.CurrencyManagement</h4>
             <div class="d-flex gap-2">
-                <NavLink href="/currencyModal" class="btn btn-success">
+                <NavLink href="/currency" class="btn btn-success">
                     <i class="feather icon-plus-circle me-2"></i>
                     <span class="fw-bold">@ActionsResources.Add</span>
                 </NavLink>
@@ -136,7 +136,7 @@
                                             <td class="text-danger text-center align-middle">@GeneralResources.Inactive</td>
                                         }
                                         <td class="d-flex gap-1 justify-content-center align-items-center">
-                                            <NavLink href="@($"/currencyModal/{currency.Id}")" class="btn btn-primary btn-sm mx-1">
+                                            <NavLink href="@($"/currency/{currency.Id}")" class="btn btn-primary btn-sm mx-1">
                                                 <span class="fas fa-edit"></span>
                                             </NavLink>
                                             @if (!currency.IsBaseCurrency)
