@@ -16,10 +16,9 @@ jobs:
         uses: actions/checkout@v4
       
       # 2️⃣ تثبيت .NET SDK (لو المشروع .NET 9 غيّر الرقم لو مختلف)
-      - name: Setup .NET 9
-        uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: '9.0.x'
+      - name: Setup .NET
+        run: echo "Using preinstalled .NET SDK on server"
+
       
       # 3️⃣ استرجاع الـ NuGet Packages
       - name: Restore dependencies
