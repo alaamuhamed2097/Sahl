@@ -369,79 +369,75 @@
                         <div id="collapseAttributes" class="collapse" aria-labelledby="headingAttributes" 
                              data-bs-parent="#productAccordion">
                             <div class="card-body">
-                                @if (Model.CategoryId != Guid.Empty)
-                                {
-                                    <ItemAttributesSection CategoryAttributes="categoryAttributes"
-                                                       ItemAttributes="Model.ItemAttributes"
-                                                       OnRemoveAttribute="RemoveAttribute" />
+      @if (Model.CategoryId != Guid.Empty)
+         {
+            <ItemAttributesSection CategoryAttributes="categoryAttributes"
+ ItemAttributes="Model.ItemAttributes"
+  OnRemoveAttribute="RemoveAttribute"
+     OnGenerateCombinations="GenerateAttributeCombinations"
+       OnAttributeValueChanged="StateHasChanged" />
 
-                                    <h6 class="mb-3 text-primary">@FormResources.Price</h6>
-                                    <div class="card">
-                                        <div class="card-header d-flex justify-content-between align-items-center">
-                                            <h5 class="mb-0 text-primary">@ECommerceResources.AttributeCombinations <span class="text-danger">*</span></h5>
-                                        </div>
-                                        <div class="card-body">
-                                            @if (Model.ItemAttributeCombinationPricings.Any())
-                                            {
-                                                <div class="table-responsive">
-                                                    <table class="table table-bordered">
-                                                        <thead>
-                                                            <tr>
-                                                                <th>@ECommerceResources.Attributes</th>
-                                                                <th>@FormResources.Price</th>
-                                                                <th>@ECommerceResources.Quantity</th>
-                                                                <th>@FormResources.Image</th>
-                                                                <th>@ECommerceResources.Actions</th>
-                                                            </tr>
-                                                        </thead>
-                                                        <tbody>
-                                                            @foreach (var combination in Model.ItemAttributeCombinationPricings)
-                                                            {
-                                                                <tr>
-                                                                    <td>
-                                                                        @GetCombinationAttributesDisplay(combination.AttributeIds)
-                                                                    </td>
-                                                                    <td>
-                                                                        <InputNumber class="form-control"
-                                                                                     @bind-Value="combination.FinalPrice" />
-                                                                    </td>
-                                                                    <td>
-                                                                        <InputNumber class="form-control"
-                                                                                     @bind-Value="combination.Quantity" />
-                                                                    </td>
-                                                                    <td>
-                                                                        <InputFile class="form-control"
-                                                                                   OnChange="@(e => HandleCombinationImageUpload(e, combination))"
-                                                                                   accept="image/*" />
-                                                                        @if (!string.IsNullOrEmpty(combination.Image))
-                                                                        {
-                                                                            <img src="@combination.Image" class="img-thumbnail mt-2" style="max-height: 50px;" />
-                                                                        }
-                                                                    </td>
-                                                                    <td>
-                                                                        <button type="button" class="btn btn-sm btn-danger"
-                                                                                @onclick="() => RemoveCombination(combination)">
-                                                                            <i class="fas fa-trash"></i>
-                                                                        </button>
-                                                                    </td>
-                                                                </tr>
-                                                            }
-                                                        </tbody>
-                                                    </table>
-                                                </div>
-                                            }
-                                            else
-                                            {
-                                                <div class="text-center py-4 text-muted">
-                                                    <i class="fas fa-list-alt fa-3x mb-3"></i>
-                                                    <p>@NotifiAndAlertsResources.NoAttributeCombinations</p>
-                                                </div>
-                                            }
-                                        </div>
-                                    </div>
-                                }
-                            </div>
-                        </div>
+  @if (Model.ItemAttributeCombinationPricings.Any())
+        {
+          <h6 class="mb-3 text-primary mt-4">@ECommerceResources.AttributeCombinations</h6>
+           <div class="card">
+       <div class="card-header d-flex justify-content-between align-items-center">
+            <h5 class="mb-0 text-primary">@FormResources.Price @ECommerceResources.AttributeCombinations</h5>
+             <span class="badge bg-info">@Model.ItemAttributeCombinationPricings.Count</span>
+</div>
+ <div class="card-body">
+       <div class="table-responsive">
+   <table class="table table-bordered">
+         <thead>
+     <tr>
+    <th>@ECommerceResources.Attributes</th>
+    <th>@FormResources.Price</th>
+             <th>@ECommerceResources.Quantity</th>
+         <th>@FormResources.Image</th>
+ <th>@ECommerceResources.Actions</th>
+           </tr>
+         </thead>
+        <tbody>
+              @foreach (var combination in Model.ItemAttributeCombinationPricings)
+        {
+ <tr>
+       <td>
+ @GetCombinationAttributesDisplay(combination.AttributeIds)
+      </td>
+            <td>
+     <InputNumber class="form-control"
+             @bind-Value="combination.FinalPrice" />
+         </td>
+      <td>
+         <InputNumber class="form-control"
+         @bind-Value="combination.Quantity" />
+               </td>
+   <td>
+       <InputFile class="form-control"
+         OnChange="@(e => HandleCombinationImageUpload(e, combination))"
+     accept="image/*" />
+            @if (!string.IsNullOrEmpty(combination.Image))
+          {
+     <img src="@GetImageSourceForDisplay(combination.Image)" class="img-thumbnail mt-2" style="max-height: 50px;" />
+      }
+    </td>
+     <td>
+          <button type="button" class="btn btn-sm btn-danger"
+       @onclick="() => RemoveCombination(combination)">
+         <i class="fas fa-trash"></i>
+      </button>
+          </td>
+        </tr>
+       }
+       </tbody>
+     </table>
+     </div>
+      </div>
+          </div>
+      }
+     }
+ </div>
+       </div>
                     </div>
                 </div>
             </div>

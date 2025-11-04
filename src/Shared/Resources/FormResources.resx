@@ -699,4 +699,10 @@
   <data name="MoveDown" xml:space="preserve">
     <value>نقل الي الأسفل</value>
   </data>
+  <data name="Multiple" xml:space="preserve">
+    <value>متعدد</value>
+  </data>
+  <data name="Values" xml:space="preserve">
+    <value>القيم</value>
+  </data>
 </root>

@@ -699,4 +699,10 @@
   <data name="MoveDown" xml:space="preserve">
     <value>MoveDown</value>
   </data>
+  <data name="Multiple" xml:space="preserve">
+    <value>Multiple</value>
+  </data>
+  <data name="Values" xml:space="preserve">
+    <value>Values</value>
+  </data>
 </root>

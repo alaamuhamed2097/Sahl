@@ -1,72 +1,59 @@
-﻿name: Update OpenAPI Spec
+﻿name: 🚀 Deploy ASP.NET API & Blazor Dashboard to IIS
 
-# 🔥 متى يشتغل الـ Workflow
 on:
   push:
-    branches: 
-      - main      # أو master حسب الـ branch الرئيسي عندك
-      - develop   # اختياري
-    paths:
-      - 'src/Api/**'  # بس لما حد يعدل في الـ API
-
-  workflow_dispatch:  # عشان تقدر تشغله يدوي
+    branches:
+      - main  # يشتغل لما تعمل push على main
+  workflow_dispatch:  # عشان تشغله يدويًا من GitHub Actions
 
 jobs:
-  update-openapi:
-    runs-on: ubuntu-latest
+  deploy:
+    runs-on: [self-hosted, windows, iis]  # ✅ اللابلز كلها جوا runs-on
     
     steps:
-    # 1️⃣ تحميل الكود من GitHub
-    - name: Checkout code
-      uses: actions/checkout@v4
-      with:
-        token: ${{ secrets.GITHUB_TOKEN }}
+      # 1️⃣ تحميل الكود من GitHub
+      - name: Checkout code
+        uses: actions/checkout@v4
       
-    # 2️⃣ تنزيل .NET 9
-    - name: Setup .NET
-      uses: actions/setup-dotnet@v4
-      with:
-        dotnet-version: '9.0.x'
-        
-    # 3️⃣ استرجاع الـ Packages
-    - name: Restore dependencies
-      run: dotnet restore
+      # 2️⃣ تثبيت .NET SDK (لو المشروع .NET 9 غيّر الرقم لو مختلف)
+      - name: Setup .NET 9
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '9.0.x'
       
-    # 4️⃣ بناء المشروع
-    - name: Build API
-      run: dotnet build ./src/Api --no-restore -c Release
+      # 3️⃣ استرجاع الـ NuGet Packages
+      - name: Restore dependencies
+        run: dotnet restore
       
-    # 5️⃣ تشغيل الـ API وتصدير OpenAPI
-    - name: Generate OpenAPI JSON
-      run: |
-        cd src/Api
-        
-        # تشغيل الـ API في الخلفية
-        dotnet run --no-build -c Release --urls=http://localhost:5000 &
-        API_PID=$!
-        
-        # انتظار الـ API تبدأ
-        echo "Waiting for API to start..."
-        sleep 15
-        
-        # تحميل OpenAPI JSON
-        echo "Downloading OpenAPI spec..."
-        curl -o ../../api-specs/swagger.json http://localhost:5000/openapi/v1.json
-        
-        # إيقاف الـ API
-        kill $API_PID
-        
-    # 6️⃣ رفع التحديثات على GitHub
-    - name: Commit and Push Changes
-      run: |
-        git config user.name "github-actions[bot]"
-        git config user.email "github-actions[bot]@users.noreply.github.com"
-        git add api-specs/swagger.json
-        
-        # بس لو فيه تغييرات
-        if git diff --staged --quiet; then
-          echo "No changes to commit"
-        else
-          git commit -m "🤖 Update OpenAPI spec [skip ci]"
-          git push
-        fi
+      # 4️⃣ بناء مشروع الـ API
+      - name: Build API
+        run: dotnet build ./src/Api -c Release --no-restore
+      
+      # 5️⃣ بناء مشروع الـ Blazor Dashboard
+      - name: Build Blazor Dashboard
+        run: dotnet build ./src/BlazorApp -c Release --no-restore
+      
+      # 6️⃣ نشر (Publish) الـ API
+      - name: Publish API
+        run: dotnet publish ./src/Api -c Release -o "C:\publish\SahlApi"
+      
+      # 7️⃣ نشر (Publish) الـ Dashboard
+      - name: Publish Dashboard
+        run: dotnet publish ./src/BlazorApp -c Release -o "C:\publish\SahlDashboard"
+      
+      # 8️⃣ نسخ الملفات للمسارات الفعلية على السيرفر
+      - name: Deploy to IIS
+        run: |
+          echo "Deploying API and Dashboard to IIS..."
+          # تأكد إن المسارات دي موجودة
+          if (!(Test-Path "C:\0ALI\WebSites\SahlApi")) { New-Item -ItemType Directory -Force -Path "C:\0ALI\WebSites\SahlApi" }
+          if (!(Test-Path "C:\0ALI\WebSites\SahlDashboard")) { New-Item -ItemType Directory -Force -Path "C:\0ALI\WebSites\SahlDashboard" }
+          # نسخ الملفات من فولدر publish
+          robocopy "C:\publish\SahlApi" "C:\0ALI\WebSites\SahlApi" /MIR
+          robocopy "C:\publish\SahlDashboard" "C:\0ALI\WebSites\SahlDashboard" /MIR
+          # إعادة تشغيل IIS
+          iisreset
+      
+      # 9️⃣ تأكيد النجاح
+      - name: Done
+        run: echo "✅ Deployment completed successfully!"

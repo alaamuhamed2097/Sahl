@@ -172,6 +172,12 @@ namespace Dashboard.Pages.Catalog.Products
                         image.IsNew = false;
                     }
 
+                    // Load category attributes if category is set
+                    if (Model.CategoryId != Guid.Empty)
+                    {
+                        await LoadCategoryAttributes();
+                    }
+
                     StateHasChanged();
                 }
                 else
@@ -214,17 +220,7 @@ namespace Dashboard.Pages.Catalog.Products
         // ========== Event Handlers ==========
         private async Task HandleCategoryChange()
         {
-            //fieldValidation["CategoryId"] = Model.CategoryId != Guid.Empty;
-
-            //if (Model.CategoryId != Guid.Empty)
-            //{
-            //    await LoadCategoryAttributes();
-            //}
-            //else
-            //{
-            //    categoryAttributes.Clear();
-            //}
-            //StateHasChanged();
+            await HandleCategoryChangeWithCombinations();
         }
 
         private async Task HandleThumbnailUpload(InputFileChangeEventArgs e)
@@ -586,14 +582,27 @@ namespace Dashboard.Pages.Catalog.Products
 
             foreach (var id in ids)
             {
-                if (Guid.TryParse(id, out var attributeId))
+                if (Guid.TryParse(id, out var guid))
                 {
-                    var attribute = categoryAttributes.FirstOrDefault(a => a.Id == attributeId);
-                    var value = Model.ItemAttributes.FirstOrDefault(a => a.AttributeId == attributeId)?.Value;
+                    // First check if it's an option ID
+                    var categoryAttr = categoryAttributes
+                        .FirstOrDefault(ca => ca.AttributeOptions?.Any(o => o.Id == guid) == true);
 
-                    if (attribute != null && !string.IsNullOrEmpty(value))
+                    if (categoryAttr != null)
                     {
-                        attributes.Add($"{attribute.Title}: {value}");
+                        var option = categoryAttr.AttributeOptions.First(o => o.Id == guid);
+                        attributes.Add($"{categoryAttr.Title}: {option.Title}");
+                    }
+                    else
+                    {
+                        // If not an option, check if it's an attribute ID with a direct value
+                        var attribute = categoryAttributes.FirstOrDefault(a => a.Id == guid);
+                        var value = Model.ItemAttributes.FirstOrDefault(a => a.AttributeId == guid)?.Value;
+
+                        if (attribute != null && !string.IsNullOrEmpty(value))
+                        {
+                            attributes.Add($"{attribute.Title}: {value}");
+                        }
                     }
                 }
             }
