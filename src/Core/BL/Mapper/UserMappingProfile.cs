@@ -1,4 +1,6 @@
 ﻿using Domains.Identity;
+using Domins.Entities.Location;
+using Shared.DTOs.Location;
 using Shared.DTOs.User.Admin;
 
 namespace BL.Mapper
@@ -15,6 +17,11 @@ namespace BL.Mapper
             CreateMap<AdminCreateDto, ApplicationUser>();
             CreateMap<ApplicationUser, AdminDto>();
             CreateMap<AdminUpdateDto, ApplicationUser>();
+
+            // Add additional user-related mappings here
+            CreateMap<TbCountry, CountryDto>().ReverseMap();
+            CreateMap<TbState, StateDto>().ReverseMap();
+            CreateMap<TbCity, CityDto>().ReverseMap();
         }
     }
 }

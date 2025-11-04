@@ -10,6 +10,7 @@ using Domins.Entities.Brand;
 using Domins.Entities.Category;
 using Domins.Entities.Currency;
 using Domins.Entities.Item;
+using Domins.Entities.Location;
 using Domins.Entities.Unit;
 using Domins.Entities.VideoProvider;
 using Domins.Views;
@@ -74,6 +75,11 @@ namespace DAL.ApplicationContext
         // Unit Management
         public DbSet<TbUnit> TbUnits { get; set; }
         public DbSet<TbUnitConversion> TbUnitConversions { get; set; }
+
+        // Location Management
+        public DbSet<TbCountry> TbCountries { get; set; }
+        public DbSet<TbState> TbStates { get; set; }
+        public DbSet<TbCity> TbCities { get; set; }
 
         // Video Provider Management
         public DbSet<TbVideoProvider> TbVideoProviders { get; set; }

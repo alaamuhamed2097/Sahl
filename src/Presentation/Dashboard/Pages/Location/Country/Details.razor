@@ -1,0 +1,44 @@
+@* @page "/country"
+@page "/country/{Id:guid}"
+@using Common.Enumerations.User
+@attribute [Authorize(Roles = nameof(UserRole.Admin))]
+
+<PageTitle>@GeneralResources.Countries</PageTitle>
+<div class="container-fluid p-0">
+    <div class="card shadow-sm border-0">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h4 class="modal-title" id="countryModalTitle">
+                @(Model.Id == Guid.Empty ? ActionsResources.Add : ActionsResources.Edit)
+            </h4>
+        </div>
+        <EditForm Model="@Model" OnValidSubmit="Save">
+
+            <DataAnnotationsValidator />
+            <div class="card-body p-4">
+                <div class="form-group">
+                    <label>@FormResources.ArabicTitle</label>
+                    <InputText type="text" class="form-control" @bind-value="Model.TitleAr" />
+                    <ValidationMessage For="@(() =>Model.TitleAr)" />
+                    <br />
+                    <label>@FormResources.EnglishTitle</label>
+                    <InputText type="text" class="form-control" @bind-value="Model.TitleEn" />
+                    <ValidationMessage For="@(() =>Model.TitleEn)" />
+                </div>
+            </div>
+            <div class="card-footer bg-light py-3 d-flex justify-content-end gap-2">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal" @onclick="CloseModal">@ActionsResources.Cancel</button>
+                <button type="submit" class="btn btn-success" disabled="@isSaving">
+                    @if (isSaving)
+                    {
+                        <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                        <span class="sr-only">@GeneralResources.Loading</span>
+                    }
+                    else
+                    {
+                        <span>@ActionsResources.Save</span>
+                    }
+                </button>
+            </div>
+        </EditForm>
+    </div>
+</div> *@
