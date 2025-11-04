@@ -22,26 +22,30 @@ jobs:
       # 3️⃣ استرجاع الـ NuGet Packages
       - name: Restore dependencies
         run: dotnet restore
+        
+      # 4️⃣ تثبيت Blazor Workload (مرة واحدة)
+      - name: Install Blazor Workload
+        run: dotnet workload restore
 
-      # 4️⃣ بناء مشروع الـ API
+      # 5️⃣ بناء مشروع الـ API
       - name: Build API
         run: dotnet build ./src/Presentation/Api -c Release --no-restore
 
-      # 5️⃣ بناء مشروع الـ Blazor Dashboard
+      # 6️⃣ بناء مشروع الـ Blazor Dashboard
       - name: Build Blazor Dashboard
         run: dotnet build ./src/Presentation/Dashboard -c Release --no-restore
-
-      # 6️⃣ نشر (Publish) الـ API
+        
+      # 7️⃣ نشر (Publish) الـ API
       - name: Publish API
         run: |
           if (!(Test-Path "C:\publish")) { New-Item -ItemType Directory -Force -Path "C:\publish" }
           dotnet publish ./src/Presentation/Api -c Release -o "C:\publish\SahlApi"
 
-      # 7️⃣ نشر (Publish) الـ Dashboard
+      # 8️⃣ نشر (Publish) الـ Dashboard
       - name: Publish Dashboard
         run: dotnet publish ./src/Presentation/Dashboard -c Release -o "C:\publish\SahlDashboard"
 
-      # 8️⃣ نسخ الملفات للمسارات الفعلية على السيرفر
+      # 9️⃣ نسخ الملفات للمسارات الفعلية على السيرفر
       - name: Deploy to IIS
         run: |
           echo "Deploying API and Dashboard to IIS..."
