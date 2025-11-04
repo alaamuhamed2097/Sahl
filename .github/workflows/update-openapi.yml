@@ -4,55 +4,53 @@ on:
   push:
     branches:
       - main  # يشتغل لما تعمل push على main
-  workflow_dispatch:  # عشان تشغله يدويًا من GitHub Actions
+  workflow_dispatch:  # تقدر تشغله يدويًا من GitHub Actions
 
 jobs:
   deploy:
-    runs-on: [self-hosted, windows, iis]  # ✅ اللابلز كلها جوا runs-on
-    
+    runs-on: [self-hosted, windows, iis]  # ✅ نفس اللابلز اللي حطيتها في runner
+
     steps:
       # 1️⃣ تحميل الكود من GitHub
       - name: Checkout code
         uses: actions/checkout@v4
       
-      # 2️⃣ تثبيت .NET SDK (لو المشروع .NET 9 غيّر الرقم لو مختلف)
+      # 2️⃣ استخدام الـ .NET المثبت مسبقًا
       - name: Setup .NET
         run: echo "Using preinstalled .NET SDK on server"
 
-      
       # 3️⃣ استرجاع الـ NuGet Packages
       - name: Restore dependencies
         run: dotnet restore
-      
+
       # 4️⃣ بناء مشروع الـ API
       - name: Build API
-        run: dotnet build ./src/Api -c Release --no-restore
-      
+        run: dotnet build ./src/Presentation/Api -c Release --no-restore
+
       # 5️⃣ بناء مشروع الـ Blazor Dashboard
       - name: Build Blazor Dashboard
-        run: dotnet build ./src/BlazorApp -c Release --no-restore
-      
+        run: dotnet build ./src/Presentation/Dashboard -c Release --no-restore
+
       # 6️⃣ نشر (Publish) الـ API
       - name: Publish API
-        run: dotnet publish ./src/Api -c Release -o "C:\publish\SahlApi"
-      
+        run: |
+          if (!(Test-Path "C:\publish")) { New-Item -ItemType Directory -Force -Path "C:\publish" }
+          dotnet publish ./src/Presentation/Api -c Release -o "C:\publish\SahlApi"
+
       # 7️⃣ نشر (Publish) الـ Dashboard
       - name: Publish Dashboard
-        run: dotnet publish ./src/BlazorApp -c Release -o "C:\publish\SahlDashboard"
-      
+        run: dotnet publish ./src/Presentation/Dashboard -c Release -o "C:\publish\SahlDashboard"
+
       # 8️⃣ نسخ الملفات للمسارات الفعلية على السيرفر
       - name: Deploy to IIS
         run: |
           echo "Deploying API and Dashboard to IIS..."
-          # تأكد إن المسارات دي موجودة
           if (!(Test-Path "C:\0ALI\WebSites\SahlApi")) { New-Item -ItemType Directory -Force -Path "C:\0ALI\WebSites\SahlApi" }
           if (!(Test-Path "C:\0ALI\WebSites\SahlDashboard")) { New-Item -ItemType Directory -Force -Path "C:\0ALI\WebSites\SahlDashboard" }
-          # نسخ الملفات من فولدر publish
           robocopy "C:\publish\SahlApi" "C:\0ALI\WebSites\SahlApi" /MIR
           robocopy "C:\publish\SahlDashboard" "C:\0ALI\WebSites\SahlDashboard" /MIR
-          # إعادة تشغيل IIS
           iisreset
-      
+
       # 9️⃣ تأكيد النجاح
       - name: Done
         run: echo "✅ Deployment completed successfully!"
