@@ -1,5 +1,5 @@
-﻿@page "/marketing/testimonials/{id:guid?}"
-@page "/testimonials/{id:guid?}"
+﻿@page "/testimonial"
+@page "/testimonial/{id:guid?}"
 
 @using Common.Enumerations
 @using Common.Enumerations.User
@@ -10,13 +10,13 @@
 @attribute [Authorize(Roles = nameof(UserRole.Admin))]
 @inherits ComponentBase
 
-<PageTitle>@(TestimonialId == Guid.Empty ? TestimonialResources.AddTestimonial : TestimonialResources.EditTestimonial)</PageTitle>
+<PageTitle>@(Id == Guid.Empty ? TestimonialResources.AddTestimonial : TestimonialResources.EditTestimonial)</PageTitle>
 
 <div class="container-fluid p-0">
     <div class="card shadow-sm border-0">
         <div class="card-header d-flex justify-content-between align-items-center">
             <h4 class="mb-0">
-                💬 @(TestimonialId == Guid.Empty ? TestimonialResources.AddTestimonial : TestimonialResources.EditTestimonial)
+                💬 @(Id == Guid.Empty ? TestimonialResources.AddTestimonial : TestimonialResources.EditTestimonial)
             </h4>
             <button class="btn btn-secondary" @onclick="CloseModal">
                 <i class="fas fa-times me-2"></i>

@@ -55,7 +55,7 @@ namespace Dashboard.Pages.Settings
         {
             { "contact", false },
             { "social", false },
-            { "business", false },
+            { "order", false },
             { "seo", false },
             { "banner", false }
         };
@@ -94,7 +94,7 @@ namespace Dashboard.Pages.Settings
             StateHasChanged();
         }
 
-        private void UpdateTabValidationState()
+        protected void UpdateTabValidationState()
         {
             if (editContext == null) return;
 
@@ -114,10 +114,10 @@ namespace Dashboard.Pages.Settings
 
             tabValidationErrors["contact"] = contactFields.Any(field =>
                 editContext.GetValidationMessages(field).Any()) ||
-                (!isPhoneValid && hasValidatedPhone && !string.IsNullOrEmpty(Model.Phone)) ||
-                (!isWhatsAppValid && hasValidatedWhatsApp && !string.IsNullOrEmpty(Model.WhatsAppNumber)) ||
-                (string.IsNullOrWhiteSpace(Model.Email)) ||
-                (string.IsNullOrWhiteSpace(Model.Address));
+                !isPhoneValid && hasValidatedPhone && !string.IsNullOrEmpty(Model.Phone) ||
+                !isWhatsAppValid && hasValidatedWhatsApp && !string.IsNullOrEmpty(Model.WhatsAppNumber) ||
+                string.IsNullOrWhiteSpace(Model.Email) ||
+                string.IsNullOrWhiteSpace(Model.Address);
 
             // Check for social tab errors (these might have URL validation)
             var socialFields = new[] {
@@ -134,18 +134,18 @@ namespace Dashboard.Pages.Settings
                 HasInvalidUrl(Model.TwitterUrl) ||
                 HasInvalidUrl(Model.LinkedInUrl);
 
-            // Check for business tab errors
-            var businessFields = new[] {
-                editContext.Field(nameof(Model.Level1Percentage)),
-                editContext.Field(nameof(Model.Level2Percentage)),
-                editContext.Field(nameof(Model.WithdrawalLimit))
+            // Check for order tab errors
+            var orderFields = new[] {
+                editContext.Field(nameof(Model.ShippingAmount)),
+                editContext.Field(nameof(Model.OrderTaxPercentage)),
+                editContext.Field(nameof(Model.OrderExtraCost))
             };
 
-            tabValidationErrors["business"] = businessFields.Any(field =>
+            tabValidationErrors["order"] = orderFields.Any(field =>
                 editContext.GetValidationMessages(field).Any()) ||
-                (Model.Level1Percentage < 0 || Model.Level1Percentage > 100) ||
-                (Model.Level2Percentage < 0 || Model.Level2Percentage > 100) ||
-                (Model.WithdrawalLimit < 0);
+                Model.ShippingAmount < 0 ||
+                Model.OrderTaxPercentage < 0 || Model.OrderTaxPercentage > 100 ||
+                Model.OrderExtraCost < 0;
 
             // Check for SEO tab errors
             var seoFields = new[] {
@@ -156,8 +156,8 @@ namespace Dashboard.Pages.Settings
 
             tabValidationErrors["seo"] = seoFields.Any(field =>
                 editContext.GetValidationMessages(field).Any()) ||
-                (string.IsNullOrWhiteSpace(Model.SEOTitle)) ||
-                (string.IsNullOrWhiteSpace(Model.SEODescription));
+                string.IsNullOrWhiteSpace(Model.SEOTitle) ||
+                string.IsNullOrWhiteSpace(Model.SEODescription);
 
             // Check for banner tab errors (optional - only if you want to enforce banner requirement)
             var bannerFields = new[] {
@@ -175,7 +175,7 @@ namespace Dashboard.Pages.Settings
                 return false; // Empty is valid for optional fields
 
             return !Uri.TryCreate(url, UriKind.Absolute, out var uriResult)
-                   || (uriResult.Scheme != Uri.UriSchemeHttp && uriResult.Scheme != Uri.UriSchemeHttps);
+                   || uriResult.Scheme != Uri.UriSchemeHttp && uriResult.Scheme != Uri.UriSchemeHttps;
         }
 
         private async Task LoadCountriesAsync()
@@ -428,22 +428,22 @@ namespace Dashboard.Pages.Settings
                 isValid = false;
             }
 
-            // Validate Business Settings
-            if (Model.Level1Percentage < 0 || Model.Level1Percentage > 100)
+            // Validate Order Settings
+            if (Model.ShippingAmount < 0)
             {
-                tabValidationErrors["business"] = true;
+                tabValidationErrors["order"] = true;
                 isValid = false;
             }
 
-            if (Model.Level2Percentage < 0 || Model.Level2Percentage > 100)
+            if (Model.OrderTaxPercentage < 0 || Model.OrderTaxPercentage > 100)
             {
-                tabValidationErrors["business"] = true;
+                tabValidationErrors["order"] = true;
                 isValid = false;
             }
 
-            if (Model.WithdrawalLimit < 0)
+            if (Model.OrderExtraCost < 0)
             {
-                tabValidationErrors["business"] = true;
+                tabValidationErrors["order"] = true;
                 isValid = false;
             }
 
@@ -472,7 +472,7 @@ namespace Dashboard.Pages.Settings
 
         private async Task NavigateToFirstErrorTab()
         {
-            var tabsWithErrors = new[] { "contact", "social", "business", "seo" }
+            var tabsWithErrors = new[] { "contact", "social", "business", "order", "withdrawal", "seo" }
                 .Where(tab => tabValidationErrors[tab])
                 .ToList();
 
@@ -499,7 +499,10 @@ namespace Dashboard.Pages.Settings
                 "contact" => "Contact Information",
                 "social" => "Social Media",
                 "business" => "Business Settings",
+                "order" => "Order Settings",
+                "withdrawal" => "Withdrawal Settings",
                 "seo" => "SEO Settings",
+                "banner" => "Banner Settings",
                 _ => tabKey
             };
         }
@@ -620,6 +623,27 @@ namespace Dashboard.Pages.Settings
                     break;
                 case "metatags":
                     Model.SEOMetaTags = value;
+                    break;
+            }
+            UpdateTabValidationState();
+        }
+
+        private void OnOrderInput(ChangeEventArgs e, string fieldName)
+        {
+            var value = e.Value?.ToString() ?? "";
+            switch (fieldName.ToLower())
+            {
+                case "shipping":
+                    if (decimal.TryParse(value, out var shipping))
+                        Model.ShippingAmount = shipping;
+                    break;
+                case "tax":
+                    if (decimal.TryParse(value, out var tax))
+                        Model.OrderTaxPercentage = tax;
+                    break;
+                case "extracost":
+                    if (decimal.TryParse(value, out var extra))
+                        Model.OrderExtraCost = extra;
                     break;
             }
             UpdateTabValidationState();
@@ -840,7 +864,7 @@ namespace Dashboard.Pages.Settings
         // Mark existing banner for deletion (will be deleted on save)
         private async Task DeleteExistingBannerImage()
         {
-            if ((await DeleteConfirmNotification()))
+            if (await DeleteConfirmNotification())
             {
                 Model.IsBannerDeleted = true;
                 previewBannerUrl = null;
@@ -877,7 +901,7 @@ namespace Dashboard.Pages.Settings
                 }
             };
 
-            return (await JSRuntime.InvokeAsync<bool>("swal", options));
+            return await JSRuntime.InvokeAsync<bool>("swal", options);
         }
 
         // Undo banner deletion (restore the existing banner)
@@ -906,10 +930,6 @@ namespace Dashboard.Pages.Settings
                 IsBannerDeleted = true,
                 MainBannerPath = null,
                 Base64Image = null,
-                Level1Percentage = 5.0m,
-                Level2Percentage = 2.5m,
-                WithdrawalLimit = 1000m,
-                WithdrawalFeePersentage = 1m,
                 ShippingAmount = 0m,
                 SEOTitle = "Your Company Name",
                 SEODescription = "Professional services and solutions for your business needs.",

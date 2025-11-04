@@ -17,6 +17,7 @@ namespace BL.Mapper
             ConfigureBrandMapping();
             ConfigureMediaMappings();
             ConfigureOrderMappings();
+            ConfigureSettingMappings();
         }
     }
 }

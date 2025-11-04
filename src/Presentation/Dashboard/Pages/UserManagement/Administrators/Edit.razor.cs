@@ -62,11 +62,11 @@ namespace Dashboard.Pages.UserManagement.Administrators
                 StateHasChanged(); // Force UI update to show spinner
 
                 var result = await adminService.UpdateAsync(Id, Model);
-
                 isSaving = false;
+
                 if (result.Success)
                 {
-                    await CloseModal();
+                    CloseModal();
                     await JSRuntime.InvokeVoidAsync("swal", ValidationResources.Done, NotifiAndAlertsResources.SavedSuccessfully, "success");
                 }
                 else
@@ -80,15 +80,11 @@ namespace Dashboard.Pages.UserManagement.Administrators
                     NotifiAndAlertsResources.FailedAlert,
                     "error");
             }
-            finally
-            {
-                await CloseModal();
-            }
         }
 
-        protected async Task CloseModal()
+        protected void CloseModal()
         {
-            Navigation.NavigateTo("/admin");
+            Navigation.NavigateTo("/users/administrators");
         }
     }
 }

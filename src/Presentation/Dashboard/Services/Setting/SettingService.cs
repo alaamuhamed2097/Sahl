@@ -35,21 +35,38 @@ namespace Dashboard.Services.Setting
             }
         }
 
+        public async Task<ResponseModel<string>> GetMainBannerPathAsync()
+        {
+            try
+            {
+                return await _apiService.GetAsync<string>(ApiEndpoints.Setting.MainBanner);
+            }
+            catch (Exception ex)
+            {
+                // Log error here
+                return new ResponseModel<string>
+                {
+                    Success = false,
+                    Message = ex.Message
+                };
+            }
+        }
+
         /// <summary>
         /// Update application settings.
         /// </summary>
-        public async Task<ResponseModel<bool>> UpdateSettingsAsync(SettingDto dto)
+        public async Task<ResponseModel<string>> UpdateSettingsAsync(SettingDto dto)
         {
             if (dto == null) throw new ArgumentNullException(nameof(dto));
 
             try
             {
-                return await _apiService.PostAsync<SettingDto, bool>(ApiEndpoints.Setting.Update, dto);
+                return await _apiService.PostAsync<SettingDto, string>(ApiEndpoints.Setting.Update, dto);
             }
             catch (Exception ex)
             {
                 // Log error here
-                return new ResponseModel<bool>
+                return new ResponseModel<string>
                 {
                     Success = false,
                     Message = ex.Message

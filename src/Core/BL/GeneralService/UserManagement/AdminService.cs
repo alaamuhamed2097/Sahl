@@ -9,11 +9,11 @@
 
 //namespace BL.GeneralService.UserManagement
 //{
-//    public class AdminService : UserService<AdminDto,AdminCreateDto,AdminUpdateDto>
+//    public class AdminService : UserService<AdminDto, AdminCreateDto, AdminUpdateDto>
 //    {
 //        protected override UserType _role { get; set; } = UserType.Admin;
 
-//        public AdminService(UserManager<ApplicationUser> userManager, IMapper mapper) : 
+//        public AdminService(UserManager<ApplicationUser> userManager, IMapper mapper) :
 //            base(userManager, mapper)
 //        {
 //        }

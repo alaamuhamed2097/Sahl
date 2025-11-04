@@ -1,4 +1,5 @@
 ﻿using Common.Enumerations.User;
+using Domains.Entities.Setting;
 using Domains.Identity;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -24,6 +25,7 @@ namespace DAL.ApplicationContext
         {
             await SeedRolesAsync(roleManager);
             await SeedUserAsync(userManager);
+            await SeedSettingAsync(context);
         }
 
         private static async Task SeedRolesAsync(RoleManager<IdentityRole> roleManager)
@@ -93,6 +95,54 @@ namespace DAL.ApplicationContext
                 var result = await userManager.CreateAsync(VendorUser, "Vendor123456");
                 await userManager.AddToRoleAsync(VendorUser, "Vendor");
             }
+        }
+
+        private static async Task SeedSettingAsync(ApplicationDbContext context)
+        {
+            // Check if settings already exist
+            if (await context.Set<TbSetting>().AnyAsync())
+            {
+                return; // Settings already seeded
+            }
+
+            var defaultSetting = new TbSetting
+            {
+                // Contact Information
+                Email = "info@yourcompany.com",
+                Phone = "1234567890",
+                PhoneCode = "+20",
+                Address = "123 Main Street, Cairo, Egypt",
+
+                // Social Media Links
+                FacebookUrl = "https://facebook.com/yourcompany",
+                InstagramUrl = "https://instagram.com/yourcompany",
+                TwitterUrl = "https://twitter.com/yourcompany",
+                LinkedInUrl = "https://linkedin.com/company/yourcompany",
+
+                // WhatsApp
+                WhatsAppNumber = "1234567890",
+                WhatsAppCode = "+20",
+
+                // Banner
+                MainBannerPath = null,
+
+                // Pricing & Tax Settings
+                ShippingAmount = 0m,
+                OrderTaxPercentage = 14m,
+                OrderExtraCost = 0m,
+
+                // SEO Fields (من BaseSeo)
+                SEOTitle = "Your Company - Online Store",
+                SEODescription = "Welcome to our online store offering the best products and services",
+                SEOMetaTags = "ecommerce, online store, shopping, egypt",
+
+                // Base Entity Fields
+                CreatedBy = Guid.Empty,
+                CreatedDateUtc = DateTime.UtcNow,
+            };
+
+            await context.Set<TbSetting>().AddAsync(defaultSetting);
+            await context.SaveChangesAsync();
         }
     }
 }

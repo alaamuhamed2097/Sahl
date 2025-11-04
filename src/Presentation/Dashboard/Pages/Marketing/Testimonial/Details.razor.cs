@@ -12,7 +12,7 @@ namespace Dashboard.Pages.Marketing.Testimonial
 {
     public partial class Details : ComponentBase
     {
-        [Parameter] public Guid TestimonialId { get; set; }
+        [Parameter] public Guid Id { get; set; }
 
         [Inject] private HttpClient Http { get; set; } = null!;
         [Inject] private NavigationManager Navigation { get; set; } = null!;
@@ -37,7 +37,7 @@ namespace Dashboard.Pages.Marketing.Testimonial
         {
             baseUrl = ApiOptions.Value.BaseUrl;
 
-            if (TestimonialId != Guid.Empty)
+            if (Id != Guid.Empty)
             {
                 previewImageUrl = null;
                 await LoadTestimonial();
@@ -83,7 +83,7 @@ namespace Dashboard.Pages.Marketing.Testimonial
         {
             try
             {
-                var response = await TestimonialService.GetByIdAsync(TestimonialId);
+                var response = await TestimonialService.GetByIdAsync(Id);
                 if (response?.Success == true && response.Data != null)
                 {
                     model = response.Data;

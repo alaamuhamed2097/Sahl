@@ -100,44 +100,9 @@
                                     </NavLink>
                                 </li>
                                 <li class="nav-item">
-                                    <NavLink href="/currencies" class="nav-link" onclick="closeNavMenu()">
-                                        <span class="pcoded-micon"><i class="fas fa-dollar-sign"></i></span>
-                                        <span class="pcoded-mtext">@ECommerceResources.Currencies</span>
-                                    </NavLink>
-                                </li>
-                            </ul>
-                        </li>
-
-                        <!-- 💰 Sales (Financial Management) -->
-                        <li data-username="sales" class="nav-item pcoded-hasmenu @(IsSubmenuOpen("sales") ? "pcoded-trigger" : "")">
-                            <a href="javascript:void(0)" class="nav-link" @onclick="@(() => ToggleSubmenu("sales"))">
-                                <span class="pcoded-micon"><i class="fas fa-money-bill-wave"></i></span>
-                                <span class="pcoded-mtext">@GeneralResources.Financial</span>
-                                <span class="pcoded-mcaret"></span>
-                            </a>
-                            <ul class="pcoded-submenu" style="display: @(IsSubmenuOpen("sales") ? "block" : "none")">
-                               @*  <li class="nav-item">
-                                    <NavLink href="/sales/orders" class="nav-link" onclick="closeNavMenu()">
-                                        <span class="pcoded-micon"><i class="fas fa-dolly-flatbed"></i></span>
-                                        <span class="pcoded-mtext">@ECommerceResources.Orders</span>
-                                    </NavLink>
-                                </li>
-                                <li class="nav-item">
-                                    <NavLink href="/sales/refunds" class="nav-link" onclick="closeNavMenu()">
-                                        <span class="pcoded-micon"><i class="fas fa-undo"></i></span>
-                                        <span class="pcoded-mtext">@ECommerceResources.Refunds</span>
-                                    </NavLink>
-                                </li> *@
-                                <li class="nav-item">
-                                    <NavLink href="/sales/promocodes" class="nav-link" onclick="closeNavMenu()">
-                                        <span class="pcoded-micon"><i class="fas fa-tag"></i></span>
-                                        <span class="pcoded-mtext">@FormResources.PromoCodes</span>
-                                    </NavLink>
-                                </li>
-                                <li class="nav-item">
-                                    <NavLink href="/sales/payment-methods" class="nav-link" onclick="closeNavMenu()">
-                                        <span class="pcoded-micon"><i class="fas fa-credit-card"></i></span>
-                                        <span class="pcoded-mtext">@GeneralResources.PaymentMethods</span>
+                                    <NavLink href="/shippingCompanies" class="nav-link" onclick="closeNavMenu()">
+                                        <span class="pcoded-micon"><i class="fas fa-truck"></i></span>
+                                        <span class="pcoded-mtext">@ECommerceResources.ShippingCompanies</span>
                                     </NavLink>
                                 </li>
                             </ul>
@@ -152,7 +117,13 @@
                             </a>
                             <ul class="pcoded-submenu" style="display: @(IsSubmenuOpen("marketing") ? "block" : "none")">
                                 <li class="nav-item">
-                                    <NavLink href="/marketing/testimonials" class="nav-link" onclick="closeNavMenu()">
+                                    <NavLink href="/promocodes" class="nav-link" onclick="closeNavMenu()">
+                                        <span class="pcoded-micon"><i class="fas fa-tag"></i></span>
+                                        <span class="pcoded-mtext">@FormResources.PromoCodes</span>
+                                    </NavLink>
+                                </li>
+                                <li class="nav-item">
+                                    <NavLink href="/testimonials" class="nav-link" onclick="closeNavMenu()">
                                         <span class="pcoded-micon"><i class="fas fa-comments"></i></span>
                                         <span class="pcoded-mtext">@TestimonialResources.Testimonials</span>
                                     </NavLink>
@@ -175,25 +146,19 @@
                             </a>
                             <ul class="pcoded-submenu" style="display: @(IsSubmenuOpen("shipping") ? "block" : "none")">
                                 <li class="nav-item">
-                                    <NavLink href="/shipping/companies" class="nav-link" onclick="closeNavMenu()">
-                                        <span class="pcoded-micon"><i class="fas fa-truck"></i></span>
-                                        <span class="pcoded-mtext">@ECommerceResources.ShippingCompanies</span>
-                                    </NavLink>
-                                </li>
-                                <li class="nav-item">
-                                    <NavLink href="/shipping/countries" class="nav-link" onclick="closeNavMenu()">
+                                    <NavLink href="/countries" class="nav-link" onclick="closeNavMenu()">
                                         <span class="pcoded-micon"><i class="fas fa-globe-africa"></i></span>
                                         <span class="pcoded-mtext">@GeneralResources.Countries</span>
                                     </NavLink>
                                 </li>
                                 <li class="nav-item">
-                                    <NavLink href="/shipping/states" class="nav-link" onclick="closeNavMenu()">
+                                    <NavLink href="/states" class="nav-link" onclick="closeNavMenu()">
                                         <span class="pcoded-micon"><i class="fas fa-map-marked-alt"></i></span>
                                         <span class="pcoded-mtext">@GeneralResources.Governorates</span>
                                     </NavLink>
                                 </li>
                                 <li class="nav-item">
-                                    <NavLink href="/shipping/cities" class="nav-link" onclick="closeNavMenu()">
+                                    <NavLink href="/cities" class="nav-link" onclick="closeNavMenu()">
                                         <span class="pcoded-micon"><i class="fas fa-city"></i></span>
                                         <span class="pcoded-mtext">@GeneralResources.Cities</span>
                                     </NavLink>
@@ -233,8 +198,8 @@
                                     </NavLink>
                                 </li>
                                 <li class="nav-item">
-                                    <NavLink href="/settings/currencies" class="nav-link" onclick="closeNavMenu()">
-                                        <span class="pcoded-micon"><i class="fas fa-coins"></i></span>
+                                    <NavLink href="/currencies" class="nav-link" onclick="closeNavMenu()">
+                                        <span class="pcoded-micon"><i class="fas fa-dollar-sign"></i></span>
                                         <span class="pcoded-mtext">@CurrencyResources.CurrencyManagement</span>
                                     </NavLink>
                                 </li>

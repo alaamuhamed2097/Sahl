@@ -23,8 +23,8 @@ namespace Dashboard.Pages.UserManagement.Administrators
                 StateHasChanged(); // Force UI update to show spinner
 
                 var result = await adminService.CreateAsync(Model);
-
                 isSaving = false;
+
                 if (result.Success)
                 {
                     await CloseModal();
@@ -41,15 +41,11 @@ namespace Dashboard.Pages.UserManagement.Administrators
                     NotifiAndAlertsResources.FailedAlert,
                     "error");
             }
-            finally
-            {
-                await CloseModal();
-            }
         }
 
         protected async Task CloseModal()
         {
-            Navigation.NavigateTo("/admin");
+            Navigation.NavigateTo("/users/administrators");
         }
     }
 }

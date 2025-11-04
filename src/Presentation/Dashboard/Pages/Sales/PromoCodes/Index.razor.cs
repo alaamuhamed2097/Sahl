@@ -10,8 +10,8 @@ namespace Dashboard.Pages.Sales.PromoCodes
     public partial class Index : BaseListPage<PromoCodeDto>
     {
         protected override string EntityName { get; } = FormResources.PromoCodes;
-        protected override string AddRoute { get; } = $"/sales/promocodes/{Guid.Empty}";
-        protected override string EditRouteTemplate { get; } = "/sales/promocodes/{id}";
+        protected override string AddRoute { get; } = $"/promocode";
+        protected override string EditRouteTemplate { get; } = "/promocode/{id}";
         protected override string SearchEndpoint { get; } = ApiEndpoints.PromoCode.Search;
         protected override Dictionary<string, Func<PromoCodeDto, object>> ExportColumns { get; }
         = new Dictionary<string, Func<PromoCodeDto, object>>

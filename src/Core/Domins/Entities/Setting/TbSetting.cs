@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 
 namespace Domains.Entities.Setting
 {
@@ -43,5 +44,13 @@ namespace Domains.Entities.Setting
 
         [Range(0, double.MaxValue)]
         public decimal ShippingAmount { get; set; } = 0m;
+
+        [Range(0, 100)]
+        [DefaultValue(14)]
+        public decimal OrderTaxPercentage { get; set; } = 14;
+
+        [Range(0, double.MaxValue)]
+        [DefaultValue(0)]
+        public decimal OrderExtraCost { get; set; } = 0m;
     }
 }

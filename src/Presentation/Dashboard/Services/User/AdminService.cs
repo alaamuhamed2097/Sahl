@@ -86,7 +86,7 @@ namespace Dashboard.Services.User
 
             try
             {
-                return await _apiService.PutAsync<AdminProfileUpdateDto, AdminProfileDto>($"{ApiEndpoints.Admin.Update}/{id}", admin);
+                return await _apiService.PostAsync<AdminProfileUpdateDto, AdminProfileDto>($"{ApiEndpoints.Admin.Update}/{id}", admin);
             }
             catch (Exception ex)
             {
@@ -106,7 +106,7 @@ namespace Dashboard.Services.User
         {
             try
             {
-                var result = await _apiService.PostAsync<Guid, ResponseModel<bool>>($"{ApiEndpoints.Admin.Delete}", id);
+                var result = await _apiService.PostAsync<Guid, bool>($"{ApiEndpoints.Admin.Delete}", id);
                 if (result.Success)
                 {
                     return new ResponseModel<bool>

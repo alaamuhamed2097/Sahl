@@ -13,8 +13,8 @@ namespace Dashboard.Pages.Marketing.Testimonial
 
         // Abstract properties implementation
         protected override string EntityName => "Testimonials";
-        protected override string AddRoute => $"/marketing/testimonials/{Guid.Empty}";
-        protected override string EditRouteTemplate => "/marketing/testimonials/{id}";
+        protected override string AddRoute => $"/testimonial";
+        protected override string EditRouteTemplate => "/testimonial/{id}";
         protected override string SearchEndpoint => "api/Testimonial/search";
 
         // Export columns configuration

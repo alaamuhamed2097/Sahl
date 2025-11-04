@@ -4,13 +4,19 @@ using BL.Contracts.Service.Currency;
 using BL.Contracts.Service.ECommerce.Category;
 using BL.Contracts.Service.ECommerce.Item;
 using BL.Contracts.Service.ECommerce.Unit;
+using BL.Contracts.Service.PromoCode;
+using BL.Contracts.Service.Setting;
 using BL.Contracts.Service.ShippingCompny;
+using BL.Contracts.Service.Testimonial;
 using BL.GeneralService.Location;
 using BL.Service.Brand;
 using BL.Service.Currency;
 using BL.Service.ECommerce.Category;
 using BL.Service.ECommerce.Unit;
+using BL.Service.PromoCode;
+using BL.Service.Setting;
 using BL.Service.ShippingCompany;
+using BL.Service.Testimonial;
 using BL.Services.Items;
 
 namespace Api.Extensions
@@ -37,7 +43,17 @@ namespace Api.Extensions
             services.AddScoped<ICurrencyConversionFactory, CurrencyConversionFactory>();
             services.AddScoped<ILocationBasedCurrencyService, LocationBasedCurrencyService>();
 
+            // shipping company
             services.AddScoped<IShippingCompanyService, ShippingCompanyService>();
+
+            // Promo code
+            services.AddScoped<IPromoCodeService, PromoCodeService>();
+
+            // Testimonial Services
+            services.AddScoped<ITestimonialService, TestimonialService>();
+
+            // Setting Services
+            services.AddScoped<ISettingService, SettingService>();
 
             return services;
         }

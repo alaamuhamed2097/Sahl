@@ -1,12 +1,9 @@
 @page "/settings"
-@page "/settings/general"
-
 @using Common.Enumerations
 @using Common.Enumerations.User
 @using Microsoft.AspNetCore.Authorization
 @using Resources
 @using Shared.DTOs.Setting
-@using Dashboard.Contracts.Setting
 @attribute [Authorize(Roles = nameof(UserRole.Admin))]
 
 <PageTitle>@GeneralResources.Settings</PageTitle>
@@ -100,11 +97,11 @@
                             </button>
                         </li>
                         <li class="nav-item" role="presentation">
-                            <button class="@GetTabClass("business")"
-                                    @onclick='() => SetActiveTab("business")' type="button">
-                                <i class="fas fa-chart-line me-2"></i>
-                                @GeneralResources.BusinessSettings
-                                @if (tabValidationErrors.ContainsKey("business") && tabValidationErrors["business"])
+                            <button class="@GetTabClass("order")"
+                                    @onclick='() => SetActiveTab("order")' type="button">
+                                <i class="fas fa-shopping-cart me-2"></i>
+                                @GeneralResources.OrderSettings
+                                @if (tabValidationErrors.ContainsKey("order") && tabValidationErrors["order"])
                                 {
                                     <span class="error-indicator ms-2">
                                         <i class="fas fa-exclamation-circle"></i>
@@ -347,118 +344,8 @@
                             </div>
                         </div>
 
-                        <!-- Business Settings Tab -->
-                        <div class="@($"tab-pane {(ActiveTab == "business" ? "show active" : "")}")" id="business">
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <div class="card border-0 bg-light">
-                                        <div class="card-header bg-transparent">
-                                            <h6 class="mb-0">
-                                                <i class="fas fa-percentage me-2"></i>
-                                                @GeneralResources.CommissionRates
-                                            </h6>
-                                        </div>
-                                        <div class="card-body">
-                                            <div class="form-group mb-3">
-                                                <label class="form-label">@GeneralResources.Level1CommissionPercentage *</label>
-                                                <div class="input-group">
-                                                    <InputNumber class="form-control" @bind-Value="Model.Level1Percentage"
-                                                                 min="0" max="100" step="0.1" />
-                                                    <span class="input-group-text">%</span>
-                                                </div>
-                                                <ValidationMessage For="@(() => Model.Level1Percentage)" />
-                                                <small class="form-text text-muted">@GeneralResources.CommissionForDirectReferrals</small>
-                                            </div>
-
-                                            <div class="form-group mb-3">
-                                                <label class="form-label">@GeneralResources.Level2CommissionPercentage *</label>
-                                                <div class="input-group">
-                                                    <InputNumber class="form-control" @bind-Value="Model.Level2Percentage"
-                                                                 min="0" max="100" step="0.1" />
-                                                    <span class="input-group-text">%</span>
-                                                </div>
-                                                <ValidationMessage For="@(() => Model.Level2Percentage)" />
-                                                <small class="form-text text-muted">@GeneralResources.CommissionForSecondLevelReferrals</small>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="col-md-6">
-                                    <div class="card border-warning">
-                                        <div class="card-header bg-warning bg-opacity-10">
-                                            <h6 class="mb-0 text-warning">
-                                                <i class="fas fa-exclamation-triangle me-2"></i>
-                                                @GeneralResources.ImportantNotice
-                                            </h6>
-                                        </div>
-                                        <div class="card-body">
-                                            <p><strong>@GeneralResources.CommissionRateGuidelines:</strong></p>
-                                            <ul>
-                                                <li>@GeneralResources.RatesAppliedToNewTransactions</li>
-                                                <li>@GeneralResources.ChangesAffectFutureCommissions</li>
-                                                <li>@GeneralResources.TotalCommissionRatesShouldNotExceed</li>
-                                                <li>@GeneralResources.ConsiderMarketStandards</li>
-                                            </ul>
-
-                                            <div class="mt-3 p-3 bg-info bg-opacity-10 rounded">
-                                                <strong>@GeneralResources.CurrentTotal: @((Model.Level1Percentage + Model.Level2Percentage).ToString("F1"))%</strong>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="row mt-3">
-                                <!-- Withdrawal Limit Row -->
-                                <div class="col-md-6">
-                                    <div class="card border-0 bg-light">
-                                        <div class="card-header bg-transparent">
-                                            <h6 class="mb-0">
-                                                <i class="fas fa-money-bill me-2"></i>
-                                                @GeneralResources.WithdrawalLimitLabel
-                                            </h6>
-                                        </div>
-                                        <div class="card-body">
-                                            <div class="form-group mb-0">
-                                                <label class="form-label">@GeneralResources.WithdrawalLimitLabel</label>
-                                                <div class="input-group">
-                                                    <span class="input-group-text"><i class="fas fa-money-bill"></i></span>
-                                                    <InputNumber class="form-control" @bind-Value="Model.WithdrawalLimit"
-                                                                 min="0" step="0.1" />
-                                                </div>
-                                                <ValidationMessage For="@(() => Model.WithdrawalLimit)" />
-                                                <small class="form-text text-muted">@GeneralResources.WithdrawalLimitHelpText</small>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- Withdrawal Fee Persentage -->
-                                <div class="col-md-6">
-                                    <div class="card border-0 bg-light">
-                                        <div class="card-header bg-transparent">
-                                            <h6 class="mb-0">
-                                                <i class="fas fa-money-bill me-2"></i>
-                                                @GeneralResources.WithdrawalFeeLabel
-                                            </h6>
-                                        </div>
-                                        <div class="card-body">
-                                            <div class="form-group mb-0">
-                                                <label class="form-label">@GeneralResources.WithdrawalFeeLabel</label>
-                                                <div class="input-group">
-                                                    <span class="input-group-text"><i class="fas fa-money-bill"></i></span>
-                                                    <InputNumber class="form-control" @bind-Value="Model.WithdrawalFeePersentage"
-                                                                 min="0" step="0.1" max="100"/>
-                                                </div>
-                                                <ValidationMessage For="@(() => Model.WithdrawalLimit)" />
-                                                <small class="form-text text-muted">@GeneralResources.WithdrawalFeeHelpText</small>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
+                        <!-- Order Settings Tab -->
+                        <div class="@($"tab-pane {(ActiveTab == "order" ? "show active" : "")}")" id="order">
                             <div class="row mt-3">
                                 <!-- Shipping Amount -->
                                 <div class="col-md-6">
@@ -475,6 +362,7 @@
                                                 <div class="input-group">
                                                     <span class="input-group-text"><i class="fas fa-truck"></i></span>
                                                     <InputNumber class="form-control" @bind-Value="Model.ShippingAmount"
+                                                                 @bind-Value:after="UpdateTabValidationState"
                                                                  min="0" step="0.1" />
                                                     <span class="input-group-text">$</span>
                                                 </div>
@@ -500,6 +388,7 @@
                                                 <div class="input-group">
                                                     <span class="input-group-text"><i class="fas fa-file-invoice-dollar me-2"></i></span>
                                                     <InputNumber class="form-control" @bind-Value="Model.OrderTaxPercentage"
+                                                                 @bind-Value:after="UpdateTabValidationState"
                                                                  min="0" step="0.1" />
                                                     <span class="input-group-text">%</span>
                                                 </div>
@@ -527,6 +416,7 @@
                                                 <div class="input-group">
                                                     <span class="input-group-text"><i class="fas fa-file-invoice-dollar me-2"></i></span>
                                                     <InputNumber class="form-control" @bind-Value="Model.OrderExtraCost"
+                                                                 @bind-Value:after="UpdateTabValidationState"
                                                                  min="0" step="0.1" />
                                                     <span class="input-group-text">$</span>
                                                 </div>
@@ -537,7 +427,6 @@
                                     </div>
                                 </div>
                             </div>
-
                         </div>
 
                         <!-- SEO Settings Tab -->
@@ -774,5 +663,9 @@
     .character-count-danger {
         color: #dc3545;
         font-weight: bold;
+    }
+
+    .fa, .fas, .far, .fal, .fab {
+        margin-left: 5px;
     }
 </style>

@@ -159,30 +159,30 @@ namespace DAL.ApplicationContext
             // Category Views
             modelBuilder.Entity<VwAttributeWithOptions>()
                .HasNoKey()
-           .ToView("VwAttributeWithOptions");
+               .ToView("VwAttributeWithOptions");
 
             modelBuilder.Entity<VwCategoryItems>()
                  .HasNoKey()
-         .ToView("VwCategoryItems");
+                 .ToView("VwCategoryItems");
 
             modelBuilder.Entity<VwCategoryWithAttributes>()
-                     .HasNoKey()
+                 .HasNoKey()
                  .ToView("VwCategoryWithAttributes");
 
             // Item Views
             modelBuilder.Entity<VwItem>()
-       .HasNoKey()
-         .ToView("VwItems");
+                .HasNoKey()
+                .ToView("VwItems");
 
             // Unit Views
             modelBuilder.Entity<VwUnitWithConversionsUnits>()
-   .HasNoKey()
-     .ToView("VwUnitWithConversionsUnits");
+               .HasNoKey()
+               .ToView("VwUnitWithConversionsUnits");
 
-            // User Notification Views
+            // User Views
             modelBuilder.Entity<VwUserNotification>()
-              .HasNoKey()
-                   .ToView("VwUserNotifications");
+                .HasNoKey()
+                .ToView("VwUserNotifications");
 
             #endregion
         }

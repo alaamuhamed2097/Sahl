@@ -6,6 +6,7 @@ namespace Dashboard.Contracts.Setting
     public interface ISettingService
     {
         Task<ResponseModel<SettingDto>> GetSettingsAsync();
-        Task<ResponseModel<bool>> UpdateSettingsAsync(SettingDto dto);
+        Task<ResponseModel<string>> GetMainBannerPathAsync();
+        Task<ResponseModel<string>> UpdateSettingsAsync(SettingDto dto);
     }
 }

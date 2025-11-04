@@ -51,12 +51,6 @@ namespace Shared.DTOs.Setting
         [StringLength(4, ErrorMessageResourceName = "OutOfMaxLength", ErrorMessageResourceType = typeof(ValidationResources))]
         public string? WhatsAppCode { get; set; }
 
-        [Range(0, 100, ErrorMessageResourceName = "InvalidRange", ErrorMessageResourceType = typeof(ValidationResources))]
-        public decimal Level1Percentage { get; set; } = 0;
-
-        [Range(0, 100, ErrorMessageResourceName = "InvalidRange", ErrorMessageResourceType = typeof(ValidationResources))]
-        public decimal Level2Percentage { get; set; } = 0;
-
 
         public string? MainBannerPath { get; set; }
 
@@ -64,11 +58,6 @@ namespace Shared.DTOs.Setting
 
         public bool IsBannerDeleted { get; set; } = false;
 
-        [Range(0, double.MaxValue)]
-        public decimal WithdrawalLimit { get; set; } = 1000m;
-
-        [Range(0, double.MaxValue)]
-        public decimal WithdrawalFeePersentage { get; set; } = 1m;
 
         [Range(0, double.MaxValue, ErrorMessageResourceName = "InvalidRange", ErrorMessageResourceType = typeof(ValidationResources))]
         public decimal ShippingAmount { get; set; } = 0m;
@@ -96,12 +85,10 @@ namespace Shared.DTOs.Setting
 
             // Convert monetary values
             ShippingAmount *= rate;
-            WithdrawalLimit *= rate;
             OrderExtraCost *= rate;
 
             // Format
             FormattedShippingAmount = conversion.Culture != null ? ShippingAmount.ToString("C", conversion.Culture) : conversion.FormattedConvertedAmount;
-            FormattedWithdrawalLimit = conversion.Culture != null ? WithdrawalLimit.ToString("C", conversion.Culture) : null;
             FormattedOrderExtraCost = conversion.Culture != null ? OrderExtraCost.ToString("C", conversion.Culture) : null;
             await Task.CompletedTask;
         }
