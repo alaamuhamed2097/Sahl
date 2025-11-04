@@ -1,5 +1,6 @@
-@* @page "/city"
+@page "/city"
 @page "/city/{Id:guid}"
+
 @using Common.Enumerations.User
 @attribute [Authorize(Roles = nameof(UserRole.Admin))]
 
@@ -68,4 +69,4 @@
             </div>
         </EditForm>
     </div>
-</div> *@
+</div>

@@ -1,4 +1,6 @@
-@* @page "/cities"
+@page "/cities"
+
+@using Common.Enumerations.User
 @using Shared.DTOs.Location
 
 @attribute [Authorize(Roles = nameof(UserRole.Admin))]
@@ -137,4 +139,3 @@
     </div>
 </div>
 
- *@

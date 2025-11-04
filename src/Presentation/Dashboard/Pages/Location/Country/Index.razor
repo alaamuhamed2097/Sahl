@@ -1,5 +1,6 @@
-@* @page "/countries"
+@page "/countries"
 @using Common.Enumerations.User
+@using Shared.DTOs.Location
 @inherits BaseListPage<CountryDto>
 @attribute [Authorize(Roles = nameof(UserRole.Admin))]
 <PageTitle>@ECommerceResources.Countries</PageTitle>
@@ -171,4 +172,4 @@
             </div>
         </div>
     </div>
-</div> *@
+</div>
