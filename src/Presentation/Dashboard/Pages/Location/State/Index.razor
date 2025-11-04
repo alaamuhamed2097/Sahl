@@ -1,5 +1,6 @@
-﻿@* @page "/states"
+﻿@page "/states"
 @using Common.Enumerations.User
+@using Shared.DTOs.Location
 @attribute [Authorize(Roles = nameof(UserRole.Admin))]
 @inherits BaseListPage<StateDto>
 
@@ -131,4 +132,4 @@
             </div>
         </div>
     </div>
-</div> *@
+</div>
