@@ -51,32 +51,19 @@
 
   // Debug timeout handler to prevent hanging in mono_wasm_fire_debugger_agent_message
     if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-        // Override console.assert to prevent debugger hangs
+        // Override console.assert to completely disable debugger invocation
      const originalAssert = console.assert;
-    let debuggerHangTimeout = null;
 
         console.assert = function (...args) {
-            // Clear any existing timeout
-   if (debuggerHangTimeout) {
-       clearTimeout(debuggerHangTimeout);
-    }
-
-            // Set timeout to detect debugger hangs (5 seconds)
-    debuggerHangTimeout = setTimeout(() => {
- console.warn('Debugger agent may be hanging. Consider refreshing the page or disabling debugger.');
-            }, 5000);
-
-            // Call original assert
- originalAssert.apply(console, args);
-
-            // Clear timeout after successful assert
-     setTimeout(() => {
-   if (debuggerHangTimeout) {
-                    clearTimeout(debuggerHangTimeout);
-          debuggerHangTimeout = null;
-          }
-            }, 100);
-        };
+            // Simply log the assertion without calling debugger
+     // This prevents mono_wasm_fire_debugger_agent_message from pausing execution
+            if (args.length > 0 && !args[0]) {
+     // Only log if assertion fails
+      console.log('[Debug Disabled] Assertion:', ...args.slice(1));
+     }
+     // DO NOT call originalAssert to avoid debugger; statement
+   // originalAssert.apply(console, args);
+};
     }
 
     // jQuery dependency tracker
