@@ -3521,6 +3521,7 @@ label {
 /* ===  scroll bar start  ===== */
 .navbar-content {
     position: relative;
+   
 }
 
 .ps .ps__rail-x.ps--clicking,
@@ -3674,6 +3675,7 @@ label {
         .pcoded-navbar .scroll-div.navbar-content {
             height: 100% !important;
             min-height: 100% !important;
+             overflow-y: auto;
         }
 
         .pcoded-navbar ~ .pcoded-header,
@@ -18274,4 +18276,7 @@ div.code-toolbar {
         overflow-y: auto;
         height: 100vh;
     }
+}
+.nav-link{
+    gap: 8px !important;
 }
