@@ -12,10 +12,12 @@
     <div class="card shadow-sm border-0">
         <div class="card-header">
             <div class="d-flex justify-content-between align-items-center">
-                <h4 class="mb-0">
+            <div >
                     <i class="fas fa-cog me-2"></i>
+                <h4 class="mb-0 mobile-hidden">
                     @GeneralResources.Settings
                 </h4>
+            </div>
                 <div class="d-flex gap-2">
                     <button type="button" class="btn btn-outline-secondary" @onclick="ResetToDefaults" disabled="@IsSaving">
                         <i class="fas fa-undo me-2"></i>
