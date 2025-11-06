@@ -1,4 +1,5 @@
 ﻿name: 🚀 Deploy ASP.NET API & Blazor Dashboard to IIS
+
 on:
   push:
     branches:
@@ -21,17 +22,17 @@ jobs:
       - name: Restore dependencies
         run: dotnet restore
         
-      # 4️⃣ التحقق من Blazor Workload (بدون إعادة تثبيت)
+      # 4️⃣ التحقق من Blazor Workload
       - name: Verify Blazor Workload
         run: |
           Write-Host "✅ Using preinstalled Blazor workload"
           dotnet workload list
       
-      # 5️⃣ بناء مشروع الـ API (Incremental Build)
+      # 5️⃣ بناء مشروع الـ API
       - name: Build API
         run: dotnet build ./src/Presentation/Api -c Release --no-restore /p:UseIncrementalBuild=true
       
-      # 6️⃣ بناء مشروع الـ Blazor Dashboard (Incremental Build)
+      # 6️⃣ بناء مشروع الـ Blazor Dashboard
       - name: Build Blazor Dashboard
         run: dotnet build ./src/Presentation/Dashboard -c Release --no-restore /p:UseIncrementalBuild=true
       
@@ -60,10 +61,9 @@ jobs:
             robocopy "C:\0ALI\WebSites\SahlApi\wwwroot" "C:\temp\deployment-backup\api-wwwroot" /E /R:2 /W:2 /NP /NDL /NFL
           }
           
-          # 3. وضع الموقع في Maintenance Mode
+          # 3. وضع الموقع في Maintenance Mode (استخدام الملف الجاهز)
           Write-Host "🔧 Enabling maintenance mode..."
-          $html = '<!DOCTYPE html><html dir="rtl" lang="ar"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>تحت الصيانة</title><style>body{font-family:Arial,sans-serif;text-align:center;padding:50px;background:#f0f0f0}h1{color:#333}p{color:#666}</style></head><body><h1>🔧 الموقع تحت الصيانة</h1><p>سنعود قريباً... يرجى المحاولة بعد قليل</p><p style="font-size:12px;margin-top:30px">Updating to latest version...</p></body></html>'
-          $html | Out-File "C:\0ALI\WebSites\SahlApi\app_offline.htm" -Encoding UTF8
+          Copy-Item ".github/workflows/maintenance.html" "C:\0ALI\WebSites\SahlApi\app_offline.htm" -Force
           
           Start-Sleep -Seconds 2
           
@@ -106,28 +106,9 @@ jobs:
             robocopy "C:\0ALI\WebSites\SahlDashboard\wwwroot" "C:\temp\deployment-backup\dash-wwwroot" /E /R:2 /W:2 /NP /NDL /NFL
           }
           
-          # 3. وضع الموقع في Maintenance Mode
+          # 3. وضع الموقع في Maintenance Mode (استخدام الملف الجاهز)
           Write-Host "🔧 Enabling maintenance mode..."
-          @'
-          <!DOCTYPE html>
-          <html dir="rtl" lang="ar">
-          <head>
-              <meta charset="UTF-8">
-              <meta name="viewport" content="width=device-width, initial-scale=1.0">
-              <title>تحت الصيانة</title>
-              <style>
-                  body { font-family: Arial, sans-serif; text-align: center; padding: 50px; background: #f0f0f0; }
-                  h1 { color: #333; }
-                  p { color: #666; }
-              </style>
-          </head>
-          <body>
-              <h1>🔧 لوحة التحكم تحت الصيانة</h1>
-              <p>سنعود قريباً... يرجى المحاولة بعد قليل</p>
-              <p style="font-size: 12px; margin-top: 30px;">Updating dashboard...</p>
-          </body>
-          </html>
-          '@ | Out-File "C:\0ALI\WebSites\SahlDashboard\app_offline.htm" -Encoding UTF8
+          Copy-Item ".github/workflows/maintenance.html" "C:\0ALI\WebSites\SahlDashboard\app_offline.htm" -Force
           
           Start-Sleep -Seconds 2
           
