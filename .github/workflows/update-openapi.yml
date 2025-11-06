@@ -62,26 +62,8 @@ jobs:
           
           # 3. وضع الموقع في Maintenance Mode
           Write-Host "🔧 Enabling maintenance mode..."
-          @'
-          <!DOCTYPE html>
-          <html dir="rtl" lang="ar">
-          <head>
-              <meta charset="UTF-8">
-              <meta name="viewport" content="width=device-width, initial-scale=1.0">
-              <title>تحت الصيانة</title>
-              <style>
-                  body { font-family: Arial, sans-serif; text-align: center; padding: 50px; background: #f0f0f0; }
-                  h1 { color: #333; }
-                  p { color: #666; }
-              </style>
-          </head>
-          <body>
-              <h1>🔧 الموقع تحت الصيانة</h1>
-              <p>سنعود قريباً... يرجى المحاولة بعد قليل</p>
-              <p style="font-size: 12px; margin-top: 30px;">Updating to latest version...</p>
-          </body>
-          </html>
-          '@ | Out-File "C:\0ALI\WebSites\SahlApi\app_offline.htm" -Encoding UTF8
+          $html = '<!DOCTYPE html><html dir="rtl" lang="ar"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>تحت الصيانة</title><style>body{font-family:Arial,sans-serif;text-align:center;padding:50px;background:#f0f0f0}h1{color:#333}p{color:#666}</style></head><body><h1>🔧 الموقع تحت الصيانة</h1><p>سنعود قريباً... يرجى المحاولة بعد قليل</p><p style="font-size:12px;margin-top:30px">Updating to latest version...</p></body></html>'
+          $html | Out-File "C:\0ALI\WebSites\SahlApi\app_offline.htm" -Encoding UTF8
           
           Start-Sleep -Seconds 2
           
