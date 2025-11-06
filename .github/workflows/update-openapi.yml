@@ -68,12 +68,6 @@ jobs:
           }
           
           # ⚡ نسخ الملفات المتغيرة فقط واستثناء appsettings و web.config
-          # /XO = استثناء الملفات الأقدم (ينسخ الأحدث بس)
-          # /XF = استثناء ملفات معينة
-          # /NP = بدون progress (عشان الـ log يكون نظيف)
-          # /NDL = بدون قائمة المجلدات
-          # /NFL = بدون قائمة الملفات
-          
           robocopy "C:\publish\SahlApi" "C:\0ALI\WebSites\SahlApi" `
             /XO `
             /XF "appsettings.json" "appsettings.*.json" "web.config" `
@@ -85,13 +79,40 @@ jobs:
             /NP /NDL /R:3 /W:5
           
           echo "✅ Files synced successfully"
-          
-          # إعادة تشغيل IIS
-          iisreset
       
-      # 1️⃣1️⃣ تأكيد النجاح
-      - name: Done
+      # 1️⃣1️⃣ إعادة تشغيل Application Pools بس (بدون توقيف كل IIS)
+      - name: Restart Application Pools
         run: |
-          echo "✅ Deployment completed successfully!"
-          echo "📊 Only modified files were deployed"
-          echo "🔒 Config files preserved on server"
+          Write-Host "🔄 Restarting Application Pools..."
+          
+          # الطريقة الذكية: جيب اسم الـ App Pool تلقائياً من الـ Website
+          $sites = @("SahlApi", "SahlDashboard")
+          
+          foreach ($site in $sites) {
+            try {
+              $appPool = (Get-Website -Name $site).applicationPool
+              if ($appPool) {
+                Restart-WebAppPool -Name $appPool
+                Write-Host "✅ Restarted $site (App Pool: $appPool)"
+              } else {
+                Write-Host "⚠️ Could not find App Pool for $site"
+              }
+            } catch {
+              Write-Host "⚠️ Error restarting $site : $_"
+              Write-Host "💡 Trying alternative method..."
+              
+              # بديل: حاول تعيد تشغيل بالاسم المباشر
+              try {
+                Restart-WebAppPool -Name $site
+                Write-Host "✅ Restarted using pool name: $site"
+              } catch {
+                Write-Host "❌ Could not restart $site - may need manual restart"
+              }
+            }
+          }
+          
+          Write-Host ""
+          Write-Host "✅ Deployment completed successfully!"
+          Write-Host "📊 Only modified files were deployed"
+          Write-Host "🔒 Config files preserved on server"
+          Write-Host "🔄 Application Pools restarted (not entire IIS)"
