@@ -1236,8 +1236,9 @@ button:focus-visible,
   justify-content: space-between !important; /* توزيع العناصر بشكل متساوي */
   
   }
-  .d-flex.justify-content-between.align-items-center{
-  }
+  .hidden {
+    display: none !important;
+}
   .d-flex.gap-2{
     height: 60px !important;
   }

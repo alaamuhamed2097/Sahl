@@ -6,51 +6,46 @@
 
 <div class="container-fluid p-0">
     <div class="card shadow-sm border-0">
-        <div class="card-header d-flex justify-content-between align-items-center">
-            <h4 class="modal-title">
-                @(Model.Id == Guid.Empty ? ActionsResources.Add : ActionsResources.Edit) @ECommerceResources.ShippingCompany
-            </h4>
+        <div class="card-header bg-primary d-flex justify-content-between align-items-center">
+            <h5 class="modal-title  text-white">
+               📦 @(Model.Id == Guid.Empty ? ActionsResources.Add : ActionsResources.Edit)  @ECommerceResources.ShippingCompany
+            </h5>
         </div>
         <EditForm Model="@Model" OnValidSubmit="Save">
             <DataAnnotationsValidator />
             <div class="card-body p-4">
                 <div class="row">
                     <div class="col-md-6 mb-3">
-                        <label class="form-label">@ECommerceResources.Name:</label>
+                        <label class="form-label">@ECommerceResources.Name</label>
                         <InputText class="form-control" @bind-Value="Model.Name"
                                    placeholder="@String.Format(FormResources.Placeholder, ECommerceResources.Name)" />
                         <ValidationMessage For="@(() => Model.Name)" />
                     </div>
-                </div>
-
-                <div class="row">
-                    <div class="col-md-6 mb-3">
+                     <div class="col-md-6 mb-3  " style="direction:ltr;">
                         <label class="form-label">@FormResources.PhoneNumber</label>
                         <div class="input-group">
-                            <select class="form-select bg-primary p-0 ps-2"
-                                    style="max-width: 120px;"
+                            <select class="form-select bg-light    text-black  pe-3 ps-2"
+                                    style="max-width: 120px;font-size: 13px; "
                                     @bind="Model.PhoneCode">
                                 @foreach (var country in countries)
                                 {
-                                    <option value="@country.PhoneCode">
+                                    <option value="@country.PhoneCode" >
                                         @country.Flag @country.PhoneCode @(ResourceManager.CurrentLanguage == Language.Arabic ? country.NameAr : country.NameEn)
                                     </option>
                                 }
                             </select>
                             <InputText type="tel"
                                        class="form-control"
+                                        style="font-size: "
                                        placeholder="@FormResources.EnterPhoneNumber"
-                                       @bind-Value="Model.PhoneNumber" />
+                                       @bind-Value="Model.PhoneNumber"  />
                         </div>
                         <ValidationMessage For="@(() => Model.PhoneCode)" />
                         <ValidationMessage For="@(() => Model.PhoneNumber)" />
                     </div>
-                </div>
-
-                <div class="row">
                     <div class="col-md-6 mb-3">
-                        <label class="form-label">@FormResources.Logo:</label>
-                        <InputFile class="form-control"
+                        <label class="form-label bg-light    text-black">@FormResources.Logo</label>
+                        <InputFile class="form-control  "
                                    OnChange="HandleSelectedLogo"
                                    accept="image/*" />
                         <ValidationMessage For="@(() => Model.Base64Image)" />
@@ -71,10 +66,17 @@
                     </div>
                 </div>
 
-            </div>
-            <div class="card-footer bg-light py-3 d-flex justify-content-end gap-2">
+                <!-- <div class="row">
+                   
+                </div>
+
+                <div class="row">
+                    
+                </div> -->
+
+            <div class="card-footer  py-3 d-flex justify-content-end gap-2">
                 <button type="button" class="btn btn-secondary" @onclick="CloseModal">@ActionsResources.Cancel</button>
-                <button type="submit" class="btn btn-success" disabled="@isSaving">
+                <button type="submit" class="btn bg-primary text-white" disabled="@isSaving">
                     @if (isSaving)
                     {
                         <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
@@ -85,6 +87,7 @@
                         <span>@ActionsResources.Save</span>
                     }
                 </button>
+            </div>
             </div>
         </EditForm>
     </div>
