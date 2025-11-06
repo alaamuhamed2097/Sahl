@@ -57,6 +57,7 @@ jobs:
           if (Test-Path "C:\0ALI\WebSites\SahlApi\wwwroot") {
             Write-Host "Backing up wwwroot (user files)..."
             robocopy "C:\0ALI\WebSites\SahlApi\wwwroot" "C:\temp\deployment-backup\api-wwwroot" /E /R:2 /W:2 /NP /NDL /NFL
+            if ($LASTEXITCODE -gt 7) { exit $LASTEXITCODE }
           }
           
           Write-Host "Enabling maintenance mode..."
@@ -75,6 +76,7 @@ jobs:
           if (Test-Path "C:\temp\deployment-backup\api-wwwroot") {
             Write-Host "Restoring wwwroot (user files)..."
             robocopy "C:\temp\deployment-backup\api-wwwroot" "C:\0ALI\WebSites\SahlApi\wwwroot" /E /R:2 /W:2 /NP /NDL /NFL
+            if ($LASTEXITCODE -gt 7) { exit $LASTEXITCODE }
           }
           
           Write-Host "Disabling maintenance mode..."
@@ -95,6 +97,7 @@ jobs:
           if (Test-Path "C:\0ALI\WebSites\SahlDashboard\wwwroot") {
             Write-Host "Backing up wwwroot (user files)..."
             robocopy "C:\0ALI\WebSites\SahlDashboard\wwwroot" "C:\temp\deployment-backup\dash-wwwroot" /E /R:2 /W:2 /NP /NDL /NFL
+            if ($LASTEXITCODE -gt 7) { exit $LASTEXITCODE }
           }
           
           Write-Host "Enabling maintenance mode..."
@@ -113,6 +116,7 @@ jobs:
           if (Test-Path "C:\temp\deployment-backup\dash-wwwroot") {
             Write-Host "Restoring wwwroot (user files)..."
             robocopy "C:\temp\deployment-backup\dash-wwwroot" "C:\0ALI\WebSites\SahlDashboard\wwwroot" /E /R:2 /W:2 /NP /NDL /NFL
+            if ($LASTEXITCODE -gt 7) { exit $LASTEXITCODE }
           }
           
           Write-Host "Disabling maintenance mode..."
