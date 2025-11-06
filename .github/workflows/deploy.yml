@@ -57,7 +57,8 @@ jobs:
           if (Test-Path "C:\0ALI\WebSites\SahlApi\wwwroot") {
             Write-Host "Backing up wwwroot (user files)..."
             robocopy "C:\0ALI\WebSites\SahlApi\wwwroot" "C:\temp\deployment-backup\api-wwwroot" /E /R:2 /W:2 /NP /NDL /NFL
-            if ($LASTEXITCODE -gt 7) { exit $LASTEXITCODE }
+            if ($LASTEXITCODE -ge 8) { exit $LASTEXITCODE }
+            $global:LASTEXITCODE = 0
           }
           
           Write-Host "Enabling maintenance mode..."
@@ -67,7 +68,8 @@ jobs:
           
           Write-Host "Deploying files from publish folder..."
           robocopy "$env:TEMP\publish\api" "C:\0ALI\WebSites\SahlApi" /E /R:2 /W:2 /NP
-          if ($LASTEXITCODE -gt 7) { exit $LASTEXITCODE }
+          if ($LASTEXITCODE -ge 8) { exit $LASTEXITCODE }
+          $global:LASTEXITCODE = 0
           
           Write-Host "Restoring config files..."
           Copy-Item "C:\temp\deployment-backup\api-appsettings.json" "C:\0ALI\WebSites\SahlApi\appsettings.json" -ErrorAction SilentlyContinue
@@ -77,7 +79,8 @@ jobs:
           if (Test-Path "C:\temp\deployment-backup\api-wwwroot") {
             Write-Host "Restoring wwwroot (user files)..."
             robocopy "C:\temp\deployment-backup\api-wwwroot" "C:\0ALI\WebSites\SahlApi\wwwroot" /E /R:2 /W:2 /NP /NDL /NFL
-            if ($LASTEXITCODE -gt 7) { exit $LASTEXITCODE }
+            if ($LASTEXITCODE -ge 8) { exit $LASTEXITCODE }
+            $global:LASTEXITCODE = 0
           }
           
           Write-Host "Disabling maintenance mode..."
@@ -98,7 +101,8 @@ jobs:
           if (Test-Path "C:\0ALI\WebSites\SahlDashboard\wwwroot") {
             Write-Host "Backing up wwwroot (user files)..."
             robocopy "C:\0ALI\WebSites\SahlDashboard\wwwroot" "C:\temp\deployment-backup\dash-wwwroot" /E /R:2 /W:2 /NP /NDL /NFL
-            if ($LASTEXITCODE -gt 7) { exit $LASTEXITCODE }
+            if ($LASTEXITCODE -ge 8) { exit $LASTEXITCODE }
+            $global:LASTEXITCODE = 0
           }
           
           Write-Host "Enabling maintenance mode..."
@@ -108,7 +112,8 @@ jobs:
           
           Write-Host "Deploying files from publish folder..."
           robocopy "$env:TEMP\publish\dashboard" "C:\0ALI\WebSites\SahlDashboard" /E /R:2 /W:2 /NP
-          if ($LASTEXITCODE -gt 7) { exit $LASTEXITCODE }
+          if ($LASTEXITCODE -ge 8) { exit $LASTEXITCODE }
+          $global:LASTEXITCODE = 0
           
           Write-Host "Restoring config files..."
           Copy-Item "C:\temp\deployment-backup\dash-appsettings.json" "C:\0ALI\WebSites\SahlDashboard\appsettings.json" -ErrorAction SilentlyContinue
@@ -118,7 +123,8 @@ jobs:
           if (Test-Path "C:\temp\deployment-backup\dash-wwwroot") {
             Write-Host "Restoring wwwroot (user files)..."
             robocopy "C:\temp\deployment-backup\dash-wwwroot" "C:\0ALI\WebSites\SahlDashboard\wwwroot" /E /R:2 /W:2 /NP /NDL /NFL
-            if ($LASTEXITCODE -gt 7) { exit $LASTEXITCODE }
+            if ($LASTEXITCODE -ge 8) { exit $LASTEXITCODE }
+            $global:LASTEXITCODE = 0
           }
           
           Write-Host "Disabling maintenance mode..."
