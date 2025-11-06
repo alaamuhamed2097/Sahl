@@ -97,12 +97,12 @@ namespace Dashboard.Pages.Catalog.Products
             try
             {
                 await ResourceLoaderService.LoadStyleSheets([
-        "assets/plugins/smart-wizard/css/smart_wizard.min.css",
+             "assets/plugins/smart-wizard/css/smart_wizard.min.css",
              "assets/plugins/smart-wizard/css/smart_wizard_theme_arrows.min.css"
             ]);
 
                 await ResourceLoaderService.LoadScriptsSequential(
-              "assets/plugins/smart-wizard/js/jquery.smartWizard.min.js",
+                 "assets/plugins/smart-wizard/js/jquery.smartWizard.min.js",
                  "assets/js/pages/product-wizard.js"
                    );
 
@@ -121,11 +121,11 @@ namespace Dashboard.Pages.Catalog.Products
             try
             {
                 var tasks = new[]
-                     {
- LoadCategoriesAsync(),
-            LoadUnitsAsync(),
-          LoadBrands()
-         };
+                {
+                    LoadCategoriesAsync(),
+                    LoadUnitsAsync(),
+                    LoadBrands()
+                };
 
                 await Task.WhenAll(tasks);
             }
@@ -158,6 +158,7 @@ namespace Dashboard.Pages.Catalog.Products
             try
             {
                 isLoadingAttributes = true;
+                StateHasChanged(); // Trigger UI update to show loading indicator
 
                 // OPTIMIZED: Use dedicated endpoint to get category attributes directly
                 // This is more efficient than loading the entire category
@@ -167,6 +168,13 @@ namespace Dashboard.Pages.Catalog.Products
                 {
                     // Extract CategoryAttributes from the response
                     categoryAttributes = result.Data.ToList();
+
+                    // Debug: Log the loaded attributes
+                    Console.WriteLine($"Loaded {categoryAttributes.Count} attributes for category {Model.CategoryId}");
+                    foreach (var attr in categoryAttributes)
+                    {
+                        Console.WriteLine($"  - Attribute: {attr.Title} (TitleAr: {attr.TitleAr}, TitleEn: {attr.TitleEn})");
+                    }
 
                     // Initialize ItemAttributes list if null
                     if (Model.ItemAttributes == null)
@@ -207,9 +215,10 @@ namespace Dashboard.Pages.Catalog.Products
                 {
                     // Handle error case
                     categoryAttributes = new List<CategoryAttributeDto>();
+                    Console.WriteLine($"Failed to load attributes: {result?.Message ?? "Unknown error"}");
                     await ShowErrorMessage(
                     ValidationResources.Error,
-                    result?.Message ?? "Failed to load category attributes");
+                    result?.Message ?? ValidationResources.FailedToLoadCategoryAttributes);
                 }
 
                 StateHasChanged();
@@ -217,11 +226,14 @@ namespace Dashboard.Pages.Catalog.Products
             catch (Exception ex)
             {
                 categoryAttributes = new List<CategoryAttributeDto>();
+                Console.WriteLine($"Exception loading category attributes: {ex.Message}");
+                Console.WriteLine($"Stack trace: {ex.StackTrace}");
                 await ShowErrorMessage(ValidationResources.Error, ex.Message);
             }
             finally
             {
                 isLoadingAttributes = false;
+                StateHasChanged(); // Hide loading indicator
             }
         }
 
@@ -369,8 +381,8 @@ namespace Dashboard.Pages.Catalog.Products
                     if (file.Size > MaxFileSize)
                     {
                         await ShowErrorMessage(
-                   NotifiAndAlertsResources.Warning,
-            $"{file.Name} {string.Format(ValidationResources.ImageSizeLimitExceeded, MaxFileSize / 1024 / 1024)} {MaxFileSize / 1024 / 1024}MB");
+                            NotifiAndAlertsResources.Warning,
+                            $"{file.Name} {string.Format(ValidationResources.ImageSizeLimitExceeded, MaxFileSize / 1024 / 1024)} {MaxFileSize / 1024 / 1024}MB");
                         continue;
                     }
 
@@ -378,8 +390,8 @@ namespace Dashboard.Pages.Catalog.Products
                     if (!file.ContentType.StartsWith("image/"))
                     {
                         await ShowErrorMessage(
-                  NotifiAndAlertsResources.Warning,
-                 $"{file.Name} {ValidationResources.InvalidImageFormat}");
+                            NotifiAndAlertsResources.Warning,
+                            $"{file.Name} {ValidationResources.InvalidImageFormat}");
                         continue;
                     }
 
@@ -630,11 +642,11 @@ namespace Dashboard.Pages.Catalog.Products
         {
             return step switch
             {
-                0 => "Please fill in all basic information fields (Product Name, Short Description, and Description in both Arabic and English).",
-                1 => "Please fill in all SEO fields (SEO Title, Description, and Meta Tags).",
-                2 => "Please select Category, Brand, and Unit.",
-                3 => "Please upload at least a thumbnail image or product images.",
-                4 => "Attributes are optional. You can proceed to save.",
+                0 => ValidationResources.FillBasicInformationFields,
+                1 => ValidationResources.FillSEOFields,
+                2 => ValidationResources.SelectCategoryBrandUnit,
+                3 => ValidationResources.UploadThumbnailOrImages,
+                4 => ValidationResources.AttributesOptional,
                 _ => ValidationResources.PleaseFixValidationErrors
             };
         }
