@@ -13,32 +13,15 @@
 
 <div class="container-fluid p-0">
     <div class="card shadow-sm border-0">
-        <div class="card-header d-flex justify-content-between align-items-center">
-            <h4 class="mb-3">💰 @CurrencyResources.CurrencyManagement</h4>
-            <div class="d-flex gap-2">
-                <NavLink href="/currencyModal" class="btn btn-success">
-                    <i class="feather icon-plus-circle me-2"></i>
-                    <span class="fw-bold">@ActionsResources.Add</span>
-                </NavLink>
-                <button class="btn btn-info" @onclick="UpdateExchangeRates" disabled="@_isUpdatingRates">
-                    @if (_isUpdatingRates)
-                    {
-                        <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
-                    }
-                    else
-                    {
-                        <i class="fas fa-sync-alt me-2"></i>
-                    }
-                    <span class="fw-bold">@GeneralResources.UpdateExchangeRates</span>
-                </button>
-            </div>
+  <div class="card-header bg-primary text-white py-3 d-flex justify-content-between align-items-center">
+         <h5 class="mb-0 fw-semibold">💰 @CurrencyResources.CurrencyManagement</h5>
         </div>
         <div class="card-body">
-            <div class="dt-responsive table-responsive">
-                <!-- Filtration start -->
-                <ul class="navbar-nav d-flex flex-row align-items-center gap-3 mb-2 px-0 w-100">
-                    <li class="nav-item col-md-6 w-auto d-flex flex-row align-items-center gap-3">
-                        <EditForm Model="searchModel" OnSubmit="@Search">
+   <div class="dt-responsive table-responsive">
+    <!-- Filtration start -->
+        <ul class="navbar-nav d-flex flex-row align-items-center gap-3 mb-2 px-0 w-100">
+    <li class="nav-item col-md-6 w-auto d-flex flex-row align-items-center gap-3">
+            <EditForm Model="searchModel" OnSubmit="@Search">
                             <!-- Search Box -->
                             <div class="input-group rounded" style="width: 170px; height: 38px;">
                                 <input type="text" @bind="searchModel.SearchTerm"
@@ -54,8 +37,8 @@
                             </div>
                         </EditForm>
 
-                        <!-- Page Size -->
-                        <div class="d-flex align-items-center gap-2">
+   <!-- Page Size -->
+       <div class="d-flex align-items-center gap-2">
                            
                             <select class="form-select rounded-3 shadow-sm border-light text-primary fw-bold text-center"
                                     style="width: 100px; height: 38px; padding-right: 16px;"
@@ -66,10 +49,10 @@
                                 <option value="30">30</option>
                             </select>
                         </div>
-                    </li>
-                    <li class="nav-item ms-auto d-flex flex-row align-items-center gap-2">
-                        <!-- Status Filter -->
-                        <div class="d-flex align-items-center gap-2">
+      </li>
+         <li class="nav-item ms-auto d-flex flex-row align-items-center gap-2">
+ <!-- Status Filter -->
+   <div class="d-flex align-items-center gap-2">
                             <label class="form-label fw-semibold mb-0">@FormResources.Status:</label>
                             <select class="form-select rounded-3 shadow-sm border-light text-primary fw-bold"
                                     style="width: 120px; height: 38px;"
@@ -79,8 +62,8 @@
                                 <option value="inactive">@GeneralResources.Inactive</option>
                             </select>
                         </div>
-                        <!-- Export Buttons -->
-                        <div class="dropdown">
+      <!-- Export Buttons -->
+ <div class="dropdown">
                             <button class="btn btn-info" type="button" id="exportDropdown" data-bs-toggle="dropdown" aria-expanded="false">
                                 <i class="fas fa-file-export me-2"></i>
                                 <span class="fw-bold">@ActionsResources.Export</span>
@@ -90,8 +73,26 @@
                                 <li><a class="dropdown-item" href="javascript:void(0)" @onclick="ExportToPrint"><i class="fas fa-print mx-2"></i>@ActionsResources.Print</a></li>
                             </ul>
                         </div>
-                    </li>
-                </ul>
+    <!-- Add Button -->
+      <NavLink href="/currencyModal" class="btn btn-success">
+     <i class="feather icon-plus-circle me-2"></i>
+   <span class="fw-bold">@ActionsResources.Add</span>
+       </NavLink>
+        
+   <!-- Update Exchange Rates Button -->
+  <button class="btn btn-info" @onclick="UpdateExchangeRates" disabled="@_isUpdatingRates">
+         @if (_isUpdatingRates)
+     {
+   <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+    }
+         else
+         {
+             <i class="fas fa-sync-alt me-2"></i>
+          }
+          <span class="fw-bold">@GeneralResources.UpdateExchangeRates</span>
+   </button>
+                </li>
+    </ul>
                 <!-- Table -->
                 <div class="table-responsive border rounded-3">
                     <table id="currency-table" class="table table-striped table-hover mb-0 align-text-center">

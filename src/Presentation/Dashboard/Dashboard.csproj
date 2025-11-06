@@ -126,5 +126,8 @@
 	<ItemGroup>
 	  <AdditionalFiles Remove="C:\Users\alaam\AppData\Roaming\SonarLint for Visual Studio\.global\csharp\SonarLint.xml" />
 	</ItemGroup>
+	<ItemGroup>
+	  <Folder Include="Pages\Catalog\Orders\" />
+	</ItemGroup>
 
 </Project>

@@ -55,7 +55,7 @@
                                              ValueExpression="@(() => decValue)"
                                              placeholder="@($"{FormResources.Write} {_attribute.Title}")" />
                             }
-                            else if (_attribute.FieldType == FieldType.DateTime)
+                            else if (_attribute.FieldType == FieldType.Date)
                             {
                                 DateTime? dateVal = DateTime.TryParse(attributeEntry.Value, out var val) ? val : null;
                                 <InputDate TValue="DateTime?" class="form-control"
