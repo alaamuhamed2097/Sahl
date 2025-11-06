@@ -1,0 +1,269 @@
+﻿name: 🚀 Deploy ASP.NET API & Blazor Dashboard to IIS
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: [self-hosted, windows, iis]
+    steps:
+      # 1️⃣ تحميل الكود من GitHub
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      # 2️⃣ استخدام الـ .NET المثبت مسبقًا
+      - name: Setup .NET
+        run: echo "Using preinstalled .NET SDK on server"
+      
+      # 3️⃣ استرجاع الـ NuGet Packages
+      - name: Restore dependencies
+        run: dotnet restore
+        
+      # 4️⃣ التحقق من Blazor Workload
+      - name: Verify Blazor Workload
+        run: |
+          Write-Host "Using preinstalled Blazor workload"
+          dotnet workload list
+      
+      # 5️⃣ Publish API (Build + Publish في خطوة واحدة)
+      - name: Publish API
+        run: dotnet publish ./src/Presentation/Api -c Release -o "$env:TEMP\publish\api" --no-restore
+      
+      # 6️⃣ Publish Dashboard (Build + Publish في خطوة واحدة)
+      - name: Publish Dashboard
+        run: dotnet publish ./src/Presentation/Dashboard -c Release -o "$env:TEMP\publish\dashboard" --no-restore
+      
+      # 7️⃣ تجهيز مجلد مؤقت للـ backup
+      - name: Prepare temp directory
+        run: |
+          if (!(Test-Path "C:\temp\deployment-backup")) { 
+            New-Item -ItemType Directory -Force -Path "C:\temp\deployment-backup" 
+          }
+          Write-Host "Temp directory ready"
+      
+      # 8️⃣ نشر الـ API مع حماية appsettings + wwwroot
+      - name: Deploy API to IIS
+        run: |
+          Write-Host "=========================================="
+          Write-Host "Deploying SahlApi..."
+          Write-Host "=========================================="
+          
+          # Backup appsettings files
+          Write-Host "Step 1: Backing up appsettings files..."
+          if (Test-Path "C:\0ALI\WebSites\SahlApi\appsettings.json") {
+            Copy-Item "C:\0ALI\WebSites\SahlApi\appsettings.json" "C:\temp\deployment-backup\api-appsettings.json" -Force
+            Write-Host "  - appsettings.json backed up"
+          }
+          Get-ChildItem "C:\0ALI\WebSites\SahlApi\appsettings.*.json" -ErrorAction SilentlyContinue | ForEach-Object {
+            Copy-Item $_.FullName "C:\temp\deployment-backup\" -Force
+            Write-Host "  - $($_.Name) backed up"
+          }
+          
+          # Backup web.config
+          if (Test-Path "C:\0ALI\WebSites\SahlApi\web.config") {
+            Copy-Item "C:\0ALI\WebSites\SahlApi\web.config" "C:\temp\deployment-backup\api-web.config" -Force
+            Write-Host "  - web.config backed up"
+          }
+          
+          # Backup wwwroot (user files)
+          if (Test-Path "C:\0ALI\WebSites\SahlApi\wwwroot") {
+            Write-Host "Step 2: Backing up wwwroot (user files)..."
+            robocopy "C:\0ALI\WebSites\SahlApi\wwwroot" "C:\temp\deployment-backup\api-wwwroot" /E /R:2 /W:2 /NP /NDL /NFL
+            if ($LASTEXITCODE -ge 8) { exit $LASTEXITCODE }
+            $global:LASTEXITCODE = 0
+            Write-Host "  - wwwroot backed up successfully"
+          }
+          
+          # Enable maintenance mode
+          Write-Host "Step 3: Enabling maintenance mode..."
+          Copy-Item ".github/workflows/maintenance.html" "C:\0ALI\WebSites\SahlApi\app_offline.htm" -Force
+          Start-Sleep -Seconds 2
+          
+          # Deploy new files
+          Write-Host "Step 4: Deploying new files..."
+          robocopy "$env:TEMP\publish\api" "C:\0ALI\WebSites\SahlApi" /E /R:2 /W:2 /NP
+          if ($LASTEXITCODE -ge 8) { exit $LASTEXITCODE }
+          $global:LASTEXITCODE = 0
+          
+          # Restore appsettings files (CRITICAL)
+          Write-Host "Step 5: Restoring appsettings files..."
+          if (Test-Path "C:\temp\deployment-backup\api-appsettings.json") {
+            Copy-Item "C:\temp\deployment-backup\api-appsettings.json" "C:\0ALI\WebSites\SahlApi\appsettings.json" -Force
+            Write-Host "  - appsettings.json restored"
+          }
+          Get-ChildItem "C:\temp\deployment-backup\appsettings.*.json" -ErrorAction SilentlyContinue | ForEach-Object {
+            Copy-Item $_.FullName "C:\0ALI\WebSites\SahlApi\" -Force
+            Write-Host "  - $($_.Name) restored"
+          }
+          
+          # Restore web.config
+          if (Test-Path "C:\temp\deployment-backup\api-web.config") {
+            Copy-Item "C:\temp\deployment-backup\api-web.config" "C:\0ALI\WebSites\SahlApi\web.config" -Force
+            Write-Host "  - web.config restored"
+          }
+          
+          # Restore wwwroot
+          if (Test-Path "C:\temp\deployment-backup\api-wwwroot") {
+            Write-Host "Step 6: Restoring wwwroot (user files)..."
+            robocopy "C:\temp\deployment-backup\api-wwwroot" "C:\0ALI\WebSites\SahlApi\wwwroot" /E /R:2 /W:2 /NP /NDL /NFL
+            if ($LASTEXITCODE -ge 8) { exit $LASTEXITCODE }
+            $global:LASTEXITCODE = 0
+            Write-Host "  - wwwroot restored successfully"
+          }
+          
+          # Verify critical files exist
+          Write-Host "Step 7: Verifying critical files..."
+          $apiCriticalFiles = @(
+            "C:\0ALI\WebSites\SahlApi\appsettings.json"
+          )
+          foreach ($file in $apiCriticalFiles) {
+            if (Test-Path $file) {
+              Write-Host "  - VERIFIED: $file exists" -ForegroundColor Green
+            } else {
+              Write-Host "  - ERROR: $file is missing!" -ForegroundColor Red
+              exit 1
+            }
+          }
+          
+          # Disable maintenance mode
+          Write-Host "Step 8: Disabling maintenance mode..."
+          Remove-Item "C:\0ALI\WebSites\SahlApi\app_offline.htm" -ErrorAction SilentlyContinue
+          
+          Write-Host "=========================================="
+          Write-Host "SahlApi deployed successfully!" -ForegroundColor Green
+          Write-Host "=========================================="
+      
+      # 9️⃣ نشر الـ Dashboard مع حماية web.config + appsettings
+      - name: Deploy Dashboard to IIS
+        run: |
+          Write-Host "=========================================="
+          Write-Host "Deploying SahlDashboard..."
+          Write-Host "=========================================="
+          
+          # Backup web.config (CRITICAL for Dashboard)
+          Write-Host "Step 1: Backing up web.config..."
+          if (Test-Path "C:\0ALI\WebSites\SahlDashboard\web.config") {
+            Copy-Item "C:\0ALI\WebSites\SahlDashboard\web.config" "C:\temp\deployment-backup\dash-web.config" -Force
+            Write-Host "  - web.config backed up"
+          }
+          
+          # Backup appsettings files
+          Write-Host "Step 2: Backing up appsettings files..."
+          if (Test-Path "C:\0ALI\WebSites\SahlDashboard\appsettings.json") {
+            Copy-Item "C:\0ALI\WebSites\SahlDashboard\appsettings.json" "C:\temp\deployment-backup\dash-appsettings.json" -Force
+            Write-Host "  - appsettings.json backed up"
+          }
+          Get-ChildItem "C:\0ALI\WebSites\SahlDashboard\appsettings.*.json" -ErrorAction SilentlyContinue | ForEach-Object {
+            Copy-Item $_.FullName "C:\temp\deployment-backup\" -Force
+            Write-Host "  - $($_.Name) backed up"
+          }
+          
+          # Enable maintenance mode
+          Write-Host "Step 3: Enabling maintenance mode..."
+          Copy-Item ".github/workflows/maintenance.html" "C:\0ALI\WebSites\SahlDashboard\app_offline.htm" -Force
+          Start-Sleep -Seconds 2
+          
+          # Deploy new files
+          Write-Host "Step 4: Deploying new files..."
+          robocopy "$env:TEMP\publish\dashboard" "C:\0ALI\WebSites\SahlDashboard" /E /R:2 /W:2 /NP
+          if ($LASTEXITCODE -ge 8) { exit $LASTEXITCODE }
+          $global:LASTEXITCODE = 0
+          
+          # Restore web.config (CRITICAL)
+          Write-Host "Step 5: Restoring web.config..."
+          if (Test-Path "C:\temp\deployment-backup\dash-web.config") {
+            Copy-Item "C:\temp\deployment-backup\dash-web.config" "C:\0ALI\WebSites\SahlDashboard\web.config" -Force
+            Write-Host "  - web.config restored"
+          }
+          
+          # Restore appsettings files
+          Write-Host "Step 6: Restoring appsettings files..."
+          if (Test-Path "C:\temp\deployment-backup\dash-appsettings.json") {
+            Copy-Item "C:\temp\deployment-backup\dash-appsettings.json" "C:\0ALI\WebSites\SahlDashboard\appsettings.json" -Force
+            Write-Host "  - appsettings.json restored"
+          }
+          Get-ChildItem "C:\temp\deployment-backup\appsettings.*.json" -ErrorAction SilentlyContinue | ForEach-Object {
+            $destPath = "C:\0ALI\WebSites\SahlDashboard\$($_.Name)"
+            Copy-Item $_.FullName $destPath -Force
+            Write-Host "  - $($_.Name) restored"
+          }
+          
+          # Verify critical files exist
+          Write-Host "Step 7: Verifying critical files..."
+          $dashCriticalFiles = @(
+            "C:\0ALI\WebSites\SahlDashboard\web.config"
+          )
+          foreach ($file in $dashCriticalFiles) {
+            if (Test-Path $file) {
+              Write-Host "  - VERIFIED: $file exists" -ForegroundColor Green
+            } else {
+              Write-Host "  - ERROR: $file is missing!" -ForegroundColor Red
+              exit 1
+            }
+          }
+          
+          # Disable maintenance mode
+          Write-Host "Step 8: Disabling maintenance mode..."
+          Remove-Item "C:\0ALI\WebSites\SahlDashboard\app_offline.htm" -ErrorAction SilentlyContinue
+          
+          Write-Host "=========================================="
+          Write-Host "SahlDashboard deployed successfully!" -ForegroundColor Green
+          Write-Host "=========================================="
+      
+      # 🔟 إعادة تشغيل Application Pools
+      - name: Restart Application Pools
+        run: |
+          Write-Host "=========================================="
+          Write-Host "Restarting Application Pools..."
+          Write-Host "=========================================="
+          
+          $sites = @("SahlApi", "SahlDashboard")
+          
+          foreach ($site in $sites) {
+            try {
+              $appPool = (Get-Website -Name $site).applicationPool
+              if ($appPool) {
+                Restart-WebAppPool -Name $appPool
+                Write-Host "  - Restarted $site (App Pool: $appPool)" -ForegroundColor Green
+              }
+            } catch {
+              Write-Host "  - Could not auto-detect pool for $site, trying direct restart..." -ForegroundColor Yellow
+              try {
+                Restart-WebAppPool -Name $site
+                Write-Host "  - Restarted pool: $site" -ForegroundColor Green
+              } catch {
+                Write-Host "  - Manual restart may be needed for $site" -ForegroundColor Red
+              }
+            }
+          }
+      
+      # 1️⃣1️⃣ تنظيف الملفات المؤقتة
+      - name: Cleanup
+        run: |
+          Write-Host "=========================================="
+          Write-Host "Cleaning up..."
+          Write-Host "=========================================="
+          
+          Remove-Item "C:\temp\deployment-backup\*" -Recurse -Force -ErrorAction SilentlyContinue
+          Remove-Item "$env:TEMP\publish" -Recurse -Force -ErrorAction SilentlyContinue
+          
+          Write-Host ""
+          Write-Host "=========================================="
+          Write-Host "   DEPLOYMENT COMPLETED SUCCESSFULLY!" -ForegroundColor Green
+          Write-Host "=========================================="
+          Write-Host "API Protection:" -ForegroundColor Cyan
+          Write-Host "  - appsettings.json: PRESERVED" -ForegroundColor Green
+          Write-Host "  - web.config: PRESERVED" -ForegroundColor Green
+          Write-Host "  - wwwroot (user files): PRESERVED" -ForegroundColor Green
+          Write-Host ""
+          Write-Host "Dashboard Protection:" -ForegroundColor Cyan
+          Write-Host "  - web.config: PRESERVED" -ForegroundColor Green
+          Write-Host "  - appsettings.json: PRESERVED" -ForegroundColor Green
+          Write-Host "  - wwwroot: REPLACED (updated)" -ForegroundColor Yellow
+          Write-Host ""
+          Write-Host "App Pools: RESTARTED" -ForegroundColor Green
+          Write-Host "Downtime: MINIMAL (maintenance page shown)" -ForegroundColor Green
+          Write-Host "=========================================="

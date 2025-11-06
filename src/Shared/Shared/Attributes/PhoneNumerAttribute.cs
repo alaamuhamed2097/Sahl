@@ -29,7 +29,7 @@ namespace Shared.Attributes
 
             try
             {
-                if (ValidatePhoneNumber(phoneNumber,phoneCodeValue))
+                if (ValidatePhoneNumber(phoneNumber, phoneCodeValue))
                     return ValidationResult.Success;
                 else
                     return new ValidationResult(ValidationResources.InvalidPhoneNumber, new[] { validationContext.MemberName });

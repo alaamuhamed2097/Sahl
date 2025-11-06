@@ -1,9 +1,6 @@
 ﻿using Common.Enumerations.Payment;
-using System.ComponentModel.DataAnnotations;
-using Shared.DTOs.Base;
-using Common.Enumerations;
 using Resources;
-using System.Text.Json.Serialization;
+using System.ComponentModel.DataAnnotations;
 
 namespace Shared.DTOs.ECommerce.Order
 {
@@ -16,9 +13,9 @@ namespace Shared.DTOs.ECommerce.Order
         [Required(ErrorMessageResourceName = "FieldRequired", ErrorMessageResourceType = typeof(ValidationResources))]
         [StringLength(500, MinimumLength = 2, ErrorMessageResourceName = "OutOfMaxLength", ErrorMessageResourceType = typeof(ValidationResources))]
         public string RefundReason { get; set; } = string.Empty;
-        
+
         public PaymentGatewayMethod? RefundMethod { get; set; }
-        
+
         public Guid OrderId { get; set; } = Guid.Empty;
     }
 }
