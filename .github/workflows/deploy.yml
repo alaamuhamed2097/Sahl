@@ -30,13 +30,21 @@ jobs:
       
       # 5️⃣ بناء مشروع الـ API
       - name: Build API
-        run: dotnet build ./src/Presentation/Api -c Release --no-restore /p:UseIncrementalBuild=true
+        run: dotnet build ./src/Presentation/Api -c Release --no-restore
       
       # 6️⃣ بناء مشروع الـ Blazor Dashboard
       - name: Build Blazor Dashboard
-        run: dotnet build ./src/Presentation/Dashboard -c Release --no-restore /p:UseIncrementalBuild=true
+        run: dotnet build ./src/Presentation/Dashboard -c Release --no-restore
       
-      # 7️⃣ تجهيز مجلد مؤقت للـ backup
+      # 7️⃣ Publish API (تجهيز الملفات للنشر)
+      - name: Publish API
+        run: dotnet publish ./src/Presentation/Api -c Release -o "$env:TEMP\publish\api" --no-build
+      
+      # 8️⃣ Publish Dashboard (تجهيز الملفات للنشر)
+      - name: Publish Dashboard
+        run: dotnet publish ./src/Presentation/Dashboard -c Release -o "$env:TEMP\publish\dashboard" --no-build
+      
+      # 9️⃣ تجهيز مجلد مؤقت للـ backup
       - name: Prepare temp directory
         run: |
           if (!(Test-Path "C:\temp\deployment-backup")) { 
@@ -44,7 +52,7 @@ jobs:
           }
           Write-Host "Temp directory ready"
       
-      # 8️⃣ نشر الـ API مع حماية الملفات الحساسة
+      # 🔟 نشر الـ API مع حماية الملفات الحساسة
       - name: Deploy API to IIS
         run: |
           Write-Host "Deploying SahlApi..."
@@ -65,8 +73,9 @@ jobs:
           
           Start-Sleep -Seconds 2
           
-          Write-Host "Publishing new version..."
-          dotnet publish ./src/Presentation/Api -c Release -o "C:\0ALI\WebSites\SahlApi" --no-build
+          Write-Host "Deploying files from publish folder..."
+          robocopy "$env:TEMP\publish\api" "C:\0ALI\WebSites\SahlApi" /E /R:2 /W:2 /NP
+          if ($LASTEXITCODE -gt 7) { exit $LASTEXITCODE }
           
           Write-Host "Restoring config files..."
           Copy-Item "C:\temp\deployment-backup\api-appsettings.json" "C:\0ALI\WebSites\SahlApi\appsettings.json" -ErrorAction SilentlyContinue
@@ -84,7 +93,7 @@ jobs:
           
           Write-Host "SahlApi deployed successfully!"
       
-      # 9️⃣ نشر الـ Dashboard مع حماية الملفات الحساسة
+      # 1️⃣1️⃣ نشر الـ Dashboard مع حماية الملفات الحساسة
       - name: Deploy Dashboard to IIS
         run: |
           Write-Host "Deploying SahlDashboard..."
@@ -105,8 +114,9 @@ jobs:
           
           Start-Sleep -Seconds 2
           
-          Write-Host "Publishing new version..."
-          dotnet publish ./src/Presentation/Dashboard -c Release -o "C:\0ALI\WebSites\SahlDashboard" --no-build
+          Write-Host "Deploying files from publish folder..."
+          robocopy "$env:TEMP\publish\dashboard" "C:\0ALI\WebSites\SahlDashboard" /E /R:2 /W:2 /NP
+          if ($LASTEXITCODE -gt 7) { exit $LASTEXITCODE }
           
           Write-Host "Restoring config files..."
           Copy-Item "C:\temp\deployment-backup\dash-appsettings.json" "C:\0ALI\WebSites\SahlDashboard\appsettings.json" -ErrorAction SilentlyContinue
@@ -124,7 +134,7 @@ jobs:
           
           Write-Host "SahlDashboard deployed successfully!"
       
-      # 🔟 إعادة تشغيل Application Pools
+      # 1️⃣2️⃣ إعادة تشغيل Application Pools
       - name: Restart Application Pools
         run: |
           Write-Host "Restarting Application Pools..."
@@ -149,17 +159,18 @@ jobs:
             }
           }
       
-      # 1️⃣1️⃣ تنظيف الملفات المؤقتة
+      # 1️⃣3️⃣ تنظيف الملفات المؤقتة
       - name: Cleanup
         run: |
-          Write-Host "Cleaning up backup files..."
+          Write-Host "Cleaning up backup and publish files..."
           Remove-Item "C:\temp\deployment-backup\*" -Recurse -Force -ErrorAction SilentlyContinue
+          Remove-Item "$env:TEMP\publish" -Recurse -Force -ErrorAction SilentlyContinue
           
           Write-Host ""
           Write-Host "======================================"
           Write-Host "Deployment Completed Successfully!"
           Write-Host "======================================"
-          Write-Host "- Deployed with incremental build"
+          Write-Host "- Deployed with full publish"
           Write-Host "- Config files preserved"
           Write-Host "- wwwroot (user files) protected"
           Write-Host "- App Pools restarted"
