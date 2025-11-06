@@ -34,18 +34,17 @@
                             </div>
                         </EditForm>
 
-                        <!-- Page Size -->
-                        <div class="d-flex align-items-center gap-2">
-                         
-                            <select class="form-select rounded-3 shadow-sm border-light text-primary fw-bold text-center"
-                                    style="width: 100px; height: 38px; padding-right: 16px;"
-                                    @onchange="OnPageSizeChanged">
-                                <option value="10">10</option>
-                                <option value="15">15</option>
-                                <option value="20">20</option>
-                                <option value="30">30</option>
-                            </select>
-                        </div>
+                               <!-- Page Size -->
+                                                                <div class="d-flex align-items-center gap-2">
+                                            <select class="form-select rounded-3 shadow-sm border-light text-primary fw-bold text-center custom-dropdown"
+                                                    style="width: 130px; height: 40px; padding-right: 30px;"
+                                                    @onchange="OnPageSizeChanged">
+                                                <option value="10"selected="@(searchModel.PageSize == 10)">10</option>
+                                                <option value="15"selected="@(searchModel.PageSize == 15)">15</option>
+                                                <option value="20"selected="@(searchModel.PageSize == 20)">20</option>
+                                                <option value="30"selected="@(searchModel.PageSize == 30)">30</option>
+                                            </select>
+                                        </div>
                     </li>
                     <li class="nav-item ms-auto d-flex flex-row align-items-center gap-2">
                         <!-- Export Buttons -->

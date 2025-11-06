@@ -36,25 +36,21 @@
                             </div>
                         </EditForm>
 
-                        <!-- Page Size -->
-                        <div class="d-flex align-items-center gap-2">
-                            <!-- <label class="form-label fw-semibold mb-0">@ActionsResources.Show</label> -->
-                            <select class="form-select rounded-3 shadow-sm border-light text-primary fw-bold text-center"
-                                    style="width: 100px; height: 38px; padding-right: 16px;"
-                                    @onchange="OnPageSizeChanged">
-                                <option value="10" selected="@(searchModel.PageSize == 10)">10</option>
-                                <option value="15" selected="@(searchModel.PageSize == 15)">15</option>
-                                <option value="20" selected="@(searchModel.PageSize == 20)">20</option>
-                                <option value="30" selected="@(searchModel.PageSize == 30)">30</option>
-                            </select>
-                        </div>
+                        
+                                  <!-- Page Size -->
+                                                                <div class="d-flex align-items-center gap-2">
+                                            <select class="form-select rounded-3 shadow-sm border-light text-primary fw-bold text-center custom-dropdown"
+                                                    style="width: 130px; height: 40px; padding-right: 30px;"
+                                                    @onchange="OnPageSizeChanged">
+                                                <option value="10"selected="@(searchModel.PageSize == 10)">10</option>
+                                                <option value="15"selected="@(searchModel.PageSize == 15)">15</option>
+                                                <option value="20"selected="@(searchModel.PageSize == 20)">20</option>
+                                                <option value="30"selected="@(searchModel.PageSize == 30)">30</option>
+                                            </select>
+                                        </div>
                     </li>
                     <li class="nav-item ms-auto d-flex flex-row align-items-center gap-2">
-                        <!-- Add Testimonial Button -->
-                        <button class="btn btn-success" @onclick="Add">
-                            <i class="fas fa-plus me-2"></i>
-                            <span class="fw-bold">@TestimonialResources.AddTestimonial</span>
-                        </button>
+                       
 
                         <!-- Export Buttons -->
                         <div class="dropdown">
@@ -67,6 +63,11 @@
                                 <li><a class="dropdown-item" href="javascript:void(0)" @onclick="ExportToPrint"><i class="fas fa-print mx-2"></i>@ActionsResources.Print</a></li>
                             </ul>
                         </div>
+                         <!-- Add Testimonial Button -->
+                        <button class="btn btn-success" @onclick="Add">
+                             <i class="feather icon-plus-circle me-2"></i>
+                            <span class="fw-bold">@TestimonialResources.AddTestimonial</span>
+                        </button>
                     </li>
                 </ul>
                 
