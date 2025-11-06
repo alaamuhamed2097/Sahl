@@ -1265,3 +1265,42 @@ button:focus-visible,
 .navbar-nav.d-flex.flex-row.gap-row-item.align-items-center{
      padding: 0px !important;
 }
+
+.pagination-container .pagination .page-item .page-link {
+    color: #495057;
+    border: none;
+    background-color: #fff;
+    transition: all 0.2s ease-in-out;
+}
+
+.pagination-container .pagination .page-item.active .page-link {
+    background-color: #0d6efd;
+    color: #fff;
+    font-weight: 600;
+}
+
+.pagination-container .pagination .page-item:not(.disabled):hover .page-link {
+    background-color: #e9ecef;
+    color: #0d6efd;
+}
+
+.pagination-container .pagination .page-item.disabled .page-link {
+    color: #adb5bd;
+    background-color: #f8f9fa;
+}
+
+.pagination-container .pagination .page-link {
+    min-width: 38px;
+    text-align: center;
+}
+.pagination-container {
+    /* position: fixed; */
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background-color: #fff; /* لون خلفية أبيض */
+    padding: 10px 20px;
+    border-top: 1px solid #dee2e6;
+    box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.05);
+    z-index: 999;
+}
