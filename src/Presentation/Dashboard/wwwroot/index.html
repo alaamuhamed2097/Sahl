@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimal-ui">
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <base href="/" />
-    <title>سهل | Sahl</title>
+    <title>بسيط | Basit</title>
 
     <link rel="icon" type="image/x-icon" href="/assets/images/favicon.svg" />
 
@@ -119,14 +119,9 @@
     <!-- Preload critical JavaScript with high priority -->
     <link rel="preload" href="_framework/blazor.webassembly.js" as="script" fetchpriority="high" />
     <link rel="preload" href="Common/Scripts/ScriptLoader.min.js" as="script" fetchpriority="high" />
-    <!-- Preload jQuery early since many functions depend on it -->
     <link rel="preload" href="assets/js/jQuery-3.3.1.min.js" as="script" fetchpriority="high" />
-
-    <!-- Preload Bootstrap JS since pcoded.min.js depends on it -->
     <link rel="preload" href="assets/plugins/bootstrap/js/popper.min.js" as="script" />
     <link rel="preload" href="assets/plugins/bootstrap/js/bootstrap.min.js" as="script" />
-
-    <!-- Preload localization script early -->
     <link rel="preload" href="Common/language/localization.js" as="script" fetchpriority="high" />
 
     <!-- Preload secondary CSS but load asynchronously -->
@@ -147,6 +142,27 @@
     <link rel="preload" href="assets/fonts/fontawesome/css/fontawesome-all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'" />
     <link rel="preload" href="assets/fonts/material/css/materialdesignicons.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'" />
     <link rel="preload" href="assets/plugins/animation/css/animate.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'" />
+
+    <!-- ✅ CRITICAL FIX: منع debugger من التفعيل قبل تحميل Blazor -->
+    <script>
+        // 1️⃣ منع globalThis.dotnetDebugger من التفعيل
+        Object.defineProperty(globalThis, 'dotnetDebugger', {
+            get: function () { return undefined; },
+            set: function () { },
+            configurable: false,
+            enumerable: false
+        });
+
+        // 2️⃣ تجاوز console.assert لمنع استدعاء debugger
+        const originalAssert = console.assert;
+        console.assert = function (...args) {
+            if (args.length > 0 && !args[0]) {
+                console.log('[Assertion Failed]:', ...args.slice(1));
+            }
+            // لا تستدعي originalAssert لتجنب debugger statement
+        };
+    </script>
+
     <!-- Critical JavaScript - Load immediately -->
     <script>
         // Performance monitoring for LCP optimization
@@ -226,14 +242,14 @@
         <div class="loading-container" id="loading-screen">
             <!-- LCP Optimized: Direct img tag with fetchpriority high -->
             <img src="/assets/images/logo-icon.svg"
-                 alt="سهل | Sahl Logo"
+                 alt="بسيط | Basit Logo"
                  class="loading-logo-img"
                  fetchpriority="high"
                  width="80"
                  height="80"
                  decoding="sync"
                  onload="this.style.opacity='1'" />
-            <div class="loading-text">سهل | Sahl</div>
+            <div class="loading-text">بسيط | Basit</div>
             <div class="loading-subtitle">جاري تحميل التطبيق<span class="loading-dots"></span></div>
             <div class="progress-container">
                 <div class="progress-bar" id="progress-bar"></div>
@@ -249,23 +265,6 @@
     <!-- Load Blazor WebAssembly with optimized loading -->
     <script src="_framework/blazor.webassembly.js" autostart="false"></script>
     <script>
-        // Debug timeout handler to prevent hanging in mono_wasm_fire_debugger_agent_message
-        if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-         // Override console.assert to completely disable debugger invocation
-       const originalAssert = console.assert;
-
-        console.assert = function (...args) {
-    // Simply log the assertion without calling debugger
-    // This prevents mono_wasm_fire_debugger_agent_message from pausing execution
-      if (args.length > 0 && !args[0]) {
-  // Only log if assertion fails
-     console.log('[Debug Disabled] Assertion:', ...args.slice(1));
-       }
-       // DO NOT call originalAssert to avoid debugger; statement
-  // originalAssert.apply(console, args);
-        };
-    }
-
         // jQuery dependency tracker
         window.jQueryReady = false;
 
@@ -317,15 +316,22 @@
         }
 
         Blazor.start({
+            // ✅ CRITICAL: فرض وضع Production لتعطيل debugging
+            //environment: 'Production',
+
             loadBootResource: function (type, name, defaultUri, integrity) {
+                // منع تحميل ملفات debug symbols
+                if (name.includes('.pdb')) {
+                    return null;
+                }
+
                 // Optimize resource loading
                 if (type === 'dotnetjs') {
                     return defaultUri + '?v=' + Date.now();
                 }
                 return defaultUri;
             },
-            // Disable debugging to prevent debugger hangs
-  //environment: 'Release',
+
             // Add debug configuration
             circuit: {
                 reconnectionOptions: {
@@ -691,20 +697,14 @@
             text-rendering: optimizeLegibility;
         }
 
-        /* ==============================================
-           MOBILE HEADER - ICONS ON SAME LINE AS LOGO
-           ============================================== */
-
-        /* Compact header on mobile */
+        /* MOBILE HEADER - ICONS ON SAME LINE AS LOGO */
         @media (max-width: 991.98px) {
-            /* Single-line header */
             .pcoded-header {
                 min-height: 56px !important;
                 height: 56px !important;
                 padding: 0 !important;
             }
 
-                /* m-header contains logo AND icons on mobile */
                 .pcoded-header .m-header {
                     display: flex !important;
                     align-items: center !important;
@@ -714,7 +714,6 @@
                     width: 100% !important;
                 }
 
-                    /* Smaller logo on mobile */
                     .pcoded-header .m-header .b-brand {
                         padding: 0 !important;
                         display: flex !important;
@@ -725,21 +724,18 @@
                             max-height: 50px !important;
                         }
 
-                /* Mobile menu button */
                 .pcoded-header .mobile-menu {
                     width: 32px !important;
                     height: 32px !important;
                     margin-right: 0.5rem !important;
                 }
 
-                /* Icons container in m-header */
                 .pcoded-header .m-header > div:last-child {
                     display: flex !important;
                     align-items: center !important;
                     gap: 0.25rem !important;
                 }
 
-                /* Mobile navbar-nav in m-header */
                 .pcoded-header .m-header .navbar-nav {
                     display: flex !important;
                     flex-direction: row !important;
@@ -750,7 +746,6 @@
                     list-style: none !important;
                 }
 
-                    /* List items */
                     .pcoded-header .m-header .navbar-nav > li {
                         display: flex !important;
                         align-items: center !important;
@@ -758,7 +753,6 @@
                         padding: 0 !important;
                     }
 
-                        /* Compact icon buttons in m-header */
                         .pcoded-header .m-header .navbar-nav > li > a,
                         .pcoded-header .m-header .navbar-nav > li > button,
                         .pcoded-header .m-header .navbar-nav .dropdown-toggle {
@@ -774,7 +768,6 @@
                             text-decoration: none !important;
                         }
 
-                            /* Hover effect */
                             .pcoded-header .m-header .navbar-nav > li > a:hover,
                             .pcoded-header .m-header .navbar-nav > li > button:hover,
                             .pcoded-header .m-header .navbar-nav .dropdown-toggle:hover {
@@ -782,7 +775,6 @@
                                 border-radius: 0.25rem !important;
                             }
 
-                    /* Icons */
                     .pcoded-header .m-header .navbar-nav i,
                     .pcoded-header .m-header .navbar-nav .feather {
                         display: block !important;
@@ -791,7 +783,6 @@
                         margin: 0 !important;
                     }
 
-                    /* Dropdown menus */
                     .pcoded-header .m-header .navbar-nav .dropdown-menu {
                         position: absolute !important;
                         right: 0 !important;
@@ -800,20 +791,17 @@
                         margin-top: 0.5rem !important;
                     }
 
-                    /* Notification dropdown */
                     .pcoded-header .m-header .navbar-nav .dropdown .notification {
                         right: 50% !important;
                         top: calc(100% + 0.5rem) !important;
                         transform: translateX(50%);
                     }
 
-                /* Hide desktop navbar on mobile */
                 .pcoded-header #navbarSupportedContent {
                     display: none !important;
                 }
         }
 
-        /* Desktop styles */
         @media (min-width: 992px) {
             .pcoded-header {
                 display: flex;
@@ -826,7 +814,6 @@
                     align-items: center;
                 }
 
-                    /* Hide mobile icons on desktop */
                     .pcoded-header .m-header > div:last-child {
                         display: none !important;
                     }
@@ -862,18 +849,14 @@
             }
         }
 
-        /* ==============================================
-       MOBILE HEADER FIX - SHOW ICONS
-       ============================================== */
+        /* MOBILE HEADER FIX - SHOW ICONS */
         @media (max-width: 991.98px) {
-            /* Force show mobile header icons */
             .pcoded-header .m-header > div:last-child {
                 display: flex !important;
                 align-items: center !important;
                 gap: 8px !important;
             }
 
-            /* Mobile navbar in header */
             .pcoded-header .m-header .navbar-nav {
                 display: flex !important;
                 flex-direction: row !important;
@@ -883,14 +866,12 @@
                 padding: 0 !important;
             }
 
-                /* Mobile nav items */
                 .pcoded-header .m-header .navbar-nav > li {
                     display: flex !important;
                     align-items: center !important;
                     margin: 0 !important;
                 }
 
-                    /* Mobile icons styling */
                     .pcoded-header .m-header .navbar-nav > li > a,
                     .pcoded-header .m-header .navbar-nav > li > button {
                         display: flex !important;
@@ -912,14 +893,12 @@
                             color: var(--primary) !important;
                         }
 
-                /* Icon sizes */
                 .pcoded-header .m-header .navbar-nav i,
                 .pcoded-header .m-header .navbar-nav .feather {
                     font-size: 20px !important;
                     color: inherit !important;
                 }
 
-            /* Language dropdown on mobile */
             .pcoded-header .m-header .dropdown-toggle {
                 width: auto !important;
                 padding: 8px 12px !important;
@@ -930,9 +909,7 @@
             }
         }
 
-        /* ==============================================
-       LOADING SCREEN - BRAND COLORS
-       ============================================== */
+        /* LOADING SCREEN - BRAND COLORS */
         .loading-container {
             background: linear-gradient(135deg, #0EA5E9 0%, #0369A1 100%) !important;
         }
@@ -966,41 +943,36 @@
             margin-top: 10px;
         }
 
-        /* ==============================================
-       HEADER COLORS - CONSISTENT WITH THEME
-       ============================================== */
+        /* HEADER COLORS - CONSISTENT WITH THEME */
         .pcoded-header {
             background: #FFFFFF !important;
             box-shadow: 0 2px 8px rgba(15, 23, 42, 0.08) !important;
             border-bottom: 1px solid #E2E8F0 !important;
         }
 
-            /* Header icons colors */
             .pcoded-header .navbar-nav > li > a,
             .pcoded-header .navbar-nav > li > button,
             .pcoded-header .dropdown-toggle {
-                color: #334155 !important; /* var(--neutral-dark) */
+                color: #334155 !important;
             }
 
                 .pcoded-header .navbar-nav > li > a:hover,
                 .pcoded-header .navbar-nav > li > button:hover,
                 .pcoded-header .dropdown-toggle:hover {
-                    color: #0EA5E9 !important; /* var(--primary) */
-                    background: #F1F5F9 !important; /* var(--neutral-lighter) */
+                    color: #0EA5E9 !important;
+                    background: #F1F5F9 !important;
                 }
 
-            /* Language dropdown */
             .pcoded-header .dropdown-toggle {
-                border: 1.5px solid #E2E8F0 !important; /* var(--neutral-light) */
+                border: 1.5px solid #E2E8F0 !important;
                 background: transparent !important;
             }
 
                 .pcoded-header .dropdown-toggle:hover {
-                    border-color: #0EA5E9 !important; /* var(--primary) */
-                    background: #E0F2FE !important; /* var(--primary-lighter) */
+                    border-color: #0EA5E9 !important;
+                    background: #E0F2FE !important;
                 }
 
-        /* Mobile menu button */
         .mobile-menu,
         #mobile-collapse,
         #mobile-collapse1 {

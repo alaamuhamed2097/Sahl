@@ -23,7 +23,6 @@ window.ScriptLoader = {
 
         // Return resolved promise if script already loaded
         if (this.loadedScripts.has(url)) {
-            console.log(`Script ${url} already loaded`);
             return Promise.resolve();
         }
 
@@ -70,7 +69,6 @@ window.ScriptLoader = {
 
             script.onload = () => {
                 clearTimeout(timeoutId);
-                console.log(`Script loaded successfully: ${url}`);
                 this.loadedScripts.add(url);
                 this.loadingPromises.delete(url);
                 resolve();
@@ -130,18 +128,14 @@ window.ScriptLoader = {
             'https://code.highcharts.com/modules/export-data.js',
             'https://code.highcharts.com/modules/accessibility.js'
         ];
-
-        console.log('Loading Highcharts library...');
         
         return this.loadScriptsSequential(highchartsUrls)
             .then(() => {
-                console.log('Highcharts library loaded successfully');
                 
                 // Verify Highcharts is available with timeout
                 return this.waitForGlobal('Highcharts', 5000);
             })
             .then(() => {
-                console.log('Highcharts verified and ready');
                 return true;
             })
             .catch(error => {
@@ -150,7 +144,6 @@ window.ScriptLoader = {
                 // Try fallback strategy for production
                 return this.tryHighchartsFallback()
                     .then(() => {
-                        console.log('Highcharts loaded via fallback');
                         return true;
                     })
                     .catch(fallbackError => {
@@ -168,8 +161,6 @@ window.ScriptLoader = {
             'https://cdn.jsdelivr.net/npm/highcharts@latest/modules/export-data.js',
             'https://cdn.jsdelivr.net/npm/highcharts@latest/modules/accessibility.js'
         ];
-
-        console.log('Trying Highcharts fallback URLs...');
         
         return this.loadScriptsSequential(fallbackUrls)
             .then(() => this.waitForGlobal('Highcharts', 5000));
@@ -201,16 +192,12 @@ window.ScriptLoader = {
     },
 
     // Load TinyMCE on demand with production compatibility (FIXED - no circular dependency)
-    loadTinyMCE: function () {
-        console.log('Loading TinyMCE core library...');
-        
+    loadTinyMCE: function () {        
         return this.loadScript('assets/js/plugins/tinymce/tinymce.min.js')
             .then(() => {
-                console.log('TinyMCE core loaded successfully');
                 return this.waitForGlobal('tinymce', 5000);
             })
             .then(() => {
-                console.log('TinyMCE core verified and ready');
                 return true;
             })
             .catch(error => {
@@ -243,7 +230,6 @@ window.ScriptLoader = {
         if (script) {
             script.parentNode.removeChild(script);
             this.loadedScripts.delete(url);
-            console.log(`Script removed: ${url}`);
             return true;
         }
         return false;

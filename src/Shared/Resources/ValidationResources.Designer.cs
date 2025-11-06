@@ -2183,5 +2183,59 @@ namespace Resources {
                 return ResourceManager.GetString("ZipCodeLength", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to يرجى ملء جميع حقول المعلومات الأساسية (اسم المنتج والوصف القصير والوصف بالعربية والإنجليزية)..
+        /// </summary>
+        public static string FillBasicInformationFields {
+            get {
+                return ResourceManager.GetString("FillBasicInformationFields", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to يرجى ملء جميع حقول السيو (عنوان السيو والوصف والكلمات الدلالية)..
+        /// </summary>
+        public static string FillSEOFields {
+            get {
+                return ResourceManager.GetString("FillSEOFields", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to يرجى اختيار الفئة والعلامة التجارية والوحدة..
+        /// </summary>
+        public static string SelectCategoryBrandUnit {
+            get {
+                return ResourceManager.GetString("SelectCategoryBrandUnit", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to يرجى رفع صورة مصغرة أو صور للمنتج على الأقل..
+        /// </summary>
+        public static string UploadThumbnailOrImages {
+            get {
+                return ResourceManager.GetString("UploadThumbnailOrImages", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to الخصائص اختيارية. يمكنك المتابعة للحفظ..
+        /// </summary>
+        public static string AttributesOptional {
+            get {
+                return ResourceManager.GetString("AttributesOptional", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to فشل في تحميل خصائص الفئة.
+        /// </summary>
+        public static string FailedToLoadCategoryAttributes {
+            get {
+                return ResourceManager.GetString("FailedToLoadCategoryAttributes", resourceCulture);
+            }
+        }
     }
 }

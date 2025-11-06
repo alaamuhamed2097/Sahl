@@ -93,7 +93,7 @@ namespace Dashboard.Pages.Shipping.Companies
                     await ShowErrorNotification(ValidationResources.Failed, NotifiAndAlertsResources.SaveFailed);
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 await ShowErrorNotification(NotifiAndAlertsResources.FailedAlert, NotifiAndAlertsResources.SomethingWentWrong);
             }
@@ -114,7 +114,7 @@ namespace Dashboard.Pages.Shipping.Companies
                 Model = result.Data ?? new();
                 StateHasChanged();
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 await ShowErrorNotification(ValidationResources.Error, NotifiAndAlertsResources.SomethingWentWrong);
             }
@@ -167,7 +167,7 @@ namespace Dashboard.Pages.Shipping.Companies
                         }
                     }
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
                     await ShowErrorNotification(
                     NotifiAndAlertsResources.Error,
@@ -177,7 +177,7 @@ namespace Dashboard.Pages.Shipping.Companies
 
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 await ShowErrorNotification(
                 NotifiAndAlertsResources.Error,
@@ -197,7 +197,7 @@ namespace Dashboard.Pages.Shipping.Companies
 
         protected async Task CloseModal()
         {
-            Navigation.NavigateTo("/shipping/companies", true);
+            Navigation.NavigateTo("/shippingCompanies", true);
         }
 
         private async Task ShowErrorNotification(string title, string message)

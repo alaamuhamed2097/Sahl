@@ -28,7 +28,7 @@
 
 	<!-- Brand Text -->
 	<text x="95" y="35" font-family="Tajawal, Arial, sans-serif" font-size="28" font-weight="700"
-		  fill="url(#gradient-primary-light)" text-anchor="middle" direction="rtl">سهل</text>
+		  fill="url(#gradient-primary-light)" text-anchor="middle" direction="rtl">بسيط</text>
 
 	<!-- Tagline -->
 	<text x="95" y="53" font-family="Tajawal, Arial, sans-serif" font-size="10" font-weight="400"
