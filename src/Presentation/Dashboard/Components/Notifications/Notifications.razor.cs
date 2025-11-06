@@ -13,6 +13,7 @@ namespace Dashboard.Components.Notifications
         private int UnReadCount { get; set; }
         private List<UserNotificationRequest> UserNotifications { get; set; } = new List<UserNotificationRequest>();
         private List<UserNotificationRequest> MarkNotifications { get; set; } = new List<UserNotificationRequest>();
+        private bool _isLoading = false;
 
         [Parameter] public bool NotificationsChanged { get; set; }
         [Inject] private IUserNotificationService UserNotificationService { get; set; }
@@ -35,7 +36,15 @@ namespace Dashboard.Components.Notifications
         {
             if (firstRender || !isScrollbarInitialized)
             {
-                await JSRuntime.InvokeVoidAsync("initializePerfectScrollbar", $"notification-body-{ComponentId}");
+                try
+                {
+                    await JSRuntime.InvokeVoidAsync("initializePerfectScrollbar", $"notification-body-{ComponentId}");
+                    isScrollbarInitialized = true;
+                }
+                catch (Exception)
+                {
+                    // Ignore JS interop errors
+                }
             }
         }
         private async Task HandleNotificationRead(bool value)
@@ -51,17 +60,28 @@ namespace Dashboard.Components.Notifications
         {
             if (MarkNotifications == null || MarkNotifications.Count() == 0)
                 return;
-            var response = await UserNotificationService.MarkAsReadAsync(MarkNotifications);
-            if (response.Success)
+
+            try
             {
-                await LoadUserNotificationsAsync();
-                StateHasChanged();
+                var response = await UserNotificationService.MarkAsReadAsync(MarkNotifications);
+                if (response?.Success == true)
+                {
+                    await LoadUserNotificationsAsync();
+                    StateHasChanged();
+                }
+                else
+                {
+                    await JSRuntime.InvokeVoidAsync("swal", ValidationResources.Failed, NotifiAndAlertsResources.SaveFailed, "error");
+                }
             }
-            else
+            catch (Exception)
             {
-                await JSRuntime.InvokeVoidAsync("swal", ValidationResources.Failed, NotifiAndAlertsResources.SaveFailed, "error");
+                // Silently handle errors - notifications are not critical
             }
-            MarkNotifications = new List<UserNotificationRequest>();
+            finally
+            {
+                MarkNotifications = new List<UserNotificationRequest>();
+            }
         }
 
         private async Task MarkNotificationAsReadAsync(UserNotificationRequest notification)
@@ -80,24 +100,50 @@ namespace Dashboard.Components.Notifications
 
         private async Task LoadUserNotificationsAsync()
         {
-            var response = await UserNotificationService.GetAllAsync();
-            if (response.Success)
+            if (_isLoading)
+                return;
+
+            try
             {
-                if (response.Data.Value != null)
-                    UserNotifications = response.Data.Value.OrderByDescending(n => n.CreatedDateUtc).ToList() ?? new List<UserNotificationRequest>();
-                UnReadCount = response.Data.UnReadCount;
+                _isLoading = true;
+                var response = await UserNotificationService.GetAllAsync();
+
+                if (response?.Success == true && response.Data != null)
+                {
+                    if (response.Data.Value != null)
+                        UserNotifications = response.Data.Value.OrderByDescending(n => n.CreatedDateUtc).ToList() ?? new List<UserNotificationRequest>();
+                    UnReadCount = response.Data.UnReadCount;
+                }
+                else
+                {
+                    // Silently fail - notifications are not critical
+                    UserNotifications = new List<UserNotificationRequest>();
+                    UnReadCount = 0;
+                }
+            }
+            catch (Exception)
+            {
+                // Silently handle errors - notifications are not critical
+                // Log the error if needed but don't disrupt user experience
+                UserNotifications = new List<UserNotificationRequest>();
+                UnReadCount = 0;
+            }
+            finally
+            {
+                _isLoading = false;
             }
         }
+
         private IOrderedEnumerable<IGrouping<string, UserNotificationRequest>> GroupedNotifications =>
            UserNotifications.GroupBy(n =>
                n.CreatedDateUtc.Date == DateTime.UtcNow.Date ? "Today" :
                n.CreatedDateUtc.Date == DateTime.UtcNow.AddDays(-1).Date ? "Yesterday" :
                "Earlier")
            .OrderBy(g => g.Key == "Today" ? 0 : g.Key == "Yesterday" ? 1 : 2);
+
         private void ShowAllNotifications()
         {
             NavigationManager.NavigateTo("/notifications", true);
         }
-
     }
 }

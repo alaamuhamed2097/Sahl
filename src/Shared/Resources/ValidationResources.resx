@@ -825,4 +825,22 @@
   <data name="CategoryHasChild" xml:space="preserve">
     <value>هذه الفئة تحتوي على فئات فرعية ولا يمكن حذفها.</value>
   </data>
+  <data name="FillBasicInformationFields" xml:space="preserve">
+    <value>يرجى ملء جميع حقول المعلومات الأساسية (اسم المنتج والوصف القصير والوصف بالعربية والإنجليزية).</value>
+  </data>
+  <data name="FillSEOFields" xml:space="preserve">
+    <value>يرجى ملء جميع حقول السيو (عنوان السيو والوصف والكلمات الدلالية).</value>
+  </data>
+  <data name="SelectCategoryBrandUnit" xml:space="preserve">
+    <value>يرجى اختيار الفئة والعلامة التجارية والوحدة.</value>
+  </data>
+  <data name="UploadThumbnailOrImages" xml:space="preserve">
+    <value>يرجى رفع صورة مصغرة أو صور للمنتج على الأقل.</value>
+  </data>
+  <data name="AttributesOptional" xml:space="preserve">
+    <value>الخصائص اختيارية. يمكنك المتابعة للحفظ.</value>
+  </data>
+  <data name="FailedToLoadCategoryAttributes" xml:space="preserve">
+    <value>فشل في تحميل خصائص الفئة</value>
+  </data>
 </root>

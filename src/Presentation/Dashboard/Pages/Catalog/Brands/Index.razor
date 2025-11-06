@@ -174,73 +174,80 @@
                 </div>
 
                 <!-- Pagination -->
-                <div class="d-flex justify-content-between mt-3" dir="ltr">
-                    <div class="d-flex align-items-center just flex-end">
-                        <span class="text-muted">
-                            @string.Format(ActionsResources.ShowingEntries, StartRecord, EndRecord, totalRecords)
-                        </span>
-                    </div>
-                    <nav>
-                        <ul class="pagination mb-0">
-                            <!-- First Button -->
-                            <li class="page-item @(!CanGoToPreviousPage ? "disabled" : "")">
-                                <a class="page-link" @onclick="() => GoToPage(1)" title="@ActionsResources.First">
-                                    <i class="fas fa-angle-double-left"></i>
-                                </a>
-                            </li>
+               <div class="pagination-wrapper d-flex flex-column justify-content-end flex-grow-1">
+    <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mt-4 pagination-container" dir="ltr">
 
-                            <!-- Previous Button -->
-                            <li class="page-item @(!CanGoToPreviousPage ? "disabled" : "")">
-                                <a class="page-link" @onclick="() => GoToPage(currentPage - 1)">
-                                    @ActionsResources.Previous
-                                </a>
-                            </li>
-                            <!-- Dynamic Page Numbers -->
-                            @{
-                                const int maxVisiblePages = 5;
-                                int startPage = Math.Max(1, currentPage - 2);
-                                int endPage = Math.Min(totalPages, startPage + maxVisiblePages - 1);
-                                if (endPage - startPage + 1 < maxVisiblePages)
-                                {
-                                    startPage = Math.Max(1, endPage - maxVisiblePages + 1);
-                                }
-                            }
-                            @if (startPage > 1)
-                            {
-                                <li class="page-item disabled">
-                                    <a class="page-link">...</a>
-                                </li>
-                            }
-                            @for (int pag = startPage; pag <= endPage; pag++)
-                            {
-                                // Capture the loop variable in a local variable
-                                int pageNumber = pag;
-                                <li class="page-item @(pag == currentPage ? "active" : "")">
-                                    <a class="page-link" @onclick="() => GoToPage(pageNumber)">@pag</a>
-                                </li>
-                            }
-                            @if (endPage < totalPages)
-                            {
-                                <li class="page-item disabled">
-                                    <a class="page-link">...</a>
-                                </li>
-                            }
-                            <!-- Next Button -->
-                            <li class="page-item @(!CanGoToNextPage ? "disabled" : "")">
-                                <a class="page-link" @onclick="() => GoToPage(currentPage + 1)">
-                                    @ActionsResources.Next
-                                </a>
-                            </li>
+        <!-- النص الإحصائي -->
+        <div class="text-muted small">
+            @string.Format(ActionsResources.ShowingEntries, StartRecord, EndRecord, totalRecords)
+        </div>
 
-                            <!-- Last Button -->
-                            <li class="page-item @(!CanGoToNextPage ? "disabled" : "")">
-                                <a class="page-link" @onclick="() => GoToPage(totalPages)" title="@ActionsResources.Last">
-                                    <i class="fas fa-angle-double-right"></i>
-                                </a>
-                            </li>
-                        </ul>
-                    </nav>
-                </div>
+        <!-- الباجينيشن -->
+        <nav aria-label="Pagination">
+            <ul class="pagination pagination-sm mb-0 shadow-sm rounded-3 overflow-hidden">
+
+                <!-- أول صفحة -->
+                <li class="page-item @(!CanGoToPreviousPage ? "disabled" : "")">
+                    <a class="page-link" @onclick="() => GoToPage(1)" title="@ActionsResources.First">
+                        <i class="fas fa-angle-double-left"></i>
+                    </a>
+                </li>
+
+                <!-- السابقة -->
+                <li class="page-item @(!CanGoToPreviousPage ? "disabled" : "")">
+                    <a class="page-link" @onclick="() => GoToPage(currentPage - 1)">
+                        <i class="fas fa-angle-left"></i>
+                    </a>
+                </li>
+
+                @* أرقام الصفحات *@
+                @{
+                    const int maxVisiblePages = 5;
+                    int startPage = Math.Max(1, currentPage - 2);
+                    int endPage = Math.Min(totalPages, startPage + maxVisiblePages - 1);
+                    if (endPage - startPage + 1 < maxVisiblePages)
+                    {
+                        startPage = Math.Max(1, endPage - maxVisiblePages + 1);
+                    }
+                }
+
+                @if (startPage > 1)
+                {
+                    <li class="page-item disabled"><span class="page-link">...</span></li>
+                }
+
+                @for (int pag = startPage; pag <= endPage; pag++)
+                {
+                    int pageNumber = pag;
+                    <li class="page-item @(pag == currentPage ? "active" : "")">
+                        <a class="page-link fw-bold" @onclick="() => GoToPage(pageNumber)">@pag</a>
+                    </li>
+                }
+
+                @if (endPage < totalPages)
+                {
+                    <li class="page-item disabled"><span class="page-link">...</span></li>
+                }
+
+                <!-- التالية -->
+                <li class="page-item @(!CanGoToNextPage ? "disabled" : "")">
+                    <a class="page-link" @onclick="() => GoToPage(currentPage + 1)">
+                        <i class="fas fa-angle-right"></i>
+                    </a>
+                </li>
+
+                <!-- آخر صفحة -->
+                <li class="page-item @(!CanGoToNextPage ? "disabled" : "")">
+                    <a class="page-link" @onclick="() => GoToPage(totalPages)" title="@ActionsResources.Last">
+                        <i class="fas fa-angle-double-right"></i>
+                    </a>
+                </li>
+
+            </ul>
+        </nav>
+    </div>
+</div>
+
             </div>
         </div>
     </div>

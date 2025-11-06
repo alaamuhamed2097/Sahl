@@ -124,6 +124,9 @@ body {
 .card-body {
     --bs-card-color: #686c71;
     padding: 20px 25px;
+      height: 100vh; /* ياخد طول الشاشة بالكامل */
+
+
 }
 
 .text-white .card-body {
@@ -1128,6 +1131,7 @@ label {
     overflow-x: auto;
     display: block;
     width: 100%;
+
 }
 
 .invoice-box {
