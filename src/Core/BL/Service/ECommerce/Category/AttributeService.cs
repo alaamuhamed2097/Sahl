@@ -313,5 +313,67 @@ namespace BL.Service.ECommerce.Category
             // Use bulk update
             await _attributeUnitOfWork.TableRepository<TbAttributeOption>().UpdateBulkFieldsAsync(entityFieldValues, userId);
         }
+
+        /// <summary>
+        /// Get all attributes for a specific category with their options
+        /// </summary>
+        public async Task<IEnumerable<CategoryAttributeDto>> GetByCategoryIdAsync(Guid categoryId)
+        {
+            try
+            {
+                if (categoryId == Guid.Empty)
+                    throw new ArgumentException("Category ID cannot be empty", nameof(categoryId));
+
+                // Get category attributes for the specified category
+                var categoryAttributes = await _attributeUnitOfWork.TableRepository<TbCategoryAttribute>()
+                    .GetAsync(ca => ca.CategoryId == categoryId && ca.CurrentState == 1);
+
+                if (!categoryAttributes.Any())
+                    return new List<CategoryAttributeDto>();
+
+                // Get the attribute IDs
+                var attributeIds = categoryAttributes.Select(ca => ca.AttributeId).ToList();
+
+                // Get attributes with options using the view
+                var attributesWithOptions = await _attributeUnitOfWork.Repository<VwAttributeWithOptions>()
+                    .GetAsync(a => attributeIds.Contains(a.Id));
+
+                // Map to DTOs
+                var attributeDtos = _mapper.MapList<VwAttributeWithOptions, AttributeDto>(attributesWithOptions);
+
+                // Build CategoryAttributeDto with combined information
+                var result = new List<CategoryAttributeDto>();
+                foreach (var categoryAttr in categoryAttributes.OrderBy(ca => ca.DisplayOrder))
+                {
+                    var attributeDto = attributeDtos.FirstOrDefault(a => a.Id == categoryAttr.AttributeId);
+                    if (attributeDto != null)
+                    {
+                        result.Add(new CategoryAttributeDto
+                        {
+                            Id = categoryAttr.Id,
+                            CategoryId = categoryAttr.CategoryId,
+                            AttributeId = categoryAttr.AttributeId,
+                            TitleAr = attributeDto.TitleAr,
+                            TitleEn = attributeDto.TitleEn,
+                            FieldType = attributeDto.FieldType,
+                            IsRangeFieldType = attributeDto.IsRangeFieldType,
+                            MaxLength = attributeDto.MaxLength,
+                            AffectsPricing = categoryAttr.AffectsPricing,
+                            IsRequired = categoryAttr.IsRequired,
+                            DisplayOrder = categoryAttr.DisplayOrder,
+                            AttributeOptionsJson = attributeDto.AttributeOptions != null
+                                ? System.Text.Json.JsonSerializer.Serialize(attributeDto.AttributeOptions)
+                                : "[]"
+                        });
+                    }
+                }
+
+                return result;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Error getting attributes for category {categoryId}: {ex.Message}", ex);
+            }
+        }
     }
 }

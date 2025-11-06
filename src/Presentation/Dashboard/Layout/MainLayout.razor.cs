@@ -63,11 +63,13 @@ namespace Dashboard.Layout
             await CookieAuthenticationStateProvider.MarkUserAsLoggedOut();
             Navigation.NavigateTo("/login", true);
         }
+
         private void HandleLanguageChanged()
         {
             // Force component re-render
             InvokeAsync(StateHasChanged);
         }
+
         private async Task InitializeLanguageFromStorage()
         {
             var lang = await JSRuntime.InvokeAsync<string>("localization.getCurrentLanguage");

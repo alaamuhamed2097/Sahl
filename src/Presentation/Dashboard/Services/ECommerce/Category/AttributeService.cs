@@ -58,6 +58,26 @@ namespace Dashboard.Services.ECommerce.Category
         }
 
         /// <summary>
+        /// Get all attributes for a specific category.
+        /// </summary>
+        public async Task<ResponseModel<IEnumerable<CategoryAttributeDto>>> GetByCategoryIdAsync(Guid categoryId)
+        {
+            try
+            {
+                return await _apiService.GetAsync<IEnumerable<CategoryAttributeDto>>($"{ApiEndpoints.Attribute.Get}/category/{categoryId}");
+            }
+            catch (Exception ex)
+            {
+                // Log error here
+                return new ResponseModel<IEnumerable<CategoryAttributeDto>>
+                {
+                    Success = false,
+                    Message = ex.Message
+                };
+            }
+        }
+
+        /// <summary>
         /// Save or update a attribute.
         /// </summary>
         public async Task<ResponseModel<bool>> SaveAsync(AttributeDto attribute)

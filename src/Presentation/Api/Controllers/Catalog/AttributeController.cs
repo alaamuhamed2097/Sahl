@@ -10,7 +10,7 @@ using Shared.GeneralModels;
 using Shared.GeneralModels.SearchCriteriaModels;
 using Shared.ResultModels;
 
-namespace Api.Controllers.ECommerce.Category
+namespace Api.Controllers.Catalog
 {
     [ApiController]
     [Route("api/[controller]")]
@@ -81,6 +81,43 @@ namespace Api.Controllers.ECommerce.Category
                 {
                     Message = string.Format(ValidationResources.RetrievedSuccessfully, ECommerceResources.Attribute),
                     Data = attribute
+                });
+            }
+            catch (Exception ex)
+            {
+                return HandleException(ex);
+            }
+        }
+
+        /// <summary>
+        /// Retrieves all attributes for a specific category with their options.
+        /// </summary>
+        [HttpGet("category/{categoryId}")]
+        [Authorize]
+        public async Task<IActionResult> GetByCategory(Guid categoryId)
+        {
+            try
+            {
+                if (categoryId == Guid.Empty)
+                    return BadRequest(new ResponseModel<string>
+                    {
+                        Success = false,
+                        Message = NotifiAndAlertsResources.InvalidInputAlert
+                    });
+
+                var attributes = await _attributeService.GetByCategoryIdAsync(categoryId);
+
+                if (attributes == null || !attributes.Any())
+                    return Ok(new ResponseModel<IEnumerable<CategoryAttributeDto>>
+                    {
+                        Message = NotifiAndAlertsResources.NoDataFound,
+                        Data = new List<CategoryAttributeDto>()
+                    });
+
+                return Ok(new ResponseModel<IEnumerable<CategoryAttributeDto>>
+                {
+                    Message = string.Format(ValidationResources.RetrievedSuccessfully, ECommerceResources.Attributes),
+                    Data = attributes
                 });
             }
             catch (Exception ex)

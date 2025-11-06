@@ -5,7 +5,7 @@ using Shared.DTOs.User;
 using Shared.GeneralModels;
 using System.Security.Claims;
 
-namespace Api.Controllers
+namespace Api.Controllers.Authentication
 {
     /// <summary>
     /// Provides endpoints for user password management, including password reset and change functionalities.

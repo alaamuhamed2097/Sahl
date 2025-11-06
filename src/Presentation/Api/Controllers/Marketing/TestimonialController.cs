@@ -9,7 +9,7 @@ using Shared.DTOs.Testimonial;
 using Shared.GeneralModels;
 using Shared.GeneralModels.SearchCriteriaModels;
 
-namespace Api.Controllers.Testimonial
+namespace Api.Controllers.Marketing
 {
     [Route("api/[controller]")]
     [ApiController]

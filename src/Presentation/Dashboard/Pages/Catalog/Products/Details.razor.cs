@@ -30,6 +30,7 @@ namespace Dashboard.Pages.Catalog.Products
         [Inject] protected IItemService ItemService { get; set; } = null!;
         [Inject] protected IBrandService BrandService { get; set; } = null!;
         [Inject] protected ICategoryService CategoryService { get; set; } = null!;
+        [Inject] protected IAttributeService AttributeService { get; set; } = null!;
         [Inject] protected IUnitService UnitService { get; set; } = null!;
         //   [Inject] protected IVideoProviderService VideoProviderService { get; set; } = null!;
         [Inject] protected IJSRuntime JSRuntime { get; set; } = null!;
@@ -41,7 +42,12 @@ namespace Dashboard.Pages.Catalog.Products
         protected bool isSaving { get; set; }
         protected bool isProcessing { get; set; }
         protected int processingProgress { get; set; }
-        protected ItemDto Model { get; set; } = new() { Images = new List<ItemImageDto>() };
+        protected ItemDto Model { get; set; } = new()
+        {
+            Images = new List<ItemImageDto>(),
+            ItemAttributes = new List<ItemAttributeDto>(),
+            ItemAttributeCombinationPricings = new List<ItemAttributeCombinationPricingDto>()
+        };
 
         // Validation states
         protected bool showValidationErrors = false;
@@ -120,28 +126,65 @@ namespace Dashboard.Pages.Catalog.Products
             try
             {
                 isLoadingAttributes = true;
-                var result = await CategoryService.GetByIdAsync(Model.CategoryId);
 
-                if (result?.Success == true)
+                // OPTIMIZED: Use dedicated endpoint to get category attributes directly
+                // This is more efficient than loading the entire category
+                var result = await AttributeService.GetByCategoryIdAsync(Model.CategoryId);
+
+                if (result?.Success == true && result.Data != null)
                 {
-                    categoryAttributes = result.Data?.CategoryAttributes ?? new List<CategoryAttributeDto>();
+                    // Extract CategoryAttributes from the response
+                    categoryAttributes = result.Data.ToList();
+
+                    // Initialize ItemAttributes list if null
+                    if (Model.ItemAttributes == null)
+                    {
+                        Model.ItemAttributes = new List<ItemAttributeDto>();
+                    }
 
                     // Initialize attributes if this is a new product
                     if (Id == Guid.Empty)
                     {
                         Model.ItemAttributes = categoryAttributes
-                            .Select(a => new ItemAttributeDto
+                           .Select(a => new ItemAttributeDto
+                           {
+                               // Map to the AttributeId (the actual attribute, not the CategoryAttribute ID)
+                               AttributeId = a.AttributeId,
+                               Value = string.Empty
+                           })
+                           .ToList();
+                    }
+                    else
+                    {
+                        // For existing products, ensure all category attributes have entries
+                        foreach (var categoryAttr in categoryAttributes)
+                        {
+                            // Check if item already has this attribute (using AttributeId not CategoryAttribute Id)
+                            if (!Model.ItemAttributes.Any(ia => ia.AttributeId == categoryAttr.AttributeId))
                             {
-                                AttributeId = a.Id,
-                                Value = string.Empty
-                            })
-                            .ToList();
+                                Model.ItemAttributes.Add(new ItemAttributeDto
+                                {
+                                    AttributeId = categoryAttr.AttributeId,
+                                    Value = string.Empty
+                                });
+                            }
+                        }
                     }
                 }
+                else
+                {
+                    // Handle error case
+                    categoryAttributes = new List<CategoryAttributeDto>();
+                    await ShowErrorMessage(
+              ValidationResources.Error,
+                  result?.Message ?? "Failed to load category attributes");
+                }
+
                 StateHasChanged();
             }
             catch (Exception ex)
             {
+                categoryAttributes = new List<CategoryAttributeDto>();
                 await ShowErrorMessage(ValidationResources.Error, ex.Message);
             }
             finally
