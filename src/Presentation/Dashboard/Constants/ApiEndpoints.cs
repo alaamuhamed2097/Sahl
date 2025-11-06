@@ -7,8 +7,6 @@
             public const string Login = "api/Auth/login";
         }
 
-
-
         public static class UserAuthentication
         {
             public const string UserInfo = "api/UserAuthentication/userinfo";

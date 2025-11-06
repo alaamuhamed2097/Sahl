@@ -17,6 +17,11 @@ namespace Dashboard.Contracts.ECommerce.Category
         Task<ResponseModel<AttributeDto>> GetByIdAsync(Guid id);
 
         /// <summary>
+        /// Get all attributes for a specific category.
+        /// </summary>
+        Task<ResponseModel<IEnumerable<CategoryAttributeDto>>> GetByCategoryIdAsync(Guid categoryId);
+
+        /// <summary>
         /// Save or update a attribute.
         /// </summary>
         Task<ResponseModel<bool>> SaveAsync(AttributeDto attribute);

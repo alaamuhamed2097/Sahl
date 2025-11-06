@@ -49,21 +49,21 @@
   window.performanceMetrics.updateProgress(100);
     });
 
-  // Debug timeout handler to prevent hanging in mono_wasm_fire_debugger_agent_message
+    // Debug timeout handler to prevent hanging in mono_wasm_fire_debugger_agent_message
     if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
         // Override console.assert to completely disable debugger invocation
-     const originalAssert = console.assert;
+        const originalAssert = console.assert;
 
         console.assert = function (...args) {
             // Simply log the assertion without calling debugger
-     // This prevents mono_wasm_fire_debugger_agent_message from pausing execution
+            // This prevents mono_wasm_fire_debugger_agent_message from pausing execution
             if (args.length > 0 && !args[0]) {
-     // Only log if assertion fails
-      console.log('[Debug Disabled] Assertion:', ...args.slice(1));
-     }
-     // DO NOT call originalAssert to avoid debugger; statement
-   // originalAssert.apply(console, args);
-};
+                // Only log if assertion fails
+                console.log('[Debug Disabled] Assertion:', ...args.slice(1));
+            }
+            // DO NOT call originalAssert to avoid debugger; statement
+            // originalAssert.apply(console, args);
+        };
     }
 
     // jQuery dependency tracker

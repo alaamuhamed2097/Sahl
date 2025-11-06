@@ -14,154 +14,154 @@
 <PageTitle>@FormResources.PromoCodes</PageTitle>
 <div class="container-fluid p-0">
     <div class="card shadow-sm border-0">
-        <div class="card-header d-flex justify-content-between align-items-center">
-            <h4 class="mb-3">@FormResources.PromoCodes</h4>
-        </div>
-        <div class="card-body">
-            <div class="dt-responsive table-responsive">
-                <!-- Filtration start -->
-                <ul class="navbar-nav d-flex flex-row align-items-center gap-3 mb-2 px-0 w-100">
-                    <li class="nav-item col-md-6 w-auto d-flex flex-row align-items-center gap-3">
-                        <EditForm Model="searchModel" OnSubmit="@Search">
-                            <!-- Search Box -->
-                            <div class="input-group rounded" style="width: 170px; height: 38px;">
-                                <input type="text" @bind="searchModel.SearchTerm"
-                                       id="searchInput"
-                                       class="form-control text-center border-0 @(ResourceManager.CurrentLanguage == Language.Arabic ? "rounded-end" : "rounded-start")"
-                                       placeholder="@ActionsResources.Search"
-                                       style="height: 38px;" />
-                                <button type="submit"
-                                        class="btn btn-danger d-flex align-items-center justify-content-center border-0 @(ResourceManager.CurrentLanguage == Language.Arabic ? "rounded-start" : "rounded-end")"
-                                        style="width: 40px; height: 38px;">
-                                    <i class="fas fa-search text-white m-0"></i>
-                                </button>
-                            </div>
-                        </EditForm>
+        <div class="card-header bg-primary text-white py-3 d-flex justify-content-between align-items-center">
+    <h5 class="mb-0 fw-semibold text-white">🏷️ @FormResources.PromoCodes</h5>
+     </div>
+<div class="card-body">
+      <div class="dt-responsive table-responsive">
+       <!-- Filtration start -->
+        <ul class="navbar-nav d-flex flex-row align-items-center gap-3 mb-2 px-0 w-100">
+        <li class="nav-item col-md-6 w-auto d-flex flex-row align-items-center gap-3">
+            <EditForm Model="searchModel" OnSubmit="@Search">
+          <!-- Search Box -->
+        <div class="input-group rounded" style="width: 170px; height: 38px;">
+      <input type="text" @bind="searchModel.SearchTerm"
+     id="searchInput"
+ class="form-control text-center border-0 @(ResourceManager.CurrentLanguage == Language.Arabic ? "rounded-end" : "rounded-start")"
+       placeholder="@ActionsResources.Search"
+           style="height: 38px;" />
+           <button type="submit"
+          class="btn btn-danger d-flex align-items-center justify-content-center border-0 @(ResourceManager.CurrentLanguage == Language.Arabic ? "rounded-start" : "rounded-end")"
+        style="width: 40px; height: 38px;">
+  <i class="fas fa-search text-white m-0"></i>
+         </button>
+          </div>
+   </EditForm>
 
-                        <!-- Page Size -->
-                        <div class="d-flex align-items-center gap-2">
-                            <label class="form-label fw-semibold mb-0">@ActionsResources.Show</label>
-                            <select class="form-select rounded-3 shadow-sm border-light text-primary fw-bold text-center"
-                                    style="width: 100px; height: 38px; padding-right: 16px;"
-                                    @onchange="OnPageSizeChanged">
-                                <option value="10">10</option>
-                                <option value="15">15</option>
-                                <option value="20">20</option>
-                                <option value="30">30</option>
-                            </select>
-                        </div>
-                    </li>
-                    <li class="nav-item ms-auto d-flex flex-row align-items-center gap-2">
-                        <!-- Export Buttons -->
-                        <div class="dropdown">
-                            <button class="btn btn-info" type="button" id="exportDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                                <i class="fas fa-file-export me-2"></i>
-                                <span class="fw-bold">@ActionsResources.Export</span>
-                            </button>
-                            <ul class="dropdown-menu" aria-labelledby="exportDropdown">
-                                <li><a class="dropdown-item" href="javascript:void(0)" @onclick="ExportToExcel"><i class="far fa-file-excel mx-2"></i>Excel</a></li>
-                                <li><a class="dropdown-item" href="javascript:void(0)" @onclick="ExportToPrint"><i class="fas fa-print mx-2"></i>Print</a></li>
-                            </ul>
-                        </div>
+     <!-- Page Size -->
+            <div class="d-flex align-items-center gap-2">
+         
+              <select class="form-select rounded-3 shadow-sm border-light text-primary fw-bold text-center"
+     style="width: 100px; height: 38px; padding-right: 16px;"
+      @onchange="OnPageSizeChanged">
+        <option value="10">10</option>
+      <option value="15">15</option>
+  <option value="20">20</option>
+          <option value="30">30</option>
+            </select>
+      </div>
+    </li>
+             <li class="nav-item ms-auto d-flex flex-row align-items-center gap-2">
+     <!-- Export Buttons -->
+    <div class="dropdown">
+    <button class="btn btn-info" type="button" id="exportDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+        <i class="fas fa-file-export me-2"></i>
+      <span class="fw-bold">@ActionsResources.Export</span>
+        </button>
+    <ul class="dropdown-menu" aria-labelledby="exportDropdown">
+      <li><a class="dropdown-item" href="javascript:void(0)" @onclick="ExportToExcel"><i class="far fa-file-excel mx-2"></i>Excel</a></li>
+ <li><a class="dropdown-item" href="javascript:void(0)" @onclick="ExportToPrint"><i class="fas fa-print mx-2"></i>Print</a></li>
+  </ul>
+         </div>
 
-                        <!-- Add Button -->
-                        <button class="btn btn-success" @onclick="Add">
-                            <i class="feather icon-plus-circle me-2"></i>
-                            <span class="fw-bold">@ActionsResources.Add</span>
-                        </button>
-                    </li>
-                </ul>
-                <table id="simpletable" class="text-center table table-striped table-bordered nowrap">
-                    <thead>
-                        <tr>
-                            <th class="sorting">@FormResources.Title</th>
-                            <th class="sorting">@FormResources.Code</th>
-                            <th class="sorting">@FormResources.StartDate</th>
-                            <th class="sorting">@FormResources.EndDate</th>
-                            <th class="sorting">@FormResources.Type</th>
-                            <th class="sorting">@FormResources.Value</th>
-                            <th class="sorting">@FormResources.UsageLimit</th>
-                            <th class="sorting">@FormResources.UsageCount</th>
-                            <th class="sorting">@FormResources.Status</th>
-                            <th>@ECommerceResources.Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody class="fs-6 fw-bold">
-                        @if (items != null && items.Count() != 0)
-                        {
-                            @foreach (var item in items)
-                            {
-                                <tr>
-                                    <td class="text-center p-3">@item.Title</td>
-                                    <td class="text-center p-3">@item.Code</td>
-                                    <td class="text-center p-3">@item.StartDate.ToString("yyyy-MM-dd")</td>
-                                    <td class="text-center p-3">@item.EndDate.ToString("yyyy-MM-dd")</td>
-                                    <td class="text-center p-3">@item.PromoCodeType</td>
-                                    <td class="text-center p-3">@(((item.Value - Convert.ToInt32(item.Value)) > 0)? item.Value : Convert.ToInt32(item.Value))@(item.PromoCodeType == PromoCodeType.Percentage? "%":"$")</td>
-                                    <td class="text-center p-3">@(item.UsageLimit?.ToString() ?? "∞")</td>
-                                    <td class="text-center p-3">@item.UsageCount</td>
-                                    
-                                    @if(item.IsActive == true)
-                                    {
-                                        <td class="text-center p-3 text-success">@FormResources.Active</td>
-                                    }
-                                    else
-                                    {
-                                        <td class="text-center p-3 text-warning">@FormResources.InActive</td>
-                                    }
+                 <!-- Add Button -->
+             <button class="btn btn-success" @onclick="Add">
+         <i class="feather icon-plus-circle me-2"></i>
+    <span class="fw-bold">@ActionsResources.Add</span>
+       </button>
+   </li>
+        </ul>
+        <table id="simpletable" class="text-center table table-striped table-bordered nowrap">
+        <thead>
+     <tr>
+ <th class="sorting">@FormResources.Title</th>
+            <th class="sorting">@FormResources.Code</th>
+  <th class="sorting">@FormResources.StartDate</th>
+                    <th class="sorting">@FormResources.EndDate</th>
+   <th class="sorting">@FormResources.Type</th>
+            <th class="sorting">@FormResources.Value</th>
+        <th class="sorting">@FormResources.UsageLimit</th>
+     <th class="sorting">@FormResources.UsageCount</th>
+      <th class="sorting">@FormResources.Status</th>
+    <th>@ECommerceResources.Actions</th>
+           </tr>
+            </thead>
+   <tbody class="fs-6 fw-bold">
+        @if (items != null && items.Count() != 0)
+      {
+ @foreach (var item in items)
+       {
+    <tr>
+          <td class="text-center p-3">@item.Title</td>
+           <td class="text-center p-3">@item.Code</td>
+      <td class="text-center p-3">@item.StartDate.ToString("yyyy-MM-dd")</td>
+ <td class="text-center p-3">@item.EndDate.ToString("yyyy-MM-dd")</td>
+       <td class="text-center p-3">@item.PromoCodeType</td>
+                 <td class="text-center p-3">@(((item.Value - Convert.ToInt32(item.Value)) > 0)? item.Value : Convert.ToInt32(item.Value))@(item.PromoCodeType == PromoCodeType.Percentage? "%":"$")</td>
+        <td class="text-center p-3">@(item.UsageLimit?.ToString() ?? "∞")</td>
+             <td class="text-center p-3">@item.UsageCount</td>
+       
+              @if(item.IsActive == true)
+           {
+   <td class="text-center p-3 text-success">@FormResources.Active</td>
+   }
+               else
+   {
+       <td class="text-center p-3 text-warning">@FormResources.InActive</td>
+        }
 
-                                    <td class="d-flex gap-1 justify-content-center align-items-center">
-                                        <a class="btn btn-primary btn-sm" @onclick="() => Edit(item)">
-                                            <i class="feather icon-edit m-0"></i>
-                                        </a>
-                                        <button class="btn btn-danger  btn-sm" @onclick="() => Delete(item.Id)">
-                                            <i class="feather icon-trash-2 m-0"></i>
-                                        </button>
-                                    </td>
-                                </tr>
-                            }
-                        }
-                        else
-                        {
-                            <tr>
-                                <td colspan="10" class=" text-center">
-                                    @NotifiAndAlertsResources.NoDataFound
-                                </td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
-                <!-- Pagination start -->
-                <div class="d-flex justify-content-end select-none align-items-center mt-3">
-                    <nav>
-                        <ul dir="ltr" class="pagination mb-0">
-                            <!-- Previous Button -->
-                            <li class="page-item @(currentPage == 1 ? "disabled" : "")">
-                                <a class="page-link"
-                                   href="javascript:void(0)"
-                                   @onclick="async () => GoToPage(currentPage - 1)">
-                                    @ActionsResources.Previous
-                                </a>
-                            </li>
+       <td class="d-flex gap-1 justify-content-center align-items-center">
+   <a class="btn btn-primary btn-sm" @onclick="() => Edit(item)">
+          <i class="feather icon-edit m-0"></i>
+        </a>
+              <button class="btn btn-danger  btn-sm" @onclick="() => Delete(item.Id)">
+   <i class="feather icon-trash-2 m-0"></i>
+          </button>
+        </td>
+        </tr>
+           }
+   }
+        else
+           {
+          <tr>
+         <td colspan="10" class=" text-center">
+             @NotifiAndAlertsResources.NoDataFound
+        </td>
+    </tr>
+        }
+      </tbody>
+        </table>
+        <!-- Pagination start -->
+            <div class="d-flex justify-content-end select-none align-items-center mt-3">
+     <nav>
+         <ul dir="ltr" class="pagination mb-0">
+      <!-- Previous Button -->
+       <li class="page-item @(currentPage == 1 ? "disabled" : "")">
+   <a class="page-link"
+      href="javascript:void(0)"
+ @onclick="async () => GoToPage(currentPage - 1)">
+        @ActionsResources.Previous
+         </a>
+         </li>
 
-                            <!-- Page Numbers -->
-                            @foreach (var pag in Enumerable.Range(1, totalPages))
-                            {
-                                <li class="page-item @(pag == currentPage ? "active" : "")"><a class="page-link" @onclick="async () => GoToPage(pag)">@pag</a></li>
-                            }
+        <!-- Page Numbers -->
+         @foreach (var pag in Enumerable.Range(1, totalPages))
+      {
+      <li class="page-item @(pag == currentPage ? "active" : "")"><a class="page-link" @onclick="async () => GoToPage(pag)">@pag</a></li>
+           }
 
-                            <!-- Next Button -->
-                            <li class="page-item @(currentPage == totalPages ? "disabled" : "")">
-                                <a class="page-link"
-                                   @onclick="async () => GoToPage(currentPage + 1)">
-                                    @ActionsResources.Next
-                                </a>
-                            </li>
-                        </ul>
-                    </nav>
-                </div>
-                <!-- Pagination end -->
-            </div>
+         <!-- Next Button -->
+       <li class="page-item @(currentPage == totalPages ? "disabled" : "")">
+<a class="page-link"
+               @onclick="async () => GoToPage(currentPage + 1)">
+  @ActionsResources.Next
+       </a>
+    </li>
+              </ul>
+        </nav>
+          </div>
+   <!-- Pagination end -->
+          </div>
         </div>
     </div>
 </div>

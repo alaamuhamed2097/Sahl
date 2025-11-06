@@ -1,50 +1,50 @@
-﻿using Api.Controllers.Base;
-using BL.Contracts.Service.ShippingCompny;
+using Api.Controllers.Base;
+using BL.Contracts.Service.ECommerce.Unit;
 using Common.Enumerations.User;
 using DAL.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Resources;
-using Shared.DTOs.ECommerce;
+using Shared.DTOs.ECommerce.Unit;
 using Shared.GeneralModels;
 using Shared.GeneralModels.SearchCriteriaModels;
 
-namespace Api.Controllers.ShippingCompany
+namespace Api.Controllers.Catalog
 {
-    [Route("api/[controller]")]
     [ApiController]
-    [Authorize(Roles = nameof(UserRole.Admin))]
-    public class ShippingCompanyController : BaseController
+    [Route("api/[controller]")]
+    public class UnitController : BaseController
     {
-        private readonly IShippingCompanyService _shippingCompanyService;
+        private readonly IUnitService _unitService;
 
-        public ShippingCompanyController(IShippingCompanyService shippingCompanyService, Serilog.ILogger logger)
+        public UnitController(IUnitService unitService, Serilog.ILogger logger)
             : base(logger)
         {
-            _shippingCompanyService = shippingCompanyService;
+            _unitService = unitService;
         }
 
         /// <summary>
-        /// Retrieves all shipping companies.
+        /// Retrieves all units.
         /// </summary>
         [HttpGet]
+        [AllowAnonymous]
         public IActionResult Get()
         {
             try
             {
-                var companies = _shippingCompanyService.GetAll();
-                if (companies == null || !companies.Any())
+                var units = _unitService.GetAll();
+                if (units == null || !units.Any())
                     return NotFound(new ResponseModel<string>
                     {
                         Success = false,
-                        Message = "No companies found."
+                        Message = NotifiAndAlertsResources.NoDataFound
                     });
 
-                return Ok(new ResponseModel<IEnumerable<ShippingCompanyDto>>
+                return Ok(new ResponseModel<IEnumerable<UnitDto>>
                 {
                     Success = true,
-                    Message = "companies retrieved successfully.",
-                    Data = companies
+                    Message = NotifiAndAlertsResources.DataRetrieved,
+                    Data = units
                 });
             }
             catch (Exception ex)
@@ -54,9 +54,10 @@ namespace Api.Controllers.ShippingCompany
         }
 
         /// <summary>
-        /// Retrieves a shipping company by ID.
+        /// Retrieves a unit by ID.
         /// </summary>
         [HttpGet("{id}")]
+        [AllowAnonymous]
         public IActionResult Get(Guid id)
         {
             try
@@ -65,22 +66,22 @@ namespace Api.Controllers.ShippingCompany
                     return BadRequest(new ResponseModel<string>
                     {
                         Success = false,
-                        Message = "Invalid company ID."
+                        Message = NotifiAndAlertsResources.InvalidInputAlert
                     });
 
-                var company = _shippingCompanyService.FindById(id);
-                if (company == null)
+                var unit = _unitService.FindById(id);
+                if (unit == null)
                     return NotFound(new ResponseModel<string>
                     {
                         Success = false,
-                        Message = "company not found."
+                        Message = NotifiAndAlertsResources.NoDataFound
                     });
 
-                return Ok(new ResponseModel<ShippingCompanyDto>
+                return Ok(new ResponseModel<UnitDto>
                 {
                     Success = true,
-                    Message = "company retrieved successfully.",
-                    Data = company
+                    Message = NotifiAndAlertsResources.DataRetrieved,
+                    Data = unit
                 });
             }
             catch (Exception ex)
@@ -90,10 +91,11 @@ namespace Api.Controllers.ShippingCompany
         }
 
         /// <summary>
-        /// Searches shipping companies with pagination and filtering
+        /// Searches units with pagination and filtering
         /// </summary>
         /// <param name="criteria">Search criteria including pagination parameters</param>
         [HttpGet("search")]
+        [Authorize(Roles = nameof(UserRole.Admin))]
         public IActionResult Search([FromQuery] BaseSearchCriteriaModel criteria)
         {
             try
@@ -102,11 +104,11 @@ namespace Api.Controllers.ShippingCompany
                 criteria.PageNumber = criteria.PageNumber < 1 ? 1 : criteria.PageNumber;
                 criteria.PageSize = criteria.PageSize < 1 || criteria.PageSize > 100 ? 10 : criteria.PageSize;
 
-                var result = _shippingCompanyService.GetPage(criteria);
+                var result = _unitService.GetPage(criteria);
 
                 if (result == null || !result.Items.Any())
                 {
-                    return Ok(new ResponseModel<PaginatedDataModel<ShippingCompanyDto>>
+                    return Ok(new ResponseModel<PaginatedDataModel<UnitDto>>
                     {
                         Success = true,
                         Message = NotifiAndAlertsResources.NoDataFound,
@@ -114,7 +116,7 @@ namespace Api.Controllers.ShippingCompany
                     });
                 }
 
-                return Ok(new ResponseModel<PaginatedDataModel<ShippingCompanyDto>>
+                return Ok(new ResponseModel<PaginatedDataModel<UnitDto>>
                 {
                     Success = true,
                     Message = NotifiAndAlertsResources.DataRetrieved,
@@ -128,10 +130,11 @@ namespace Api.Controllers.ShippingCompany
         }
 
         /// <summary>
-        /// Saves a shipping company.
+        /// Saves a unit.
         /// </summary>
         [HttpPost("save")]
-        public async Task<IActionResult> Save([FromBody] ShippingCompanyDto shippingDto)
+        [Authorize(Roles = nameof(UserRole.Admin))]
+        public IActionResult Save([FromBody] UnitDto unitDto)
         {
             try
             {
@@ -139,12 +142,12 @@ namespace Api.Controllers.ShippingCompany
                     return BadRequest(new ResponseModel<string>
                     {
                         Success = false,
-                        Message = "Invalid shipping companies data."
+                        Message = NotifiAndAlertsResources.InvalidInputAlert
                     });
 
-                var success = await _shippingCompanyService.Save(shippingDto, GuidUserId);
+                var success = _unitService.Save(unitDto, GuidUserId);
                 if (!success)
-                    return Ok(new ResponseModel<string>
+                    return BadRequest(new ResponseModel<string>
                     {
                         Success = false,
                         Message = NotifiAndAlertsResources.SaveFailed
@@ -163,9 +166,10 @@ namespace Api.Controllers.ShippingCompany
         }
 
         /// <summary>
-        /// Deletes a shipping company by ID.
+        /// Deletes a unit by ID.
         /// </summary>
         [HttpPost("delete")]
+        [Authorize(Roles = nameof(UserRole.Admin))]
         public IActionResult Delete([FromBody] Guid id)
         {
             try
@@ -174,10 +178,10 @@ namespace Api.Controllers.ShippingCompany
                     return BadRequest(new ResponseModel<string>
                     {
                         Success = false,
-                        Message = "Invalid country ID."
+                        Message = "Invalid unit ID."
                     });
 
-                var success = _shippingCompanyService.Delete(id, GuidUserId);
+                var success = _unitService.Delete(id, GuidUserId);
                 if (!success)
                     return BadRequest(new ResponseModel<string>
                     {
@@ -196,5 +200,6 @@ namespace Api.Controllers.ShippingCompany
                 return HandleException(ex);
             }
         }
+
     }
 }

@@ -10,7 +10,7 @@ using Shared.DTOs.ECommerce.Item;
 using Shared.GeneralModels;
 using Shared.GeneralModels.SearchCriteriaModels;
 
-namespace Api.Controllers.ECommerce.Item
+namespace Api.Controllers.Catalog
 {
     [ApiController]
     [Route("api/[controller]")]

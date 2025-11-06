@@ -9,7 +9,7 @@ using Shared.DTOs.Brand;
 using Shared.GeneralModels;
 using Shared.GeneralModels.SearchCriteriaModels;
 
-namespace Api.Controllers.Brand
+namespace Api.Controllers.Catalog
 {
     [Route("api/[controller]")]
     [ApiController]

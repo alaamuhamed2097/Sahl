@@ -84,6 +84,7 @@ namespace BL.Service.ECommerce.Category
 
             return _mapper.MapList<TbCategory, CategoryDto>(categories.OrderBy(c => c.TreeViewSerial, new TreeViewSerialComparer()));
         }
+
         public override async Task<CategoryDto> FindByIdAsync(Guid Id)
         {
             Expression<Func<VwCategoryWithAttributes, bool>> filter = x => x.Id == Id;
@@ -597,6 +598,7 @@ namespace BL.Service.ECommerce.Category
                 throw new Exception(ValidationResources.UnexpectedError, ex);
             }
         }
+
         public async Task<List<CategoryTreeDto>> BuildCategoryTree()
         {
             var categoriesWithAttributes = await _categoryUnitOfWork.Repository<VwCategoryWithAttributes>().GetAllAsync();

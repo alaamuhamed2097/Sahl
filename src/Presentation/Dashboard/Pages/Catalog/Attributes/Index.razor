@@ -1,4 +1,4 @@
-@page "/attributes"
+﻿@page "/attributes"
 
 @using Shared.DTOs.ECommerce.Category
 @inherits BaseListPage<AttributeDto>
@@ -7,17 +7,17 @@
 <div class="container-fluid p-0">
     <div class="card shadow-sm border-0">
         <div class="card-header bg-primary text-white py-3 d-flex justify-content-between align-items-center">
-            <h5 class="mb-0 fw-semibold">@GeneralResources.Attributes</h5>
+            <h5 class="mb-0 fw-semibold text-white">🔖 @GeneralResources.Attributes</h5>
         </div>
 
         <div class="card-body p-4">
             <div class="dt-responsive table-responsive">
                 <!-- DESKTOP FILTRATION (Original - Unchanged) -->
                 <ul class="navbar-nav d-flex flex-row align-items-center gap-3 mb-2 px-0 w-100 d-none d-lg-flex">
-                    <li class="nav-item col-md-6 w-auto d-flex flex-row align-items-center gap-3">
+                    <li class="nav-item gap-2 col-md-6 w-auto d-flex flex-row align-items-center gap-3">
                         <EditForm Model="searchModel" OnSubmit="@Search">
                             <!-- Search Box -->
-                            <div class="input-group rounded-3 border" style="width: 170px; height: 38px;">
+                            <div class="input-group rounded-3 border gap-2" style="width: 170px; height: 38px;">
                                 <InputText @bind-Value="searchModel.SearchTerm"
                                            id="searchInput"
                                            class="form-control rounded-end-3 text-center border-0"
@@ -33,7 +33,7 @@
 
                         <!-- Page Size -->
                         <div class="d-flex align-items-center gap-2">
-                            <label class="form-label fw-semibold mb-0">@ActionsResources.Show</label>
+                            <!-- <label class="form-label fw-semibold mb-0">@ActionsResources.Show</label> -->
                             <select class="form-select rounded-3 shadow-sm border-light text-primary fw-bold text-center"
                                     style="width: 100px; height: 38px; padding-right: 16px;"
                                     @onchange="OnPageSizeChanged">
@@ -44,7 +44,7 @@
                             </select>
                         </div>
                     </li>
-                    <li class="nav-item ms-auto d-flex flex-row align-items-center gap-2">
+                    <li class="nav-item ms-auto  d-flex flex-row align-items-center gap-2">
                         <!-- Export Buttons -->
                         <div class="dropdown">
                             <button class="btn btn-info" type="button" id="exportDropdown" data-bs-toggle="dropdown" aria-expanded="false">
@@ -66,80 +66,7 @@
                 </ul>
 
                 <!-- MOBILE FILTRATION (New Mobile-First Design) -->
-                <div class="d-lg-none">
-                    <div class="row g-2 g-md-3 mb-3">
-                        <!-- Search and Page Size Row -->
-                        <div class="col-12 col-md-8">
-                            <div class="d-flex flex-column flex-sm-row gap-2 gap-sm-3 align-items-stretch align-items-sm-center">
-                                <EditForm Model="searchModel" OnSubmit="@Search" class="flex-grow-1 flex-sm-grow-0">
-                                    <!-- Mobile-Optimized Search Box -->
-                                    <div class="input-group rounded-3 border" style="max-width: 200px;">
-                                        <InputText @bind-Value="searchModel.SearchTerm"
-                                                   id="searchInputMobile"
-                                                   class="form-control rounded-end-3 border-0 px-2"
-                                                   placeholder="@ActionsResources.Search"
-                                                   style="height: 38px; font-size: 14px;" />
-                                        <button type="submit"
-                                                class="btn btn-danger rounded-start-3 d-flex align-items-center justify-content-center border-0"
-                                                style="width: 40px; height: 38px;">
-                                            <i class="fas fa-search text-white" style="font-size: 12px;"></i>
-                                        </button>
-                                    </div>
-                                </EditForm>
-
-                                <!-- Mobile-Friendly Page Size -->
-                                <div class="d-flex align-items-center gap-2">
-                                    <label class="form-label fw-semibold mb-0 text-nowrap small">@ActionsResources.Show</label>
-                                    <select class="form-select rounded-3 shadow-sm border-light text-primary fw-bold text-center p-0"
-                                            style="width: 80px; height: 38px; font-size: 14px;"
-                                            @onchange="OnPageSizeChanged">
-                                        <option value="10">10</option>
-                                        <option value="15">15</option>
-                                        <option value="20">20</option>
-                                        <option value="30">30</option>
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Action Buttons Row -->
-                        <div class="col-12 col-md-4">
-                            <div class="d-flex justify-content-start justify-content-md-end gap-2">
-                                <!-- Mobile-Optimized Export Dropdown -->
-                                <div class="dropdown">
-                                    <button class="btn btn-info btn-sm d-flex align-items-center"
-                                            type="button"
-                                            id="exportDropdownMobile"
-                                            data-bs-toggle="dropdown"
-                                            aria-expanded="false">
-                                        <i class="fas fa-file-export m-0 me-1 d-none d-sm-inline"></i>
-                                        <i class="fas fa-file-export m-0 d-sm-none"></i>
-                                        <span class="fw-bold d-none d-sm-inline ms-1">@ActionsResources.Export</span>
-                                    </button>
-                                    <ul class="dropdown-menu" aria-labelledby="exportDropdownMobile">
-                                        <li>
-                                            <a class="dropdown-item small" href="javascript:void(0)" @onclick="ExportToExcel">
-                                                <i class="far fa-file-excel me-2"></i>Excel
-                                            </a>
-                                        </li>
-                                        <li>
-                                            <a class="dropdown-item small" href="javascript:void(0)" @onclick="ExportToPrint">
-                                                <i class="fas fa-print me-2"></i>Print
-                                            </a>
-                                        </li>
-                                    </ul>
-                                </div>
-
-                                <!-- Mobile-Optimized Add Button -->
-                                <button class="btn btn-success btn-sm d-flex align-items-center" @onclick="Add">
-                                    <i class="feather icon-plus-circle m-0 d-none d-sm-inline"></i>
-                                    <i class="feather icon-plus-circle m-0 d-sm-none"></i>
-                                    <span class="fw-bold d-none d-sm-inline ms-1">@ActionsResources.Add</span>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+               
 
                 <!-- Table -->
                 <!-- Responsive Table Container -->
@@ -269,7 +196,7 @@
                     </div>
                 </div>
 
-                            <!-- MOBILE-OPTIMIZED PAGINATION (New) -->
+                <!-- MOBILE-OPTIMIZED PAGINATION (New) -->
                 <div class="d-lg-none d-flex flex-column flex-sm-row justify-content-between align-items-center mt-3 gap-2" dir="ltr">
                     <!-- Results Info -->
                     <div class="text-center text-sm-start">

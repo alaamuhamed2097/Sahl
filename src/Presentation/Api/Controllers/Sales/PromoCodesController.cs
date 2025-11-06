@@ -11,7 +11,7 @@ using Shared.GeneralModels.Parameters;
 using Shared.GeneralModels.ResultModels;
 using Shared.GeneralModels.SearchCriteriaModels;
 
-namespace Api.Controllers.PromoCode
+namespace Api.Controllers.Sales
 {
     [ApiController]
     [Route("api/[controller]")]

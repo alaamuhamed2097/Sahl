@@ -8,11 +8,6 @@
         Date = 4,
         CheckBox = 5,
         List = 6,
-        MultiSelectList = 7,
-        DateTime = 8,
-        Email = 9,
-        PhoneNumber = 10,
-        Password = 11,
-        FileUpload = 12
+        MultiSelectList = 7
     }
 }

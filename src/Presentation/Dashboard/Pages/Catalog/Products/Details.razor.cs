@@ -2,6 +2,7 @@ using Dashboard.Configuration;
 using Dashboard.Contracts.Brand;
 using Dashboard.Contracts.ECommerce.Category;
 using Dashboard.Contracts.ECommerce.Item;
+using Dashboard.Contracts.General;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.Extensions.Options;
@@ -19,50 +20,63 @@ namespace Dashboard.Pages.Catalog.Products
 {
     public partial class Details
     {
-        // Constants
+    // Constants
         protected const long MaxFileSize = 10 * 1024 * 1024; // 10MB
         protected const int MaxImageCount = 10;
 
         // Parameters
         [Parameter] public Guid Id { get; set; }
 
-        // Injections
+    // Injections
         [Inject] protected IItemService ItemService { get; set; } = null!;
         [Inject] protected IBrandService BrandService { get; set; } = null!;
         [Inject] protected ICategoryService CategoryService { get; set; } = null!;
+        [Inject] protected IAttributeService AttributeService { get; set; } = null!;
         [Inject] protected IUnitService UnitService { get; set; } = null!;
-        //   [Inject] protected IVideoProviderService VideoProviderService { get; set; } = null!;
+        [Inject] protected IResourceLoaderService ResourceLoaderService { get; set; } = null!;
+        //   [Inject] protected IVideoProviderService VideoProviderService { get; set; } = null!
         [Inject] protected IJSRuntime JSRuntime { get; set; } = null!;
         [Inject] protected NavigationManager Navigation { get; set; } = null!;
         [Inject] protected IOptions<ApiSettings> ApiOptions { get; set; } = default!;
 
         protected string baseUrl = string.Empty;
+ 
+        // Wizard state
+     protected bool isWizardInitialized { get; set; }
+        protected int currentStep = 0;
+        protected const int TotalSteps = 5;
+        
         // State variables
         protected bool isSaving { get; set; }
-        protected bool isProcessing { get; set; }
+     protected bool isProcessing { get; set; }
         protected int processingProgress { get; set; }
-        protected ItemDto Model { get; set; } = new() { Images = new List<ItemImageDto>() };
+        protected ItemDto Model { get; set; } = new()
+        {
+          Images = new List<ItemImageDto>(),
+          ItemAttributes = new List<ItemAttributeDto>(),
+   ItemAttributeCombinationPricings = new List<ItemAttributeCombinationPricingDto>()
+     };
 
-        // Validation states
+  // Validation states
         protected bool showValidationErrors = false;
-        protected Dictionary<string, bool> fieldValidation = new Dictionary<string, bool>();
+  protected Dictionary<string, bool> fieldValidation = new Dictionary<string, bool>();
 
         // Data collections
         private IEnumerable<CategoryDto> categories = Array.Empty<CategoryDto>();
         private IEnumerable<UnitDto> units = Array.Empty<UnitDto>();
         private IEnumerable<VideoProviderDto> videoProviders = Array.Empty<VideoProviderDto>();
         private List<CategoryAttributeDto> categoryAttributes = new();
-        private List<BrandDto> brands = new();
+    private List<BrandDto> brands = new();
         private bool isLoadingAttributes = false;
 
-        // ========== Lifecycle Methods ==========
-        protected override async Task OnInitializedAsync()
+// ========== Lifecycle Methods ==========
+    protected override async Task OnInitializedAsync()
         {
             baseUrl = ApiOptions.Value.BaseUrl;
 
             // Initialize validation dictionary
-            fieldValidation["CategoryId"] = true;
-            fieldValidation["UnitId"] = true;
+         fieldValidation["CategoryId"] = true;
+       fieldValidation["UnitId"] = true;
             fieldValidation["Quantity"] = true;
             fieldValidation["ThumbnailImage"] = true;
 
@@ -70,48 +84,72 @@ namespace Dashboard.Pages.Catalog.Products
         }
 
         protected override void OnParametersSet()
-        {
-            if (Id != Guid.Empty)
+    {
+     if (Id != Guid.Empty)
             {
-                _ = LoadProduct(Id);
-            }
+    _ = LoadProduct(Id);
+  }
         }
 
-        // ========== Data Loading Methods ==========
-        private async Task LoadData()
-        {
+        protected override async Task OnAfterRenderAsync(bool firstRender)
+  {
+       if (!firstRender) return;
             try
-            {
-                var tasks = new[]
-                {
-                    LoadCategoriesAsync(),
-                    LoadUnitsAsync(),
-                    LoadBrands()
-                };
+   {
+           await ResourceLoaderService.LoadStyleSheets([
+   "assets/plugins/smart-wizard/css/smart_wizard.min.css",
+             "assets/plugins/smart-wizard/css/smart_wizard_theme_arrows.min.css"
+       ]);
 
-                await Task.WhenAll(tasks);
+       await ResourceLoaderService.LoadScriptsSequential(
+     "assets/plugins/smart-wizard/js/jquery.smartWizard.min.js",
+        "assets/js/pages/product-wizard.js"
+          );
+
+await JSRuntime.InvokeVoidAsync("initializeSmartWizard", 0);
+        isWizardInitialized = true;
             }
             catch (Exception ex)
             {
-                await ShowErrorMessage(ValidationResources.Error, ex.Message);
-            }
+        Console.WriteLine($"Error initializing wizard: {ex.Message}");
+    }
         }
 
-        private async Task LoadCategoriesAsync()
+ // ========== Data Loading Methods ==========
+        private async Task LoadData()
+   {
+      try
+     {
+           var tasks = new[]
+                {
+ LoadCategoriesAsync(),
+            LoadUnitsAsync(),
+          LoadBrands()
+         };
+
+ await Task.WhenAll(tasks);
+   }
+ catch (Exception ex)
+   {
+      await ShowErrorMessage(ValidationResources.Error, ex.Message);
+         }
+   }
+
+     private async Task LoadCategoriesAsync()
         {
-            var result = await CategoryService.GetAllAsync();
+     var result = await CategoryService.GetAllAsync();
             if (result?.Success == true)
-            {
-                categories = result.Data ?? Array.Empty<CategoryDto>();
+          {
+    categories = result.Data ?? Array.Empty<CategoryDto>();
             }
         }
 
         private async Task LoadUnitsAsync()
-        {
+      {
             var result = await UnitService.GetAllAsync();
             if (result?.Success == true)
             {
-                units = result.Data ?? Array.Empty<UnitDto>();
+           units = result.Data ?? Array.Empty<UnitDto>();
             }
         }
 
@@ -119,102 +157,139 @@ namespace Dashboard.Pages.Catalog.Products
         {
             try
             {
-                isLoadingAttributes = true;
-                var result = await CategoryService.GetByIdAsync(Model.CategoryId);
+     isLoadingAttributes = true;
 
-                if (result?.Success == true)
+      // OPTIMIZED: Use dedicated endpoint to get category attributes directly
+   // This is more efficient than loading the entire category
+                var result = await AttributeService.GetByCategoryIdAsync(Model.CategoryId);
+
+        if (result?.Success == true && result.Data != null)
+            {
+             // Extract CategoryAttributes from the response
+     categoryAttributes = result.Data.ToList();
+
+             // Initialize ItemAttributes list if null
+  if (Model.ItemAttributes == null)
+         {
+        Model.ItemAttributes = new List<ItemAttributeDto>();
+          }
+
+  // Initialize attributes if this is a new product
+       if (Id == Guid.Empty)
+     {
+               Model.ItemAttributes = categoryAttributes
+        .Select(a => new ItemAttributeDto
+       {
+        // Map to the AttributeId (the actual attribute, not the CategoryAttribute ID)
+    AttributeId = a.AttributeId,
+      Value = string.Empty
+          })
+      .ToList();
+    }
+           else
+  {
+          // For existing products, ensure all category attributes have entries
+ foreach (var categoryAttr in categoryAttributes)
+            {
+         // Check if item already has this attribute (using AttributeId not CategoryAttribute Id)
+    if (!Model.ItemAttributes.Any(ia => ia.AttributeId == categoryAttr.AttributeId))
+             {
+       Model.ItemAttributes.Add(new ItemAttributeDto
+          {
+       AttributeId = categoryAttr.AttributeId,
+    Value = string.Empty
+       });
+            }
+             }
+        }
+          }
+   else
                 {
-                    categoryAttributes = result.Data?.CategoryAttributes ?? new List<CategoryAttributeDto>();
+            // Handle error case
+          categoryAttributes = new List<CategoryAttributeDto>();
+               await ShowErrorMessage(
+          ValidationResources.Error,
+     result?.Message ?? "Failed to load category attributes");
+    }
 
-                    // Initialize attributes if this is a new product
-                    if (Id == Guid.Empty)
-                    {
-                        Model.ItemAttributes = categoryAttributes
-                            .Select(a => new ItemAttributeDto
-                            {
-                                AttributeId = a.Id,
-                                Value = string.Empty
-                            })
-                            .ToList();
-                    }
-                }
-                StateHasChanged();
-            }
-            catch (Exception ex)
+           StateHasChanged();
+  }
+        catch (Exception ex)
+  {
+     categoryAttributes = new List<CategoryAttributeDto>();
+    await ShowErrorMessage(ValidationResources.Error, ex.Message);
+  }
+      finally
             {
-                await ShowErrorMessage(ValidationResources.Error, ex.Message);
-            }
-            finally
-            {
-                isLoadingAttributes = false;
-            }
+     isLoadingAttributes = false;
+  }
         }
 
         private async Task LoadProduct(Guid id)
         {
             try
             {
-                var result = await ItemService.GetByIdAsync(id);
+        var result = await ItemService.GetByIdAsync(id);
 
-                if (result?.Success == true)
-                {
-                    Model = result.Data ?? new ItemDto() { Images = new List<ItemImageDto>() };
+          if (result?.Success == true)
+     {
+          Model = result.Data ?? new ItemDto() { Images = new List<ItemImageDto>() };
 
-                    // Ensure images are properly loaded
-                    if (Model.Images == null)
-                    {
-                        Model.Images = new List<ItemImageDto>();
-                    }
+        // Ensure images are properly loaded
+      if (Model.Images == null)
+          {
+           Model.Images = new List<ItemImageDto>();
+          }
 
-                    // Mark existing images as not new to handle them differently from uploaded ones
-                    foreach (var image in Model.Images)
-                    {
-                        image.IsNew = false;
-                    }
+     // Mark existing images as not new to handle them differently from uploaded ones
+            foreach (var image in Model.Images)
+          {
+         image.IsNew = false;
+    }
 
-                    // Load category attributes if category is set
-                    if (Model.CategoryId != Guid.Empty)
-                    {
-                        await LoadCategoryAttributes();
-                    }
+  // Load category attributes if category is set
+       if (Model.CategoryId != Guid.Empty)
+     {
+   await LoadCategoryAttributes();
+  }
 
-                    StateHasChanged();
-                }
-                else
-                {
-                    await ShowErrorMessage(
-                        ValidationResources.Failed,
-                        NotifiAndAlertsResources.FailedToRetrieveData);
-                }
-            }
+        StateHasChanged();
+     }
+      else
+   {
+             await ShowErrorMessage(
+      ValidationResources.Failed,
+      NotifiAndAlertsResources.FailedToRetrieveData);
+         }
+    }
             catch (Exception ex)
             {
-                await ShowErrorMessage(ValidationResources.Error, ex.Message);
+    await ShowErrorMessage(ValidationResources.Error, ex.Message);
             }
         }
 
-        private async Task LoadBrands()
+  private async Task LoadBrands()
         {
-            try
-            {
-                var result = await BrandService.GetAllAsync();
+     try
+         {
+    var result = await BrandService.GetAllAsync();
 
-                if (result?.Success == true)
-                {
-                    brands = result.Data?.ToList() ?? new List<BrandDto>();
-                    StateHasChanged();
-                }
-                else
-                {
-                    await ShowErrorMessage(
-                        ValidationResources.Failed,
-                        NotifiAndAlertsResources.FailedToRetrieveData);
-                }
-            }
-            catch (Exception ex)
-            {
-                await ShowErrorMessage(ValidationResources.Error, ex.Message);
-            }
+      if (result?.Success == true)
+             {
+      brands = result.Data?.ToList() ?? new List<BrandDto>();
+            StateHasChanged();
+         }
+            else
+           {
+        await ShowErrorMessage(
+         ValidationResources.Failed,
+    NotifiAndAlertsResources.FailedToRetrieveData);
+      }
+   }
+    catch (Exception ex)
+        {
+       await ShowErrorMessage(ValidationResources.Error, ex.Message);
+        }
         }
 
         // ========== Event Handlers ==========
@@ -225,406 +300,459 @@ namespace Dashboard.Pages.Catalog.Products
 
         private async Task HandleThumbnailUpload(InputFileChangeEventArgs e)
         {
-            try
+       try
             {
-                if (e.File == null) return;
+  if (e.File == null) return;
 
-                // Validate file size
-                if (e.File.Size > MaxFileSize)
-                {
-                    fieldValidation["ThumbnailImage"] = false;
-                    await ShowErrorMessage(
-                        ValidationResources.Error,
-                        $"{e.File.Name} {string.Format(ValidationResources.ImageSizeLimitExceeded, MaxFileSize / 1024 / 1024)} {MaxFileSize / 1024 / 1024}MB");
-                    return;
+     // Validate file size
+  if (e.File.Size > MaxFileSize)
+   {
+        fieldValidation["ThumbnailImage"] = false;
+await ShowErrorMessage(
+  ValidationResources.Error,
+       $"{e.File.Name} {string.Format(ValidationResources.ImageSizeLimitExceeded, MaxFileSize / 1024 / 1024)} {MaxFileSize / 1024 / 1024}MB");
+ return;
                 }
 
-                // Validate content type
-                if (!e.File.ContentType.StartsWith("image/"))
-                {
-                    fieldValidation["ThumbnailImage"] = false;
-                    await ShowErrorMessage(
-                        ValidationResources.Error,
-                        $"{e.File.Name} {ValidationResources.NotValidImage}");
-                    return;
-                }
+       // Validate content type
+            if (!e.File.ContentType.StartsWith("image/"))
+       {
+       fieldValidation["ThumbnailImage"] = false;
+ await ShowErrorMessage(
+  ValidationResources.Error,
+      $"{e.File.Name} {ValidationResources.NotValidImage}");
+        return;
+   }
 
-                // Process thumbnail
-                Model.ThumbnailImage = await ConvertFileToBase64(e.File);
-                fieldValidation["ThumbnailImage"] = true;
-                StateHasChanged();
+         // Process thumbnail
+     Model.ThumbnailImage = await ConvertFileToBase64(e.File);
+         fieldValidation["ThumbnailImage"] = true;
+    StateHasChanged();
             }
-            catch (Exception ex)
+     catch (Exception ex)
             {
-                fieldValidation["ThumbnailImage"] = false;
-                await ShowErrorMessage(ValidationResources.Error, ex.Message);
+ fieldValidation["ThumbnailImage"] = false;
+          await ShowErrorMessage(ValidationResources.Error, ex.Message);
             }
         }
 
         private async Task HandleImageUpload(InputFileChangeEventArgs e)
         {
-            try
+ try
             {
-                if (e.FileCount == 0) return;
+         if (e.FileCount == 0) return;
 
-                isProcessing = true;
-                processingProgress = 0;
-                StateHasChanged();
+          isProcessing = true;
+       processingProgress = 0;
+         StateHasChanged();
 
-                // Validate number of images
-                int availableSlots = MaxImageCount - Model.Images.Count;
-                if (availableSlots <= 0)
-                {
-                    await ShowErrorMessage(
-                        ValidationResources.Error,
-                        $"{ValidationResources.MaximumOf} {MaxImageCount} {ValidationResources.ImagesAllowed}");
-                    return;
-                }
+       // Validate number of images
+       int availableSlots = MaxImageCount - Model.Images.Count;
+          if (availableSlots <= 0)
+   {
+      await ShowErrorMessage(
+           ValidationResources.Error,
+          $"{ValidationResources.MaximumOf} {MaxImageCount} {ValidationResources.ImagesAllowed}");
+         return;
+     }
 
-                // Initialize if null
-                Model.Images ??= new List<ItemImageDto>();
+     // Initialize if null
+       Model.Images ??= new List<ItemImageDto>();
 
                 // Get actual files to process (respect the limit)
-                var filesToProcess = e.GetMultipleFiles(Math.Min(availableSlots, e.FileCount));
+      var filesToProcess = e.GetMultipleFiles(Math.Min(availableSlots, e.FileCount));
                 int processedCount = 0;
 
-                foreach (var file in filesToProcess)
-                {
-                    // Validate file size
-                    if (file.Size > MaxFileSize)
-                    {
-                        await ShowErrorMessage(
-                            NotifiAndAlertsResources.Warning,
-                            $"{file.Name} {string.Format(ValidationResources.ImageSizeLimitExceeded, MaxFileSize / 1024 / 1024)} {MaxFileSize / 1024 / 1024}MB");
-                        continue;
-                    }
+   foreach (var file in filesToProcess)
+           {
+         // Validate file size
+    if (file.Size > MaxFileSize)
+         {
+                 await ShowErrorMessage(
+            NotifiAndAlertsResources.Warning,
+     $"{file.Name} {string.Format(ValidationResources.ImageSizeLimitExceeded, MaxFileSize / 1024 / 1024)} {MaxFileSize / 1024 / 1024}MB");
+       continue;
+       }
 
-                    // Validate content type
-                    if (!file.ContentType.StartsWith("image/"))
-                    {
-                        await ShowErrorMessage(
-                            NotifiAndAlertsResources.Warning,
-                            $"{file.Name} {ValidationResources.InvalidImageFormat}");
-                        continue;
-                    }
+ // Validate content type
+         if (!file.ContentType.StartsWith("image/"))
+{
+         await ShowErrorMessage(
+   NotifiAndAlertsResources.Warning,
+  $"{file.Name} {ValidationResources.InvalidImageFormat}");
+  continue;
+       }
 
-                    // Process image
-                    var base64Image = await ConvertFileToBase64(file);
-                    if (!string.IsNullOrEmpty(base64Image))
-                    {
-                        Model.Images.Add(new ItemImageDto
-                        {
-                            Path = base64Image,
-                            IsNew = true
-                        });
-                    }
+        // Process image
+   var base64Image = await ConvertFileToBase64(file);
+      if (!string.IsNullOrEmpty(base64Image))
+         {
+         Model.Images.Add(new ItemImageDto
+           {
+        Path = base64Image,
+    IsNew = true
+            });
+          }
 
-                    // Update progress
-                    processedCount++;
-                    processingProgress = (processedCount * 100) / filesToProcess.Count;
-                    StateHasChanged();
-                }
-            }
-            catch (Exception ex)
-            {
-                await ShowErrorMessage(ValidationResources.Error, ex.Message);
-            }
-            finally
-            {
-                isProcessing = false;
-                processingProgress = 0;
-                StateHasChanged();
-            }
+      // Update progress
+           processedCount++;
+         processingProgress = (processedCount * 100) / filesToProcess.Count;
+       StateHasChanged();
+           }
         }
+        catch (Exception ex)
+            {
+       await ShowErrorMessage(ValidationResources.Error, ex.Message);
+       }
+finally
+            {
+      isProcessing = false;
+         processingProgress = 0;
+         StateHasChanged();
+ }
+      }
 
-        private async Task HandleCombinationImageUpload(InputFileChangeEventArgs e, ItemAttributeCombinationPricingDto combination)
+     private async Task HandleCombinationImageUpload(InputFileChangeEventArgs e, ItemAttributeCombinationPricingDto combination)
         {
-            try
-            {
-                if (e.File == null) return;
+         try
+          {
+          if (e.File == null) return;
 
-                // Validate file size
-                if (e.File.Size > MaxFileSize)
-                {
-                    await ShowErrorMessage(
-                        ValidationResources.Error,
-                        $"{e.File.Name} {string.Format(ValidationResources.ImageSizeLimitExceeded, MaxFileSize / 1024 / 1024)} {MaxFileSize / 1024 / 1024}MB");
-                    return;
-                }
+    // Validate file size
+             if (e.File.Size > MaxFileSize)
+        {
+            await ShowErrorMessage(
+ ValidationResources.Error,
+      $"{e.File.Name} {string.Format(ValidationResources.ImageSizeLimitExceeded, MaxFileSize / 1024 / 1024)} {MaxFileSize / 1024 / 1024}MB");
+          return;
+       }
 
-                // Validate content type
-                if (!e.File.ContentType.StartsWith("image/"))
-                {
-                    await ShowErrorMessage(
-                        ValidationResources.Error,
-                        $"{e.File.Name} {ValidationResources.NotValidImage}");
-                    return;
-                }
+        // Validate content type
+    if (!e.File.ContentType.StartsWith("image/"))
+          {
+            await ShowErrorMessage(
+           ValidationResources.Error,
+    $"{e.File.Name} {ValidationResources.NotValidImage}");
+        return;
+ }
 
-                combination.Image = await ConvertFileToBase64(e.File);
-                StateHasChanged();
-            }
-            catch (Exception ex)
-            {
-                await ShowErrorMessage(ValidationResources.Error, ex.Message);
-            }
+     combination.Image = await ConvertFileToBase64(e.File);
+          StateHasChanged();
         }
-
-        //private void UpdateAttributeValue(Guid attributeId, ChangeEventArgs e)
-        //{
-        //    try
-        //    {
-        //        Console.WriteLine(e.Value);
-        //        var value = e.Value?.ToString() ?? string.Empty;
-        //        var attribute = Model.ItemAttributes.FirstOrDefault(a => a.AttributeId == attributeId);
-        //        if (attribute != null)
-        //        {
-        //            attribute.Value = value;
-        //        }
-        //        else
-        //        {
-        //            Model.ItemAttributes.Add(new ItemAttributeDto
-        //            {
-        //                AttributeId = attributeId,
-        //                Value = value
-        //            });
-        //        }
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        Console.WriteLine(ex.Message);
-        //    }
-        //}
+  catch (Exception ex)
+            {
+       await ShowErrorMessage(ValidationResources.Error, ex.Message);
+            }
+}
 
         // ========== UI Action Methods ==========
-        protected async Task RemoveThumbnail()
+protected async Task RemoveThumbnail()
         {
-            var confirmed = await JSRuntime.InvokeAsync<bool>("swal", new
+     var confirmed = await JSRuntime.InvokeAsync<bool>("swal", new
             {
-                title = NotifiAndAlertsResources.ConfirmDeleteImage,
-                icon = "warning",
+       title = NotifiAndAlertsResources.ConfirmDeleteImage,
+          icon = "warning",
                 buttons = new { confirm = true },
-                dangerMode = true
+             dangerMode = true
             });
 
-            if (confirmed)
-            {
+     if (confirmed)
+         {
                 Model.ThumbnailImage = null;
-                StateHasChanged();
-            }
+            StateHasChanged();
+      }
         }
 
         private async Task DeleteImage(ItemImageDto image)
-        {
-            try
+   {
+         try
             {
                 var confirmed = await JSRuntime.InvokeAsync<bool>("swal", new
-                {
-                    title = NotifiAndAlertsResources.ConfirmDeleteImage,
-                    icon = "warning",
-                    buttons = new { confirm = true },
-                    dangerMode = true
-                });
+       {
+       title = NotifiAndAlertsResources.ConfirmDeleteImage,
+    icon = "warning",
+       buttons = new { confirm = true },
+  dangerMode = true
+           });
 
-                if (confirmed)
-                {
-                    Model.Images.Remove(image);
-                    // Update validation state - if we have no images, we need a thumbnail
-                    fieldValidation["ThumbnailImage"] = !string.IsNullOrEmpty(Model.ThumbnailImage) || Model.Images.Count > 0;
-                    StateHasChanged();
-                }
-            }
-            catch (Exception ex)
-            {
-                await ShowErrorMessage(ValidationResources.Error, ex.Message);
+         if (confirmed)
+     {
+         Model.Images.Remove(image);
+     // Update validation state - if we have no images, we need a thumbnail
+         fieldValidation["ThumbnailImage"] = !string.IsNullOrEmpty(Model.ThumbnailImage) || Model.Images.Count > 0;
+   StateHasChanged();
+  }
+     }
+         catch (Exception ex)
+ {
+      await ShowErrorMessage(ValidationResources.Error, ex.Message);
             }
         }
 
         private void RemoveAttribute(Guid attributeId)
         {
             var attribute = Model.ItemAttributes.FirstOrDefault(a => a.AttributeId == attributeId);
-            if (attribute != null)
+     if (attribute != null)
             {
-                Model.ItemAttributes.Remove(attribute);
+      Model.ItemAttributes.Remove(attribute);
 
-                // Remove any combinations that include this attribute
-                Model.ItemAttributeCombinationPricings = Model.ItemAttributeCombinationPricings
-                    .Where(c => !c.AttributeIds.Split(',').Contains(attributeId.ToString()))
-                    .ToList();
-            }
+ // Remove any combinations that include this attribute
+        Model.ItemAttributeCombinationPricings = Model.ItemAttributeCombinationPricings
+          .Where(c => !c.AttributeIds.Split(',').Contains(attributeId.ToString()))
+      .ToList();
+      }
         }
 
         private void RemoveCombination(ItemAttributeCombinationPricingDto combination)
-        {
-            Model.ItemAttributeCombinationPricings.Remove(combination);
+     {
+          Model.ItemAttributeCombinationPricings.Remove(combination);
         }
 
         protected async Task Save()
+    {
+      try
+  {
+      // Validate required fields
+    ValidateForm();
+
+       if (!IsFormValid())
+      {
+   showValidationErrors = true;
+           // Highlight which fields are invalid
+            if (!fieldValidation["ThumbnailImage"])
+      {
+   await ShowErrorMessage(
+   ValidationResources.ValidationError,
+       ValidationResources.ImageRequired);
+       }
+            else
         {
-            try
-            {
-                // Validate required fields
-                ValidateForm();
+    await ShowErrorMessage(
+      ValidationResources.ValidationError,
+         ValidationResources.PleaseFixValidationErrors);
+        }
+       return;
+            }
 
-                if (!IsFormValid())
-                {
-                    showValidationErrors = true;
-                    // Highlight which fields are invalid
-                    if (!fieldValidation["ThumbnailImage"])
-                    {
-                        await ShowErrorMessage(
-                            ValidationResources.ValidationError,
-                            ValidationResources.ImageRequired);
-                    }
-                    else
-                    {
-                        await ShowErrorMessage(
-                            ValidationResources.ValidationError,
-                            ValidationResources.PleaseFixValidationErrors);
-                    }
-                    return;
-                }
+         isSaving = true;
+           StateHasChanged();
 
-                isSaving = true;
-                StateHasChanged();
+       var result = await ItemService.SaveAsync(Model);
 
-                var result = await ItemService.SaveAsync(Model);
+    if (result?.Success == true)
+             {
+        await ShowSuccessMessage(
+          ValidationResources.Done,
+       NotifiAndAlertsResources.SavedSuccessfully);
 
-                if (result?.Success == true)
-                {
-                    await ShowSuccessMessage(
-                        ValidationResources.Done,
-                        NotifiAndAlertsResources.SavedSuccessfully);
-
-                    Navigation.NavigateTo("/Products");
-                }
-                else
-                {
-                    await ShowErrorMessage(
-                        ValidationResources.Failed,
-                        result?.Message ?? NotifiAndAlertsResources.SaveFailed);
-                }
+ Navigation.NavigateTo("/Products");
+          }
+     else
+     {
+              await ShowErrorMessage(
+          ValidationResources.Failed,
+  result?.Message ?? NotifiAndAlertsResources.SaveFailed);
+      }
             }
             catch (Exception ex)
-            {
-                await ShowErrorMessage(NotifiAndAlertsResources.FailedAlert, ex.Message);
-            }
-            finally
-            {
-                isSaving = false;
-                StateHasChanged();
-            }
+     {
+              await ShowErrorMessage(NotifiAndAlertsResources.FailedAlert, ex.Message);
+   }
+         finally
+       {
+isSaving = false;
+ StateHasChanged();
         }
+ }
 
         protected void CloseModal()
         {
-            Navigation.NavigateTo("/Products");
+     Navigation.NavigateTo("/Products");
+        }
+
+        // ========== Wizard Navigation Methods ==========
+        protected async Task<bool> ValidateCurrentStep()
+   {
+    switch (currentStep)
+      {
+      case 0: // Basic Information
+           return !string.IsNullOrWhiteSpace(Model.TitleAr) &&
+  !string.IsNullOrWhiteSpace(Model.TitleEn) &&
+    !string.IsNullOrWhiteSpace(Model.ShortDescriptionAr) &&
+      !string.IsNullOrWhiteSpace(Model.ShortDescriptionEn) &&
+          !string.IsNullOrWhiteSpace(Model.DescriptionAr) &&
+      !string.IsNullOrWhiteSpace(Model.DescriptionEn);
+          
+           case 1: // SEO
+return !string.IsNullOrWhiteSpace(Model.SEOTitle) &&
+            !string.IsNullOrWhiteSpace(Model.SEODescription) &&
+         !string.IsNullOrWhiteSpace(Model.SEOMetaTags);
+         
+     case 2: // Classification
+return Model.CategoryId != Guid.Empty &&
+      Model.BrandId != Guid.Empty &&
+Model.UnitId != Guid.Empty;
+       
+      case 3: // Media
+           return !string.IsNullOrEmpty(Model.ThumbnailImage) ||
+(Model.Images != null && Model.Images.Count > 0);
+
+     case 4: // Attributes (optional)
+         return true;
+             
+         default:
+     return true;
+   }
+        }
+
+        protected async Task MoveToNextStep()
+      {
+            if (await ValidateCurrentStep())
+            {
+                if (isWizardInitialized && currentStep < TotalSteps - 1)
+  {
+         currentStep++;
+    await JSRuntime.InvokeVoidAsync("moveToNextStep");
+   StateHasChanged();
+    }
+   }
+            else
+ {
+        // Show specific validation message based on current step
+        string errorMessage = GetStepValidationMessage(currentStep);
+             await ShowErrorMessage(
+    ValidationResources.ValidationError,
+     errorMessage);
+      }
+        }
+
+        private string GetStepValidationMessage(int step)
+        {
+            return step switch
+   {
+          0 => "Please fill in all basic information fields (Product Name, Short Description, and Description in both Arabic and English).",
+              1 => "Please fill in all SEO fields (SEO Title, Description, and Meta Tags).",
+                2 => "Please select Category, Brand, and Unit.",
+       3 => "Please upload at least a thumbnail image or product images.",
+              4 => "Attributes are optional. You can proceed to save.",
+    _ => ValidationResources.PleaseFixValidationErrors
+            };
+    }
+
+        protected async Task MoveToPreviousStep()
+        {
+    if (isWizardInitialized && currentStep > 0)
+            {
+    currentStep--;
+      await JSRuntime.InvokeVoidAsync("moveToPreviousStep");
+         StateHasChanged();
+    }
         }
 
         // ========== Helper Methods ==========
         private async Task<string> ConvertFileToBase64(IBrowserFile file)
         {
             try
-            {
-                using var stream = file.OpenReadStream(MaxFileSize);
-                using var memoryStream = new MemoryStream();
-                await stream.CopyToAsync(memoryStream);
-                return $"{Convert.ToBase64String(memoryStream.ToArray())}";
-            }
-            catch (Exception ex)
-            {
-                await ShowErrorMessage(
-                    ValidationResources.Error,
-                    $"{ValidationResources.ErrorProcessingFile}: {ex.Message}");
-                return null;
-            }
+         {
+     using var stream = file.OpenReadStream(MaxFileSize);
+       using var memoryStream = new MemoryStream();
+await stream.CopyToAsync(memoryStream);
+    return $"{Convert.ToBase64String(memoryStream.ToArray())}";
+ }
+   catch (Exception ex)
+{
+     await ShowErrorMessage(
+     ValidationResources.Error,
+             $"{ValidationResources.ErrorProcessingFile}: {ex.Message}");
+      return null;
+      }
         }
 
         private async Task ShowErrorMessage(string title, string message, string type = "error")
-        {
+    {
             await JSRuntime.InvokeVoidAsync("swal", title, message, type);
         }
 
         private async Task ShowSuccessMessage(string title, string message)
         {
-            await JSRuntime.InvokeVoidAsync("swal", title, message, "success");
+  await JSRuntime.InvokeVoidAsync("swal", title, message, "success");
         }
 
-        private void ValidateForm()
+ private void ValidateForm()
         {
             // Quantity validation - only validate if stock status is true (in stock)
-            fieldValidation["Quantity"] = !Model.StockStatus || Model.Quantity > 0;
+  fieldValidation["Quantity"] = !Model.StockStatus || Model.Quantity > 0;
 
-            // Thumbnail/Image validation - either thumbnail or at least one image is required
-            fieldValidation["ThumbnailImage"] = !string.IsNullOrEmpty(Model.ThumbnailImage) ||
-                                              (Model.Images != null && Model.Images.Count > 0);
+  // Thumbnail/Image validation - either thumbnail or at least one image is required
+  fieldValidation["ThumbnailImage"] = !string.IsNullOrEmpty(Model.ThumbnailImage) ||
+       (Model.Images != null && Model.Images.Count > 0);
         }
 
         private bool IsFormValid()
-        {
+      {
             // Check all validation fields
             var basicValidations = fieldValidation.Values.All(valid => valid);
 
             // Additional check for images if needed
             bool imagesValid = !string.IsNullOrEmpty(Model.ThumbnailImage) ||
-                             (Model.Images != null && Model.Images.Count > 0);
+        (Model.Images != null && Model.Images.Count > 0);
 
-            return basicValidations && imagesValid;
-        }
+   return basicValidations && imagesValid;
+  }
 
         private string GetCombinationAttributesDisplay(string attributeIds)
         {
-            if (string.IsNullOrEmpty(attributeIds))
-                return string.Empty;
+  if (string.IsNullOrEmpty(attributeIds))
+           return string.Empty;
 
             var ids = attributeIds.Split(',');
-            var attributes = new List<string>();
+   var attributes = new List<string>();
 
-            foreach (var id in ids)
-            {
-                if (Guid.TryParse(id, out var guid))
-                {
-                    // First check if it's an option ID
-                    var categoryAttr = categoryAttributes
-                        .FirstOrDefault(ca => ca.AttributeOptions?.Any(o => o.Id == guid) == true);
+      foreach (var id in ids)
+          {
+    if (Guid.TryParse(id, out var guid))
+           {
+        // First check if it's an option ID
+    var categoryAttr = categoryAttributes
+         .FirstOrDefault(ca => ca.AttributeOptions?.Any(o => o.Id == guid) == true);
 
-                    if (categoryAttr != null)
-                    {
-                        var option = categoryAttr.AttributeOptions.First(o => o.Id == guid);
-                        attributes.Add($"{categoryAttr.Title}: {option.Title}");
-                    }
-                    else
-                    {
-                        // If not an option, check if it's an attribute ID with a direct value
-                        var attribute = categoryAttributes.FirstOrDefault(a => a.Id == guid);
-                        var value = Model.ItemAttributes.FirstOrDefault(a => a.AttributeId == guid)?.Value;
+       if (categoryAttr != null)
+     {
+ var option = categoryAttr.AttributeOptions.First(o => o.Id == guid);
+         attributes.Add($"{categoryAttr.Title}: {option.Title}");
+       }
+        else
+      {
+         // If not an option, check if it's an attribute ID with a direct value
+    var attribute = categoryAttributes.FirstOrDefault(a => a.Id == guid);
+            var value = Model.ItemAttributes.FirstOrDefault(a => a.AttributeId == guid)?.Value;
 
-                        if (attribute != null && !string.IsNullOrEmpty(value))
-                        {
-                            attributes.Add($"{attribute.Title}: {value}");
-                        }
-                    }
-                }
-            }
-
-            return string.Join(" | ", attributes);
+      if (attribute != null && !string.IsNullOrEmpty(value))
+ {
+            attributes.Add($"{attribute.Title}: {value}");
+          }
         }
+         }
+   }
+
+     return string.Join(" | ", attributes);
+ }
 
         private string GetImageSourceForDisplay(string imagePath)
-        {
+    {
             if (string.IsNullOrEmpty(imagePath))
-                return string.Empty;
+    return string.Empty;
 
             // Check if it's already a full data URL
-            if (imagePath.StartsWith("data:image/"))
-                return imagePath;
+  if (imagePath.StartsWith("data:image/"))
+     return imagePath;
 
-            // Check if it's a base64 string (new uploads)
-            if (imagePath.Length > 200)
-                return $"data:image/png;base64,{imagePath}";
+// Check if it's a base64 string (new uploads)
+ if (imagePath.Length > 200)
+   return $"data:image/png;base64,{imagePath}";
 
-            // If it's a path to an image on the server
+   // If it's a path to an image on the server
             return baseUrl + imagePath;
-        }
+     }
     }
 }

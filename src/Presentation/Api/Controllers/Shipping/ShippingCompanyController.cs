@@ -1,50 +1,50 @@
-using Api.Controllers.Base;
-using BL.Contracts.Service.ECommerce.Unit;
+﻿using Api.Controllers.Base;
+using BL.Contracts.Service.ShippingCompny;
 using Common.Enumerations.User;
 using DAL.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Resources;
-using Shared.DTOs.ECommerce.Unit;
+using Shared.DTOs.ECommerce;
 using Shared.GeneralModels;
 using Shared.GeneralModels.SearchCriteriaModels;
 
-namespace Api.Controllers.ECommerce.Unit
+namespace Api.Controllers.Shipping
 {
-    [ApiController]
     [Route("api/[controller]")]
-    public class UnitController : BaseController
+    [ApiController]
+    [Authorize(Roles = nameof(UserRole.Admin))]
+    public class ShippingCompanyController : BaseController
     {
-        private readonly IUnitService _unitService;
+        private readonly IShippingCompanyService _shippingCompanyService;
 
-        public UnitController(IUnitService unitService, Serilog.ILogger logger)
+        public ShippingCompanyController(IShippingCompanyService shippingCompanyService, Serilog.ILogger logger)
             : base(logger)
         {
-            _unitService = unitService;
+            _shippingCompanyService = shippingCompanyService;
         }
 
         /// <summary>
-        /// Retrieves all units.
+        /// Retrieves all shipping companies.
         /// </summary>
         [HttpGet]
-        [AllowAnonymous]
         public IActionResult Get()
         {
             try
             {
-                var units = _unitService.GetAll();
-                if (units == null || !units.Any())
+                var companies = _shippingCompanyService.GetAll();
+                if (companies == null || !companies.Any())
                     return NotFound(new ResponseModel<string>
                     {
                         Success = false,
-                        Message = NotifiAndAlertsResources.NoDataFound
+                        Message = "No companies found."
                     });
 
-                return Ok(new ResponseModel<IEnumerable<UnitDto>>
+                return Ok(new ResponseModel<IEnumerable<ShippingCompanyDto>>
                 {
                     Success = true,
-                    Message = NotifiAndAlertsResources.DataRetrieved,
-                    Data = units
+                    Message = "companies retrieved successfully.",
+                    Data = companies
                 });
             }
             catch (Exception ex)
@@ -54,10 +54,9 @@ namespace Api.Controllers.ECommerce.Unit
         }
 
         /// <summary>
-        /// Retrieves a unit by ID.
+        /// Retrieves a shipping company by ID.
         /// </summary>
         [HttpGet("{id}")]
-        [AllowAnonymous]
         public IActionResult Get(Guid id)
         {
             try
@@ -66,22 +65,22 @@ namespace Api.Controllers.ECommerce.Unit
                     return BadRequest(new ResponseModel<string>
                     {
                         Success = false,
-                        Message = NotifiAndAlertsResources.InvalidInputAlert
+                        Message = "Invalid company ID."
                     });
 
-                var unit = _unitService.FindById(id);
-                if (unit == null)
+                var company = _shippingCompanyService.FindById(id);
+                if (company == null)
                     return NotFound(new ResponseModel<string>
                     {
                         Success = false,
-                        Message = NotifiAndAlertsResources.NoDataFound
+                        Message = "company not found."
                     });
 
-                return Ok(new ResponseModel<UnitDto>
+                return Ok(new ResponseModel<ShippingCompanyDto>
                 {
                     Success = true,
-                    Message = NotifiAndAlertsResources.DataRetrieved,
-                    Data = unit
+                    Message = "company retrieved successfully.",
+                    Data = company
                 });
             }
             catch (Exception ex)
@@ -91,11 +90,10 @@ namespace Api.Controllers.ECommerce.Unit
         }
 
         /// <summary>
-        /// Searches units with pagination and filtering
+        /// Searches shipping companies with pagination and filtering
         /// </summary>
         /// <param name="criteria">Search criteria including pagination parameters</param>
         [HttpGet("search")]
-        [Authorize(Roles = nameof(UserRole.Admin))]
         public IActionResult Search([FromQuery] BaseSearchCriteriaModel criteria)
         {
             try
@@ -104,11 +102,11 @@ namespace Api.Controllers.ECommerce.Unit
                 criteria.PageNumber = criteria.PageNumber < 1 ? 1 : criteria.PageNumber;
                 criteria.PageSize = criteria.PageSize < 1 || criteria.PageSize > 100 ? 10 : criteria.PageSize;
 
-                var result = _unitService.GetPage(criteria);
+                var result = _shippingCompanyService.GetPage(criteria);
 
                 if (result == null || !result.Items.Any())
                 {
-                    return Ok(new ResponseModel<PaginatedDataModel<UnitDto>>
+                    return Ok(new ResponseModel<PaginatedDataModel<ShippingCompanyDto>>
                     {
                         Success = true,
                         Message = NotifiAndAlertsResources.NoDataFound,
@@ -116,7 +114,7 @@ namespace Api.Controllers.ECommerce.Unit
                     });
                 }
 
-                return Ok(new ResponseModel<PaginatedDataModel<UnitDto>>
+                return Ok(new ResponseModel<PaginatedDataModel<ShippingCompanyDto>>
                 {
                     Success = true,
                     Message = NotifiAndAlertsResources.DataRetrieved,
@@ -130,11 +128,10 @@ namespace Api.Controllers.ECommerce.Unit
         }
 
         /// <summary>
-        /// Saves a unit.
+        /// Saves a shipping company.
         /// </summary>
         [HttpPost("save")]
-        [Authorize(Roles = nameof(UserRole.Admin))]
-        public IActionResult Save([FromBody] UnitDto unitDto)
+        public async Task<IActionResult> Save([FromBody] ShippingCompanyDto shippingDto)
         {
             try
             {
@@ -142,12 +139,12 @@ namespace Api.Controllers.ECommerce.Unit
                     return BadRequest(new ResponseModel<string>
                     {
                         Success = false,
-                        Message = NotifiAndAlertsResources.InvalidInputAlert
+                        Message = "Invalid shipping companies data."
                     });
 
-                var success = _unitService.Save(unitDto, GuidUserId);
+                var success = await _shippingCompanyService.Save(shippingDto, GuidUserId);
                 if (!success)
-                    return BadRequest(new ResponseModel<string>
+                    return Ok(new ResponseModel<string>
                     {
                         Success = false,
                         Message = NotifiAndAlertsResources.SaveFailed
@@ -166,10 +163,9 @@ namespace Api.Controllers.ECommerce.Unit
         }
 
         /// <summary>
-        /// Deletes a unit by ID.
+        /// Deletes a shipping company by ID.
         /// </summary>
         [HttpPost("delete")]
-        [Authorize(Roles = nameof(UserRole.Admin))]
         public IActionResult Delete([FromBody] Guid id)
         {
             try
@@ -178,10 +174,10 @@ namespace Api.Controllers.ECommerce.Unit
                     return BadRequest(new ResponseModel<string>
                     {
                         Success = false,
-                        Message = "Invalid unit ID."
+                        Message = "Invalid country ID."
                     });
 
-                var success = _unitService.Delete(id, GuidUserId);
+                var success = _shippingCompanyService.Delete(id, GuidUserId);
                 if (!success)
                     return BadRequest(new ResponseModel<string>
                     {
@@ -200,6 +196,5 @@ namespace Api.Controllers.ECommerce.Unit
                 return HandleException(ex);
             }
         }
-
     }
 }

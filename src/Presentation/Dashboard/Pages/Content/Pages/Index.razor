@@ -14,11 +14,11 @@
 
 <div class="container-fluid p-0">
     <div class="card shadow-sm border-0">
-        <div class="card-header d-flex justify-content-between align-items-center">
-            <h4 class="mb-0">📄 @GeneralResources.StaticPages</h4>
-            <!-- Removed Add button since users can only edit existing pages -->
-        </div>
-        <div class="card-body">
+        <div class="card-header bg-primary text-white py-3 d-flex justify-content-between align-items-center">
+            <h5 class="mb-0 fw-semibold text-white">📄 @GeneralResources.StaticPages</h5>
+       <!-- Removed Add button since users can only edit existing pages -->
+      </div>
+      <div class="card-body">
             <div class="dt-responsive table-responsive">
                 <!-- Filtration start -->
                 <ul class="navbar-nav d-flex flex-row align-items-center gap-3 mb-2 px-0 w-100">
@@ -41,7 +41,7 @@
 
                         <!-- Page Size -->
                         <div class="d-flex align-items-center gap-2">
-                            <label class="form-label fw-semibold mb-0">@ActionsResources.Show</label>
+                           
                             <select class="form-select rounded-3 shadow-sm border-light text-primary fw-bold text-center"
                                     style="width: 100px; height: 38px; padding-right: 16px;"
                                     @onchange="OnPageSizeChanged">

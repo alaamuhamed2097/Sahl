@@ -63,16 +63,16 @@
     </div>
 
     <!-- Desktop navbar -->
-    <div class="navbar-collapse position-relative d-none d-lg-flex align-items-center" style="justify-content: space-between;" id="navbarSupportedContent">
+    <div class="navbar-collapse mobile-disa position-relative d-none d-lg-flex align-items-center" style="justify-content: space-between;" id="navbarSupportedContent">
         <!-- Desktop: Show page title -->
         <h4 class="ms-3 my-auto">
             <i class="feather icon-home me-2"></i> @GeneralResources.Dashboard
         </h4>
 
-        <ul class="navbar-nav d-flex flex-row align-items-center">
+        <ul class="navbar-nav d-flex flex-row gap-row-item align-items-center">
             <!-- Language Switcher Button -->
             <li>
-                <button class="btn btn-link nav-link p-0" @onclick="ChangeLanguage" 
+                <button class="btn gap-row-item btn-link nav-link p-0" @onclick="ChangeLanguage" 
                         title="@(ResourceManager.CurrentLanguage == Language.English ? GeneralResources.Arabic : GeneralResources.English)">
                     <i class="feather icon-globe m-0"></i>
                     <span class="d-none d-lg-inline ms-2">@(ResourceManager.CurrentLanguage == Language.English ? GeneralResources.Arabic : GeneralResources.English)</span>
@@ -87,7 +87,7 @@
                        title="@GeneralResources.Settings">
                         <i class="icon feather icon-settings m-0"></i>
                     </a>
-                    <div class="dropdown-menu dropdown-menu-end profile-notification">
+                    <div class="dropdown-menu gap-row-item dropdown-menu-end profile-notification">
                         <div class="pro-head">
                             <img src="@baseUrl/@UserImage"
                                  class="img-radius"
