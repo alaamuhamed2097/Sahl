@@ -1,7 +1,7 @@
-﻿using Resources;
+﻿using Common.Enumerations.PromoCode;
+using Resources;
 using Resources.Enumerations;
 using Shared.DTOs.Base;
-using Common.Enumerations.PromoCode;
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 

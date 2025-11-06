@@ -1,9 +1,9 @@
-﻿using Resources;
+﻿using Common.Enumerations.Order;
+using Common.Enumerations.Payment;
+using Resources;
 using Resources.Enumerations;
 using Shared.DTOs.Base;
-using Common.Enumerations.Payment;
 using System.Text.Json.Serialization;
-using Common.Enumerations.Order;
 
 namespace Shared.DTOs.ECommerce
 {
@@ -20,7 +20,7 @@ namespace Shared.DTOs.ECommerce
         public DateTime CreatedDateUtc { get; set; }
         public DateTime? OrderDeliveryDate { get; set; }
         public Guid? DirectSaleLinkId { get; set; }
-        
+
         [JsonIgnore]
         public string CreatedDateLocalFormatted =>
          TimeZoneInfo.ConvertTimeFromUtc(CreatedDateUtc, TimeZoneInfo.FindSystemTimeZoneById("Africa/Cairo")).ToString("yyyy-MM-dd HH:mm tt");
@@ -53,7 +53,7 @@ namespace Shared.DTOs.ECommerce
 
         [JsonIgnore]
         public string PaymentGatewayMethodTitle => ResourceManager.CurrentLanguage == Language.Arabic ? PaymentGatewayMethodTitleAr : PaymentGatewayMethodTitleEn;
-        
+
         // Business Points Information
         /// <summary>
         /// Number of business points used for this order
