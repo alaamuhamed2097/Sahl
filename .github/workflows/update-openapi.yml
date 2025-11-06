@@ -21,9 +21,11 @@ jobs:
       - name: Restore dependencies
         run: dotnet restore
         
-      # 4️⃣ تثبيت Blazor Workload
-      - name: Install Blazor Workload
-        run: dotnet workload restore
+      # 4️⃣ التحقق من Blazor Workload (بدون إعادة تثبيت)
+      - name: Verify Blazor Workload
+        run: |
+          Write-Host "✅ Using preinstalled Blazor workload"
+          dotnet workload list
       
       # 5️⃣ بناء مشروع الـ API (Incremental Build)
       - name: Build API
@@ -60,7 +62,7 @@ jobs:
           
           # 3. وضع الموقع في Maintenance Mode
           Write-Host "🔧 Enabling maintenance mode..."
-          $maintenanceHtml = @"
+          @'
           <!DOCTYPE html>
           <html dir="rtl" lang="ar">
           <head>
@@ -79,8 +81,7 @@ jobs:
               <p style="font-size: 12px; margin-top: 30px;">Updating to latest version...</p>
           </body>
           </html>
-          "@
-          $maintenanceHtml | Out-File "C:\0ALI\WebSites\SahlApi\app_offline.htm" -Encoding UTF8
+          '@ | Out-File "C:\0ALI\WebSites\SahlApi\app_offline.htm" -Encoding UTF8
           
           Start-Sleep -Seconds 2
           
@@ -125,7 +126,7 @@ jobs:
           
           # 3. وضع الموقع في Maintenance Mode
           Write-Host "🔧 Enabling maintenance mode..."
-          $maintenanceHtml = @"
+          @'
           <!DOCTYPE html>
           <html dir="rtl" lang="ar">
           <head>
@@ -144,8 +145,7 @@ jobs:
               <p style="font-size: 12px; margin-top: 30px;">Updating dashboard...</p>
           </body>
           </html>
-          "@
-          $maintenanceHtml | Out-File "C:\0ALI\WebSites\SahlDashboard\app_offline.htm" -Encoding UTF8
+          '@ | Out-File "C:\0ALI\WebSites\SahlDashboard\app_offline.htm" -Encoding UTF8
           
           Start-Sleep -Seconds 2
           
