@@ -1,19 +1,18 @@
-﻿using Resources;
-using Shared.DTOs.ECommerce;
-using Shared.GeneralModels;
-using Dashboard.Constants;
+﻿using Dashboard.Constants;
 using Dashboard.Contracts.General;
 using Dashboard.Contracts.Location;
+using Resources;
 using Shared.DTOs.Location;
+using Shared.GeneralModels;
 
 namespace Dashboard.Services.Location
 {
-   
-    public class CityService  : ICityService
+
+    public class CityService : ICityService
     {
         private readonly IApiService _apiService;
 
-        public CityService (IApiService apiService)
+        public CityService(IApiService apiService)
         {
             _apiService = apiService;
         }
@@ -21,7 +20,7 @@ namespace Dashboard.Services.Location
         /// <summary>
         /// Get all City with optional filters.
         /// </summary>
-        public async  Task<ResponseModel<IEnumerable<CityDto>>> GetAllAsync()
+        public async Task<ResponseModel<IEnumerable<CityDto>>> GetAllAsync()
         {
             try
             {

@@ -1,8 +1,5 @@
-using Shared.DTOs.ECommerce;
-using Shared.GeneralModels;
-using Shared.GeneralModels.SearchCriteriaModels;
-using Dashboard.Models;
 using Shared.DTOs.Location;
+using Shared.GeneralModels;
 
 namespace Dashboard.Contracts
 {

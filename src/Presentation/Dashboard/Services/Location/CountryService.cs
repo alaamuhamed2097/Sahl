@@ -1,14 +1,13 @@
-﻿using Resources;
-using Shared.DTOs.ECommerce;
-using Shared.GeneralModels;
-using Dashboard.Constants;
+﻿using Dashboard.Constants;
 using Dashboard.Contracts;
 using Dashboard.Contracts.General;
+using Resources;
 using Shared.DTOs.Location;
+using Shared.GeneralModels;
 
 namespace Dashboard.Services.Location
 {
-   
+
     public class CountryService : ICountryService
     {
         private readonly IApiService _apiService;
