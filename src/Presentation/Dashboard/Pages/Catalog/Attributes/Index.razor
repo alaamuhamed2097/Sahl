@@ -31,18 +31,17 @@
                             </div>
                         </EditForm>
 
-                        <!-- Page Size -->
-                        <div class="d-flex align-items-center gap-2">
-                            <!-- <label class="form-label fw-semibold mb-0">@ActionsResources.Show</label> -->
-                            <select class="form-select rounded-3 shadow-sm border-light text-primary fw-bold text-center"
-                                    style="width: 100px; height: 38px; padding-right: 16px;"
-                                    @onchange="OnPageSizeChanged">
-                                <option value="10">10</option>
-                                <option value="15">15</option>
-                                <option value="20">20</option>
-                                <option value="30">30</option>
-                            </select>
-                        </div>
+                                 <!-- Page Size -->
+                                                                <div class="d-flex align-items-center gap-2">
+                                            <select class="form-select rounded-3 shadow-sm border-light text-primary fw-bold text-center custom-dropdown"
+                                                    style="width: 130px; height: 40px; padding-right: 30px;"
+                                                    @onchange="OnPageSizeChanged">
+                                                <option value="10"selected="@(searchModel.PageSize == 10)">10</option>
+                                                <option value="15"selected="@(searchModel.PageSize == 15)">15</option>
+                                                <option value="20"selected="@(searchModel.PageSize == 20)">20</option>
+                                                <option value="30"selected="@(searchModel.PageSize == 30)">30</option>
+                                            </select>
+                                        </div>
                     </li>
                     <li class="nav-item ms-auto  d-flex flex-row align-items-center gap-2">
                         <!-- Export Buttons -->
@@ -197,82 +196,91 @@
                 </div>
 
                 <!-- MOBILE-OPTIMIZED PAGINATION (New) -->
-                <div class="d-lg-none d-flex flex-column flex-sm-row justify-content-between align-items-center mt-3 gap-2" dir="ltr">
-                    <!-- Results Info -->
-                    <div class="text-center text-sm-start">
-                        <span class="text-muted small">
-                            @string.Format(ActionsResources.ShowingEntries, ((currentPage - 1) * searchModel.PageSize + 1), Math.Min(currentPage * searchModel.PageSize, totalRecords), totalRecords)
-                        </span>
-                    </div>
+               <div class="d-flex flex-column flex-sm-row justify-content-between align-items-center mt-3 gap-2" dir="ltr">
+    <!-- Results Info -->
+    <div class="text-center text-sm-start">
+        <span class="text-muted small">
+            @string.Format(
+                ActionsResources.ShowingEntries,
+                ((currentPage - 1) * searchModel.PageSize + 1),
+                Math.Min(currentPage * searchModel.PageSize, totalRecords),
+                totalRecords
+            )
+        </span>
+    </div>
 
-                    <!-- Pagination Controls -->
-                    <nav>
-                        <ul class="pagination mb-0 pagination-sm">
-                            <!-- First Button (Hidden on very small screens) -->
-                            <li class="page-item @(currentPage == 1 ? "disabled" : "") d-none d-sm-inline-block">
-                                <a class="page-link" @onclick="() => GoToPage(1)" title="@ActionsResources.First">
-                                    <i class="fas fa-angle-double-left"></i>
-                                </a>
-                            </li>
+    <!-- Pagination Controls -->
+    <nav>
+        <ul class="pagination mb-0 pagination-sm">
+            <!-- First Button -->
+            <li class="page-item @(currentPage == 1 ? "disabled" : "") d-none d-sm-inline-block">
+                <a class="page-link" href="javascript:void(0)" @onclick="() => GoToPage(1)" title="@ActionsResources.First">
+                    <i class="fas fa-angle-double-left"></i>
+                </a>
+            </li>
 
-                            <!-- Previous Button -->
-                            <li class="page-item @(currentPage == 1 ? "disabled" : "")">
-                                <a class="page-link" @onclick="() => GoToPage(currentPage - 1)">
-                                    <span class="d-none d-sm-inline">@ActionsResources.Previous</span>
-                                    <span class="d-sm-none"><i class="fas fa-chevron-left"></i></span>
-                                </a>
-                            </li>
+            <!-- Previous Button -->
+            <li class="page-item @(currentPage == 1 ? "disabled" : "")">
+                <a class="page-link" href="javascript:void(0)" @onclick="() => GoToPage(currentPage - 1)">
+                    <span class="d-none d-sm-inline">@ActionsResources.Previous</span>
+                    <span class="d-sm-none"><i class="fas fa-chevron-left"></i></span>
+                </a>
+            </li>
 
-                            <!-- Dynamic Page Numbers (Reduced for mobile) -->
-                            @{
-                                int maxVisiblePagesMobile = 3; // Reduced for better mobile experience
-                                int startPageMobile = Math.Max(1, currentPage - 1);
-                                int endPageMobile = Math.Min(totalPages, startPageMobile + maxVisiblePagesMobile - 1);
-                                if (endPageMobile - startPageMobile + 1 < maxVisiblePagesMobile)
-                                {
-                                    startPageMobile = Math.Max(1, endPageMobile - maxVisiblePagesMobile + 1);
-                                }
-                            }
+            <!-- Dynamic Page Numbers -->
+            @{
+                int maxVisiblePages = 3; // يناسب الموبايل
+                int startPage = Math.Max(1, currentPage - 1);
+                int endPage = Math.Min(totalPages, startPage + maxVisiblePages - 1);
 
-                            @if (startPageMobile > 1)
-                            {
-                                <li class="page-item disabled d-none d-sm-inline-block">
-                                    <a class="page-link">...</a>
-                                </li>
-                            }
+                if (endPage - startPage + 1 < maxVisiblePages)
+                {
+                    startPage = Math.Max(1, endPage - maxVisiblePages + 1);
+                }
+            }
 
-                            @for (int pag = startPageMobile; pag <= endPageMobile; pag++)
-                            {
-                                int pageNumber = pag;
-                                <li class="page-item @(pag == currentPage ? "active" : "")">
-                                    <a class="page-link" @onclick="() => GoToPage(pageNumber)">@pag</a>
-                                </li>
-                            }
+            @if (startPage > 1)
+            {
+                <li class="page-item disabled d-none d-sm-inline-block">
+                    <a class="page-link">...</a>
+                </li>
+            }
 
-                            @if (endPageMobile < totalPages)
-                            {
-                                <li class="page-item disabled d-none d-sm-inline-block">
-                                    <a class="page-link">...</a>
-                                </li>
-                            }
+            @for (int pag = startPage; pag <= endPage; pag++)
+            {
+                int pageNumber = pag;
+                <li class="page-item @(pag == currentPage ? "active" : "")">
+                    <a class="page-link" href="javascript:void(0)" @onclick="() => GoToPage(pageNumber)">
+                        @pag
+                    </a>
+                </li>
+            }
 
-                            <!-- Next Button -->
-                            <li class="page-item @(currentPage == totalPages ? "disabled" : "")">
-                                <a class="page-link" @onclick="() => GoToPage(currentPage + 1)">
-                                    <span class="d-none d-sm-inline">@ActionsResources.Next</span>
-                                    <span class="d-sm-none"><i class="fas fa-chevron-right"></i></span>
-                                </a>
-                            </li>
+            @if (endPage < totalPages)
+            {
+                <li class="page-item disabled d-none d-sm-inline-block">
+                    <a class="page-link">...</a>
+                </li>
+            }
 
-                            <!-- Last Button (Hidden on very small screens) -->
-                            <li class="page-item @(currentPage == totalPages ? "disabled" : "") d-none d-sm-inline-block">
-                                <a class="page-link" @onclick="() => GoToPage(totalPages)" title="@ActionsResources.Last">
-                                    <i class="fas fa-angle-double-right"></i>
-                                </a>
-                            </li>
-                        </ul>
-                    </nav>
-                </div>
+            <!-- Next Button -->
+            <li class="page-item @(currentPage == totalPages ? "disabled" : "")">
+                <a class="page-link" href="javascript:void(0)" @onclick="() => GoToPage(currentPage + 1)">
+                    <span class="d-none d-sm-inline">@ActionsResources.Next</span>
+                    <span class="d-sm-none"><i class="fas fa-chevron-right"></i></span>
+                </a>
+            </li>
+
+            <!-- Last Button -->
+            <li class="page-item @(currentPage == totalPages ? "disabled" : "") d-none d-sm-inline-block">
+                <a class="page-link" href="javascript:void(0)" @onclick="() => GoToPage(totalPages)" title="@ActionsResources.Last">
+                    <i class="fas fa-angle-double-right"></i>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</div>
+
                 <!-- Pagination end -->
             </div>
         </div>

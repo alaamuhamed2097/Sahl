@@ -6,8 +6,8 @@
 @using Shared.DTOs.User
 
 <!-- [ Navigation Menu ] start -->
-<nav class="@NavMenuClass pcoded-navbar menupos-fixed" id="navMenuModal">
-    <div class="navbar-wrapper">
+<nav class="@NavMenuClass pcoded-navbar menupos-fixed " id="navMenuModal">
+    <div class="navbar-wrapper ">
         <div class="navbar-brand header-logo">
             <a href="/" class="b-brand">
                 <img src="assets/images/logo.svg" alt="" class="logo images" />
@@ -19,7 +19,7 @@
         </div>
         <div class="navbar-content scroll-div ps ps--active-y"
              id="layout-sidenav-@ComponentId"
-             style="overflow:auto !important">
+             style="overflow:auto !important ">
             <ul class="nav pcoded-inner-navbar">
 
                 <!-- Dashboard - Show to all authenticated users -->
@@ -82,10 +82,14 @@
                                     </NavLink>
                                 </li>
                                 <li class="nav-item">
-                                    <NavLink href="/brands" class="nav-link" onclick="closeNavMenu()">
-                                        <span class="pcoded-micon"><i class="fas fa-copyright"></i></span>
-                                        <span class="pcoded-mtext">@BrandResources.Brands</span>
-                                    </NavLink>
+                                   <NavLink href="/brands" class="nav-link d-flex align-items-center" onclick="closeNavMenu()" style="gap: 6px;">
+    <span class="pcoded-micon">
+        <i class="fas fa-copyright"></i>
+    </span>
+    <span class="pcoded-mtext" style="white-space: nowrap;">
+        @BrandResources.Brands
+    </span>
+</NavLink>
                                 </li>
                                 <li class="nav-item">
                                     <NavLink href="/attributes" class="nav-link" onclick="closeNavMenu()">

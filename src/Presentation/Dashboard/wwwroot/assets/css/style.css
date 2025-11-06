@@ -124,9 +124,9 @@ body {
 .card-body {
     --bs-card-color: #686c71;
     padding: 20px 25px;
-      height: 100vh; /* ياخد طول الشاشة بالكامل */
+      height: 80vh; /* ياخد طول الشاشة بالكامل */
 
-
+overflow: hidden; /* يخفي أي تمرير */
 }
 
 .text-white .card-body {

@@ -40,22 +40,21 @@
                             </div>
                         </EditForm>
 
-                        <!-- Page Size -->
-                        <div class="d-flex align-items-center gap-2">
-                           
-                            <select class="form-select rounded-3 shadow-sm border-light text-primary fw-bold text-center"
-                                    style="width: 100px; height: 38px; padding-right: 16px;"
-                                    @onchange="OnPageSizeChanged">
-                                <option value="10">10</option>
-                                <option value="15">15</option>
-                                <option value="20">20</option>
-                                <option value="30">30</option>
-                            </select>
-                        </div>
+ <!-- Page Size -->
+                                                                <div class="d-flex align-items-center gap-2">
+                                            <select class="form-select rounded-3 shadow-sm border-light text-primary fw-bold text-center custom-dropdown"
+                                                    style="width: 130px; height: 40px; padding-right: 30px;"
+                                                    @onchange="OnPageSizeChanged">
+                                                <option value="10"selected="@(searchModel.PageSize == 10)">10</option>
+                                                <option value="15"selected="@(searchModel.PageSize == 15)">15</option>
+                                                <option value="20"selected="@(searchModel.PageSize == 20)">20</option>
+                                                <option value="30"selected="@(searchModel.PageSize == 30)">30</option>
+                                            </select>
+                                        </div>
 
                         <!-- List Type -->
                         <div class="d-flex align-items-center gap-2">
-                            <label class="form-label fw-semibold mb-0">@ECommerceResources.ListType</label>
+                            <label class="form-label hidden  fw-semibold mb-0">@ECommerceResources.ListType</label>
                             <select class="form-select rounded-3 shadow-sm border-light text-primary fw-bold text-center"
                                     style="width: 150px; height: 38px; padding-right: 16px;"
                                     onchange="window.location.href = this.value">
@@ -79,7 +78,7 @@
                     </li>
                 </ul>
                 <!-- Table -->
-                <div class="table-responsive border rounded-3">
+                <div class="table-responsive table-container border rounded-3">
                     <table id="order-table" class="table table-striped table-hover mb-0 align-text-center ">
                         <thead class="bg-light">
                             <tr>
