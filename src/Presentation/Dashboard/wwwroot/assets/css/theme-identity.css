@@ -1239,6 +1239,11 @@ button:focus-visible,
   .hidden {
     display: none !important;
 }
+.mobil-stylest{
+    padding: 6px !important;
+    display: flex !important;
+
+}
   .d-flex.gap-2{
     height: 60px !important;
   }
@@ -1253,9 +1258,14 @@ button:focus-visible,
     border: none !important;
   }
   
-  .navbar-content.scroll-div.ps.ps--active-y{
-
-  }
+    .dashboard-page {
+        padding: 1rem;
+    }
+    .icon-wrapper {
+        width: 50px;
+        height: 50px;
+        font-size: 1.4rem;
+    }
     .btn-responsive {
     flex: 1 1 100%;
     width: 100%;
@@ -1359,4 +1369,76 @@ button:focus-visible,
 
 .table-container table {
   width: 100%;
+}
+
+.dashboard-page {
+    min-height: 100vh;
+    background: linear-gradient(180deg, #f8f9fc 0%, #ffffff 100%);
+}
+
+.dashboard-card {
+    transition: all 0.3s ease-in-out;
+}
+
+.dashboard-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+}
+
+.icon-wrapper {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.6rem;
+}
+
+.card-header {
+    font-size: 0.95rem;
+    font-weight: 600;
+}
+/*  */
+.icon-wrapper {
+  width: 70px;
+  height: 70px;
+  border-radius: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 28px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+}
+
+/* خلفيات متدرجة للأيقونات */
+.bg-gradient-primary {
+  background: linear-gradient(135deg, #007bff, #00b4ff);
+}
+.bg-gradient-warning {
+  background: linear-gradient(135deg, #f39c12, #f1c40f);
+}
+.bg-gradient-success {
+  background: linear-gradient(135deg, #28a745, #54d88b);
+}
+.bg-gradient-danger {
+  background: linear-gradient(135deg, #dc3545, #ff6b6b);
+}
+
+/* البوكس الخاص بالنص */
+.text-box {
+  background: linear-gradient(145deg, #ffffff, #f7f9fc);
+  border: 1px solid rgba(0,0,0,0.05);
+  box-shadow: inset 0 0 6px rgba(0,0,0,0.05);
+  transition: all 0.3s ease;
+}
+
+.hover-card:hover .text-box {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 15px rgba(4, 95, 241, 0.08);
+}
+
+/* تحسين عام */
+.dashboard-page {
+  background-color: #f5f7fb;
 }
