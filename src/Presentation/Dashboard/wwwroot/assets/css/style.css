@@ -121,12 +121,18 @@ body {
     background: linear-gradient(-45deg, var(--primary), #149698);
 }
 
-.card-body {
+/* .card-body {
     --bs-card-color: #686c71;
     padding: 20px 25px;
-      height: 80vh; /* ياخد طول الشاشة بالكامل */
+      height: 80vh; 
 
-overflow: hidden; /* يخفي أي تمرير */
+overflow: hidden; 
+} */
+ .card-body {
+    --bs-card-color: #686c71;
+    padding: 20px 25px;
+    overflow: hidden; /* يخفى أي تمرير داخل الكارد فقط */
+    height: auto; /* ← ده الأهم */
 }
 
 .text-white .card-body {
