@@ -1,4 +1,4 @@
-@page "/products/import"
+﻿@page "/products/import"
 @using Shared.DTOs.ECommerce
 @using Shared.DTOs.ECommerce.Category
 @using Shared.DTOs.Brand
@@ -8,18 +8,19 @@
 @using Dashboard.Contracts.ECommerce.Category
 @using Dashboard.Contracts.Brand
 @using Dashboard.Contracts.ECommerce.Item
-@using Dashboard.Contracts
+@using Dashboard.Contracts.General
 @using Microsoft.AspNetCore.Components.Forms
 @using Resources
+@using System.Text.Json
 
 @inject ICategoryService CategoryService
 @inject IBrandService BrandService
 @inject IUnitService UnitService
 @inject IAttributeService AttributeService
 @inject IItemService ItemService
-@inject ExcelTemplateService ExcelTemplateService
 @inject IJSRuntime JSRuntime
 @inject NavigationManager Navigation
+@inject IResourceLoaderService ResourceLoaderService
 
 <PageTitle>@ECommerceResources.ImportProducts</PageTitle>
 
@@ -398,6 +399,9 @@
 
     protected override async Task OnInitializedAsync()
     {
+        // Load Excel helper script
+        await ResourceLoaderService.LoadScript("Common/Excel/excelExportHelper.js");
+        
         await LoadInitialData();
     }
 
@@ -467,41 +471,6 @@
         }
     }
 
-    private async Task GenerateTemplate()
-    {
-        try
-        {
-            isGeneratingTemplate = true;
-            StateHasChanged();
-
-            var category = categories.First(c => c.Id == selectedCategoryId);
-            var templateBytes = ExcelTemplateService.GenerateProductTemplate(
-                new List<CategoryDto> { category },
-                categoryAttributes,
-                brands,
-                units
-            );
-
-            // Download file
-            await JSRuntime.InvokeVoidAsync("downloadFile", 
-                $"ProductImport_{category.TitleEn}_{DateTime.Now:yyyyMMdd}.xlsx",
-                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-                Convert.ToBase64String(templateBytes));
-
-            // Move to next step
-            currentStep = ImportStep.UploadFile;
-        }
-        catch (Exception ex)
-        {
-            await ShowError("Error generating template", ex.Message);
-        }
-        finally
-        {
-            isGeneratingTemplate = false;
-            StateHasChanged();
-        }
-    }
-
     private async Task GenerateTemplateWithData()
     {
         try
@@ -510,21 +479,100 @@
             StateHasChanged();
 
             var category = categories.First(c => c.Id == selectedCategoryId);
-            var templateBytes = ExcelTemplateService.GenerateProductTemplate(
-                new List<CategoryDto> { category },
-                categoryAttributes,
-                brands,
-                units
+            
+            // Prepare data for JavaScript
+            var templateConfig = new
+            {
+                headers = new[]
+                {
+                    $"{FormResources.Title} ({GeneralResources.Arabic})*",
+                    $"{FormResources.Title} ({GeneralResources.English})*",
+                    $"{FormResources.ShortDescription} ({GeneralResources.Arabic})*",
+                    $"{FormResources.ShortDescription} ({GeneralResources.English})*",
+                    $"{FormResources.Description} ({GeneralResources.Arabic})*",
+                    $"{FormResources.Description} ({GeneralResources.English})*",
+                    $"{ECommerceResources.Category}*",
+                    $"{BrandResources.Brand}*",
+                    $"{ECommerceResources.Unit}*",
+                    $"{FormResources.Price}*",
+                    $"{ECommerceResources.Quantity}*",
+                    $"{ECommerceResources.StockStatus}*",
+                    "Is New Arrival",
+                    "Is Best Seller",
+                    "Is Recommended",
+                    "Thumbnail Image",
+                    $"{FormResources.Image} 1",
+                    $"{FormResources.Image} 2",
+                    $"{FormResources.Image} 3",
+                    $"{FormResources.Image} 4",
+                    $"{FormResources.Image} 5"
+                },
+                exampleRow = new[]
+                {
+                    "منتج تجريبي",
+                    "Example Product",
+                    "وصف قصير",
+                    "Short description",
+                    "وصف كامل",
+                    "Full description",
+                    category.Title,
+                    brands.Values.FirstOrDefault() ?? "Brand Name",
+                    units.Values.FirstOrDefault() ?? "Unit Name",
+                    "100.00",
+                    "50",
+                    "True",
+                    "False",
+                    "False",
+                    "False",
+                    "/images/products/example.jpg",
+                    "",
+                    "",
+                    "",
+                    "",
+                    ""
+                },
+                categories = categories.Where(c => c.IsFinal).Select(c => new { 
+                    id = c.Id.ToString(), 
+                    title = c.Title,
+                    titleAr = c.TitleAr,
+                    titleEn = c.TitleEn,
+                    isFinal = c.IsFinal
+                }).ToArray(),
+                brands = brands.Select(b => new { 
+                    id = b.Key.ToString(), 
+                    name = b.Value 
+                }).ToArray(),
+                units = units.Select(u => new { 
+                    id = u.Key.ToString(), 
+                    title = u.Value 
+                }).ToArray(),
+                attributes = categoryAttributes.Select(a => new {
+                    id = a.AttributeId.ToString(),
+                    title = a.Title,
+                    affectsPricing = a.AffectsPricing,
+                    options = a.AttributeOptions?.Select(o => new {
+                        id = o.Id.ToString(),
+                        title = o.Title
+                    }).ToArray() ?? Array.Empty<object>()
+                }).ToArray()
+            };
+
+            // Call JavaScript to generate template with REAL DROPDOWNS
+            var success = await JSRuntime.InvokeAsync<bool>(
+                "excelExportHelper.generateProductImportTemplate",
+                $"ProductImportTemplate_{category.TitleEn}_{DateTime.Now:yyyyMMdd}.xlsx",
+                templateConfig
             );
 
-            // Download file
-            await JSRuntime.InvokeVoidAsync("downloadFile", 
-                $"ProductImportTemplate_{category.TitleEn}_{DateTime.Now:yyyyMMdd}.xlsx",
-                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-                Convert.ToBase64String(templateBytes));
-
-            // Move to next step
-            currentStep = ImportStep.UploadFile;
+            if (success)
+            {
+                // Move to next step
+                currentStep = ImportStep.UploadFile;
+            }
+            else
+            {
+                await ShowError(NotifiAndAlertsResources.Error, "Failed to generate template");
+            }
         }
         catch (Exception ex)
         {
@@ -545,23 +593,83 @@
             StateHasChanged();
 
             var category = categories.First(c => c.Id == selectedCategoryId);
-            var templateBytes = ExcelTemplateService.GenerateEmptyProductTemplate(
-                new List<CategoryDto> { category },
-                categoryAttributes
+            
+            // Prepare data for JavaScript (empty template - no reference data)
+            var templateConfig = new
+            {
+                headers = new[]
+                {
+                    $"{FormResources.Title} ({GeneralResources.Arabic})*",
+                    $"{FormResources.Title} ({GeneralResources.English})*",
+                    $"{FormResources.ShortDescription} ({GeneralResources.Arabic})*",
+                    $"{FormResources.ShortDescription} ({GeneralResources.English})*",
+                    $"{FormResources.Description} ({GeneralResources.Arabic})*",
+                    $"{FormResources.Description} ({GeneralResources.English})*",
+                    $"{ECommerceResources.Category}*",
+                    $"{BrandResources.Brand}*",
+                    $"{ECommerceResources.Unit}*",
+                    $"{FormResources.Price}*",
+                    $"{ECommerceResources.Quantity}*",
+                    $"{ECommerceResources.StockStatus}*",
+                    "Is New Arrival",
+                    "Is Best Seller",
+                    "Is Recommended",
+                    "Thumbnail Image",
+                    $"{FormResources.Image} 1",
+                    $"{FormResources.Image} 2",
+                    $"{FormResources.Image} 3",
+                    $"{FormResources.Image} 4",
+                    $"{FormResources.Image} 5"
+                },
+                exampleRow = new[]
+                {
+                    "منتج تجريبي",
+                    "Example Product",
+                    "وصف قصير",
+                    "Short description",
+                    "وصف كامل",
+                    "Full description",
+                    "Category Name",
+                    "Brand Name",
+                    "Unit Name",
+                    "100.00",
+                    "50",
+                    "True",
+                    "False",
+                    "False",
+                    "False",
+                    "/images/products/example.jpg",
+                    "",
+                    "",
+                    "",
+                    "",
+                    ""
+                },
+                categories = Array.Empty<object>(),  // Empty for basic template
+                brands = Array.Empty<object>(),
+                units = Array.Empty<object>(),
+                attributes = Array.Empty<object>()
+            };
+
+            // Call JavaScript
+            var success = await JSRuntime.InvokeAsync<bool>(
+                "excelExportHelper.generateProductImportTemplate",
+                $"ProductImportEmpty_{category.TitleEn}_{DateTime.Now:yyyyMMdd}.xlsx",
+                templateConfig
             );
 
-            // Download file
-            await JSRuntime.InvokeVoidAsync("downloadFile", 
-                $"ProductImportEmpty_{category.TitleEn}_{DateTime.Now:yyyyMMdd}.xlsx",
-                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-                Convert.ToBase64String(templateBytes));
-
-            // Move to next step
-            currentStep = ImportStep.UploadFile;
+            if (success)
+            {
+                currentStep = ImportStep.UploadFile;
+            }
+            else
+            {
+                await ShowError(NotifiAndAlertsResources.Error, "Failed to generate template");
+            }
         }
         catch (Exception ex)
         {
-            await ShowError("Error generating empty template", ex.Message);
+            await ShowError(NotifiAndAlertsResources.Error, ex.Message);
         }
         finally
         {
@@ -597,13 +705,47 @@
             validationErrors.Clear();
             StateHasChanged();
 
+            // Read file as base64
             using var stream = uploadedFile.OpenReadStream(maxAllowedSize: 10 * 1024 * 1024);
-            importedProducts = ExcelTemplateService.ParseProductsFromExcel(
-                stream, 
-                categoryAttributes, 
-                categories, 
-                brands, 
-                units);
+            using var memoryStream = new MemoryStream();
+            await stream.CopyToAsync(memoryStream);
+            var fileBytes = memoryStream.ToArray();
+            var base64File = Convert.ToBase64String(fileBytes);
+
+            // Call JavaScript to parse Excel
+            var parsedJson = await JSRuntime.InvokeAsync<string>(
+                "excelExportHelper.parseProductsFromExcel",
+                base64File,
+                new
+                {
+                    categoryAttributes = categoryAttributes.Select(a => new {
+                        attributeId = a.AttributeId.ToString(),
+                        title = a.Title,
+                        affectsPricing = a.AffectsPricing,
+                        fieldType = a.FieldType.ToString(),
+                        options = a.AttributeOptions?.Select(o => new {
+                            id = o.Id.ToString(),
+                            title = o.Title
+                        }).ToArray() ?? Array.Empty<object>()
+                    }).ToArray(),
+                    categories = categories.Select(c => new {
+                        id = c.Id.ToString(),
+                        title = c.Title
+                    }).ToArray(),
+                    brands = brands.Select(b => new {
+                        id = b.Key.ToString(),
+                        name = b.Value
+                    }).ToArray(),
+                    units = units.Select(u => new {
+                        id = u.Key.ToString(),
+                        title = u.Value
+                    }).ToArray()
+                }
+            );
+
+            // Parse JSON result
+            var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
+            importedProducts = JsonSerializer.Deserialize<List<ImportedProductDto>>(parsedJson, options) ?? new();
 
             // Validate products
             ValidateImportedProducts();
@@ -916,5 +1058,30 @@
         public int RowNumber { get; set; }
         public bool Success { get; set; }
         public string Message { get; set; } = string.Empty;
+    }
+
+    // DTO for imported products from Excel
+    private class ImportedProductDto
+    {
+        public string TitleAr { get; set; } = string.Empty;
+        public string TitleEn { get; set; } = string.Empty;
+        public string ShortDescriptionAr { get; set; } = string.Empty;
+        public string ShortDescriptionEn { get; set; } = string.Empty;
+        public string DescriptionAr { get; set; } = string.Empty;
+        public string DescriptionEn { get; set; } = string.Empty;
+        public Guid CategoryId { get; set; }
+        public Guid BrandId { get; set; }
+        public Guid UnitId { get; set; }
+        public decimal Price { get; set; }
+        public int Quantity { get; set; }
+        public bool StockStatus { get; set; }
+        public bool IsNewArrival { get; set; }
+        public bool IsBestSeller { get; set; }
+        public bool IsRecommended { get; set; }
+        public string? ThumbnailImagePath { get; set; }
+        public List<string> ImagePaths { get; set; } = new();
+        public Dictionary<Guid, string> AttributeValues { get; set; } = new();
+        public Dictionary<Guid, List<Guid>> PricingAttributeValues { get; set; } = new();
+        public int RowNumber { get; set; }
     }
 }
