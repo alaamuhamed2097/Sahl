@@ -1207,6 +1207,9 @@ button:focus-visible,
   .btn.btn-success {
    
 }
+ #sidebar-overlay.show {
+            display: flex !important;
+        }
 .fw-bold{
     display: none !important   ;
 }
