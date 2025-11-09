@@ -7,8 +7,8 @@
 
 <div class="container-fluid p-0">
     <div class="card shadow-sm border-0">
-        <div class="card-header d-flex justify-content-between align-items-center">
-            <h4 class="modal-title">
+        <div class="card-header d-flex bg-primary  justify-content-between align-items-center">
+            <h4 class="modal-title text-white">
                 @ActionsResources.Add @ECommerceResources.Admin
             </h4>
         </div>
@@ -77,11 +77,11 @@
                 </div>
             </div>
 
-            <div class="card-footer bg-light py-3 d-flex justify-content-end gap-2">
-                <button type="button" class="btn btn-secondary px-4" data-dismiss="modal" @onclick="CloseModal">
+            <div class="card-footer bg-light  py-3 d-flex justify-content-end gap-2">
+                <button type="button" class="btn btn-responsive btn-secondary px-4" data-dismiss="modal" @onclick="CloseModal">
                     @ActionsResources.Cancel
                 </button>
-                <button type="submit" class="btn btn-success px-4" disabled="@isSaving">
+                <button type="submit" class="btn btn-primary btn-responsive text-white px-4" disabled="@isSaving">
                     @if (isSaving)
                     {
                         <span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>

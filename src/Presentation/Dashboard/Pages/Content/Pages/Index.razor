@@ -39,18 +39,17 @@
                             </div>
                         </EditForm>
 
-                        <!-- Page Size -->
-                        <div class="d-flex align-items-center gap-2">
-                           
-                            <select class="form-select rounded-3 shadow-sm border-light text-primary fw-bold text-center"
-                                    style="width: 100px; height: 38px; padding-right: 16px;"
-                                    @onchange="OnPageSizeChanged">
-                                <option value="10" selected="@(searchModel.PageSize == 10)">10</option>
-                                <option value="15" selected="@(searchModel.PageSize == 15)">15</option>
-                                <option value="20" selected="@(searchModel.PageSize == 20)">20</option>
-                                <option value="30" selected="@(searchModel.PageSize == 30)">30</option>
-                            </select>
-                        </div>
+                                   <!-- Page Size -->
+                                                                <div class="d-flex align-items-center gap-2">
+                                            <select class="form-select rounded-3 shadow-sm border-light text-primary fw-bold text-center custom-dropdown"
+                                                    style="width: 130px; height: 40px; padding-right: 30px;"
+                                                    @onchange="OnPageSizeChanged">
+                                                <option value="10"selected="@(searchModel.PageSize == 10)">10</option>
+                                                <option value="15"selected="@(searchModel.PageSize == 15)">15</option>
+                                                <option value="20"selected="@(searchModel.PageSize == 20)">20</option>
+                                                <option value="30"selected="@(searchModel.PageSize == 30)">30</option>
+                                            </select>
+                                        </div>
                     </li>
                     <li class="nav-item ms-auto d-flex flex-row align-items-center gap-2">
                         <!-- Export Buttons -->
@@ -68,7 +67,7 @@
                 </ul>
                 
                 <!-- Table -->
-                <div class="table-responsive border rounded-3 overflow-hidden">
+                <div class="table-responsive  border rounded-3 overflow-hidden">
                     <table class="table table-hover mb-0 d-none d-md-table">
                         <thead class="bg-light">
                             <tr>
@@ -110,12 +109,20 @@
                                 }
                             }
                             else
-                            {
-                                <tr>
-                                    <td colspan="5" class="text-center">
-                                        @NotifiAndAlertsResources.NoDataFound
-                                    </td>
-                                </tr>
+							{
+								<tr>
+									<td colspan="5" class="text-center">
+										<div class="text-center p-4">
+											<!-- أيقونة كبيرة -->
+											<i class="fas fa-database text-muted" style="font-size: 60px;"></i>
+
+											<!-- نص -->
+											<p class="text-muted mt-3" style="font-size: 18px;">
+												@NotifiAndAlertsResources.NoDataFound
+											</p>
+										</div>
+									</td>
+								</tr>
                             }
                         </tbody>
                     </table>
@@ -151,10 +158,19 @@
                         }
                         else
                         {
-                            <div class="text-center p-4">
+                                                  <div class="text-center p-4">
+    <!-- أيقونة كبيرة -->
+    <i class="fas fa-database text-muted" style="font-size: 60px;"></i>
+    
+    <!-- نص -->
+    <p class="text-muted mt-3" style="font-size: 18px;">
+        @NotifiAndAlertsResources.NoDataFound
+    </p>
+</div>
+                            <!-- <div class="text-center p-4">
                                 <i class="fas fa-file-alt fa-3x text-muted mb-3"></i>
                                 <p class="text-muted">@NotifiAndAlertsResources.NoDataFound</p>
-                            </div>
+                            </div> -->
                         }
                     </div>
                 </div>

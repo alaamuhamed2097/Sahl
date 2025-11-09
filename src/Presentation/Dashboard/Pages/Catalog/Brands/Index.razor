@@ -15,8 +15,8 @@
         <div class="card-header bg-primary text-white py-3 d-flex justify-content-between align-items-center">
             <h5 class="mb-0 fw-semibold text-white">🏷️ @BrandResources.BrandManagement</h5>
         </div>
-        <div class="card-body">
-            <div class="dt-responsive table-responsive">
+        <div class="card-body mobil-stylest ">
+            <div class="dt-responsive table-responsive ">
                 <!-- Filtration start -->
                 <ul class="navbar-nav d-flex flex-row align-items-center gap-3 mb-2 px-0 w-100">
                     <li class="nav-item col-md-6 w-auto d-flex flex-row align-items-center gap-3">
@@ -35,25 +35,25 @@
                                 </button>
                             </div>
                         </EditForm>
+                                             <!-- Page Size -->
+                                                                <div class="d-flex align-items-center gap-2">
+                                            <select class="form-select rounded-3 shadow-sm border-light text-primary fw-bold text-center custom-dropdown"
+                                                    style="width: 130px; height: 40px; padding-right: 30px;"
+                                                    @onchange="OnPageSizeChanged">
+                                                <option value="10"selected="@(searchModel.PageSize == 10)">10</option>
+                                                <option value="15"selected="@(searchModel.PageSize == 15)">15</option>
+                                                <option value="20"selected="@(searchModel.PageSize == 20)">20</option>
+                                                <option value="30"selected="@(searchModel.PageSize == 30)">30</option>
+                                            </select>
+                                        </div>
 
-                        <!-- Page Size -->
-                        <div class="d-flex align-items-center gap-2">
-                            <!-- <label class="form-label fw-semibold mb-0">@ActionsResources.Show</label> -->
-                            <select class="form-select rounded-3 shadow-sm border-light text-primary fw-bold text-center"
-                                    style="width: 100px; height: 38px; padding-right: 16px;"
-                                    @onchange="OnPageSizeChanged">
-                                <option value="10">10</option>
-                                <option value="15">15</option>
-                                <option value="20">20</option>
-                                <option value="30">30</option>
-                            </select>
-                        </div>
+
 
                         <!-- Filter -->
-                        <div class="d-flex align-items-center gap-2">
-                            <label class="form-label fw-semibold mb-0">@ActionsResources.Filter</label>
-                            <select class="form-select rounded-3 shadow-sm border-light text-primary fw-bold text-center"
-                                    style="width: 150px; height: 38px; padding-right: 16px;"
+                                                <div class="d-flex align-items-center gap-2">
+                            <label class="form-label hidden fw-semibold mb-0">@ActionsResources.Filter</label>
+                            <select class="form-select rounded-3 shadow-sm border-light text-primary fw-bold text-center custom-dropdown"
+                                    style="width: 200px; height: 40px; padding-right: 30px;"
                                     @onchange="OnFilterChanged">
                                 <option value="">@BrandResources.AllBrands</option>
                                 <option value="favorites">@BrandResources.FavoriteBrands</option>
@@ -61,6 +61,7 @@
                                 <option value="recent">@BrandResources.RecentBrands</option>
                             </select>
                         </div>
+
                     </li>
                     <li class="nav-item ms-auto d-flex flex-row align-items-center gap-2">
                         <!-- Add Brand Button -->
@@ -83,7 +84,7 @@
                     </li>
                 </ul>
                 <!-- Table -->
-                <div class="table-responsive border rounded-3">
+                <div class="table-responsive dt-responsived table-container border rounded-3">
                     <table id="brand-table" class="table table-striped table-hover mb-0 align-text-center">
                         <thead class="bg-light">
                             <tr>
@@ -165,7 +166,17 @@
                             {
                                 <tr>
                                     <td colspan="8" class="text-center">
-                                        @BrandResources.NoBrandsFound
+
+                              <div class="text-center p-4">
+                                <!-- أيقونة كبيرة -->
+                                <i class="fas fa-database text-muted" style="font-size: 60px;"></i>
+                                
+                                    <!-- نص -->
+                                    <p class="text-muted mt-3" style="font-size: 18px;">
+                                                  @BrandResources.NoBrandsFound
+                                                </p>
+                                    </div>
+                                        
                                     </td>
                                 </tr>
                             }
