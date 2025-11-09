@@ -1195,6 +1195,15 @@ namespace Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to تم اختيار الملف.
+        /// </summary>
+        public static string FileSelected {
+            get {
+                return ResourceManager.GetString("FileSelected", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to الشؤون المالية.
         /// </summary>
         public static string Financial {
@@ -1281,6 +1290,15 @@ namespace Resources {
         public static string Images {
             get {
                 return ResourceManager.GetString("Images", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ملاحظات مهمة.
+        /// </summary>
+        public static string ImportantNotes {
+            get {
+                return ResourceManager.GetString("ImportantNotes", resourceCulture);
             }
         }
         
@@ -2086,6 +2104,15 @@ namespace Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to جاري المعالجة.
+        /// </summary>
+        public static string Processing {
+            get {
+                return ResourceManager.GetString("Processing", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to جاري المعالجة....
         /// </summary>
         public static string ProcessingDots {
@@ -2604,6 +2631,15 @@ namespace Resources {
         public static string TicketsLeft {
             get {
                 return ResourceManager.GetString("TicketsLeft", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to نصائح.
+        /// </summary>
+        public static string Tips {
+            get {
+                return ResourceManager.GetString("Tips", resourceCulture);
             }
         }
         

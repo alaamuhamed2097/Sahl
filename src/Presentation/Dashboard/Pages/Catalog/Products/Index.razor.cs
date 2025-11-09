@@ -25,6 +25,8 @@ namespace Dashboard.Pages.Catalog.Products
         };
 
         [Inject] protected IItemService ItemService { get; set; } = null!;
+        [Inject] protected NavigationManager Navigation { get; set; } = null!;
+
         protected override async Task<ResponseModel<IEnumerable<ItemDto>>> GetAllItemsAsync()
         {
             var result = await ItemService.GetAllAsync();
@@ -37,13 +39,20 @@ namespace Dashboard.Pages.Catalog.Products
                 return result;
             }
         }
+        
         protected override async Task<ResponseModel<bool>> DeleteItemAsync(Guid id)
         {
             return await ItemService.DeleteAsync(id);
         }
+        
         protected override async Task<string> GetItemId(ItemDto item)
         {
             return item.Id.ToString();
+        }
+
+        protected void GoToImport()
+        {
+            Navigation.NavigateTo("/products/import");
         }
 
     }

@@ -1155,4 +1155,17 @@
   <data name="Content" xml:space="preserve">
     <value>المحتوى</value>
   </data>
+  <!-- Import Feature Resources -->
+  <data name="ImportantNotes" xml:space="preserve">
+    <value>ملاحظات مهمة</value>
+  </data>
+  <data name="FileSelected" xml:space="preserve">
+    <value>تم اختيار الملف</value>
+  </data>
+  <data name="Processing" xml:space="preserve">
+    <value>جاري المعالجة</value>
+  </data>
+  <data name="Tips" xml:space="preserve">
+    <value>نصائح</value>
+  </data>
 </root>

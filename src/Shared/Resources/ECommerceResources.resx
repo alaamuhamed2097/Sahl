@@ -741,4 +741,56 @@
   <data name="Currency" xml:space="preserve">
     <value>عمله</value>
   </data>
+  <!-- Excel Import Resources -->
+  <data name="ImportProducts" xml:space="preserve">
+    <value>استيراد المنتجات</value>
+  </data>
+  <data name="Step1SelectCategory" xml:space="preserve">
+    <value>الخطوة 1: اختيار الفئة</value>
+  </data>
+  <data name="Step2UploadFile" xml:space="preserve">
+    <value>الخطوة 2: رفع ملف Excel</value>
+  </data>
+  <data name="SelectCategoryInstructions" xml:space="preserve">
+    <value>اختر الفئة التي تريد استيراد المنتجات إليها</value>
+  </data>
+  <data name="SelectedCategory" xml:space="preserve">
+    <value>الفئة المختارة</value>
+  </data>
+  <data name="DownloadTemplateWithData" xml:space="preserve">
+    <value>تحميل القالب مع البيانات المرجعية</value>
+  </data>
+  <data name="DownloadEmptyTemplate" xml:space="preserve">
+    <value>تحميل قالب فارغ</value>
+  </data>
+  <data name="TemplateWithReferenceData" xml:space="preserve">
+    <value>القالب مع البيانات المرجعية</value>
+  </data>
+  <data name="TemplateWithDataDescription" xml:space="preserve">
+    <value>يحتوي على أوراق مرجعية للفئات والعلامات التجارية والوحدات وخيارات الخصائص</value>
+  </data>
+  <data name="EmptyTemplate" xml:space="preserve">
+    <value>القالب الفارغ</value>
+  </data>
+  <data name="EmptyTemplateDescription" xml:space="preserve">
+    <value>يحتوي فقط على ورقة المنتجات والتعليمات (بدون بيانات مرجعية)</value>
+  </data>
+  <data name="DeleteExampleRow" xml:space="preserve">
+    <value>احذف صف المثال قبل الاستيراد</value>
+  </data>
+  <data name="AllFieldsMarkedRequired" xml:space="preserve">
+    <value>جميع الحقول المميزة بـ * مطلوبة</value>
+  </data>
+  <data name="SelectFromDropdown" xml:space="preserve">
+    <value>اختر من القائمة المنسدلة للفئة والعلامة التجارية والوحدة</value>
+  </data>
+  <data name="UploadFileInstructions" xml:space="preserve">
+    <value>ارفع ملف Excel المملوء ببيانات المنتجات. تأكد من ملء جميع الحقول المطلوبة بشكل صحيح.</value>
+  </data>
+  <data name="ExcelFile" xml:space="preserve">
+    <value>ملف Excel</value>
+  </data>
+  <data name="ParseAndReviewData" xml:space="preserve">
+    <value>تحليل ومراجعة البيانات</value>
+  </data>
 </root>

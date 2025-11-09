@@ -1,0 +1,920 @@
+@page "/products/import"
+@using Shared.DTOs.ECommerce
+@using Shared.DTOs.ECommerce.Category
+@using Shared.DTOs.Brand
+@using Shared.DTOs.ECommerce.Unit
+@using Shared.DTOs.ECommerce.Item
+@using Dashboard.Services
+@using Dashboard.Contracts.ECommerce.Category
+@using Dashboard.Contracts.Brand
+@using Dashboard.Contracts.ECommerce.Item
+@using Dashboard.Contracts
+@using Microsoft.AspNetCore.Components.Forms
+@using Resources
+
+@inject ICategoryService CategoryService
+@inject IBrandService BrandService
+@inject IUnitService UnitService
+@inject IAttributeService AttributeService
+@inject IItemService ItemService
+@inject ExcelTemplateService ExcelTemplateService
+@inject IJSRuntime JSRuntime
+@inject NavigationManager Navigation
+
+<PageTitle>@ECommerceResources.ImportProducts</PageTitle>
+
+<div class="container-fluid p-0">
+    <div class="card shadow-sm border-0">
+        <div class="card-header bg-primary text-white py-3">
+            <h5 class="mb-0 fw-semibold text-white">?? @ECommerceResources.ImportProducts</h5>
+        </div>
+        <div class="card-body">
+            
+            @if (currentStep == ImportStep.SelectCategory)
+            {
+                <!-- Step 1: Select Category -->
+                <div class="row">
+                    <div class="col-md-8 mx-auto">
+                        <h6 class="text-primary mb-3">@ECommerceResources.Step1SelectCategory</h6>
+                        <p class="text-muted">@ECommerceResources.SelectCategoryInstructions</p>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">@ECommerceResources.Category *</label>
+                            <select class="form-select" @onchange="OnCategorySelected">
+                                <option value="">-- @ActionsResources.Select @ECommerceResources.Category --</option>
+                                @foreach (var category in categories.Where(c => c.IsFinal))
+                                {
+                                    <option value="@category.Id">@category.Title</option>
+                                }
+                            </select>
+                        </div>
+
+                        @if (selectedCategoryId != Guid.Empty)
+                        {
+                            <div class="alert alert-info">
+                                <i class="fas fa-info-circle me-2"></i>
+                                <strong>@ECommerceResources.SelectedCategory:</strong> @selectedCategoryName
+                            </div>
+
+                            <div class="d-flex gap-2 flex-wrap">
+                                <!-- Download Template with Data -->
+                                <button class="btn btn-primary" @onclick="GenerateTemplateWithData" disabled="@isGeneratingTemplate">
+                                    @if (isGeneratingTemplate)
+                                    {
+                                        <span class="spinner-border spinner-border-sm me-2"></span>
+                                    }
+                                    <i class="fas fa-download me-2"></i>
+                                    @ECommerceResources.DownloadTemplateWithData
+                                </button>
+
+                                <!-- Download Empty Template -->
+                                <button class="btn btn-outline-primary" @onclick="GenerateEmptyTemplate" disabled="@isGeneratingTemplate">
+                                    @if (isGeneratingTemplate)
+                                    {
+                                        <span class="spinner-border spinner-border-sm me-2"></span>
+                                    }
+                                    <i class="fas fa-file-excel me-2"></i>
+                                    @ECommerceResources.DownloadEmptyTemplate
+                                </button>
+                            </div>
+
+                            <div class="alert alert-warning mt-3">
+                                <i class="fas fa-exclamation-triangle me-2"></i>
+                                <strong>@GeneralResources.ImportantNotes:</strong>
+                                <ul class="mb-0 mt-2">
+                                    <li><strong>@ECommerceResources.TemplateWithReferenceData:</strong> @ECommerceResources.TemplateWithDataDescription</li>
+                                    <li><strong>@ECommerceResources.EmptyTemplate:</strong> @ECommerceResources.EmptyTemplateDescription</li>
+                                    <li>@ECommerceResources.DeleteExampleRow</li>
+                                    <li>@ECommerceResources.AllFieldsMarkedRequired</li>
+                                    <li>@ECommerceResources.SelectFromDropdown</li>
+                                </ul>
+                            </div>
+                        }
+                    </div>
+                </div>
+            }
+            else if (currentStep == ImportStep.UploadFile)
+            {
+                <!-- Step 2: Upload Excel File -->
+                <div class="row">
+                    <div class="col-md-8 mx-auto">
+                        <h6 class="text-primary mb-3">@ECommerceResources.Step2UploadFile</h6>
+                        <p class="text-muted">@ECommerceResources.UploadFileInstructions</p>
+                        
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle me-2"></i>
+                            <strong>@ECommerceResources.SelectedCategory:</strong> @selectedCategoryName
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">@ECommerceResources.ExcelFile * (.xlsx only)</label>
+                            <InputFile class="form-control" OnChange="HandleFileUpload" accept=".xlsx" />
+                            @if (!string.IsNullOrEmpty(uploadError))
+                            {
+                                <div class="alert alert-danger mt-2">
+                                    <i class="fas fa-exclamation-circle me-2"></i>
+                                    @uploadError
+                                </div>
+                            }
+                            @if (uploadedFile != null)
+                            {
+                                <div class="alert alert-success mt-2">
+                                    <i class="fas fa-check-circle me-2"></i>
+                                    @GeneralResources.FileSelected: <strong>@uploadedFile.Name</strong> (@((uploadedFile.Size / 1024.0).ToString("F2")) KB)
+                                </div>
+                            }
+                        </div>
+
+                        <div class="d-flex gap-2">
+                            <button class="btn btn-secondary" @onclick="BackToSelectCategory">
+                                <i class="fas fa-arrow-left me-2"></i>
+                                @ActionsResources.Back
+                            </button>
+                            <button class="btn btn-primary" @onclick="ParseExcelFile" disabled="@(uploadedFile == null || isProcessing)">
+                                @if (isProcessing)
+                                {
+                                    <span class="spinner-border spinner-border-sm me-2"></span>
+                                    <text>@GeneralResources.Processing</text>
+                                }
+                                else
+                                {
+                                    <i class="fas fa-check me-2"></i>
+                                    <text>@ECommerceResources.ParseAndReviewData</text>
+                                }
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            }
+            else if (currentStep == ImportStep.ReviewData)
+            {
+                <!-- Step 3: Review Parsed Data -->
+                <div class="row">
+                    <div class="col-12">
+                        <h6 class="text-primary mb-3">Step 3: Review Parsed Products</h6>
+                        <p class="text-muted">Review the products parsed from Excel. Fix any validation errors before importing.</p>
+                        
+                        <div class="alert alert-success">
+                            <i class="fas fa-check-circle me-2"></i>
+                            Successfully parsed <strong>@importedProducts.Count</strong> products
+                        </div>
+
+                        @if (validationErrors.Any())
+                        {
+                            <div class="alert alert-danger">
+                                <h6><i class="fas fa-times-circle me-2"></i>Validation Errors Found:</h6>
+                                <p class="mb-2">Please fix these errors before importing:</p>
+                                <ul class="mb-0">
+                                    @foreach (var error in validationErrors.Take(20))
+                                    {
+                                        <li>@error</li>
+                                    }
+                                </ul>
+                                @if (validationErrors.Count > 20)
+                                {
+                                    <p class="mb-0 mt-2 text-muted">... and @(validationErrors.Count - 20) more errors</p>
+                                }
+                            </div>
+                        }
+
+                        <div class="table-responsive">
+                            <table class="table table-striped table-hover">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th style="width: 40px">#</th>
+                                        <th>Title (EN)</th>
+                                        <th>Category</th>
+                                        <th>Price</th>
+                                        <th>Quantity</th>
+                                        <th>Stock</th>
+                                        <th>Attributes</th>
+                                        <th>Pricing Combos</th>
+                                        <th>Status</th>
+                                        <th style="width: 100px">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var product in importedProducts)
+                                    {
+                                        var rowErrors = GetRowValidationErrors(product);
+                                        var hasErrors = rowErrors.Any();
+                                        <tr class="@(hasErrors ? "table-danger" : "")">
+                                            <td>@product.RowNumber</td>
+                                            <td>
+                                                @product.TitleEn
+                                                @if (string.IsNullOrWhiteSpace(product.TitleEn))
+                                                {
+                                                    <span class="badge bg-danger">Missing</span>
+                                                }
+                                            </td>
+                                            <td>
+                                                @if (product.CategoryId != Guid.Empty)
+                                                {
+                                                    var cat = categories.FirstOrDefault(c => c.Id == product.CategoryId);
+                                                    <text>@(cat?.Title ?? "Unknown")</text>
+                                                }
+                                                else
+                                                {
+                                                    <span class="badge bg-danger">Invalid</span>
+                                                }
+                                            </td>
+                                            <td>@product.Price.ToString("C")</td>
+                                            <td>
+                                                @product.Quantity
+                                                @if (product.Quantity < 0)
+                                                {
+                                                    <span class="badge bg-danger">Invalid</span>
+                                                }
+                                            </td>
+                                            <td>
+                                                @if (product.StockStatus)
+                                                {
+                                                    <span class="badge bg-success">In Stock</span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="badge bg-danger">Out of Stock</span>
+                                                }
+                                            </td>
+                                            <td>
+                                                <span class="badge bg-info">@product.AttributeValues.Count attrs</span>
+                                            </td>
+                                            <td>
+                                                @{
+                                                    var comboCount = GetCombinationCount(product.PricingAttributeValues);
+                                                }
+                                                @if (comboCount > 0)
+                                                {
+                                                    <span class="badge bg-warning text-dark">@comboCount combinations</span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="text-muted">-</span>
+                                                }
+                                            </td>
+                                            <td>
+                                                @if (hasErrors)
+                                                {
+                                                    <span class="badge bg-danger" title="@string.Join(", ", rowErrors)">
+                                                        <i class="fas fa-times me-1"></i>
+                                                        @rowErrors.Count errors
+                                                    </span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="badge bg-success">
+                                                        <i class="fas fa-check"></i>
+                                                        Valid
+                                                    </span>
+                                                }
+                                            </td>
+                                            <td>
+                                                <button class="btn btn-sm btn-danger" @onclick="() => RemoveProduct(product)">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div class="d-flex gap-2 mt-3">
+                            <button class="btn btn-secondary" @onclick="BackToUpload">
+                                <i class="fas fa-arrow-left me-2"></i>
+                                Back
+                            </button>
+                            <button class="btn btn-success" 
+                                    @onclick="ImportProducts" 
+                                    disabled="@(isImporting || importedProducts.Count == 0 || validationErrors.Any())">
+                                @if (isImporting)
+                                {
+                                    <span class="spinner-border spinner-border-sm me-2"></span>
+                                    <text>Importing @importProgress%</text>
+                                }
+                                else
+                                {
+                                    <i class="fas fa-upload me-2"></i>
+                                    <text>Import @importedProducts.Count Products</text>
+                                }
+                            </button>
+                        </div>
+
+                        @if (validationErrors.Any())
+                        {
+                            <div class="alert alert-warning mt-3">
+                                <i class="fas fa-exclamation-triangle me-2"></i>
+                                <strong>Cannot import:</strong> Please fix all validation errors first or remove invalid rows.
+                            </div>
+                        }
+                    </div>
+                </div>
+            }
+            else if (currentStep == ImportStep.Complete)
+            {
+                <!-- Step 4: Import Complete -->
+                <div class="row">
+                    <div class="col-md-8 mx-auto text-center">
+                        <div class="mb-4">
+                            <i class="fas fa-check-circle text-success" style="font-size: 5rem;"></i>
+                        </div>
+                        <h4 class="text-success mb-3">Import Completed!</h4>
+                        <p class="text-muted mb-4">
+                            Successfully imported <strong class="text-success">@successCount</strong> products.
+                            @if (failedCount > 0)
+                            {
+                                <br/><span class="text-danger">@failedCount products failed to import.</span>
+                            }
+                        </p>
+
+                        @if (importResults.Any())
+                        {
+                            <div class="alert alert-info text-start">
+                                <h6>Import Summary:</h6>
+                                <ul class="mb-0">
+                                    @foreach (var result in importResults.Take(10))
+                                    {
+                                        <li class="@(result.Success ? "text-success" : "text-danger")">
+                                            <i class="fas @(result.Success ? "fa-check-circle" : "fa-times-circle") me-1"></i>
+                                            Row @result.RowNumber: @result.Message
+                                        </li>
+                                    }
+                                </ul>
+                                @if (importResults.Count > 10)
+                                {
+                                    <p class="mb-0 mt-2">... and @(importResults.Count - 10) more results</p>
+                                }
+                            </div>
+                        }
+
+                        <div class="d-flex gap-2 justify-content-center">
+                            <button class="btn btn-primary" @onclick="GoToProducts">
+                                <i class="fas fa-box me-2"></i>
+                                View Products
+                            </button>
+                            <button class="btn btn-secondary" @onclick="StartNewImport">
+                                <i class="fas fa-redo me-2"></i>
+                                Import More Products
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            }
+
+        </div>
+    </div>
+</div>
+
+@code {
+    private enum ImportStep
+    {
+        SelectCategory,
+        UploadFile,
+        ReviewData,
+        Complete
+    }
+
+    private ImportStep currentStep = ImportStep.SelectCategory;
+    private List<CategoryDto> categories = new();
+    private List<CategoryAttributeDto> categoryAttributes = new();
+    private Dictionary<Guid, string> brands = new();
+    private Dictionary<Guid, string> units = new();
+    
+    private Guid selectedCategoryId = Guid.Empty;
+    private string selectedCategoryName = string.Empty;
+    private bool isGeneratingTemplate = false;
+    private bool isProcessing = false;
+    private bool isImporting = false;
+    private int importProgress = 0;
+    
+    private IBrowserFile? uploadedFile;
+    private string uploadError = string.Empty;
+    private List<ImportedProductDto> importedProducts = new();
+    private List<string> validationErrors = new();
+    private List<ImportResult> importResults = new();
+    
+    private int successCount = 0;
+    private int failedCount = 0;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadInitialData();
+    }
+
+    private async Task LoadInitialData()
+    {
+        try
+        {
+            // Load categories
+            var categoriesResult = await CategoryService.GetAllAsync();
+            if (categoriesResult?.Success == true)
+            {
+                categories = categoriesResult.Data?.ToList() ?? new();
+            }
+
+            // Load brands
+            var brandsResult = await BrandService.GetAllAsync();
+            if (brandsResult?.Success == true)
+            {
+                brands = brandsResult.Data?.ToDictionary(b => b.Id, b => b.Title) ?? new();
+            }
+
+            // Load units
+            var unitsResult = await UnitService.GetAllAsync();
+            if (unitsResult?.Success == true)
+            {
+                units = unitsResult.Data?.ToDictionary(u => u.Id, u => u.Title) ?? new();
+            }
+        }
+        catch (Exception ex)
+        {
+            await ShowError("Error loading data", ex.Message);
+        }
+    }
+
+    private async Task OnCategorySelected(ChangeEventArgs e)
+    {
+        if (Guid.TryParse(e.Value?.ToString(), out var categoryId))
+        {
+            selectedCategoryId = categoryId;
+            var category = categories.FirstOrDefault(c => c.Id == categoryId);
+            selectedCategoryName = category?.Title ?? "";
+            
+            // Load category attributes
+            await LoadCategoryAttributes();
+        }
+        else
+        {
+            selectedCategoryId = Guid.Empty;
+            selectedCategoryName = "";
+            categoryAttributes.Clear();
+        }
+    }
+
+    private async Task LoadCategoryAttributes()
+    {
+        try
+        {
+            var result = await AttributeService.GetByCategoryIdAsync(selectedCategoryId);
+            if (result?.Success == true)
+            {
+                categoryAttributes = result.Data?.ToList() ?? new();
+            }
+        }
+        catch (Exception ex)
+        {
+            await ShowError("Error loading attributes", ex.Message);
+        }
+    }
+
+    private async Task GenerateTemplate()
+    {
+        try
+        {
+            isGeneratingTemplate = true;
+            StateHasChanged();
+
+            var category = categories.First(c => c.Id == selectedCategoryId);
+            var templateBytes = ExcelTemplateService.GenerateProductTemplate(
+                new List<CategoryDto> { category },
+                categoryAttributes,
+                brands,
+                units
+            );
+
+            // Download file
+            await JSRuntime.InvokeVoidAsync("downloadFile", 
+                $"ProductImport_{category.TitleEn}_{DateTime.Now:yyyyMMdd}.xlsx",
+                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                Convert.ToBase64String(templateBytes));
+
+            // Move to next step
+            currentStep = ImportStep.UploadFile;
+        }
+        catch (Exception ex)
+        {
+            await ShowError("Error generating template", ex.Message);
+        }
+        finally
+        {
+            isGeneratingTemplate = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task GenerateTemplateWithData()
+    {
+        try
+        {
+            isGeneratingTemplate = true;
+            StateHasChanged();
+
+            var category = categories.First(c => c.Id == selectedCategoryId);
+            var templateBytes = ExcelTemplateService.GenerateProductTemplate(
+                new List<CategoryDto> { category },
+                categoryAttributes,
+                brands,
+                units
+            );
+
+            // Download file
+            await JSRuntime.InvokeVoidAsync("downloadFile", 
+                $"ProductImportTemplate_{category.TitleEn}_{DateTime.Now:yyyyMMdd}.xlsx",
+                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                Convert.ToBase64String(templateBytes));
+
+            // Move to next step
+            currentStep = ImportStep.UploadFile;
+        }
+        catch (Exception ex)
+        {
+            await ShowError(NotifiAndAlertsResources.Error, ex.Message);
+        }
+        finally
+        {
+            isGeneratingTemplate = false;
+            StateHasChanged();
+        }
+    }
+    
+    private async Task GenerateEmptyTemplate()
+    {
+        try
+        {
+            isGeneratingTemplate = true;
+            StateHasChanged();
+
+            var category = categories.First(c => c.Id == selectedCategoryId);
+            var templateBytes = ExcelTemplateService.GenerateEmptyProductTemplate(
+                new List<CategoryDto> { category },
+                categoryAttributes
+            );
+
+            // Download file
+            await JSRuntime.InvokeVoidAsync("downloadFile", 
+                $"ProductImportEmpty_{category.TitleEn}_{DateTime.Now:yyyyMMdd}.xlsx",
+                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                Convert.ToBase64String(templateBytes));
+
+            // Move to next step
+            currentStep = ImportStep.UploadFile;
+        }
+        catch (Exception ex)
+        {
+            await ShowError("Error generating empty template", ex.Message);
+        }
+        finally
+        {
+            isGeneratingTemplate = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task HandleFileUpload(InputFileChangeEventArgs e)
+    {
+        uploadedFile = e.File;
+        uploadError = string.Empty;
+
+        if (uploadedFile.Size > 10 * 1024 * 1024) // 10MB limit
+        {
+            uploadError = "File size exceeds 10MB limit";
+            uploadedFile = null;
+        }
+        else if (!uploadedFile.Name.EndsWith(".xlsx", StringComparison.OrdinalIgnoreCase))
+        {
+            uploadError = "Only .xlsx files are supported";
+            uploadedFile = null;
+        }
+    }
+
+    private async Task ParseExcelFile()
+    {
+        if (uploadedFile == null) return;
+
+        try
+        {
+            isProcessing = true;
+            validationErrors.Clear();
+            StateHasChanged();
+
+            using var stream = uploadedFile.OpenReadStream(maxAllowedSize: 10 * 1024 * 1024);
+            importedProducts = ExcelTemplateService.ParseProductsFromExcel(
+                stream, 
+                categoryAttributes, 
+                categories, 
+                brands, 
+                units);
+
+            // Validate products
+            ValidateImportedProducts();
+
+            currentStep = ImportStep.ReviewData;
+        }
+        catch (Exception ex)
+        {
+            await ShowError(NotifiAndAlertsResources.Error, ex.Message);
+        }
+        finally
+        {
+            isProcessing = false;
+            StateHasChanged();
+        }
+    }
+
+    private List<string> GetRowValidationErrors(ImportedProductDto product)
+    {
+        var errors = new List<string>();
+
+        // Required fields validation
+        if (string.IsNullOrWhiteSpace(product.TitleEn))
+            errors.Add("Title (EN) is required");
+        
+        if (string.IsNullOrWhiteSpace(product.TitleAr))
+            errors.Add("Title (AR) is required");
+
+        if (string.IsNullOrWhiteSpace(product.ShortDescriptionEn))
+            errors.Add("Short Description (EN) is required");
+
+        if (string.IsNullOrWhiteSpace(product.ShortDescriptionAr))
+            errors.Add("Short Description (AR) is required");
+
+        if (string.IsNullOrWhiteSpace(product.DescriptionEn))
+            errors.Add("Description (EN) is required");
+
+        if (string.IsNullOrWhiteSpace(product.DescriptionAr))
+            errors.Add("Description (AR) is required");
+
+        // Category validation
+        if (product.CategoryId == Guid.Empty)
+            errors.Add("Category ID is required");
+        else if (!categories.Any(c => c.Id == product.CategoryId))
+            errors.Add("Invalid Category ID - Category does not exist");
+
+        // Brand validation
+        if (product.BrandId == Guid.Empty)
+            errors.Add("Brand ID is required");
+        else if (!brands.ContainsKey(product.BrandId))
+            errors.Add("Invalid Brand ID - Brand does not exist");
+
+        // Unit validation
+        if (product.UnitId == Guid.Empty)
+            errors.Add("Unit ID is required");
+        else if (!units.ContainsKey(product.UnitId))
+            errors.Add("Invalid Unit ID - Unit does not exist");
+
+        // Price validation
+        if (product.Price <= 0)
+            errors.Add("Price must be greater than 0");
+
+        // Quantity validation
+        if (product.Quantity < 0)
+            errors.Add("Quantity cannot be negative");
+
+        // Validate pricing attribute options exist
+        foreach (var pricingAttr in product.PricingAttributeValues)
+        {
+            var attribute = categoryAttributes.FirstOrDefault(a => a.AttributeId == pricingAttr.Key);
+            if (attribute == null)
+            {
+                errors.Add($"Pricing attribute {pricingAttr.Key} not found in category");
+                continue;
+            }
+
+            foreach (var optionId in pricingAttr.Value)
+            {
+                if (attribute.AttributeOptions == null || 
+                    !attribute.AttributeOptions.Any(o => o.Id == optionId))
+                {
+                    errors.Add($"Invalid option ID {optionId} for attribute {attribute.TitleEn}");
+                }
+            }
+        }
+
+        // Validate regular attribute values
+        foreach (var attr in product.AttributeValues)
+        {
+            var attribute = categoryAttributes.FirstOrDefault(a => a.AttributeId == attr.Key);
+            if (attribute == null)
+            {
+                errors.Add($"Attribute {attr.Key} not found in category");
+            }
+        }
+
+        return errors;
+    }
+
+    private void ValidateImportedProducts()
+    {
+        validationErrors.Clear();
+        
+        foreach (var product in importedProducts)
+        {
+            var rowErrors = GetRowValidationErrors(product);
+            foreach (var error in rowErrors)
+            {
+                validationErrors.Add($"Row {product.RowNumber}: {error}");
+            }
+        }
+    }
+
+    private async Task ImportProducts()
+    {
+        try
+        {
+            isImporting = true;
+            importProgress = 0;
+            importResults.Clear();
+            successCount = 0;
+            failedCount = 0;
+            StateHasChanged();
+
+            int processed = 0;
+            foreach (var importedProduct in importedProducts)
+            {
+                try
+                {
+                    var itemDto = ConvertToItemDto(importedProduct);
+                    var result = await ItemService.SaveAsync(itemDto);
+
+                    if (result?.Success == true)
+                    {
+                        successCount++;
+                        importResults.Add(new ImportResult
+                        {
+                            RowNumber = importedProduct.RowNumber,
+                            Success = true,
+                            Message = "Imported successfully"
+                        });
+                    }
+                    else
+                    {
+                        failedCount++;
+                        importResults.Add(new ImportResult
+                        {
+                            RowNumber = importedProduct.RowNumber,
+                            Success = false,
+                            Message = result?.Message ?? "Unknown error"
+                        });
+                    }
+                }
+                catch (Exception ex)
+                {
+                    failedCount++;
+                    importResults.Add(new ImportResult
+                    {
+                        RowNumber = importedProduct.RowNumber,
+                        Success = false,
+                        Message = ex.Message
+                    });
+                }
+
+                processed++;
+                importProgress = (processed * 100) / importedProducts.Count;
+                StateHasChanged();
+            }
+
+            currentStep = ImportStep.Complete;
+        }
+        catch (Exception ex)
+        {
+            await ShowError("Error importing products", ex.Message);
+        }
+        finally
+        {
+            isImporting = false;
+            StateHasChanged();
+        }
+    }
+
+    private ItemDto ConvertToItemDto(ImportedProductDto imported)
+    {
+        var item = new ItemDto
+        {
+            TitleAr = imported.TitleAr,
+            TitleEn = imported.TitleEn,
+            ShortDescriptionAr = imported.ShortDescriptionAr,
+            ShortDescriptionEn = imported.ShortDescriptionEn,
+            DescriptionAr = imported.DescriptionAr,
+            DescriptionEn = imported.DescriptionEn,
+            CategoryId = imported.CategoryId,
+            BrandId = imported.BrandId,
+            UnitId = imported.UnitId,
+            Price = imported.Price,
+            Quantity = imported.Quantity,
+            StockStatus = imported.StockStatus,
+            IsNewArrival = imported.IsNewArrival,
+            IsBestSeller = imported.IsBestSeller,
+            IsRecommended = imported.IsRecommended,
+            ThumbnailImage = imported.ThumbnailImagePath ?? string.Empty,
+            Images = new List<ItemImageDto>(),
+            ItemAttributes = new List<ItemAttributeDto>(),
+            ItemAttributeCombinationPricings = new List<ItemAttributeCombinationPricingDto>()
+        };
+
+        // Add item attributes
+        foreach (var attr in imported.AttributeValues)
+        {
+            item.ItemAttributes.Add(new ItemAttributeDto
+            {
+                AttributeId = attr.Key,
+                Value = attr.Value
+            });
+        }
+
+        // Generate pricing combinations if pricing attributes exist
+        if (imported.PricingAttributeValues.Any())
+        {
+            var combinations = GeneratePricingCombinations(imported.PricingAttributeValues);
+            foreach (var combo in combinations)
+            {
+                item.ItemAttributeCombinationPricings.Add(new ItemAttributeCombinationPricingDto
+                {
+                    AttributeIds = string.Join(",", combo),
+                    FinalPrice = imported.Price,
+                    Quantity = 0
+                });
+            }
+        }
+
+        return item;
+    }
+
+    private List<List<Guid>> GeneratePricingCombinations(Dictionary<Guid, List<Guid>> attributeValues)
+    {
+        if (!attributeValues.Any()) return new();
+
+        var result = new List<List<Guid>> { new List<Guid>() };
+
+        foreach (var kvp in attributeValues)
+        {
+            var newResult = new List<List<Guid>>();
+            foreach (var existing in result)
+            {
+                foreach (var optionId in kvp.Value)
+                {
+                    var newCombo = new List<Guid>(existing) { optionId };
+                    newResult.Add(newCombo);
+                }
+            }
+            result = newResult;
+        }
+
+        return result;
+    }
+
+    private int GetCombinationCount(Dictionary<Guid, List<Guid>> pricingAttributes)
+    {
+        if (!pricingAttributes.Any()) return 0;
+        return pricingAttributes.Values.Aggregate(1, (acc, list) => acc * list.Count);
+    }
+
+    private void RemoveProduct(ImportedProductDto product)
+    {
+        importedProducts.Remove(product);
+    }
+
+    private void BackToSelectCategory()
+    {
+        currentStep = ImportStep.SelectCategory;
+        uploadedFile = null;
+        uploadError = string.Empty;
+    }
+
+    private void BackToUpload()
+    {
+        currentStep = ImportStep.UploadFile;
+        importedProducts.Clear();
+        validationErrors.Clear();
+    }
+
+    private void StartNewImport()
+    {
+        currentStep = ImportStep.SelectCategory;
+        selectedCategoryId = Guid.Empty;
+        selectedCategoryName = string.Empty;
+        uploadedFile = null;
+        uploadError = string.Empty;
+        importedProducts.Clear();
+        validationErrors.Clear();
+        importResults.Clear();
+        successCount = 0;
+        failedCount = 0;
+    }
+
+    private void GoToProducts()
+    {
+        Navigation.NavigateTo("/products");
+    }
+
+    private async Task ShowError(string title, string message)
+    {
+        await JSRuntime.InvokeVoidAsync("swal", title, message, "error");
+    }
+
+    private class ImportResult
+    {
+        public int RowNumber { get; set; }
+        public bool Success { get; set; }
+        public string Message { get; set; } = string.Empty;
+    }
+}
