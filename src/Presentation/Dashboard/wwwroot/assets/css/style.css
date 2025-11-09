@@ -1137,9 +1137,31 @@ label {
     overflow-x: auto;
     display: block;
     width: 100%;
+    min-height: 75vh; /* يخليه ياخد تقريبًا ارتفاع الشاشة */
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 
 }
+.dt-responsive{
+     overflow-x: auto;
+    display: block;
+    width: 100%;
+    min-height: 75vh; /* يخليه ياخد تقريبًا ارتفاع الشاشة */
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+.dt-responsived{
+    overflow-x: auto;
+    display: block;
+    width: 100%;
 
+    min-height: 65vh; /* يخليه ياخد تقريبًا ارتفاع الشاشة */
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
 .invoice-box {
     margin-right: 1rem;
     margin-left: 1rem;
@@ -3569,7 +3591,7 @@ label {
     display: block;
     clear: both;
     float: unset;
-    right: 0;
+    right: 7px;
     top: 0;
     margin-left: 280px;
     min-height: 100vh;
@@ -3776,7 +3798,7 @@ label {
     }
 
     .pcoded-content {
-        padding: 30px 15px;
+        /* padding: 30px 15px; */
     }
 
     .card {
@@ -16862,6 +16884,12 @@ div.code-toolbar {
 
         .sw-vertical-right .step-anchor {
             margin-left: 30px;
+        }
+        .dt-responsived-mob{
+            min-height: 65vh;
+        }
+        .resbonsever{
+            height: 80px !important;
         }
 }
 
