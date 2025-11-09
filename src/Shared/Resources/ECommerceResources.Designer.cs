@@ -277,6 +277,15 @@ namespace Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to جميع الحقول المميزة بـ * مطلوبة.
+        /// </summary>
+        public static string AllFieldsMarkedRequired {
+            get {
+                return ResourceManager.GetString("AllFieldsMarkedRequired", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to الفائدة بالعربية .
         /// </summary>
         public static string ArabicBenefit {
@@ -628,6 +637,15 @@ namespace Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to احذف صف المثال قبل الاستيراد.
+        /// </summary>
+        public static string DeleteExampleRow {
+            get {
+                return ResourceManager.GetString("DeleteExampleRow", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to تم التسليم.
         /// </summary>
         public static string Delivered {
@@ -655,11 +673,47 @@ namespace Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to تحميل قالب فارغ.
+        /// </summary>
+        public static string DownloadEmptyTemplate {
+            get {
+                return ResourceManager.GetString("DownloadEmptyTemplate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to تحميل القالب مع البيانات المرجعية.
+        /// </summary>
+        public static string DownloadTemplateWithData {
+            get {
+                return ResourceManager.GetString("DownloadTemplateWithData", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to الإيميل.
         /// </summary>
         public static string Email {
             get {
                 return ResourceManager.GetString("Email", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to القالب الفارغ.
+        /// </summary>
+        public static string EmptyTemplate {
+            get {
+                return ResourceManager.GetString("EmptyTemplate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to يحتوي فقط على ورقة المنتجات والتعليمات (بدون بيانات مرجعية).
+        /// </summary>
+        public static string EmptyTemplateDescription {
+            get {
+                return ResourceManager.GetString("EmptyTemplateDescription", resourceCulture);
             }
         }
         
@@ -687,6 +741,15 @@ namespace Resources {
         public static string EquivalentDollars {
             get {
                 return ResourceManager.GetString("EquivalentDollars", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ملف Excel.
+        /// </summary>
+        public static string ExcelFile {
+            get {
+                return ResourceManager.GetString("ExcelFile", resourceCulture);
             }
         }
         
@@ -759,6 +822,15 @@ namespace Resources {
         public static string FromUnit {
             get {
                 return ResourceManager.GetString("FromUnit", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to استيراد المنتجات.
+        /// </summary>
+        public static string ImportProducts {
+            get {
+                return ResourceManager.GetString("ImportProducts", resourceCulture);
             }
         }
         
@@ -1312,6 +1384,15 @@ namespace Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to تحليل ومراجعة البيانات.
+        /// </summary>
+        public static string ParseAndReviewData {
+            get {
+                return ResourceManager.GetString("ParseAndReviewData", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to طريقة الدفع.
         /// </summary>
         public static string PaymentMethod {
@@ -1582,6 +1663,33 @@ namespace Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to اختر الفئة التي تريد استيراد المنتجات إليها.
+        /// </summary>
+        public static string SelectCategoryInstructions {
+            get {
+                return ResourceManager.GetString("SelectCategoryInstructions", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to الفئة المختارة.
+        /// </summary>
+        public static string SelectedCategory {
+            get {
+                return ResourceManager.GetString("SelectedCategory", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to اختر من القائمة المنسدلة للفئة والعلامة التجارية والوحدة.
+        /// </summary>
+        public static string SelectFromDropdown {
+            get {
+                return ResourceManager.GetString("SelectFromDropdown", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to يرجى اختيار شركة الشحن..
         /// </summary>
         public static string SelectShippingCompany {
@@ -1744,6 +1852,24 @@ namespace Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to الخطوة 1: اختيار الفئة.
+        /// </summary>
+        public static string Step1SelectCategory {
+            get {
+                return ResourceManager.GetString("Step1SelectCategory", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to الخطوة 2: رفع ملف Excel.
+        /// </summary>
+        public static string Step2UploadFile {
+            get {
+                return ResourceManager.GetString("Step2UploadFile", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to حاله المخزون.
         /// </summary>
         public static string StockStatus {
@@ -1776,6 +1902,24 @@ namespace Resources {
         public static string TargetUnit {
             get {
                 return ResourceManager.GetString("TargetUnit", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to يحتوي على أوراق مرجعية للفئات والعلامات التجارية والوحدات وخيارات الخصائص.
+        /// </summary>
+        public static string TemplateWithDataDescription {
+            get {
+                return ResourceManager.GetString("TemplateWithDataDescription", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to القالب مع البيانات المرجعية.
+        /// </summary>
+        public static string TemplateWithReferenceData {
+            get {
+                return ResourceManager.GetString("TemplateWithReferenceData", resourceCulture);
             }
         }
         
@@ -1866,6 +2010,15 @@ namespace Resources {
         public static string Units {
             get {
                 return ResourceManager.GetString("Units", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ارفع ملف Excel المملوء ببيانات المنتجات. تأكد من ملء جميع الحقول المطلوبة بشكل صحيح..
+        /// </summary>
+        public static string UploadFileInstructions {
+            get {
+                return ResourceManager.GetString("UploadFileInstructions", resourceCulture);
             }
         }
         

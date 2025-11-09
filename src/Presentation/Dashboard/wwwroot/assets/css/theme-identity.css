@@ -324,8 +324,6 @@ h6 {
   background: var(--neutral-lighter) !important;
   border: 1.5px solid var(--neutral-light) !important;
   color: var(--neutral-dark) !important;
-  
- 
 }
 
 /* ===================================
@@ -564,10 +562,11 @@ button:focus-visible,
 
   .card-body {
     padding: 16px !important;
+    min-height: 80% !important;
   }
 
   .btn {
-    padding: 8px 16px !important;
+    padding: 10px !important;
   }
 }
 
@@ -1205,129 +1204,130 @@ button:focus-visible,
     align-items: center !important; /* align-items-center */
   }
   .btn.btn-success {
-   
-}
-.fw-bold{
-    display: none !important   ;
-}
-.navbar-nav.d-flex.flex-row.align-items-center.gap-3.mb-2.px-0.w-100 {
-  display: flex !important;              /* يضمن إن العناصر تكون في خط واحد */
-  flex-direction: row !important;        /* صف أفقي */
-  align-items: center !important;        /* محاذاة عمودية في المنتصف */
-  justify-content: space-between !important; /* توزيع العناصر بشكل متساوي */
-  gap: 0 !important;                     /* يلغي المسافات الإضافية */
-  flex-wrap: nowrap !important;          /* أهم سطر: يمنع العناصر من النزول تحت بعض */
-}
-  .nav-item.ms-auto.d-flex.flex-row.align-items-center.gap-2{
-    gap: 0px !important; /* align-items-center */   
   }
-  .fas.fa-plus.me-2{
+  #sidebar-overlay.show {
+    display: flex !important;
+  }
+  .fw-bold {
+    display: none !important   ;
+  }
+  .navbar-nav.d-flex.flex-row.align-items-center.gap-3.mb-2.px-0.w-100 {
+    display: flex !important; /* يضمن إن العناصر تكون في خط واحد */
+    flex-direction: row !important; /* صف أفقي */
+    align-items: center !important; /* محاذاة عمودية في المنتصف */
+    justify-content: space-between !important; /* توزيع العناصر بشكل متساوي */
+    gap: 0 !important; /* يلغي المسافات الإضافية */
+    flex-wrap: nowrap !important; /* أهم سطر: يمنع العناصر من النزول تحت بعض */
+  }
+  .nav-item.ms-auto.d-flex.flex-row.align-items-center.gap-2 {
+    gap: 0px !important; /* align-items-center */
+  }
+  .fas.fa-plus.me-2 {
     padding: 0px !important;
     align-items: center !important;
-    justify-content: center !important; 
+    justify-content: center !important;
   }
-  .navbar-nav.d-flex.flex-row.align-items-center.gap-3.mb-2.px-0.w-100{
+  .navbar-nav.d-flex.flex-row.align-items-center.gap-3.mb-2.px-0.w-100 {
     justify-content: space-between !important;
   }
-  .nav-item.col-md-6.w-auto.d-flex.flex-row.align-items-center.gap-3{
+  .nav-item.col-md-6.w-auto.d-flex.flex-row.align-items-center.gap-3 {
   }
-  .navbar-nav.d-flex.flex-row.align-items-center.gap-3.mb-2.px-0.w-100{
-    align-items: center !important;        /* محاذاة عمودية في المنتصف */
-  justify-content: space-between !important; /* توزيع العناصر بشكل متساوي */
-  
+  .navbar-nav.d-flex.flex-row.align-items-center.gap-3.mb-2.px-0.w-100 {
+    align-items: center !important; /* محاذاة عمودية في المنتصف */
+    justify-content: space-between !important; /* توزيع العناصر بشكل متساوي */
   }
   .hidden {
     display: none !important;
-}
-.mobil-stylest{
+  }
+  .mobil-stylest {
     padding: 6px !important;
     display: flex !important;
-
-}
-  .d-flex.gap-2{
+  }
+  .mobil-stylestd {
+    padding: 0px !important;
+    display: flex !important;
+  }
+  .d-flex.gap-2 {
     height: 60px !important;
   }
-  .btn.btn-outline-secondary{
+  .btn.btn-outline-secondary {
     padding: 1px 10px !important;
   }
-  .mobile-hidden{
+  .mobile-hidden {
     display: none !important;
   }
-  .tab-content{
+  .tab-content {
     padding: 0px !important;
     border: none !important;
   }
-  
-    .dashboard-page {
-        padding: 1rem;
-    }
-    .icon-wrapper {
-        width: 50px;
-        height: 50px;
-        font-size: 1.4rem;
-    }
-    .btn-responsive {
+
+  .dashboard-page {
+    padding: 1rem;
+  }
+  .icon-wrapper {
+    width: 50px;
+    height: 50px;
+    font-size: 1.4rem;
+  }
+  .btn-responsive {
     flex: 1 1 100%;
     width: 100%;
     height: 40px !important;
-   
   }
-  
 
   .card-footer-mobile {
     flex-direction: row !important;
-    gap: .5rem !important;
-     margin-bottom: 4px !important;
+    gap: 0.5rem !important;
+    margin-bottom: 4px !important;
   }
-  
 }
-.mobile-disa{
-    margin-left:10px ;
+.mobile-disa {
+  margin-left: 10px;
 }
-.gap-row-item{
-    padding: 0px !important;
+.gap-row-item {
+  padding: 0px !important;
 }
-.navbar-nav.d-flex.flex-row.gap-row-item.align-items-center{
-     padding: 0px !important;
+.navbar-nav.d-flex.flex-row.gap-row-item.align-items-center {
+  padding: 0px !important;
 }
 
 .pagination-container .pagination .page-item .page-link {
-    color: #495057;
-    border: none;
-    background-color: #fff;
-    transition: all 0.2s ease-in-out;
+  color: #495057;
+  border: none;
+  background-color: #fff;
+  transition: all 0.2s ease-in-out;
 }
 
 .pagination-container .pagination .page-item.active .page-link {
-    background-color: #0d6efd;
-    color: #fff;
-    font-weight: 600;
+  background-color: #0d6efd;
+  color: #fff;
+  font-weight: 600;
 }
 
 .pagination-container .pagination .page-item:not(.disabled):hover .page-link {
-    background-color: #e9ecef;
-    color: #0d6efd;
+  background-color: #e9ecef;
+  color: #0d6efd;
 }
 
 .pagination-container .pagination .page-item.disabled .page-link {
-    color: #adb5bd;
-    background-color: #f8f9fa;
+  color: #adb5bd;
+  background-color: #f8f9fa;
 }
 
 .pagination-container .pagination .page-link {
-    min-width: 38px;
-    text-align: center;
+  min-width: 38px;
+  text-align: center;
 }
 .pagination-container {
-    /* position: fixed; */
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    background-color: #fff; /* لون خلفية أبيض */
-    padding: 10px 20px;
-    border-top: 1px solid #dee2e6;
-    box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.05);
-    z-index: 999;
+  /* position: fixed; */
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background-color: #fff; /* لون خلفية أبيض */
+  padding: 10px 20px;
+  border-top: 1px solid #dee2e6;
+  box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.05);
+  z-index: 999;
 }
 .hide-scrollbar {
   scrollbar-width: none; /* Firefox */
@@ -1338,11 +1338,11 @@ button:focus-visible,
   display: none; /* Chrome و Safari و Edge الحديث */
 }
 .full-height-card {
-  min-height: 63vh; /* يخليه ياخد تقريبًا ارتفاع الشاشة */
+  min-height: 55vh; /* يخليه ياخد تقريبًا ارتفاع الشاشة */
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-   /* يمنع الخروج بره الكارد */
+  /* يمنع الخروج بره الكارد */
 }
 .custom-dropdown {
   background-color: #fff;
@@ -1372,32 +1372,32 @@ button:focus-visible,
 }
 
 .dashboard-page {
-    min-height: 100vh;
-    background: linear-gradient(180deg, #f8f9fc 0%, #ffffff 100%);
+  min-height: 100vh;
+  background: linear-gradient(180deg, #f8f9fc 0%, #ffffff 100%);
 }
 
 .dashboard-card {
-    transition: all 0.3s ease-in-out;
+  transition: all 0.3s ease-in-out;
 }
 
 .dashboard-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+  transform: translateY(-5px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
 }
 
 .icon-wrapper {
-    width: 60px;
-    height: 60px;
-    border-radius: 50%;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.6rem;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.6rem;
 }
 
 .card-header {
-    font-size: 0.95rem;
-    font-weight: 600;
+  font-size: 0.95rem;
+  font-weight: 600;
 }
 /*  */
 .icon-wrapper {
@@ -1408,7 +1408,7 @@ button:focus-visible,
   justify-content: center;
   align-items: center;
   font-size: 28px;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
 }
 
 /* خلفيات متدرجة للأيقونات */
@@ -1428,8 +1428,8 @@ button:focus-visible,
 /* البوكس الخاص بالنص */
 .text-box {
   background: linear-gradient(145deg, #ffffff, #f7f9fc);
-  border: 1px solid rgba(0,0,0,0.05);
-  box-shadow: inset 0 0 6px rgba(0,0,0,0.05);
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.05);
   transition: all 0.3s ease;
 }
 

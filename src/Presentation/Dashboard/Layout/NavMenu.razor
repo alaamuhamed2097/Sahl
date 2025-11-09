@@ -272,9 +272,16 @@
         </div>
     </div>
 </nav>
+<!-- Overlay - يظهر فقط في وضع الموبايل عند فتح السايد بار -->
+<div id="sidebar-overlay"
+     class="position-fixed top-0 start-0 w-100 h-100 d-none"
+     style="background-color: rgba(0,0,0,0.1); z-index: 1050;"
+     onclick="closeSidebarOverlay()">
+</div>
 <!-- [ Navigation Menu ] end -->
 
 <style>
+  
     .user-profile-item {
         margin-bottom: 0;
         border-bottom: 1px solid rgba(0,0,0,0.05);
@@ -430,9 +437,63 @@
     [dir="rtl"] .user-handle {
         text-align: center;
     }
+      /* لما تظهر */
+    .sidebar-overlay.show {
+        display: block !important;
+    }
+   
 </style>
 
 <script>
+    // يغلق القائمة في الموبايل عند الضغط على أي رابط
+    function closeNavMenu() {
+        if (window.innerWidth < 768) {
+            const $navbar = $(".pcoded-navbar");
+            if ($navbar.hasClass('mob-open')) {
+                $navbar.removeClass('mob-open');
+                $(".mobile-menu, #mobile-collapse, #mobile-collapse1").removeClass('on');
+                hideSidebarOverlay();
+            }
+        }
+    }
+
+    // إظهار overlay عند فتح السايد بار
+    function showSidebarOverlay() {
+        if (window.innerWidth < 768) {
+            document.getElementById("sidebar-overlay").classList.add("show");
+        }
+    }
+
+    // إخفاء overlay
+    function hideSidebarOverlay() {
+        const overlay = document.getElementById("sidebar-overlay");
+        if (overlay) overlay.classList.remove("show");
+    }
+
+    // غلق السايد بار بالضغط على الخلفية
+    function closeSidebarOverlay() {
+        const $navbar = $(".pcoded-navbar");
+        if ($navbar.hasClass('mob-open')) {
+            $navbar.removeClass('mob-open');
+            $(".mobile-menu, #mobile-collapse, #mobile-collapse1").removeClass('on');
+            hideSidebarOverlay();
+        }
+    }
+
+    // ملاحظة: افتح overlay عند فتح السايد بار
+    $(document).on('click', '#mobile-collapse, #mobile-collapse1, .mobile-menu', function () {
+        const $navbar = $(".pcoded-navbar");
+        setTimeout(() => {
+            if ($navbar.hasClass('mob-open')) {
+                showSidebarOverlay();
+            } else {
+                hideSidebarOverlay();
+            }
+        }, 200);
+    });
+</script>
+
+<!-- <script>
     // JavaScript function to close the navigation menu in mobile view only
     function closeNavMenu() {
         // Check if the screen width is below the mobile breakpoint (e.g., 768px)
@@ -456,4 +517,4 @@
             }
         }
     }
-</script>
+</script> -->
