@@ -151,8 +151,12 @@
                                          </td>
                                         <td class="d-flex gap-1 justify-content-center align-items-center">
                                             <div class="d-flex justify-content-center gap-2">
-                                                <button class="btn btn-primary" @onclick="() => Edit(item)">@ActionsResources.Edit</button>
-                                                <button class="btn btn-danger" @onclick="() => Delete(item.Id)">@ActionsResources.Delete</button>
+                                                <button class="btn btn-primary" @onclick="() => Edit(item)">
+                                                <i class="fas fa-pencil-alt mx-1 ms-2"></i>
+                                                @ActionsResources.Edit</button>
+                                                <button class="btn btn-danger" @onclick="() => Delete(item.Id)">
+                                                <i class="feather icon-trash-2 mx-1 ms-2"></i>
+                                                @ActionsResources.Delete</button>
                                             </div>
                                         </td>
                                     </tr>

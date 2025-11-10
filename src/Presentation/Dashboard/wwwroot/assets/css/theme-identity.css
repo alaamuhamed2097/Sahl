@@ -253,7 +253,7 @@ h6 {
   border-radius: var(--radius-sm) !important;
   font-weight: 600 !important;
   padding: 10px 24px !important;
-  transition: var(--transition);
+  transition: none !important;
   border: none !important;
   font-size: 14px;
 }
@@ -267,7 +267,7 @@ h6 {
 .btn-primary:hover {
   background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary-darker) 100%) !important;
   box-shadow: 0 6px 16px rgba(14, 165, 233, 0.4) !important;
-  transform: translateY(-2px);
+  /* transform: translateY(-2px); */
 }
 
 .btn-success {
@@ -279,7 +279,7 @@ h6 {
 .btn-success:hover {
   background: linear-gradient(135deg, var(--success-dark) 0%, #047857 100%) !important;
   box-shadow: 0 6px 16px rgba(16, 185, 129, 0.4) !important;
-  transform: translateY(-2px);
+  /* transform: translateY(-2px); */
 }
 
 .btn-outline-primary {
@@ -1466,7 +1466,7 @@ button:focus-visible,
 /* شاشات الديسكتوب الكبيرة */
 @media (min-width: 1200px) {
     .search-box {
-        width: 620px; /* عرض كبير وواضح */
+        width: 420px; /* عرض كبير وواضح */
     }
 }
 

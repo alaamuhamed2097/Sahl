@@ -68,11 +68,11 @@
        </button>
    </li>
         </ul>
-        <table id="simpletable" class="text-center table table-striped table-bordered nowrap">
+        <table id="simpletable" class="text-center table align-middle  nowrap mb-0 w-100" style="table-layout: fixed;" >
         <thead>
      <tr>
- <th class="sorting">@FormResources.Title</th>
-            <th class="sorting">@FormResources.Code</th>
+ <th >@FormResources.Title</th>
+            <th >@FormResources.Code</th>
   <th class="sorting">@FormResources.StartDate</th>
                     <th class="sorting">@FormResources.EndDate</th>
    <th class="sorting">@FormResources.Type</th>
@@ -80,7 +80,7 @@
         <th class="sorting">@FormResources.UsageLimit</th>
      <th class="sorting">@FormResources.UsageCount</th>
       <th class="sorting">@FormResources.Status</th>
-    <th>@ECommerceResources.Actions</th>
+    <th class="text-center " >@ECommerceResources.Actions</th>
            </tr>
             </thead>
    <tbody class="fs-6 fw-bold">
@@ -108,12 +108,17 @@
         }
 
        <td class="d-flex gap-1 justify-content-center align-items-center">
-   <a class="btn btn-primary btn-sm" @onclick="() => Edit(item)">
-          <i class="feather icon-edit m-0"></i>
-        </a>
-              <button class="btn btn-danger  btn-sm" @onclick="() => Delete(item.Id)">
-   <i class="feather icon-trash-2 m-0"></i>
-          </button>
+        <button class="btn btn-primary  align-items-center" @onclick="() => Edit(item)">
+        <i class="feather icon-edit me-2 "></i>
+        <span class="d-none d-md-inline">@ActionsResources.Edit</span>
+    </button>
+
+    <!-- زر الحذف -->
+    <button class="btn btn-danger align-items-center"  @onclick="() => Delete(item.Id)">
+        <i class="feather icon-trash-2 me-2"></i>
+        <span class="d-none d-md-inline">@ActionsResources.Delete</span>
+    </button>
+  
         </td>
         </tr>
            }

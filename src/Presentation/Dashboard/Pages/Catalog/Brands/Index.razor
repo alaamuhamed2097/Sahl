@@ -49,7 +49,7 @@
 
                         <!-- Filter -->
                                                 <div class="d-flex align-items-center gap-2">
-                            <label class="form-label hidden fw-semibold mb-0">@ActionsResources.Filter</label>
+                            <!-- <label class="form-label hidden fw-semibold mb-0">@ActionsResources.Filter</label> -->
                             <select class="form-select rounded-3 shadow-sm border-light text-primary fw-bold text-center custom-dropdown"
                                     style="width: 200px; height: 40px; padding-right: 30px;"
                                     @onchange="OnFilterChanged">
@@ -75,7 +75,7 @@
                         </div>
                         <!-- Add Brand Button -->
                         <button class="btn btn-success" @onclick="Add">
-                            <i class="fas fa-plus mx-1"></i>
+                            <i class="feather icon-plus-circle "></i>
                             <span class="fw-bold">@ActionsResources.Add</span>
                         </button>
 
@@ -134,7 +134,7 @@
                                             <span class="badge bg-@(item.IsFavorite ? "warning" : "secondary")">
                                                 @if (item.IsFavorite)
                                                 {
-                                                    <i class="fas fa-star me-1"></i>
+                                                    <i class="fas fa-star me-2 ms-2"></i>
                                                     @GeneralResources.Favorite
                                                 }
                                                 else
@@ -147,15 +147,24 @@
                                             <span class="badge bg-info">@item.DisplayOrder</span>
                                         </td>
                                         <td class="d-flex gap-1 justify-content-center align-items-center">
-                                            <button class="btn btn-primary btn-sm mx-1" @onclick="() => Edit(item)" title="@ActionsResources.Edit">
-                                                <span class="fas fa-edit"></span>
-                                            </button>
-                                            <button class="btn btn-warning btn-sm mx-1" @onclick="() => ToggleFavorite(item)" title="@BrandResources.ToggleFavorite">
-                                                <span class="fas fa-star"></span>
-                                            </button>
-                                            <button class="btn btn-danger btn-sm mx-1" @onclick="() => Delete(item.Id)" title="@ActionsResources.Delete">
-                                                <span class="fas fa-trash"></span>
-                                            </button>
+                                           <button class="btn btn-primary btn-sm mx-1 d-flex align-items-center" 
+        @onclick="() => Edit(item)" title="@ActionsResources.Edit">
+    <i class="feather icon-edit me-2"></i>
+    <span>@ActionsResources.Edit</span>
+</button>
+
+<button class="btn btn-warning btn-sm mx-1 d-flex align-items-center text-white" 
+        @onclick="() => ToggleFavorite(item)" title="@BrandResources.ToggleFavorite">
+    <i class="feather icon-star me-2"></i>
+    <span>@GeneralResources.Favorite</span>
+</button>
+
+<button class="btn btn-danger btn-sm mx-1 d-flex align-items-center" 
+        @onclick="() => Delete(item.Id)" title="@ActionsResources.Delete">
+    <i class="feather icon-trash-2 me-2"></i>
+    <span>@ActionsResources.Delete</span>
+</button>
+
                                         </td>
                                     </tr>
                                 }
