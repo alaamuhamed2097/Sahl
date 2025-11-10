@@ -1137,7 +1137,7 @@ label {
     overflow-x: auto;
     display: block;
     width: 100%;
-    min-height: 75vh; /* يخليه ياخد تقريبًا ارتفاع الشاشة */
+    min-height: 60vh; /* يخليه ياخد تقريبًا ارتفاع الشاشة */
   display: flex;
   flex-direction: column;
   justify-content: space-between;

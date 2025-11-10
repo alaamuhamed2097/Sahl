@@ -1280,6 +1280,17 @@ button:focus-visible,
     gap: 0.5rem !important;
     margin-bottom: 4px !important;
   }
+   .no-data-container {
+            height: 300px; /* يقل الارتفاع في الموبايل */
+        }
+
+        .no-data-container i {
+            font-size: 40px; /* الأيقونة أصغر */
+        }
+
+        .no-data-container p {
+            font-size: 16px; /* النص أصغر */
+        }
 }
 .mobile-disa {
   margin-left: 10px;

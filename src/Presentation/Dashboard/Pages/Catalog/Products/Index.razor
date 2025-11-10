@@ -163,89 +163,25 @@
                             }
                             else
                             {
-                                <tr>
-                                    <td colspan="7" class=" text-center">
-                                        @NotifiAndAlertsResources.NoDataFound
-                                    </td>
-                                </tr>
+                               <tr>
+    <td colspan="7" class="p-0 no-data-container">
+        <div class=" d-flex flex-column justify-content-center align-items-center text-center" style="height: 500px;">
+            <!-- أيقونة كبيرة -->
+            <i class="fas fa-database text-muted" style="font-size: 60px;"></i>
+
+            <!-- نص -->
+            <p class="text-muted mt-3" style="font-size: 18px;">
+                @NotifiAndAlertsResources.NoDataFound
+            </p>
+        </div>
+    </td>
+</tr>
+
                             }
                         </tbody>
                     </table>
 
-                    <!-- Mobile View (Cards) -->
-                    <div class="d-md-none">
-                        @if (items != null && items.Count()!=0)
-                        {
-                            @foreach (var item in items)
-                            {
-                                <div class="card mb-3 border-0 shadow-sm">
-                                    <div class="card-body">
-                                        <div class="d-flex justify-content-center mb-3">
-                                            @if (!string.IsNullOrEmpty(item.ThumbnailImage))
-                                            {
-                                                <img src="@baseUrl/@item.ThumbnailImage"
-                                                     class="rounded-2 object-fit-cover border"
-                                                     style="width: 120px; height: 120px;"
-                                                     alt="Product image" />
-                                            }
-                                            else
-                                            {
-                                                <div class="d-flex align-items-center justify-content-center rounded-2 bg-light border"
-                                                     style="width: 120px; height: 120px;">
-                                                    <i class="feather icon-image text-muted" style="font-size: 2rem;"></i>
-                                                </div>
-                                            }
-                                        </div>
-
-                                        <div class="mb-3 text-center">
-                                            <h6 class="fw-bold mb-1">@(ResourceManager.CurrentLanguage == Language.Arabic ? item.TitleAr : item.TitleEn)</h6>
-
-                                            @{
-                                                var mobileStockStatusClass = item.StockStatus
-                                                ? "bg-success"
-                                                : "bg-danger";
-                                                var mobileStockStatusText = item.StockStatus
-                                                ? ECommerceResources.InStock
-                                                : ECommerceResources.OutOfStock;
-                                            }
-
-                                            <div class="d-flex justify-content-center align-items-center gap-2 mt-2">
-                                                <span class="badge @mobileStockStatusClass rounded-pill py-2 px-3">
-                                                    @mobileStockStatusText
-                                                </span>
-                                                <span class="fw-bold @(item.Quantity <= 10 ? "text-danger" : "text-success")">
-                                                    @item.Quantity @ECommerceResources.ItemsAvailable
-                                                </span>
-                                                @if (item.Quantity <= 10 && item.Quantity > 0)
-                                                {
-                                                    <span class="badge bg-warning text-dark rounded-pill"
-                                                          title="@ECommerceResources.LowStockWarning">
-                                                        <i class="fas fa-exclamation-triangle"></i>
-                                                    </span>
-                                                }
-                                                else if (item.Quantity == 0)
-                                                {
-                                                    <span class="badge bg-danger rounded-pill">
-                                                        <i class="fas fa-times"></i>
-                                                    </span>
-                                                }
-                                            </div>
-                                        </div>
-
-                                        <div class="d-flex justify-content-center gap-2">
-                                            <button class="btn btn-sm btn-primary flex-grow-1 rounded-1" @onclick="() => Edit(item)">
-                                                <i class="feather icon-edit-2 me-1"></i>@ActionsResources.Edit
-                                            </button>
-                                            <button class="btn btn-sm btn-danger flex-grow-1 rounded-1" @onclick="() => Delete(item.Id)">
-                                                <i class="feather icon-trash-2 me-1"></i>
-                                                @ActionsResources.Delete
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
-                            }
-                        }
-                    </div>
+                    
                 </div>
 
                 <!-- Pagination -->
