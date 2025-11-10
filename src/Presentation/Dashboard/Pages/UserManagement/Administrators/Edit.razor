@@ -5,8 +5,8 @@
 
 <div class="container-fluid p-0">
     <div class="card shadow-sm border-0">
-        <div class="card-header d-flex justify-content-between align-items-center">
-            <h4 class="modal-title">
+        <div class="card-header d-flex justify-content-between bg-primary align-items-center">
+            <h4 class="modal-title text-white">
               ✏️  @ActionsResources.Edit @ECommerceResources.Admin
             </h4>
         </div>
@@ -49,9 +49,9 @@
 
             <div class="card-footer bg-light py-3 d-flex justify-content-end gap-2 btn-responsive ">
                 <button type="button" class="btn btn-secondary px-4" data-dismiss="modal" @onclick="CloseModal">
-                    @ActionsResources.Cancel
+                    <i class="feather icon-x-circle me-2"></i>  @ActionsResources.Cancel
                 </button>
-                <button type="submit" class="btn btn-success px-4" disabled="@isSaving">
+                <button type="submit" class="btn btn-primary px-4 " disabled="@isSaving">
                     @if (isSaving)
                     {
                         <span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
@@ -59,7 +59,8 @@
                     }
                     else
                     {
-                        <span>@ActionsResources.Save</span>
+                        <span>
+                          <i class="feather icon-save me-2"></i> @ActionsResources.Save</span>
                     }
                 </button>
             </div>

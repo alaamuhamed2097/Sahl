@@ -80,7 +80,7 @@
 
             <div class="card-footer bg-light  py-3 d-flex justify-content-end gap-2">
                 <button type="button" class="btn btn-responsive btn-secondary px-4" data-dismiss="modal" @onclick="CloseModal">
-                    @ActionsResources.Cancel
+                   <i class="feather icon-x-circle me-2"></i>   @ActionsResources.Cancel
                 </button>
                 <button type="submit" class="btn btn-primary btn-responsive text-white px-4" disabled="@isSaving">
                     @if (isSaving)
@@ -90,7 +90,9 @@
                     }
                     else
                     {
-                        <span>@ActionsResources.Save</span>
+                        <span>
+                          <i class="feather icon-save me-2"></i> 
+                        @ActionsResources.Save</span>
                     }
                 </button>
             </div>
