@@ -1,4 +1,4 @@
-@page "/brand"
+﻿@page "/brand"
 @page "/brand/{id:guid}"
 
 @using Common.Enumerations.User
@@ -10,7 +10,7 @@
     <div class="card shadow-sm  border-0">
         <div class="card-header d-flex justify-content-between align-items-center">
             <h4 class="modal-title">
-                @(Model.Id == Guid.Empty ? ActionsResources.Add : ActionsResources.Edit) @BrandResources.Brand
+                @(Model.Id == Guid.Empty ? $"➕ {ActionsResources.Add}" : $"✏️ {ActionsResources.Edit}") @BrandResources.Brand
             </h4>
         </div>
         <EditForm Model="@Model" OnValidSubmit="Save">
