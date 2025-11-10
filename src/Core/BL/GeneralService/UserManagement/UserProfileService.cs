@@ -99,6 +99,22 @@ namespace BL.GeneralService.UserManagement
                                          ((u.FirstName + ' ' + u.LastName) != null && (u.FirstName + ' ' + u.LastName).ToLower().Contains(searchTerm)));
             }
 
+            // Apply sorting if specified
+            if (!string.IsNullOrWhiteSpace(criteriaModel.SortBy))
+            {
+                var sortBy = criteriaModel.SortBy.ToLower();
+                var isDescending = criteriaModel.SortDirection?.ToLower() == "desc";
+
+                users = sortBy switch
+                {
+                    "username" => isDescending ? users.OrderByDescending(x => x.UserName) : users.OrderBy(x => x.UserName),
+                    "email" => isDescending ? users.OrderByDescending(x => x.Email) : users.OrderBy(x => x.Email),
+                    "name" => isDescending ? users.OrderByDescending(x => x.FirstName + " " + x.LastName) : users.OrderBy(x => x.FirstName + " " + x.LastName),
+                    "userstate" => isDescending ? users.OrderByDescending(x => x.UserState) : users.OrderBy(x => x.UserState),
+                    _ => users.OrderBy(x => x.UserName) // Default sorting
+                };
+            }
+
             var totalRecords = users.Count();
             users = users.Skip((criteriaModel.PageNumber - 1) * criteriaModel.PageSize).Take(criteriaModel.PageSize);
             return new PaginatedDataModel<AdminProfileDto>(_mapper.MapList<ApplicationUser, AdminProfileDto>(users), totalRecords);

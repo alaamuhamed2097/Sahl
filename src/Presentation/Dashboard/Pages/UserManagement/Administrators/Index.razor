@@ -10,7 +10,18 @@
 @using Shared.DTOs.User.Admin
 @inherits BaseListPage<AdminProfileDto>
 
-<PageTitle>@ECommerceResources.Admins</PageTitle> 
+<PageTitle>@ECommerceResources.Admins</PageTitle>
+
+<style>
+    .cursor-pointer {
+        cursor: pointer;
+        user-select: none;
+    }
+
+    .cursor-pointer:hover {
+        background-color: rgba(0, 0, 0, 0.05);
+    }
+</style>
 
 <div class="col-sm-12">  
     <div class="card">  
@@ -74,10 +85,22 @@
                 <table id="order-table" class="table table-striped table-bordered nowrap">
                     <thead>
                         <tr>
-                            <th class="text-center">@ECommerceResources.UserName</th>
-                            <th class="text-center">@ECommerceResources.Email</th>
-                            <th class="text-center">@ECommerceResources.Name</th>
-                            <th class="text-center">@ECommerceResources.UserState</th>
+                            <th class="text-center cursor-pointer" @onclick='() => SortByColumn("UserName")'>
+                                @ECommerceResources.UserName
+                                <i class="@GetSortIconClass("UserName") ms-1"></i>
+                            </th>
+                            <th class="text-center cursor-pointer" @onclick='() => SortByColumn("Email")'>
+                                @ECommerceResources.Email
+                                <i class="@GetSortIconClass("Email") ms-1"></i>
+                            </th>
+                            <th class="text-center cursor-pointer" @onclick='() => SortByColumn("Name")'>
+                                @ECommerceResources.Name
+                                <i class="@GetSortIconClass("Name") ms-1"></i>
+                            </th>
+                            <th class="text-center cursor-pointer" @onclick='() => SortByColumn("UserState")'>
+                                @ECommerceResources.UserState
+                                <i class="@GetSortIconClass("UserState") ms-1"></i>
+                            </th>
                             <th class="text-center">@ECommerceResources.Actions</th>
                         </tr>
                     </thead>

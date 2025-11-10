@@ -169,6 +169,42 @@ public abstract partial class BaseListPage<TDto> : ComponentBase, IDisposable
         }
     }
 
+    /// <summary>
+    /// Handle column sorting
+    /// </summary>
+    protected virtual async Task SortByColumn(string columnName)
+    {
+        if (searchModel.SortBy == columnName)
+        {
+            // Toggle sort direction if same column
+            searchModel.SortDirection = searchModel.SortDirection == "asc" ? "desc" : "asc";
+        }
+        else
+        {
+            // New column, default to ascending
+            searchModel.SortBy = columnName;
+            searchModel.SortDirection = "asc";
+        }
+
+        // Reset to first page when sorting changes
+        currentPage = 1;
+        searchModel.PageNumber = 1;
+        await Search();
+    }
+
+    /// <summary>
+    /// Get CSS class for sort icon
+    /// </summary>
+    protected string GetSortIconClass(string columnName)
+    {
+        if (searchModel.SortBy != columnName)
+            return "fas fa-sort text-muted";
+
+        return searchModel.SortDirection == "asc" 
+            ? "fas fa-sort-up text-primary" 
+            : "fas fa-sort-down text-primary";
+    }
+
     // Helper methods for pagination UI
     protected bool CanGoToPreviousPage => currentPage > 1;
     protected bool CanGoToNextPage => currentPage < totalPages;

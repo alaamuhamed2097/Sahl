@@ -4,7 +4,19 @@
 @using Shared.DTOs.ECommerce
 @inherits BaseListPage<ShippingCompanyDto>
 @attribute [Authorize(Roles = nameof(UserRole.Admin))]
+
 <PageTitle>@ECommerceResources.ShippingCompanies</PageTitle>
+
+<style>
+    .cursor-pointer {
+        cursor: pointer;
+        user-select: none;
+    }
+
+    .cursor-pointer:hover {
+        background-color: rgba(0, 0, 0, 0.05);
+    }
+</style>
 
 <div class="container-fluid p-0">
     <div class="card shadow-sm border-0">
@@ -70,8 +82,14 @@
                         <thead class="bg-light">
                             <tr>
                                 <th class="text-center p-3 align-middle">@FormResources.Logo</th>
-                                <th>@ECommerceResources.Name</th>
-                                <th>@FormResources.PhoneNumber</th>
+                                <th class="cursor-pointer" @onclick='() => SortByColumn("Name")'>
+                                    @ECommerceResources.Name
+                                    <i class="@GetSortIconClass("Name") ms-1"></i>
+                                </th>
+                                <th class="cursor-pointer" @onclick='() => SortByColumn("PhoneNumber")'>
+                                    @FormResources.PhoneNumber
+                                    <i class="@GetSortIconClass("PhoneNumber") ms-1"></i>
+                                </th>
                                 <th class="text-center">@ECommerceResources.Actions</th>
                             </tr>
                         </thead>
@@ -80,7 +98,7 @@
                             {
                                 @foreach (var item in items)
                                 {
-                                    <tr>
+                                    <tr class="cursor-pointer">
                                         <td class="text-center align-middle p-2">
                                             <div class="d-flex justify-content-center">
                                                 @if (!string.IsNullOrEmpty(item.LogoImagePath))

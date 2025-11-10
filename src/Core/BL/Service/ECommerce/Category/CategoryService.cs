@@ -63,11 +63,38 @@ namespace BL.Service.ECommerce.Category
                              x.TitleEn != null && x.TitleEn.ToLower().Contains(searchTerm);
             }
 
+            // Create ordering function based on SortBy and SortDirection
+            Func<IQueryable<TbCategory>, IOrderedQueryable<TbCategory>> orderBy = null;
+            
+            if (!string.IsNullOrWhiteSpace(criteriaModel.SortBy))
+            {
+                var sortBy = criteriaModel.SortBy.ToLower();
+                var isDescending = criteriaModel.SortDirection?.ToLower() == "desc";
+
+                orderBy = query =>
+                {
+                    return sortBy switch
+                    {
+                        "titlear" => isDescending ? query.OrderByDescending(x => x.TitleAr) : query.OrderBy(x => x.TitleAr),
+                        "titleen" => isDescending ? query.OrderByDescending(x => x.TitleEn) : query.OrderBy(x => x.TitleEn),
+                        "title" => isDescending ? query.OrderByDescending(x => x.TitleAr) : query.OrderBy(x => x.TitleAr),
+                        "createddateutc" => isDescending ? query.OrderByDescending(x => x.CreatedDateUtc) : query.OrderBy(x => x.CreatedDateUtc),
+                        "treeviewserial" => isDescending ? query.OrderByDescending(x => x.TreeViewSerial) : query.OrderBy(x => x.TreeViewSerial),
+                        _ => query.OrderBy(x => x.CreatedDateUtc) // Default sorting
+                    };
+                };
+            }
+            else
+            {
+                // Default ordering
+                orderBy = query => query.OrderBy(x => x.CreatedDateUtc);
+            }
+
             var vwCategoryWithAttributes = await _categoryUnitOfWork.Repository<TbCategory>().GetPageAsync(
                 criteriaModel.PageNumber,
                 criteriaModel.PageSize,
                 filter,
-                orderBy: x => x.OrderBy(x => x.CreatedDateUtc));
+                orderBy: orderBy);
 
             var categories = _mapper.MapList<TbCategory, CategoryDto>(vwCategoryWithAttributes.Items);
 
