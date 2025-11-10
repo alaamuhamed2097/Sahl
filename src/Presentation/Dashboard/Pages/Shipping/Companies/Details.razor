@@ -74,20 +74,28 @@
                     
                 </div> -->
 
-            <div class="card-footer  py-3 d-flex justify-content-end gap-2 card-footer-mobile">
-                <button type="button" class="btn btn-secondary btn-responsive" @onclick="CloseModal">@ActionsResources.Cancel</button>
-                <button type="submit" class="btn bg-primary text-white btn-responsive" disabled="@isSaving">
-                    @if (isSaving)
-                    {
-                        <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-                        <span class="sr-only">@FormResources.Saving...</span>
-                    }
-                    else
-                    {
-                        <span>@ActionsResources.Save</span>
-                    }
-                </button>
-            </div>
+           <div class="card-footer py-3 d-flex justify-content-end gap-2 card-footer-mobile">
+    <!-- زر الإلغاء -->
+    <button type="button" class="btn btn-secondary btn-responsive d-flex align-items-center" @onclick="CloseModal">
+        <i class="fas fa-times me-2"></i>
+        <span class="btn-text">@ActionsResources.Cancel</span>
+    </button>
+
+    <!-- زر الحفظ -->
+    <button type="submit" class="btn bg-primary text-white btn-responsive d-flex align-items-center" disabled="@isSaving">
+        @if (isSaving)
+        {
+            <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+            <span class="btn-text">@FormResources.Saving...</span>
+        }
+        else
+        {
+            <i class="fas fa-save me-2"></i>
+            <span class="btn-text">@ActionsResources.Save</span>
+        }
+    </button>
+</div>
+
             </div>
         </EditForm>
     </div>

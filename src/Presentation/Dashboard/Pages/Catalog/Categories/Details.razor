@@ -247,7 +247,7 @@
             </div>
             <div class="card-footer bg-light py-3 d-flex justify-content-end gap-2 card-footer-mobile">
                 <button type="button" class="btn btn-secondary btn-responsive px-4" data-dismiss="modal" @onclick="CloseModal">
-                    @ActionsResources.Cancel
+                     <i class="feather icon-trash-2 me-2"></i> @ActionsResources.Cancel
                 </button>
                 <button type="submit" class="btn btn-primary btn-responsive px-4" disabled="@IsSaving">
                     @if (IsSaving)
@@ -257,7 +257,7 @@
                     }
                     else
                     {
-                        <span>@ActionsResources.Save</span>
+                        <span> <i class="feather icon-save me-2"></i>@ActionsResources.Save</span>
                     }
                 </button>
             </div>
