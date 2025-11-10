@@ -1455,10 +1455,6 @@ button:focus-visible,
 }
 
 /* الحجم الافتراضي (موبايل) */
-.search-box {
-    width: 170px;
-    height: 38px;
-}
 
 /* شاشات التابلت وأكبر */
 @media (min-width: 768px) {
@@ -1474,11 +1470,6 @@ button:focus-visible,
     }
 }
 
-.search-box input {
-    height: 38px;
-}
 
-.search-box button {
-    width: 40px;
-    height: 38px;
-}
+
+
