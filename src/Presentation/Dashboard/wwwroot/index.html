@@ -146,12 +146,12 @@
     <!-- ✅ CRITICAL FIX: منع debugger من التفعيل قبل تحميل Blazor -->
     <script>
         // 1️⃣ منع globalThis.dotnetDebugger من التفعيل
-        //Object.defineProperty(globalThis, 'dotnetDebugger', {
-        //    get: function () { return undefined; },
-        //    set: function () { },
-        //    configurable: false,
-        //    enumerable: false
-        //});
+        Object.defineProperty(globalThis, 'dotnetDebugger', {
+            get: function () { return undefined; },
+            set: function () { },
+            configurable: false,
+            enumerable: false
+        });
 
         // 2️⃣ تجاوز console.assert لمنع استدعاء debugger
         const originalAssert = console.assert;
@@ -321,9 +321,9 @@
 
             loadBootResource: function (type, name, defaultUri, integrity) {
                 // منع تحميل ملفات debug symbols
-                //if (name.includes('.pdb')) {
-                //    return null;
-                //}
+                if (name.includes('.pdb')) {
+                    return null;
+                }
 
                 // Optimize resource loading
                 if (type === 'dotnetjs') {
