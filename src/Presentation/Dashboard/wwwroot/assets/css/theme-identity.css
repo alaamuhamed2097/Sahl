@@ -1453,3 +1453,32 @@ button:focus-visible,
 .dashboard-page {
   background-color: #f5f7fb;
 }
+
+/* الحجم الافتراضي (موبايل) */
+.search-box {
+    width: 170px;
+    height: 38px;
+}
+
+/* شاشات التابلت وأكبر */
+@media (min-width: 768px) {
+    .search-box {
+        width: 250px; /* أوسع قليلاً */
+    }
+}
+
+/* شاشات الديسكتوب الكبيرة */
+@media (min-width: 1200px) {
+    .search-box {
+        width: 620px; /* عرض كبير وواضح */
+    }
+}
+
+.search-box input {
+    height: 38px;
+}
+
+.search-box button {
+    width: 40px;
+    height: 38px;
+}

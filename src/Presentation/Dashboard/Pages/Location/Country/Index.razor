@@ -15,21 +15,19 @@
                 <!-- Filtration start -->
                 <ul class="navbar-nav d-flex flex-row align-items-center gap-3 mb-2 px-0 w-100">
                     <li class="nav-item col-md-6 w-auto d-flex flex-row align-items-center gap-3">
-                        <EditForm Model="searchModel" OnSubmit="@Search">
-                            <!-- Search Box -->
-                            <div class="input-group rounded" style="width: 170px; height: 38px;">
-                                <input type="text" @bind="searchModel.SearchTerm"
-                                       id="searchInput"
-                                       class="form-control text-center border-0 @(ResourceManager.CurrentLanguage == Language.Arabic ? "rounded-end" : "rounded-start")"
-                                       placeholder="@ActionsResources.Search"
-                                       style="height: 38px;" />
-                                <button type="submit"
-                                        class="btn btn-danger d-flex align-items-center justify-content-center border-0 @(ResourceManager.CurrentLanguage == Language.Arabic ? "rounded-start" : "rounded-end")"
-                                        style="width: 40px; height: 38px;">
-                                    <i class="fas fa-search text-white m-0"></i>
-                                </button>
-                            </div>
-                        </EditForm>
+                         <EditForm Model="searchModel" OnSubmit="@Search">
+    <!-- Search Box -->
+    <div class="input-group rounded search-box">
+        <input type="text" @bind="searchModel.SearchTerm"
+               id="searchInput"
+               class="form-control text-center border-0 @(ResourceManager.CurrentLanguage == Language.Arabic ? "rounded-end" : "rounded-start")"
+               placeholder="@ActionsResources.Search" />
+        <button type="submit"
+                class="btn btn-danger d-flex align-items-center justify-content-center border-0 @(ResourceManager.CurrentLanguage == Language.Arabic ? "rounded-start" : "rounded-end")">
+            <i class="fas fa-search text-white m-0"></i>
+        </button>
+    </div>
+</EditForm>
 
                         <!-- Page Size -->
                                                                 <div class="d-flex align-items-center gap-2">
