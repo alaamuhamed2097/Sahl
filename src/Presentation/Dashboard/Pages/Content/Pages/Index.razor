@@ -12,6 +12,17 @@
 
 <PageTitle>@GeneralResources.StaticPages</PageTitle>
 
+<style>
+    .cursor-pointer {
+        cursor: pointer;
+        user-select: none;
+    }
+
+    .cursor-pointer:hover {
+        background-color: rgba(0, 0, 0, 0.05);
+    }
+</style>
+
 <div class="container-fluid p-0">
     <div class="card shadow-sm border-0">
         <div class="card-header bg-primary text-white py-3 d-flex justify-content-between align-items-center">
@@ -72,9 +83,15 @@
                         <thead class="bg-light">
                             <tr>
                                 <th class="text-center align-middle" style="width: 8%;">#</th>
-                                <th class="text-center align-middle" style="width: 30%;">@FormResources.Title</th>
+                                <th class="text-center align-middle cursor-pointer" style="width: 30%;" @onclick='() => SortByColumn("Title")'>
+                                    @FormResources.Title
+                                    <i class="@GetSortIconClass("Title") ms-1"></i>
+                                </th>
                                 <th class="text-center align-middle" style="width: 35%;">@FormResources.ShortDescription</th>
-                                <th class="text-center align-middle" style="width: 12%;">@FormResources.CreationDate</th>
+                                <th class="text-center align-middle cursor-pointer" style="width: 12%;" @onclick='() => SortByColumn("CreatedDateUtc")'>
+                                    @FormResources.CreationDate
+                                    <i class="@GetSortIconClass("CreatedDateUtc") ms-1"></i>
+                                </th>
                                 <th class="text-center align-middle" style="width: 15%;">@FormResources.Actions</th>
                             </tr>
                         </thead>
