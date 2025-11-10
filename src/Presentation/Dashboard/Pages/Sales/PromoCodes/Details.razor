@@ -14,8 +14,8 @@
 
 <div class="container-fluid p-0">
     <div class="card shadow-sm border-0">
-        <div class="card-header d-flex justify-content-between align-items-center">
-            <h4 class="modal-title">
+        <div class="card-header d-flex bg-primary justify-content-between align-items-center">
+            <h4 class="modal-title text-white">
                 @(Model.Id == Guid.Empty ? $"➕ {ActionsResources.Add}" : $"✏️ {ActionsResources.Edit}")
                 @FormResources.PromoCode
             </h4>
@@ -95,21 +95,27 @@
             </div>
         </div>
 
-        <div class="card-footer bg-light py-3 d-flex justify-content-end gap-2">
-            <button type="button" class="btn btn-secondary" @onclick="CloseModal">
-                @ActionsResources.Cancel
-            </button>
-            <button type="submit" form="mainForm" class="btn btn-success" disabled="@_isSaving">
-                @if (_isSaving)
-                {
-                    <span class="spinner-border spinner-border-sm" role="status"></span>
-                    @FormResources.Saving
-                }
-                else
-                {
-                    @ActionsResources.Save
-                }
-            </button>
-        </div>
+       <div class="card-footer bg-light py-3 d-flex justify-content-end gap-2">
+    <!-- زر الإلغاء -->
+    <button type="button" class="btn btn-secondary btn-responsive d-flex align-items-center" @onclick="CloseModal">
+        <i class="fas fa-times me-2"></i>
+        <span class="btn-text">@ActionsResources.Cancel</span>
+    </button>
+
+    <!-- زر الحفظ -->
+    <button type="submit" form="mainForm" class="btn btn-primary btn-responsive d-flex align-items-center" disabled="@_isSaving">
+        @if (_isSaving)
+        {
+            <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+            <span class="btn-text">@FormResources.Saving</span>
+        }
+        else
+        {
+            <i class="fas fa-save me-2"></i>
+            <span class="btn-text">@ActionsResources.Save</span>
+        }
+    </button>
+</div>
+
     </div>
 </div>

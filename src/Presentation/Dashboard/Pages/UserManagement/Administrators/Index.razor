@@ -116,16 +116,20 @@
                                             <span class="badge bg-light text-dark">@GeneralResources.Other</span>
                                         }
                                     </td>
-                                    <td class="d-flex justify-content-center gap-2 align-content-center">
-                                        <button class="btn btn-primary" @onclick="() => Edit(item)">
-                                           <i class="feather icon-edit me-2"></i>
-                                            @ActionsResources.Edit 
-                                        </button>
-                                        <button class="btn btn-danger" @onclick="() => Delete(new Guid(item.Id))">
-                                             <i class="feather icon-trash-2 me-2"></i>
-                                            @ActionsResources.Delete
-                                        </button>
-                                    </td>
+                                  <td class="d-flex justify-content-center gap-2 align-content-center">
+    <!-- زر التعديل -->
+    <button class="btn btn-primary d-flex align-items-center" @onclick="() => Edit(item)">
+        <i class="feather icon-edit me-2"></i>
+        <span class="d-none d-md-inline">@ActionsResources.Edit</span>
+    </button>
+
+    <!-- زر الحذف -->
+    <button class="btn btn-danger d-flex align-items-center" @onclick="() => Delete(new Guid(item.Id))">
+        <i class="feather icon-trash-2 me-2"></i>
+        <span class="d-none d-md-inline">@ActionsResources.Delete</span>
+    </button>
+</td>
+
                                 </tr>
                             }
                         }

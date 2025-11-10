@@ -8,8 +8,8 @@
 
 <div class="container-fluid p-0">
     <div class="card shadow-sm  border-0">
-        <div class="card-header d-flex justify-content-between align-items-center">
-            <h4 class="modal-title">
+        <div class="card-header d-flex justify-content-between bg-primary align-items-center">
+            <h4 class="modal-title text-white">
                 @(Model.Id == Guid.Empty ? $"➕ {ActionsResources.Add}" : $"✏️ {ActionsResources.Edit}") @BrandResources.Brand
             </h4>
         </div>
@@ -130,10 +130,10 @@
 
             </div>
             <div class="card-footer bg-light py-3 d-flex justify-content-end gap-2">
-                <button type="button" class="btn btn-secondary" @onclick="CloseModal">
-                    <i class="fas fa-times me-1"></i>@ActionsResources.Cancel
+                <button type="button" class="btn btn-secondary " @onclick="CloseModal">
+                    <i class="fas fa-times me-1" ></i>@ActionsResources.Cancel
                 </button>
-                <button type="submit" class="btn btn-success" disabled="@isSaving">
+                <button type="submit" class="btn btn-primary " disabled="@isSaving">
                     @if (isSaving)
                     {
                         <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
