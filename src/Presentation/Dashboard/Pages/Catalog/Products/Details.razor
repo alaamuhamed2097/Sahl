@@ -1,4 +1,4 @@
-@page "/product"
+﻿@page "/product"
 @page "/product/{id:guid}"
 
 @using Common.Enumerations.User
@@ -9,7 +9,7 @@
     <div class="card shadow-sm border-0">
         <div class="card-header bg-primary d-flex justify-content-between align-items-center">
             <h5 class="modal-title text-white">
-                @(Model.Id == Guid.Empty ? ActionsResources.Add : ActionsResources.Edit) @ECommerceResources.Product
+                @(Model.Id == Guid.Empty ? $"➕ {ActionsResources.Add}" : $"✏️ {ActionsResources.Edit}")) @ECommerceResources.Product
             </h5>
         </div>
 

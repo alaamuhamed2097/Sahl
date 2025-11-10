@@ -8,7 +8,7 @@
     <div class="card shadow-sm border-0">
         <div class="card-header bg-primary d-flex justify-content-between align-items-center">
             <h5 class="modal-title  text-white">
-               📦 @(Model.Id == Guid.Empty ? ActionsResources.Add : ActionsResources.Edit)  @ECommerceResources.ShippingCompany
+               📦 @(Model.Id == Guid.Empty ? $"➕ {ActionsResources.Add}" : $"✏️ {ActionsResources.Edit}")  @ECommerceResources.ShippingCompany
             </h5>
         </div>
         <EditForm Model="@Model" OnValidSubmit="Save">

@@ -1,4 +1,4 @@
-using Shared.DTOs.ECommerce.Item;
+﻿using Shared.DTOs.ECommerce.Item;
 
 namespace Dashboard.Pages.Catalog.Products
 {
@@ -163,21 +163,39 @@ namespace Dashboard.Pages.Catalog.Products
         /// </summary>
         private async Task HandleCategoryChangeWithCombinations()
         {
-            fieldValidation["CategoryId"] = Model.CategoryId != Guid.Empty;
+            try
+            {
+                Console.WriteLine($"🔍 HandleCategoryChangeWithCombinations - CategoryId: {Model.CategoryId}");
 
-            if (Model.CategoryId != Guid.Empty)
-            {
-                await LoadCategoryAttributes();
-                // Clear existing combinations when category changes
-                Model.ItemAttributeCombinationPricings.Clear();
+                fieldValidation["CategoryId"] = Model.CategoryId != Guid.Empty;
+
+                if (Model.CategoryId != Guid.Empty)
+                {
+                    Console.WriteLine($"📥 Loading category attributes...");
+                    await LoadCategoryAttributes();
+
+                    Console.WriteLine($"🗑️ Clearing existing combinations...");
+                    // Clear existing combinations when category changes
+                    Model.ItemAttributeCombinationPricings.Clear();
+
+                    Console.WriteLine($"✅ Category change completed - Attributes loaded: {categoryAttributes.Count}");
+                }
+                else
+                {
+                    Console.WriteLine($"🗑️ Category cleared - resetting all data");
+                    categoryAttributes.Clear();
+                    Model.ItemAttributes.Clear();
+                    Model.ItemAttributeCombinationPricings.Clear();
+                }
+
+                StateHasChanged();
             }
-            else
+            catch (Exception ex)
             {
-                categoryAttributes.Clear();
-                Model.ItemAttributes.Clear();
-                Model.ItemAttributeCombinationPricings.Clear();
+                Console.WriteLine($"❌ Error in HandleCategoryChangeWithCombinations: {ex.Message}");
+                Console.WriteLine($"Stack trace: {ex.StackTrace}");
+                throw;
             }
-            StateHasChanged();
         }
     }
 }
