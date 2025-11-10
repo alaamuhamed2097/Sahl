@@ -7,12 +7,27 @@
 
 <PageTitle>@ECommerceResources.Units</PageTitle>
 
+<style>
+    .cursor-pointer {
+        cursor: pointer;
+        user-select: none;
+    }
+
+    .cursor-pointer:hover {
+        background-color: rgba(0, 0, 0, 0.05);
+    }
+
+    .sortable-header {
+        transition: background-color 0.2s ease;
+    }
+</style>
+
 <div class="container-fluid p-0">
     <div class="card shadow-sm border-0">
-    <div class="card-header bg-primary text-white py-3 d-flex justify-content-between align-items-center">
+        <div class="card-header bg-primary text-white py-3 d-flex justify-content-between align-items-center">
             <h5 class="mb-0 fw-semibold text-white">⚖️ @ECommerceResources.Units</h5>
         </div>
-    <div class="card-body">
+        <div class="card-body">
             <div class="dt-responsive table-responsive">
                 <!-- Filtration start -->
                 <ul class="navbar-nav d-flex flex-row align-items-center gap-3 mb-2 px-0 w-100">
@@ -33,17 +48,17 @@
                             </div>
                         </EditForm>
 
-                                 <!-- Page Size -->
-                                                                <div class="d-flex align-items-center gap-2">
-                                            <select class="form-select rounded-3 shadow-sm border-light text-primary fw-bold text-center custom-dropdown"
-                                                    style="width: 130px; height: 40px; padding-right: 30px;"
-                                                    @onchange="OnPageSizeChanged">
-                                                <option value="10"selected="@(searchModel.PageSize == 10)">10</option>
-                                                <option value="15"selected="@(searchModel.PageSize == 15)">15</option>
-                                                <option value="20"selected="@(searchModel.PageSize == 20)">20</option>
-                                                <option value="30"selected="@(searchModel.PageSize == 30)">30</option>
-                                            </select>
-                                        </div>
+                        <!-- Page Size -->
+                        <div class="d-flex align-items-center gap-2">
+                            <select class="form-select rounded-3 shadow-sm border-light text-primary fw-bold text-center custom-dropdown"
+                                    style="width: 130px; height: 40px; padding-right: 30px;"
+                                    @onchange="OnPageSizeChanged">
+                                <option value="10" selected="@(searchModel.PageSize == 10)">10</option>
+                                <option value="15" selected="@(searchModel.PageSize == 15)">15</option>
+                                <option value="20" selected="@(searchModel.PageSize == 20)">20</option>
+                                <option value="30" selected="@(searchModel.PageSize == 30)">30</option>
+                            </select>
+                        </div>
                     </li>
                     <li class="nav-item ms-auto d-flex flex-row align-items-center gap-2">
                         <!-- Export Buttons -->
@@ -67,29 +82,33 @@
                 </ul>
 
                 <!-- Responsive Table Container -->
-                <div class="table-responsive dt-responsived  rounded-3 overflow-hidden">
+                <div class="table-responsive dt-responsived rounded-3 overflow-hidden">
                     <table class="table table-hover mb-0 d-none d-md-table">
                         <thead class="bg-light">
                             <tr>
-                                <th class="text-center  align-middle">@ECommerceResources.Title</th>
+                                <th class="text-center align-middle cursor-pointer" @onclick='() => SortByColumn("Title")'>
+                                    @ECommerceResources.Title
+                                    <i class="@GetSortIconClass("Title") ms-1"></i>
+                                </th>
                                 <th class="text-center align-middle" style="width: 200px;">@ECommerceResources.Actions</th>
                             </tr>
                         </thead>
                         <tbody>
-                            @if (items != null && items.Count()!=0)
+                            @if (items != null && items.Count() != 0)
                             {
                                 @foreach (var item in items)
                                 {
                                     <tr class="align-middle">
                                         <td class="text-center align-middle">@item.Title</td>
-                                        <td class="d-flex gap-1 justify-content-center align-items-center">
-                                            <button class="btn btn-sm btn-primary me-1 rounded-1" @onclick="() => Edit(item)">
-                                                <i class="feather icon-edit-2 me-1"></i>@ActionsResources.Edit
-                                            </button>
-                                            <button class="btn btn-sm btn-danger rounded-1" @onclick="() => Delete(item.Id)">
-                                                <i class="feather icon-trash-2"></i>
-                                                @ActionsResources.Delete
-                                            </button>
+                                        <td class="text-center align-middle">
+                                            <div class="d-flex gap-1 justify-content-center">
+                                                <button class="btn btn-sm btn-primary me-1 rounded-1" @onclick="() => Edit(item)">
+                                                    <i class="feather icon-edit-2 me-1"></i>@ActionsResources.Edit
+                                                </button>
+                                                <button class="btn btn-sm btn-danger rounded-1" @onclick="() => Delete(item.Id)">
+                                                    <i class="feather icon-trash-2 me-1"></i>@ActionsResources.Delete
+                                                </button>
+                                            </div>
                                         </td>
                                     </tr>
                                 }
@@ -97,17 +116,14 @@
                             else
                             {
                                 <tr>
-                                    <td colspan="7" class="p-0">
-        <div class="d-flex flex-column justify-content-center align-items-center text-center" style="height: 500px;">
-            <!-- أيقونة كبيرة -->
-            <i class="fas fa-database text-muted" style="font-size: 60px;"></i>
-
-            <!-- نص -->
-            <p class="text-muted mt-3" style="font-size: 18px;">
-                @NotifiAndAlertsResources.NoDataFound
-            </p>
-        </div>
-    </td>
+                                    <td colspan="2" class="p-0">
+                                        <div class="d-flex flex-column justify-content-center align-items-center text-center" style="height: 500px;">
+                                            <i class="fas fa-database text-muted" style="font-size: 60px;"></i>
+                                            <p class="text-muted mt-3" style="font-size: 18px;">
+                                                @NotifiAndAlertsResources.NoDataFound
+                                            </p>
+                                        </div>
+                                    </td>
                                 </tr>
                             }
                         </tbody>
@@ -115,7 +131,7 @@
 
                     <!-- Mobile View (Cards) -->
                     <div class="d-md-none">
-                        @if (items != null && items.Count()!=0)
+                        @if (items != null && items.Count() != 0)
                         {
                             @foreach (var item in items)
                             {
@@ -130,113 +146,100 @@
                                                 <i class="feather icon-edit-2 me-1"></i>@ActionsResources.Edit
                                             </button>
                                             <button class="btn btn-sm btn-danger flex-grow-1 rounded-1" @onclick="() => Delete(item.Id)">
-                                                <i class="feather icon-trash-2 me-1"></i>
-                                                @ActionsResources.Delete
+                                                <i class="feather icon-trash-2 me-1"></i>@ActionsResources.Delete
                                             </button>
                                         </div>
                                     </div>
                                 </div>
                             }
-                        }else{
-                            <tr>
-                                    <td colspan="7" class=" p-0">
-        <div class=" d-flex flex-column justify-content-center align-items-center text-center" style="height: 500px;">
-            <!-- أيقونة كبيرة -->
-            <i class="fas fa-database text-muted" style="font-size: 60px;"></i>
-
-            <!-- نص -->
-            <p class="text-muted mt-3" style="font-size: 18px;">
-                @NotifiAndAlertsResources.NoDataFound
-            </p>
-        </div>
-    </td>
-                                </tr>
+                        }
+                        else
+                        {
+                            <div class="d-flex flex-column justify-content-center align-items-center text-center" style="height: 500px;">
+                                <i class="fas fa-database text-muted" style="font-size: 60px;"></i>
+                                <p class="text-muted mt-3" style="font-size: 18px;">
+                                    @NotifiAndAlertsResources.NoDataFound
+                                </p>
+                            </div>
                         }
                     </div>
-                <!-- Pagination -->
-               
-                <!-- p-v2 -->
-       
-<div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mt-4 pagination-container" dir="ltr">
-    <div class="text-muted small">
-        @string.Format(ActionsResources.ShowingEntries,
-            ((currentPage - 1) * searchModel.PageSize + 1),
-            Math.Min(currentPage * searchModel.PageSize, totalRecords),
-            totalRecords)
-    </div>
-
-    <nav aria-label="Pagination">
-        <ul class="pagination pagination-sm mb-0 shadow-sm rounded-3 overflow-hidden">
-
-            <!-- First -->
-            <li class="page-item @(currentPage == 1 ? "disabled" : "")">
-                <a class="page-link" @onclick="() => GoToPage(1)" title="@ActionsResources.First">
-                    <i class="fas fa-angle-double-left"></i>
-                </a>
-            </li>
-
-            <!-- Previous -->
-            <li class="page-item @(currentPage == 1 ? "disabled" : "")">
-                <a class="page-link" @onclick="() => GoToPage(currentPage - 1)">
-                    <i class="fas fa-angle-left"></i>
-                </a>
-            </li>
-
-            @{
-                const int maxVisiblePages = 5;
-                int startPage = Math.Max(1, currentPage - 2);
-                int endPage = Math.Min(totalPages, startPage + maxVisiblePages - 1);
-                if (endPage - startPage + 1 < maxVisiblePages)
-                {
-                    startPage = Math.Max(1, endPage - maxVisiblePages + 1);
-                }
-            }
-
-            @if (startPage > 1)
-            {
-                <li class="page-item">
-                    <a class="page-link" @onclick="() => GoToPage(1)">1</a>
-                </li>
-                <li class="page-item disabled"><span class="page-link">...</span></li>
-            }
-
-            @for (int pag = startPage; pag <= endPage; pag++)
-            {
-                int pageNumber = pag;
-                <li class="page-item @(pag == currentPage ? "active" : "")">
-                    <a class="page-link fw-bold" @onclick="() => GoToPage(pageNumber)">@pag</a>
-                </li>
-            }
-
-            @if (endPage < totalPages)
-            {
-                <li class="page-item disabled"><span class="page-link">...</span></li>
-                <li class="page-item">
-                    <a class="page-link" @onclick="() => GoToPage(totalPages)">@totalPages</a>
-                </li>
-            }
-
-            <!-- Next -->
-            <li class="page-item @(currentPage == totalPages ? "disabled" : "")">
-                <a class="page-link" @onclick="() => GoToPage(currentPage + 1)">
-                    <i class="fas fa-angle-right"></i>
-                </a>
-            </li>
-
-            <!-- Last -->
-            <li class="page-item @(currentPage == totalPages ? "disabled" : "")">
-                <a class="page-link" @onclick="() => GoToPage(totalPages)" title="@ActionsResources.Last">
-                    <i class="fas fa-angle-double-right"></i>
-                </a>
-            </li>
-
-        </ul>
-    </nav>
-</div>
                 </div>
 
+                <!-- Pagination -->
+                <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mt-4 pagination-container" dir="ltr">
+                    <div class="text-muted small">
+                        @string.Format(ActionsResources.ShowingEntries,
+                            ((currentPage - 1) * searchModel.PageSize + 1),
+                            Math.Min(currentPage * searchModel.PageSize, totalRecords),
+                            totalRecords)
+                    </div>
 
+                    <nav aria-label="Pagination">
+                        <ul class="pagination pagination-sm mb-0 shadow-sm rounded-3 overflow-hidden">
+                            <!-- First -->
+                            <li class="page-item @(currentPage == 1 ? "disabled" : "")">
+                                <a class="page-link" @onclick="() => GoToPage(1)" title="@ActionsResources.First">
+                                    <i class="fas fa-angle-double-left"></i>
+                                </a>
+                            </li>
 
+                            <!-- Previous -->
+                            <li class="page-item @(currentPage == 1 ? "disabled" : "")">
+                                <a class="page-link" @onclick="() => GoToPage(currentPage - 1)">
+                                    <i class="fas fa-angle-left"></i>
+                                </a>
+                            </li>
+
+                            @{
+                                const int maxVisiblePages = 5;
+                                int startPage = Math.Max(1, currentPage - 2);
+                                int endPage = Math.Min(totalPages, startPage + maxVisiblePages - 1);
+                                if (endPage - startPage + 1 < maxVisiblePages)
+                                {
+                                    startPage = Math.Max(1, endPage - maxVisiblePages + 1);
+                                }
+                            }
+
+                            @if (startPage > 1)
+                            {
+                                <li class="page-item">
+                                    <a class="page-link" @onclick="() => GoToPage(1)">1</a>
+                                </li>
+                                <li class="page-item disabled"><span class="page-link">...</span></li>
+                            }
+
+                            @for (int pag = startPage; pag <= endPage; pag++)
+                            {
+                                int pageNumber = pag;
+                                <li class="page-item @(pag == currentPage ? "active" : "")">
+                                    <a class="page-link fw-bold" @onclick="() => GoToPage(pageNumber)">@pag</a>
+                                </li>
+                            }
+
+                            @if (endPage < totalPages)
+                            {
+                                <li class="page-item disabled"><span class="page-link">...</span></li>
+                                <li class="page-item">
+                                    <a class="page-link" @onclick="() => GoToPage(totalPages)">@totalPages</a>
+                                </li>
+                            }
+
+                            <!-- Next -->
+                            <li class="page-item @(currentPage == totalPages ? "disabled" : "")">
+                                <a class="page-link" @onclick="() => GoToPage(currentPage + 1)">
+                                    <i class="fas fa-angle-right"></i>
+                                </a>
+                            </li>
+
+                            <!-- Last -->
+                            <li class="page-item @(currentPage == totalPages ? "disabled" : "")">
+                                <a class="page-link" @onclick="() => GoToPage(totalPages)" title="@ActionsResources.Last">
+                                    <i class="fas fa-angle-double-right"></i>
+                                </a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
             </div>
         </div>
     </div>
