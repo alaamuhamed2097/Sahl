@@ -5,6 +5,8 @@
     const VERSION_CHECK_INTERVAL = 300000; // 5 minutes
     const VERSION_STORAGE_KEY = 'app_version';
     const LAST_CHECK_KEY = 'version_last_check';
+    const RELOAD_LOCK_KEY = 'version_reload_lock';
+    const RELOAD_LOCK_DURATION = 10000; // 10 seconds
 
     const VersionManager = {
         currentVersion: null,
@@ -13,6 +15,25 @@
         // Initialize version manager
         init: function () {
             console.log('? Version Manager: Initializing...');
+            
+            // Check if we just reloaded
+            const reloadLock = localStorage.getItem(RELOAD_LOCK_KEY);
+            if (reloadLock) {
+                const lockTime = parseInt(reloadLock);
+                const timeSinceLock = Date.now() - lockTime;
+                
+                if (timeSinceLock < RELOAD_LOCK_DURATION) {
+                    console.log('?? Recently reloaded, skipping check for', (RELOAD_LOCK_DURATION - timeSinceLock) / 1000, 'seconds');
+                    setTimeout(() => {
+                        localStorage.removeItem(RELOAD_LOCK_KEY);
+                        this.checkForUpdates(true);
+                    }, RELOAD_LOCK_DURATION - timeSinceLock);
+                    this.startPeriodicCheck();
+                    this.listenToVisibilityChange();
+                    return;
+                }
+            }
+            
             this.checkForUpdates(true);
             this.startPeriodicCheck();
             this.listenToVisibilityChange();
@@ -41,6 +62,7 @@
 
                 console.log('?? Current Version:', storedVersion || 'Unknown');
                 console.log('?? Server Version:', serverVersion);
+                console.log('?? Force Update:', forceUpdate);
 
                 if (!storedVersion) {
                     // First time - store current version
@@ -49,9 +71,12 @@
                     return;
                 }
 
-                if (serverVersion !== storedVersion || forceUpdate) {
+                if (serverVersion !== storedVersion) {
                     console.log('?? New version detected! Updating...');
                     await this.performUpdate(serverVersion, forceUpdate);
+                } else if (forceUpdate) {
+                    console.log('?? Force update requested!');
+                    await this.performUpdate(serverVersion, true);
                 } else if (!isInitial) {
                     console.log('? App is up to date');
                 }
@@ -97,7 +122,7 @@
             } catch (error) {
                 console.error('? Update failed:', error);
                 // Force reload anyway
-                setTimeout(() => location.reload(true), 2000);
+                this.reloadApp();
             }
         },
 
@@ -106,14 +131,30 @@
             const keysToKeep = [
                 VERSION_STORAGE_KEY,
                 LAST_CHECK_KEY,
+                RELOAD_LOCK_KEY,
                 'auth_token',
                 'refresh_token',
                 'user_preferences',
                 'selected_language'
             ];
 
-            // Clear sessionStorage completely
+            // Save values
+            const savedValues = {};
+            keysToKeep.forEach(key => {
+                const value = localStorage.getItem(key);
+                if (value !== null) {
+                    savedValues[key] = value;
+                }
+            });
+
+            // Clear all
+            localStorage.clear();
             sessionStorage.clear();
+
+            // Restore saved values
+            Object.keys(savedValues).forEach(key => {
+                localStorage.setItem(key, savedValues[key]);
+            });
 
             // Store new version
             localStorage.setItem(VERSION_STORAGE_KEY, newVersion);
@@ -130,13 +171,25 @@
             console.log('??', message);
 
             // Show SweetAlert if available
-            if (typeof swal === 'function') {
+            if (typeof Swal !== 'undefined') {
+                Swal.fire({
+                    title: '????? ?????',
+                    text: message,
+                    icon: 'info',
+                    showConfirmButton: false,
+                    timer: forceUpdate ? 2000 : 3000,
+                    allowOutsideClick: false,
+                    allowEscapeKey: false
+                }).then(() => {
+                    this.reloadApp();
+                });
+            } else if (typeof swal === 'function') {
                 swal({
                     title: '????? ?????',
                     text: message,
                     icon: 'info',
                     buttons: false,
-                    timer: forceUpdate ? 1500 : 2500,
+                    timer: forceUpdate ? 2000 : 3000,
                     closeOnClickOutside: false,
                     closeOnEsc: false
                 }).then(() => {
@@ -145,7 +198,7 @@
             } else {
                 // Fallback notification
                 this.showFallbackNotification(message);
-                setTimeout(() => this.reloadApp(), forceUpdate ? 1500 : 2500);
+                setTimeout(() => this.reloadApp(), forceUpdate ? 2000 : 3000);
             }
         },
 
@@ -180,12 +233,13 @@
         reloadApp: function () {
             console.log('?? Reloading application...');
             
-            // Try multiple reload methods for maximum compatibility
-            if (window.location.reload) {
+            // Set reload lock to prevent infinite loop
+            localStorage.setItem(RELOAD_LOCK_KEY, Date.now().toString());
+            
+            // Hard reload
+            setTimeout(() => {
                 window.location.reload(true);
-            } else {
-                window.location.href = window.location.href + '?refresh=' + Date.now();
-            }
+            }, 500);
         },
 
         // Start periodic version check
