@@ -741,7 +741,6 @@
   <data name="Currency" xml:space="preserve">
     <value>عمله</value>
   </data>
-  <!-- Excel Import Resources -->
   <data name="ImportProducts" xml:space="preserve">
     <value>استيراد المنتجات</value>
   </data>
@@ -792,5 +791,14 @@
   </data>
   <data name="ParseAndReviewData" xml:space="preserve">
     <value>تحليل ومراجعة البيانات</value>
+  </data>
+  <data name="AddMultipleValuesForPricing" xml:space="preserve">
+    <value>أضف قيم متعددة لمجموعات التسعير</value>
+  </data>
+  <data name="NoOptionsConfigured" xml:space="preserve">
+    <value>لم يتم تكوين خيارات لهذه الخاصية</value>
+  </data>
+  <data name="No Options Configured" xml:space="preserve">
+    <value>لا يوجد خيارات</value>
   </data>
 </root>
