@@ -49,18 +49,18 @@
 
             <div class="card-footer bg-light py-3 d-flex justify-content-end gap-2 btn-responsive ">
                 <button type="button" class="btn btn-secondary btn-responsive px-4" data-dismiss="modal" @onclick="CloseModal">
-                    <i class="feather icon-x-circle me-2"></i>  @ActionsResources.Cancel
+                    <i class="feather icon-x-circle me-2 ms-2"></i>  @ActionsResources.Cancel
                 </button>
                 <button type="submit" class="btn btn-primary px-4 btn-responsive " disabled="@isSaving">
                     @if (isSaving)
                     {
-                        <span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
+                        <span class="spinner-border spinner-border-sm me-1 " role="status" aria-hidden="true"></span>
                         <span class="sr-only">@GeneralResources.Loading ...</span>
                     }
                     else
                     {
                         <span>
-                          <i class="feather icon-save me-2"></i> @ActionsResources.Save</span>
+                          <i class="feather icon-save me-2 ms-2"></i> @ActionsResources.Save</span>
                     }
                 </button>
             </div>

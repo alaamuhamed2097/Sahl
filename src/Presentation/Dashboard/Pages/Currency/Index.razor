@@ -20,9 +20,9 @@
               <!-- Filtration start -->
            <ul class="navbar-nav d-flex flex-row align-items-center gap-3 mb-2 px-0 w-100">
       <li class="nav-item col-md-6 w-auto d-flex flex-row align-items-center gap-3">
-   <EditForm Model="searchModel" OnSubmit="@Search">
+   <EditForm Model="searchModel"  OnSubmit="@Search">
     <!-- Search Box -->
-    <div class="input-group rounded search-box">
+    <div class="input-group rounded search-box"style="width:100%">
         <input type="text" @bind="searchModel.SearchTerm"
                id="searchInput"
                class="form-control text-center border-0 @(ResourceManager.CurrentLanguage == Language.Arabic ? "rounded-end" : "rounded-start")"
@@ -50,7 +50,7 @@
     
     <!-- Status Filter -->
              <div class="d-flex align-items-center gap-2">
-                            <label class="form-label hidden  fw-semibold mb-0">@FormResources.Status:</label>
+                            <!-- <label class="form-label hidden  fw-semibold mb-0">@FormResources.Status:</label> -->
                             <select class="form-select rounded-3 shadow-sm border-light text-primary fw-bold"
                                     style="width: 120px; height: 38px;"
                                     @bind="StatusFilter">
@@ -139,17 +139,22 @@
                                             <td class="text-danger text-center align-middle">@GeneralResources.Inactive</td>
                                         }
                                         <td class="d-flex gap-1 justify-content-center align-items-center">
+                        
                                             <NavLink href="@($"/currency/{currency.Id}")" class="btn btn-primary btn-sm mx-1">
-                                                <span class="fas fa-edit"></span>
+                                                    <i class="feather icon-edit me-2"></i>
+                                                    @ActionsResources.Edit
                                             </NavLink>
                                             @if (!currency.IsBaseCurrency)
                                             {
                                                 <button class="btn btn-warning btn-sm mx-1" @onclick="() => SetBaseCurrency(currency)" title="@CurrencyResources.SetAsBase">
-                                                    <span class="fas fa-star"></span>
+                                                <i class="feather icon-star me-2"></i>
+                                                    <span >
+                                                    @CurrencyResources.SetAsBase</span>
                                                 </button>
                                             }
                                             <button class="btn btn-danger btn-sm mx-1" @onclick="() => DeleteCurrency(currency)">
-                                                <span class="fas fa-trash"></span>
+                                                <i class="feather icon-trash-2 me-2"></i>
+    <span>@ActionsResources.Delete</span>
                                             </button>
                                         </td>
                                     </tr>
@@ -159,7 +164,7 @@
                             {
                                     <tr>
           <td colspan="7" class="p-0">
-        <div class="d-flex flex-column justify-content-center align-items-center text-center" style="height: 500px;">
+        <div class="d-flex flex-column justify-content-center align-items-center text-center" style="    height: 35vh;">
             <!-- أيقونة كبيرة -->
             <i class="fas fa-database text-muted" style="font-size: 60px;"></i>
 

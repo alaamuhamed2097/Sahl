@@ -10,8 +10,8 @@
             <h5 class="mb-0 fw-semibold text-white">🔖 @GeneralResources.Attributes</h5>
         </div>
 
-        <div class="card-body p-4 resbonsever">
-            <div class="dt-responsive resbonsever hide-scrollbar table-responsive">
+        <div class="card-body p-4 ">
+            <div class="dt-responsive  hide-scrollbar table-responsive">
                 <!-- DESKTOP FILTRATION (Original - Unchanged) -->
                 <ul class="navbar-nav d-flex flex-row align-items-center gap-3 mb-2 px-0 w-100 d-none d-lg-flex">
                     <li class="nav-item gap-2 col-md-6 w-auto d-flex flex-row align-items-center gap-3">
@@ -90,11 +90,13 @@
                                             </span>
                                         </td>
                                         <td class="text-center p-3">
-                                            <button class="btn btn-primary btn-sm mx-1" title="@ActionsResources.Edit" @onclick="() => Edit(item)">
-                                                <i class="fas fa-pencil-alt m-0"></i>
+                                            <button class="btn btn-primary btn-sm " title="@ActionsResources.Edit" @onclick="() => Edit(item)">
+                                                <i class="fas fa-pencil-alt mx-1 ms-2"></i>
+                                                @ActionsResources.Edit
                                             </button>
-                                            <button class="btn btn-danger btn-sm mx-1" title="@ActionsResources.Delete" @onclick="() => Delete(item.Id)">
-                                                <i class="feather icon-trash-2 m-0"></i>
+                                            <button class="btn btn-danger btn-sm mx-1 ms-2" title="@ActionsResources.Delete" @onclick="() => Delete(item.Id)">
+                                                <i class="feather icon-trash-2 mx-1 ms-2"></i>
+                                                @ActionsResources.Delete
                                             </button>
                                         </td>
                                     </tr>
