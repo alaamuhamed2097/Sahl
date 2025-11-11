@@ -5,7 +5,7 @@
     <div class="card shadow-sm border-0">
         <div class="card-header bg-primary text-white py-3">
             <h5 class="modal-title text-white mb-0 fw-semibold">
-                @(Model.Id == Guid.Empty ? ActionsResources.Add : ActionsResources.Edit) @ECommerceResources.Category
+                @(Model.Id == Guid.Empty ? $"➕ {ActionsResources.Add}" : $"✏️ {ActionsResources.Edit}") @ECommerceResources.Category
             </h5>
         </div>
         <EditForm Model="@Model" OnValidSubmit="Save">
@@ -245,22 +245,26 @@
                     </div>
                 </div>
             </div>
-            <div class="card-footer bg-light py-3 d-flex justify-content-end gap-2 card-footer-mobile">
+
+            <div class="card-footer bg-light py-3 d-flex justify-content-end gap-2 ">
                 <button type="button" class="btn btn-secondary btn-responsive px-4" data-dismiss="modal" @onclick="CloseModal">
-                    @ActionsResources.Cancel
+                     <i class="feather icon-x-circle me-2 ms-2"></i>  @ActionsResources.Cancel
                 </button>
                 <button type="submit" class="btn btn-primary btn-responsive px-4" disabled="@IsSaving">
                     @if (IsSaving)
                     {
-                        <span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
+                        <span class="spinner-border spinner-border-sm mx-1" role="status" aria-hidden="true"></span>
                         <span class="sr-only">@GeneralResources.Loading ...</span>
                     }
-                    else
+                    else 
                     {
-                        <span>@ActionsResources.Save</span>
+                        <span class="gap-4">
+                         <i class="feather icon-save me-2 ms-2 "></i>
+                        @ActionsResources.Save</span>
                     }
                 </button>
             </div>
+            
         </EditForm>
     </div>
 </div>

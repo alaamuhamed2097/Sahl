@@ -46,10 +46,32 @@ namespace BL.Service.Location
                              x.TitleEn != null && x.TitleEn.ToLower().Contains(searchTerm));
             }
 
+            // Create ordering function based on SortBy and SortDirection
+            Func<IQueryable<TbCountry>, IOrderedQueryable<TbCountry>> orderBy = null;
+            
+            if (!string.IsNullOrWhiteSpace(criteriaModel.SortBy))
+            {
+                var sortBy = criteriaModel.SortBy.ToLower();
+                var isDescending = criteriaModel.SortDirection?.ToLower() == "desc";
+
+                orderBy = query =>
+                {
+                    return sortBy switch
+                    {
+                        "titlear" => isDescending ? query.OrderByDescending(x => x.TitleAr) : query.OrderBy(x => x.TitleAr),
+                        "titleen" => isDescending ? query.OrderByDescending(x => x.TitleEn) : query.OrderBy(x => x.TitleEn),
+                        "title" => isDescending ? query.OrderByDescending(x => x.TitleAr) : query.OrderBy(x => x.TitleAr),
+                        "createddateutc" => isDescending ? query.OrderByDescending(x => x.CreatedDateUtc) : query.OrderBy(x => x.CreatedDateUtc),
+                        _ => query.OrderBy(x => x.TitleAr) // Default sorting
+                    };
+                };
+            }
+
             var entitiesList = _baseRepository.GetPage(
                 criteriaModel.PageNumber,
                 criteriaModel.PageSize,
-                filter);
+                filter,
+                orderBy);
 
             var dtoList = _mapper.MapList<TbCountry, CountryDto>(entitiesList.Items);
 

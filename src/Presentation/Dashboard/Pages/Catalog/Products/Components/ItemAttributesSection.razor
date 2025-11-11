@@ -7,171 +7,176 @@
 @using Shared.DTOs.ECommerce.Item
 @attribute [Authorize(Roles = nameof(UserRole.Admin))]
 
-@if (CategoryAttributes.Any())
+@if (CategoryAttributes != null && CategoryAttributes.Any())
 {
     <div class="card mb-4">
-<div class="card-header">
-       <h5 class="mb-0 text-primary">@ECommerceResources.ItemAttributes<span class="text-danger">*</span></h5>
+        <div class="card-header">
+            <h5 class="mb-0 text-primary">@ECommerceResources.ItemAttributes<span class="text-danger">*</span></h5>
         </div>
         <div class="card-body">
-          @foreach (var _attribute in CategoryAttributes)
- {
-     // FIX: Use AttributeId (the actual attribute ID) not CategoryAttribute.Id
-      var attributeEntry = ItemAttributes.FirstOrDefault(a => a.AttributeId == _attribute.AttributeId);
-  if (attributeEntry == null)
-              {
- attributeEntry = new ItemAttributeDto
-    {
-      // Use the actual AttributeId
-         AttributeId = _attribute.AttributeId,
-   Value = string.Empty
-         };
-      ItemAttributes.Add(attributeEntry);
-          }
+            @foreach (var _attribute in CategoryAttributes)
+            {
+                // CRITICAL FIX: Use _attribute.Id to match how we initialize ItemAttributes in Details.razor.cs
+                var attributeEntry = ItemAttributes.FirstOrDefault(a => a.AttributeId == _attribute.Id);
+                if (attributeEntry == null)
+                {
+                    attributeEntry = new ItemAttributeDto
+                    {
+                        AttributeId = _attribute.Id,
+                        Value = string.Empty
+                    };
+                    ItemAttributes.Add(attributeEntry);
+                }
 
-    <div class="row align-items-center mb-3">
-          <div class="col-md-10">
-          <label class="form-label">
-         @_attribute.Title
-    @if (_attribute.AffectsPricing)
-      {
-          <span class="badge bg-info text-white ms-2">@ECommerceResources.IsAffectPrice</span>
-  }
-    </label>
-            <div>
-       @if (_attribute.FieldType == FieldType.Text)
-      {
-          <InputText class="form-control"
-      @bind-Value="attributeEntry.Value"
-  @bind-Value:after="() => OnAttributeValueChanged.InvokeAsync()"
- placeholder="@($"{FormResources.Write} {_attribute.Title}")" />
-   }
-           else if (_attribute.FieldType == FieldType.IntegerNumber)
-       {
-  int? intValue = int.TryParse(attributeEntry.Value, out var val) ? val : null;
-          <InputNumber TValue="int?" class="form-control"
-   Value="intValue"
-    ValueChanged="@(async (int? v) => { attributeEntry.Value = v?.ToString(); await OnAttributeValueChanged.InvokeAsync(); })"
-        ValueExpression="@(() => intValue)"
-          placeholder="@($"{FormResources.Write} {_attribute.Title}")" />
-              }
-   else if (_attribute.FieldType == FieldType.DecimalNumber)
-{
-  decimal? decValue = decimal.TryParse(attributeEntry.Value, out var val) ? val : null;
-      <InputNumber TValue="decimal?" class="form-control"
-      step="0.01"
-                Value="decValue"
-       ValueChanged="@(async (decimal? v) => { attributeEntry.Value = v?.ToString(); await OnAttributeValueChanged.InvokeAsync(); })"
-       ValueExpression="@(() => decValue)"
-  placeholder="@($"{FormResources.Write} {_attribute.Title}")" />
-    }
-else if (_attribute.FieldType == FieldType.Date)
-     {
-      DateTime? dateVal = DateTime.TryParse(attributeEntry.Value, out var val) ? val : null;
-    <InputDate TValue="DateTime?" class="form-control"
-     Value="dateVal"
-             ValueChanged="@(async (DateTime? v) => { attributeEntry.Value = v?.ToString("yyyy-MM-dd"); await OnAttributeValueChanged.InvokeAsync(); })"
-  ValueExpression="@(() => dateVal)"
-    placeholder="@($"{FormResources.Write} {_attribute.Title}")" />
-     }
-          else if (_attribute.FieldType == FieldType.CheckBox)
- {
-    bool isChecked = bool.TryParse(attributeEntry.Value, out var val) && val;
-      <div class="form-check">
-       <InputCheckbox class="form-check-input"
-       Value="isChecked"
-        ValueChanged="@(async (bool v) => { attributeEntry.Value = v.ToString(); await OnAttributeValueChanged.InvokeAsync(); })"
-           ValueExpression="@(() => isChecked)" />
-          <label class="form-check-label">@_attribute.Title</label>
-     </div>
-    }
-   else if (_attribute.FieldType == FieldType.List && _attribute.AttributeOptions != null)
- {
-    <!-- Support multi-select for price-affecting attributes -->
-   @if (_attribute.AffectsPricing)
- {
-         <div class="border rounded p-2" style="max-height: 200px; overflow-y: auto;">
-  @foreach (var option in _attribute.AttributeOptions)
-           {
-      var selectedOptions = (attributeEntry.Value ?? "").Split(',', StringSplitOptions.RemoveEmptyEntries).ToList();
-var isSelected = selectedOptions.Contains(option.Id.ToString());
+                <div class="row align-items-center mb-3">
+                    <div class="col-md-10">
+                        <label class="form-label">
+                            @_attribute.Title
+                            @if (_attribute.AffectsPricing)
+                            {
+                                <span class="badge bg-info text-white ms-2">@ECommerceResources.IsAffectPrice</span>
+                            }
+                        </label>
+                        <div>
+                            @if (_attribute.FieldType == FieldType.Text)
+                            {
+                                <InputText class="form-control"
+                                           @bind-Value="attributeEntry.Value"
+                                           @bind-Value:after="() => OnAttributeValueChanged.InvokeAsync()"
+                                           placeholder="@($"{FormResources.Write} {_attribute.Title}")" />
+                            }
+                            else if (_attribute.FieldType == FieldType.IntegerNumber)
+                            {
+                                int? intValue = int.TryParse(attributeEntry.Value, out var val) ? val : null;
+                                <InputNumber TValue="int?" class="form-control"
+                                             Value="intValue"
+                                             ValueChanged="@(async (int? v) => { attributeEntry.Value = v?.ToString(); await OnAttributeValueChanged.InvokeAsync(); })"
+                                             ValueExpression="@(() => intValue)"
+                                             placeholder="@($"{FormResources.Write} {_attribute.Title}")" />
+                            }
+                            else if (_attribute.FieldType == FieldType.DecimalNumber)
+                            {
+                                decimal? decValue = decimal.TryParse(attributeEntry.Value, out var val) ? val : null;
+                                <InputNumber TValue="decimal?" class="form-control"
+                                             step="0.01"
+                                             Value="decValue"
+                                             ValueChanged="@(async (decimal? v) => { attributeEntry.Value = v?.ToString(); await OnAttributeValueChanged.InvokeAsync(); })"
+                                             ValueExpression="@(() => decValue)"
+                                             placeholder="@($"{FormResources.Write} {_attribute.Title}")" />
+                            }
+                            else if (_attribute.FieldType == FieldType.Date)
+                            {
+                                DateTime? dateVal = DateTime.TryParse(attributeEntry.Value, out var val) ? val : null;
+                                <InputDate TValue="DateTime?" class="form-control"
+                                           Value="dateVal"
+                                           ValueChanged="@(async (DateTime? v) => { attributeEntry.Value = v?.ToString("yyyy-MM-dd"); await OnAttributeValueChanged.InvokeAsync(); })"
+                                           ValueExpression="@(() => dateVal)"
+                                           placeholder="@($"{FormResources.Write} {_attribute.Title}")" />
+                            }
+                            else if (_attribute.FieldType == FieldType.CheckBox)
+                            {
+                                bool isChecked = bool.TryParse(attributeEntry.Value, out var val) && val;
+                                <div class="form-check">
+                                    <InputCheckbox class="form-check-input"
+                                                   Value="isChecked"
+                                                   ValueChanged="@(async (bool v) => { attributeEntry.Value = v.ToString(); await OnAttributeValueChanged.InvokeAsync(); })"
+                                                   ValueExpression="@(() => isChecked)" />
+                                    <label class="form-check-label">@_attribute.Title</label>
+                                </div>
+                            }
+                            else if (_attribute.FieldType == FieldType.List && _attribute.AttributeOptions != null)
+                            {
+                                <!-- Support multi-select for price-affecting attributes -->
+                                @if (_attribute.AffectsPricing)
+                                {
+                                    <div class="border rounded p-2" style="max-height: 200px; overflow-y: auto;">
+                                        @foreach (var option in _attribute.AttributeOptions)
+                                        {
+                                            var selectedOptions = (attributeEntry.Value ?? "").Split(',', StringSplitOptions.RemoveEmptyEntries).ToList();
+                                            var isSelected = selectedOptions.Contains(option.Id.ToString());
 
-      <div class="form-check">
-      <input type="checkbox" class="form-check-input"
-   id="option_@option.Id"
- checked="@isSelected"
- @onchange="@(() => ToggleOption(attributeEntry, option.Id))" />
-     <label class="form-check-label" for="option_@option.Id">
-         @option.Title
-  </label>
-  </div>
-          }
-    </div>
-  <small class="text-muted">@FormResources.Select</small>
-     }
-   else
-         {
-    <InputSelect class="form-select"
-     @bind-Value="attributeEntry.Value"
- @bind-Value:after="() => OnAttributeValueChanged.InvokeAsync()">
-         <option value="">@FormResources.Select</option>
-         @foreach (var option in _attribute.AttributeOptions)
-      {
-    <option value="@option.Id">@option.Title</option>
-      }
-       </InputSelect>
- }
- }
-        else if (_attribute.FieldType == FieldType.MultiSelectList && _attribute.AttributeOptions != null)
-     {
-     <div class="border rounded p-2" style="max-height: 200px; overflow-y: auto;">
-    @foreach (var option in _attribute.AttributeOptions)
-    {
-       var selectedOptions = (attributeEntry.Value ?? "").Split(',', StringSplitOptions.RemoveEmptyEntries).ToList();
-     var isSelected = selectedOptions.Contains(option.Id.ToString());
+                                            <div class="form-check">
+                                                <input type="checkbox" class="form-check-input"
+                                                       id="option_@option.Id"
+                                                       checked="@isSelected"
+                                                       @onchange="@(() => ToggleOption(attributeEntry, option.Id))" />
+                                                <label class="form-check-label" for="option_@option.Id">
+                                                    @option.Title
+                                                </label>
+                                            </div>
+                                        }
+                                    </div>
+                                    <small class="text-muted">@FormResources.Select</small>
+                                }
+                                else
+                                {
+                                    <InputSelect class="form-select"
+                                                 @bind-Value="attributeEntry.Value"
+                                                 @bind-Value:after="() => OnAttributeValueChanged.InvokeAsync()">
+                                        <option value="">@FormResources.Select</option>
+                                        @foreach (var option in _attribute.AttributeOptions)
+                                        {
+                                            <option value="@option.Id">@option.Title</option>
+                                        }
+                                    </InputSelect>
+                                }
+                            }
+                            else if (_attribute.FieldType == FieldType.MultiSelectList && _attribute.AttributeOptions != null)
+                            {
+                                <div class="border rounded p-2" style="max-height: 200px; overflow-y: auto;">
+                                    @foreach (var option in _attribute.AttributeOptions)
+                                    {
+                                        var selectedOptions = (attributeEntry.Value ?? "").Split(',', StringSplitOptions.RemoveEmptyEntries).ToList();
+                                        var isSelected = selectedOptions.Contains(option.Id.ToString());
 
-      <div class="form-check">
-  <input type="checkbox" class="form-check-input"
-     id="option_@option.Id"
-     checked="@isSelected"
-@onchange="@(() => ToggleOption(attributeEntry, option.Id))" />
-        <label class="form-check-label" for="option_@option.Id">
-     @option.Title
-          </label>
-          </div>
-     }
-         </div>
-        }
- </div>
-         </div>
-  <div class="col-md-2 text-end mt-4">
-   <!-- FIX: Pass AttributeId instead of CategoryAttribute.Id -->
-  <button type="button" class="btn btn-outline-danger"
-          @onclick="() => RemoveAttribute(_attribute.AttributeId)">
-  <i class="fas fa-trash"></i>
-</button>
-   </div>
-              </div>
-     }
+                                        <div class="form-check">
+                                            <input type="checkbox" class="form-check-input"
+                                                   id="option_@option.Id"
+                                                   checked="@isSelected"
+                                                   @onchange="@(() => ToggleOption(attributeEntry, option.Id))" />
+                                            <label class="form-check-label" for="option_@option.Id">
+                                                @option.Title
+                                            </label>
+                                        </div>
+                                    }
+                                </div>
+                            }
+                        </div>
+                    </div>
+                    <div class="col-md-2 text-end mt-4">
+                        <button type="button" class="btn btn-outline-danger"
+                                @onclick="() => RemoveAttribute(_attribute.Id)">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </div>
+            }
         </div>
     </div>
 
     <!-- Button to generate combinations -->
     @if (CategoryAttributes.Any(ca => ca.AffectsPricing))
     {
-  <div class="card mb-3">
+        <div class="card mb-3">
             <div class="card-body">
-     <div class="d-flex justify-content-between align-items-center">
-            <div>
-   <h6 class="mb-1">@ECommerceResources.AttributeCombinations</h6>
-      <small class="text-muted">@FormResources.Select @ECommerceResources.Attributes</small>
-   </div>
- <button type="button" class="btn btn-primary" @onclick="OnGenerateCombinations">
-   <i class="fas fa-sync-alt me-2"></i>
-     @ActionsResources.Add @ECommerceResources.AttributeCombinations
-       </button>
-     </div>
-   </div>
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="mb-1">@ECommerceResources.AttributeCombinations</h6>
+                        <small class="text-muted">@FormResources.Select @ECommerceResources.Attributes</small>
+                    </div>
+                    <button type="button" class="btn btn-primary" @onclick="OnGenerateCombinations">
+                        <i class="fas fa-sync-alt me-2"></i>
+                        @ActionsResources.Add @ECommerceResources.AttributeCombinations
+                    </button>
+                </div>
+            </div>
         </div>
     }
+}
+else
+{
+    <div class="alert alert-warning">
+        <i class="fas fa-exclamation-triangle me-2"></i>
+        No attributes configured for this category yet.
+    </div>
 }

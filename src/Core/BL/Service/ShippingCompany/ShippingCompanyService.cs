@@ -65,10 +65,31 @@ namespace BL.Service.ShippingCompany
                              x.PhoneCode + x.PhoneNumber != null && (x.PhoneCode + x.PhoneNumber).ToLower().Contains(searchTerm));
             }
 
+            // Create ordering function based on SortBy and SortDirection
+            Func<IQueryable<TbShippingCompany>, IOrderedQueryable<TbShippingCompany>> orderBy = null;
+            
+            if (!string.IsNullOrWhiteSpace(criteriaModel.SortBy))
+            {
+                var sortBy = criteriaModel.SortBy.ToLower();
+                var isDescending = criteriaModel.SortDirection?.ToLower() == "desc";
+
+                orderBy = query =>
+                {
+                    return sortBy switch
+                    {
+                        "name" => isDescending ? query.OrderByDescending(x => x.Name) : query.OrderBy(x => x.Name),
+                        "phonenumber" => isDescending ? query.OrderByDescending(x => x.PhoneNumber) : query.OrderBy(x => x.PhoneNumber),
+                        "createddateutc" => isDescending ? query.OrderByDescending(x => x.CreatedDateUtc) : query.OrderBy(x => x.CreatedDateUtc),
+                        _ => query.OrderBy(x => x.Name) // Default sorting
+                    };
+                };
+            }
+
             var entitiesList = _baseRepository.GetPage(
                 criteriaModel.PageNumber,
                 criteriaModel.PageSize,
-                filter);
+                filter,
+                orderBy);
 
             var dtoList = _mapper.MapList<TbShippingCompany, ShippingCompanyDto>(entitiesList.Items);
 

@@ -9,7 +9,8 @@
     <div class="card shadow-sm border-0">
         <div class="card-header d-flex bg-primary  justify-content-between align-items-center">
             <h4 class="modal-title text-white">
-                @ActionsResources.Add @ECommerceResources.Admin
+             <i class="bi bi-plus-circle fs-3 text-white"></i>
+               ➕ @ActionsResources.Add @ECommerceResources.Admin
             </h4>
         </div>
         <EditForm Model="@Model" OnValidSubmit="Save">
@@ -79,7 +80,7 @@
 
             <div class="card-footer bg-light  py-3 d-flex justify-content-end gap-2">
                 <button type="button" class="btn btn-responsive btn-secondary px-4" data-dismiss="modal" @onclick="CloseModal">
-                    @ActionsResources.Cancel
+                   <i class="feather icon-x-circle me-2 ms-2"></i>   @ActionsResources.Cancel
                 </button>
                 <button type="submit" class="btn btn-primary btn-responsive text-white px-4" disabled="@isSaving">
                     @if (isSaving)
@@ -89,7 +90,9 @@
                     }
                     else
                     {
-                        <span>@ActionsResources.Save</span>
+                        <span>
+                          <i class="feather icon-save me-1 ms-2"></i> 
+                        @ActionsResources.Save</span>
                     }
                 </button>
             </div>

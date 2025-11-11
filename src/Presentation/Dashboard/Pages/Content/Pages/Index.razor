@@ -12,6 +12,17 @@
 
 <PageTitle>@GeneralResources.StaticPages</PageTitle>
 
+<style>
+    .cursor-pointer {
+        cursor: pointer;
+        user-select: none;
+    }
+
+    .cursor-pointer:hover {
+        background-color: rgba(0, 0, 0, 0.05);
+    }
+</style>
+
 <div class="container-fluid p-0">
     <div class="card shadow-sm border-0">
         <div class="card-header bg-primary text-white py-3 d-flex justify-content-between align-items-center">
@@ -23,21 +34,19 @@
                 <!-- Filtration start -->
                 <ul class="navbar-nav d-flex flex-row align-items-center gap-3 mb-2 px-0 w-100">
                     <li class="nav-item col-md-6 w-auto d-flex flex-row align-items-center gap-3">
-                        <EditForm Model="searchModel" OnSubmit="@Search">
-                            <!-- Search Box -->
-                            <div class="input-group rounded-3 border" style="width: 170px; height: 38px;">
-                                <InputText @bind-Value="searchModel.SearchTerm"
-                                           id="searchInput"
-                                           class="form-control rounded-end-3 text-center border-0"
-                                           placeholder="@ActionsResources.Search"
-                                           style="height: 38px;" />
-                                <button type="submit"
-                                        class="btn btn-danger rounded-start-3 d-flex align-items-center justify-content-center border-0"
-                                        style="width: 40px; height: 38px;">
-                                    <i class="fas fa-search text-white m-0"></i>
-                                </button>
-                            </div>
-                        </EditForm>
+                           <EditForm Model="searchModel" OnSubmit="@Search">
+    <!-- Search Box -->
+    <div class="input-group rounded search-box">
+        <input type="text" @bind="searchModel.SearchTerm"
+               id="searchInput"
+               class="form-control text-center border-0 @(ResourceManager.CurrentLanguage == Language.Arabic ? "rounded-end" : "rounded-start")"
+               placeholder="@ActionsResources.Search" />
+        <button type="submit"
+                class="btn btn-danger d-flex align-items-center justify-content-center border-0 @(ResourceManager.CurrentLanguage == Language.Arabic ? "rounded-start" : "rounded-end")">
+            <i class="fas fa-search text-white m-0"></i>
+        </button>
+    </div>
+</EditForm>
 
                                    <!-- Page Size -->
                                                                 <div class="d-flex align-items-center gap-2">
@@ -55,7 +64,7 @@
                         <!-- Export Buttons -->
                         <div class="dropdown">
                             <button class="btn btn-info" type="button" id="exportDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                                <i class="fas fa-file-export me-2"></i>
+                                <i class="fas fa-file-export mx-1"></i>
                                 <span class="fw-bold">@ActionsResources.Export</span>
                             </button>
                             <ul class="dropdown-menu" aria-labelledby="exportDropdown">
@@ -72,9 +81,15 @@
                         <thead class="bg-light">
                             <tr>
                                 <th class="text-center align-middle" style="width: 8%;">#</th>
-                                <th class="text-center align-middle" style="width: 30%;">@FormResources.Title</th>
+                                <th class="text-center align-middle cursor-pointer" style="width: 30%;" @onclick='() => SortByColumn("Title")'>
+                                    @FormResources.Title
+                                    <i class="@GetSortIconClass("Title") ms-1"></i>
+                                </th>
                                 <th class="text-center align-middle" style="width: 35%;">@FormResources.ShortDescription</th>
-                                <th class="text-center align-middle" style="width: 12%;">@FormResources.CreationDate</th>
+                                <th class="text-center align-middle cursor-pointer" style="width: 12%;" @onclick='() => SortByColumn("CreatedDateUtc")'>
+                                    @FormResources.CreationDate
+                                    <i class="@GetSortIconClass("CreatedDateUtc") ms-1"></i>
+                                </th>
                                 <th class="text-center align-middle" style="width: 15%;">@FormResources.Actions</th>
                             </tr>
                         </thead>
@@ -110,19 +125,19 @@
                             }
                             else
 							{
-								<tr>
-									<td colspan="5" class="text-center">
-										<div class="text-center p-4">
-											<!-- أيقونة كبيرة -->
-											<i class="fas fa-database text-muted" style="font-size: 60px;"></i>
+			     <tr>
+          <td colspan="7" class="p-0">
+        <div class="d-flex flex-column justify-content-center align-items-center text-center" style="height: 600px;">
+            <!-- أيقونة كبيرة -->
+            <i class="fas fa-database text-muted" style="font-size: 60px;"></i>
 
-											<!-- نص -->
-											<p class="text-muted mt-3" style="font-size: 18px;">
-												@NotifiAndAlertsResources.NoDataFound
-											</p>
-										</div>
-									</td>
-								</tr>
+            <!-- نص -->
+            <p class="text-muted mt-3" style="font-size: 18px;">
+                @NotifiAndAlertsResources.NoDataFound
+            </p>
+        </div>
+    </td>
+    </tr>
                             }
                         </tbody>
                     </table>
@@ -158,19 +173,17 @@
                         }
                         else
                         {
-                                                  <div class="text-center p-4">
-    <!-- أيقونة كبيرة -->
-    <i class="fas fa-database text-muted" style="font-size: 60px;"></i>
+                                      
+        <div class="d-flex flex-column justify-content-center align-items-center text-center" style="height: 500px;">
+            <!-- أيقونة كبيرة -->
+            <i class="fas fa-database text-muted" style="font-size: 60px;"></i>
+
+            <!-- نص -->
+            <p class="text-muted mt-3" style="font-size: 18px;">
+                @NotifiAndAlertsResources.NoDataFound
+            </p>
+        </div>
     
-    <!-- نص -->
-    <p class="text-muted mt-3" style="font-size: 18px;">
-        @NotifiAndAlertsResources.NoDataFound
-    </p>
-</div>
-                            <!-- <div class="text-center p-4">
-                                <i class="fas fa-file-alt fa-3x text-muted mb-3"></i>
-                                <p class="text-muted">@NotifiAndAlertsResources.NoDataFound</p>
-                            </div> -->
                         }
                     </div>
                 </div>

@@ -1,4 +1,4 @@
-@page "/brand"
+﻿@page "/brand"
 @page "/brand/{id:guid}"
 
 @using Common.Enumerations.User
@@ -8,13 +8,14 @@
 
 <div class="container-fluid p-0">
     <div class="card shadow-sm  border-0">
-        <div class="card-header d-flex justify-content-between align-items-center">
-            <h4 class="modal-title">
-                @(Model.Id == Guid.Empty ? ActionsResources.Add : ActionsResources.Edit) @BrandResources.Brand
+        <div class="card-header d-flex justify-content-between bg-primary align-items-center">
+            <h4 class="modal-title text-white">
+                @(Model.Id == Guid.Empty ? $"➕ {ActionsResources.Add}" : $"✏️ {ActionsResources.Edit}") @BrandResources.Brand
             </h4>
         </div>
         <EditForm Model="@Model" OnValidSubmit="Save">
             <DataAnnotationsValidator />
+            
             <div class="card-body p-4">
                 <!-- Name Fields -->
                 <div class="row">
@@ -130,10 +131,10 @@
 
             </div>
             <div class="card-footer bg-light py-3 d-flex justify-content-end gap-2">
-                <button type="button" class="btn btn-secondary" @onclick="CloseModal">
-                    <i class="fas fa-times me-1"></i>@ActionsResources.Cancel
+                <button type="button" class="btn btn-secondary " @onclick="CloseModal">
+                    <i class="fas fa-times me-2 ms-2" ></i>@ActionsResources.Cancel
                 </button>
-                <button type="submit" class="btn btn-success" disabled="@isSaving">
+                <button type="submit" class="btn btn-primary " disabled="@isSaving">
                     @if (isSaving)
                     {
                         <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
@@ -141,7 +142,7 @@
                     }
                     else
                     {
-                        <i class="fas fa-save me-1"></i>
+                        <i class="fas fa-save me-2 ms-2"></i>
 
                         @ActionsResources.Save
                     }

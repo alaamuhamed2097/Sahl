@@ -1137,30 +1137,30 @@ label {
     overflow-x: auto;
     display: block;
     width: 100%;
-    min-height: 75vh; /* يخليه ياخد تقريبًا ارتفاع الشاشة */
+    min-height: 60vh; /* يخليه ياخد تقريبًا ارتفاع الشاشة */
   display: flex;
   flex-direction: column;
   justify-content: space-between;
 
 }
-.dt-responsive{
-     overflow-x: auto;
-    display: block;
-    width: 100%;
-    min-height: 75vh; /* يخليه ياخد تقريبًا ارتفاع الشاشة */
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-}
-.dt-responsived{
+.dt-responsive {
     overflow-x: auto;
     display: block;
     width: 100%;
+    min-height: 55vh !important; /* يخليه ياخد تقريبًا ارتفاع الشاشة */
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
 
-    min-height: 65vh; /* يخليه ياخد تقريبًا ارتفاع الشاشة */
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
+.dt-responsived {
+    overflow-x: auto;
+    display: block;
+    width: 100%;
+    min-height: 55vh !important; /* يخليه ياخد تقريبًا ارتفاع الشاشة */
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
 }
 .invoice-box {
     margin-right: 1rem;

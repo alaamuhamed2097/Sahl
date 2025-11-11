@@ -1,0 +1,27 @@
+<Project>
+  <Target Name="UpdateVersion" BeforeTargets="Build">
+    <Message Text="?? Updating application version..." Importance="high" />
+    
+    <!-- Run PowerShell script to update version -->
+    <Exec Command="powershell -ExecutionPolicy Bypass -File &quot;$(ProjectDir)../../../update-version.ps1&quot;" 
+          ContinueOnError="true" 
+          IgnoreExitCode="true" />
+  </Target>
+  
+  <Target Name="UpdateVersionPatch" AfterTargets="Build">
+    <Exec Command="powershell -ExecutionPolicy Bypass -File &quot;$(ProjectDir)../../../update-version.ps1&quot; -VersionType patch" 
+          ContinueOnError="true" />
+  </Target>
+  
+  <Target Name="UpdateVersionMinor">
+    <Exec Command="powershell -ExecutionPolicy Bypass -File &quot;$(ProjectDir)../../../update-version.ps1&quot; -VersionType minor" />
+  </Target>
+  
+  <Target Name="UpdateVersionMajor">
+    <Exec Command="powershell -ExecutionPolicy Bypass -File &quot;$(ProjectDir)../../../update-version.ps1&quot; -VersionType major" />
+  </Target>
+  
+  <Target Name="ForceUpdate">
+    <Exec Command="powershell -ExecutionPolicy Bypass -File &quot;$(ProjectDir)../../../update-version.ps1&quot; -ForceUpdate $true" />
+  </Target>
+</Project>

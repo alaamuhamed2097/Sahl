@@ -143,7 +143,7 @@ h6 {
 /* Menu Items */
 .pcoded-navbar .pcoded-inner-navbar li a {
   color: rgba(255, 255, 255, 0.8) !important;
-  padding: 12px 20px !important;
+  padding: 10px 20px !important;
   margin: 4px 12px !important;
   border-radius: var(--radius-sm);
   transition: var(--transition-fast);
@@ -156,7 +156,7 @@ h6 {
 .pcoded-navbar .pcoded-inner-navbar li a:hover {
   background: rgba(14, 165, 233, 0.15) !important;
   color: #e0f2fe !important;
-  transform: translateX(-4px);
+  transform: translateX(-2px);
   padding-right: 24px !important;
 }
 
@@ -253,7 +253,7 @@ h6 {
   border-radius: var(--radius-sm) !important;
   font-weight: 600 !important;
   padding: 10px 24px !important;
-  transition: var(--transition);
+  transition: none !important;
   border: none !important;
   font-size: 14px;
 }
@@ -267,7 +267,7 @@ h6 {
 .btn-primary:hover {
   background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary-darker) 100%) !important;
   box-shadow: 0 6px 16px rgba(14, 165, 233, 0.4) !important;
-  transform: translateY(-2px);
+  /* transform: translateY(-2px); */
 }
 
 .btn-success {
@@ -279,7 +279,7 @@ h6 {
 .btn-success:hover {
   background: linear-gradient(135deg, var(--success-dark) 0%, #047857 100%) !important;
   box-shadow: 0 6px 16px rgba(16, 185, 129, 0.4) !important;
-  transform: translateY(-2px);
+  /* transform: translateY(-2px); */
 }
 
 .btn-outline-primary {
@@ -358,6 +358,8 @@ h6 {
   padding: 14px 20px !important;
   color: var(--neutral-medium) !important;
 }
+
+
 
 /* ===================================
    BADGES - MODERN PILL STYLE
@@ -1280,6 +1282,17 @@ button:focus-visible,
     gap: 0.5rem !important;
     margin-bottom: 4px !important;
   }
+   .no-data-container {
+            height: 300px; /* يقل الارتفاع في الموبايل */
+        }
+
+        .no-data-container i {
+            font-size: 40px; /* الأيقونة أصغر */
+        }
+
+        .no-data-container p {
+            font-size: 16px; /* النص أصغر */
+        }
 }
 .mobile-disa {
   margin-left: 10px;
@@ -1442,3 +1455,24 @@ button:focus-visible,
 .dashboard-page {
   background-color: #f5f7fb;
 }
+
+/* الحجم الافتراضي (موبايل) */
+
+/* شاشات التابلت وأكبر */
+@media (min-width: 768px) {
+    .search-box {
+        width: 250px; /* أوسع قليلاً */
+    }
+}
+
+/* شاشات الديسكتوب الكبيرة */
+@media (min-width: 1200px) {
+    .search-box {
+        width: 420px; /* عرض كبير وواضح */
+    }
+}
+
+
+
+
+

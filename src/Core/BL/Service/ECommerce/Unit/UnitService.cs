@@ -47,10 +47,31 @@ namespace BL.Service.ECommerce.Unit
                              x.TitleEn != null && x.TitleEn.ToLower().Contains(searchTerm);
             }
 
+            // Create ordering function based on SortBy and SortDirection
+            Func<IQueryable<VwUnitWithConversionsUnits>, IOrderedQueryable<VwUnitWithConversionsUnits>> orderBy = null;
+
+            if (!string.IsNullOrWhiteSpace(criteriaModel.SortBy))
+            {
+                var sortBy = criteriaModel.SortBy.ToLower();
+                var isDescending = criteriaModel.SortDirection?.ToLower() == "desc";
+
+                orderBy = query =>
+                {
+                    return sortBy switch
+                    {
+                        "titlear" => isDescending ? query.OrderByDescending(x => x.TitleAr) : query.OrderBy(x => x.TitleAr),
+                        "titleen" => isDescending ? query.OrderByDescending(x => x.TitleEn) : query.OrderBy(x => x.TitleEn),
+                        "title" => isDescending ? query.OrderByDescending(x => x.TitleAr) : query.OrderBy(x => x.TitleAr),
+                        _ => query.OrderBy(x => x.TitleAr) // Default sorting
+                    };
+                };
+            }
+
             var entitiesList = _unitRepository.Repository<VwUnitWithConversionsUnits>().GetPage(
                 criteriaModel.PageNumber,
                 criteriaModel.PageSize,
-                filter);
+                filter,
+                orderBy);
 
             var units = _mapper.MapList<VwUnitWithConversionsUnits, UnitDto>(entitiesList.Items);
 

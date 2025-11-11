@@ -196,7 +196,7 @@ namespace Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to إدارة شهادات العملاء.
+        ///   Looks up a localized string similar to شهادات العملاء.
         /// </summary>
         public static string TestimonialManagement {
             get {

@@ -20,21 +20,19 @@
               <!-- Filtration start -->
            <ul class="navbar-nav d-flex flex-row align-items-center gap-3 mb-2 px-0 w-100">
       <li class="nav-item col-md-6 w-auto d-flex flex-row align-items-center gap-3">
- <EditForm Model="searchModel" OnSubmit="@Search">
-             <!-- Search Box -->
- <div class="input-group rounded" style="width: 170px; height: 38px;">
-                                <input type="text" @bind="searchModel.SearchTerm"
-                                       id="searchInput"
-                                       class="form-control text-center border-0 @(ResourceManager.CurrentLanguage == Language.Arabic ? "rounded-end" : "rounded-start")"
-                                       placeholder="@ActionsResources.Search"
-                                       style="height: 38px;" />
-                                <button type="submit"
-                                        class="btn btn-danger d-flex align-items-center justify-content-center border-0 @(ResourceManager.CurrentLanguage == Language.Arabic ? "rounded-start" : "rounded-end")"
-                                        style="width: 40px; height: 38px;">
-                                    <i class="fas fa-search text-white m-0"></i>
-                                </button>
-                            </div>
-            </EditForm>
+   <EditForm Model="searchModel"  OnSubmit="@Search">
+    <!-- Search Box -->
+    <div class="input-group rounded search-box"style="width:100%">
+        <input type="text" @bind="searchModel.SearchTerm"
+               id="searchInput"
+               class="form-control text-center border-0 @(ResourceManager.CurrentLanguage == Language.Arabic ? "rounded-end" : "rounded-start")"
+               placeholder="@ActionsResources.Search" />
+        <button type="submit"
+                class="btn btn-danger d-flex align-items-center justify-content-center border-0 @(ResourceManager.CurrentLanguage == Language.Arabic ? "rounded-start" : "rounded-end")">
+            <i class="fas fa-search text-white m-0"></i>
+        </button>
+    </div>
+</EditForm>
 
  <!-- Page Size -->
                                                                 <div class="d-flex align-items-center gap-2">
@@ -49,9 +47,10 @@
                                         </div>
      </li>
     <li class="nav-item ms-auto d-flex flex-row align-items-center gap-2">
+    
     <!-- Status Filter -->
              <div class="d-flex align-items-center gap-2">
-                            <label class="form-label hidden  fw-semibold mb-0">@FormResources.Status:</label>
+                            <!-- <label class="form-label hidden  fw-semibold mb-0">@FormResources.Status:</label> -->
                             <select class="form-select rounded-3 shadow-sm border-light text-primary fw-bold"
                                     style="width: 120px; height: 38px;"
                                     @bind="StatusFilter">
@@ -60,10 +59,11 @@
                                 <option value="inactive">@GeneralResources.Inactive</option>
                             </select>
                         </div>
+                        
          <!-- Export Buttons -->
                 <div class="dropdown">
                             <button class="btn btn-info" type="button" id="exportDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                                <i class="fas fa-file-export me-2"></i>
+                                <i class="fas fa-file-export mx-1"></i>
                                 <span class="fw-bold">@ActionsResources.Export</span>
                             </button>
                             <ul class="dropdown-menu" aria-labelledby="exportDropdown">
@@ -71,26 +71,29 @@
                                 <li><a class="dropdown-item" href="javascript:void(0)" @onclick="ExportToPrint"><i class="fas fa-print mx-2"></i>@ActionsResources.Print</a></li>
                             </ul>
                         </div>
-     <!-- Add Button -->
-<NavLink href="/currency" class="btn btn-success">
- <i class="feather icon-plus-circle me-2"></i>
-  <span class="fw-bold">@ActionsResources.Add</span>
-       </NavLink>
+
              
           <!-- Update Exchange Rates Button -->
    <button class="btn btn-info" @onclick="UpdateExchangeRates" disabled="@_isUpdatingRates">
+   
  @if (_isUpdatingRates)
            {
           <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
        }
   else
               {
-    <i class="fas fa-sync-alt me-2"></i>
+    <i class="fas fa-sync-alt mx-1"></i>
    }
      <span class="fw-bold">@GeneralResources.UpdateExchangeRates</span>
       </button>
           </li>
+               <!-- Add Button -->
+<NavLink href="/currency" class="btn btn-success">
+ <i class="feather icon-plus-circle mx-1"></i>
+  <span class="fw-bold">@ActionsResources.Add</span>
+       </NavLink>
   </ul>
+  
                 <!-- Table -->
                 <div class="table-responsive dt-responsived table-container border rounded-3">
                     <table id="currency-table" class="table table-striped table-hover mb-0 align-text-center">
@@ -136,17 +139,22 @@
                                             <td class="text-danger text-center align-middle">@GeneralResources.Inactive</td>
                                         }
                                         <td class="d-flex gap-1 justify-content-center align-items-center">
+                        
                                             <NavLink href="@($"/currency/{currency.Id}")" class="btn btn-primary btn-sm mx-1">
-                                                <span class="fas fa-edit"></span>
+                                                    <i class="feather icon-edit me-2"></i>
+                                                    @ActionsResources.Edit
                                             </NavLink>
                                             @if (!currency.IsBaseCurrency)
                                             {
                                                 <button class="btn btn-warning btn-sm mx-1" @onclick="() => SetBaseCurrency(currency)" title="@CurrencyResources.SetAsBase">
-                                                    <span class="fas fa-star"></span>
+                                                <i class="feather icon-star me-2"></i>
+                                                    <span >
+                                                    @CurrencyResources.SetAsBase</span>
                                                 </button>
                                             }
                                             <button class="btn btn-danger btn-sm mx-1" @onclick="() => DeleteCurrency(currency)">
-                                                <span class="fas fa-trash"></span>
+                                                <i class="feather icon-trash-2 me-2"></i>
+    <span>@ActionsResources.Delete</span>
                                             </button>
                                         </td>
                                     </tr>
@@ -154,20 +162,19 @@
                             }
                             else
                             {
-                                <tr>
-                                    <td colspan="7" class="text-center">
-                                     <div class="text-center p-4">
-    <!-- أيقونة كبيرة -->
-    <i class="fas fa-database text-muted" style="font-size: 60px;"></i>
-    
-    <!-- نص -->
-    <p class="text-muted mt-3" style="font-size: 18px;">
-        @NotifiAndAlertsResources.NoDataFound
-    </p>
-</div>
-                                      
-                                    </td>
-                                </tr>
+                                    <tr>
+          <td colspan="7" class="p-0">
+        <div class="d-flex flex-column justify-content-center align-items-center text-center" style="    height: 35vh;">
+            <!-- أيقونة كبيرة -->
+            <i class="fas fa-database text-muted" style="font-size: 60px;"></i>
+
+            <!-- نص -->
+            <p class="text-muted mt-3" style="font-size: 18px;">
+                @NotifiAndAlertsResources.NoDataFound
+            </p>
+        </div>
+    </td>
+    </tr>
                             }
                         </tbody>
                     </table>

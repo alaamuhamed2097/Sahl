@@ -1,4 +1,4 @@
-using Dashboard.Configuration;
+﻿using Dashboard.Configuration;
 using Dashboard.Contracts.Brand;
 using Dashboard.Contracts.ECommerce.Category;
 using Dashboard.Contracts.ECommerce.Item;
@@ -65,9 +65,9 @@ namespace Dashboard.Pages.Catalog.Products
         private IEnumerable<CategoryDto> categories = Array.Empty<CategoryDto>();
         private IEnumerable<UnitDto> units = Array.Empty<UnitDto>();
         private IEnumerable<VideoProviderDto> videoProviders = Array.Empty<VideoProviderDto>();
-        private List<CategoryAttributeDto> categoryAttributes = new();
+        protected List<CategoryAttributeDto> categoryAttributes = new();
         private List<BrandDto> brands = new();
-        private bool isLoadingAttributes = false;
+        protected bool isLoadingAttributes = false;
 
         // ========== Lifecycle Methods ==========
         protected override async Task OnInitializedAsync()
@@ -157,23 +157,29 @@ namespace Dashboard.Pages.Catalog.Products
         {
             try
             {
+                Console.WriteLine($"🔍 LoadCategoryAttributes - START");
                 isLoadingAttributes = true;
-                StateHasChanged(); // Trigger UI update to show loading indicator
+                StateHasChanged();
 
-                // OPTIMIZED: Use dedicated endpoint to get category attributes directly
-                // This is more efficient than loading the entire category
+                Console.WriteLine($"📡 Calling API: AttributeService.GetByCategoryIdAsync({Model.CategoryId})");
                 var result = await AttributeService.GetByCategoryIdAsync(Model.CategoryId);
+
+                Console.WriteLine($"📥 API Response - Success: {result?.Success}, Data count: {result?.Data?.Count()}");
 
                 if (result?.Success == true && result.Data != null)
                 {
-                    // Extract CategoryAttributes from the response
                     categoryAttributes = result.Data.ToList();
 
-                    // Debug: Log the loaded attributes
-                    Console.WriteLine($"Loaded {categoryAttributes.Count} attributes for category {Model.CategoryId}");
+                    Console.WriteLine($"✅ Loaded {categoryAttributes.Count} attributes:");
                     foreach (var attr in categoryAttributes)
                     {
-                        Console.WriteLine($"  - Attribute: {attr.Title} (TitleAr: {attr.TitleAr}, TitleEn: {attr.TitleEn})");
+                        Console.WriteLine($"  - ID: {attr.Id}");
+                        Console.WriteLine($"    AttributeId: {attr.AttributeId}");
+                        Console.WriteLine($"    Title: {attr.Title}");
+                        Console.WriteLine($"    TitleAr: {attr.TitleAr}");
+                        Console.WriteLine($"    TitleEn: {attr.TitleEn}");
+                        Console.WriteLine($"    AffectsPricing: {attr.AffectsPricing}");
+                        Console.WriteLine($"    FieldType: {attr.FieldType}");
                     }
 
                     // Initialize ItemAttributes list if null
@@ -185,55 +191,69 @@ namespace Dashboard.Pages.Catalog.Products
                     // Initialize attributes if this is a new product
                     if (Id == Guid.Empty)
                     {
+                        Console.WriteLine($"🆕 New product - initializing attributes");
                         Model.ItemAttributes = categoryAttributes
-                        .Select(a => new ItemAttributeDto
-                        {
-                            // Map to the AttributeId (the actual attribute, not the CategoryAttribute ID)
-                            AttributeId = a.AttributeId,
-                            Value = string.Empty
-                        })
-                        .ToList();
+                            .Select(a => new ItemAttributeDto
+                            {
+                                // CRITICAL: Use the correct ID field
+                                AttributeId = a.Id,  // or a.AttributeId depending on your DTO structure
+                                Value = string.Empty
+                            })
+                            .ToList();
+
+                        Console.WriteLine($"✅ Initialized {Model.ItemAttributes.Count} item attributes");
                     }
                     else
                     {
+                        Console.WriteLine($"📝 Existing product - merging attributes");
                         // For existing products, ensure all category attributes have entries
                         foreach (var categoryAttr in categoryAttributes)
                         {
-                            // Check if item already has this attribute (using AttributeId not CategoryAttribute Id)
-                            if (!Model.ItemAttributes.Any(ia => ia.AttributeId == categoryAttr.AttributeId))
+                            // CRITICAL: Use the correct ID field for lookup
+                            if (!Model.ItemAttributes.Any(ia => ia.AttributeId == categoryAttr.Id))
                             {
+                                Console.WriteLine($"  ➕ Adding missing attribute: {categoryAttr.Title}");
                                 Model.ItemAttributes.Add(new ItemAttributeDto
                                 {
-                                    AttributeId = categoryAttr.AttributeId,
+                                    AttributeId = categoryAttr.Id,
                                     Value = string.Empty
                                 });
                             }
                         }
+                        Console.WriteLine($"✅ Total item attributes: {Model.ItemAttributes.Count}");
                     }
+                    
+                    Console.WriteLine($"🔄 About to call StateHasChanged - categoryAttributes.Count: {categoryAttributes.Count}");
                 }
                 else
                 {
-                    // Handle error case
+                    Console.WriteLine($"❌ Failed to load attributes: {result?.Message ?? "Unknown error"}");
                     categoryAttributes = new List<CategoryAttributeDto>();
-                    Console.WriteLine($"Failed to load attributes: {result?.Message ?? "Unknown error"}");
                     await ShowErrorMessage(
-                    ValidationResources.Error,
-                    result?.Message ?? ValidationResources.FailedToLoadCategoryAttributes);
+                        "Error",
+                        result?.Message ?? "Failed to load category attributes");
                 }
 
+                // Force UI update
+                isLoadingAttributes = false;
+                Console.WriteLine($"🔄 Calling StateHasChanged - isLoadingAttributes: {isLoadingAttributes}");
                 StateHasChanged();
+                
+                // Give Blazor time to render
+                await Task.Delay(100);
+                Console.WriteLine($"✅ LoadCategoryAttributes - COMPLETE - Attributes visible: {categoryAttributes.Count}");
             }
             catch (Exception ex)
             {
-                categoryAttributes = new List<CategoryAttributeDto>();
-                Console.WriteLine($"Exception loading category attributes: {ex.Message}");
+                Console.WriteLine($"❌ Exception in LoadCategoryAttributes: {ex.Message}");
                 Console.WriteLine($"Stack trace: {ex.StackTrace}");
-                await ShowErrorMessage(ValidationResources.Error, ex.Message);
+                categoryAttributes = new List<CategoryAttributeDto>();
+                await ShowErrorMessage("Error", ex.Message);
             }
             finally
             {
                 isLoadingAttributes = false;
-                StateHasChanged(); // Hide loading indicator
+                StateHasChanged();
             }
         }
 
@@ -307,7 +327,21 @@ namespace Dashboard.Pages.Catalog.Products
         // ========== Event Handlers ==========
         private async Task HandleCategoryChange()
         {
-            await HandleCategoryChangeWithCombinations();
+            try
+            {
+                Console.WriteLine($"🔍 HandleCategoryChange called - CategoryId: {Model.CategoryId}");
+
+                // Call the method that exists in Details.CombinationLogic.cs
+                await HandleCategoryChangeWithCombinations();
+
+                Console.WriteLine($"✅ HandleCategoryChange completed");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"❌ Error in HandleCategoryChange: {ex.Message}");
+                Console.WriteLine($"Stack trace: {ex.StackTrace}");
+                await ShowErrorMessage("Error", ex.Message);
+            }
         }
 
         private async Task HandleThumbnailUpload(InputFileChangeEventArgs e)

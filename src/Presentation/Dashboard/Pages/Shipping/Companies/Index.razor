@@ -4,7 +4,19 @@
 @using Shared.DTOs.ECommerce
 @inherits BaseListPage<ShippingCompanyDto>
 @attribute [Authorize(Roles = nameof(UserRole.Admin))]
+
 <PageTitle>@ECommerceResources.ShippingCompanies</PageTitle>
+
+<style>
+    .cursor-pointer {
+        cursor: pointer;
+        user-select: none;
+    }
+
+    .cursor-pointer:hover {
+        background-color: rgba(0, 0, 0, 0.05);
+    }
+</style>
 
 <div class="container-fluid p-0">
     <div class="card shadow-sm border-0">
@@ -16,21 +28,19 @@
                 <!-- Filtration start -->
                 <ul class="navbar-nav d-flex flex-row align-items-center gap-3 mb-2 px-0 w-100">
                     <li class="nav-item col-md-6 w-auto d-flex flex-row align-items-center gap-3">
-                        <EditForm Model="searchModel" OnSubmit="@Search">
-                            <!-- Search Box -->
-                            <div class="input-group rounded" style="width: 170px; height: 38px;">
-                                <input type="text" @bind="searchModel.SearchTerm"
-                                       id="searchInput"
-                                       class="form-control text-center border-0 @(ResourceManager.CurrentLanguage == Language.Arabic ? "rounded-end" : "rounded-start")"
-                                       placeholder="@ActionsResources.Search"
-                                       style="height: 38px;" />
-                                <button type="submit"
-                                        class="btn btn-danger d-flex align-items-center justify-content-center border-0 @(ResourceManager.CurrentLanguage == Language.Arabic ? "rounded-start" : "rounded-end")"
-                                        style="width: 40px; height: 38px;">
-                                    <i class="fas fa-search text-white m-0"></i>
-                                </button>
-                            </div>
-                        </EditForm>
+                          <EditForm Model="searchModel" OnSubmit="@Search">
+    <!-- Search Box -->
+    <div class="input-group rounded search-box">
+        <input type="text" @bind="searchModel.SearchTerm"
+               id="searchInput"
+               class="form-control text-center border-0 @(ResourceManager.CurrentLanguage == Language.Arabic ? "rounded-end" : "rounded-start")"
+               placeholder="@ActionsResources.Search" />
+        <button type="submit"
+                class="btn btn-danger d-flex align-items-center justify-content-center border-0 @(ResourceManager.CurrentLanguage == Language.Arabic ? "rounded-start" : "rounded-end")">
+            <i class="fas fa-search text-white m-0"></i>
+        </button>
+    </div>
+</EditForm>
 
                                   <!-- Page Size -->
                                                                 <div class="d-flex align-items-center gap-2">
@@ -48,7 +58,7 @@
                         <!-- Export Buttons -->
                         <div class="dropdown">
                             <button class="btn btn-info" type="button" id="exportDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                                <i class="fas fa-file-export me-2"></i>
+                                <i class="fas fa-file-export mx-1"></i>
                                 <span class="fw-bold">@ActionsResources.Export</span>
                             </button>
                             <ul class="dropdown-menu" aria-labelledby="exportDropdown">
@@ -59,7 +69,7 @@
 
                         <!-- Add Button -->
                         <button class="btn btn-success" @onclick="Add">
-                            <i class="feather icon-plus-circle me-2"></i>
+                            <i class="feather icon-plus-circle mx-1"></i>
                             <span class="fw-bold">@ActionsResources.Add</span>
                         </button>
                     </li>
@@ -70,9 +80,15 @@
                         <thead class="bg-light">
                             <tr>
                                 <th class="text-center p-3 align-middle">@FormResources.Logo</th>
-                                <th>@ECommerceResources.Name</th>
-                                <th>@FormResources.PhoneNumber</th>
-                                <th class="text-center">@ECommerceResources.Actions</th>
+                                <th class="cursor-pointer" @onclick='() => SortByColumn("Name")'>
+                                    @ECommerceResources.Name
+                                    <i class="@GetSortIconClass("Name") ms-1"></i>
+                                </th>
+                                <th class="cursor-pointer" @onclick='() => SortByColumn("PhoneNumber")'>
+                                    @FormResources.PhoneNumber
+                                    <i class="@GetSortIconClass("PhoneNumber") ms-1"></i>
+                                </th>
+                                <th class="text-center " style="width: 30%;">@ECommerceResources.Actions</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -80,7 +96,7 @@
                             {
                                 @foreach (var item in items)
                                 {
-                                    <tr>
+                                    <tr class="cursor-pointer">
                                         <td class="text-center align-middle p-2">
                                             <div class="d-flex justify-content-center">
                                                 @if (!string.IsNullOrEmpty(item.LogoImagePath))
@@ -101,9 +117,17 @@
                                         </td>
                                         <td>@item.Name</td>
                                         <td>@($"{item.PhoneCode} {item.PhoneNumber}")</td>
-                                        <td class="text-center align-middle">
-                                            <button class="btn btn-primary" @onclick="() => Edit(item)">@ActionsResources.Edit</button>
-                                            <button class="btn btn-danger" @onclick="() => Delete(item.Id)">@ActionsResources.Delete</button>
+                                        <td class="text-center align-middle">  <!-- زر التعديل -->
+    <button class="btn btn-primary  align-items-center" @onclick="() => Edit(item)">
+        <i class="feather icon-edit me-2 "></i>
+        <span class="d-none d-md-inline">@ActionsResources.Edit</span>
+    </button>
+
+    <!-- زر الحذف -->
+    <button class="btn btn-danger align-items-center"  @onclick="() => Delete(item.Id)">
+        <i class="feather icon-trash-2 me-2"></i>
+        <span class="d-none d-md-inline">@ActionsResources.Delete</span>
+    </button>
                                         </td>
                                     </tr>
                                 }
@@ -111,18 +135,18 @@
                             else
                             {
                                 <tr>
-                                    <td colspan="3" class=" text-center">
-                                               <div class="text-center p-4">
-    <!-- أيقونة كبيرة -->
-    <i class="fas fa-database text-muted" style="font-size: 60px;"></i>
-    
-    <!-- نص -->
-    <p class="text-muted mt-3" style="font-size: 18px;">
-         @NotifiAndAlertsResources.NoDataFound
-    </p>
-</div>
-                                       
-                                    </td>
+                                
+                                     <td colspan="7" class="p-0">
+        <div class="d-flex flex-column justify-content-center align-items-center text-center" style="height: 500px;">
+            <!-- أيقونة كبيرة -->
+            <i class="fas fa-database text-muted" style="font-size: 60px;"></i>
+
+            <!-- نص -->
+            <p class="text-muted mt-3" style="font-size: 18px;">
+                @NotifiAndAlertsResources.NoDataFound
+            </p>
+        </div>
+    </td>
                                 </tr>
                             }
                         </tbody>
