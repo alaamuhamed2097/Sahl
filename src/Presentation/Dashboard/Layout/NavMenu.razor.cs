@@ -10,13 +10,15 @@ namespace Dashboard.Layout
 {
     public partial class NavMenu : IDisposable
     {
+
         private HashSet<string> _openSubmenus = new HashSet<string>();
         private string ComponentId = Guid.NewGuid().ToString("N")[..8];
         protected bool IsCollapsed = false;
         protected string baseUrl = string.Empty;
         protected string _ecommerceUrl = "";
+		//private string currentUrl;
 
-        private string NavMenuClass => IsCollapsed ? "pcoded-navbar menupos-fixed navbar-collapsed" : "pcoded-navbar menupos-fixed";
+		private string NavMenuClass => IsCollapsed ? "pcoded-navbar menupos-fixed navbar-collapsed" : "pcoded-navbar menupos-fixed";
         private string MobileMenuClass => IsCollapsed ? "mobile-menu on" : "mobile-menu";
 
         [Inject] private LanguageService LanguageService { get; set; }
@@ -91,19 +93,111 @@ namespace Dashboard.Layout
         {
             return _openSubmenus.Contains(submenuName);
         }
+		private void EnsureSubmenuForCurrentRoute()
+		{
+			// امسح القوائم القديمة أولًا
+			_openSubmenus.Clear();
 
-        private void EnsureSubmenuForCurrentRoute()
-        {
-            var relativePath = NavigationManager.ToBaseRelativePath(NavigationManager.Uri ?? string.Empty);
-            var trimmed = relativePath.Trim('/');
-            var submenu = GetSubmenuForPath(trimmed);
-            if (!string.IsNullOrWhiteSpace(submenu))
-            {
-                _openSubmenus.Add(submenu);
-            }
-        }
+			//var relativePath = NavigationManager.ToBaseRelativePath(NavigationManager.Uri).Trim('/');
+			var relativePath = NavigationManager.ToBaseRelativePath(NavigationManager.Uri ?? string.Empty);
 
-        private static string? GetSubmenuForPath(string relativePath)
+			// =========================
+			// Admin / E-Commerce
+			// =========================
+			if (StartsWithAny(relativePath, new[] {"product", "category", "brand", "attribute", "unit", "shippingCompany" }))
+				_openSubmenus.Add("catalog");
+
+			if (StartsWithAny(relativePath, new[] { "users/administrators", "users/vendors" }))
+				_openSubmenus.Add("users-management");
+
+			if (StartsWithAny(relativePath, new[] { "promocode", "testimonial" }))
+				_openSubmenus.Add("marketing");
+
+			if (StartsWithAny(relativePath, new[] { "country", "state", "city" }))
+				_openSubmenus.Add("shipping");
+
+			if (StartsWithAny(relativePath, new[] { "content/pages" }))
+				_openSubmenus.Add("content");
+
+			if (StartsWithAny(relativePath, new[] { "settings", "currencies" }))
+				_openSubmenus.Add("settings");
+
+
+             //=========================
+             //Vendor
+             //=========================
+
+            //if (StartsWithAny(relativePath, new[] { "commissions", "VendorBusinessPoints", "top-earners", "myTeam" }))
+            //    _openSubmenus.Add("Vendor-earnings-network");
+
+            //if (StartsWithAny(relativePath, new[] { "VendorOrders", "VendorGifts", "Vendor-events" }))
+            //    _openSubmenus.Add("vendor-orders-rewards");
+
+            //if (StartsWithAny(relativePath, new[] { "walletinfo", "VendorPaymentMethods" }))
+            //    _openSubmenus.Add("vendor-wallet-payments");
+
+            //if (StartsWithAny(relativePath, new[] { "PersonalInfo", "accountDetails", "VendorSettings" }))
+            //    _openSubmenus.Add("vendor-account-settings");
+			InvokeAsync(StateHasChanged);
+
+		}
+		// ميثود مساعدة لفحص البادئات
+		private static bool StartsWithAny(string path, IEnumerable<string> prefixes)
+		{
+			foreach (var prefix in prefixes)
+			{
+				if (path.StartsWith(prefix, StringComparison.OrdinalIgnoreCase))
+					return true;
+			}
+			return false;
+		}
+		// ميثود مساعدة لفحص البادئات
+		//private static bool StartsWithAny(string path, IEnumerable<string> prefixes)
+		//{
+		//	foreach (var prefix in prefixes)
+		//	{
+		//		if (path.StartsWith(prefix, StringComparison.OrdinalIgnoreCase))
+		//			return true;
+		//	}
+		//	return false;
+		//}
+
+		//private void EnsureSubmenuForCurrentRoute()
+		//{
+		//	// امسح القوائم القديمة أولًا
+		//	_openSubmenus.Clear();
+
+		//	var relativePath = NavigationManager.ToBaseRelativePath(NavigationManager.Uri).Trim('/');
+
+		//	// هنا تحدد القوائم الفرعية اللي تتفتح حسب الـ Route
+		//	if (relativePath.StartsWith("products") || relativePath.StartsWith("categories"))
+		//		_openSubmenus.Add("catalog");
+
+		//	if (relativePath.StartsWith("users"))
+		//		_openSubmenus.Add("users-management");
+
+		//	if (relativePath.StartsWith("marketing"))
+		//		_openSubmenus.Add("marketing");
+
+		//	if (relativePath.StartsWith("settings") || relativePath.StartsWith("currencies"))
+		//		_openSubmenus.Add("settings");
+
+		//	// وأي submenu آخر حسب حاجتك
+		//}
+
+
+		//private void EnsureSubmenuForCurrentRoute()
+		//{
+		//    var relativePath = NavigationManager.ToBaseRelativePath(NavigationManager.Uri ?? string.Empty);
+		//    var trimmed = relativePath.Trim('/');
+		//    var submenu = GetSubmenuForPath(trimmed);
+		//    if (!string.IsNullOrWhiteSpace(submenu))
+		//    {
+		//        _openSubmenus.Add(submenu);
+		//    }
+		//}
+
+		private static string? GetSubmenuForPath(string relativePath)
         {
             if (string.IsNullOrWhiteSpace(relativePath)) return null;
 
@@ -122,16 +216,16 @@ namespace Dashboard.Layout
             return null;
         }
 
-        private static bool StartsWithAny(string path, IEnumerable<string> prefixes)
-        {
-            foreach (var prefix in prefixes)
-            {
-                if (path.StartsWith(prefix, StringComparison.OrdinalIgnoreCase))
-                {
-                    return true;
-                }
-            }
-            return false;
-        }
+        //private static bool StartsWithAny(string path, IEnumerable<string> prefixes)
+        //{
+        //    foreach (var prefix in prefixes)
+        //    {
+        //        if (path.StartsWith(prefix, StringComparison.OrdinalIgnoreCase))
+        //        {
+        //            return true;
+        //        }
+        //    }
+        //    return false;
+        //}
     }
 }

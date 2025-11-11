@@ -4,6 +4,7 @@
 @using Microsoft.AspNetCore.Components.Authorization
 @using Shared.DTOs.ECommerce
 @using Shared.DTOs.User
+@inject NavigationManager Navigation
 
 <!-- [ Navigation Menu ] start -->
 <nav class="@NavMenuClass pcoded-navbar  menupos-fixed " id="navMenuModal">
@@ -26,7 +27,7 @@
                 <AuthorizeView>
                     <Authorized>
                         <li data-username="dashboard" class="nav-item">
-                            <NavLink href="/" class="nav-link" Match="NavLinkMatch.All" onclick="closeNavMenu()">
+                            <NavLink href="/" class="nav-link" onclick="closeNavMenu()">
                                 <span class="pcoded-micon"><i class="fas fa-home"></i></span>
                                 <span class="pcoded-mtext">@GeneralResources.Dashboard</span>
                             </NavLink>
@@ -46,7 +47,7 @@
                             </a>
                             <ul class="pcoded-submenu" style="display: @(IsSubmenuOpen("users-management") ? "block" : "none")">
                                 <li class="nav-item">
-                                    <NavLink href="/users/administrators" class="nav-link" onclick="closeNavMenu()">
+                                    <NavLink href="/users/administrators" Match="NavLinkMatch.Prefix" class="nav-link" onclick="closeNavMenu()">
                                         <span class="pcoded-micon"><i class="fas fa-user-shield"></i></span>
                                         <span class="pcoded-mtext">@ECommerceResources.Admins</span>
                                     </NavLink>
@@ -70,19 +71,19 @@
                             </a>
                             <ul class="pcoded-submenu" style="display: @(IsSubmenuOpen("catalog") ? "block" : "none")">
                                 <li class="nav-item">
-                                    <NavLink href="/products" class="nav-link" onclick="closeNavMenu()">
+                                    <NavLink href="/products" class="nav-link" Match="NavLinkMatch.Prefix" onclick="closeNavMenu()">
                                         <span class="pcoded-micon"><i class="fas fa-box-open"></i></span>
                                         <span class="pcoded-mtext">@ECommerceResources.Products</span>
                                     </NavLink>
                                 </li>
                                 <li class="nav-item">
-                                    <NavLink href="/categories" class="nav-link" onclick="closeNavMenu()">
+                                    <NavLink href="/categories" class="nav-link" Match="NavLinkMatch.Prefix" onclick="closeNavMenu()">
                                         <span class="pcoded-micon"><i class="fas fa-tags"></i></span>
                                         <span class="pcoded-mtext">@ECommerceResources.Categories</span>
                                     </NavLink>
                                 </li>
                                 <li class="nav-item">
-                                   <NavLink href="/brands" class="nav-link d-flex align-items-center" onclick="closeNavMenu()" style="gap: 6px;">
+                                    <NavLink href="/brands" class="nav-link d-flex align-items-center" Match="NavLinkMatch.Prefix" onclick="closeNavMenu()" style="gap: 6px;">
     <span class="pcoded-micon">
         <i class="fas fa-copyright"></i>
     </span>
@@ -92,19 +93,19 @@
 </NavLink>
                                 </li>
                                 <li class="nav-item">
-                                    <NavLink href="/attributes" class="nav-link" onclick="closeNavMenu()">
+                                    <NavLink href="/attributes" class="nav-link" Match="NavLinkMatch.Prefix" onclick="closeNavMenu()">
                                         <span class="pcoded-micon"><i class="fas fa-sliders-h"></i></span>
                                         <span class="pcoded-mtext">@ECommerceResources.Attributes</span>
                                     </NavLink>
                                 </li>
                                 <li class="nav-item">
-                                    <NavLink href="/units" class="nav-link" onclick="closeNavMenu()">
+                                    <NavLink href="/units" class="nav-link" Match="NavLinkMatch.Prefix" onclick="closeNavMenu()">
                                         <span class="pcoded-micon"><i class="fas fa-balance-scale"></i></span>
                                         <span class="pcoded-mtext">@ECommerceResources.Units</span>
                                     </NavLink>
                                 </li>
                                 <li class="nav-item">
-                                    <NavLink href="/shippingCompanies" class="nav-link" onclick="closeNavMenu()">
+                                    <NavLink href="/shippingCompanies" class="nav-link" Match="NavLinkMatch.Prefix" onclick="closeNavMenu()">
                                         <span class="pcoded-micon"><i class="fas fa-truck"></i></span>
                                         <span class="pcoded-mtext">@ECommerceResources.ShippingCompanies</span>
                                     </NavLink>
@@ -121,13 +122,13 @@
                             </a>
                             <ul class="pcoded-submenu" style="display: @(IsSubmenuOpen("marketing") ? "block" : "none")">
                                 <li class="nav-item">
-                                    <NavLink href="/promocodes" class="nav-link" onclick="closeNavMenu()">
+                                    <NavLink href="/promocodes" class="nav-link" Match="NavLinkMatch.Prefix" onclick="closeNavMenu()">
                                         <span class="pcoded-micon"><i class="fas fa-tag"></i></span>
                                         <span class="pcoded-mtext">@FormResources.PromoCodes</span>
                                     </NavLink>
                                 </li>
                                 <li class="nav-item">
-                                    <NavLink href="/testimonials" class="nav-link" onclick="closeNavMenu()">
+                                    <NavLink href="/testimonials" class="nav-link" Match="NavLinkMatch.Prefix" onclick="closeNavMenu()">
                                         <span class="pcoded-micon"><i class="fas fa-comments"></i></span>
                                         <span class="pcoded-mtext">@TestimonialResources.Testimonials</span>
                                     </NavLink>
@@ -150,19 +151,19 @@
                             </a>
                             <ul class="pcoded-submenu" style="display: @(IsSubmenuOpen("shipping") ? "block" : "none")">
                                 <li class="nav-item">
-                                    <NavLink href="/countries" class="nav-link" onclick="closeNavMenu()">
+                                    <NavLink href="/countries" class="nav-link" Match="NavLinkMatch.Prefix" onclick="closeNavMenu()">
                                         <span class="pcoded-micon"><i class="fas fa-globe-africa"></i></span>
                                         <span class="pcoded-mtext">@GeneralResources.Countries</span>
                                     </NavLink>
                                 </li>
                                 <li class="nav-item">
-                                    <NavLink href="/states" class="nav-link" onclick="closeNavMenu()">
+                                    <NavLink href="/states" class="nav-link" Match="NavLinkMatch.Prefix" onclick="closeNavMenu()">
                                         <span class="pcoded-micon"><i class="fas fa-map-marked-alt"></i></span>
                                         <span class="pcoded-mtext">@GeneralResources.Governorates</span>
                                     </NavLink>
                                 </li>
                                 <li class="nav-item">
-                                    <NavLink href="/cities" class="nav-link" onclick="closeNavMenu()">
+                                    <NavLink href="/cities" class="nav-link" Match="NavLinkMatch.Prefix" onclick="closeNavMenu()">
                                         <span class="pcoded-micon"><i class="fas fa-city"></i></span>
                                         <span class="pcoded-mtext">@GeneralResources.Cities</span>
                                     </NavLink>
@@ -179,7 +180,7 @@
                             </a>
                             <ul class="pcoded-submenu" style="display: @(IsSubmenuOpen("content") ? "block" : "none")">
                                 <li class="nav-item">
-                                    <NavLink href="/content/pages" class="nav-link" onclick="closeNavMenu()">
+                                    <NavLink href="/content/pages" class="nav-link" Match="NavLinkMatch.Prefix" onclick="closeNavMenu()">
                                         <span class="pcoded-micon"><i class="fas fa-file-alt"></i></span>
                                         <span class="pcoded-mtext">@GeneralResources.StaticPages</span>
                                     </NavLink>
@@ -196,13 +197,13 @@
                             </a>
                             <ul class="pcoded-submenu" style="display: @(IsSubmenuOpen("settings") ? "block" : "none")">
                                 <li class="nav-item">
-                                    <NavLink href="/settings" class="nav-link" Match="NavLinkMatch.All" onclick="closeNavMenu()">
+                                    <NavLink href="/settings" class="nav-link" Match="NavLinkMatch.Prefix" onclick="closeNavMenu()">
                                         <span class="pcoded-micon"><i class="feather icon-settings"></i></span>
                                         <span class="pcoded-mtext">@GeneralResources.Settings</span>
                                     </NavLink>
                                 </li>
                                 <li class="nav-item">
-                                    <NavLink href="/currencies" class="nav-link" onclick="closeNavMenu()">
+                                    <NavLink href="/currencies" class="nav-link" Match="NavLinkMatch.Prefix" onclick="closeNavMenu()">
                                         <span class="pcoded-micon"><i class="fas fa-dollar-sign"></i></span>
                                         <span class="pcoded-mtext">@CurrencyResources.CurrencyManagement</span>
                                     </NavLink>
@@ -224,7 +225,7 @@
                             </a>
                             <ul class="pcoded-submenu" style="display: @(IsSubmenuOpen("vendor-orders-rewards") ? "block" : "none")">
                                 <li class="nav-item">
-                                    <NavLink href="/vendor/orders" class="nav-link" onclick="closeNavMenu()">
+                                    <NavLink href="/vendor/orders" class="nav-link" Match="NavLinkMatch.Prefix" onclick="closeNavMenu()">
                                         <span class="pcoded-micon"><i class="fas fa-dolly-flatbed"></i></span>
                                         <span class="pcoded-mtext">@ECommerceResources.Orders</span>
                                     </NavLink>
@@ -241,25 +242,25 @@
                             </a>
                             <ul class="pcoded-submenu" style="display: @(IsSubmenuOpen("vendor-account-settings") ? "block" : "none")">
                                 <li class="nav-item">
-                                    <NavLink href="/vendor/personal-info" class="nav-link" onclick="closeNavMenu()">
+                                    <NavLink href="/vendor/personal-info" class="nav-link" Match="NavLinkMatch.Prefix" onclick="closeNavMenu()">
                                         <span class="pcoded-micon"><i class="fas fa-user-circle"></i></span>
                                         <span class="pcoded-mtext">@GeneralResources.PersonalInformation</span>
                                     </NavLink>
                                 </li>
                                 <li class="nav-item">
-                                    <NavLink href="/vendor/account-details" class="nav-link" onclick="closeNavMenu()">
+                                    <NavLink href="/vendor/account-details" class="nav-link" Match="NavLinkMatch.Prefix" onclick="closeNavMenu()">
                                         <span class="pcoded-micon"><i class="fas fa-list-alt"></i></span>
                                         <span class="pcoded-mtext">@GeneralResources.AccountDetails</span>
                                     </NavLink>
                                 </li>
                                 <li class="nav-item">
-                                    <NavLink href="/vendor/settings?section=configurations" class="nav-link" Match="NavLinkMatch.All" onclick="closeNavMenu()">
+                                    <NavLink href="/vendor/settings?section=configurations" class="nav-link" Match="NavLinkMatch.Prefix" onclick="closeNavMenu()">
                                         <span class="pcoded-micon"><i class="feather icon-sliders"></i></span>
                                         <span class="pcoded-mtext">@GeneralResources.Configurations</span>
                                     </NavLink>
                                 </li>
                                 <li class="nav-item">
-                                    <NavLink href="/vendor/settings" class="nav-link" Match="NavLinkMatch.All" onclick="closeNavMenu()">
+                                    <NavLink href="/vendor/settings" class="nav-link" Match="NavLinkMatch.Prefix" onclick="closeNavMenu()">
                                         <span class="pcoded-micon"><i class="feather icon-settings"></i></span>
                                         <span class="pcoded-mtext">@GeneralResources.Settings</span>
                                     </NavLink>
@@ -281,7 +282,17 @@
 <!-- [ Navigation Menu ] end -->
 
 <style>
-  
+    .nav-link.active {
+        background-color: rgba(4, 169, 245, 0.15);
+        color: #04a9f5 !important;
+        font-weight: 600;
+        border-radius: 6px;
+    }
+
+        /* الأيقونة تبقى بنفس لون الزر */
+        .nav-link.active i {
+            color: #04a9f5 !important;
+        }
     .user-profile-item {
         margin-bottom: 0;
         border-bottom: 1px solid rgba(0,0,0,0.05);
@@ -456,6 +467,7 @@
             }
         }
     }
+       
 
     // إظهار overlay عند فتح السايد بار
     function showSidebarOverlay() {
