@@ -11,6 +11,8 @@ namespace Dashboard.Pages.Catalog.Attributes
     public partial class Details
     {
         private bool isSaving { get; set; }
+        private Guid _lastLoadedId = Guid.Empty; // Track the last loaded ID
+        
         protected IEnumerable<FieldType> fieldTypes = Enum.GetValues(typeof(FieldType)).Cast<FieldType>();
         protected FieldType fieldType
         {
@@ -35,17 +37,34 @@ namespace Dashboard.Pages.Catalog.Attributes
         [Inject] protected IResourceLoaderService ResourceLoaderService { get; set; } = null!;
         [Inject] protected IAttributeService AttributeService { get; set; } = null!;
 
-        protected override void OnParametersSet()
+        protected override async Task OnInitializedAsync()
         {
+            // Load the attribute if Id is provided
             if (Id != Guid.Empty)
             {
-                Edit(Id);
+                await Edit(Id);
+                _lastLoadedId = Id;
             }
         }
+
+        protected override async Task OnParametersSetAsync()
+        {
+            // Only load if the Id has actually changed
+            if (Id != Guid.Empty && Id != _lastLoadedId)
+            {
+                await Edit(Id);
+                _lastLoadedId = Id;
+            }
+        }
+
         protected override async Task OnAfterRenderAsync(bool firstRender)
         {
-            await ResourceLoaderService.LoadStyleSheet("css/display_order.css");
+            if (firstRender)
+            {
+                await ResourceLoaderService.LoadStyleSheet("css/display_order.css");
+            }
         }
+
         protected async Task Save()
         {
             try

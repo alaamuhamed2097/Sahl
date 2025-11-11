@@ -1,0 +1,40 @@
+@* Lazy Loading Component Wrapper *@
+
+<div class="lazy-component-wrapper @(IsLoading ? "loading" : "loaded")">
+    @if (IsLoading)
+    {
+        <div class="lazy-placeholder p-4 text-center">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+            <p class="mt-2 text-muted">@LoadingText</p>
+        </div>
+    }
+    else
+    {
+        <div class="fade-in">
+            @ChildContent
+        </div>
+    }
+</div>
+
+@code {
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    [Parameter]
+    public string LoadingText { get; set; } = "Loading...";
+
+    private bool IsLoading { get; set; } = true;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            // Simulate async loading with a small delay to show the loader
+            await Task.Delay(100);
+            IsLoading = false;
+            StateHasChanged();
+        }
+    }
+}

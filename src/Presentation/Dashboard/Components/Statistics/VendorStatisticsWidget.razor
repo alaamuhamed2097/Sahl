@@ -1,0 +1,215 @@
+@using Common.Enumerations.User
+@using Resources
+@attribute [Authorize(Roles = nameof(UserRole.Vendor))]
+
+<div class="row g-4 fade-in">
+    <!-- My Orders Card -->
+    <div class="col-xl-3 col-md-6">
+        <div class="card dashboard-widget stat-widget">
+            <div class="card-body">
+                <div class="stat-widget-icon stat-primary">
+                    <i class="fas fa-shopping-bag"></i>
+                </div>
+                <div class="stat-widget-number">@MyOrders</div>
+                <div class="stat-widget-label">My Orders</div>
+                <div class="stat-widget-change positive">
+                    <i class="fas fa-arrow-up"></i>
+                    <span>+15%</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- My Earnings Card -->
+    <div class="col-xl-3 col-md-6">
+        <div class="card dashboard-widget stat-widget">
+            <div class="card-body">
+                <div class="stat-widget-icon stat-success">
+                    <i class="fas fa-wallet"></i>
+                </div>
+                <div class="stat-widget-number">@MyEarnings.ToString("C")</div>
+                <div class="stat-widget-label">My Earnings</div>
+                <div class="stat-widget-change positive">
+                    <i class="fas fa-arrow-up"></i>
+                    <span>+20%</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pending Orders Card -->
+    <div class="col-xl-3 col-md-6">
+        <div class="card dashboard-widget stat-widget">
+            <div class="card-body">
+                <div class="stat-widget-icon stat-warning">
+                    <i class="fas fa-clock"></i>
+                </div>
+                <div class="stat-widget-number">@PendingOrders</div>
+                <div class="stat-widget-label">Pending Orders</div>
+                <div class="stat-widget-change neutral">
+                    <i class="fas fa-minus"></i>
+                    <span>0%</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Completed Orders Card -->
+    <div class="col-xl-3 col-md-6">
+        <div class="card dashboard-widget stat-widget">
+            <div class="card-body">
+                <div class="stat-widget-icon stat-info">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <div class="stat-widget-number">@CompletedOrders</div>
+                <div class="stat-widget-label">@ECommerceResources.CompletedOrders</div>
+                <div class="stat-widget-change positive">
+                    <i class="fas fa-arrow-up"></i>
+                    <span>+10%</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Charts Row -->
+<div class="row g-4 mt-3">
+    <!-- Sales Performance Chart -->
+    <div class="col-xl-8">
+        <div class="card dashboard-widget chart-widget">
+            <div class="card-body">
+                <div class="dashboard-widget-header">
+                    <h5 class="dashboard-widget-title">Sales Performance</h5>
+                </div>
+                <div class="chart-container">
+                    <div id="user-sale" style="height: 300px;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Stats -->
+    <div class="col-xl-4">
+        <div class="card dashboard-widget">
+            <div class="card-body">
+                <div class="dashboard-widget-header">
+                    <h5 class="dashboard-widget-title">Quick Stats</h5>
+                </div>
+                <div class="progress-widget">
+                    <div class="progress-item">
+                        <div class="d-flex justify-content-between mb-2">
+                            <span class="progress-label">Order Fulfillment</span>
+                            <span class="progress-value">85%</span>
+                        </div>
+                        <div class="progress-bar-container">
+                            <div class="progress-bar progress-success" style="width: 85%"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="progress-item">
+                        <div class="d-flex justify-content-between mb-2">
+                            <span class="progress-label">Customer Satisfaction</span>
+                            <span class="progress-value">92%</span>
+                        </div>
+                        <div class="progress-bar-container">
+                            <div class="progress-bar" style="width: 92%"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="progress-item">
+                        <div class="d-flex justify-content-between mb-2">
+                            <span class="progress-label">Response Time</span>
+                            <span class="progress-value">78%</span>
+                        </div>
+                        <div class="progress-bar-container">
+                            <div class="progress-bar progress-warning" style="width: 78%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Recent Activity -->
+<div class="row g-4 mt-3">
+    <div class="col-12">
+        <div class="card dashboard-widget">
+            <div class="card-body">
+                <div class="dashboard-widget-header">
+                    <h5 class="dashboard-widget-title">Recent Activity</h5>
+                </div>
+                <div class="activity-widget">
+                    @for (int i = 0; i < 5; i++)
+                    {
+                        var iconClass = i % 3 == 0 ? "activity-success" : (i % 3 == 1 ? "activity-primary" : "activity-warning");
+                        var icon = i % 3 == 0 ? "check-circle" : (i % 3 == 1 ? "shopping-cart" : "clock");
+                        
+                        <div class="activity-item">
+                            <div class="activity-icon @iconClass">
+                                <i class="fas fa-@icon"></i>
+                            </div>
+                            <div class="activity-content">
+                                <div class="activity-title">@GetActivityTitle(i)</div>
+                                <div class="activity-description">@GetActivityDescription(i)</div>
+                                <div class="activity-time">@GetActivityTime(i)</div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    private int MyOrders { get; set; } = 45;
+    private decimal MyEarnings { get; set; } = 5678.50m;
+    private int PendingOrders { get; set; } = 12;
+    private int CompletedOrders { get; set; } = 33;
+    private bool isLoading = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Simulate loading data
+        await Task.Delay(500);
+        
+        // TODO: Replace with actual API calls
+        // MyOrders = await VendorStatisticsService.GetMyOrdersAsync();
+        // MyEarnings = await VendorStatisticsService.GetMyEarningsAsync();
+        // PendingOrders = await VendorStatisticsService.GetPendingOrdersAsync();
+        // CompletedOrders = await VendorStatisticsService.GetCompletedOrdersAsync();
+        
+        isLoading = false;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && !isLoading)
+        {
+            // Initialize charts using the existing statistic.js
+            await Task.Delay(100); // Allow DOM to render
+            // The floatchart() function from statistic.js will be called automatically
+        }
+    }
+
+    private string GetActivityTitle(int index) => index switch
+    {
+        0 => "Order Completed",
+        1 => "New Order Received",
+        2 => "Order Pending",
+        3 => "Payment Received",
+        _ => "Order Processing"
+    };
+
+    private string GetActivityDescription(int index) => index switch
+    {
+        0 => "Order #" + (1000 + index) + " has been completed successfully",
+        1 => "New order received from customer",
+        2 => "Order waiting for confirmation",
+        3 => "Payment confirmed for order #" + (1000 + index),
+        _ => "Order is being processed"
+    };
+
+    private string GetActivityTime(int index) => $"{index + 1} hours ago";
+}

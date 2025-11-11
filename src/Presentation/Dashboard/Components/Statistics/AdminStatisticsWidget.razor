@@ -1,0 +1,148 @@
+@using Common.Enumerations.User
+@using Resources
+@attribute [Authorize(Roles = nameof(UserRole.Admin))]
+
+<div class="row g-4 fade-in">
+    <!-- Total Orders Card -->
+    <div class="col-xl-3 col-md-6">
+        <div class="card dashboard-widget stat-widget">
+            <div class="card-body">
+                <div class="stat-widget-icon stat-primary">
+                    <i class="fas fa-shopping-cart"></i>
+                </div>
+                <div class="stat-widget-number">@TotalOrders</div>
+                <div class="stat-widget-label">Total Orders</div>
+                <div class="stat-widget-change positive">
+                    <i class="fas fa-arrow-up"></i>
+                    <span>+12%</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Total Revenue Card -->
+    <div class="col-xl-3 col-md-6">
+        <div class="card dashboard-widget stat-widget">
+            <div class="card-body">
+                <div class="stat-widget-icon stat-success">
+                    <i class="fas fa-dollar-sign"></i>
+                </div>
+                <div class="stat-widget-number">@TotalRevenue.ToString("C")</div>
+                <div class="stat-widget-label">Total Revenue</div>
+                <div class="stat-widget-change positive">
+                    <i class="fas fa-arrow-up"></i>
+                    <span>+8%</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Total Products Card -->
+    <div class="col-xl-3 col-md-6">
+        <div class="card dashboard-widget stat-widget">
+            <div class="card-body">
+                <div class="stat-widget-icon stat-info">
+                    <i class="fas fa-box"></i>
+                </div>
+                <div class="stat-widget-number">@TotalProducts</div>
+                <div class="stat-widget-label">@ECommerceResources.Products</div>
+                <div class="stat-widget-change neutral">
+                    <i class="fas fa-minus"></i>
+                    <span>0%</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Total Users Card -->
+    <div class="col-xl-3 col-md-6">
+        <div class="card dashboard-widget stat-widget">
+            <div class="card-body">
+                <div class="stat-widget-icon stat-warning">
+                    <i class="fas fa-users"></i>
+                </div>
+                <div class="stat-widget-number">@TotalUsers</div>
+                <div class="stat-widget-label">Total Users</div>
+                <div class="stat-widget-change positive">
+                    <i class="fas fa-arrow-up"></i>
+                    <span>+5%</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Charts Row -->
+<div class="row g-4 mt-3">
+    <!-- Sales Chart -->
+    <div class="col-xl-8">
+        <div class="card dashboard-widget chart-widget">
+            <div class="card-body">
+                <div class="dashboard-widget-header">
+                    <h5 class="dashboard-widget-title">Sales Overview</h5>
+                </div>
+                <div class="chart-container">
+                    <div id="sale-view" style="height: 300px;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Orders -->
+    <div class="col-xl-4">
+        <div class="card dashboard-widget">
+            <div class="card-body">
+                <div class="dashboard-widget-header">
+                    <h5 class="dashboard-widget-title">Recent Orders</h5>
+                </div>
+                <div class="activity-widget">
+                    @for (int i = 0; i < 5; i++)
+                    {
+                        <div class="activity-item">
+                            <div class="activity-icon activity-primary">
+                                <i class="fas fa-shopping-bag"></i>
+                            </div>
+                            <div class="activity-content">
+                                <div class="activity-title">Order #@(1000 + i)</div>
+                                <div class="activity-description">New order received</div>
+                                <div class="activity-time">@(i + 1) hours ago</div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    private int TotalOrders { get; set; } = 1234;
+    private decimal TotalRevenue { get; set; } = 45678.90m;
+    private int TotalProducts { get; set; } = 567;
+    private int TotalUsers { get; set; } = 890;
+    private bool isLoading = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Simulate loading data
+        await Task.Delay(500);
+        
+        // TODO: Replace with actual API calls
+        // TotalOrders = await StatisticsService.GetTotalOrdersAsync();
+        // TotalRevenue = await StatisticsService.GetTotalRevenueAsync();
+        // TotalProducts = await StatisticsService.GetTotalProductsAsync();
+        // TotalUsers = await StatisticsService.GetTotalUsersAsync();
+        
+        isLoading = false;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && !isLoading)
+        {
+            // Initialize charts using the existing statistic.js
+            await Task.Delay(100); // Allow DOM to render
+            // The floatchart() function from statistic.js will be called automatically
+        }
+    }
+}

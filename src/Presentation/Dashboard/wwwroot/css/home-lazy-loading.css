@@ -1,20 +1,30 @@
 /* Home Page Lazy Loading Styles */
 
+.loading-skeleton {
+    animation: fadeIn 0.3s ease-in;
+}
+
 .loading-skeleton .skeleton-card {
     animation: pulse 1.5s ease-in-out infinite alternate;
+    border-radius: 12px;
+    overflow: hidden;
 }
 
 .skeleton-avatar {
     width: 60px;
     height: 60px;
-    background: #e9ecef;
+    background: linear-gradient(90deg, #e9ecef 25%, #f8f9fa 50%, #e9ecef 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
     border-radius: 50%;
-    margin-bottom: 15px;
+    margin: 0 auto 15px;
 }
 
 .skeleton-text {
     height: 16px;
-    background: #e9ecef;
+    background: linear-gradient(90deg, #e9ecef 25%, #f8f9fa 50%, #e9ecef 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
     border-radius: 4px;
     margin-bottom: 10px;
 }
@@ -22,10 +32,12 @@
 .skeleton-title {
     width: 80%;
     height: 20px;
+    margin: 0 auto 10px;
 }
 
 .skeleton-subtitle {
     width: 60%;
+    margin: 0 auto;
 }
 
 @keyframes pulse {
@@ -33,7 +45,16 @@
         opacity: 1;
     }
     100% {
-        opacity: 0.5;
+        opacity: 0.7;
+    }
+}
+
+@keyframes shimmer {
+    0% {
+        background-position: -200% 0;
+    }
+    100% {
+        background-position: 200% 0;
     }
 }
 
@@ -62,13 +83,24 @@
 /* Lazy Component Styles */
 .lazy-component-wrapper {
     transition: opacity 0.3s ease-in-out;
+    animation: fadeIn 0.5s ease-in;
+}
+
+.lazy-component-wrapper.loading {
+    opacity: 1;
+}
+
+.lazy-component-wrapper.loaded {
+    opacity: 1;
 }
 
 .lazy-placeholder {
     border: 2px dashed #dee2e6;
-    border-radius: 8px;
+    border-radius: 12px;
     background: #f8f9fa;
     transition: all 0.2s ease;
+    padding: 3rem;
+    text-align: center;
 }
 
 .lazy-placeholder:hover {
@@ -80,6 +112,29 @@
     padding: 2rem;
 }
 
+/* Load Button Styles */
+.btn-lg {
+    padding: 0.75rem 2rem;
+    font-size: 1.1rem;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+.btn-lg:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Card Enhancements */
+.card.border-0.shadow-sm {
+    border-radius: 12px;
+    transition: all 0.3s ease;
+}
+
+.card.border-0.shadow-sm:hover {
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12) !important;
+}
+
 /* Performance optimizations */
 .loading-skeleton {
     contain: layout style paint;
@@ -87,6 +142,11 @@
 
 .skeleton-card {
     will-change: opacity;
+}
+
+/* Dashboard Page Container */
+.dashboard-page {
+    min-height: calc(100vh - 200px);
 }
 
 /* Mobile optimizations */
@@ -102,5 +162,73 @@
     
     .lazy-placeholder {
         min-height: 150px;
+        padding: 2rem 1rem;
+    }
+    
+    .btn-lg {
+        padding: 0.6rem 1.5rem;
+        font-size: 1rem;
+    }
+    
+    .card.border-0.shadow-sm .card-body {
+        padding: 2rem 1.5rem !important;
+    }
+}
+
+@media (max-width: 576px) {
+    .lazy-placeholder {
+        padding: 1.5rem 1rem;
+    }
+    
+    .btn-lg {
+        width: 100%;
+    }
+}
+
+/* Spinner Styles */
+.spinner-border {
+    width: 3rem;
+    height: 3rem;
+    border-width: 0.3rem;
+}
+
+/* Text utilities */
+.text-muted {
+    color: #6c757d !important;
+}
+
+/* Icon styles in load cards */
+.text-center i.fas {
+    display: inline-block;
+}
+
+/* Accessibility */
+@media (prefers-reduced-motion: reduce) {
+    .loading-skeleton .skeleton-card,
+    .skeleton-avatar,
+    .skeleton-text,
+    .fade-in,
+    .lazy-component-wrapper,
+    .btn-lg {
+        animation: none !important;
+        transition: none !important;
+    }
+    
+    .btn-lg:hover {
+        transform: none;
+    }
+}
+
+/* Focus management */
+.btn-lg:focus-visible {
+    outline: 2px solid var(--bs-primary, #0d6efd);
+    outline-offset: 2px;
+}
+
+/* Print styles */
+@media print {
+    .lazy-placeholder,
+    .loading-skeleton {
+        display: none;
     }
 }
