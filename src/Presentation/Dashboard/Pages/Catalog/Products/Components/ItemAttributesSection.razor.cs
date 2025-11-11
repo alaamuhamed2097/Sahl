@@ -59,8 +59,8 @@ namespace Dashboard.Pages.Catalog.Products.Components
 
             attribute.Value = string.Join(",", selectedOptions);
             
-            // Trigger combination generation automatically if this is a pricing attribute
-            var categoryAttr = CategoryAttributes.FirstOrDefault(ca => ca.Id == attribute.AttributeId);
+            // FIX: Use AttributeId instead of Id
+            var categoryAttr = CategoryAttributes.FirstOrDefault(ca => ca.AttributeId == attribute.AttributeId);
             if (categoryAttr?.AffectsPricing == true)
             {
                 await OnGenerateCombinations.InvokeAsync();
@@ -74,7 +74,8 @@ namespace Dashboard.Pages.Catalog.Products.Components
         /// </summary>
         private async Task HandlePricingAttributeValueChanged(ItemAttributeDto attribute)
         {
-            var categoryAttr = CategoryAttributes.FirstOrDefault(ca => ca.Id == attribute.AttributeId);
+            // FIX: Use AttributeId instead of Id
+            var categoryAttr = CategoryAttributes.FirstOrDefault(ca => ca.AttributeId == attribute.AttributeId);
             if (categoryAttr?.AffectsPricing == true)
             {
                 await OnGenerateCombinations.InvokeAsync();
