@@ -3,7 +3,7 @@
 // offline support. See https://aka.ms/blazor-offline-considerations
 
 // ✅ VERSION MANAGEMENT: Dynamic cache versioning
-const APP_VERSION = 'v1.0.0'; // Will be updated by update-version.ps1
+const APP_VERSION = 'v1.0.1'; // Will be updated by update-version.ps1
 const cacheNamePrefix = 'offline-cache-';
 const cacheName = `${cacheNamePrefix}${APP_VERSION}-${self.assetsManifest?.version || 'manual'}`;
 

@@ -12,7 +12,7 @@
 
         // Initialize version manager
         init: function () {
-            console.log('?? Version Manager: Initializing...');
+            console.log('? Version Manager: Initializing...');
             this.checkForUpdates(true);
             this.startPeriodicCheck();
             this.listenToVisibilityChange();
@@ -45,7 +45,7 @@
                 if (!storedVersion) {
                     // First time - store current version
                     localStorage.setItem(VERSION_STORAGE_KEY, serverVersion);
-                    console.log('? Version stored:', serverVersion);
+                    console.log('?? Version stored:', serverVersion);
                     return;
                 }
 
@@ -83,7 +83,7 @@
                 if ('serviceWorker' in navigator) {
                     const registrations = await navigator.serviceWorker.getRegistrations();
                     for (const registration of registrations) {
-                        console.log('??? Unregistering service worker...');
+                        console.log('?? Unregistering service worker...');
                         await registration.unregister();
                     }
                 }
@@ -124,15 +124,15 @@
         // Show update notification
         showUpdateNotification: function (version, forceUpdate) {
             const message = forceUpdate 
-                ? `?? ?????? ????? ??? ?????? (${version}). ???? ????? ??????? ????...`
-                : `????? ????? ???? (${version}). ???? ??????? ????????...`;
+                ? `????? ??? ????? ???? (${version}). ???? ????? ??????? ?????...`
+                : `????? ???? ???? (${version}). ???? ??????? ????????...`;
 
             console.log('??', message);
 
             // Show SweetAlert if available
             if (typeof swal === 'function') {
                 swal({
-                    title: '????? ??????',
+                    title: '????? ?????',
                     text: message,
                     icon: 'info',
                     buttons: false,
@@ -210,7 +210,7 @@
                     
                     // Check if more than 5 minutes since last check
                     if (timeSinceLastCheck > VERSION_CHECK_INTERVAL) {
-                        console.log('??? Tab became visible - checking for updates...');
+                        console.log('?? Tab became visible - checking for updates...');
                         this.checkForUpdates(false);
                     }
                 }

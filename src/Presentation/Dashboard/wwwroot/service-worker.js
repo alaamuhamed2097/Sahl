@@ -1,7 +1,7 @@
-// Service Worker for Dashboard - Enhanced Cache Management
+﻿// Service Worker for Dashboard - Enhanced Cache Management
 // Version-aware caching with automatic updates
 
-const CACHE_VERSION = 'v1.0.0';
+const CACHE_VERSION = 'v1.0.1';
 const CACHE_NAME = `dashboard-cache-${CACHE_VERSION}`;
 const RUNTIME_CACHE = `runtime-${CACHE_VERSION}`;
 
