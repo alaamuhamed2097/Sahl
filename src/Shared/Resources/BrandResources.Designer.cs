@@ -124,7 +124,7 @@ namespace Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to إدارة العلامات التجارية.
+        ///   Looks up a localized string similar to العلامات التجارية.
         /// </summary>
         public static string BrandManagement {
             get {
