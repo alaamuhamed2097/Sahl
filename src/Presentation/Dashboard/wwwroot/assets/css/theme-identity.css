@@ -359,6 +359,8 @@ h6 {
   color: var(--neutral-medium) !important;
 }
 
+
+
 /* ===================================
    BADGES - MODERN PILL STYLE
    =================================== */
@@ -1469,6 +1471,7 @@ button:focus-visible,
         width: 420px; /* عرض كبير وواضح */
     }
 }
+
 
 
 

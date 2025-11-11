@@ -68,7 +68,7 @@
        </button>
    </li>
         </ul>
-        <table id="simpletable" class="text-center table align-middle  nowrap mb-0 w-100" style="table-layout: fixed;" >
+        <table id="simpletable" class="text-center table   nowrap  "  >
         <thead>
      <tr>
  <th >@FormResources.Title</th>
@@ -83,18 +83,18 @@
     <th class="text-center " >@ECommerceResources.Actions</th>
            </tr>
             </thead>
-   <tbody class="fs-6 fw-bold">
+   <tbody class="fs-7 ">
         @if (items != null && items.Count() != 0)
       {
  @foreach (var item in items)
        {
     <tr>
-          <td class="text-center p-3">@item.Title</td>
-           <td class="text-center p-3">@item.Code</td>
-      <td class="text-center p-3">@item.StartDate.ToString("yyyy-MM-dd")</td>
- <td class="text-center p-3">@item.EndDate.ToString("yyyy-MM-dd")</td>
-       <td class="text-center p-3">@item.PromoCodeType</td>
-                 <td class="text-center p-3">@(((item.Value - Convert.ToInt32(item.Value)) > 0)? item.Value : Convert.ToInt32(item.Value))@(item.PromoCodeType == PromoCodeType.Percentage? "%":"$")</td>
+          <td class="text-center  p-1">@item.Title</td>
+           <td class="text-center p-1">@item.Code</td>
+      <td class="text-center p-1">@item.StartDate.ToString("yyyy-MM-dd")</td>
+ <td class="text-center p-1">@item.EndDate.ToString("yyyy-MM-dd")</td>
+       <td class="text-center p-1">@item.PromoCodeType</td>
+                 <td class="text-center p-1">@(((item.Value - Convert.ToInt32(item.Value)) > 0)? item.Value : Convert.ToInt32(item.Value))@(item.PromoCodeType == PromoCodeType.Percentage? "%":"$")</td>
         <td class="text-center p-3">@(item.UsageLimit?.ToString() ?? "∞")</td>
              <td class="text-center p-3">@item.UsageCount</td>
        
