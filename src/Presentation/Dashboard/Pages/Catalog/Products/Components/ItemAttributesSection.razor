@@ -1,4 +1,4 @@
-@using Common.Enumerations
+﻿@using Common.Enumerations
 @using Common.Enumerations.FieldType
 @using Common.Enumerations.User
 @using Resources
@@ -12,7 +12,7 @@
     <div class="card mb-4">
         <div class="card-header">
             <h5 class="mb-0 text-primary">@ECommerceResources.ItemAttributes</h5>
-            <small class="text-muted">???? ??? ????? ??????</small>
+            <small class="text-muted">أدخل قيم خصائص المنتج</small>
         </div>
         <div class="card-body">
             @foreach (var _attribute in CategoryAttributes)
@@ -125,15 +125,15 @@
                             {
                                 @if (_attribute.AffectsPricing)
                                 {
-                                    var valueList = GetMultiValueList(_attribute.Id, attributeEntry.Value);
+                                    var valueList = GetMultiValueList(_attribute.AttributeId, attributeEntry.Value);
                                     <div class="border rounded p-3" style="background-color: #f8f9fa;">
                                         <div class="d-flex justify-content-between align-items-center mb-3">
                                             <small class="text-muted d-flex align-items-center">
                                                 <i class="fas fa-info-circle me-2"></i>
-                                                ??? ??? ?????? ???????? ???????
+                                                أضف قيم متعددة لمجموعات التسعير
                                             </small>
-                                            <button type="button" class="btn btn-sm btn-success d-flex align-items-center" @onclick="() => AddNewValue(_attribute.Id)">
-                                                <i class="fas fa-plus me-1"></i> ????? ????
+                                            <button type="button" class="btn btn-sm btn-success d-flex align-items-center" @onclick="() => AddNewValue(_attribute.AttributeId)">
+                                                <i class="fas fa-plus me-1"></i> إضافة قيمة
                                             </button>
                                         </div>
                                         @for (int i = 0; i < valueList.Count; i++)
@@ -144,12 +144,12 @@
                                                 <span class="input-group-text">#@(index + 1)</span>
                                                 <input type="text" class="form-control"
                                                        value="@currentValue"
-                                                       @onchange="@(async (ChangeEventArgs e) => await OnMultiValueChanged(_attribute.Id, index, e.Value?.ToString(), attributeEntry))"
+                                                       @onchange="@(async (ChangeEventArgs e) => await OnMultiValueChanged(_attribute.AttributeId, index, e.Value?.ToString(), attributeEntry))"
                                                        maxlength="@(_attribute.MaxLength ?? 255)"
-                                                       placeholder="@($"Enter value {index + 1}")" />
+                                                       placeholder="@($"أدخل القيمة {index + 1}")" />
                                                 @if (valueList.Count > 1)
                                                 {
-                                                    <button type="button" class="btn btn-outline-danger" @onclick="async () => await RemoveValue(_attribute.Id, index, attributeEntry)" title="Remove">
+                                                    <button type="button" class="btn btn-outline-danger" @onclick="async () => await RemoveValue(_attribute.AttributeId, index, attributeEntry)" title="حذف">
                                                         <i class="fas fa-times"></i>
                                                     </button>
                                                 }
@@ -174,15 +174,15 @@
                             {
                                 @if (_attribute.AffectsPricing)
                                 {
-                                    var valueList = GetMultiValueList(_attribute.Id, attributeEntry.Value);
+                                    var valueList = GetMultiValueList(_attribute.AttributeId, attributeEntry.Value);
                                     <div class="border rounded p-3" style="background-color: #f8f9fa;">
                                         <div class="d-flex justify-content-between align-items-center mb-3">
                                             <small class="text-muted d-flex align-items-center">
                                                 <i class="fas fa-info-circle me-2"></i>
-                                                ??? ??? ?????? ???????? ???????
+                                                أضف قيم متعددة لمجموعات التسعير
                                             </small>
-                                            <button type="button" class="btn btn-sm btn-success d-flex align-items-center" @onclick="() => AddNewValue(_attribute.Id)">
-                                                <i class="fas fa-plus me-1"></i> ????? ????
+                                            <button type="button" class="btn btn-sm btn-success d-flex align-items-center" @onclick="() => AddNewValue(_attribute.AttributeId)">
+                                                <i class="fas fa-plus me-1"></i> إضافة قيمة
                                             </button>
                                         </div>
                                         @for (int i = 0; i < valueList.Count; i++)
@@ -194,11 +194,11 @@
                                                 <span class="input-group-text">#@(index + 1)</span>
                                                 <input type="number" class="form-control"
                                                        value="@intValue"
-                                                       @onchange="@(async (ChangeEventArgs e) => await OnMultiValueChanged(_attribute.Id, index, e.Value?.ToString(), attributeEntry))"
-                                                       placeholder="@($"Enter value {index + 1}")" />
+                                                       @onchange="@(async (ChangeEventArgs e) => await OnMultiValueChanged(_attribute.AttributeId, index, e.Value?.ToString(), attributeEntry))"
+                                                       placeholder="@($"أدخل القيمة {index + 1}")" />
                                                 @if (valueList.Count > 1)
                                                 {
-                                                    <button type="button" class="btn btn-outline-danger" @onclick="async () => await RemoveValue(_attribute.Id, index, attributeEntry)" title="Remove">
+                                                    <button type="button" class="btn btn-outline-danger" @onclick="async () => await RemoveValue(_attribute.AttributeId, index, attributeEntry)" title="حذف">
                                                         <i class="fas fa-times"></i>
                                                     </button>
                                                 }
@@ -224,15 +224,15 @@
                             {
                                 @if (_attribute.AffectsPricing)
                                 {
-                                    var valueList = GetMultiValueList(_attribute.Id, attributeEntry.Value);
+                                    var valueList = GetMultiValueList(_attribute.AttributeId, attributeEntry.Value);
                                     <div class="border rounded p-3" style="background-color: #f8f9fa;">
                                         <div class="d-flex justify-content-between align-items-center mb-3">
                                             <small class="text-muted d-flex align-items-center">
                                                 <i class="fas fa-info-circle me-2"></i>
-                                                ??? ??? ?????? ???????? ???????
+                                                أضف قيم متعددة لمجموعات التسعير
                                             </small>
-                                            <button type="button" class="btn btn-sm btn-success d-flex align-items-center" @onclick="() => AddNewValue(_attribute.Id)">
-                                                <i class="fas fa-plus me-1"></i> ????? ????
+                                            <button type="button" class="btn btn-sm btn-success d-flex align-items-center" @onclick="() => AddNewValue(_attribute.AttributeId)">
+                                                <i class="fas fa-plus me-1"></i> إضافة قيمة
                                             </button>
                                         </div>
                                         @for (int i = 0; i < valueList.Count; i++)
@@ -244,11 +244,11 @@
                                                 <span class="input-group-text">#@(index + 1)</span>
                                                 <input type="number" step="0.01" class="form-control"
                                                        value="@decValue"
-                                                       @onchange="@(async (ChangeEventArgs e) => await OnMultiValueChanged(_attribute.Id, index, e.Value?.ToString(), attributeEntry))"
-                                                       placeholder="@($"Enter value {index + 1}")" />
+                                                       @onchange="@(async (ChangeEventArgs e) => await OnMultiValueChanged(_attribute.AttributeId, index, e.Value?.ToString(), attributeEntry))"
+                                                       placeholder="@($"أدخل القيمة {index + 1}")" />
                                                 @if (valueList.Count > 1)
                                                 {
-                                                    <button type="button" class="btn btn-outline-danger" @onclick="async () => await RemoveValue(_attribute.Id, index, attributeEntry)" title="Remove">
+                                                    <button type="button" class="btn btn-outline-danger" @onclick="async () => await RemoveValue(_attribute.AttributeId, index, attributeEntry)" title="حذف">
                                                         <i class="fas fa-times"></i>
                                                     </button>
                                                 }
@@ -275,15 +275,15 @@
                             {
                                 @if (_attribute.AffectsPricing)
                                 {
-                                    var valueList = GetMultiValueList(_attribute.Id, attributeEntry.Value);
+                                    var valueList = GetMultiValueList(_attribute.AttributeId, attributeEntry.Value);
                                     <div class="border rounded p-3" style="background-color: #f8f9fa;">
                                         <div class="d-flex justify-content-between align-items-center mb-3">
                                             <small class="text-muted d-flex align-items-center">
                                                 <i class="fas fa-info-circle me-2"></i>
-                                                ??? ??? ?????? ???????? ???????
+                                                أضف قيم متعددة لمجموعات التسعير
                                             </small>
-                                            <button type="button" class="btn btn-sm btn-success d-flex align-items-center" @onclick="() => AddNewValue(_attribute.Id)">
-                                                <i class="fas fa-plus me-1"></i> ????? ????
+                                            <button type="button" class="btn btn-sm btn-success d-flex align-items-center" @onclick="() => AddNewValue(_attribute.AttributeId)">
+                                                <i class="fas fa-plus me-1"></i> إضافة قيمة
                                             </button>
                                         </div>
                                         @for (int i = 0; i < valueList.Count; i++)
@@ -295,11 +295,11 @@
                                                 <span class="input-group-text">#@(index + 1)</span>
                                                 <input type="date" class="form-control"
                                                        value="@(dateValue?.ToString("yyyy-MM-dd"))"
-                                                       @onchange="@(async (ChangeEventArgs e) => await OnMultiValueChanged(_attribute.Id, index, e.Value?.ToString(), attributeEntry))"
-                                                       placeholder="@($"Enter value {index + 1}")" />
+                                                       @onchange="@(async (ChangeEventArgs e) => await OnMultiValueChanged(_attribute.AttributeId, index, e.Value?.ToString(), attributeEntry))"
+                                                       placeholder="@($"أدخل القيمة {index + 1}")" />
                                                 @if (valueList.Count > 1)
                                                 {
-                                                    <button type="button" class="btn btn-outline-danger" @onclick="async () => await RemoveValue(_attribute.Id, index, attributeEntry)" title="Remove">
+                                                    <button type="button" class="btn btn-outline-danger" @onclick="async () => await RemoveValue(_attribute.AttributeId, index, attributeEntry)" title="حذف">
                                                         <i class="fas fa-times"></i>
                                                     </button>
                                                 }
@@ -324,7 +324,7 @@
                             else if (_attribute.FieldType == FieldType.CheckBox)
                             {
                                 bool isChecked = bool.TryParse(attributeEntry.Value, out var val) && val;
-                                var checkboxId = $"check_{_attribute.Id}";
+                                var checkboxId = $"check_{_attribute.AttributeId}";
                                 <div class="form-check form-switch">
                                     <InputCheckbox class="form-check-input"
                                                    Value="isChecked"
@@ -343,7 +343,7 @@
                                     {
                                         <!-- Multi-select for price-affecting attributes -->
                                         <div class="border rounded p-3" style="max-height: 250px; overflow-y: auto; background-color: #f8f9fa;">
-                                            <small class="text-muted d-block mb-2">???? ?????? ?????? ???????</small>
+                                            <small class="text-muted d-block mb-2">اختر خيارات متعددة للتسعير</small>
                                             @foreach (var option in _attribute.AttributeOptions.OrderBy(o => o.DisplayOrder))
                                             {
                                                 var selectedOptions = (attributeEntry.Value ?? "").Split(',', StringSplitOptions.RemoveEmptyEntries).ToList();
@@ -388,7 +388,7 @@
                                 {
                                     <div class="alert alert-warning mb-0">
                                         <i class="fas fa-exclamation-triangle me-2"></i>
-                                        ?? ??? ????? ?????? ???? ???????
+                                        لم يتم تكوين خيارات لهذه الخاصية
                                     </div>
                                 }
                             }
@@ -397,7 +397,7 @@
                                 @if (_attribute.AttributeOptions != null && _attribute.AttributeOptions.Any())
                                 {
                                     <div class="border rounded p-3" style="max-height: 250px; overflow-y: auto; background-color: #f8f9fa;">
-                                        <small class="text-muted d-block mb-2">???? ?????? ??????</small>
+                                        <small class="text-muted d-block mb-2">اختر خيارات متعددة</small>
                                         @foreach (var option in _attribute.AttributeOptions.OrderBy(o => o.DisplayOrder))
                                         {
                                             var selectedOptions = (attributeEntry.Value ?? "").Split(',', StringSplitOptions.RemoveEmptyEntries).ToList();
@@ -432,7 +432,7 @@
                     </div>
                     <div class="col-md-2 text-end">
                         <button type="button" class="btn btn-outline-danger btn-sm mt-4"
-                                @onclick="() => RemoveAttribute(_attribute.Id)"
+                                @onclick="() => RemoveAttribute(_attribute.AttributeId)"
                                 title="@ActionsResources.Delete @ECommerceResources.Attribute">
                             <i class="fas fa-trash"></i>
                         </button>
@@ -448,8 +448,8 @@
         <div class="alert alert-info d-flex align-items-center mb-3">
             <i class="fas fa-info-circle me-3 fs-5"></i>
             <div>
-                <strong>??????? ???????? ???????? ??????:</strong>
-                <p class="mb-0 small">???? ????? ??????? ?????? ???????? ??? ????? ??? ?????? ??????? ??? ?????</p>
+                <strong>التوليد التلقائي لمجموعات السمات:</strong>
+                <p class="mb-0 small">سيتم توليد مجموعات السمات تلقائياً عند إدخال قيم السمات المؤثرة على السعر</p>
             </div>
         </div>
     }
@@ -458,6 +458,6 @@ else
 {
     <div class="alert alert-warning">
         <i class="fas fa-exclamation-triangle me-2"></i>
-        ?? ???? ????? ??????? ???? ????? ???
+        لا توجد خصائص مُكوّنة لهذه الفئة بعد
     </div>
 }

@@ -36,11 +36,12 @@ namespace Dashboard.Pages.Catalog.Products
 
             foreach (var attr in priceAffectingAttributes)
             {
-                Console.WriteLine($"  🔎 Processing attribute: {attr.Title} (ID: {attr.Id})");
+                Console.WriteLine($"  🔎 Processing attribute: {attr.Title} (AttributeId: {attr.AttributeId})");
                 Console.WriteLine($"     FieldType: {attr.FieldType}");
                 Console.WriteLine($"     Options available: {attr.AttributeOptions?.Count ?? 0}");
                 
-                var itemAttr = Model.ItemAttributes.FirstOrDefault(ia => ia.AttributeId == attr.Id);
+                // FIX: Use AttributeId instead of Id
+                var itemAttr = Model.ItemAttributes.FirstOrDefault(ia => ia.AttributeId == attr.AttributeId);
                 if (itemAttr == null)
                 {
                     Console.WriteLine($"     ⚠️ No ItemAttribute found for this attribute");
@@ -76,7 +77,7 @@ namespace Dashboard.Pages.Catalog.Products
                                 Console.WriteLine($"       ✅ Matched option: {option.Title} (ID: {option.Id})");
                                 options.Add(new AttributeOptionInfo
                                 {
-                                    AttributeId = attr.Id,
+                                    AttributeId = attr.AttributeId,  // FIX: Use AttributeId
                                     AttributeName = attr.Title,
                                     OptionId = option.Id,
                                     DisplayValue = option.Title
@@ -107,13 +108,13 @@ namespace Dashboard.Pages.Catalog.Products
                     
                     foreach (var value in values)
                     {
-                        // Use the attribute ID + value hash as a consistent identifier
-                        var valueIdentifier = $"{attr.Id}:{value}";
+                        // Use the attribute AttributeId + value hash as a consistent identifier
+                        var valueIdentifier = $"{attr.AttributeId}:{value}";
                         var valueId = GenerateConsistentGuid(valueIdentifier);
                         
                         options.Add(new AttributeOptionInfo
                         {
-                            AttributeId = attr.Id,
+                            AttributeId = attr.AttributeId,  // FIX: Use AttributeId
                             AttributeName = attr.Title,
                             OptionId = valueId,
                             DisplayValue = value
