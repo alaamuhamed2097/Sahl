@@ -118,7 +118,7 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="BrandManagement" xml:space="preserve">
-    <value>إدارة العلامات التجارية</value>
+    <value>العلامات التجارية</value>
   </data>
   <data name="Brands" xml:space="preserve">
     <value>العلامات التجارية</value>
