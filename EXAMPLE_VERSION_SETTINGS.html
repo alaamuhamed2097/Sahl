@@ -1,0 +1,204 @@
+<!-- ????: ?? ??? ????????? ?? ???? ????????? -->
+<!-- ????? ????? ??? ?? ?? ???? Blazor -->
+
+<div class="card">
+    <div class="card-header">
+        <h5>??????? ???????</h5>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label>??????? ??????</label>
+                    <input type="text" class="form-control" id="current-version" readonly />
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label>??? ???</label>
+                    <input type="text" class="form-control" id="last-check" readonly />
+                </div>
+            </div>
+        </div>
+        
+        <div class="row mt-3">
+            <div class="col-md-12">
+                <button type="button" class="btn btn-primary" onclick="checkForUpdatesManually()">
+                    <i class="feather icon-refresh-cw"></i>
+                    ??? ????????? ????
+                </button>
+                
+                <button type="button" class="btn btn-secondary" onclick="clearCacheManually()">
+                    <i class="feather icon-trash-2"></i>
+                    ??? ?????
+                </button>
+                
+                <button type="button" class="btn btn-info" onclick="viewCacheInfo()">
+                    <i class="feather icon-info"></i>
+                    ??????? ?????
+                </button>
+            </div>
+        </div>
+        
+        <div id="update-status" class="alert alert-info mt-3" style="display: none;">
+            <strong>???? ???????:</strong> <span id="status-message"></span>
+        </div>
+    </div>
+</div>
+
+<script>
+    // ????? ??????? ??????? ??? ??? ??????
+    function loadVersionInfo() {
+        const currentVersion = localStorage.getItem('app_version') || '??? ?????';
+        const lastCheck = localStorage.getItem('version_last_check');
+        
+        document.getElementById('current-version').value = currentVersion;
+        
+        if (lastCheck) {
+            const date = new Date(parseInt(lastCheck));
+            document.getElementById('last-check').value = date.toLocaleString('ar-EG');
+        } else {
+            document.getElementById('last-check').value = '?? ??? ????? ???';
+        }
+    }
+
+    // ??? ????????? ??????
+    async function checkForUpdatesManually() {
+        const statusDiv = document.getElementById('update-status');
+        const statusMsg = document.getElementById('status-message');
+        
+        statusDiv.style.display = 'block';
+        statusDiv.className = 'alert alert-info mt-3';
+        statusMsg.textContent = '???? ??? ?????????...';
+        
+        try {
+            await window.VersionManager.manualCheck();
+            
+            // ??? ?? ??? ????? ???????? ?????? ?? ???? ?????
+            setTimeout(() => {
+                statusDiv.className = 'alert alert-success mt-3';
+                statusMsg.textContent = '? ??????? ???? ??? ??? ?????!';
+                loadVersionInfo();
+            }, 2000);
+        } catch (error) {
+            statusDiv.className = 'alert alert-danger mt-3';
+            statusMsg.textContent = '? ??? ??? ????? ??? ?????????: ' + error.message;
+        }
+    }
+
+    // ??? ????? ??????
+    async function clearCacheManually() {
+        if (!confirm('?? ??? ????? ?? ??? ?????? ???? ????? ????? ??????.')) {
+            return;
+        }
+        
+        const statusDiv = document.getElementById('update-status');
+        const statusMsg = document.getElementById('status-message');
+        
+        statusDiv.style.display = 'block';
+        statusDiv.className = 'alert alert-warning mt-3';
+        statusMsg.textContent = '???? ??? ?????...';
+        
+        try {
+            // ??? ???? ?????
+            if ('caches' in window) {
+                const cacheNames = await caches.keys();
+                await Promise.all(cacheNames.map(name => caches.delete(name)));
+            }
+            
+            // ??? Service Workers
+            if ('serviceWorker' in navigator) {
+                const registrations = await navigator.serviceWorker.getRegistrations();
+                for (const registration of registrations) {
+                    await registration.unregister();
+                }
+            }
+            
+            statusMsg.textContent = '? ?? ??? ?????. ???? ????? ???????...';
+            
+            setTimeout(() => {
+                location.reload(true);
+            }, 1500);
+            
+        } catch (error) {
+            statusDiv.className = 'alert alert-danger mt-3';
+            statusMsg.textContent = '? ??? ???: ' + error.message;
+        }
+    }
+
+    // ??? ??????? ?????
+    async function viewCacheInfo() {
+        try {
+            const cacheInfo = [];
+            
+            if ('caches' in window) {
+                const cacheNames = await caches.keys();
+                
+                for (const name of cacheNames) {
+                    const cache = await caches.open(name);
+                    const keys = await cache.keys();
+                    cacheInfo.push({
+                        name: name,
+                        items: keys.length
+                    });
+                }
+            }
+            
+            let message = '<strong>??????? ?????:</strong><br><br>';
+            
+            if (cacheInfo.length === 0) {
+                message += '?? ???? ??? ?????.';
+            } else {
+                cacheInfo.forEach(cache => {
+                    message += `?? <strong>${cache.name}</strong>: ${cache.items} ???<br>`;
+                });
+            }
+            
+            // ??? ?? SweetAlert ??? ??? ?????
+            if (typeof swal === 'function') {
+                swal({
+                    title: '??????? ?????',
+                    content: {
+                        element: 'div',
+                        attributes: {
+                            innerHTML: message
+                        }
+                    },
+                    icon: 'info'
+                });
+            } else {
+                alert(message.replace(/<br>/g, '\n').replace(/<\/?strong>/g, ''));
+            }
+            
+        } catch (error) {
+            alert('??? ???: ' + error.message);
+        }
+    }
+
+    // ????? ????????? ??? ??? ??????
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', loadVersionInfo);
+    } else {
+        loadVersionInfo();
+    }
+</script>
+
+<style>
+    .btn {
+        margin-right: 5px;
+        margin-bottom: 5px;
+    }
+    
+    .btn i {
+        margin-left: 5px;
+    }
+    
+    #update-status {
+        animation: fadeIn 0.3s ease-in;
+    }
+    
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(-10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+</style>

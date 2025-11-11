@@ -1,0 +1,131 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Launch Dashboard",
+      "type": "blazorwasm",
+      "request": "launch",
+      "cwd": "${workspaceFolder}/src/Presentation/Dashboard"
+    }
+  ],
+  "tasks": {
+    "version": "2.0.0",
+    "tasks": [
+      {
+        "label": "Quick Update (Patch)",
+        "type": "shell",
+        "command": "powershell",
+        "args": [
+          "-ExecutionPolicy",
+          "Bypass",
+          "-File",
+          "${workspaceFolder}/quick-update.ps1"
+        ],
+        "problemMatcher": [],
+        "group": "none"
+      },
+      {
+        "label": "Quick Update (Minor)",
+        "type": "shell",
+        "command": "powershell",
+        "args": [
+          "-ExecutionPolicy",
+          "Bypass",
+          "-File",
+          "${workspaceFolder}/quick-update.ps1",
+          "-Type",
+          "minor"
+        ],
+        "problemMatcher": [],
+        "group": "none"
+      },
+      {
+        "label": "Quick Update (Major)",
+        "type": "shell",
+        "command": "powershell",
+        "args": [
+          "-ExecutionPolicy",
+          "Bypass",
+          "-File",
+          "${workspaceFolder}/quick-update.ps1",
+          "-Type",
+          "major"
+        ],
+        "problemMatcher": [],
+        "group": "none"
+      },
+      {
+        "label": "Quick Update (Force)",
+        "type": "shell",
+        "command": "powershell",
+        "args": [
+          "-ExecutionPolicy",
+          "Bypass",
+          "-File",
+          "${workspaceFolder}/quick-update.ps1",
+          "-Force"
+        ],
+        "problemMatcher": [],
+        "group": "none"
+      },
+      {
+        "label": "Update Version (Patch)",
+        "type": "shell",
+        "command": "powershell",
+        "args": [
+          "-ExecutionPolicy",
+          "Bypass",
+          "-File",
+          "${workspaceFolder}/update-version.ps1"
+        ],
+        "problemMatcher": [],
+        "group": "none"
+      },
+      {
+        "label": "Update Version (Minor)",
+        "type": "shell",
+        "command": "powershell",
+        "args": [
+          "-ExecutionPolicy",
+          "Bypass",
+          "-File",
+          "${workspaceFolder}/update-version.ps1",
+          "-VersionType",
+          "minor"
+        ],
+        "problemMatcher": [],
+        "group": "none"
+      },
+      {
+        "label": "Update Version (Major)",
+        "type": "shell",
+        "command": "powershell",
+        "args": [
+          "-ExecutionPolicy",
+          "Bypass",
+          "-File",
+          "${workspaceFolder}/update-version.ps1",
+          "-VersionType",
+          "major"
+        ],
+        "problemMatcher": [],
+        "group": "none"
+      },
+      {
+        "label": "Force Update",
+        "type": "shell",
+        "command": "powershell",
+        "args": [
+          "-ExecutionPolicy",
+          "Bypass",
+          "-File",
+          "${workspaceFolder}/update-version.ps1",
+          "-ForceUpdate",
+          "$true"
+        ],
+        "problemMatcher": [],
+        "group": "none"
+      }
+    ]
+  }
+}
