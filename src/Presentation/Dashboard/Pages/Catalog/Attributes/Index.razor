@@ -4,6 +4,17 @@
 @inherits BaseListPage<AttributeDto>
 <PageTitle>@GeneralResources.Attributes</PageTitle>
 
+<style>
+    .cursor-pointer {
+        cursor: pointer;
+        user-select: none;
+    }
+
+    .cursor-pointer:hover {
+        background-color: rgba(0, 0, 0, 0.05);
+    }
+</style>
+
 <div class="container-fluid p-0">
 	<div class="card shadow-sm  border-0">
 		<div class="card-header bg-primary text-white py-3 d-flex justify-content-between align-items-center">
@@ -70,8 +81,14 @@
 					<table class="table table-hover mb-0 d-none  d-lg-table">
 						<thead class="bg-light">
 							<tr>
-								<th class="text-center p-3 align-middle">@ECommerceResources.Title</th>
-								<th class="text-center p-3 align-middle">@ECommerceResources.FieldType</th>
+								<th class="text-center p-3 align-middle cursor-pointer" @onclick='() => SortByColumn("Title")'>
+									@ECommerceResources.Title
+									<i class="@GetSortIconClass("Title") ms-1"></i>
+								</th>
+								<th class="text-center p-3 align-middle cursor-pointer" @onclick='() => SortByColumn("FieldType")'>
+									@ECommerceResources.FieldType
+									<i class="@GetSortIconClass("FieldType") ms-1"></i>
+								</th>
 								<th class="text-center p-3 align-middle" style="width: 200px;">@ECommerceResources.Actions</th>
 							</tr>
 						</thead>

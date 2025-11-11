@@ -51,11 +51,38 @@ namespace BL.Service.ECommerce.Category
                              x.TitleEn != null && x.TitleEn.ToLower().Contains(searchTerm);
             }
 
+            // Create ordering function based on SortBy and SortDirection
+            Func<IQueryable<TbAttribute>, IOrderedQueryable<TbAttribute>> orderBy = null;
+            
+            if (!string.IsNullOrWhiteSpace(criteriaModel.SortBy))
+            {
+                var sortBy = criteriaModel.SortBy.ToLower();
+                var isDescending = criteriaModel.SortDirection?.ToLower() == "desc";
+
+                orderBy = query =>
+                {
+                    return sortBy switch
+                    {
+                        "titlear" => isDescending ? query.OrderByDescending(x => x.TitleAr) : query.OrderBy(x => x.TitleAr),
+                        "titleen" => isDescending ? query.OrderByDescending(x => x.TitleEn) : query.OrderBy(x => x.TitleEn),
+                        "title" => isDescending ? query.OrderByDescending(x => x.TitleAr) : query.OrderBy(x => x.TitleAr),
+                        "fieldtype" => isDescending ? query.OrderByDescending(x => x.FieldType) : query.OrderBy(x => x.FieldType),
+                        "createddateutc" => isDescending ? query.OrderByDescending(x => x.CreatedDateUtc) : query.OrderBy(x => x.CreatedDateUtc),
+                        _ => query.OrderByDescending(a => a.CreatedDateUtc) // Default sorting
+                    };
+                };
+            }
+            else
+            {
+                // Default ordering
+                orderBy = query => query.OrderByDescending(a => a.CreatedDateUtc);
+            }
+
             var entitiesList = await _attributeUnitOfWork.Repository<TbAttribute>().GetPageAsync(
                 criteriaModel.PageNumber,
                 criteriaModel.PageSize,
                 filter,
-                orderBy: a => a.OrderByDescending(at => at.CreatedDateUtc));
+                orderBy: orderBy);
 
             var attributes = _mapper.MapList<TbAttribute, AttributeDto>(entitiesList.Items);
 

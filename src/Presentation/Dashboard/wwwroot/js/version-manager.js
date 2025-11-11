@@ -6,15 +6,36 @@
     const VERSION_STORAGE_KEY = 'app_version';
     const LAST_CHECK_KEY = 'version_last_check';
     const RELOAD_LOCK_KEY = 'version_reload_lock';
-    const RELOAD_LOCK_DURATION = 10000; // 10 seconds
+    const RELOAD_LOCK_DURATION = 30000; // 30 seconds
+    const INITIALIZED_KEY = 'version_manager_initialized'; // ? NEW: Track initialization
 
     const VersionManager = {
         currentVersion: null,
         checkTimer: null,
+        isUpdating: false,
+        _hasInitialized: false, // ? NEW: Local flag
 
         // Initialize version manager
         init: function () {
+            // ? FIX: ???? ?? ??????? ???? ????? init ??? ????
+            if (this._hasInitialized) {
+                console.log('? Version Manager: Already initialized, skipping...');
+                return;
+            }
+
+            // ? FIX: ???? ?? sessionStorage ???? init ?? ?? ????
+            const sessionInitialized = sessionStorage.getItem(INITIALIZED_KEY);
+            if (sessionInitialized) {
+                console.log('? Version Manager: Already initialized in this session, skipping...');
+                this._hasInitialized = true;
+                return;
+            }
+
             console.log('? Version Manager: Initializing...');
+            
+            // ? Mark as initialized
+            this._hasInitialized = true;
+            sessionStorage.setItem(INITIALIZED_KEY, 'true');
             
             // Check if we just reloaded
             const reloadLock = localStorage.getItem(RELOAD_LOCK_KEY);
@@ -24,14 +45,21 @@
                 
                 if (timeSinceLock < RELOAD_LOCK_DURATION) {
                     console.log('?? Recently reloaded, skipping check for', (RELOAD_LOCK_DURATION - timeSinceLock) / 1000, 'seconds');
+                    
+                    // ? FIX: ???? ??? lock ??? ?????? ????? ??? ?? ?????? checkForUpdates
                     setTimeout(() => {
                         localStorage.removeItem(RELOAD_LOCK_KEY);
-                        this.checkForUpdates(true);
+                        console.log('?? Reload lock cleared');
+                        // ? ?? ?????? checkForUpdates ???!
                     }, RELOAD_LOCK_DURATION - timeSinceLock);
+                    
                     this.startPeriodicCheck();
                     this.listenToVisibilityChange();
                     return;
                 }
+                
+                // ? FIX: ??? ????? ??? ??? lock? ????? ?????? ??????
+                localStorage.removeItem(RELOAD_LOCK_KEY);
             }
             
             this.checkForUpdates(true);
@@ -41,6 +69,12 @@
 
         // Check for updates
         checkForUpdates: async function (isInitial = false) {
+            // ? FIX: ???? ?? isUpdating ???? checks ??????
+            if (this.isUpdating) {
+                console.log('?? Update already in progress, skipping check...');
+                return;
+            }
+
             try {
                 const response = await fetch('/version.json?t=' + Date.now(), {
                     cache: 'no-cache',
@@ -71,11 +105,28 @@
                     return;
                 }
 
+                // ? FIX: ???? ?? RELOAD_LOCK ??? ???????
+                const reloadLock = localStorage.getItem(RELOAD_LOCK_KEY);
+                if (reloadLock) {
+                    const lockTime = parseInt(reloadLock);
+                    const timeSinceLock = Date.now() - lockTime;
+                    
+                    if (timeSinceLock < RELOAD_LOCK_DURATION) {
+                        console.log('?? Update already in progress, skipping...');
+                        return;
+                    }
+                    
+                    // ? FIX: ???? ??? lock ??? ????? ????
+                    localStorage.removeItem(RELOAD_LOCK_KEY);
+                }
+
                 if (serverVersion !== storedVersion) {
                     console.log('?? New version detected! Updating...');
+                    this.isUpdating = true; // ? Mark as updating
                     await this.performUpdate(serverVersion, forceUpdate);
                 } else if (forceUpdate) {
                     console.log('?? Force update requested!');
+                    this.isUpdating = true; // ? Mark as updating
                     await this.performUpdate(serverVersion, true);
                 } else if (!isInitial) {
                     console.log('? App is up to date');
@@ -85,6 +136,7 @@
 
             } catch (error) {
                 console.error('? Version check error:', error);
+                this.isUpdating = false; // ? Reset on error
             }
         },
 
@@ -92,6 +144,10 @@
         performUpdate: async function (newVersion, forceUpdate) {
             try {
                 console.log('?? Clearing cache...');
+
+                // ? FIX: ????? ??????? ??? ??? reload
+                localStorage.setItem(VERSION_STORAGE_KEY, newVersion);
+                console.log('?? Version updated in storage:', newVersion);
 
                 // Clear browser cache
                 if ('caches' in window) {
@@ -121,6 +177,8 @@
 
             } catch (error) {
                 console.error('? Update failed:', error);
+                // ? FIX: ??? ?? ???? ?????? ???? ??????? ??????
+                localStorage.setItem(VERSION_STORAGE_KEY, newVersion);
                 // Force reload anyway
                 this.reloadApp();
             }
@@ -128,17 +186,30 @@
 
         // Clear non-essential storage
         clearNonEssentialStorage: function (newVersion) {
+            // ? FIX: Keep ALL authentication and user-related keys
             const keysToKeep = [
                 VERSION_STORAGE_KEY,
                 LAST_CHECK_KEY,
                 RELOAD_LOCK_KEY,
+                // ? Authentication keys
                 'auth_token',
                 'refresh_token',
+                'authToken',
+                'isAuthenticated',
+                // ? User preferences
                 'user_preferences',
-                'selected_language'
+                'autoLoadPreference',
+                // ? Language keys
+                'selected_language',
+                'lang',
+                'current_language',
+                // ? Application settings
+                'theme',
+                'sidebar_collapsed',
+                'notifications_enabled'
             ];
 
-            // Save values
+            // Save values from localStorage
             const savedValues = {};
             keysToKeep.forEach(key => {
                 const value = localStorage.getItem(key);
@@ -147,93 +218,58 @@
                 }
             });
 
-            // Clear all
+            // ? NEW: Also save ALL keys that start with specific prefixes
+            const prefixesToKeep = ['auth', 'user', 'selected_', 'version_', 'reload_', 'lang', 'pref_'];
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                if (key && prefixesToKeep.some(prefix => key.toLowerCase().startsWith(prefix))) {
+                    const value = localStorage.getItem(key);
+                    if (value !== null && !savedValues[key]) {
+                        savedValues[key] = value;
+                        console.log('?? Keeping prefixed key:', key);
+                    }
+                }
+            }
+
+            // Clear all localStorage
             localStorage.clear();
-            sessionStorage.clear();
+            
+            // ? CRITICAL FIX: DON'T clear sessionStorage - it contains Blazor state and language data
+            // sessionStorage.clear(); // ? REMOVED - This was causing logout and language reset!
 
             // Restore saved values
             Object.keys(savedValues).forEach(key => {
                 localStorage.setItem(key, savedValues[key]);
             });
 
-            // Store new version
+            // ? Ensure version is saved
             localStorage.setItem(VERSION_STORAGE_KEY, newVersion);
 
-            console.log('? Storage cleaned (keeping essential data)');
+            console.log('? Storage cleaned (keeping authentication & user data)');
+            console.log('?? Kept keys:', Object.keys(savedValues));
         },
 
         // Show update notification
         showUpdateNotification: function (version, forceUpdate) {
-            const message = forceUpdate 
-                ? `????? ??? ????? ???? (${version}). ???? ????? ??????? ?????...`
-                : `????? ???? ???? (${version}). ???? ??????? ????????...`;
-
-            console.log('??', message);
-
-            // Show SweetAlert if available
-            if (typeof Swal !== 'undefined') {
-                Swal.fire({
-                    title: '????? ?????',
-                    text: message,
-                    icon: 'info',
-                    showConfirmButton: false,
-                    timer: forceUpdate ? 2000 : 3000,
-                    allowOutsideClick: false,
-                    allowEscapeKey: false
-                }).then(() => {
-                    this.reloadApp();
-                });
-            } else if (typeof swal === 'function') {
-                swal({
-                    title: '????? ?????',
-                    text: message,
-                    icon: 'info',
-                    buttons: false,
-                    timer: forceUpdate ? 2000 : 3000,
-                    closeOnClickOutside: false,
-                    closeOnEsc: false
-                }).then(() => {
-                    this.reloadApp();
-                });
-            } else {
-                // Fallback notification
-                this.showFallbackNotification(message);
-                setTimeout(() => this.reloadApp(), forceUpdate ? 2000 : 3000);
-            }
+            // ? SILENT UPDATE: Skip notifications, just reload directly
+            console.log('?? Silent update to version:', version);
+            this.reloadApp();
         },
 
-        // Fallback notification (if SweetAlert not available)
+        // Fallback notification (NOT USED - Silent update)
         showFallbackNotification: function (message) {
-            const notification = document.createElement('div');
-            notification.style.cssText = `
-                position: fixed;
-                top: 20px;
-                right: 20px;
-                background: linear-gradient(135deg, #0EA5E9 0%, #0369A1 100%);
-                color: white;
-                padding: 20px 30px;
-                border-radius: 12px;
-                box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-                z-index: 999999;
-                font-family: 'Cairo', 'Tajawal', sans-serif;
-                font-size: 16px;
-                max-width: 400px;
-                animation: slideIn 0.3s ease-out;
-            `;
-            notification.innerHTML = `
-                <div style="display: flex; align-items: center; gap: 15px;">
-                    <div style="font-size: 32px;">??</div>
-                    <div>${message}</div>
-                </div>
-            `;
-            document.body.appendChild(notification);
+            // ? REMOVED: No visual notifications
+            console.log('?? Update notification (silent):', message);
         },
 
         // Reload app with hard refresh
         reloadApp: function () {
             console.log('?? Reloading application...');
             
-            // Set reload lock to prevent infinite loop
+            // ? Clear sessionStorage flag before reload
+            sessionStorage.removeItem(INITIALIZED_KEY);
+            
+            // ? FIX: Set reload lock AFTER updating version
             localStorage.setItem(RELOAD_LOCK_KEY, Date.now().toString());
             
             // Hard reload
@@ -278,6 +314,7 @@
         }
     };
 
+    // ? FIX: ????? init() ??? ??? ????? ?????? ??????
     // Auto-initialize when DOM is ready
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', () => {

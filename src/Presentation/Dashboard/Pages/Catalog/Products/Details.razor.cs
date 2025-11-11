@@ -70,6 +70,10 @@ namespace Dashboard.Pages.Catalog.Products
         protected bool isLoadingAttributes = false;
 
         // ========== Lifecycle Methods ==========
+        // ? FIX: متغير لتتبع التهيئة
+        private bool _initialized = false;
+        private Guid _lastLoadedId = Guid.Empty;
+
         protected override async Task OnInitializedAsync()
         {
             baseUrl = ApiOptions.Value.BaseUrl;
@@ -81,12 +85,20 @@ namespace Dashboard.Pages.Catalog.Products
             fieldValidation["ThumbnailImage"] = true;
 
             await LoadData();
+            _initialized = true;
         }
 
         protected override void OnParametersSet()
         {
-            if (Id != Guid.Empty)
+            // ? FIX: تحقق من التهيئة ومن تغيير الـ Id لمنع infinite loop
+            if (!_initialized)
             {
+                return; // سينفذ OnInitializedAsync
+            }
+
+            if (Id != Guid.Empty && Id != _lastLoadedId)
+            {
+                _lastLoadedId = Id;
                 _ = LoadProduct(Id);
             }
         }
