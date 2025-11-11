@@ -12,13 +12,18 @@ namespace Dashboard.Pages.Catalog.Products
         /// </summary>
         public void GenerateAttributeCombinations()
         {
+            Console.WriteLine($"🔍 GenerateAttributeCombinations - START");
+            
             // Get all price-affecting attributes from category
             var priceAffectingAttributes = categoryAttributes
                     .Where(ca => ca.AffectsPricing)
              .ToList();
 
+            Console.WriteLine($"📊 Found {priceAffectingAttributes.Count} price-affecting attributes");
+
             if (!priceAffectingAttributes.Any())
             {
+                Console.WriteLine($"⚠️ No price-affecting attributes, clearing combinations");
                 // No price-affecting attributes, clear combinations
                 Model.ItemAttributeCombinationPricings.Clear();
                 return;
@@ -26,12 +31,30 @@ namespace Dashboard.Pages.Catalog.Products
 
             // Build a list of attribute options for each price-affecting attribute
             var attributeOptionSets = new List<List<AttributeOptionInfo>>();
+            // Store mapping of option IDs to display values for later retrieval
+            var optionDisplayMap = new Dictionary<Guid, string>();
 
             foreach (var attr in priceAffectingAttributes)
             {
-                var itemAttr = Model.ItemAttributes.FirstOrDefault(ia => ia.AttributeId == attr.Id);
-                if (itemAttr == null || string.IsNullOrWhiteSpace(itemAttr.Value))
+                Console.WriteLine($"  🔎 Processing attribute: {attr.Title} (AttributeId: {attr.AttributeId})");
+                Console.WriteLine($"     FieldType: {attr.FieldType}");
+                Console.WriteLine($"     Options available: {attr.AttributeOptions?.Count ?? 0}");
+                
+                // FIX: Use AttributeId instead of Id
+                var itemAttr = Model.ItemAttributes.FirstOrDefault(ia => ia.AttributeId == attr.AttributeId);
+                if (itemAttr == null)
+                {
+                    Console.WriteLine($"     ⚠️ No ItemAttribute found for this attribute");
                     continue;
+                }
+                
+                Console.WriteLine($"     ItemAttribute Value: '{itemAttr.Value}'");
+                
+                if (string.IsNullOrWhiteSpace(itemAttr.Value))
+                {
+                    Console.WriteLine($"     ⚠️ Value is empty, skipping");
+                    continue;
+                }
 
                 var options = new List<AttributeOptionInfo>();
 
@@ -39,60 +62,105 @@ namespace Dashboard.Pages.Catalog.Products
                 if (attr.FieldType == Common.Enumerations.FieldType.FieldType.List ||
          attr.FieldType == Common.Enumerations.FieldType.FieldType.MultiSelectList)
                 {
-                    if (attr.AttributeOptions != null)
+                    Console.WriteLine($"     📋 List/MultiSelectList type");
+                    if (attr.AttributeOptions != null && attr.AttributeOptions.Any())
                     {
                         // User can select multiple options (comma-separated)
                         var selectedValues = itemAttr.Value.Split(',', StringSplitOptions.RemoveEmptyEntries);
+                        Console.WriteLine($"     Selected values: {string.Join(", ", selectedValues)}");
+                        
                         foreach (var value in selectedValues)
                         {
                             var option = attr.AttributeOptions.FirstOrDefault(o => o.Id.ToString() == value.Trim());
                             if (option != null)
                             {
+                                Console.WriteLine($"       ✅ Matched option: {option.Title} (ID: {option.Id})");
                                 options.Add(new AttributeOptionInfo
                                 {
-                                    AttributeId = attr.Id,
+                                    AttributeId = attr.AttributeId,  // FIX: Use AttributeId
+                                    AttributeName = attr.Title,
                                     OptionId = option.Id,
                                     DisplayValue = option.Title
                                 });
+                                optionDisplayMap[option.Id] = $"{attr.Title}: {option.Title}";
+                            }
+                            else
+                            {
+                                Console.WriteLine($"       ❌ No option found for value: {value.Trim()}");
                             }
                         }
+                    }
+                    else
+                    {
+                        Console.WriteLine($"     ⚠️ No options available for this attribute");
                     }
                 }
                 else
                 {
-                    // For other types (Text, Number, etc.): treat the value itself as the option
-                    options.Add(new AttributeOptionInfo
+                    Console.WriteLine($"     📝 Other type (Text/Number/Date)");
+                    // For other types: Split by comma to allow multiple values
+                    var values = itemAttr.Value.Split(',', StringSplitOptions.RemoveEmptyEntries)
+                        .Select(v => v.Trim())
+                        .Where(v => !string.IsNullOrWhiteSpace(v))
+                        .ToList();
+                    
+                    Console.WriteLine($"     Found {values.Count} value(s): {string.Join(", ", values)}");
+                    
+                    foreach (var value in values)
                     {
-                        AttributeId = attr.Id,
-                        OptionId = Guid.Empty,
-                        DisplayValue = itemAttr.Value
-                    });
+                        // Use the attribute AttributeId + value hash as a consistent identifier
+                        var valueIdentifier = $"{attr.AttributeId}:{value}";
+                        var valueId = GenerateConsistentGuid(valueIdentifier);
+                        
+                        options.Add(new AttributeOptionInfo
+                        {
+                            AttributeId = attr.AttributeId,  // FIX: Use AttributeId
+                            AttributeName = attr.Title,
+                            OptionId = valueId,
+                            DisplayValue = value
+                        });
+                        optionDisplayMap[valueId] = $"{attr.Title}: {value}";
+                        Console.WriteLine($"       ✅ Added value: {value} (ID: {valueId})");
+                    }
                 }
 
                 if (options.Any())
                 {
+                    Console.WriteLine($"     ✅ Added {options.Count} options to set");
                     attributeOptionSets.Add(options);
                 }
+                else
+                {
+                    Console.WriteLine($"     ⚠️ No valid options found");
+                }
             }
+
+            // Store the mapping for display purposes
+            _optionDisplayMap = optionDisplayMap;
 
             // If no valid options, clear combinations
             if (!attributeOptionSets.Any())
             {
+                Console.WriteLine($"⚠️ No valid option sets, clearing combinations");
                 Model.ItemAttributeCombinationPricings.Clear();
                 return;
             }
 
+            Console.WriteLine($"📊 Total attribute option sets: {attributeOptionSets.Count}");
+
             // Generate Cartesian product of all attribute options
             var combinations = GenerateCartesianProduct(attributeOptionSets);
+            Console.WriteLine($"🎲 Generated {combinations.Count} combinations");
 
             // Create or update combination pricings
             var newCombinations = new List<ItemAttributeCombinationPricingDto>();
 
             foreach (var combination in combinations)
             {
-                // Create attribute IDs string (comma-separated list of option IDs or attribute IDs)
-                var attributeIds = string.Join(",", combination.Select(opt =>
- opt.OptionId != Guid.Empty ? opt.OptionId.ToString() : opt.AttributeId.ToString()));
+                // Create attribute IDs string (comma-separated list of option IDs)
+                var attributeIds = string.Join(",", combination.Select(opt => opt.OptionId.ToString()));
+
+                Console.WriteLine($"  🔗 Combination: {string.Join(" | ", combination.Select(c => c.DisplayValue))}");
 
                 // Check if this combination already exists
                 var existing = Model.ItemAttributeCombinationPricings
@@ -100,11 +168,13 @@ namespace Dashboard.Pages.Catalog.Products
 
                 if (existing != null)
                 {
+                    Console.WriteLine($"     ♻️ Keeping existing combination");
                     // Keep existing combination with its price and quantity
                     newCombinations.Add(existing);
                 }
                 else
                 {
+                    Console.WriteLine($"     ✨ Creating new combination");
                     // Create new combination with default values
                     newCombinations.Add(new ItemAttributeCombinationPricingDto
                     {
@@ -118,7 +188,20 @@ namespace Dashboard.Pages.Catalog.Products
 
             // Replace the combinations list
             Model.ItemAttributeCombinationPricings = newCombinations;
+            Console.WriteLine($"✅ GenerateAttributeCombinations - COMPLETE - Total combinations: {newCombinations.Count}");
             StateHasChanged();
+        }
+        
+        /// <summary>
+        /// Generates a consistent GUID based on a string identifier
+        /// </summary>
+        private Guid GenerateConsistentGuid(string identifier)
+        {
+            using (var md5 = System.Security.Cryptography.MD5.Create())
+            {
+                var hash = md5.ComputeHash(System.Text.Encoding.UTF8.GetBytes(identifier));
+                return new Guid(hash);
+            }
         }
 
         /// <summary>
@@ -154,10 +237,11 @@ namespace Dashboard.Pages.Catalog.Products
         private class AttributeOptionInfo
         {
             public Guid AttributeId { get; set; }
+            public string AttributeName { get; set; } = string.Empty;
             public Guid OptionId { get; set; }
             public string DisplayValue { get; set; } = string.Empty;
         }
-
+        
         /// <summary>
         /// Called when category changes to load attributes and clear combinations
         /// </summary>

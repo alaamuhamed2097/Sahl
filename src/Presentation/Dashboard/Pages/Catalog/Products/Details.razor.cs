@@ -68,6 +68,7 @@ namespace Dashboard.Pages.Catalog.Products
         protected List<CategoryAttributeDto> categoryAttributes = new();
         private List<BrandDto> brands = new();
         protected bool isLoadingAttributes = false;
+        private Dictionary<Guid, string> _optionDisplayMap = new();
 
         // ========== Lifecycle Methods ==========
         // ? FIX: متغير لتتبع التهيئة
@@ -192,6 +193,21 @@ namespace Dashboard.Pages.Catalog.Products
                         Console.WriteLine($"    TitleEn: {attr.TitleEn}");
                         Console.WriteLine($"    AffectsPricing: {attr.AffectsPricing}");
                         Console.WriteLine($"    FieldType: {attr.FieldType}");
+                        Console.WriteLine($"    AttributeOptionsJson: {attr.AttributeOptionsJson}");
+                        
+                        // Log parsed options
+                        if (attr.AttributeOptions != null && attr.AttributeOptions.Any())
+                        {
+                            Console.WriteLine($"    ✅ Parsed {attr.AttributeOptions.Count} options:");
+                            foreach (var opt in attr.AttributeOptions)
+                            {
+                                Console.WriteLine($"      • {opt.Title} (ID: {opt.Id}, DisplayOrder: {opt.DisplayOrder})");
+                            }
+                        }
+                        else
+                        {
+                            Console.WriteLine($"    ⚠️ No options available or parsing failed");
+                        }
                     }
 
                     // Initialize ItemAttributes list if null
@@ -207,8 +223,8 @@ namespace Dashboard.Pages.Catalog.Products
                         Model.ItemAttributes = categoryAttributes
                             .Select(a => new ItemAttributeDto
                             {
-                                // CRITICAL: Use the correct ID field
-                                AttributeId = a.Id,  // or a.AttributeId depending on your DTO structure
+                                // FIX: Use AttributeId, not Id
+                                AttributeId = a.AttributeId,
                                 Value = string.Empty
                             })
                             .ToList();
@@ -221,13 +237,13 @@ namespace Dashboard.Pages.Catalog.Products
                         // For existing products, ensure all category attributes have entries
                         foreach (var categoryAttr in categoryAttributes)
                         {
-                            // CRITICAL: Use the correct ID field for lookup
-                            if (!Model.ItemAttributes.Any(ia => ia.AttributeId == categoryAttr.Id))
+                            // FIX: Use AttributeId, not Id
+                            if (!Model.ItemAttributes.Any(ia => ia.AttributeId == categoryAttr.AttributeId))
                             {
                                 Console.WriteLine($"  ➕ Adding missing attribute: {categoryAttr.Title}");
                                 Model.ItemAttributes.Add(new ItemAttributeDto
                                 {
-                                    AttributeId = categoryAttr.Id,
+                                    AttributeId = categoryAttr.AttributeId,
                                     Value = string.Empty
                                 });
                             }
@@ -330,11 +346,11 @@ namespace Dashboard.Pages.Catalog.Products
                 NotifiAndAlertsResources.FailedToRetrieveData);
                 }
             }
-            catch (Exception ex)
-            {
-                await ShowErrorMessage(ValidationResources.Error, ex.Message);
-            }
-        }
+catch (Exception ex)
+{
+await ShowErrorMessage(ValidationResources.Error, ex.Message);
+}
+}
 
         // ========== Event Handlers ==========
         private async Task HandleCategoryChange()
@@ -572,6 +588,16 @@ namespace Dashboard.Pages.Catalog.Products
             {
                 // Validate required fields
                 ValidateForm();
+                
+                // Validate attributes
+                if (!ValidateAttributes())
+                {
+                    showValidationErrors = true;
+                    await ShowErrorMessage(
+                        ValidationResources.ValidationError,
+                        "Please fill in all required attributes before saving.");
+                    return;
+                }
 
                 if (!IsFormValid())
                 {
@@ -621,6 +647,27 @@ namespace Dashboard.Pages.Catalog.Products
                 isSaving = false;
                 StateHasChanged();
             }
+        }
+        
+        /// <summary>
+        /// Validates all required attributes have values
+        /// </summary>
+        private bool ValidateAttributes()
+        {
+            if (Model.CategoryId == Guid.Empty || !categoryAttributes.Any())
+                return true; // No attributes to validate
+
+            foreach (var categoryAttr in categoryAttributes.Where(ca => ca.IsRequired))
+            {
+                var itemAttr = Model.ItemAttributes.FirstOrDefault(ia => ia.AttributeId == categoryAttr.Id);
+                if (itemAttr == null || string.IsNullOrWhiteSpace(itemAttr.Value))
+                {
+                    Console.WriteLine($"❌ Required attribute '{categoryAttr.Title}' is missing or empty");
+                    return false;
+                }
+            }
+
+            return true;
         }
 
         protected void CloseModal()
@@ -770,27 +817,30 @@ namespace Dashboard.Pages.Catalog.Products
             {
                 if (Guid.TryParse(id, out var guid))
                 {
-                    // First check if it's an option ID
-                    var categoryAttr = categoryAttributes
-                         .FirstOrDefault(ca => ca.AttributeOptions?.Any(o => o.Id == guid) == true);
-
-                    if (categoryAttr != null)
+                    // Check if we have a display mapping for this ID
+                    if (_optionDisplayMap != null && _optionDisplayMap.ContainsKey(guid))
                     {
-                        var option = categoryAttr.AttributeOptions.First(o => o.Id == guid);
-                        attributes.Add($"{categoryAttr.Title}: {option.Title}");
+                        attributes.Add(_optionDisplayMap[guid]);
                     }
                     else
                     {
-                        // If not an option, check if it's an attribute ID with a direct value
-                        var attribute = categoryAttributes.FirstOrDefault(a => a.Id == guid);
-                        var value = Model.ItemAttributes.FirstOrDefault(a => a.AttributeId == guid)?.Value;
+                        // Fallback: Try to find in attribute options
+                        var categoryAttr = categoryAttributes
+                             .FirstOrDefault(ca => ca.AttributeOptions?.Any(o => o.Id == guid) == true);
 
-                        if (attribute != null && !string.IsNullOrEmpty(value))
+                        if (categoryAttr != null)
                         {
-                            attributes.Add($"{attribute.Title}: {value}");
+                            var option = categoryAttr.AttributeOptions.First(o => o.Id == guid);
+                            attributes.Add($"{categoryAttr.Title}: {option.Title}");
                         }
                     }
                 }
+            }
+
+            // If we couldn't resolve any IDs, show a placeholder
+            if (!attributes.Any())
+            {
+                return "Combination (IDs: " + string.Join(", ", ids.Take(2)) + (ids.Length > 2 ? "..." : "") + ")";
             }
 
             return string.Join(" | ", attributes);

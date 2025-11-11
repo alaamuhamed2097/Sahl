@@ -142,6 +142,15 @@ namespace Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to أضف قيم متعددة لمجموعات التسعير.
+        /// </summary>
+        public static string AddMultipleValuesForPricing {
+            get {
+                return ResourceManager.GetString("AddMultipleValuesForPricing", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to إضافة خيار.
         /// </summary>
         public static string AddOption {
@@ -1231,6 +1240,15 @@ namespace Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to لا يوجد خيارات.
+        /// </summary>
+        public static string No_Options_Configured {
+            get {
+                return ResourceManager.GetString("No Options Configured", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to لا توجد خصائص متاحة.
         /// </summary>
         public static string NoAttributes {
@@ -1245,6 +1263,15 @@ namespace Resources {
         public static string NoAttributesAdded {
             get {
                 return ResourceManager.GetString("NoAttributesAdded", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to لم يتم تكوين خيارات لهذه الخاصية.
+        /// </summary>
+        public static string NoOptionsConfigured {
+            get {
+                return ResourceManager.GetString("NoOptionsConfigured", resourceCulture);
             }
         }
         

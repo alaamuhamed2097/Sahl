@@ -388,9 +388,8 @@ namespace BL.Service.ECommerce.Category
                             AffectsPricing = categoryAttr.AffectsPricing,
                             IsRequired = categoryAttr.IsRequired,
                             DisplayOrder = categoryAttr.DisplayOrder,
-                            AttributeOptionsJson = attributeDto.AttributeOptions != null
-                                ? System.Text.Json.JsonSerializer.Serialize(attributeDto.AttributeOptions)
-                                : "[]"
+                            // FIX: Don't serialize - pass the list directly
+                            AttributeOptionsJson = attributeDto.AttributeOptions ?? new List<AttributeOptionDto>()
                         });
                     }
                 }
