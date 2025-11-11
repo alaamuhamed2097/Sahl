@@ -136,7 +136,7 @@ jobs:
           Write-Host "SahlApi deployed successfully!" -ForegroundColor Green
           Write-Host "=========================================="
       
-      # 9️⃣ نشر الـ Dashboard مع حماية web.config + appsettings
+      # 9️⃣ نشر الـ Dashboard مع حماية web.config
       - name: Deploy Dashboard to IIS
         run: |
           Write-Host "=========================================="
@@ -148,17 +148,6 @@ jobs:
           if (Test-Path "C:\0ALI\WebSites\SahlDashboard\web.config") {
             Copy-Item "C:\0ALI\WebSites\SahlDashboard\web.config" "C:\temp\deployment-backup\dash-web.config" -Force
             Write-Host "  - web.config backed up"
-          }
-          
-          # Backup appsettings files
-          Write-Host "Step 2: Backing up appsettings files..."
-          if (Test-Path "C:\0ALI\WebSites\SahlDashboard\appsettings.json") {
-            Copy-Item "C:\0ALI\WebSites\SahlDashboard\appsettings.json" "C:\temp\deployment-backup\dash-appsettings.json" -Force
-            Write-Host "  - appsettings.json backed up"
-          }
-          Get-ChildItem "C:\0ALI\WebSites\SahlDashboard\appsettings.*.json" -ErrorAction SilentlyContinue | ForEach-Object {
-            Copy-Item $_.FullName "C:\temp\deployment-backup\" -Force
-            Write-Host "  - $($_.Name) backed up"
           }
           
           # Enable maintenance mode
@@ -177,18 +166,6 @@ jobs:
           if (Test-Path "C:\temp\deployment-backup\dash-web.config") {
             Copy-Item "C:\temp\deployment-backup\dash-web.config" "C:\0ALI\WebSites\SahlDashboard\web.config" -Force
             Write-Host "  - web.config restored"
-          }
-          
-          # Restore appsettings files
-          Write-Host "Step 6: Restoring appsettings files..."
-          if (Test-Path "C:\temp\deployment-backup\dash-appsettings.json") {
-            Copy-Item "C:\temp\deployment-backup\dash-appsettings.json" "C:\0ALI\WebSites\SahlDashboard\appsettings.json" -Force
-            Write-Host "  - appsettings.json restored"
-          }
-          Get-ChildItem "C:\temp\deployment-backup\appsettings.*.json" -ErrorAction SilentlyContinue | ForEach-Object {
-            $destPath = "C:\0ALI\WebSites\SahlDashboard\$($_.Name)"
-            Copy-Item $_.FullName $destPath -Force
-            Write-Host "  - $($_.Name) restored"
           }
           
           # Verify critical files exist
