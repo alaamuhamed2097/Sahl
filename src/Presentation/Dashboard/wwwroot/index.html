@@ -319,23 +319,18 @@
         }
 
         Blazor.start({
-            // ✅ CRITICAL: فرض وضع Production لتعطيل debugging
-            //environment: 'Production',
-
-            loadBootResource: function (type, name, defaultUri, integrity) {
-                // منع تحميل ملفات debug symbols
-                if (name.includes('.pdb')) {
+            loadBootResource: function(type, name, defaultUri, integrity) {
+                // Only block .pdb files
+                if (name.endsWith('.pdb')) {
                     return null;
                 }
 
-                // Optimize resource loading
-                if (type === 'dotnetjs') {
-                    return defaultUri + '?v=' + Date.now();
-                }
+                // For all other resources, use the default URI without modification
+                // Don't add cache busting for dotnetjs as it can break module loading
                 return defaultUri;
             },
 
-            // Add debug configuration
+            // Configure circuit for better error handling
             circuit: {
                 reconnectionOptions: {
                     maxRetries: 3,
@@ -343,17 +338,28 @@
                 }
             }
         }).then(() => {
-            // Blazor has started - hide loading screen
+            // Blazor has started successfully
             document.body.classList.add('loaded');
             document.body.classList.remove('loading');
-
-            // Dispatch custom event for other scripts
+    
             window.dispatchEvent(new CustomEvent('blazor-started'));
-
-            // Wait for all dependencies before initializing critical features
+    
+            // Initialize features after dependencies are ready
             waitForDependencies(() => {
                 initializeCriticalFeatures();
             });
+        }).catch((error) => {
+            // Display error to user
+            console.error('Blazor failed to start:', error);
+    
+            const errorMessage = document.getElementById('error-message');
+            if (errorMessage) {
+                errorMessage.style.display = 'block';
+                errorMessage.textContent = 'فشل تحميل التطبيق. يرجى تحديث الصفحة أو الاتصال بالدعم الفني.';
+            }
+    
+            // Hide progress bar
+            document.getElementById('progress-bar').style.width = '0%';
         });
     </script>
 
