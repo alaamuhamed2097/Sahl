@@ -197,11 +197,19 @@ namespace Dashboard.Pages.Catalog.Products
         /// </summary>
         private Guid GenerateConsistentGuid(string identifier)
         {
-            using (var md5 = System.Security.Cryptography.MD5.Create())
+            // MD5 is not supported in Blazor WebAssembly
+            // Use a deterministic hash-based approach instead
+            var hash = identifier.GetHashCode();
+            var bytes = new byte[16];
+            
+            // Fill the byte array with deterministic data based on the string
+            var idBytes = System.Text.Encoding.UTF8.GetBytes(identifier);
+            for (int i = 0; i < bytes.Length; i++)
             {
-                var hash = md5.ComputeHash(System.Text.Encoding.UTF8.GetBytes(identifier));
-                return new Guid(hash);
+                bytes[i] = (byte)(idBytes[i % idBytes.Length] ^ (hash >> (i % 4 * 8)));
             }
+            
+            return new Guid(bytes);
         }
 
         /// <summary>

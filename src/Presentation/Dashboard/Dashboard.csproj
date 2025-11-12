@@ -60,10 +60,10 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-	  <Compile Remove="Handlers\**" />
-	  <Content Remove="Handlers\**" />
-	  <EmbeddedResource Remove="Handlers\**" />
-	  <None Remove="Handlers\**" />
+		<Compile Remove="Handlers\**" />
+		<Content Remove="Handlers\**" />
+		<EmbeddedResource Remove="Handlers\**" />
+		<None Remove="Handlers\**" />
 	</ItemGroup>
 
 	<!-- ========== 🌐 Supported Cultures (Arabic + English) ========== -->
@@ -81,28 +81,24 @@
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 			<CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
 		</Content>
-		
+
 		<!-- Explicitly include JavaScript files -->
 		<Content Update="wwwroot\assets\js\pages\product-wizard.js">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 			<CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
 		</Content>
-		
+
 		<Content Update="wwwroot\Common\Downloader\fileDownloadHelper.js">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 			<CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
 		</Content>
-		
+
 		<Content Update="wwwroot\Common\Excel\excelExportHelper.js">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 			<CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
 		</Content>
-		
+
 		<!-- Ensure web.config is published -->
-		<Content Update="wwwroot\web.config">
-			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-			<CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-		</Content>
 	</ItemGroup>
 
 	<ItemGroup>
@@ -155,10 +151,10 @@
 		<ServiceWorker Include="wwwroot\service-worker.js" PublishedContent="wwwroot\service-worker.published.js" />
 	</ItemGroup>
 	<ItemGroup>
-	  <AdditionalFiles Remove="C:\Users\alaam\AppData\Roaming\SonarLint for Visual Studio\.global\csharp\SonarLint.xml" />
+		<AdditionalFiles Remove="C:\Users\alaam\AppData\Roaming\SonarLint for Visual Studio\.global\csharp\SonarLint.xml" />
 	</ItemGroup>
 	<ItemGroup>
-	  <Folder Include="Pages\Catalog\Orders\" />
+		<Folder Include="Pages\Catalog\Orders\" />
 	</ItemGroup>
 
 </Project>
