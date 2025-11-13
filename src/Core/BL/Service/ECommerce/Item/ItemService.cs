@@ -172,6 +172,43 @@ namespace BL.Services.Items
             {
                 throw new ArgumentException($"{ValidationResources.MaximumOf} {MaxImageCount} {ValidationResources.ImagesAllowed}", nameof(dto.Images));
             }
+            
+            // Ensure every item has at least one combination (default combination)
+            if (dto.ItemAttributeCombinationPricings == null || !dto.ItemAttributeCombinationPricings.Any())
+            {
+                _logger.Information("No combinations found, creating default combination for item {ItemId}", dto.Id);
+                
+                // Create a default combination with no attributes
+                dto.ItemAttributeCombinationPricings = new List<ItemAttributeCombinationPricingDto>
+                {
+                    new ItemAttributeCombinationPricingDto
+                    {
+                        AttributeIds = string.Empty, // Empty means default/no attributes
+                        Price = 0,
+                        SalesPrice = 0,
+                        Quantity = 0,
+                        IsDefault = true
+                    }
+                };
+            }
+            
+            // Ensure only one combination is marked as default
+            var defaultCombinations = dto.ItemAttributeCombinationPricings.Where(c => c.IsDefault).ToList();
+            if (defaultCombinations.Count == 0)
+            {
+                // No default set, mark the first one as default
+                _logger.Information("No default combination found, setting first combination as default for item {ItemId}", dto.Id);
+                dto.ItemAttributeCombinationPricings.First().IsDefault = true;
+            }
+            else if (defaultCombinations.Count > 1)
+            {
+                // Multiple defaults found, keep only the first one
+                _logger.Warning("Multiple default combinations found for item {ItemId}, keeping only the first", dto.Id);
+                foreach (var combo in defaultCombinations.Skip(1))
+                {
+                    combo.IsDefault = false;
+                }
+            }
 
             try
             {

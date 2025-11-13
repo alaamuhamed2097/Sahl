@@ -21,5 +21,11 @@ namespace Shared.DTOs.ECommerce.Item
         [Required(ErrorMessageResourceName = "FieldRequired", ErrorMessageResourceType = typeof(ValidationResources))]
         [Range(0, int.MaxValue, ErrorMessageResourceName = "QuantityCannotBeNegative", ErrorMessageResourceType = typeof(ValidationResources))]
         public int Quantity { get; set; }
+
+        /// <summary>
+        /// Indicates if this is the default pricing combination for the item.
+        /// Only one combination per item can be marked as default.
+        /// </summary>
+        public bool IsDefault { get; set; } = false;
     }
 }

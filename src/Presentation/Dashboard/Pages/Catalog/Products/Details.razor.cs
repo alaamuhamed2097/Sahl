@@ -54,7 +54,18 @@ namespace Dashboard.Pages.Catalog.Products
         {
             Images = new List<ItemImageDto>(),
             ItemAttributes = new List<ItemAttributeDto>(),
-            ItemAttributeCombinationPricings = new List<ItemAttributeCombinationPricingDto>()
+            ItemAttributeCombinationPricings = new List<ItemAttributeCombinationPricingDto>
+            {
+                // Initialize with a default combination
+                new ItemAttributeCombinationPricingDto
+                {
+                    AttributeIds = string.Empty,
+                    Price = 0,
+                    SalesPrice = 0,
+                    Quantity = 0,
+                    IsDefault = true
+                }
+            }
         };
 
         // Validation states
@@ -82,7 +93,7 @@ namespace Dashboard.Pages.Catalog.Products
             // Initialize validation dictionary
             fieldValidation["CategoryId"] = true;
             fieldValidation["UnitId"] = true;
-            fieldValidation["Quantity"] = true;
+            // REMOVED: Quantity and ThumbnailImage validation - handled elsewhere
             fieldValidation["ThumbnailImage"] = true;
 
             await LoadData();
@@ -546,9 +557,41 @@ await ShowErrorMessage(ValidationResources.Error, ex.Message);
 
         private void RemoveCombination(ItemAttributeCombinationPricingDto combination)
         {
+            // Don't allow removing the default combination if it's the only one
+            if (combination.IsDefault && Model.ItemAttributeCombinationPricings.Count == 1)
+            {
+                ShowErrorMessage(
+                    ValidationResources.Error,
+                    "Cannot remove the default combination. At least one combination is required.").Wait();
+                return;
+            }
+
             Model.ItemAttributeCombinationPricings.Remove(combination);
+
+            // If we removed the default, set another one as default
+            if (combination.IsDefault && Model.ItemAttributeCombinationPricings.Any())
+            {
+                Model.ItemAttributeCombinationPricings.First().IsDefault = true;
+            }
         }
 
+        /// <summary>
+        /// Sets a combination as the default one
+        /// </summary>
+        private void SetDefaultCombination(ItemAttributeCombinationPricingDto combination)
+        {
+            // Unmark all others
+            foreach (var combo in Model.ItemAttributeCombinationPricings)
+            {
+                combo.IsDefault = false;
+            }
+
+            // Mark this one as default
+            combination.IsDefault = true;
+            
+            Console.WriteLine($"✅ Set combination as default: {GetCombinationAttributesDisplay(combination.AttributeIds)}");
+            StateHasChanged();
+        }
         protected async Task Save()
         {
             try
@@ -840,9 +883,7 @@ await ShowErrorMessage(ValidationResources.Error, ex.Message);
 
         private void ValidateForm()
         {
-            // Quantity validation - only validate if stock status is true (in stock)
-            fieldValidation["Quantity"] = !Model.StockStatus || Model.Quantity > 0;
-
+            // REMOVED: Quantity validation - now handled by combinations
             // Thumbnail/Image validation - either thumbnail or at least one image is required
             fieldValidation["ThumbnailImage"] = !string.IsNullOrEmpty(Model.ThumbnailImage) ||
                  (Model.Images != null && Model.Images.Count > 0);

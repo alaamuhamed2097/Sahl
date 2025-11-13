@@ -23,9 +23,24 @@ namespace Dashboard.Pages.Catalog.Products
 
             if (!priceAffectingAttributes.Any())
             {
-                Console.WriteLine($"?? No price-affecting attributes, clearing combinations");
-                // No price-affecting attributes, clear combinations
-                Model.ItemAttributeCombinationPricings.Clear();
+                Console.WriteLine($"?? No price-affecting attributes, ensuring default combination exists");
+                // No price-affecting attributes, ensure we have a default combination
+                if (!Model.ItemAttributeCombinationPricings.Any())
+                {
+                    Model.ItemAttributeCombinationPricings.Add(new ItemAttributeCombinationPricingDto
+                    {
+                        AttributeIds = string.Empty,
+                        Price = 0,
+                        SalesPrice = 0,
+                        Quantity = 0,
+                        IsDefault = true
+                    });
+                }
+                else
+                {
+                    // Ensure at least one is marked as default
+                    EnsureSingleDefaultCombination();
+                }
                 return;
             }
 
@@ -86,7 +101,7 @@ namespace Dashboard.Pages.Catalog.Products
                             }
                             else
                             {
-                                Console.WriteLine($"       ? No option found for value: {value.Trim()}");
+                                Console.WriteLine($"       ?? No option found for value: {value.Trim()}");
                             }
                         }
                     }
@@ -138,11 +153,25 @@ namespace Dashboard.Pages.Catalog.Products
             // Store the mapping for display purposes
             _optionDisplayMap = optionDisplayMap;
 
-            // If no valid options, clear combinations
+            // If no valid options, ensure default combination
             if (!attributeOptionSets.Any())
             {
-                Console.WriteLine($"?? No valid option sets, clearing combinations");
-                Model.ItemAttributeCombinationPricings.Clear();
+                Console.WriteLine($"?? No valid option sets, ensuring default combination exists");
+                if (!Model.ItemAttributeCombinationPricings.Any())
+                {
+                    Model.ItemAttributeCombinationPricings.Add(new ItemAttributeCombinationPricingDto
+                    {
+                        AttributeIds = string.Empty,
+                        Price = 0,
+                        SalesPrice = 0,
+                        Quantity = 0,
+                        IsDefault = true
+                    });
+                }
+                else
+                {
+                    EnsureSingleDefaultCombination();
+                }
                 return;
             }
 
@@ -150,7 +179,13 @@ namespace Dashboard.Pages.Catalog.Products
 
             // Generate Cartesian product of all attribute options
             var combinations = GenerateCartesianProduct(attributeOptionSets);
-            Console.WriteLine($"?? Generated {combinations.Count} combinations");
+            Console.WriteLine($"? Generated {combinations.Count} combinations");
+
+            // Remember which combination was default before
+            var previousDefaultId = Model.ItemAttributeCombinationPricings
+                .FirstOrDefault(c => c.IsDefault)?.Id ?? Guid.Empty;
+            var previousDefaultAttributeIds = Model.ItemAttributeCombinationPricings
+                .FirstOrDefault(c => c.IsDefault)?.AttributeIds ?? string.Empty;
 
             // Create or update combination pricings
             var newCombinations = new List<ItemAttributeCombinationPricingDto>();
@@ -168,28 +203,88 @@ namespace Dashboard.Pages.Catalog.Products
 
                 if (existing != null)
                 {
-                    Console.WriteLine($"     ?? Keeping existing combination");
+                    Console.WriteLine($"     ? Keeping existing combination");
                     // Keep existing combination with its price
                     newCombinations.Add(existing);
                 }
                 else
                 {
                     Console.WriteLine($"     ? Creating new combination");
+                    // Get default price from existing combinations or use 0
+                    var defaultPrice = Model.ItemAttributeCombinationPricings.Any() 
+                        ? Model.ItemAttributeCombinationPricings.First().Price 
+                        : 0;
+                    
                     // Create new combination with default values
                     newCombinations.Add(new ItemAttributeCombinationPricingDto
                     {
                         AttributeIds = attributeIds,
-                        Price = Model.Price ?? 0,
-                        SalesPrice = Model.Price ?? 0,
-                        Quantity = 0
+                        Price = defaultPrice,
+                        SalesPrice = defaultPrice,
+                        Quantity = 0,
+                        IsDefault = false
                     });
                 }
             }
 
             // Replace the combinations list
             Model.ItemAttributeCombinationPricings = newCombinations;
+
+            // Restore or set default
+            if (previousDefaultId != Guid.Empty)
+            {
+                var restoredDefault = newCombinations.FirstOrDefault(c => 
+                    c.Id == previousDefaultId || c.AttributeIds == previousDefaultAttributeIds);
+                if (restoredDefault != null)
+                {
+                    restoredDefault.IsDefault = true;
+                    Console.WriteLine($"? Restored previous default combination");
+                }
+                else
+                {
+                    // Previous default not found, set first as default
+                    newCombinations.First().IsDefault = true;
+                    Console.WriteLine($"?? Previous default not found, set first as default");
+                }
+            }
+            else
+            {
+                // No previous default, set first as default
+                newCombinations.First().IsDefault = true;
+                Console.WriteLine($"? Set first combination as default");
+            }
+
             Console.WriteLine($"? GenerateAttributeCombinations - COMPLETE - Total combinations: {newCombinations.Count}");
             StateHasChanged();
+        }
+        
+        /// <summary>
+        /// Ensures only one combination is marked as default
+        /// </summary>
+        private void EnsureSingleDefaultCombination()
+        {
+            var defaultCombinations = Model.ItemAttributeCombinationPricings
+                .Where(c => c.IsDefault)
+                .ToList();
+
+            if (defaultCombinations.Count == 0)
+            {
+                // No default, set first as default
+                if (Model.ItemAttributeCombinationPricings.Any())
+                {
+                    Model.ItemAttributeCombinationPricings.First().IsDefault = true;
+                    Console.WriteLine($"? Set first combination as default");
+                }
+            }
+            else if (defaultCombinations.Count > 1)
+            {
+                // Multiple defaults, keep only first
+                Console.WriteLine($"?? Multiple default combinations found, keeping only first");
+                foreach (var combo in defaultCombinations.Skip(1))
+                {
+                    combo.IsDefault = false;
+                }
+            }
         }
         
         /// <summary>
@@ -266,18 +361,43 @@ namespace Dashboard.Pages.Catalog.Products
                     Console.WriteLine($"?? Loading category attributes...");
                     await LoadCategoryAttributes();
 
-                    Console.WriteLine($"??? Clearing existing combinations...");
-                    // Clear existing combinations when category changes
-                    Model.ItemAttributeCombinationPricings.Clear();
+                    Console.WriteLine($"?? Resetting to default combination...");
+                    // Reset to default combination when category changes
+                    var defaultPrice = Model.ItemAttributeCombinationPricings.Any() 
+                        ? Model.ItemAttributeCombinationPricings.First(c => c.IsDefault)?.Price ?? Model.ItemAttributeCombinationPricings.First().Price
+                        : 0;
+                    
+                    Model.ItemAttributeCombinationPricings = new List<ItemAttributeCombinationPricingDto>
+                    {
+                        new ItemAttributeCombinationPricingDto
+                        {
+                            AttributeIds = string.Empty,
+                            Price = defaultPrice,
+                            SalesPrice = defaultPrice,
+                            Quantity = 0,
+                            IsDefault = true
+                        }
+                    };
 
                     Console.WriteLine($"? Category change completed - Attributes loaded: {categoryAttributes.Count}");
                 }
                 else
                 {
-                    Console.WriteLine($"??? Category cleared - resetting all data");
+                    Console.WriteLine($"?? Category cleared - resetting all data");
                     categoryAttributes.Clear();
                     Model.ItemAttributes.Clear();
-                    Model.ItemAttributeCombinationPricings.Clear();
+                    // Keep default combination
+                    Model.ItemAttributeCombinationPricings = new List<ItemAttributeCombinationPricingDto>
+                    {
+                        new ItemAttributeCombinationPricingDto
+                        {
+                            AttributeIds = string.Empty,
+                            Price = 0,
+                            SalesPrice = 0,
+                            Quantity = 0,
+                            IsDefault = true
+                        }
+                    };
                 }
 
                 StateHasChanged();
