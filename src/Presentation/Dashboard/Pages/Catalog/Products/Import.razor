@@ -978,7 +978,8 @@
                 item.ItemAttributeCombinationPricings.Add(new ItemAttributeCombinationPricingDto
                 {
                     AttributeIds = string.Join(",", combo),
-                    FinalPrice = imported.Price,
+                    Price = imported.Price,
+                    SalesPrice = imported.Price,
                     Quantity = 0
                 });
             }

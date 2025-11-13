@@ -115,9 +115,9 @@ namespace Shared.DTOs.ECommerce.Item
             {
                 foreach (var pricing in ItemAttributeCombinationPricings)
                 {
-                    // This would need the conversion factory to convert individual prices
-                    // For now, applying the same rate
-                    pricing.FinalPrice *= conversion.ExchangeRate;
+                    // Apply conversion to both Price and SalesPrice
+                    pricing.Price *= conversion.ExchangeRate;
+                    pricing.SalesPrice *= conversion.ExchangeRate;
                 }
             }
         }

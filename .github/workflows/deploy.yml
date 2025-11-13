@@ -48,30 +48,30 @@ jobs:
       - name: Deploy API to IIS
         run: |
           Write-Host "=========================================="
-          Write-Host "Deploying SahlApi..."
+          Write-Host "Deploying BasitApi..."
           Write-Host "=========================================="
           
           # Backup appsettings files
           Write-Host "Step 1: Backing up appsettings files..."
-          if (Test-Path "C:\0ALI\WebSites\SahlApi\appsettings.json") {
-            Copy-Item "C:\0ALI\WebSites\SahlApi\appsettings.json" "C:\temp\deployment-backup\api-appsettings.json" -Force
+          if (Test-Path "C:\0ALI\WebSites\BasitApi\appsettings.json") {
+            Copy-Item "C:\0ALI\WebSites\BasitApi\appsettings.json" "C:\temp\deployment-backup\api-appsettings.json" -Force
             Write-Host "  - appsettings.json backed up"
           }
-          Get-ChildItem "C:\0ALI\WebSites\SahlApi\appsettings.*.json" -ErrorAction SilentlyContinue | ForEach-Object {
+          Get-ChildItem "C:\0ALI\WebSites\BasitApi\appsettings.*.json" -ErrorAction SilentlyContinue | ForEach-Object {
             Copy-Item $_.FullName "C:\temp\deployment-backup\" -Force
             Write-Host "  - $($_.Name) backed up"
           }
           
           # Backup web.config
-          if (Test-Path "C:\0ALI\WebSites\SahlApi\web.config") {
-            Copy-Item "C:\0ALI\WebSites\SahlApi\web.config" "C:\temp\deployment-backup\api-web.config" -Force
+          if (Test-Path "C:\0ALI\WebSites\BasitApi\web.config") {
+            Copy-Item "C:\0ALI\WebSites\BasitApi\web.config" "C:\temp\deployment-backup\api-web.config" -Force
             Write-Host "  - web.config backed up"
           }
           
           # Backup wwwroot (user files)
-          if (Test-Path "C:\0ALI\WebSites\SahlApi\wwwroot") {
+          if (Test-Path "C:\0ALI\WebSites\BasitApi\wwwroot") {
             Write-Host "Step 2: Backing up wwwroot (user files)..."
-            robocopy "C:\0ALI\WebSites\SahlApi\wwwroot" "C:\temp\deployment-backup\api-wwwroot" /E /R:2 /W:2 /NP /NDL /NFL
+            robocopy "C:\0ALI\WebSites\BasitApi\wwwroot" "C:\temp\deployment-backup\api-wwwroot" /E /R:2 /W:2 /NP /NDL /NFL
             if ($LASTEXITCODE -ge 8) { exit $LASTEXITCODE }
             $global:LASTEXITCODE = 0
             Write-Host "  - wwwroot backed up successfully"
@@ -79,36 +79,36 @@ jobs:
           
           # Enable maintenance mode
           Write-Host "Step 3: Enabling maintenance mode..."
-          Copy-Item ".github/workflows/maintenance.html" "C:\0ALI\WebSites\SahlApi\app_offline.htm" -Force
+          Copy-Item ".github/workflows/maintenance.html" "C:\0ALI\WebSites\BasitApi\app_offline.htm" -Force
           Start-Sleep -Seconds 2
           
           # Deploy new files
           Write-Host "Step 4: Deploying new files..."
-          robocopy "$env:TEMP\publish\api" "C:\0ALI\WebSites\SahlApi" /E /R:2 /W:2 /NP
+          robocopy "$env:TEMP\publish\api" "C:\0ALI\WebSites\BasitApi" /E /R:2 /W:2 /NP
           if ($LASTEXITCODE -ge 8) { exit $LASTEXITCODE }
           $global:LASTEXITCODE = 0
           
           # Restore appsettings files (CRITICAL)
           Write-Host "Step 5: Restoring appsettings files..."
           if (Test-Path "C:\temp\deployment-backup\api-appsettings.json") {
-            Copy-Item "C:\temp\deployment-backup\api-appsettings.json" "C:\0ALI\WebSites\SahlApi\appsettings.json" -Force
+            Copy-Item "C:\temp\deployment-backup\api-appsettings.json" "C:\0ALI\WebSites\BasitApi\appsettings.json" -Force
             Write-Host "  - appsettings.json restored"
           }
           Get-ChildItem "C:\temp\deployment-backup\appsettings.*.json" -ErrorAction SilentlyContinue | ForEach-Object {
-            Copy-Item $_.FullName "C:\0ALI\WebSites\SahlApi\" -Force
+            Copy-Item $_.FullName "C:\0ALI\WebSites\BasitApi\" -Force
             Write-Host "  - $($_.Name) restored"
           }
           
           # Restore web.config
           if (Test-Path "C:\temp\deployment-backup\api-web.config") {
-            Copy-Item "C:\temp\deployment-backup\api-web.config" "C:\0ALI\WebSites\SahlApi\web.config" -Force
+            Copy-Item "C:\temp\deployment-backup\api-web.config" "C:\0ALI\WebSites\BasitApi\web.config" -Force
             Write-Host "  - web.config restored"
           }
           
           # Restore wwwroot
           if (Test-Path "C:\temp\deployment-backup\api-wwwroot") {
             Write-Host "Step 6: Restoring wwwroot (user files)..."
-            robocopy "C:\temp\deployment-backup\api-wwwroot" "C:\0ALI\WebSites\SahlApi\wwwroot" /E /R:2 /W:2 /NP /NDL /NFL
+            robocopy "C:\temp\deployment-backup\api-wwwroot" "C:\0ALI\WebSites\BasitApi\wwwroot" /E /R:2 /W:2 /NP /NDL /NFL
             if ($LASTEXITCODE -ge 8) { exit $LASTEXITCODE }
             $global:LASTEXITCODE = 0
             Write-Host "  - wwwroot restored successfully"
@@ -117,7 +117,7 @@ jobs:
           # Verify critical files exist
           Write-Host "Step 7: Verifying critical files..."
           $apiCriticalFiles = @(
-            "C:\0ALI\WebSites\SahlApi\appsettings.json"
+            "C:\0ALI\WebSites\BasitApi\appsettings.json"
           )
           foreach ($file in $apiCriticalFiles) {
             if (Test-Path $file) {
@@ -130,63 +130,63 @@ jobs:
           
           # Disable maintenance mode
           Write-Host "Step 8: Disabling maintenance mode..."
-          Remove-Item "C:\0ALI\WebSites\SahlApi\app_offline.htm" -ErrorAction SilentlyContinue
+          Remove-Item "C:\0ALI\WebSites\BasitApi\app_offline.htm" -ErrorAction SilentlyContinue
           
           Write-Host "=========================================="
-          Write-Host "SahlApi deployed successfully!" -ForegroundColor Green
+          Write-Host "BasitApi deployed successfully!" -ForegroundColor Green
           Write-Host "=========================================="
       
       # 9️⃣ نشر الـ Dashboard مع حماية web.config + appsettings
       - name: Deploy Dashboard to IIS
         run: |
           Write-Host "=========================================="
-          Write-Host "Deploying SahlDashboard..."
+          Write-Host "Deploying BasitDashboard..."
           Write-Host "=========================================="
           
           # Backup web.config (CRITICAL for Dashboard)
           Write-Host "Step 1: Backing up web.config..."
-          if (Test-Path "C:\0ALI\WebSites\SahlDashboard\web.config") {
-            Copy-Item "C:\0ALI\WebSites\SahlDashboard\web.config" "C:\temp\deployment-backup\dash-web.config" -Force
+          if (Test-Path "C:\0ALI\WebSites\BasitDashboard\web.config") {
+            Copy-Item "C:\0ALI\WebSites\BasitDashboard\web.config" "C:\temp\deployment-backup\dash-web.config" -Force
             Write-Host "  - web.config backed up"
           }
           
           # Backup appsettings files
           Write-Host "Step 2: Backing up appsettings files..."
-          if (Test-Path "C:\0ALI\WebSites\SahlDashboard\appsettings.json") {
-            Copy-Item "C:\0ALI\WebSites\SahlDashboard\appsettings.json" "C:\temp\deployment-backup\dash-appsettings.json" -Force
+          if (Test-Path "C:\0ALI\WebSites\BasitDashboard\appsettings.json") {
+            Copy-Item "C:\0ALI\WebSites\BasitDashboard\appsettings.json" "C:\temp\deployment-backup\dash-appsettings.json" -Force
             Write-Host "  - appsettings.json backed up"
           }
-          Get-ChildItem "C:\0ALI\WebSites\SahlDashboard\appsettings.*.json" -ErrorAction SilentlyContinue | ForEach-Object {
+          Get-ChildItem "C:\0ALI\WebSites\BasitDashboard\appsettings.*.json" -ErrorAction SilentlyContinue | ForEach-Object {
             Copy-Item $_.FullName "C:\temp\deployment-backup\" -Force
             Write-Host "  - $($_.Name) backed up"
           }
           
           # Enable maintenance mode
           Write-Host "Step 3: Enabling maintenance mode..."
-          Copy-Item ".github/workflows/maintenance.html" "C:\0ALI\WebSites\SahlDashboard\app_offline.htm" -Force
+          Copy-Item ".github/workflows/maintenance.html" "C:\0ALI\WebSites\BasitDashboard\app_offline.htm" -Force
           Start-Sleep -Seconds 2
           
           # Deploy new files
           Write-Host "Step 4: Deploying new files..."
-          robocopy "$env:TEMP\publish\dashboard" "C:\0ALI\WebSites\SahlDashboard" /E /R:2 /W:2 /NP
+          robocopy "$env:TEMP\publish\dashboard" "C:\0ALI\WebSites\BasitDashboard" /E /R:2 /W:2 /NP
           if ($LASTEXITCODE -ge 8) { exit $LASTEXITCODE }
           $global:LASTEXITCODE = 0
           
           # Restore web.config (CRITICAL)
           Write-Host "Step 5: Restoring web.config..."
           if (Test-Path "C:\temp\deployment-backup\dash-web.config") {
-            Copy-Item "C:\temp\deployment-backup\dash-web.config" "C:\0ALI\WebSites\SahlDashboard\web.config" -Force
+            Copy-Item "C:\temp\deployment-backup\dash-web.config" "C:\0ALI\WebSites\BasitDashboard\web.config" -Force
             Write-Host "  - web.config restored"
           }
           
           # Restore appsettings files
           Write-Host "Step 6: Restoring appsettings files..."
           if (Test-Path "C:\temp\deployment-backup\dash-appsettings.json") {
-            Copy-Item "C:\temp\deployment-backup\dash-appsettings.json" "C:\0ALI\WebSites\SahlDashboard\appsettings.json" -Force
+            Copy-Item "C:\temp\deployment-backup\dash-appsettings.json" "C:\0ALI\WebSites\BasitDashboard\appsettings.json" -Force
             Write-Host "  - appsettings.json restored"
           }
           Get-ChildItem "C:\temp\deployment-backup\appsettings.*.json" -ErrorAction SilentlyContinue | ForEach-Object {
-            $destPath = "C:\0ALI\WebSites\SahlDashboard\$($_.Name)"
+            $destPath = "C:\0ALI\WebSites\BasitDashboard\$($_.Name)"
             Copy-Item $_.FullName $destPath -Force
             Write-Host "  - $($_.Name) restored"
           }
@@ -194,7 +194,7 @@ jobs:
           # Verify critical files exist
           Write-Host "Step 7: Verifying critical files..."
           $dashCriticalFiles = @(
-            "C:\0ALI\WebSites\SahlDashboard\web.config"
+            "C:\0ALI\WebSites\BasitDashboard\web.config"
           )
           foreach ($file in $dashCriticalFiles) {
             if (Test-Path $file) {
@@ -207,10 +207,10 @@ jobs:
           
           # Disable maintenance mode
           Write-Host "Step 8: Disabling maintenance mode..."
-          Remove-Item "C:\0ALI\WebSites\SahlDashboard\app_offline.htm" -ErrorAction SilentlyContinue
+          Remove-Item "C:\0ALI\WebSites\BasitDashboard\app_offline.htm" -ErrorAction SilentlyContinue
           
           Write-Host "=========================================="
-          Write-Host "SahlDashboard deployed successfully!" -ForegroundColor Green
+          Write-Host "BasitDashboard deployed successfully!" -ForegroundColor Green
           Write-Host "=========================================="
       
       # 🔟 إعادة تشغيل Application Pools
@@ -220,7 +220,7 @@ jobs:
           Write-Host "Restarting Application Pools..."
           Write-Host "=========================================="
           
-          $sites = @("SahlApi", "SahlDashboard")
+          $sites = @("BasitApi", "BasitDashboard")
           
           foreach ($site in $sites) {
             try {

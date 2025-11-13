@@ -826,22 +826,40 @@
   <data name="CategoryHasChild" xml:space="preserve">
     <value>This category contains subcategories and cannot be deleted.</value>
   </data>
-	<data name="FillBasicInformationFields" xml:space="preserve">
-  <value>Please fill in all basic information fields (product name, short description, and descriptions in Arabic and English).</value>
-</data>
-	<data name="FillSEOFields" xml:space="preserve">
-  <value>Please fill in all SEO fields (SEO title, description, and keywords).</value>
-</data>
-	<data name="SelectCategoryBrandUnit" xml:space="preserve">
-  <value>Please select the category, brand, and unit.</value>
-</data>
-	<data name="UploadThumbnailOrImages" xml:space="preserve">
-  <value>Please upload at least a thumbnail or product images.</value>
-</data>
-	<data name="AttributesOptional" xml:space="preserve">
-  <value>Attributes are optional. You can proceed to save.</value>
-</data>
-	<data name="FailedToLoadCategoryAttributes" xml:space="preserve">
-  <value>Failed to load category attributes.</value>
-</data>
+  <data name="FillBasicInformationFields" xml:space="preserve">
+    <value>Please fill in all basic information fields (product name, short description, and descriptions in Arabic and English).</value>
+  </data>
+  <data name="FillSEOFields" xml:space="preserve">
+    <value>Please fill in all SEO fields (SEO title, description, and keywords).</value>
+  </data>
+  <data name="SelectCategoryBrandUnit" xml:space="preserve">
+    <value>Please select the category, brand, and unit.</value>
+  </data>
+  <data name="UploadThumbnailOrImages" xml:space="preserve">
+    <value>Please upload at least a thumbnail or product images.</value>
+  </data>
+  <data name="AttributesOptional" xml:space="preserve">
+    <value>Attributes are optional. You can proceed to save.</value>
+  </data>
+  <data name="FailedToLoadCategoryAttributes" xml:space="preserve">
+    <value>Failed to load category attributes.</value>
+  </data>
+  <data name="PriceMustBeGreaterThanZero" xml:space="preserve">
+    <value>Price must be greater than 0</value>
+  </data>
+  <data name="QuantityCannotBeNegative" xml:space="preserve">
+    <value>Quantity cannot be negative</value>
+  </data>
+  <data name="AllCombinationsPriceValidation" xml:space="preserve">
+    <value>All combinations must have price and sales price greater than 0</value>
+  </data>
+  <data name="PriceValidation" xml:space="preserve">
+    <value>Price must be greater than 0</value>
+  </data>
+  <data name="QuantityValidation" xml:space="preserve">
+    <value>Quantity cannot be negative</value>
+  </data>
+  <data name="CategorySelectionRequired" xml:space="preserve">
+    <value>Please select a category in the Classification step to configure attributes.</value>
+  </data>
 </root>

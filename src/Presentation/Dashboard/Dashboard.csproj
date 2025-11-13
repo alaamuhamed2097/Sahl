@@ -50,10 +50,19 @@
 		<WasmBuildNative Condition="'$(Configuration)' == 'Release'">true</WasmBuildNative>
 
 		<!-- ========== 🐛 Debug Settings ========== -->
-		<DebuggerSupport Condition="'$(Configuration)' == 'Debug'">true</DebuggerSupport>
-		<DebugType Condition="'$(Configuration)' == 'Debug'">portable</DebugType>
-		<DebugSymbols Condition="'$(Configuration)' == 'Debug'">true</DebugSymbols>
-		<WasmDebugLevel Condition="'$(Configuration)' == 'Debug'">-1</WasmDebugLevel>
+		<!-- ✅ CRITICAL FIX: Disable aggressive debugging to prevent debugger statement hang -->
+		<DebuggerSupport Condition="'$(Configuration)' == 'Debug'">false</DebuggerSupport>
+		<DebugType Condition="'$(Configuration)' == 'Debug'">none</DebugType>
+		<DebugSymbols Condition="'$(Configuration)' == 'Debug'">false</DebugSymbols>
+		<WasmDebugLevel Condition="'$(Configuration)' == 'Debug'">0</WasmDebugLevel>
+		<CopyOutputSymbolsToOutputDirectory Condition="'$(Configuration)' == 'Debug'">false</CopyOutputSymbolsToOutputDirectory>
+
+		<!-- Disable debug symbols in Release mode -->
+		<DebuggerSupport Condition="'$(Configuration)' == 'Release'">false</DebuggerSupport>
+		<DebugType Condition="'$(Configuration)' == 'Release'">none</DebugType>
+		<DebugSymbols Condition="'$(Configuration)' == 'Release'">false</DebugSymbols>
+		<CopyOutputSymbolsToOutputDirectory Condition="'$(Configuration)' == 'Release'">false</CopyOutputSymbolsToOutputDirectory>
+		<CopyOutputSymbolsToPublishDirectory Condition="'$(Configuration)' == 'Release'">false</CopyOutputSymbolsToPublishDirectory>
 
 		<!-- Disable AOT in Debug for faster builds -->
 		<RunAOTCompilation Condition="'$(Configuration)' == 'Debug'">false</RunAOTCompilation>
@@ -126,6 +135,7 @@
 		To see available assemblies, check: bin\Release\net9.0\publish\wwwroot\_framework\
 		
 		Common candidates for lazy loading:
+		+
 		- Third-party libraries used in specific features
 		- Large System assemblies used rarely
 		

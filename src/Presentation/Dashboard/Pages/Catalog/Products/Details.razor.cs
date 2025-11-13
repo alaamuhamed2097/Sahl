@@ -486,39 +486,6 @@ await ShowErrorMessage(ValidationResources.Error, ex.Message);
             }
         }
 
-        private async Task HandleCombinationImageUpload(InputFileChangeEventArgs e, ItemAttributeCombinationPricingDto combination)
-        {
-            try
-            {
-                if (e.File == null) return;
-
-                // Validate file size
-                if (e.File.Size > MaxFileSize)
-                {
-                    await ShowErrorMessage(
-         ValidationResources.Error,
-              $"{e.File.Name} {string.Format(ValidationResources.ImageSizeLimitExceeded, MaxFileSize / 1024 / 1024)} {MaxFileSize / 1024 / 1024}MB");
-                    return;
-                }
-
-                // Validate content type
-                if (!e.File.ContentType.StartsWith("image/"))
-                {
-                    await ShowErrorMessage(
-                   ValidationResources.Error,
-            $"{e.File.Name} {ValidationResources.NotValidImage}");
-                    return;
-                }
-
-                combination.Image = await ConvertFileToBase64(e.File);
-                StateHasChanged();
-            }
-            catch (Exception ex)
-            {
-                await ShowErrorMessage(ValidationResources.Error, ex.Message);
-            }
-        }
-
         // ========== UI Action Methods ==========
         protected async Task RemoveThumbnail()
         {
@@ -599,6 +566,13 @@ await ShowErrorMessage(ValidationResources.Error, ex.Message);
                     return;
                 }
 
+                // Validate attribute combinations
+                if (!ValidateAttributeCombinations())
+                {
+                    showValidationErrors = true;
+                    return;
+                }
+
                 if (!IsFormValid())
                 {
                     showValidationErrors = true;
@@ -659,7 +633,7 @@ await ShowErrorMessage(ValidationResources.Error, ex.Message);
 
             foreach (var categoryAttr in categoryAttributes.Where(ca => ca.IsRequired))
             {
-                var itemAttr = Model.ItemAttributes.FirstOrDefault(ia => ia.AttributeId == categoryAttr.Id);
+                var itemAttr = Model.ItemAttributes.FirstOrDefault(ia => ia.AttributeId == categoryAttr.AttributeId);
                 if (itemAttr == null || string.IsNullOrWhiteSpace(itemAttr.Value))
                 {
                     Console.WriteLine($"❌ Required attribute '{categoryAttr.Title}' is missing or empty");
@@ -667,6 +641,87 @@ await ShowErrorMessage(ValidationResources.Error, ex.Message);
                 }
             }
 
+            return true;
+        }
+
+        /// <summary>
+        /// Validates attribute combinations have valid pricing
+        /// </summary>
+        private bool ValidateAttributeCombinations()
+        {
+            Console.WriteLine($"🔍 ValidateAttributeCombinations - START");
+            Console.WriteLine($"📊 Total combinations: {Model.ItemAttributeCombinationPricings.Count}");
+            
+            if (!Model.ItemAttributeCombinationPricings.Any())
+            {
+                Console.WriteLine($"✅ No combinations to validate");
+                return true; // No combinations to validate
+            }
+
+            var hasErrors = false;
+            var errorMessages = new List<string>();
+
+            for (int i = 0; i < Model.ItemAttributeCombinationPricings.Count; i++)
+            {
+                var combination = Model.ItemAttributeCombinationPricings[i];
+                var displayName = GetCombinationAttributesDisplay(combination.AttributeIds);
+                
+                Console.WriteLine($"🔍 Validating combination {i + 1}: {displayName}");
+
+                // Validate Price
+                if (combination.Price <= 0)
+                {
+                    hasErrors = true;
+                    var errorMsg = $"Combination '{displayName}' must have a price greater than 0";
+                    errorMessages.Add(errorMsg);
+                    Console.WriteLine($"  ❌ {errorMsg}");
+                }
+                else
+                {
+                    Console.WriteLine($"  ✅ Price: {combination.Price}");
+                }
+
+                // Validate SalesPrice
+                if (combination.SalesPrice <= 0)
+                {
+                    hasErrors = true;
+                    var errorMsg = $"Combination '{displayName}' must have a sales price greater than 0";
+                    errorMessages.Add(errorMsg);
+                    Console.WriteLine($"  ❌ {errorMsg}");
+                }
+                else
+                {
+                    Console.WriteLine($"  ✅ Sales Price: {combination.SalesPrice}");
+                }
+
+                // Validate Quantity
+                if (combination.Quantity < 0)
+                {
+                    hasErrors = true;
+                    var errorMsg = $"Combination '{displayName}' cannot have a negative quantity";
+                    errorMessages.Add(errorMsg);
+                    Console.WriteLine($"  ❌ {errorMsg}");
+                }
+                else
+                {
+                    Console.WriteLine($"  ✅ Quantity: {combination.Quantity}");
+                }
+            }
+
+            if (hasErrors)
+            {
+                Console.WriteLine($"❌ Validation FAILED - {errorMessages.Count} error(s)");
+                
+                // Show all errors in a single message
+                var errorMessage = string.Join("\n", errorMessages);
+                ShowErrorMessage(
+                    ValidationResources.ValidationError,
+                    $"Please fix the following errors in attribute combinations:\n\n{errorMessage}").Wait();
+                
+                return false;
+            }
+
+            Console.WriteLine($"✅ ValidateAttributeCombinations - PASSED");
             return true;
         }
 

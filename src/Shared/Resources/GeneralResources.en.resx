@@ -1168,5 +1168,17 @@
 	<data name="Tips" xml:space="preserve">
   <value>Tips</value>
 </data>
+  <data name="LoadingAttributes" xml:space="preserve">
+    <value>Loading attributes...</value>
+  </data>
+  <data name="PleaseSelectCategoryToConfigureAttributes" xml:space="preserve">
+    <value>Please select a category in the Classification step to configure attributes.</value>
+  </data>
+  <data name="AllCombinationsMustHavePriceGreaterThanZero" xml:space="preserve">
+    <value>All combinations must have a price greater than 0</value>
+  </data>
+  <data name="PriceMustBeGreaterThanZero" xml:space="preserve">
+    <value>Price must be greater than 0</value>
+  </data>
 
 </root>

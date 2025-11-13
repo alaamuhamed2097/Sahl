@@ -435,9 +435,9 @@
                             {
                                 <div class="text-center py-5">
                                     <div class="spinner-border text-primary" role="status">
-                                        <span class="visually-hidden">Loading...</span>
+                                        <span class="visually-hidden">@GeneralResources.Loading</span>
                                     </div>
-                                    <p class="mt-2 text-muted">Loading attributes...</p>
+                                    <p class="mt-2 text-muted">@GeneralResources.Loading...</p>
                                 </div>
                             }
                             else if (Model.CategoryId != Guid.Empty)
@@ -457,46 +457,77 @@
                                             <span class="badge bg-info">@Model.ItemAttributeCombinationPricings.Count</span>
                                         </div>
                                         <div class="card-body">
+                                            <div class="alert alert-warning">
+                                                <i class="fas fa-exclamation-triangle me-2"></i>
+                                                <strong>@GeneralResources.ImportantNotes:</strong>
+                                                <ul class="mb-0 mt-2">
+                                                    <li>@ValidationResources.AllCombinationsPriceValidation</li>
+                                                </ul>
+                                            </div>
+                                            
                                             <div class="table-responsive">
                                                 <table class="table table-bordered">
                                                     <thead>
                                                         <tr>
                                                             <th>@ECommerceResources.Attributes</th>
-                                                            <th>@FormResources.Price</th>
-                                                            <th>@ECommerceResources.Quantity</th>
-                                                            <th>@FormResources.Image</th>
+                                                            <th>@FormResources.Price <span class="text-danger">*</span></th>
+                                                            <th>@ECommerceResources.SalesPrice <span class="text-danger">*</span></th>
+                                                            <th>@ECommerceResources.Quantity <span class="text-danger">*</span></th>
                                                             <th>@ECommerceResources.Actions</th>
                                                         </tr>
                                                     </thead>
                                                     <tbody>
                                                         @foreach (var combination in Model.ItemAttributeCombinationPricings)
                                                         {
-                                                            <tr>
+                                                            var hasInvalidPrice = combination.Price <= 0;
+                                                            var hasInvalidSalesPrice = combination.SalesPrice <= 0;
+                                                            var hasInvalidQuantity = combination.Quantity < 0;
+                                                            var hasErrors = hasInvalidPrice || hasInvalidSalesPrice || hasInvalidQuantity;
+                                                            
+                                                            <tr class="@(hasErrors ? "table-danger" : "")">
                                                                 <td>
                                                                     @GetCombinationAttributesDisplay(combination.AttributeIds)
                                                                 </td>
                                                                 <td>
-                                                                    <InputNumber class="form-control" @bind-Value="combination.FinalPrice" />
-                                                                </td>
-                                                                <td>
-                                                                    <InputNumber class="form-control" @bind-Value="combination.Quantity" />
-                                                                </td>
-                                                                <td>
-                                                                    <InputFile class="form-control"
-                                                                               OnChange="@(e => HandleCombinationImageUpload(e, combination))"
-                                                                               accept="image/*" />
-                                                                    @if (!string.IsNullOrEmpty(combination.Image))
+                                                                    <InputNumber class="@($"form-control {(hasInvalidPrice && showValidationErrors ? "is-invalid" : "")}")" 
+                                                                                 @bind-Value="combination.Price" 
+                                                                                 min="0.01" 
+                                                                                 step="0.01" />
+                                                                    @if (hasInvalidPrice && showValidationErrors)
                                                                     {
-                                                                        <img src="@GetImageSourceForDisplay(combination.Image)" 
-                                                                             class="img-thumbnail mt-2" 
-                                                                             style="max-height: 50px;" />
+                                                                        <div class="invalid-feedback d-block">
+                                                                            @ValidationResources.PriceValidation
+                                                                        </div>
+                                                                    }
+                                                                </td>
+                                                                <td>
+                                                                    <InputNumber class="@($"form-control {(hasInvalidSalesPrice && showValidationErrors ? "is-invalid" : "")}")" 
+                                                                                 @bind-Value="combination.SalesPrice" 
+                                                                                 min="0.01" 
+                                                                                 step="0.01" />
+                                                                    @if (hasInvalidSalesPrice && showValidationErrors)
+                                                                    {
+                                                                        <div class="invalid-feedback d-block">
+                                                                            @ValidationResources.PriceValidation                                                                         
+                                                                        </div>
+                                                                    }
+                                                                </td>
+                                                                <td>
+                                                                    <InputNumber class="@($"form-control {(hasInvalidQuantity && showValidationErrors ? "is-invalid" : "")}")" 
+                                                                                 @bind-Value="combination.Quantity" 
+                                                                                 min="0" />
+                                                                    @if (hasInvalidQuantity && showValidationErrors)
+                                                                    {
+                                                                        <div class="invalid-feedback d-block">
+                                                                            @ValidationResources.QuantityValidation
+                                                                        </div>
                                                                     }
                                                                 </td>
                                                                 <td>
                                                                     <button type="button" 
                                                                             class="btn btn-sm btn-danger"
                                                                             @onclick="() => RemoveCombination(combination)">
-                                                                        <i class="fas fa-trash "></i>
+                                                                        <i class="fas fa-trash"></i>
                                                                     </button>
                                                                 </td>
                                                             </tr>
@@ -512,7 +543,7 @@
                             {
                                 <div class="alert alert-info">
                                     <i class="fas fa-info-circle me-2"></i>
-                                    Please select a category in the Classification step to configure attributes.
+                                    @ValidationResources.CategorySelectionRequired
                                 </div>
                             }
 

@@ -147,7 +147,10 @@ namespace BL.Services.Items
         {
             if (Id == Guid.Empty)
                 throw new ArgumentNullException(nameof(Id));
-            var item = _tableRepository.Get(x => x.Id == Id, includeProperties: "ItemImages,Category").FirstOrDefault();
+            var item = _tableRepository.Get(
+                x => x.Id == Id, 
+                includeProperties: "ItemImages,Category,ItemAttributes,ItemAttributeCombinationPricings"
+            ).FirstOrDefault();
             if (item == null)
                 throw new KeyNotFoundException(ValidationResources.EntityNotFound);
             return _mapper.MapModel<TbItem, ItemDto>(item);
@@ -216,6 +219,36 @@ namespace BL.Services.Items
                             .HardDelete(image.Id);
                         }
                     }
+                    
+                    // Delete existing attributes
+                    var existingAttributes = _unitOfWork
+                        .TableRepository<TbItemAttribute>()
+                        .Get(ia => ia.ItemId == dto.Id);
+                    
+                    if (existingAttributes.Any())
+                    {
+                        foreach (var attr in existingAttributes)
+                        {
+                            _unitOfWork
+                                .TableRepository<TbItemAttribute>()
+                                .HardDelete(attr.Id);
+                        }
+                    }
+                    
+                    // Delete existing combinations
+                    var existingCombinations = _unitOfWork
+                        .TableRepository<TbItemAttributeCombinationPricing>()
+                        .Get(c => c.ItemId == dto.Id);
+                    
+                    if (existingCombinations.Any())
+                    {
+                        foreach (var combo in existingCombinations)
+                        {
+                            _unitOfWork
+                                .TableRepository<TbItemAttributeCombinationPricing>()
+                                .HardDelete(combo.Id);
+                        }
+                    }
                 }
 
                 var entity = _mapper.MapModel<ItemDto, TbItem>(dto);
@@ -236,9 +269,49 @@ namespace BL.Services.Items
                 if (dto.Images?.Count(x => x.IsNew) > 0)
                     imagesSaved = _unitOfWork.TableRepository<TbItemImage>().AddRange(imageEntities, userId);
 
+                // Save ItemAttributes
+                var attributesSaved = true;
+                if (dto.ItemAttributes?.Any() == true)
+                {
+                    var attributeEntities = new List<TbItemAttribute>();
+                    foreach (var attr in dto.ItemAttributes)
+                    {
+                        // Only save attributes with values
+                        if (!string.IsNullOrWhiteSpace(attr.Value))
+                        {
+                            var attributeEntity = _mapper.MapModel<ItemAttributeDto, TbItemAttribute>(attr);
+                            attributeEntity.ItemId = itemId;
+                            attributeEntities.Add(attributeEntity);
+                        }
+                    }
+                    
+                    if (attributeEntities.Any())
+                    {
+                        attributesSaved = _unitOfWork.TableRepository<TbItemAttribute>().AddRange(attributeEntities, userId);
+                    }
+                }
+
+                // Save ItemAttributeCombinationPricings
+                var combinationsSaved = true;
+                if (dto.ItemAttributeCombinationPricings?.Any() == true)
+                {
+                    var combinationEntities = new List<TbItemAttributeCombinationPricing>();
+                    foreach (var combo in dto.ItemAttributeCombinationPricings)
+                    {
+                        var combinationEntity = _mapper.MapModel<ItemAttributeCombinationPricingDto, TbItemAttributeCombinationPricing>(combo);
+                        combinationEntity.ItemId = itemId;
+                        combinationEntities.Add(combinationEntity);
+                    }
+                    
+                    if (combinationEntities.Any())
+                    {
+                        combinationsSaved = _unitOfWork.TableRepository<TbItemAttributeCombinationPricing>().AddRange(combinationEntities, userId);
+                    }
+                }
+
                 await _unitOfWork.CommitAsync();
 
-                return itemSaved && imagesSaved;
+                return itemSaved && imagesSaved && attributesSaved && combinationsSaved;
             }
             catch (Exception ex)
             {
