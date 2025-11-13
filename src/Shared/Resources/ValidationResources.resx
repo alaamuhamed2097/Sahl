@@ -415,7 +415,7 @@
     <value>رقم الهاتف مطلوب.</value>
   </data>
   <data name="SpecializationENRequired" xml:space="preserve">
-    <value>التخصص بالإنجليزية مطلوب.</value>
+    <value>الت specialization بالعربية مطلوب.</value>
   </data>
   <data name="NameArLength" xml:space="preserve">
     <value>اسم (عربي) يجب أن يكون بين 2 و 100 حرف.</value>
@@ -842,5 +842,23 @@
   </data>
   <data name="FailedToLoadCategoryAttributes" xml:space="preserve">
     <value>فشل في تحميل خصائص الفئة</value>
+  </data>
+  <data name="PriceMustBeGreaterThanZero" xml:space="preserve">
+    <value>يجب أن يكون السعر أكبر من 0</value>
+  </data>
+  <data name="QuantityCannotBeNegative" xml:space="preserve">
+    <value>لا يمكن أن تكون الكمية سالبة</value>
+  </data>
+  <data name="AllCombinationsPriceValidation" xml:space="preserve">
+    <value>يجب أن تحتوي جميع التركيبات على سعر وسعر بيع أكبر من 0</value>
+  </data>
+  <data name="PriceValidation" xml:space="preserve">
+    <value>يجب أن يكون السعر أكبر من 0</value>
+  </data>
+  <data name="QuantityValidation" xml:space="preserve">
+    <value>لا يمكن أن تكون الكمية سالبة</value>
+  </data>
+  <data name="CategorySelectionRequired" xml:space="preserve">
+    <value>يرجى اختيار فئة في خطوة التصنيف لتكوين الخصائص.</value>
   </data>
 </root>

@@ -320,46 +320,64 @@
 
         Blazor.start({
             loadBootResource: function(type, name, defaultUri, integrity) {
-                // Only block .pdb files
-                if (name.endsWith('.pdb')) {
+                // ✅ حظر ملفات الـ Debug
+                if (name.endsWith('.pdb') || 
+                    name.includes('.pdb.') || 
+                    name === 'dotnet.native.wasm.symbols' ||
+                    name.includes('debug') ||
+                    name.includes('.dbg')) {
+                    console.log(`[BLOCKED] Debug file: ${name}`);
                     return null;
                 }
 
-                // For all other resources, use the default URI without modification
-                // Don't add cache busting for dotnetjs as it can break module loading
+                // ✅ FIX الرئيسي: التعامل مع undefined URI
+                if (!defaultUri || defaultUri === 'undefined') {
+                    console.error(`[ERROR] Invalid URI for ${name}, trying to reconstruct...`);
+                    // بناء الـ URI يدوياً
+                    const baseHref = document.querySelector('base')?.getAttribute('href') || '/';
+                    defaultUri = `${baseHref}_framework/${name}`;
+                    console.log(`[RECONSTRUCTED] New URI: ${defaultUri}`);
+                }
+
+                // ✅ تسجيل محاولة التحميل
+                console.log(`[LOADING] ${type}: ${name}`);
+                console.log(`[URI] ${defaultUri}`);
+
+                // ✅ إرجاع الـ URI مباشرة بدون fetch إضافي
+                // الـ Blazor runtime هيعمل fetch بنفسه
                 return defaultUri;
             },
 
-            // Configure circuit for better error handling
-            circuit: {
-                reconnectionOptions: {
-                    maxRetries: 3,
-                    retryIntervalMilliseconds: 2000
-                }
-            }
+            // تعطيل debugging تماماً
+            debugBuild: false,
+    
+            // إعدادات إضافية للاستقرار
+            environment: 'Production'
         }).then(() => {
-            // Blazor has started successfully
+            console.log('✅ Blazor started successfully!');
             document.body.classList.add('loaded');
             document.body.classList.remove('loading');
     
             window.dispatchEvent(new CustomEvent('blazor-started'));
     
-            // Initialize features after dependencies are ready
             waitForDependencies(() => {
                 initializeCriticalFeatures();
             });
         }).catch((error) => {
-            // Display error to user
-            console.error('Blazor failed to start:', error);
+            console.error('❌ Blazor failed to start:', error);
     
             const errorMessage = document.getElementById('error-message');
             if (errorMessage) {
                 errorMessage.style.display = 'block';
-                errorMessage.textContent = 'فشل تحميل التطبيق. يرجى تحديث الصفحة أو الاتصال بالدعم الفني.';
+                errorMessage.textContent = 'فشل تحميل التطبيق. يرجى تحديث الصفحة (Ctrl+F5) أو الاتصال بالدعم الفني.';
+                errorMessage.innerHTML += '<br><button onclick="location.reload(true)" style="margin-top:10px;padding:8px 16px;background:#0EA5E9;color:white;border:none;border-radius:4px;cursor:pointer;">إعادة تحميل الصفحة</button>';
             }
     
-            // Hide progress bar
-            document.getElementById('progress-bar').style.width = '0%';
+            const progressBar = document.getElementById('progress-bar');
+            if (progressBar) {
+                progressBar.style.width = '0%';
+                progressBar.style.background = '#ef4444';
+            }
         });
     </script>
 
@@ -386,7 +404,7 @@
     </script>
 
     <!-- Service worker registration - Non-blocking -->
-    <script>
+    <!--<script>
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', function () {
                 navigator.serviceWorker.register('service-worker.js').catch(function (error) {
@@ -394,7 +412,7 @@
                 });
             });
         }
-    </script>
+    </script>-->
 
     <script>
         // Enhanced CSS Theme Loader for Blazor WebAssembly
@@ -1009,20 +1027,3 @@
                 .pcoded-header .dropdown-toggle:hover {
                     border-color: #0EA5E9 !important;
                     background: #E0F2FE !important;
-                }
-
-        .mobile-menu,
-        #mobile-collapse,
-        #mobile-collapse1 {
-            color: #334155 !important;
-        }
-
-            .mobile-menu:hover,
-            #mobile-collapse:hover,
-            #mobile-collapse1:hover {
-                color: #0EA5E9 !important;
-                background: #F1F5F9 !important;
-            }
-    </style>
-</body>
-</html>

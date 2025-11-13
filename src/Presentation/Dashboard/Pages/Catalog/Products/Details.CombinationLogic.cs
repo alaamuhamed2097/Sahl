@@ -1,4 +1,4 @@
-﻿using Shared.DTOs.ECommerce.Item;
+using Shared.DTOs.ECommerce.Item;
 
 namespace Dashboard.Pages.Catalog.Products
 {
@@ -12,18 +12,18 @@ namespace Dashboard.Pages.Catalog.Products
         /// </summary>
         public void GenerateAttributeCombinations()
         {
-            Console.WriteLine($"🔍 GenerateAttributeCombinations - START");
+            Console.WriteLine($"?? GenerateAttributeCombinations - START");
             
             // Get all price-affecting attributes from category
             var priceAffectingAttributes = categoryAttributes
                     .Where(ca => ca.AffectsPricing)
              .ToList();
 
-            Console.WriteLine($"📊 Found {priceAffectingAttributes.Count} price-affecting attributes");
+            Console.WriteLine($"?? Found {priceAffectingAttributes.Count} price-affecting attributes");
 
             if (!priceAffectingAttributes.Any())
             {
-                Console.WriteLine($"⚠️ No price-affecting attributes, clearing combinations");
+                Console.WriteLine($"?? No price-affecting attributes, clearing combinations");
                 // No price-affecting attributes, clear combinations
                 Model.ItemAttributeCombinationPricings.Clear();
                 return;
@@ -36,7 +36,7 @@ namespace Dashboard.Pages.Catalog.Products
 
             foreach (var attr in priceAffectingAttributes)
             {
-                Console.WriteLine($"  🔎 Processing attribute: {attr.Title} (AttributeId: {attr.AttributeId})");
+                Console.WriteLine($"  ?? Processing attribute: {attr.Title} (AttributeId: {attr.AttributeId})");
                 Console.WriteLine($"     FieldType: {attr.FieldType}");
                 Console.WriteLine($"     Options available: {attr.AttributeOptions?.Count ?? 0}");
                 
@@ -44,7 +44,7 @@ namespace Dashboard.Pages.Catalog.Products
                 var itemAttr = Model.ItemAttributes.FirstOrDefault(ia => ia.AttributeId == attr.AttributeId);
                 if (itemAttr == null)
                 {
-                    Console.WriteLine($"     ⚠️ No ItemAttribute found for this attribute");
+                    Console.WriteLine($"     ?? No ItemAttribute found for this attribute");
                     continue;
                 }
                 
@@ -52,7 +52,7 @@ namespace Dashboard.Pages.Catalog.Products
                 
                 if (string.IsNullOrWhiteSpace(itemAttr.Value))
                 {
-                    Console.WriteLine($"     ⚠️ Value is empty, skipping");
+                    Console.WriteLine($"     ?? Value is empty, skipping");
                     continue;
                 }
 
@@ -62,7 +62,7 @@ namespace Dashboard.Pages.Catalog.Products
                 if (attr.FieldType == Common.Enumerations.FieldType.FieldType.List ||
          attr.FieldType == Common.Enumerations.FieldType.FieldType.MultiSelectList)
                 {
-                    Console.WriteLine($"     📋 List/MultiSelectList type");
+                    Console.WriteLine($"     ?? List/MultiSelectList type");
                     if (attr.AttributeOptions != null && attr.AttributeOptions.Any())
                     {
                         // User can select multiple options (comma-separated)
@@ -74,7 +74,7 @@ namespace Dashboard.Pages.Catalog.Products
                             var option = attr.AttributeOptions.FirstOrDefault(o => o.Id.ToString() == value.Trim());
                             if (option != null)
                             {
-                                Console.WriteLine($"       ✅ Matched option: {option.Title} (ID: {option.Id})");
+                                Console.WriteLine($"       ? Matched option: {option.Title} (ID: {option.Id})");
                                 options.Add(new AttributeOptionInfo
                                 {
                                     AttributeId = attr.AttributeId,  // FIX: Use AttributeId
@@ -86,18 +86,18 @@ namespace Dashboard.Pages.Catalog.Products
                             }
                             else
                             {
-                                Console.WriteLine($"       ❌ No option found for value: {value.Trim()}");
+                                Console.WriteLine($"       ? No option found for value: {value.Trim()}");
                             }
                         }
                     }
                     else
                     {
-                        Console.WriteLine($"     ⚠️ No options available for this attribute");
+                        Console.WriteLine($"     ?? No options available for this attribute");
                     }
                 }
                 else
                 {
-                    Console.WriteLine($"     📝 Other type (Text/Number/Date)");
+                    Console.WriteLine($"     ?? Other type (Text/Number/Date)");
                     // For other types: Split by comma to allow multiple values
                     var values = itemAttr.Value.Split(',', StringSplitOptions.RemoveEmptyEntries)
                         .Select(v => v.Trim())
@@ -120,18 +120,18 @@ namespace Dashboard.Pages.Catalog.Products
                             DisplayValue = value
                         });
                         optionDisplayMap[valueId] = $"{attr.Title}: {value}";
-                        Console.WriteLine($"       ✅ Added value: {value} (ID: {valueId})");
+                        Console.WriteLine($"       ? Added value: {value} (ID: {valueId})");
                     }
                 }
 
                 if (options.Any())
                 {
-                    Console.WriteLine($"     ✅ Added {options.Count} options to set");
+                    Console.WriteLine($"     ? Added {options.Count} options to set");
                     attributeOptionSets.Add(options);
                 }
                 else
                 {
-                    Console.WriteLine($"     ⚠️ No valid options found");
+                    Console.WriteLine($"     ?? No valid options found");
                 }
             }
 
@@ -141,16 +141,16 @@ namespace Dashboard.Pages.Catalog.Products
             // If no valid options, clear combinations
             if (!attributeOptionSets.Any())
             {
-                Console.WriteLine($"⚠️ No valid option sets, clearing combinations");
+                Console.WriteLine($"?? No valid option sets, clearing combinations");
                 Model.ItemAttributeCombinationPricings.Clear();
                 return;
             }
 
-            Console.WriteLine($"📊 Total attribute option sets: {attributeOptionSets.Count}");
+            Console.WriteLine($"?? Total attribute option sets: {attributeOptionSets.Count}");
 
             // Generate Cartesian product of all attribute options
             var combinations = GenerateCartesianProduct(attributeOptionSets);
-            Console.WriteLine($"🎲 Generated {combinations.Count} combinations");
+            Console.WriteLine($"?? Generated {combinations.Count} combinations");
 
             // Create or update combination pricings
             var newCombinations = new List<ItemAttributeCombinationPricingDto>();
@@ -160,7 +160,7 @@ namespace Dashboard.Pages.Catalog.Products
                 // Create attribute IDs string (comma-separated list of option IDs)
                 var attributeIds = string.Join(",", combination.Select(opt => opt.OptionId.ToString()));
 
-                Console.WriteLine($"  🔗 Combination: {string.Join(" | ", combination.Select(c => c.DisplayValue))}");
+                Console.WriteLine($"  ?? Combination: {string.Join(" | ", combination.Select(c => c.DisplayValue))}");
 
                 // Check if this combination already exists
                 var existing = Model.ItemAttributeCombinationPricings
@@ -168,27 +168,27 @@ namespace Dashboard.Pages.Catalog.Products
 
                 if (existing != null)
                 {
-                    Console.WriteLine($"     ♻️ Keeping existing combination");
-                    // Keep existing combination with its price and quantity
+                    Console.WriteLine($"     ?? Keeping existing combination");
+                    // Keep existing combination with its price
                     newCombinations.Add(existing);
                 }
                 else
                 {
-                    Console.WriteLine($"     ✨ Creating new combination");
+                    Console.WriteLine($"     ? Creating new combination");
                     // Create new combination with default values
                     newCombinations.Add(new ItemAttributeCombinationPricingDto
                     {
                         AttributeIds = attributeIds,
-                        FinalPrice = Model.Price ?? 0,
-                        Quantity = 0,
-                        Image = null
+                        Price = Model.Price ?? 0,
+                        SalesPrice = Model.Price ?? 0,
+                        Quantity = 0
                     });
                 }
             }
 
             // Replace the combinations list
             Model.ItemAttributeCombinationPricings = newCombinations;
-            Console.WriteLine($"✅ GenerateAttributeCombinations - COMPLETE - Total combinations: {newCombinations.Count}");
+            Console.WriteLine($"? GenerateAttributeCombinations - COMPLETE - Total combinations: {newCombinations.Count}");
             StateHasChanged();
         }
         
@@ -197,11 +197,19 @@ namespace Dashboard.Pages.Catalog.Products
         /// </summary>
         private Guid GenerateConsistentGuid(string identifier)
         {
-            using (var md5 = System.Security.Cryptography.MD5.Create())
+            // MD5 is not supported in Blazor WebAssembly
+            // Use a deterministic hash-based approach instead
+            var hash = identifier.GetHashCode();
+            var bytes = new byte[16];
+            
+            // Fill the byte array with deterministic data based on the string
+            var idBytes = System.Text.Encoding.UTF8.GetBytes(identifier);
+            for (int i = 0; i < bytes.Length; i++)
             {
-                var hash = md5.ComputeHash(System.Text.Encoding.UTF8.GetBytes(identifier));
-                return new Guid(hash);
+                bytes[i] = (byte)(idBytes[i % idBytes.Length] ^ (hash >> (i % 4 * 8)));
             }
+            
+            return new Guid(bytes);
         }
 
         /// <summary>
@@ -249,24 +257,24 @@ namespace Dashboard.Pages.Catalog.Products
         {
             try
             {
-                Console.WriteLine($"🔍 HandleCategoryChangeWithCombinations - CategoryId: {Model.CategoryId}");
+                Console.WriteLine($"?? HandleCategoryChangeWithCombinations - CategoryId: {Model.CategoryId}");
 
                 fieldValidation["CategoryId"] = Model.CategoryId != Guid.Empty;
 
                 if (Model.CategoryId != Guid.Empty)
                 {
-                    Console.WriteLine($"📥 Loading category attributes...");
+                    Console.WriteLine($"?? Loading category attributes...");
                     await LoadCategoryAttributes();
 
-                    Console.WriteLine($"🗑️ Clearing existing combinations...");
+                    Console.WriteLine($"??? Clearing existing combinations...");
                     // Clear existing combinations when category changes
                     Model.ItemAttributeCombinationPricings.Clear();
 
-                    Console.WriteLine($"✅ Category change completed - Attributes loaded: {categoryAttributes.Count}");
+                    Console.WriteLine($"? Category change completed - Attributes loaded: {categoryAttributes.Count}");
                 }
                 else
                 {
-                    Console.WriteLine($"🗑️ Category cleared - resetting all data");
+                    Console.WriteLine($"??? Category cleared - resetting all data");
                     categoryAttributes.Clear();
                     Model.ItemAttributes.Clear();
                     Model.ItemAttributeCombinationPricings.Clear();
@@ -276,7 +284,7 @@ namespace Dashboard.Pages.Catalog.Products
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"❌ Error in HandleCategoryChangeWithCombinations: {ex.Message}");
+                Console.WriteLine($"? Error in HandleCategoryChangeWithCombinations: {ex.Message}");
                 Console.WriteLine($"Stack trace: {ex.StackTrace}");
                 throw;
             }

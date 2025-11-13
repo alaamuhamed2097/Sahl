@@ -106,6 +106,15 @@ namespace Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to يجب أن تحتوي جميع التركيبات على سعر وسعر بيع أكبر من 0.
+        /// </summary>
+        public static string AllCombinationsPriceValidation {
+            get {
+                return ResourceManager.GetString("AllCombinationsPriceValidation", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to الصيغ المسموحه.
         /// </summary>
         public static string AllowedFormats {
@@ -129,6 +138,15 @@ namespace Resources {
         public static string AreaIdRequired {
             get {
                 return ResourceManager.GetString("AreaIdRequired", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to الخصائص اختيارية. يمكنك المتابعة للحفظ..
+        /// </summary>
+        public static string AttributesOptional {
+            get {
+                return ResourceManager.GetString("AttributesOptional", resourceCulture);
             }
         }
         
@@ -228,6 +246,15 @@ namespace Resources {
         public static string CategoryHasChild {
             get {
                 return ResourceManager.GetString("CategoryHasChild", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to يرجى اختيار فئة في خطوة التصنيف لتكوين الخصائص..
+        /// </summary>
+        public static string CategorySelectionRequired {
+            get {
+                return ResourceManager.GetString("CategorySelectionRequired", resourceCulture);
             }
         }
         
@@ -817,11 +844,38 @@ namespace Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to فشل في تحميل خصائص الفئة.
+        /// </summary>
+        public static string FailedToLoadCategoryAttributes {
+            get {
+                return ResourceManager.GetString("FailedToLoadCategoryAttributes", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to هذا الحقل مطلوب ..
         /// </summary>
         public static string FieldRequired {
             get {
                 return ResourceManager.GetString("FieldRequired", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to يرجى ملء جميع حقول المعلومات الأساسية (اسم المنتج والوصف القصير والوصف بالعربية والإنجليزية)..
+        /// </summary>
+        public static string FillBasicInformationFields {
+            get {
+                return ResourceManager.GetString("FillBasicInformationFields", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to يرجى ملء جميع حقول السيو (عنوان السيو والوصف والكلمات الدلالية)..
+        /// </summary>
+        public static string FillSEOFields {
+            get {
+                return ResourceManager.GetString("FillSEOFields", resourceCulture);
             }
         }
         
@@ -1663,6 +1717,15 @@ namespace Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to يجب أن يكون السعر أكبر من 0.
+        /// </summary>
+        public static string PriceMustBeGreaterThanZero {
+            get {
+                return ResourceManager.GetString("PriceMustBeGreaterThanZero", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to يجب أن يكون السعر عددًا إيجابيًا..
         /// </summary>
         public static string PriceRange {
@@ -1681,6 +1744,15 @@ namespace Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to يجب أن يكون السعر أكبر من 0.
+        /// </summary>
+        public static string PriceValidation {
+            get {
+                return ResourceManager.GetString("PriceValidation", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to الوحدة مطلوبة..
         /// </summary>
         public static string PropertyIdRequired {
@@ -1695,6 +1767,24 @@ namespace Resources {
         public static string PropertyTypeIdRequired {
             get {
                 return ResourceManager.GetString("PropertyTypeIdRequired", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to لا يمكن أن تكون الكمية سالبة.
+        /// </summary>
+        public static string QuantityCannotBeNegative {
+            get {
+                return ResourceManager.GetString("QuantityCannotBeNegative", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to لا يمكن أن تكون الكمية سالبة.
+        /// </summary>
+        public static string QuantityValidation {
+            get {
+                return ResourceManager.GetString("QuantityValidation", resourceCulture);
             }
         }
         
@@ -1834,6 +1924,15 @@ namespace Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to يرجى اختيار الفئة والعلامة التجارية والوحدة..
+        /// </summary>
+        public static string SelectCategoryBrandUnit {
+            get {
+                return ResourceManager.GetString("SelectCategoryBrandUnit", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to عدد الخدمات مطلوب..
         /// </summary>
         public static string ServiceCountRequired {
@@ -1906,7 +2005,7 @@ namespace Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to التخصص بالإنجليزية مطلوب..
+        ///   Looks up a localized string similar to الت specialization بالعربية مطلوب..
         /// </summary>
         public static string SpecializationENRequired {
             get {
@@ -2037,6 +2136,15 @@ namespace Resources {
         public static string UploadImageMessage {
             get {
                 return ResourceManager.GetString("UploadImageMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to يرجى رفع صورة مصغرة أو صور للمنتج على الأقل..
+        /// </summary>
+        public static string UploadThumbnailOrImages {
+            get {
+                return ResourceManager.GetString("UploadThumbnailOrImages", resourceCulture);
             }
         }
         
@@ -2181,60 +2289,6 @@ namespace Resources {
         public static string ZipCodeLength {
             get {
                 return ResourceManager.GetString("ZipCodeLength", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to يرجى ملء جميع حقول المعلومات الأساسية (اسم المنتج والوصف القصير والوصف بالعربية والإنجليزية)..
-        /// </summary>
-        public static string FillBasicInformationFields {
-            get {
-                return ResourceManager.GetString("FillBasicInformationFields", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to يرجى ملء جميع حقول السيو (عنوان السيو والوصف والكلمات الدلالية)..
-        /// </summary>
-        public static string FillSEOFields {
-            get {
-                return ResourceManager.GetString("FillSEOFields", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to يرجى اختيار الفئة والعلامة التجارية والوحدة..
-        /// </summary>
-        public static string SelectCategoryBrandUnit {
-            get {
-                return ResourceManager.GetString("SelectCategoryBrandUnit", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to يرجى رفع صورة مصغرة أو صور للمنتج على الأقل..
-        /// </summary>
-        public static string UploadThumbnailOrImages {
-            get {
-                return ResourceManager.GetString("UploadThumbnailOrImages", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to الخصائص اختيارية. يمكنك المتابعة للحفظ..
-        /// </summary>
-        public static string AttributesOptional {
-            get {
-                return ResourceManager.GetString("AttributesOptional", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to فشل في تحميل خصائص الفئة.
-        /// </summary>
-        public static string FailedToLoadCategoryAttributes {
-            get {
-                return ResourceManager.GetString("FailedToLoadCategoryAttributes", resourceCulture);
             }
         }
     }

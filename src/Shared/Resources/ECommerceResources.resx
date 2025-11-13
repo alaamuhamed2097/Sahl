@@ -801,4 +801,7 @@
   <data name="No Options Configured" xml:space="preserve">
     <value>لا يوجد خيارات</value>
   </data>
+  <data name="SalesPrice" xml:space="preserve">
+    <value>سعر البيع</value>
+  </data>
 </root>

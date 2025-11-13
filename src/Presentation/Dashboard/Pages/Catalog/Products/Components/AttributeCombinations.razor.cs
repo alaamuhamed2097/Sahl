@@ -19,9 +19,6 @@ namespace Dashboard.Pages.Catalog.Products.Components
         [Parameter]
         public EventCallback<ItemAttributeCombinationPricingDto> OnRemoveCombination { get; set; }
 
-        [Parameter]
-        public EventCallback<(InputFileChangeEventArgs, ItemAttributeCombinationPricingDto)> OnImageUpload { get; set; }
-
         private string GetCombinationAttributesDisplay(string attributeIds)
         {
             if (string.IsNullOrEmpty(attributeIds))
@@ -45,11 +42,6 @@ namespace Dashboard.Pages.Catalog.Products.Components
             }
 
             return string.Join(" | ", attributes);
-        }
-
-        private async Task HandleCombinationImageUpload(InputFileChangeEventArgs e, ItemAttributeCombinationPricingDto combination)
-        {
-            await OnImageUpload.InvokeAsync((e, combination));
         }
 
         private async Task RemoveCombination(ItemAttributeCombinationPricingDto combination)

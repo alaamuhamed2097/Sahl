@@ -792,7 +792,13 @@
   <data name="ParseAndReviewData" xml:space="preserve">
     <value>Parse and Review Data</value>
   </data>
+  <data name="NoOptionsConfigured" xml:space="preserve">
+    <value>No options have been configured for this attribute.</value>
+  </data>
   <data name="No Options Configured" xml:space="preserve">
     <value>No Options Configured</value>
+  </data>
+  <data name="SalesPrice" xml:space="preserve">
+    <value>Sales Price</value>
   </data>
 </root>

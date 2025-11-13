@@ -50,24 +50,29 @@
 		<WasmBuildNative Condition="'$(Configuration)' == 'Release'">true</WasmBuildNative>
 
 		<!-- ========== 🐛 Debug Settings ========== -->
-		<DebuggerSupport Condition="'$(Configuration)' == 'Debug'">true</DebuggerSupport>
-		<DebugType Condition="'$(Configuration)' == 'Debug'">portable</DebugType>
-		<DebugSymbols Condition="'$(Configuration)' == 'Debug'">true</DebugSymbols>
-		<WasmDebugLevel Condition="'$(Configuration)' == 'Debug'">-1</WasmDebugLevel>
+		<!-- ✅ CRITICAL FIX: Disable aggressive debugging to prevent debugger statement hang -->
+		<DebuggerSupport Condition="'$(Configuration)' == 'Debug'">false</DebuggerSupport>
+		<DebugType Condition="'$(Configuration)' == 'Debug'">none</DebugType>
+		<DebugSymbols Condition="'$(Configuration)' == 'Debug'">false</DebugSymbols>
+		<WasmDebugLevel Condition="'$(Configuration)' == 'Debug'">0</WasmDebugLevel>
+		<CopyOutputSymbolsToOutputDirectory Condition="'$(Configuration)' == 'Debug'">false</CopyOutputSymbolsToOutputDirectory>
+
+		<!-- Disable debug symbols in Release mode -->
+		<DebuggerSupport Condition="'$(Configuration)' == 'Release'">false</DebuggerSupport>
+		<DebugType Condition="'$(Configuration)' == 'Release'">none</DebugType>
+		<DebugSymbols Condition="'$(Configuration)' == 'Release'">false</DebugSymbols>
+		<CopyOutputSymbolsToOutputDirectory Condition="'$(Configuration)' == 'Release'">false</CopyOutputSymbolsToOutputDirectory>
+		<CopyOutputSymbolsToPublishDirectory Condition="'$(Configuration)' == 'Release'">false</CopyOutputSymbolsToPublishDirectory>
 
 		<!-- Disable AOT in Debug for faster builds -->
 		<RunAOTCompilation Condition="'$(Configuration)' == 'Debug'">false</RunAOTCompilation>
 	</PropertyGroup>
 
 	<ItemGroup>
-	  <Compile Remove="Handlers\**" />
-	  <Compile Remove="Pages\Catalog\Orders\**" />
-	  <Content Remove="Handlers\**" />
-	  <Content Remove="Pages\Catalog\Orders\**" />
-	  <EmbeddedResource Remove="Handlers\**" />
-	  <EmbeddedResource Remove="Pages\Catalog\Orders\**" />
-	  <None Remove="Handlers\**" />
-	  <None Remove="Pages\Catalog\Orders\**" />
+		<Compile Remove="Handlers\**" />
+		<Content Remove="Handlers\**" />
+		<EmbeddedResource Remove="Handlers\**" />
+		<None Remove="Handlers\**" />
 	</ItemGroup>
 
 	<!-- ========== 🌐 Supported Cultures (Arabic + English) ========== -->
@@ -85,28 +90,24 @@
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 			<CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
 		</Content>
-		
+
 		<!-- Explicitly include JavaScript files -->
 		<Content Update="wwwroot\assets\js\pages\product-wizard.js">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 			<CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
 		</Content>
-		
+
 		<Content Update="wwwroot\Common\Downloader\fileDownloadHelper.js">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 			<CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
 		</Content>
-		
+
 		<Content Update="wwwroot\Common\Excel\excelExportHelper.js">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 			<CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
 		</Content>
-		
+
 		<!-- Ensure web.config is published -->
-		<Content Update="wwwroot\web.config">
-			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-			<CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-		</Content>
 	</ItemGroup>
 
 	<ItemGroup>
@@ -134,6 +135,7 @@
 		To see available assemblies, check: bin\Release\net9.0\publish\wwwroot\_framework\
 		
 		Common candidates for lazy loading:
+		+
 		- Third-party libraries used in specific features
 		- Large System assemblies used rarely
 		
@@ -159,7 +161,10 @@
 		<ServiceWorker Include="wwwroot\service-worker.js" PublishedContent="wwwroot\service-worker.published.js" />
 	</ItemGroup>
 	<ItemGroup>
-	  <AdditionalFiles Remove="C:\Users\alaam\AppData\Roaming\SonarLint for Visual Studio\.global\csharp\SonarLint.xml" />
+		<AdditionalFiles Remove="C:\Users\alaam\AppData\Roaming\SonarLint for Visual Studio\.global\csharp\SonarLint.xml" />
+	</ItemGroup>
+	<ItemGroup>
+		<Folder Include="Pages\Catalog\Orders\" />
 	</ItemGroup>
 
 </Project>
