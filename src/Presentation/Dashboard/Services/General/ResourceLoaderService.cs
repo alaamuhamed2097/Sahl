@@ -22,14 +22,12 @@ namespace Dashboard.Services.General
         public async Task LoadScript(string url)
         {
             if (_loadedScripts.Contains(url)) return;
-            if (_navigationManager.BaseUri.Contains("localhost"))
-            {
-                await _jsRuntime.InvokeVoidAsync("ScriptLoader.loadScript", url);
-            }
-            else
-            {
-                await _jsRuntime.InvokeVoidAsync("ScriptLoader.loadScript", $"wwwroot/{url}");
-            }
+            
+            // ✅ FIX: Remove the wwwroot prefix for production
+            // In Blazor WebAssembly, all paths are relative to wwwroot
+            // Adding "wwwroot/" causes 404 errors in production
+            await _jsRuntime.InvokeVoidAsync("ScriptLoader.loadScript", url);
+            
             _loadedScripts.Add(url);
         }
 
@@ -69,22 +67,12 @@ namespace Dashboard.Services.General
         /// </summary>
         public async Task LoadStyleSheet(string cssPath)
         {
-            //if (_navigationManager.BaseUri.Contains("localhost"))
-            //{
+            // ✅ FIX: Simplified - no environment checking needed
             await _jsRuntime.InvokeVoidAsync("eval",
                 $@"var link=document.createElement('link');
                link.rel='stylesheet';
                link.href='{cssPath}';
                document.head.appendChild(link)");
-            //}
-            //else
-            //{
-            //    await _jsRuntime.InvokeVoidAsync("eval",
-            //        $@"var link=document.createElement('link');
-            //   link.rel='stylesheet';
-            //   link.href= wwwroot/'{cssPath}';
-            //   document.head.appendChild(link)");
-            //}
         }
 
         /// <summary>
@@ -95,22 +83,12 @@ namespace Dashboard.Services.General
         {
             foreach (var path in cssPaths)
             {
-                //if (_navigationManager.BaseUri.Contains("localhost"))
-                //{
+                // ✅ FIX: Simplified - no environment checking needed
                 await _jsRuntime.InvokeVoidAsync("eval",
                 $@"var link=document.createElement('link');
                    link.rel='stylesheet';
                    link.href='{path}';
                    document.head.appendChild(link)");
-                //}
-                //else
-                //{
-                //    await _jsRuntime.InvokeVoidAsync("eval",
-                //    $@"var link=document.createElement('link');
-                //   link.rel='stylesheet';
-                //   link.href= wwwroot/'{path}';
-                //   document.head.appendChild(link)");
-                //}
             }
         }
 
