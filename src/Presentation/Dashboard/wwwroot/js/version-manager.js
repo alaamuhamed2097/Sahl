@@ -175,7 +175,7 @@
         // Check for updates
         checkForUpdates: async function (isInitial = false) {
             if (this.isUpdating) {
-                console.log('?? Update already in progress, skipping check...');
+                console.log('? Update already in progress, skipping check...');
                 return;
             }
 
@@ -189,7 +189,21 @@
                 });
 
                 if (!response.ok) {
-                    console.warn('?? Version check failed:', response.status);
+                    // ? FIX: Gracefully handle missing version.json
+                    if (response.status === 404) {
+                        console.warn('?? version.json not found (404) - Version checking disabled');
+                        return;
+                    }
+                    console.warn('?? Version check failed:', response.status, response.statusText);
+                    return;
+                }
+
+                // ? FIX: Check content type to ensure we got JSON
+                const contentType = response.headers.get('content-type');
+                if (!contentType || !contentType.includes('application/json')) {
+                    console.warn('?? version.json returned unexpected content type:', contentType);
+                    const text = await response.text();
+                    console.warn('Response preview:', text.substring(0, 200));
                     return;
                 }
 
@@ -214,7 +228,7 @@
                     const timeSinceLock = Date.now() - lockTime;
                     
                     if (timeSinceLock < RELOAD_LOCK_DURATION) {
-                        console.log('?? Update already in progress, skipping...');
+                        console.log('? Update already in progress, skipping...');
                         return;
                     }
                     
@@ -232,7 +246,15 @@
                 localStorage.setItem(LAST_CHECK_KEY, Date.now().toString());
 
             } catch (error) {
-                console.error('? Version check error:', error);
+                // ? FIX: Better error handling
+                console.error('? Version check error:', error.message);
+                
+                // Check if it's a JSON parse error (likely HTML returned)
+                if (error instanceof SyntaxError) {
+                    console.error('? Failed to parse version.json - likely received HTML instead of JSON');
+                    console.error('? This usually means version.json is missing or the path is incorrect');
+                }
+                
                 this.isUpdating = false;
             }
         },

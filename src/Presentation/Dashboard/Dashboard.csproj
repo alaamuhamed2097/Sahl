@@ -91,6 +91,17 @@
 			<CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
 		</Content>
 
+		<!-- ✅ CRITICAL: Version Manager files -->
+		<Content Update="wwwroot\version.json">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+			<CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+		</Content>
+
+		<Content Update="wwwroot\js\version-manager.js">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+			<CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+		</Content>
+
 		<!-- Explicitly include JavaScript files -->
 		<Content Update="wwwroot\assets\js\pages\product-wizard.js">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
