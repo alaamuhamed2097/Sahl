@@ -1,4 +1,4 @@
-﻿name: 🚀 Deploy ASP.NET API & Blazor Dashboard to IIS
+name: 🚀 Deploy ASP.NET API & Blazor Dashboard to IIS
 
 on:
   push:
