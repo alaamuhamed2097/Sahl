@@ -1,4 +1,6 @@
-﻿namespace Shared.GeneralModels.ResultModels
+﻿using Common.Enumerations;
+
+namespace Shared.GeneralModels.ResultModels
 {
     public class PromoCodeValidationResult
     {

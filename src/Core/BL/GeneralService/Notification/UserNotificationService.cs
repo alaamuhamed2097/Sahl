@@ -2,7 +2,8 @@
 using BL.Contracts.IMapper;
 using DAL.Contracts.UnitOfWork;
 using DAL.Models;
-using Domins.Views.UserNotification;
+using Domains.Entities.Notification;
+using Domains.Views.UserNotification;
 using Resources;
 using Serilog;
 using Shared.GeneralModels.Parameters.Notification;

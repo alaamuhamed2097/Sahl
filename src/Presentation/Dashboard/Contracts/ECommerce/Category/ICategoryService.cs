@@ -1,4 +1,4 @@
-using Shared.DTOs.ECommerce;
+using Shared.DTOs.ECommerce.Category;
 using Shared.GeneralModels;
 
 namespace Dashboard.Contracts.ECommerce.Category

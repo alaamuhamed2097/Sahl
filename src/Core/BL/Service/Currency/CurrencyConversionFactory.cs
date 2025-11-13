@@ -1,7 +1,7 @@
 using BL.Contracts.IMapper;
 using BL.Contracts.Service.Currency;
 using DAL.Contracts.UnitOfWork;
-using Domins.Entities.Currency;
+using Domains.Entities.Currency;
 using Shared.DTOs.Currency;
 using System.Globalization;
 

@@ -1,5 +1,4 @@
 using Bl.GeneralService;
-using Bl.GeneralService.Email;
 using Bl.GeneralService.Notification;
 using BL.Contracts.GeneralService;
 using BL.Contracts.GeneralService.Notification;

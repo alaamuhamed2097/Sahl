@@ -1,5 +1,5 @@
-﻿using Domins.Entities.Item;
-using Domins.Views.Item;
+﻿using Domains.Entities.Item;
+using Domains.Views.Item;
 using Shared.DTOs.ECommerce.Item;
 using Shared.GeneralModels.Models;
 using System.Text.Json;

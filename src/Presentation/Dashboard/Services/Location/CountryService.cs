@@ -1,5 +1,6 @@
 ﻿using Dashboard.Constants;
 using Dashboard.Contracts.General;
+using Dashboard.Contracts.Location;
 using Resources;
 using Shared.DTOs.Location;
 using Shared.GeneralModels;

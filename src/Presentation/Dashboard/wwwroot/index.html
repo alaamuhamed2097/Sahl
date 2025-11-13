@@ -18,8 +18,8 @@
     <!-- LCP Critical: Preload hero logo with highest priority -->
     <link rel="preload" href="/assets/images/logo-icon.svg" as="image" fetchpriority="high" />
 
-    <!-- ✅ CRITICAL: Load Version Manager FIRST -->
-    <!-- <script src="js/version-manager.js"></script> -->
+    <!-- ✅ CRITICAL: Load Version Manager FIRST (before everything else) -->
+    <script src="js/version-manager.js"></script>
 
     <!-- Critical Path: Inline critical CSS for immediate rendering -->
     <style>

@@ -1,3 +1,4 @@
+using Dashboard.Contracts.Location;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 using Resources;

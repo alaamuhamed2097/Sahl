@@ -124,7 +124,7 @@ namespace DAL.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
-            modelBuilder.Entity("Domins.Entities.Category.TbAttribute", b =>
+            modelBuilder.Entity("Domains.Entities.Category.TbAttribute", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -176,7 +176,7 @@ namespace DAL.Migrations
                     b.ToTable("TbAttributes");
                 });
 
-            modelBuilder.Entity("Domins.Entities.Category.TbAttributeOption", b =>
+            modelBuilder.Entity("Domains.Entities.Category.TbAttributeOption", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -228,7 +228,7 @@ namespace DAL.Migrations
                     b.ToTable("TbAttributeOptions");
                 });
 
-            modelBuilder.Entity("Domins.Entities.Category.TbCategory", b =>
+            modelBuilder.Entity("Domains.Entities.Category.TbCategory", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -305,7 +305,7 @@ namespace DAL.Migrations
                     b.ToTable("TbCategories");
                 });
 
-            modelBuilder.Entity("Domins.Entities.Category.TbCategoryAttribute", b =>
+            modelBuilder.Entity("Domains.Entities.Category.TbCategoryAttribute", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -490,9 +490,9 @@ namespace DAL.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("Domins.Entities.Category.TbAttributeOption", b =>
+            modelBuilder.Entity("Domains.Entities.Category.TbAttributeOption", b =>
                 {
-                    b.HasOne("Domins.Entities.Category.TbAttribute", "Attribute")
+                    b.HasOne("Domains.Entities.Category.TbAttribute", "Attribute")
                         .WithMany("AttributeOptions")
                         .HasForeignKey("AttributeId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -501,15 +501,15 @@ namespace DAL.Migrations
                     b.Navigation("Attribute");
                 });
 
-            modelBuilder.Entity("Domins.Entities.Category.TbCategoryAttribute", b =>
+            modelBuilder.Entity("Domains.Entities.Category.TbCategoryAttribute", b =>
                 {
-                    b.HasOne("Domins.Entities.Category.TbAttribute", "Attribute")
+                    b.HasOne("Domains.Entities.Category.TbAttribute", "Attribute")
                         .WithMany("CategoryAttributes")
                         .HasForeignKey("AttributeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Domins.Entities.Category.TbCategory", "Category")
+                    b.HasOne("Domains.Entities.Category.TbCategory", "Category")
                         .WithMany("CategoryAttributes")
                         .HasForeignKey("CategoryId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -571,14 +571,14 @@ namespace DAL.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Domins.Entities.Category.TbAttribute", b =>
+            modelBuilder.Entity("Domains.Entities.Category.TbAttribute", b =>
                 {
                     b.Navigation("AttributeOptions");
 
                     b.Navigation("CategoryAttributes");
                 });
 
-            modelBuilder.Entity("Domins.Entities.Category.TbCategory", b =>
+            modelBuilder.Entity("Domains.Entities.Category.TbCategory", b =>
                 {
                     b.Navigation("CategoryAttributes");
                 });

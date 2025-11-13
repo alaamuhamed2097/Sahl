@@ -3,7 +3,7 @@ using Dashboard.Contracts.General;
 using Dashboard.Contracts.Order;
 using Dashboard.Models.pagintion;
 using Resources;
-using Shared.DTOs.ECommerce;
+using Shared.DTOs.ECommerce.Order;
 using Shared.GeneralModels;
 using Shared.GeneralModels.SearchCriteriaModels;
 

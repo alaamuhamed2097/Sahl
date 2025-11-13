@@ -1,5 +1,5 @@
-﻿using Domins.Entities.Category;
-using Domins.Views.Category;
+﻿using Domains.Entities.Category;
+using Domains.Views.Category;
 using Shared.DTOs.ECommerce.Category;
 using System.Text.Json;
 using System.Text.Json.Serialization;

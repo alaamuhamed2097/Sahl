@@ -1,0 +1,15 @@
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace Domains.Entities.Unit
+{
+    public class TbUnit : BaseEntity
+    {
+        [Required]
+        [MaxLength(100)]
+        public string TitleAr { get; set; } = null!;
+
+        [Required]
+        [MaxLength(100)]
+        public string TitleEn { get; set; } = null!;
+    }
+}

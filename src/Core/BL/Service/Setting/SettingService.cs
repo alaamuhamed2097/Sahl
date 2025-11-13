@@ -3,6 +3,7 @@ using BL.Contracts.GeneralService.Location;
 using BL.Contracts.IMapper;
 using BL.Contracts.Service.Setting;
 using DAL.Contracts.Repositories;
+using Domains.Entities.Setting;
 using Microsoft.AspNetCore.Hosting;
 using Resources;
 using Shared.DTOs.Setting;
