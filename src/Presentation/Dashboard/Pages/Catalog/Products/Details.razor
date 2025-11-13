@@ -244,7 +244,7 @@
                                     <h6 class="text-primary mb-3">@ECommerceResources.Inventory</h6>
                                 </div>
 
-                                <div class="col-md-3">
+                                <div class="col-md-6">
                                     <div class="form-group">
                                         <label>@ECommerceResources.StockStatus</label>
                                         <div class="form-check form-switch">
@@ -260,25 +260,10 @@
                                     </div>
                                 </div>
 
-                                <div class="col-md-3">
-                                    <div class="form-group">
-                                        <label>@ECommerceResources.Quantity</label>
-                                        <InputNumber class="form-control" 
-                                                     min="0" 
-                                                     placeholder="@ECommerceResources.QuantityPlaceHolder" 
-                                                     @bind-Value="Model.Quantity" />
-                                        <ValidationMessage For="@(() => Model.Quantity)" />
-                                    </div>
-                                </div>
-
-                                <div class="col-md-3">
-                                    <div class="form-group">
-                                        <label>@FormResources.Price</label>
-                                        <InputNumber class="form-control" 
-                                                     min="0" 
-                                                     placeholder="@ECommerceResources.PricePlaceHolder" 
-                                                     @bind-Value="Model.Price" />
-                                        <ValidationMessage For="@(() => Model.Price)" />
+                                <div class="col-12">
+                                    <div class="alert alert-info">
+                                        <i class="fas fa-info-circle me-2"></i>
+                                        <strong>Pricing & Inventory:</strong> Price and quantity are now managed through attribute combinations in Step 5. This allows you to set different prices and quantities for different product variations.
                                     </div>
                                 </div>
                             </div>
@@ -462,6 +447,7 @@
                                                 <strong>@GeneralResources.ImportantNotes:</strong>
                                                 <ul class="mb-0 mt-2">
                                                     <li>@ValidationResources.AllCombinationsPriceValidation</li>
+                                                    <li><strong>يجب تحديد مجموعة واحدة فقط كافتراضية (Default)</strong> - السعر الافتراضي للمنتج يأتي من المجموعة الافتراضية</li>
                                                 </ul>
                                             </div>
                                             
@@ -469,6 +455,7 @@
                                                 <table class="table table-bordered">
                                                     <thead>
                                                         <tr>
+                                                            <th style="width: 50px;">افتراضي</th>
                                                             <th>@ECommerceResources.Attributes</th>
                                                             <th>@FormResources.Price <span class="text-danger">*</span></th>
                                                             <th>@ECommerceResources.SalesPrice <span class="text-danger">*</span></th>
@@ -484,9 +471,22 @@
                                                             var hasInvalidQuantity = combination.Quantity < 0;
                                                             var hasErrors = hasInvalidPrice || hasInvalidSalesPrice || hasInvalidQuantity;
                                                             
-                                                            <tr class="@(hasErrors ? "table-danger" : "")">
+                                                            <tr class="@(hasErrors ? "table-danger" : combination.IsDefault ? "table-success" : "")">
+                                                                <td class="text-center">
+                                                                    <div class="form-check">
+                                                                        <input type="radio" 
+                                                                               name="defaultCombination" 
+                                                                               class="form-check-input" 
+                                                                               checked="@combination.IsDefault"
+                                                                               @onchange="@(() => SetDefaultCombination(combination))" />
+                                                                    </div>
+                                                                </td>
                                                                 <td>
                                                                     @GetCombinationAttributesDisplay(combination.AttributeIds)
+                                                                    @if (combination.IsDefault)
+                                                                    {
+                                                                        <span class="badge bg-success ms-2">Default</span>
+                                                                    }
                                                                 </td>
                                                                 <td>
                                                                     <InputNumber class="@($"form-control {(hasInvalidPrice && showValidationErrors ? "is-invalid" : "")}")" 
@@ -524,11 +524,19 @@
                                                                     }
                                                                 </td>
                                                                 <td>
-                                                                    <button type="button" 
-                                                                            class="btn btn-sm btn-danger"
-                                                                            @onclick="() => RemoveCombination(combination)">
-                                                                        <i class="fas fa-trash"></i>
-                                                                    </button>
+                                                                    @if (!combination.IsDefault || Model.ItemAttributeCombinationPricings.Count > 1)
+                                                                    {
+                                                                        <button type="button" 
+                                                                                class="btn btn-sm btn-danger"
+                                                                                @onclick="() => RemoveCombination(combination)"
+                                                                                disabled="@(combination.IsDefault && Model.ItemAttributeCombinationPricings.Count == 1)">
+                                                                            <i class="fas fa-trash"></i>
+                                                                        </button>
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        <small class="text-muted">Default</small>
+                                                                    }
                                                                 </td>
                                                             </tr>
                                                         }
