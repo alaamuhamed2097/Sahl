@@ -1,7 +1,6 @@
 ﻿using BL.Contracts.GeneralService;
 using BL.Contracts.GeneralService.UserManagement;
 using Common.Enumerations.User;
-using Domains.Identity;
 using Microsoft.AspNetCore.Identity;
 using Resources;
 using Shared.GeneralModels.ResultModels;

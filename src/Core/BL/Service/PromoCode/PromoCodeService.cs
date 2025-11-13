@@ -1,10 +1,8 @@
 ﻿using BL.Contracts.IMapper;
 using BL.Contracts.Service.ECommerce.Item;
 using BL.Contracts.Service.PromoCode;
-using Common.Enumerations.PromoCode;
 using DAL.Contracts.UnitOfWork;
 using DAL.Models;
-using Domains.Entities.PromoCode;
 using Microsoft.Extensions.Logging;
 using Resources;
 using Shared.DTOs.ECommerce.Order;
@@ -320,7 +318,7 @@ namespace BL.Service.PromoCode
 
                     // Use GetPrice() method instead of Price property (now handled by combinations)
                     decimal price = product.GetPrice();
-                    
+
                     result.Add(new OrderItemPriceDto
                     {
                         ItemId = item.Id,

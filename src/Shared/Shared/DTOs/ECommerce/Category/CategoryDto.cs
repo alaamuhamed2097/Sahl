@@ -2,11 +2,10 @@ using Resources;
 using Resources.Enumerations;
 using Shared.Attributes;
 using Shared.DTOs.Base;
-using Shared.DTOs.ECommerce.Category;
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 
-namespace Shared.DTOs.ECommerce
+namespace Shared.DTOs.ECommerce.Category
 {
     public class CategoryDto : BaseDto
     {

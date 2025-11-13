@@ -1,6 +1,4 @@
-﻿using Domains.Entities.Base;
-
-namespace Domins.Entities.Location
+﻿namespace Domins.Entities.Location
 {
     public class TbCity : BaseEntity
     {

@@ -12,7 +12,7 @@ namespace Dashboard.Pages.Catalog.Attributes
     {
         private bool isSaving { get; set; }
         private Guid _lastLoadedId = Guid.Empty; // Track the last loaded ID
-        
+
         protected IEnumerable<FieldType> fieldTypes = Enum.GetValues(typeof(FieldType)).Cast<FieldType>();
         protected FieldType fieldType
         {
@@ -104,7 +104,7 @@ namespace Dashboard.Pages.Catalog.Attributes
                     await JSRuntime.InvokeVoidAsync("swal", ValidationResources.Failed, NotifiAndAlertsResources.SaveFailed, "error");
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 await JSRuntime.InvokeVoidAsync("swal",
                     NotifiAndAlertsResources.FailedAlert,
@@ -145,7 +145,7 @@ namespace Dashboard.Pages.Catalog.Attributes
 
                 StateHasChanged();
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 await JSRuntime.InvokeVoidAsync("swal",
                     ValidationResources.Error,

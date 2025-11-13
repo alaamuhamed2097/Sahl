@@ -1,8 +1,7 @@
-﻿using Domains.Entities.Base;
-using Domins.Entities.Item;
+﻿using Domins.Entities.Item;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Domains.Entities.Order
+namespace Domins.Entities.Order
 {
     public class TbOrderDetail : BaseEntity
     {

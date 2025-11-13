@@ -5,7 +5,6 @@ using Common.Enumerations.User;
 using DAL.Contracts.UnitOfWork;
 using DAL.Exceptions;
 using DAL.Models;
-using Domains.Identity;
 using Microsoft.AspNetCore.Identity;
 using Resources;
 using Serilog;

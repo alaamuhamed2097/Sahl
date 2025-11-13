@@ -13,7 +13,7 @@ namespace Dashboard.Pages.Catalog.Products
         public void GenerateAttributeCombinations()
         {
             Console.WriteLine($"?? GenerateAttributeCombinations - START");
-            
+
             // Get all price-affecting attributes from category
             var priceAffectingAttributes = categoryAttributes
                     .Where(ca => ca.AffectsPricing)
@@ -54,7 +54,7 @@ namespace Dashboard.Pages.Catalog.Products
                 Console.WriteLine($"  ?? Processing attribute: {attr.Title} (AttributeId: {attr.AttributeId})");
                 Console.WriteLine($"     FieldType: {attr.FieldType}");
                 Console.WriteLine($"     Options available: {attr.AttributeOptions?.Count ?? 0}");
-                
+
                 // FIX: Use AttributeId instead of Id
                 var itemAttr = Model.ItemAttributes.FirstOrDefault(ia => ia.AttributeId == attr.AttributeId);
                 if (itemAttr == null)
@@ -62,9 +62,9 @@ namespace Dashboard.Pages.Catalog.Products
                     Console.WriteLine($"     ?? No ItemAttribute found for this attribute");
                     continue;
                 }
-                
+
                 Console.WriteLine($"     ItemAttribute Value: '{itemAttr.Value}'");
-                
+
                 if (string.IsNullOrWhiteSpace(itemAttr.Value))
                 {
                     Console.WriteLine($"     ?? Value is empty, skipping");
@@ -83,7 +83,7 @@ namespace Dashboard.Pages.Catalog.Products
                         // User can select multiple options (comma-separated)
                         var selectedValues = itemAttr.Value.Split(',', StringSplitOptions.RemoveEmptyEntries);
                         Console.WriteLine($"     Selected values: {string.Join(", ", selectedValues)}");
-                        
+
                         foreach (var value in selectedValues)
                         {
                             var option = attr.AttributeOptions.FirstOrDefault(o => o.Id.ToString() == value.Trim());
@@ -118,15 +118,15 @@ namespace Dashboard.Pages.Catalog.Products
                         .Select(v => v.Trim())
                         .Where(v => !string.IsNullOrWhiteSpace(v))
                         .ToList();
-                    
+
                     Console.WriteLine($"     Found {values.Count} value(s): {string.Join(", ", values)}");
-                    
+
                     foreach (var value in values)
                     {
                         // Use the attribute AttributeId + value hash as a consistent identifier
                         var valueIdentifier = $"{attr.AttributeId}:{value}";
                         var valueId = GenerateConsistentGuid(valueIdentifier);
-                        
+
                         options.Add(new AttributeOptionInfo
                         {
                             AttributeId = attr.AttributeId,  // FIX: Use AttributeId
@@ -211,10 +211,10 @@ namespace Dashboard.Pages.Catalog.Products
                 {
                     Console.WriteLine($"     ? Creating new combination");
                     // Get default price from existing combinations or use 0
-                    var defaultPrice = Model.ItemAttributeCombinationPricings.Any() 
-                        ? Model.ItemAttributeCombinationPricings.First().Price 
+                    var defaultPrice = Model.ItemAttributeCombinationPricings.Any()
+                        ? Model.ItemAttributeCombinationPricings.First().Price
                         : 0;
-                    
+
                     // Create new combination with default values
                     newCombinations.Add(new ItemAttributeCombinationPricingDto
                     {
@@ -233,7 +233,7 @@ namespace Dashboard.Pages.Catalog.Products
             // Restore or set default
             if (previousDefaultId != Guid.Empty)
             {
-                var restoredDefault = newCombinations.FirstOrDefault(c => 
+                var restoredDefault = newCombinations.FirstOrDefault(c =>
                     c.Id == previousDefaultId || c.AttributeIds == previousDefaultAttributeIds);
                 if (restoredDefault != null)
                 {
@@ -257,7 +257,7 @@ namespace Dashboard.Pages.Catalog.Products
             Console.WriteLine($"? GenerateAttributeCombinations - COMPLETE - Total combinations: {newCombinations.Count}");
             StateHasChanged();
         }
-        
+
         /// <summary>
         /// Ensures only one combination is marked as default
         /// </summary>
@@ -286,7 +286,7 @@ namespace Dashboard.Pages.Catalog.Products
                 }
             }
         }
-        
+
         /// <summary>
         /// Generates a consistent GUID based on a string identifier
         /// </summary>
@@ -296,14 +296,14 @@ namespace Dashboard.Pages.Catalog.Products
             // Use a deterministic hash-based approach instead
             var hash = identifier.GetHashCode();
             var bytes = new byte[16];
-            
+
             // Fill the byte array with deterministic data based on the string
             var idBytes = System.Text.Encoding.UTF8.GetBytes(identifier);
             for (int i = 0; i < bytes.Length; i++)
             {
                 bytes[i] = (byte)(idBytes[i % idBytes.Length] ^ (hash >> (i % 4 * 8)));
             }
-            
+
             return new Guid(bytes);
         }
 
@@ -344,7 +344,7 @@ namespace Dashboard.Pages.Catalog.Products
             public Guid OptionId { get; set; }
             public string DisplayValue { get; set; } = string.Empty;
         }
-        
+
         /// <summary>
         /// Called when category changes to load attributes and clear combinations
         /// </summary>
@@ -363,10 +363,10 @@ namespace Dashboard.Pages.Catalog.Products
 
                     Console.WriteLine($"?? Resetting to default combination...");
                     // Reset to default combination when category changes
-                    var defaultPrice = Model.ItemAttributeCombinationPricings.Any() 
+                    var defaultPrice = Model.ItemAttributeCombinationPricings.Any()
                         ? Model.ItemAttributeCombinationPricings.First(c => c.IsDefault)?.Price ?? Model.ItemAttributeCombinationPricings.First().Price
                         : 0;
-                    
+
                     Model.ItemAttributeCombinationPricings = new List<ItemAttributeCombinationPricingDto>
                     {
                         new ItemAttributeCombinationPricingDto

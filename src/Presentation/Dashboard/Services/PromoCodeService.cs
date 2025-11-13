@@ -101,7 +101,7 @@ namespace Dashboard.Services
                     Errors = result.Errors
                 };
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 // Log error here
                 return new ResponseModel<bool>

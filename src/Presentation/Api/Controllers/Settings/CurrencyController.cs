@@ -8,7 +8,7 @@ using Shared.DTOs.Currency;
 using Shared.GeneralModels;
 using Shared.GeneralModels.SearchCriteriaModels;
 
-namespace Api.Controllers.Setting
+namespace Api.Controllers.Settings
 {
     [Route("api/[controller]")]
     [ApiController]

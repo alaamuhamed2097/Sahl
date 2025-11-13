@@ -58,17 +58,17 @@ namespace Dashboard.Pages.Catalog.Products.Components
             }
 
             attribute.Value = string.Join(",", selectedOptions);
-            
+
             // FIX: Use AttributeId instead of Id
             var categoryAttr = CategoryAttributes.FirstOrDefault(ca => ca.AttributeId == attribute.AttributeId);
             if (categoryAttr?.AffectsPricing == true)
             {
                 await OnGenerateCombinations.InvokeAsync();
             }
-            
+
             await OnAttributeValueChanged.InvokeAsync();
         }
-        
+
         /// <summary>
         /// Handles value change for pricing attributes to auto-generate combinations
         /// </summary>
@@ -82,7 +82,7 @@ namespace Dashboard.Pages.Catalog.Products.Components
             }
             await OnAttributeValueChanged.InvokeAsync();
         }
-        
+
         /// <summary>
         /// Gets or initializes the multi-value list for an attribute
         /// </summary>
@@ -105,7 +105,7 @@ namespace Dashboard.Pages.Catalog.Products.Components
             }
             return _multiValueAttributes[attributeId];
         }
-        
+
         /// <summary>
         /// Adds a new value input for pricing attribute
         /// </summary>
@@ -115,7 +115,7 @@ namespace Dashboard.Pages.Catalog.Products.Components
             list.Add("");
             StateHasChanged();
         }
-        
+
         /// <summary>
         /// Removes a value from the list
         /// </summary>
@@ -129,7 +129,7 @@ namespace Dashboard.Pages.Catalog.Products.Components
                 await HandlePricingAttributeValueChanged(attribute);
             }
         }
-        
+
         /// <summary>
         /// Updates the attribute value from the multi-value list
         /// </summary>
@@ -143,7 +143,7 @@ namespace Dashboard.Pages.Catalog.Products.Components
                 attribute.Value = string.Join(",", values);
             }
         }
-        
+
         /// <summary>
         /// Handles value change in multi-value input
         /// </summary>

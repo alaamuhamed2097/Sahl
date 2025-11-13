@@ -266,7 +266,7 @@ namespace BL.Service.Currency
 
                 return result.Success;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 // Log the exception here if you have logging
                 // _logger.LogError(ex, "Error setting base currency {CurrencyId}", currencyId);

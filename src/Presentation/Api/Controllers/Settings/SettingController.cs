@@ -8,7 +8,7 @@ using Resources;
 using Shared.DTOs.Setting;
 using Shared.GeneralModels;
 
-namespace Api.Controllers.Setting
+namespace Api.Controllers.Settings
 {
     [Route("api/[controller]")]
     [ApiController]

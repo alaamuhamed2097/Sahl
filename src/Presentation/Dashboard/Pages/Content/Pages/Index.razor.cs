@@ -59,7 +59,7 @@ namespace Dashboard.Pages.Content.Pages
 
                 await JSRuntime.InvokeVoidAsync("showPreviewModal", page.Title, content);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 await ShowErrorNotification("Error", "Failed to preview page");
             }

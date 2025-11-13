@@ -1,8 +1,4 @@
-﻿using Common.Enumerations.PromoCode;
-using Domains.Entities.Base;
-using Domains.Entities.Order;
-
-namespace Domains.Entities.PromoCode
+﻿namespace Domins.Entities.PromoCode
 {
     public class TbPromoCode : BaseEntity
     {

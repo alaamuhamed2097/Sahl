@@ -67,7 +67,7 @@ namespace Dashboard.Pages.Currency
                     await JSRuntime.InvokeVoidAsync("swal", ValidationResources.Failed, "Failed to save currency", "error");
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 await JSRuntime.InvokeVoidAsync("swal", ValidationResources.Failed, "An error occurred while saving", "error");
             }
@@ -94,7 +94,7 @@ namespace Dashboard.Pages.Currency
                 Model = result.Data;
                 StateHasChanged();
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 await JSRuntime.InvokeVoidAsync("swal", ValidationResources.Error, "Failed to load currency", "error");
                 await CloseModal();

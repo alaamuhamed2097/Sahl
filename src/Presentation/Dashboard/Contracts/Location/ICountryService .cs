@@ -1,7 +1,7 @@
 using Shared.DTOs.Location;
 using Shared.GeneralModels;
 
-namespace Dashboard.Contracts
+namespace Dashboard.Contracts.Location
 {
     public interface ICountryService
     {

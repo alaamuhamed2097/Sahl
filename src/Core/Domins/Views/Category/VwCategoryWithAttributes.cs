@@ -1,4 +1,4 @@
-﻿namespace Domins.Views
+﻿namespace Domins.Views.Category
 {
     public class VwCategoryWithAttributes
     {

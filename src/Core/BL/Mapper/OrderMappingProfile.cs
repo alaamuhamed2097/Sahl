@@ -1,6 +1,4 @@
-﻿using Domains.Entities;
-using Domains.Entities.PromoCode;
-using Shared.DTOs.ECommerce;
+﻿using Shared.DTOs.ECommerce;
 using Shared.DTOs.ECommerce.PromoCode;
 
 namespace BL.Mapper

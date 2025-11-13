@@ -66,7 +66,7 @@ namespace BL.Mapper
 
                 return JsonSerializer.Deserialize<List<ItemImageViewDto>>(json, options) ?? new List<ItemImageViewDto>();
             }
-            catch (JsonException ex)
+            catch (JsonException)
             {
                 // You might want to log this exception
                 // For now, return empty list
@@ -87,7 +87,7 @@ namespace BL.Mapper
 
                 return JsonSerializer.Deserialize<List<ItemCombinationDto>>(json, options) ?? new List<ItemCombinationDto>();
             }
-            catch (JsonException ex)
+            catch (JsonException)
             {
                 // You might want to log this exception
                 // For now, return empty list

@@ -1,7 +1,4 @@
-﻿using Domains.Entities.Base;
-using Domains.Entities.Order;
-
-namespace Domains.Entities
+﻿namespace Domins.Entities
 {
     public class TbShippingCompany : BaseEntity
     {

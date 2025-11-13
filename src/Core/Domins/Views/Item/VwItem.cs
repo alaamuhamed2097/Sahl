@@ -20,17 +20,17 @@ namespace Domins.Views.Item
         public string UnitTitleEn { get; set; }
         public string ThumbnailImage { get; set; }
         public bool StockStatus { get; set; }
-        
+
         /// <summary>
         /// Default price from the default combination (IsDefault = true)
         /// </summary>
         public decimal DefaultPrice { get; set; }
-        
+
         /// <summary>
         /// Default quantity from the default combination (IsDefault = true)
         /// </summary>
         public int DefaultQuantity { get; set; }
-        
+
         public DateTime CreatedDateUtc { get; set; }
         public string? VideoLink { get; set; }
         public bool IsNewArrival { get; set; }
@@ -39,14 +39,14 @@ namespace Domins.Views.Item
 
         [Column("ItemImagesJson")]
         public string? ItemImagesJson { get; set; }
-        
+
         /// <summary>
         /// JSON string containing all pricing combinations
         /// Format: [{"AttributeIds":"guid1,guid2","Price":100,"SalesPrice":90,"Quantity":50,"IsDefault":true}]
         /// </summary>
         [Column("CombinationsJson")]
         public string? CombinationsJson { get; set; }
-        
+
         /// <summary>
         /// Parsed list of pricing combinations
         /// </summary>
@@ -57,7 +57,7 @@ namespace Domins.Views.Item
             {
                 if (string.IsNullOrEmpty(CombinationsJson))
                     return new List<ItemCombination>();
-                
+
                 try
                 {
                     return JsonSerializer.Deserialize<List<ItemCombination>>(CombinationsJson);
@@ -69,7 +69,7 @@ namespace Domins.Views.Item
             }
         }
     }
-    
+
     /// <summary>
     /// Represents a pricing combination for an item
     /// </summary>

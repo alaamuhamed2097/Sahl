@@ -1,5 +1,4 @@
 ﻿using Common.Enumerations.User;
-using Domains.Identity;
 using Shared.DTOs.User;
 using Shared.GeneralModels.ResultModels;
 using System.Security.Claims;

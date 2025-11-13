@@ -113,7 +113,7 @@ namespace Dashboard.Services.ECommerce.Category
                 var result = await _apiService.PostAsync<Guid, bool>($"{ApiEndpoints.Category.Delete}", id);
                 return result;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 // Log error here
                 return new ResponseModel<bool>

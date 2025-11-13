@@ -2,7 +2,6 @@
 using BL.Contracts.GeneralService.UserManagement;
 using Common.Enumerations.User;
 using DAL.Models;
-using Domains.Identity;
 using Microsoft.AspNetCore.Identity;
 using Shared.DTOs.User.Base;
 using Shared.GeneralModels.SearchCriteriaModels;

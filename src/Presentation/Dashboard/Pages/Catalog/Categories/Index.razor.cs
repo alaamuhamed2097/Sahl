@@ -304,7 +304,7 @@ namespace Dashboard.Pages.Catalog.Categories
                     CurrentPage = searchModel.PageNumber;
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 await JSRuntime.InvokeVoidAsync("swal", ValidationResources.Error, NotifiAndAlertsResources.FailedToRetrieveData, "error");
             }

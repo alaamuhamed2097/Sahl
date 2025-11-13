@@ -96,14 +96,14 @@ namespace Shared.DTOs.ECommerce.Item
         /// <summary>
         /// Get price from default combination or first combination
         /// </summary>
-        public decimal GetPrice() 
+        public decimal GetPrice()
         {
             if (ItemAttributeCombinationPricings?.Any() == true)
             {
                 var defaultCombination = ItemAttributeCombinationPricings.FirstOrDefault(c => c.IsDefault);
                 return defaultCombination?.Price ?? ItemAttributeCombinationPricings.First().Price;
             }
-            
+
             return 0;
         }
 
@@ -121,7 +121,7 @@ namespace Shared.DTOs.ECommerce.Item
                     pricing.SalesPrice *= conversion.ExchangeRate;
                 }
             }
-            
+
             ExchangeRate = conversion.ExchangeRate;
             OriginalPrice = conversion.Amount;
             FormattedPrice = conversion.FormattedConvertedAmount;

@@ -1,5 +1,4 @@
-﻿using Domains.Entities.Base;
-using Domins.Entities.Category;
+﻿using Domins.Entities.Category;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
