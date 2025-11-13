@@ -61,51 +61,51 @@ app.UseSwagger(options =>
     options.RouteTemplate = "openapi/{documentName}.json";
 });
 
-if (app.Environment.IsDevelopment())
+//if (app.Environment.IsDevelopment())
+//{
+app.UseSwaggerUI(options =>
 {
-    app.UseSwaggerUI(options =>
-    {
-        options.SwaggerEndpoint("/openapi/v1.json", "Sahl API v1");
-        options.RoutePrefix = "swagger";
+    options.SwaggerEndpoint("/openapi/v1.json", "Sahl API v1");
+    options.RoutePrefix = "swagger";
 
-        app.MapGet("/", () => Results.Redirect("/swagger"))
-           .ExcludeFromDescription();
+    app.MapGet("/", () => Results.Redirect("/swagger"))
+       .ExcludeFromDescription();
 
-        options.DefaultModelsExpandDepth(-1);
-        options.DocExpansion(Swashbuckle.AspNetCore.SwaggerUI.DocExpansion.None);
-        options.EnableDeepLinking();
-        options.DisplayRequestDuration();
-        options.EnableFilter();
-        options.ShowExtensions();
-        options.EnableValidator();
-    });
+    options.DefaultModelsExpandDepth(-1);
+    options.DocExpansion(Swashbuckle.AspNetCore.SwaggerUI.DocExpansion.None);
+    options.EnableDeepLinking();
+    options.DisplayRequestDuration();
+    options.EnableFilter();
+    options.ShowExtensions();
+    options.EnableValidator();
+});
 
-    app.MapGet("/openapi/export", async context =>
-    {
-        var httpClientFactory = context.RequestServices.GetRequiredService<IHttpClientFactory>();
-        var httpClient = httpClientFactory.CreateClient();
+app.MapGet("/openapi/export", async context =>
+{
+    var httpClientFactory = context.RequestServices.GetRequiredService<IHttpClientFactory>();
+    var httpClient = httpClientFactory.CreateClient();
 
-        var baseUrl = $"{context.Request.Scheme}://{context.Request.Host}";
-        var openApiUrl = $"{baseUrl}/openapi/v1.json";
+    var baseUrl = $"{context.Request.Scheme}://{context.Request.Host}";
+    var openApiUrl = $"{baseUrl}/openapi/v1.json";
 
-        var openApiJson = await httpClient.GetStringAsync(openApiUrl);
+    var openApiJson = await httpClient.GetStringAsync(openApiUrl);
 
-        var solutionRoot = Directory.GetParent(Directory.GetCurrentDirectory())?.Parent?.FullName
-                           ?? Directory.GetCurrentDirectory();
-        var specsPath = Path.Combine(solutionRoot, "api-specs");
-        Directory.CreateDirectory(specsPath);
+    var solutionRoot = Directory.GetParent(Directory.GetCurrentDirectory())?.Parent?.FullName
+                       ?? Directory.GetCurrentDirectory();
+    var specsPath = Path.Combine(solutionRoot, "api-specs");
+    Directory.CreateDirectory(specsPath);
 
-        var filePath = Path.Combine(specsPath, "swagger.json");
-        await File.WriteAllTextAsync(filePath, openApiJson);
+    var filePath = Path.Combine(specsPath, "swagger.json");
+    await File.WriteAllTextAsync(filePath, openApiJson);
 
-        //return Results.Ok(new
-        //{
-        //    message = "OpenAPI JSON exported successfully",
-        //    path = filePath,
-        //    url = openApiUrl
-        //});
-    }).ExcludeFromDescription();
-}
+    //return Results.Ok(new
+    //{
+    //    message = "OpenAPI JSON exported successfully",
+    //    path = filePath,
+    //    url = openApiUrl
+    //});
+}).ExcludeFromDescription();
+//}
 //else
 //{
 //    app.UseSwaggerUI(c =>

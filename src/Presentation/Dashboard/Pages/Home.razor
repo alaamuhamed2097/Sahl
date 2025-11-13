@@ -4,7 +4,10 @@
 
 @attribute [Authorize(Roles = "Admin,Vendor")]
 @using Common.Enumerations.User
+@using Microsoft.AspNetCore.Components.Authorization
 @using Microsoft.AspNetCore.Components.Web.Virtualization
+@using Dashboard.Components
+@using Dashboard.Components.Statistics
 <PageTitle>@GeneralResources.Home</PageTitle>
 
 <!-- [ breadcrumb ] start -->
@@ -17,7 +20,7 @@
 				</div>
 				<ul class="breadcrumb">
 					<li class="breadcrumb-item">
-						<a href="index.html">
+						<a href="/">
 							<i class="feather icon-home"></i>
 						</a>
 					</li>
@@ -28,225 +31,73 @@
 	</div>
 </div>
 <!-- [ breadcrumb ] end -->
+
 <div class="container-fluid py-4 dashboard-page">
-  <!-- ===== Summary Cards ===== -->
- <div class="container-fluid py-4 dashboard-page">
-  <div class="row g-4 mb-4">
-
-    <!-- Vehicle Count -->
-    <div class="col-xl-3 col-md-6 col-sm-12">
-      <div class="card border-0 rounded-4 text-center p-4 hover-card animate-fade-up">
-        <div class="icon-wrapper bg-gradient-primary text-white mx-auto mb-3">
-          <i class="fas fa-car fa-2x"></i>
-        </div>
-        <div class="text-box p-3 rounded-4">
-          <h6 class="fw-bold mb-1">عدد المركبات</h6>
-          <h3 class="fw-bolder text-dark mb-0">42</h3>
-          <small class="text-muted">مركبة مسجلة بالنظام</small>
-        </div>
-      </div>
-    </div>
-
-    <!-- Maintenance Requests -->
-    <div class="col-xl-3 col-md-6 col-sm-12">
-      <div class="card border-0 rounded-4 text-center p-4 hover-card animate-fade-up" style="--delay: 0.1s;">
-        <div class="icon-wrapper bg-gradient-warning text-white mx-auto mb-3">
-          <i class="fas fa-wrench fa-2x"></i>
-        </div>
-        <div class="text-box p-3 rounded-4">
-          <h6 class="fw-bold mb-1">طلبات الصيانة</h6>
-          <h3 class="fw-bolder text-dark mb-0">8</h3>
-          <small class="text-muted">قيد التنفيذ</small>
-        </div>
-      </div>
-    </div>
-
-    <!-- Invoices -->
-    <div class="col-xl-3 col-md-6 col-sm-12">
-      <div class="card border-0 rounded-4 text-center p-4 hover-card animate-fade-up" style="--delay: 0.2s;">
-        <div class="icon-wrapper bg-gradient-success text-white mx-auto mb-3">
-          <i class="fas fa-file-invoice-dollar fa-2x"></i>
-        </div>
-        <div class="text-box p-3 rounded-4">
-          <h6 class="fw-bold mb-1">الفواتير الصادرة</h6>
-          <h3 class="fw-bolder text-dark mb-0">125</h3>
-          <small class="text-muted">خلال هذا الشهر</small>
-        </div>
-      </div>
-    </div>
-
-    <!-- Fuel Cost -->
-    <div class="col-xl-3 col-md-6 col-sm-12">
-      <div class="card border-0 rounded-4 text-center p-4 hover-card animate-fade-up" style="--delay: 0.3s;">
-        <div class="icon-wrapper bg-gradient-danger text-white mx-auto mb-3">
-          <i class="fas fa-gas-pump fa-2x"></i>
-        </div>
-        <div class="text-box p-3 rounded-4">
-          <h6 class="fw-bold mb-1">تكلفة الوقود</h6>
-          <h3 class="fw-bolder text-dark mb-0">34,200 EGP</h3>
-          <small class="text-muted">إجمالي الشهر الحالي</small>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
-
-  <!-- ===== Charts & Alerts ===== -->
-  <div class="row g-4">
-    <!-- Fleet Performance -->
-    <div class="col-lg-8">
-      <div class="card border-0 shadow-lg rounded-4 overflow-hidden h-100">
-        <div class="card-header bg-white border-0 d-flex justify-content-between align-items-center py-3 px-4">
-          <h6 class="fw-bold mb-0 text-primary">
-            <i class="fas fa-chart-line me-2"></i> أداء الأسطول
-          </h6>
-          <span class="badge bg-light text-dark small">آخر 6 أشهر</span>
-        </div>
-        <div class="card-body d-flex justify-content-center align-items-center flex-column text-muted">
-          <i class="fas fa-chart-area fa-3x mb-3 text-secondary opacity-50"></i>
-          <p class="mb-0">سيتم إضافة الرسم البياني قريبًا</p>
-        </div>
-      </div>
-    </div>
-
-    <!-- Alerts -->
-    <div class="col-lg-4">
-      <div class="card border-0 shadow-lg rounded-4 h-100">
-        <div class="card-header bg-white border-0 py-3 px-4 d-flex justify-content-between align-items-center">
-          <h6 class="fw-bold mb-0 text-warning">
-            <i class="fas fa-bell me-2"></i> التنبيهات
-          </h6>
-          <span class="badge bg-light text-dark small">اليوم</span>
-        </div>
-        <div class="card-body p-0">
-          <ul class="list-group list-group-flush">
-            <li class="list-group-item px-4 py-3 border-0 d-flex align-items-center">
-              <i class="fas fa-exclamation-triangle text-danger fs-5 me-3"></i>
-              <div><strong>مركبة رقم 204</strong> تحتاج لصيانة عاجلة.</div>
-            </li>
-            <li class="list-group-item px-4 py-3 border-0 d-flex align-items-center">
-              <i class="fas fa-oil-can text-info fs-5 me-3"></i>
-              <div><strong>تغيير زيت</strong> مستحق لـ 5 مركبات.</div>
-            </li>
-            <li class="list-group-item px-4 py-3 border-0 d-flex align-items-center">
-              <i class="fas fa-money-bill-wave text-success fs-5 me-3"></i>
-              <div><strong>دفعة جديدة</strong> تم تسجيلها اليوم.</div>
-            </li>
-            <li class="list-group-item px-4 py-3 border-0 text-muted d-flex align-items-center">
-              <i class="fas fa-info-circle fs-5 me-3"></i>
-              <div>لا توجد تنبيهات جديدة.</div>
-            </li>
-          </ul>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
-
-<!-- Loading Skeleton -->
-@if (isInitialLoading)
-{
-    <!-- <div class="loading-skeleton">
-        <div class="row g-3">
-            <div class="col-lg-3 col-md-6">
-                <div class="card skeleton-card">
-                    <div class="card-body">
-                        <div class="skeleton-avatar"></div>
-                        <div class="skeleton-text skeleton-title"></div>
-                        <div class="skeleton-text skeleton-subtitle"></div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-lg-3 col-md-6">
-                <div class="card skeleton-card">
-                    <div class="card-body">
-                        <div class="skeleton-avatar"></div>
-                        <div class="skeleton-text skeleton-title"></div>
-                        <div class="skeleton-text skeleton-subtitle"></div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-lg-3 col-md-6">
-                <div class="card skeleton-card">
-                    <div class="card-body">
-                        <div class="skeleton-avatar"></div>
-                        <div class="skeleton-text skeleton-title"></div>
-                        <div class="skeleton-text skeleton-subtitle"></div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-lg-3 col-md-6">
-                <div class="card skeleton-card">
-                    <div class="card-body">
-                        <div class="skeleton-avatar"></div>
-                        <div class="skeleton-text skeleton-title"></div>
-                        <div class="skeleton-text skeleton-subtitle"></div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div> -->
-}
-else
-{
-    <!-- [ Main Content ] start -->
-    
-    <!-- Vendor Section -->
-@*     <AuthorizeView Roles="@nameof(UserRole.Vendor)">
-        <Authorized>
-            @if (shouldShowVendorStats)
-            {
-                @if (loadVendorWidget)
+    <!-- Loading Skeleton -->
+    @if (isInitialLoading)
+    {
+        <div class="loading-skeleton">
+            <div class="row g-3">
+                @for (int i = 0; i < 4; i++)
                 {
-                    <LazyComponent>
-                        <Dashboard.Components.Statistics.VendorStatisticsWidget />
+                    <div class="col-lg-3 col-md-6">
+                        <div class="card skeleton-card">
+                            <div class="card-body">
+                                <div class="skeleton-avatar"></div>
+                                <div class="skeleton-text skeleton-title"></div>
+                                <div class="skeleton-text skeleton-subtitle"></div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    }
+    else
+    {
+        <!-- [ Main Content ] start -->
+        
+        <!-- Vendor Section -->
+  @*       <AuthorizeView Roles="@nameof(UserRole.Vendor)">
+            <Authorized> *@
+                <LazyComponent LoadingText="@GeneralResources.LoadingDots">
+                    <VendorStatisticsWidget />
+                </LazyComponent>
+          @*   </Authorized>
+        </AuthorizeView>
+ *@
+        <!-- Admin Section -->
+        @* <AuthorizeView Roles="@nameof(UserRole.Admin)">
+            <Authorized>
+                @if (loadAdminWidget)
+                {
+                    <LazyComponent LoadingText="Loading Dashboard...">
+                        <AdminStatisticsWidget />
                     </LazyComponent>
                 }
                 else
                 {
-                    <div class="text-center p-4">
-                        <button class="btn btn-primary" @onclick="LoadVendorWidget">
-                            <i class="fas fa-chart-bar me-2"></i>
-                            Load Dashboard Statistics
-                        </button>
+                    <div class="text-center p-5">
+                        <div class="card border-0 shadow-sm">
+                            <div class="card-body p-5">
+                                <i class="fas fa-tachometer-alt text-primary mb-3" style="font-size: 3rem;"></i>
+                                <h4 class="mb-3">Admin Dashboard</h4>
+                                <p class="text-muted mb-4">View comprehensive analytics and system overview</p>
+                                <button class="btn btn-primary btn-lg" @onclick="LoadAdminWidget">
+                                    <i class="fas fa-chart-line me-2"></i>
+                                    Load Admin Dashboard
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 }
-            }
-            else if (!gotTargetAccountType)
-            {
-                <div class="alert alert-info">
-                    <i class="fas fa-info-circle me-2"></i>
-                    Redirecting to account setup...
-                </div>
-            }
-        </Authorized>
-    </AuthorizeView> *@
+            </Authorized>
+        </AuthorizeView> *@
+        
+        <!-- [ Main Content ] end -->
+    }
+</div>
 
-    <!-- Admin Section -->
-    <AuthorizeView Roles="@nameof(UserRole.Admin)">
-        <Authorized>
-            @if (loadAdminWidget)
-            {
-                <LazyComponent>
-                    <Dashboard.Components.Statistics.AdminStatisticsWidget />
-                </LazyComponent>
-            }
-            else
-            {
-                <div class="text-center p-4">
-                    <button class="btn btn-primary" @onclick="LoadAdminWidget">
-                        <i class="fas fa-chart-line me-2"></i>
-                        Load Admin Dashboard
-                    </button>
-                </div>
-            }
-        </Authorized>
-    </AuthorizeView>
-    
-    <!-- [ Main Content ] end -->
-}
-
-<link href="/css/home-lazy-loading.min.css" rel="stylesheet" />
+@* <link href="/css/home-lazy-loading.min.css" rel="stylesheet" />
+<script src="/assets/js/pages/statistic.js"></script> *@
 

@@ -142,7 +142,7 @@ namespace Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to مديرون.
+        ///   Looks up a localized string similar to المسؤولون.
         /// </summary>
         public static string Admins {
             get {
@@ -250,7 +250,7 @@ namespace Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to الصفات.
+        ///   Looks up a localized string similar to الخصائص.
         /// </summary>
         public static string Attributes {
             get {

@@ -1,7 +1,7 @@
 ﻿// Service Worker for Dashboard - Enhanced Cache Management
 // Version-aware caching with automatic updates
 
-const CACHE_VERSION = 'v1.0.1';
+const CACHE_VERSION = 'v1.0.7';
 const CACHE_NAME = `dashboard-cache-${CACHE_VERSION}`;
 const RUNTIME_CACHE = `runtime-${CACHE_VERSION}`;
 
@@ -61,6 +61,12 @@ self.addEventListener('fetch', event => {
         return;
     }
 
+    // ✅ CRITICAL: Never cache _framework files (Blazor WebAssembly dependencies)
+    if (url.pathname.includes('/_framework/')) {
+        event.respondWith(fetch(request, { cache: 'no-store' }));
+        return;
+    }
+
     // Skip version.json from cache (always fetch fresh)
     if (url.pathname.includes('/version.json')) {
         event.respondWith(fetch(request));
@@ -73,7 +79,7 @@ self.addEventListener('fetch', event => {
         return;
     }
 
-    // Cache-first strategy for static assets
+    // Cache-first strategy for static assets (but not _framework)
     if (isStaticAsset(url.pathname)) {
         event.respondWith(cacheFirst(request));
         return;

@@ -438,4 +438,7 @@
   <data name="ExpandAll" xml:space="preserve">
     <value>فتح الكل</value>
   </data>
+  <data name="AddValue" xml:space="preserve">
+    <value>إضافة قيمة</value>
+  </data>
 </root>

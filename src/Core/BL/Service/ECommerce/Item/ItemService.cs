@@ -17,7 +17,7 @@ using Shared.GeneralModels.SearchCriteriaModels;
 using System.ComponentModel.DataAnnotations;
 using System.Linq.Expressions;
 
-namespace BL.Services.Items
+namespace BL.Service.ECommerce.Item
 {
     public class ItemService : BaseService<TbItem, ItemDto>, IItemService
     {
@@ -96,22 +96,22 @@ namespace BL.Services.Items
 
             if (criteriaModel.PriceFrom.HasValue)
             {
-                filter = filter.And(x => x.Price >= criteriaModel.PriceFrom.Value);
+                filter = filter.And(x => x.DefaultPrice >= criteriaModel.PriceFrom.Value);
             }
 
             if (criteriaModel.PriceTo.HasValue)
             {
-                filter = filter.And(x => x.Price <= criteriaModel.PriceTo.Value);
+                filter = filter.And(x => x.DefaultPrice <= criteriaModel.PriceTo.Value);
             }
 
             if (criteriaModel.QuantityFrom.HasValue)
             {
-                filter = filter.And(x => x.Quantity >= criteriaModel.QuantityFrom.Value);
+                filter = filter.And(x => x.DefaultQuantity >= criteriaModel.QuantityFrom.Value);
             }
 
             if (criteriaModel.QuantityTo.HasValue)
             {
-                filter = filter.And(x => x.Quantity <= criteriaModel.QuantityTo.Value);
+                filter = filter.And(x => x.DefaultQuantity <= criteriaModel.QuantityTo.Value);
             }
 
             // New Item Flags Filters
@@ -147,7 +147,10 @@ namespace BL.Services.Items
         {
             if (Id == Guid.Empty)
                 throw new ArgumentNullException(nameof(Id));
-            var item = _tableRepository.Get(x => x.Id == Id, includeProperties: "ItemImages,Category").FirstOrDefault();
+            var item = _tableRepository.Get(
+                x => x.Id == Id,
+                includeProperties: "ItemImages,Category,ItemAttributes,ItemAttributeCombinationPricings"
+            ).FirstOrDefault();
             if (item == null)
                 throw new KeyNotFoundException(ValidationResources.EntityNotFound);
             return _mapper.MapModel<TbItem, ItemDto>(item);
@@ -168,6 +171,43 @@ namespace BL.Services.Items
             if (dto.Id == Guid.Empty && (!dto.Images.Any() || dto.Images.Count > MaxImageCount))
             {
                 throw new ArgumentException($"{ValidationResources.MaximumOf} {MaxImageCount} {ValidationResources.ImagesAllowed}", nameof(dto.Images));
+            }
+
+            // Ensure every item has at least one combination (default combination)
+            if (dto.ItemAttributeCombinationPricings == null || !dto.ItemAttributeCombinationPricings.Any())
+            {
+                _logger.Information("No combinations found, creating default combination for item {ItemId}", dto.Id);
+
+                // Create a default combination with no attributes
+                dto.ItemAttributeCombinationPricings = new List<ItemAttributeCombinationPricingDto>
+                {
+                    new ItemAttributeCombinationPricingDto
+                    {
+                        AttributeIds = string.Empty, // Empty means default/no attributes
+                        Price = 0,
+                        SalesPrice = 0,
+                        Quantity = 0,
+                        IsDefault = true
+                    }
+                };
+            }
+
+            // Ensure only one combination is marked as default
+            var defaultCombinations = dto.ItemAttributeCombinationPricings.Where(c => c.IsDefault).ToList();
+            if (defaultCombinations.Count == 0)
+            {
+                // No default set, mark the first one as default
+                _logger.Information("No default combination found, setting first combination as default for item {ItemId}", dto.Id);
+                dto.ItemAttributeCombinationPricings.First().IsDefault = true;
+            }
+            else if (defaultCombinations.Count > 1)
+            {
+                // Multiple defaults found, keep only the first one
+                _logger.Warning("Multiple default combinations found for item {ItemId}, keeping only the first", dto.Id);
+                foreach (var combo in defaultCombinations.Skip(1))
+                {
+                    combo.IsDefault = false;
+                }
             }
 
             try
@@ -216,6 +256,36 @@ namespace BL.Services.Items
                             .HardDelete(image.Id);
                         }
                     }
+
+                    // Delete existing attributes
+                    var existingAttributes = _unitOfWork
+                        .TableRepository<TbItemAttribute>()
+                        .Get(ia => ia.ItemId == dto.Id);
+
+                    if (existingAttributes.Any())
+                    {
+                        foreach (var attr in existingAttributes)
+                        {
+                            _unitOfWork
+                                .TableRepository<TbItemAttribute>()
+                                .HardDelete(attr.Id);
+                        }
+                    }
+
+                    // Delete existing combinations
+                    var existingCombinations = _unitOfWork
+                        .TableRepository<TbItemAttributeCombinationPricing>()
+                        .Get(c => c.ItemId == dto.Id);
+
+                    if (existingCombinations.Any())
+                    {
+                        foreach (var combo in existingCombinations)
+                        {
+                            _unitOfWork
+                                .TableRepository<TbItemAttributeCombinationPricing>()
+                                .HardDelete(combo.Id);
+                        }
+                    }
                 }
 
                 var entity = _mapper.MapModel<ItemDto, TbItem>(dto);
@@ -236,9 +306,49 @@ namespace BL.Services.Items
                 if (dto.Images?.Count(x => x.IsNew) > 0)
                     imagesSaved = _unitOfWork.TableRepository<TbItemImage>().AddRange(imageEntities, userId);
 
+                // Save ItemAttributes
+                var attributesSaved = true;
+                if (dto.ItemAttributes?.Any() == true)
+                {
+                    var attributeEntities = new List<TbItemAttribute>();
+                    foreach (var attr in dto.ItemAttributes)
+                    {
+                        // Only save attributes with values
+                        if (!string.IsNullOrWhiteSpace(attr.Value))
+                        {
+                            var attributeEntity = _mapper.MapModel<ItemAttributeDto, TbItemAttribute>(attr);
+                            attributeEntity.ItemId = itemId;
+                            attributeEntities.Add(attributeEntity);
+                        }
+                    }
+
+                    if (attributeEntities.Any())
+                    {
+                        attributesSaved = _unitOfWork.TableRepository<TbItemAttribute>().AddRange(attributeEntities, userId);
+                    }
+                }
+
+                // Save ItemAttributeCombinationPricings
+                var combinationsSaved = true;
+                if (dto.ItemAttributeCombinationPricings?.Any() == true)
+                {
+                    var combinationEntities = new List<TbItemAttributeCombinationPricing>();
+                    foreach (var combo in dto.ItemAttributeCombinationPricings)
+                    {
+                        var combinationEntity = _mapper.MapModel<ItemAttributeCombinationPricingDto, TbItemAttributeCombinationPricing>(combo);
+                        combinationEntity.ItemId = itemId;
+                        combinationEntities.Add(combinationEntity);
+                    }
+
+                    if (combinationEntities.Any())
+                    {
+                        combinationsSaved = _unitOfWork.TableRepository<TbItemAttributeCombinationPricing>().AddRange(combinationEntities, userId);
+                    }
+                }
+
                 await _unitOfWork.CommitAsync();
 
-                return itemSaved && imagesSaved;
+                return itemSaved && imagesSaved && attributesSaved && combinationsSaved;
             }
             catch (Exception ex)
             {

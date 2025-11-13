@@ -2,6 +2,7 @@
 @page "/product/{id:guid}"
 
 @using Common.Enumerations.User
+@using Dashboard.Pages.Catalog.Products.Components
 @attribute [Authorize(Roles = nameof(UserRole.Admin))]
 <PageTitle>@ECommerceResources.Product</PageTitle>
 
@@ -9,7 +10,7 @@
     <div class="card shadow-sm border-0">
         <div class="card-header bg-primary d-flex justify-content-between align-items-center">
             <h5 class="modal-title text-white">
-                @(Model.Id == Guid.Empty ? $"➕ {ActionsResources.Add}" : $"✏️ {ActionsResources.Edit}")) @ECommerceResources.Product
+                @(Model.Id == Guid.Empty ? $"➕ {ActionsResources.Add}" : $"✏️ {ActionsResources.Edit}") @ECommerceResources.Product
             </h5>
         </div>
 
@@ -243,7 +244,7 @@
                                     <h6 class="text-primary mb-3">@ECommerceResources.Inventory</h6>
                                 </div>
 
-                                <div class="col-md-3">
+                                <div class="col-md-6">
                                     <div class="form-group">
                                         <label>@ECommerceResources.StockStatus</label>
                                         <div class="form-check form-switch">
@@ -259,25 +260,10 @@
                                     </div>
                                 </div>
 
-                                <div class="col-md-3">
-                                    <div class="form-group">
-                                        <label>@ECommerceResources.Quantity</label>
-                                        <InputNumber class="form-control" 
-                                                     min="0" 
-                                                     placeholder="@ECommerceResources.QuantityPlaceHolder" 
-                                                     @bind-Value="Model.Quantity" />
-                                        <ValidationMessage For="@(() => Model.Quantity)" />
-                                    </div>
-                                </div>
-
-                                <div class="col-md-3">
-                                    <div class="form-group">
-                                        <label>@FormResources.Price</label>
-                                        <InputNumber class="form-control" 
-                                                     min="0" 
-                                                     placeholder="@ECommerceResources.PricePlaceHolder" 
-                                                     @bind-Value="Model.Price" />
-                                        <ValidationMessage For="@(() => Model.Price)" />
+                                <div class="col-12">
+                                    <div class="alert alert-info">
+                                        <i class="fas fa-info-circle me-2"></i>
+                                        <strong>Pricing & Inventory:</strong> Price and quantity are now managed through attribute combinations in Step 5. This allows you to set different prices and quantities for different product variations.
                                     </div>
                                 </div>
                             </div>
@@ -434,9 +420,9 @@
                             {
                                 <div class="text-center py-5">
                                     <div class="spinner-border text-primary" role="status">
-                                        <span class="visually-hidden">Loading...</span>
+                                        <span class="visually-hidden">@GeneralResources.Loading</span>
                                     </div>
-                                    <p class="mt-2 text-muted">Loading attributes...</p>
+                                    <p class="mt-2 text-muted">@GeneralResources.Loading...</p>
                                 </div>
                             }
                             else if (Model.CategoryId != Guid.Empty)
@@ -456,47 +442,101 @@
                                             <span class="badge bg-info">@Model.ItemAttributeCombinationPricings.Count</span>
                                         </div>
                                         <div class="card-body">
+                                            <div class="alert alert-warning">
+                                                <i class="fas fa-exclamation-triangle me-2"></i>
+                                                <strong>@GeneralResources.ImportantNotes:</strong>
+                                                <ul class="mb-0 mt-2">
+                                                    <li>@ValidationResources.AllCombinationsPriceValidation</li>
+                                                    <li><strong>يجب تحديد مجموعة واحدة فقط كافتراضية (Default)</strong> - السعر الافتراضي للمنتج يأتي من المجموعة الافتراضية</li>
+                                                </ul>
+                                            </div>
+                                            
                                             <div class="table-responsive">
                                                 <table class="table table-bordered">
                                                     <thead>
                                                         <tr>
+                                                            <th style="width: 50px;">افتراضي</th>
                                                             <th>@ECommerceResources.Attributes</th>
-                                                            <th>@FormResources.Price</th>
-                                                            <th>@ECommerceResources.Quantity</th>
-                                                            <th>@FormResources.Image</th>
+                                                            <th>@FormResources.Price <span class="text-danger">*</span></th>
+                                                            <th>@ECommerceResources.SalesPrice <span class="text-danger">*</span></th>
+                                                            <th>@ECommerceResources.Quantity <span class="text-danger">*</span></th>
                                                             <th>@ECommerceResources.Actions</th>
                                                         </tr>
                                                     </thead>
                                                     <tbody>
                                                         @foreach (var combination in Model.ItemAttributeCombinationPricings)
                                                         {
-                                                            <tr>
+                                                            var hasInvalidPrice = combination.Price <= 0;
+                                                            var hasInvalidSalesPrice = combination.SalesPrice <= 0;
+                                                            var hasInvalidQuantity = combination.Quantity < 0;
+                                                            var hasErrors = hasInvalidPrice || hasInvalidSalesPrice || hasInvalidQuantity;
+                                                            
+                                                            <tr class="@(hasErrors ? "table-danger" : combination.IsDefault ? "table-success" : "")">
+                                                                <td class="text-center">
+                                                                    <div class="form-check">
+                                                                        <input type="radio" 
+                                                                               name="defaultCombination" 
+                                                                               class="form-check-input" 
+                                                                               checked="@combination.IsDefault"
+                                                                               @onchange="@(() => SetDefaultCombination(combination))" />
+                                                                    </div>
+                                                                </td>
                                                                 <td>
                                                                     @GetCombinationAttributesDisplay(combination.AttributeIds)
-                                                                </td>
-                                                                <td>
-                                                                    <InputNumber class="form-control" @bind-Value="combination.FinalPrice" />
-                                                                </td>
-                                                                <td>
-                                                                    <InputNumber class="form-control" @bind-Value="combination.Quantity" />
-                                                                </td>
-                                                                <td>
-                                                                    <InputFile class="form-control"
-                                                                               OnChange="@(e => HandleCombinationImageUpload(e, combination))"
-                                                                               accept="image/*" />
-                                                                    @if (!string.IsNullOrEmpty(combination.Image))
+                                                                    @if (combination.IsDefault)
                                                                     {
-                                                                        <img src="@GetImageSourceForDisplay(combination.Image)" 
-                                                                             class="img-thumbnail mt-2" 
-                                                                             style="max-height: 50px;" />
+                                                                        <span class="badge bg-success ms-2">Default</span>
                                                                     }
                                                                 </td>
                                                                 <td>
-                                                                    <button type="button" 
-                                                                            class="btn btn-sm btn-danger"
-                                                                            @onclick="() => RemoveCombination(combination)">
-                                                                        <i class="fas fa-trash "></i>
-                                                                    </button>
+                                                                    <InputNumber class="@($"form-control {(hasInvalidPrice && showValidationErrors ? "is-invalid" : "")}")" 
+                                                                                 @bind-Value="combination.Price" 
+                                                                                 min="0.01" 
+                                                                                 step="0.01" />
+                                                                    @if (hasInvalidPrice && showValidationErrors)
+                                                                    {
+                                                                        <div class="invalid-feedback d-block">
+                                                                            @ValidationResources.PriceValidation
+                                                                        </div>
+                                                                    }
+                                                                </td>
+                                                                <td>
+                                                                    <InputNumber class="@($"form-control {(hasInvalidSalesPrice && showValidationErrors ? "is-invalid" : "")}")" 
+                                                                                 @bind-Value="combination.SalesPrice" 
+                                                                                 min="0.01" 
+                                                                                 step="0.01" />
+                                                                    @if (hasInvalidSalesPrice && showValidationErrors)
+                                                                    {
+                                                                        <div class="invalid-feedback d-block">
+                                                                            @ValidationResources.PriceValidation                                                                         
+                                                                        </div>
+                                                                    }
+                                                                </td>
+                                                                <td>
+                                                                    <InputNumber class="@($"form-control {(hasInvalidQuantity && showValidationErrors ? "is-invalid" : "")}")" 
+                                                                                 @bind-Value="combination.Quantity" 
+                                                                                 min="0" />
+                                                                    @if (hasInvalidQuantity && showValidationErrors)
+                                                                    {
+                                                                        <div class="invalid-feedback d-block">
+                                                                            @ValidationResources.QuantityValidation
+                                                                        </div>
+                                                                    }
+                                                                </td>
+                                                                <td>
+                                                                    @if (!combination.IsDefault || Model.ItemAttributeCombinationPricings.Count > 1)
+                                                                    {
+                                                                        <button type="button" 
+                                                                                class="btn btn-sm btn-danger"
+                                                                                @onclick="() => RemoveCombination(combination)"
+                                                                                disabled="@(combination.IsDefault && Model.ItemAttributeCombinationPricings.Count == 1)">
+                                                                            <i class="fas fa-trash"></i>
+                                                                        </button>
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        <small class="text-muted">Default</small>
+                                                                    }
                                                                 </td>
                                                             </tr>
                                                         }
@@ -511,7 +551,7 @@
                             {
                                 <div class="alert alert-info">
                                     <i class="fas fa-info-circle me-2"></i>
-                                    Please select a category in the Classification step to configure attributes.
+                                    @ValidationResources.CategorySelectionRequired
                                 </div>
                             }
 

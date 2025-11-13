@@ -51,9 +51,7 @@ namespace Domins.Entities.Item
         [DefaultValue(false)]
         public bool StockStatus { get; set; }
 
-        public int? Quantity { get; set; }
-
-        public decimal Price { get; set; }
+        // Price and Quantity are now completely removed - handled by ItemAttributeCombinationPricings only
 
         // New Item Flags
         [DefaultValue(false)]
@@ -76,7 +74,6 @@ namespace Domins.Entities.Item
 
         [ForeignKey("VideoProviderId")]
         public virtual TbVideoProvider VideoProvider { get; set; } = null!;
-        //public virtual ICollection<TbOrderDetail> TbOrderDetails { get; set; } = null!;
 
         public virtual ICollection<TbItemImage> ItemImages { get; set; } = null!;
         public virtual ICollection<TbItemAttribute> ItemAttributes { get; set; } = null!;

@@ -139,7 +139,7 @@
     <value>صفحات المستخدم</value>
   </data>
   <data name="Admins" xml:space="preserve">
-    <value>مديرون</value>
+    <value>المسؤولون</value>
   </data>
   <data name="SettingsPages" xml:space="preserve">
     <value>صفحات الإعدادات</value>
@@ -253,7 +253,7 @@
     <value>الفئات</value>
   </data>
   <data name="Attributes" xml:space="preserve">
-    <value>الصفات</value>
+    <value>الخصائص</value>
   </data>
   <data name="Units" xml:space="preserve">
     <value>الوحدات</value>
@@ -1129,7 +1129,7 @@
     <value>أدخل نسبة الرسوم المطبقة على عمليات السحب.</value>
   </data>
   <data name="ShippingAmountHelpText" xml:space="preserve">
-    <value>تكلفة الشحن الافتراضية مضافة إلى جميع الطلبات</value>
+    <value>تكلفة الشحن الافتراضية مaddedت إلى جميع الطلبات</value>
   </data>
   <data name="OrderTaxPercentageHelpText" xml:space="preserve">
     <value>ضريبة القيمة المضافه</value>
@@ -1155,7 +1155,6 @@
   <data name="Content" xml:space="preserve">
     <value>المحتوى</value>
   </data>
-  <!-- Import Feature Resources -->
   <data name="ImportantNotes" xml:space="preserve">
     <value>ملاحظات مهمة</value>
   </data>
@@ -1167,5 +1166,17 @@
   </data>
   <data name="Tips" xml:space="preserve">
     <value>نصائح</value>
+  </data>
+  <data name="LoadingAttributes" xml:space="preserve">
+    <value>جاري تحميل الخصائص...</value>
+  </data>
+  <data name="PleaseSelectCategoryToConfigureAttributes" xml:space="preserve">
+    <value>يرجى اختيار فئة في خطوة التصنيف لتكوين الخصائص.</value>
+  </data>
+  <data name="AllCombinationsMustHavePriceGreaterThanZero" xml:space="preserve">
+    <value>يجب أن يكون لجميع المجموعات سعر أكبر من 0</value>
+  </data>
+  <data name="PriceMustBeGreaterThanZero" xml:space="preserve">
+    <value>يجب أن يكون السعر أكبر من 0</value>
   </data>
 </root>

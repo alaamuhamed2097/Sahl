@@ -20,8 +20,12 @@ namespace Dashboard.Pages.Catalog.Products
             [FormResources.Image] = x => $"{baseUrl}/{x.ThumbnailImage}",
             [FormResources.Title] = x => ResourceManager.CurrentLanguage == Language.Arabic ? x.TitleAr : x.TitleEn,
             [ECommerceResources.StockStatus] = x => x.StockStatus ? ECommerceResources.InStock : ECommerceResources.OutOfStock,
-            [ECommerceResources.Quantity] = x => x.Quantity,
-            [FormResources.Price] = x => x.Price,
+            // Get Quantity from default combination or first combination
+            [ECommerceResources.Quantity] = x => x.ItemAttributeCombinationPricings?.FirstOrDefault(c => c.IsDefault)?.Quantity 
+                                                  ?? x.ItemAttributeCombinationPricings?.FirstOrDefault()?.Quantity 
+                                                  ?? 0,
+            // Get Price from default combination or first combination using GetPrice() method
+            [FormResources.Price] = x => x.GetPrice(),
         };
 
         [Inject] protected IItemService ItemService { get; set; } = null!;

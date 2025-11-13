@@ -18,9 +18,9 @@
                     <thead>
                         <tr>
                             <th>@ECommerceResources.Attributes</th>
-                            <th>@FormResources.Price</th>
-                            <th>@ECommerceResources.Quantity</th>
-                            <th>@FormResources.Image</th>
+                            <th>@FormResources.Price <span class="text-danger">*</span></th>
+                            <th>Sales Price <span class="text-danger">*</span></th>
+                            <th>@ECommerceResources.Quantity <span class="text-danger">*</span></th>
                             <th>@FormResources.Actions</th>
                         </tr>
                     </thead>
@@ -33,20 +33,20 @@
                                 </td>
                                 <td>
                                     <InputNumber class="form-control"
-                                                 @bind-Value="combination.FinalPrice" />
+                                                 @bind-Value="combination.Price" 
+                                                 min="0.01"
+                                                 step="0.01" />
                                 </td>
                                 <td>
                                     <InputNumber class="form-control"
-                                                 @bind-Value="combination.Quantity" />
+                                                 @bind-Value="combination.SalesPrice" 
+                                                 min="0.01"
+                                                 step="0.01" />
                                 </td>
                                 <td>
-                                    <InputFile class="form-control"
-                                               OnChange="@(e => HandleCombinationImageUpload(e, combination))"
-                                               accept="image/*" />
-                                    @if (!string.IsNullOrEmpty(combination.Image))
-                                    {
-                                        <img src="@combination.Image" class="img-thumbnail mt-2" style="max-height: 50px;" />
-                                    }
+                                    <InputNumber class="form-control"
+                                                 @bind-Value="combination.Quantity" 
+                                                 min="0" />
                                 </td>
                                 <td>
                                     <button type="button" class="btn btn-sm btn-danger"

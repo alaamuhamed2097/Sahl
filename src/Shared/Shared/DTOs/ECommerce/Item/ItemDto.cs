@@ -75,12 +75,6 @@ namespace Shared.DTOs.ECommerce.Item
         [Required(ErrorMessageResourceName = "FieldRequired", ErrorMessageResourceType = typeof(ValidationResources))]
         public bool StockStatus { get; set; }
 
-        [Required(ErrorMessageResourceName = "FieldRequired", ErrorMessageResourceType = typeof(ValidationResources))]
-        public int? Quantity { get; set; }
-
-        [Required(ErrorMessageResourceName = "FieldRequired", ErrorMessageResourceType = typeof(ValidationResources))]
-        public decimal? Price { get; set; }
-
         public bool IsNewArrival { get; set; } = false;
         public bool IsBestSeller { get; set; } = false;
         public bool IsRecommended { get; set; } = false;
@@ -99,27 +93,38 @@ namespace Shared.DTOs.ECommerce.Item
         public List<ItemAttributeDto> ItemAttributes { get; set; } = new();
         public List<ItemAttributeCombinationPricingDto> ItemAttributeCombinationPricings { get; set; } = new();
 
-        public decimal GetPrice() => Price.HasValue ? Price.Value : 0;
+        /// <summary>
+        /// Get price from default combination or first combination
+        /// </summary>
+        public decimal GetPrice() 
+        {
+            if (ItemAttributeCombinationPricings?.Any() == true)
+            {
+                var defaultCombination = ItemAttributeCombinationPricings.FirstOrDefault(c => c.IsDefault);
+                return defaultCombination?.Price ?? ItemAttributeCombinationPricings.First().Price;
+            }
+            
+            return 0;
+        }
 
         public string GetId() => Id.ToString();
 
         public async Task ApplyCurrencyConversionAsync(CurrencyConversionDto conversion, string toCurrency)
         {
-            Price = conversion.ConvertedAmount;
-            ExchangeRate = conversion.ExchangeRate;
-            OriginalPrice = conversion.Amount;
-            FormattedPrice = conversion.FormattedConvertedAmount;
-
             // Convert attribute pricings if they exist
             if (ItemAttributeCombinationPricings?.Any() == true)
             {
                 foreach (var pricing in ItemAttributeCombinationPricings)
                 {
-                    // This would need the conversion factory to convert individual prices
-                    // For now, applying the same rate
-                    pricing.FinalPrice *= conversion.ExchangeRate;
+                    // Apply conversion to both Price and SalesPrice
+                    pricing.Price *= conversion.ExchangeRate;
+                    pricing.SalesPrice *= conversion.ExchangeRate;
                 }
             }
+            
+            ExchangeRate = conversion.ExchangeRate;
+            OriginalPrice = conversion.Amount;
+            FormattedPrice = conversion.FormattedConvertedAmount;
         }
 
         public void SetCurrencyInfo(string currencyCode, CultureInfo culture)

@@ -3,7 +3,7 @@
 // offline support. See https://aka.ms/blazor-offline-considerations
 
 // ✅ VERSION MANAGEMENT: Dynamic cache versioning
-const APP_VERSION = 'v1.0.1'; // Will be updated by update-version.ps1
+const APP_VERSION = 'v1.0.7'; // Will be updated by update-version.ps1
 const cacheNamePrefix = 'offline-cache-';
 const cacheName = `${cacheNamePrefix}${APP_VERSION}-${self.assetsManifest?.version || 'manual'}`;
 
@@ -102,6 +102,17 @@ async function onFetch(event) {
     const isSameOrigin = url.origin === self.location.origin;
     const isApi = apiPathPrefixes.some(p => url.pathname.startsWith(p));
 
+    // ✅ CRITICAL: Never cache _framework files (Blazor WebAssembly dependencies)
+    if (url.pathname.includes('/_framework/')) {
+        return fetch(event.request, { 
+            cache: 'no-store',
+            headers: {
+                'Cache-Control': 'no-cache',
+                'Pragma': 'no-cache'
+            }
+        });
+    }
+
     // ✅ Always fetch version.json fresh (no cache)
     if (url.pathname.includes('version.json')) {
         return fetch(event.request, {
@@ -193,3 +204,9 @@ self.addEventListener('message', event => {
 });
 
 console.info(`📦 Service Worker loaded: ${APP_VERSION}`);
+
+
+
+
+
+

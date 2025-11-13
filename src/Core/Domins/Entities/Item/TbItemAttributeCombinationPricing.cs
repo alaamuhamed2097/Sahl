@@ -1,5 +1,4 @@
 ﻿using Domains.Entities.Base;
-using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -16,13 +15,21 @@ namespace Domins.Entities.Item
 
         [Required]
         [Column(TypeName = "decimal(18,2)")]
-        public decimal FinalPrice { get; set; }
+        public decimal Price { get; set; }
 
-        [DefaultValue(0)]
+        [Required]
+        [Column(TypeName = "decimal(18,2)")]
+        public decimal SalesPrice { get; set; }
+
+        [Required]
         public int Quantity { get; set; }
 
-        [MaxLength(255)]
-        public string? Image { get; set; }
+        /// <summary>
+        /// Indicates if this is the default pricing combination for the item.
+        /// Only one combination per item can be marked as default.
+        /// </summary>
+        [Required]
+        public bool IsDefault { get; set; } = false;
 
         [ForeignKey("ItemId")]
         public virtual TbItem Item { get; set; } = null!;

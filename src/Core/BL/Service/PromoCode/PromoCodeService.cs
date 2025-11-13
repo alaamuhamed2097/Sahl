@@ -314,12 +314,13 @@ namespace BL.Service.PromoCode
                 foreach (var item in orderItems)
                 {
                     var product = _itemService.FindById(item.Id);
-                    decimal price = 0m;
 
                     if (product == null)
                         return ServiceResult<List<OrderItemPriceDto>>.FailureResult($"Product {item.Id} not found");
 
-                    price = product.Price ?? 0;
+                    // Use GetPrice() method instead of Price property (now handled by combinations)
+                    decimal price = product.GetPrice();
+                    
                     result.Add(new OrderItemPriceDto
                     {
                         ItemId = item.Id,

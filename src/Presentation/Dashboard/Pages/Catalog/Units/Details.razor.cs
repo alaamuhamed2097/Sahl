@@ -18,6 +18,8 @@ namespace Dashboard.Pages.Catalog.Units
         [Inject] protected IJSRuntime JSRuntime { get; set; } = null!;
         [Inject] protected NavigationManager Navigation { get; set; } = null!;
 
+        // ? FIX: ????? ????? ???????
+        private bool _initialized = false;
 
         protected override async Task OnInitializedAsync()
         {
@@ -26,9 +28,14 @@ namespace Dashboard.Pages.Catalog.Units
 
         protected override void OnParametersSet()
         {
-            if (Id != Guid.Empty)
+            // ? FIX: ???? ?? ??????? ???? infinite loop
+            if (!_initialized || Id != Model.Id)
             {
-                Edit(Id);
+                if (Id != Guid.Empty)
+                {
+                    _ = Edit(Id);
+                }
+                _initialized = true;
             }
         }
 
@@ -40,10 +47,6 @@ namespace Dashboard.Pages.Catalog.Units
                 AvailableUnits = result.Data ?? Enumerable.Empty<UnitDto>();
                 StateHasChanged();
             }
-            //else
-            //{
-            //    await JSRuntime.InvokeVoidAsync("swal", ValidationResources.Failed, NotifiAndAlertsResources.FailedToRetrieveData, "error");
-            //}
         }
 
         protected async Task Save()

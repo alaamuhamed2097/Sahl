@@ -117,13 +117,16 @@
                                         <td class="text-center align-middle">
                                             <div class="d-flex gap-1 justify-content-center">
                                                 <button class="btn btn-primary btn-sm" @onclick="() => Edit(item)" title="@ActionsResources.Edit">
-                                                    <i class="fas fa-edit"></i>
+                                                      <i class="feather icon-edit me-2 "></i>
+                                                     @ActionsResources.Edit
                                                 </button>
                                                 <button class="btn btn-info btn-sm" @onclick="() => Preview(item)" title="@TestimonialResources.PreviewTestimonial">
-                                                    <i class="fas fa-eye"></i>
+                                                    <i data-feather="eye"></i>
+                                                    @TestimonialResources.PreviewTestimonial
                                                 </button>
                                                 <button class="btn btn-danger btn-sm" @onclick="() => Delete(item.Id)" title="@ActionsResources.Delete">
-                                                    <i class="fas fa-trash"></i>
+                                                          <i class="feather icon-trash-2 me-2"></i>
+@ActionsResources.Delete
                                                 </button>
                                             </div>
                                         </td>
@@ -182,13 +185,16 @@
                                         <p class="card-text"><small class="text-muted">Created: @item.CreatedDateUtc.ToString("dd/MM/yyyy")</small></p>
                                         <div class="d-flex gap-1">
                                             <button class="btn btn-primary btn-sm" @onclick="() => Edit(item)">
-                                                <i class="fas fa-edit"></i>
+                                                                                                      <i class="feather icon-edit  "></i>
+
                                             </button>
                                             <button class="btn btn-info btn-sm" @onclick="() => Preview(item)">
-                                                <i class="fas fa-eye"></i>
+                                                                                                    <i data-feather="eye"></i>
+
                                             </button>
                                             <button class="btn btn-danger btn-sm" @onclick="() => Delete(item.Id)">
-                                                <i class="fas fa-trash"></i>
+                                                                                                         <i class="feather icon-trash-2 "></i>
+
                                             </button>
                                         </div>
                                     </div>

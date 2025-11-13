@@ -106,6 +106,15 @@ namespace Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to يجب أن تحتوي جميع التركيبات على سعر وسعر بيع أكبر من 0.
+        /// </summary>
+        public static string AllCombinationsPriceValidation {
+            get {
+                return ResourceManager.GetString("AllCombinationsPriceValidation", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to الصيغ المسموحه.
         /// </summary>
         public static string AllowedFormats {
@@ -237,6 +246,15 @@ namespace Resources {
         public static string CategoryHasChild {
             get {
                 return ResourceManager.GetString("CategoryHasChild", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to يرجى اختيار فئة في خطوة التصنيف لتكوين الخصائص..
+        /// </summary>
+        public static string CategorySelectionRequired {
+            get {
+                return ResourceManager.GetString("CategorySelectionRequired", resourceCulture);
             }
         }
         
@@ -1699,6 +1717,15 @@ namespace Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to يجب أن يكون السعر أكبر من 0.
+        /// </summary>
+        public static string PriceMustBeGreaterThanZero {
+            get {
+                return ResourceManager.GetString("PriceMustBeGreaterThanZero", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to يجب أن يكون السعر عددًا إيجابيًا..
         /// </summary>
         public static string PriceRange {
@@ -1717,6 +1744,15 @@ namespace Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to يجب أن يكون السعر أكبر من 0.
+        /// </summary>
+        public static string PriceValidation {
+            get {
+                return ResourceManager.GetString("PriceValidation", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to الوحدة مطلوبة..
         /// </summary>
         public static string PropertyIdRequired {
@@ -1731,6 +1767,24 @@ namespace Resources {
         public static string PropertyTypeIdRequired {
             get {
                 return ResourceManager.GetString("PropertyTypeIdRequired", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to لا يمكن أن تكون الكمية سالبة.
+        /// </summary>
+        public static string QuantityCannotBeNegative {
+            get {
+                return ResourceManager.GetString("QuantityCannotBeNegative", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to لا يمكن أن تكون الكمية سالبة.
+        /// </summary>
+        public static string QuantityValidation {
+            get {
+                return ResourceManager.GetString("QuantityValidation", resourceCulture);
             }
         }
         
@@ -1951,7 +2005,7 @@ namespace Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to التخصص بالإنجليزية مطلوب..
+        ///   Looks up a localized string similar to الت specialization بالعربية مطلوب..
         /// </summary>
         public static string SpecializationENRequired {
             get {

@@ -13,258 +13,266 @@
 <PageTitle>@ECommerceResources.Products</PageTitle>
 
 <div class="container-fluid p-0">
-    <div class="card shadow-sm border-0">
- <div class="card-header bg-primary text-white py-3 d-flex justify-content-between align-items-center">
-            <h5 class="mb-0 fw-semibold text-white">🛍️ @ECommerceResources.Products</h5>
-        </div>
-        <div class="card-body">
-            <div class="dt-responsive table-responsive">
-                <!-- Filtration start -->
-                <ul class="navbar-nav d-flex flex-row align-items-center gap-3 mb-2 px-0 w-100">
-                    <li class="nav-item col-md-6 w-auto d-flex flex-row align-items-center gap-3">
-                        <EditForm Model="searchModel" OnSubmit="@Search">
-    <!-- Search Box -->
-    <div class="input-group rounded search-box">
-        <input type="text" @bind="searchModel.SearchTerm"
-               id="searchInput"
-               class="form-control text-center border-0 @(ResourceManager.CurrentLanguage == Language.Arabic ? "rounded-end" : "rounded-start")"
-               placeholder="@ActionsResources.Search" />
-        <button type="submit"
-                class="btn btn-danger d-flex align-items-center justify-content-center border-0 @(ResourceManager.CurrentLanguage == Language.Arabic ? "rounded-start" : "rounded-end")">
-            <i class="fas fa-search text-white m-0"></i>
-        </button>
-    </div>
-</EditForm>
-                                  <!-- Page Size -->
-                                                                <div class="d-flex align-items-center gap-2">
-                                            <select class="form-select rounded-3 shadow-sm border-light text-primary fw-bold text-center custom-dropdown"
-                                                    style="width: 130px; height: 40px; padding-right: 30px;"
-                                                    @onchange="OnPageSizeChanged">
-                                                <option value="10"selected="@(searchModel.PageSize == 10)">10</option>
-                                                <option value="15"selected="@(searchModel.PageSize == 15)">15</option>
-                                                <option value="20"selected="@(searchModel.PageSize == 20)">20</option>
-                                                <option value="30"selected="@(searchModel.PageSize == 30)">30</option>
-                                            </select>
-                                        </div>
-                    </li>
-                    <li class="nav-item ms-auto d-flex flex-row align-items-center gap-2">
-                        <!-- Export Buttons -->
-                        <div class="dropdown">
-                            <button class="btn btn-info" type="button" id="exportDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                                <i class="fas fa-file-export me-2"></i>
-                                <span class="fw-bold">@ActionsResources.Export</span>
-                            </button>
-                            <ul class="dropdown-menu" aria-labelledby="exportDropdown">
-                                <li><a class="dropdown-item" href="javascript:void(0)" @onclick="ExportToExcel"><i class="far fa-file-excel mx-2"></i>Excel</a></li>
-                                <li><a class="dropdown-item" href="javascript:void(0)" @onclick="ExportToPrint"><i class="fas fa-print mx-2"></i>Print</a></li>
-                            </ul>
-                        </div>
+	<div class="card shadow-sm border-0">
+		<div class="card-header bg-primary text-white py-3 d-flex justify-content-between align-items-center">
+			<h5 class="mb-0 fw-semibold text-white">🛍️ @ECommerceResources.Products</h5>
+		</div>
+		<div class="card-body">
+			<div class="dt-responsive table-responsive">
+				<!-- Filtration start -->
+				<ul class="navbar-nav d-flex flex-row align-items-center gap-3 mb-2 px-0 w-100">
+					<li class="nav-item col-md-6 w-auto d-flex flex-row align-items-center gap-3">
+						<EditForm Model="searchModel" OnSubmit="@Search">
+							<!-- Search Box -->
+							<div class="input-group rounded search-box">
+								<input type="text" @bind="searchModel.SearchTerm"
+									   id="searchInput"
+									   class="form-control text-center border-0 @(ResourceManager.CurrentLanguage == Language.Arabic ? "rounded-end" : "rounded-start")"
+									   placeholder="@ActionsResources.Search" />
+								<button type="submit"
+										class="btn btn-danger d-flex align-items-center justify-content-center border-0 @(ResourceManager.CurrentLanguage == Language.Arabic ? "rounded-start" : "rounded-end")">
+									<i class="fas fa-search text-white m-0"></i>
+								</button>
+							</div>
+						</EditForm>
+						<!-- Page Size -->
+						<div class="d-flex align-items-center gap-2">
+							<select class="form-select rounded-3 shadow-sm border-light text-primary fw-bold text-center custom-dropdown"
+									style="width: 130px; height: 40px; padding-right: 30px;"
+									@onchange="OnPageSizeChanged">
+								<option value="10" selected="@(searchModel.PageSize == 10)">10</option>
+								<option value="15" selected="@(searchModel.PageSize == 15)">15</option>
+								<option value="20" selected="@(searchModel.PageSize == 20)">20</option>
+								<option value="30" selected="@(searchModel.PageSize == 30)">30</option>
+							</select>
+						</div>
+					</li>
+					<li class="nav-item ms-auto d-flex flex-row align-items-center gap-2">
+						<!-- Export Buttons -->
+						<div class="dropdown">
+							<button class="btn btn-info" type="button" id="exportDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+								<i class="fas fa-file-export me-2"></i>
+								<span class="fw-bold">@ActionsResources.Export</span>
+							</button>
+							<ul class="dropdown-menu" aria-labelledby="exportDropdown">
+								<li><a class="dropdown-item" href="javascript:void(0)" @onclick="ExportToExcel"><i class="far fa-file-excel mx-2"></i>Excel</a></li>
+								<li><a class="dropdown-item" href="javascript:void(0)" @onclick="ExportToPrint"><i class="fas fa-print mx-2"></i>Print</a></li>
+							</ul>
+						</div>
 
-                        <!-- Import Button -->
-                        <button class="btn btn-warning" @onclick="GoToImport">
-                            <i class="fas fa-file-import mx-1"></i>
-                            <span class="fw-bold">@ActionsResources.Import</span>
-                        </button>
+						<!-- Import Button -->
+						<button class="btn btn-warning" @onclick="GoToImport">
+							<i class="fas fa-file-import mx-1"></i>
+							<span class="fw-bold">@ActionsResources.Import</span>
+						</button>
 
-                        <!-- Add Button -->
-                        <button class="btn btn-success" @onclick="Add">
-                            <i class="feather icon-plus-circle mx-1"></i>
-                            <span class="fw-bold">@ActionsResources.Add</span>
-                        </button>
-                    </li>
-                </ul>
-                <!-- Responsive Table Container -->
-                <div class="table-responsive full-height-card border rounded-3 overflow-hidden">
-                    <table class="table table-hover mb-0 d-none d-md-table">
-                        <thead class="bg-light">
-                            <tr>
-                                <th class="text-center align-middle">@FormResources.Image</th>
-                                <th class="text-center  align-middle">@FormResources.Title</th>
-                                <th class="text-center align-middle">@ECommerceResources.StockStatus</th>
-                                <th class="text-center align-middle">@ECommerceResources.Quantity</th>
-                                <th class="text-center align-middle">@FormResources.Price</th>
-                                <th class="text-center align-middle" style="width: 200px;">@ECommerceResources.Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @if (items != null && items.Count()!=0)
-                            {
-                                @foreach (var item in items)
-                                {
-                                    <tr class="align-middle">
-                                        <td class="text-center align-middle">
-                                            <div class="d-flex justify-content-center">
-                                                @if (!string.IsNullOrEmpty(item.ThumbnailImage))
-                                                {
-                                                    <img src="@baseUrl/@item.ThumbnailImage"
-                                                         class="rounded-2 object-fit-cover border"
-                                                         style="width: 70px; height: 70px;"
-                                                         alt="Product image" />
-                                                }
-                                                else
-                                                {
-                                                    <div class="d-flex align-items-center justify-content-center rounded-2 bg-light border"
-                                                         style="width: 70px; height: 70px;">
-                                                        <i class="feather icon-image text-muted" style="font-size: 1.5rem;"></i>
-                                                    </div>
-                                                }
-                                            </div>
-                                        </td>
-                                        <td class="text-center align-middle fw-semibold">
-                                            @(ResourceManager.CurrentLanguage == Language.Arabic ? item.TitleAr : item.TitleEn)
-                                        </td>
-                                        <td class="text-center align-middle">
-                                            @{
-                                                var stockStatusClass = item.StockStatus
-                                                ? "bg-success"
-                                                : "bg-danger";
-                                                var stockStatusText = item.StockStatus
-                                                ? ECommerceResources.InStock
-                                                : ECommerceResources.OutOfStock;
-                                            }
-                                            <span class="badge @stockStatusClass rounded-pill py-2 px-3">
-                                                @stockStatusText
-                                            </span>
-                                        </td>
-                                        <td class="text-center align-middle">
-                                            <div class="d-flex align-items-center justify-content-center gap-2">
-                                                <span class="fw-bold @(item.Quantity <= 10 ? "text-danger" : "text-success")">
-                                                    @item.Quantity
-                                                </span>
-                                                @if (item.Quantity <= 10 && item.Quantity > 0)
-                                                {
-                                                    <span class="badge bg-warning text-dark rounded-pill"
-                                                          title="@ECommerceResources.LowStockWarning">
-                                                        <i class="fas fa-exclamation-triangle me-1"></i>
-                                                    </span>
-                                                }
-                                                else if (item.Quantity == 0)
-                                                {
-                                                    <span class="badge bg-danger rounded-pill">
-                                                        <i class="fas fa-times me-1"></i>
-                                                    </span>
-                                                }
-                                            </div>
-                                        </td>
-                                        <td class="text-center align-middle">
-                                             @item.Price $
-                                         </td>
-                                        <td class="d-flex gap-1 justify-content-center align-items-center">
-                                            <div class="d-flex justify-content-center gap-2">
-                                                <button class="btn btn-primary" @onclick="() => Edit(item)">
-                                                <i class="fas fa-pencil-alt mx-1 ms-2"></i>
-                                                @ActionsResources.Edit</button>
-                                                <button class="btn btn-danger" @onclick="() => Delete(item.Id)">
-                                                <i class="feather icon-trash-2 mx-1 ms-2"></i>
-                                                @ActionsResources.Delete</button>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                }
-                            }
-                            else
-                            {
-                               <tr>
-    <td colspan="7" class="p-0 no-data-container">
-        <div class=" d-flex flex-column justify-content-center align-items-center text-center" style="height: 43vh;">
-            <!-- أيقونة كبيرة -->
-            <i class="fas fa-database text-muted" style="font-size: 60px;"></i>
+						<!-- Add Button -->
+						<button class="btn btn-success" @onclick="Add">
+							<i class="feather icon-plus-circle mx-1"></i>
+							<span class="fw-bold">@ActionsResources.Add</span>
+						</button>
+					</li>
+				</ul>
+				<!-- Responsive Table Container -->
+				<div class="table-responsive full-height-card border rounded-3 overflow-hidden">
+					<table class="table table-hover mb-0 d-none d-md-table">
+						<thead class="bg-light">
+							<tr>
+								<th class="text-center align-middle">@FormResources.Image</th>
+								<th class="text-center  align-middle">@FormResources.Title</th>
+								<th class="text-center align-middle">@ECommerceResources.StockStatus</th>
+								<th class="text-center align-middle">@ECommerceResources.Quantity</th>
+								<th class="text-center align-middle">@FormResources.Price</th>
+								<th class="text-center align-middle" style="width: 200px;">@ECommerceResources.Actions</th>
+							</tr>
+						</thead>
+						<tbody>
+							@if (items != null && items.Count() != 0)
+							{
+								@foreach (var item in items)
+								{
+									<tr class="align-middle">
+										<td class="text-center align-middle">
+											<div class="d-flex justify-content-center">
+												@if (!string.IsNullOrEmpty(item.ThumbnailImage))
+												{
+													<img src="@baseUrl/@item.ThumbnailImage"
+														 class="rounded-2 object-fit-cover border"
+														 style="width: 70px; height: 70px;"
+														 alt="Product image" />
+												}
+												else
+												{
+													<div class="d-flex align-items-center justify-content-center rounded-2 bg-light border"
+														 style="width: 70px; height: 70px;">
+														<i class="feather icon-image text-muted" style="font-size: 1.5rem;"></i>
+													</div>
+												}
+											</div>
+										</td>
+										<td class="text-center align-middle fw-semibold">
+											@(ResourceManager.CurrentLanguage == Language.Arabic ? item.TitleAr : item.TitleEn)
+										</td>
+										<td class="text-center align-middle">
+											@{
+												var stockStatusClass = item.StockStatus
+												? "bg-success"
+												: "bg-danger";
+												var stockStatusText = item.StockStatus
+												? ECommerceResources.InStock
+												: ECommerceResources.OutOfStock;
+											}
+											<span class="badge @stockStatusClass rounded-pill py-2 px-3">
+												@stockStatusText
+											</span>
+										</td>
+										<td class="text-center align-middle">
+											<div class="d-flex align-items-center justify-content-center gap-2">
+												@{
+													// Get quantity from default combination or first combination
+													var quantity = item.ItemAttributeCombinationPricings?.FirstOrDefault(c => c.IsDefault)?.Quantity
+													?? item.ItemAttributeCombinationPricings?.FirstOrDefault()?.Quantity
+													?? 0;
+												}
+												<span class="fw-bold @(quantity <= 10 ? "text-danger" : "text-success")">
+													@quantity
+												</span>
+												@if (quantity <= 10 && quantity > 0)
+												{
+													<span class="badge bg-warning text-dark rounded-pill"
+														  title="@ECommerceResources.LowStockWarning">
+														<i class="fas fa-exclamation-triangle me-1"></i>
+													</span>
+												}
+												else if (quantity == 0)
+												{
+													<span class="badge bg-danger rounded-pill">
+														<i class="fas fa-times me-1"></i>
+													</span>
+												}
+											</div>
+										</td>
+										<td class="text-center align-middle">
+											@item.GetPrice().ToString("F2") $
+										</td>
+										<td class="d-flex gap-1 justify-content-center align-items-center">
+											<div class="d-flex justify-content-center gap-2">
+												<button class="btn btn-primary" @onclick="() => Edit(item)">
+													<i class="fas fa-pencil-alt mx-1 ms-2"></i>
+													@ActionsResources.Edit
+												</button>
+												<button class="btn btn-danger" @onclick="() => Delete(item.Id)">
+													<i class="feather icon-trash-2 mx-1 ms-2"></i>
+													@ActionsResources.Delete
+												</button>
+											</div>
+										</td>
+									</tr>
+								}
+							}
+							else
+							{
+								<tr>
+									<td colspan="7" class="p-0 no-data-container">
+										<div class=" d-flex flex-column justify-content-center align-items-center text-center" style="height: 60vh;">
+											<!-- أيقونة كبيرة -->
+											<i class="fas fa-database text-muted" style="font-size: 60px;"></i>
 
-            <!-- نص -->
-            <p class="text-muted mt-3" style="font-size: 18px;">
-                @NotifiAndAlertsResources.NoDataFound
-            </p>
-        </div>
-    </td>
-</tr>
+											<!-- نص -->
+											<p class="text-muted mt-3" style="font-size: 18px;">
+												@NotifiAndAlertsResources.NoDataFound
+											</p>
+										</div>
+									</td>
+								</tr>
 
-                            }
-                        </tbody>
-                    </table>
+							}
+						</tbody>
+					</table>
 
-                    
-                </div>
 
-                <!-- Pagination -->
-                <div class="pagination-wrapper d-flex flex-column justify-content-end flex-grow-1">
-    <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mt-4 pagination-container" dir="ltr">
+				</div>
 
-        <!-- النص الإحصائي -->
-        <div class="text-muted small">
-            @string.Format(
-                ActionsResources.ShowingEntries,
-                ((currentPage - 1) * searchModel.PageSize + 1),
-                Math.Min(currentPage * searchModel.PageSize, totalRecords),
-                totalRecords
-            )
-        </div>
+				<!-- Pagination -->
+				<div class="pagination-wrapper d-flex flex-column justify-content-end flex-grow-1">
+					<div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mt-4 pagination-container" dir="ltr">
 
-        <!-- الباجينيشن -->
-        <nav aria-label="Pagination">
-            <ul class="pagination pagination-sm mb-0 shadow-sm rounded-3 overflow-hidden">
+						<!-- النص الإحصائي -->
+						<div class="text-muted small">
+							@string.Format(
+							ActionsResources.ShowingEntries,
+														((currentPage - 1) * searchModel.PageSize + 1),
+														Math.Min(currentPage * searchModel.PageSize, totalRecords),
+														totalRecords
+														)
+						</div>
 
-                <!-- أول صفحة -->
-                <li class="page-item @(currentPage == 1 ? "disabled" : "")">
-                    <a class="page-link" @onclick="() => GoToPage(1)" title="@ActionsResources.First">
-                        <i class="fas fa-angle-double-left"></i>
-                    </a>
-                </li>
+						<!-- الباجينيشن -->
+						<nav aria-label="Pagination">
+							<ul class="pagination pagination-sm mb-0 shadow-sm rounded-3 overflow-hidden">
 
-                <!-- السابقة -->
-                <li class="page-item @(currentPage == 1 ? "disabled" : "")">
-                    <a class="page-link" @onclick="() => GoToPage(currentPage - 1)">
-                        <i class="fas fa-angle-left"></i>
-                    </a>
-                </li>
+								<!-- أول صفحة -->
+								<li class="page-item @(currentPage == 1 ? "disabled" : "")">
+									<a class="page-link" @onclick="() => GoToPage(1)" title="@ActionsResources.First">
+										<i class="fas fa-angle-double-left"></i>
+									</a>
+								</li>
 
-                @* أرقام الصفحات *@
-                @{
-                    const int maxVisiblePages = 5;
-                    int startPage = Math.Max(1, currentPage - 2);
-                    int endPage = Math.Min(totalPages, startPage + maxVisiblePages - 1);
-                    if (endPage - startPage + 1 < maxVisiblePages)
-                    {
-                        startPage = Math.Max(1, endPage - maxVisiblePages + 1);
-                    }
-                }
+								<!-- السابقة -->
+								<li class="page-item @(currentPage == 1 ? "disabled" : "")">
+									<a class="page-link" @onclick="() => GoToPage(currentPage - 1)">
+										<i class="fas fa-angle-left"></i>
+									</a>
+								</li>
 
-                @if (startPage > 1)
-                {
-                    <li class="page-item disabled"><span class="page-link">...</span></li>
-                }
+								@* أرقام الصفحات *@
+								@{
+																const int maxVisiblePages = 5;
+								int startPage = Math.Max(1, currentPage - 2);
+								int endPage = Math.Min(totalPages, startPage + maxVisiblePages - 1);
+								if (endPage - startPage + 1 < maxVisiblePages)
+								{
+									startPage = Math.Max(1, endPage - maxVisiblePages + 1);
+								}
+																}
 
-                @for (int pag = startPage; pag <= endPage; pag++)
-                {
-                    int pageNumber = pag;
-                    <li class="page-item @(pag == currentPage ? "active" : "")">
-                        <a class="page-link fw-bold" @onclick="() => GoToPage(pageNumber)">@pag</a>
-                    </li>
-                }
+								@if (startPage > 1)
+								{
+									<li class="page-item disabled"><span class="page-link">...</span></li>
+								}
 
-                @if (endPage < totalPages)
-                {
-                    <li class="page-item disabled"><span class="page-link">...</span></li>
-                }
+								@for (int pag = startPage; pag <= endPage; pag++)
+								{
+									int pageNumber = pag;
+									<li class="page-item @(pag == currentPage ? "active" : "")">
+										<a class="page-link fw-bold" @onclick="() => GoToPage(pageNumber)">@pag</a>
+									</li>
+								}
 
-                <!-- التالية -->
-                <li class="page-item @(currentPage == totalPages ? "disabled" : "")">
-                    <a class="page-link" @onclick="() => GoToPage(currentPage + 1)">
-                        <i class="fas fa-angle-right"></i>
-                    </a>
-                </li>
+								@if (endPage < totalPages)
+								{
+									<li class="page-item disabled"><span class="page-link">...</span></li>
+								}
 
-                <!-- آخر صفحة -->
-                <li class="page-item @(currentPage == totalPages ? "disabled" : "")">
-                    <a class="page-link" @onclick="() => GoToPage(totalPages)" title="@ActionsResources.Last">
-                        <i class="fas fa-angle-double-right"></i>
-                    </a>
-                </li>
-            </ul>
-        </nav>
-    </div>
-</div>
+								<!-- التالية -->
+								<li class="page-item @(currentPage == totalPages ? "disabled" : "")">
+									<a class="page-link" @onclick="() => GoToPage(currentPage + 1)">
+										<i class="fas fa-angle-right"></i>
+									</a>
+								</li>
 
-            </div>
-        </div>
-    </div>
+								<!-- آخر صفحة -->
+								<li class="page-item @(currentPage == totalPages ? "disabled" : "")">
+									<a class="page-link" @onclick="() => GoToPage(totalPages)" title="@ActionsResources.Last">
+										<i class="fas fa-angle-double-right"></i>
+									</a>
+								</li>
+							</ul>
+						</nav>
+					</div>
+				</div>
+
+			</div>
+		</div>
+	</div>
 </div>

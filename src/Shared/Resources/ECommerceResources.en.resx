@@ -741,57 +741,64 @@
   <data name="Currency" xml:space="preserve">
     <value>Currency</value>
   </data>
-	<!-- Excel Import Resources -->
-	<data name="ImportProducts" xml:space="preserve">
-  <value>Import Products</value>
-</data>
-	<data name="Step1SelectCategory" xml:space="preserve">
-  <value>Step 1: Select Category</value>
-</data>
-	<data name="Step2UploadFile" xml:space="preserve">
-  <value>Step 2: Upload Excel File</value>
-</data>
-	<data name="SelectCategoryInstructions" xml:space="preserve">
-  <value>Select the category you want to import products into.</value>
-</data>
-	<data name="SelectedCategory" xml:space="preserve">
-  <value>Selected Category</value>
-</data>
-	<data name="DownloadTemplateWithData" xml:space="preserve">
-  <value>Download Template with Reference Data</value>
-</data>
-	<data name="DownloadEmptyTemplate" xml:space="preserve">
-  <value>Download Empty Template</value>
-</data>
-	<data name="TemplateWithReferenceData" xml:space="preserve">
-  <value>Template with Reference Data</value>
-</data>
-	<data name="TemplateWithDataDescription" xml:space="preserve">
-  <value>Includes reference sheets for categories, brands, units, and attribute options.</value>
-</data>
-	<data name="EmptyTemplate" xml:space="preserve">
-  <value>Empty Template</value>
-</data>
-	<data name="EmptyTemplateDescription" xml:space="preserve">
-  <value>Contains only the Products and Instructions sheets (no reference data).</value>
-</data>
-	<data name="DeleteExampleRow" xml:space="preserve">
-  <value>Delete the example row before importing.</value>
-</data>
-	<data name="AllFieldsMarkedRequired" xml:space="preserve">
-  <value>All fields marked with * are required.</value>
-</data>
-	<data name="SelectFromDropdown" xml:space="preserve">
-  <value>Select from the dropdown list for category, brand, and unit.</value>
-</data>
-	<data name="UploadFileInstructions" xml:space="preserve">
-  <value>Upload the completed Excel file with product data. Make sure all required fields are properly filled.</value>
-</data>
-	<data name="ExcelFile" xml:space="preserve">
-  <value>Excel File</value>
-</data>
-	<data name="ParseAndReviewData" xml:space="preserve">
-  <value>Parse and Review Data</value>
-</data>
-
+  <data name="ImportProducts" xml:space="preserve">
+    <value>Import Products</value>
+  </data>
+  <data name="Step1SelectCategory" xml:space="preserve">
+    <value>Step 1: Select Category</value>
+  </data>
+  <data name="Step2UploadFile" xml:space="preserve">
+    <value>Step 2: Upload Excel File</value>
+  </data>
+  <data name="SelectCategoryInstructions" xml:space="preserve">
+    <value>Select the category you want to import products into.</value>
+  </data>
+  <data name="SelectedCategory" xml:space="preserve">
+    <value>Selected Category</value>
+  </data>
+  <data name="DownloadTemplateWithData" xml:space="preserve">
+    <value>Download Template with Reference Data</value>
+  </data>
+  <data name="DownloadEmptyTemplate" xml:space="preserve">
+    <value>Download Empty Template</value>
+  </data>
+  <data name="TemplateWithReferenceData" xml:space="preserve">
+    <value>Template with Reference Data</value>
+  </data>
+  <data name="TemplateWithDataDescription" xml:space="preserve">
+    <value>Includes reference sheets for categories, brands, units, and attribute options.</value>
+  </data>
+  <data name="EmptyTemplate" xml:space="preserve">
+    <value>Empty Template</value>
+  </data>
+  <data name="EmptyTemplateDescription" xml:space="preserve">
+    <value>Contains only the Products and Instructions sheets (no reference data).</value>
+  </data>
+  <data name="DeleteExampleRow" xml:space="preserve">
+    <value>Delete the example row before importing.</value>
+  </data>
+  <data name="AllFieldsMarkedRequired" xml:space="preserve">
+    <value>All fields marked with * are required.</value>
+  </data>
+  <data name="SelectFromDropdown" xml:space="preserve">
+    <value>Select from the dropdown list for category, brand, and unit.</value>
+  </data>
+  <data name="UploadFileInstructions" xml:space="preserve">
+    <value>Upload the completed Excel file with product data. Make sure all required fields are properly filled.</value>
+  </data>
+  <data name="ExcelFile" xml:space="preserve">
+    <value>Excel File</value>
+  </data>
+  <data name="ParseAndReviewData" xml:space="preserve">
+    <value>Parse and Review Data</value>
+  </data>
+  <data name="NoOptionsConfigured" xml:space="preserve">
+    <value>No options have been configured for this attribute.</value>
+  </data>
+  <data name="No Options Configured" xml:space="preserve">
+    <value>No Options Configured</value>
+  </data>
+  <data name="SalesPrice" xml:space="preserve">
+    <value>Sales Price</value>
+  </data>
 </root>

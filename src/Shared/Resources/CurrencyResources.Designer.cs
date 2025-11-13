@@ -151,7 +151,7 @@ namespace Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to إدارة العملات.
+        ///   Looks up a localized string similar to العملات.
         /// </summary>
         public static string CurrencyManagement {
             get {
