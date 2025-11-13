@@ -17,7 +17,7 @@ using Shared.GeneralModels.SearchCriteriaModels;
 using System.ComponentModel.DataAnnotations;
 using System.Linq.Expressions;
 
-namespace BL.Services.Items
+namespace BL.Service.ECommerce.Item
 {
     public class ItemService : BaseService<TbItem, ItemDto>, IItemService
     {
@@ -96,22 +96,22 @@ namespace BL.Services.Items
 
             if (criteriaModel.PriceFrom.HasValue)
             {
-                filter = filter.And(x => x.Price >= criteriaModel.PriceFrom.Value);
+                filter = filter.And(x => x.DefaultPrice >= criteriaModel.PriceFrom.Value);
             }
 
             if (criteriaModel.PriceTo.HasValue)
             {
-                filter = filter.And(x => x.Price <= criteriaModel.PriceTo.Value);
+                filter = filter.And(x => x.DefaultPrice <= criteriaModel.PriceTo.Value);
             }
 
             if (criteriaModel.QuantityFrom.HasValue)
             {
-                filter = filter.And(x => x.Quantity >= criteriaModel.QuantityFrom.Value);
+                filter = filter.And(x => x.DefaultQuantity >= criteriaModel.QuantityFrom.Value);
             }
 
             if (criteriaModel.QuantityTo.HasValue)
             {
-                filter = filter.And(x => x.Quantity <= criteriaModel.QuantityTo.Value);
+                filter = filter.And(x => x.DefaultQuantity <= criteriaModel.QuantityTo.Value);
             }
 
             // New Item Flags Filters
@@ -148,7 +148,7 @@ namespace BL.Services.Items
             if (Id == Guid.Empty)
                 throw new ArgumentNullException(nameof(Id));
             var item = _tableRepository.Get(
-                x => x.Id == Id, 
+                x => x.Id == Id,
                 includeProperties: "ItemImages,Category,ItemAttributes,ItemAttributeCombinationPricings"
             ).FirstOrDefault();
             if (item == null)
@@ -172,12 +172,12 @@ namespace BL.Services.Items
             {
                 throw new ArgumentException($"{ValidationResources.MaximumOf} {MaxImageCount} {ValidationResources.ImagesAllowed}", nameof(dto.Images));
             }
-            
+
             // Ensure every item has at least one combination (default combination)
             if (dto.ItemAttributeCombinationPricings == null || !dto.ItemAttributeCombinationPricings.Any())
             {
                 _logger.Information("No combinations found, creating default combination for item {ItemId}", dto.Id);
-                
+
                 // Create a default combination with no attributes
                 dto.ItemAttributeCombinationPricings = new List<ItemAttributeCombinationPricingDto>
                 {
@@ -191,7 +191,7 @@ namespace BL.Services.Items
                     }
                 };
             }
-            
+
             // Ensure only one combination is marked as default
             var defaultCombinations = dto.ItemAttributeCombinationPricings.Where(c => c.IsDefault).ToList();
             if (defaultCombinations.Count == 0)
@@ -256,12 +256,12 @@ namespace BL.Services.Items
                             .HardDelete(image.Id);
                         }
                     }
-                    
+
                     // Delete existing attributes
                     var existingAttributes = _unitOfWork
                         .TableRepository<TbItemAttribute>()
                         .Get(ia => ia.ItemId == dto.Id);
-                    
+
                     if (existingAttributes.Any())
                     {
                         foreach (var attr in existingAttributes)
@@ -271,12 +271,12 @@ namespace BL.Services.Items
                                 .HardDelete(attr.Id);
                         }
                     }
-                    
+
                     // Delete existing combinations
                     var existingCombinations = _unitOfWork
                         .TableRepository<TbItemAttributeCombinationPricing>()
                         .Get(c => c.ItemId == dto.Id);
-                    
+
                     if (existingCombinations.Any())
                     {
                         foreach (var combo in existingCombinations)
@@ -321,7 +321,7 @@ namespace BL.Services.Items
                             attributeEntities.Add(attributeEntity);
                         }
                     }
-                    
+
                     if (attributeEntities.Any())
                     {
                         attributesSaved = _unitOfWork.TableRepository<TbItemAttribute>().AddRange(attributeEntities, userId);
@@ -339,7 +339,7 @@ namespace BL.Services.Items
                         combinationEntity.ItemId = itemId;
                         combinationEntities.Add(combinationEntity);
                     }
-                    
+
                     if (combinationEntities.Any())
                     {
                         combinationsSaved = _unitOfWork.TableRepository<TbItemAttributeCombinationPricing>().AddRange(combinationEntities, userId);
