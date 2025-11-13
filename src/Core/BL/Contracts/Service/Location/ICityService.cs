@@ -1,6 +1,6 @@
 using BL.Contracts.Service.Base;
 using DAL.Models;
-using Domins.Entities.Location;
+using Domains.Entities.Location;
 using Shared.DTOs.Location;
 using Shared.GeneralModels.SearchCriteriaModels;
 

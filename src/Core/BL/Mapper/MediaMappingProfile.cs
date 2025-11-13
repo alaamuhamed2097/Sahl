@@ -1,4 +1,4 @@
-﻿using Domins.Entities.VideoProvider;
+﻿using Domains.Entities.VideoProvider;
 using Shared.DTOs.Media;
 
 namespace BL.Mapper

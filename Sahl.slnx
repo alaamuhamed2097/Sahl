@@ -10,7 +10,7 @@
   <Folder Name="/src/" />
   <Folder Name="/src/Core/">
     <Project Path="src/Core/BL/BL.csproj" />
-    <Project Path="src/Core/Domins/Domins.csproj" />
+    <Project Path="src/Core/Domains/Domains.csproj" />
   </Folder>
   <Folder Name="/src/Infrastructure/">
     <Project Path="src/Infrastructure/DAL/DAL.csproj" />

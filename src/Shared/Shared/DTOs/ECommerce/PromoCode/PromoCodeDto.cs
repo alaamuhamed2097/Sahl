@@ -1,4 +1,5 @@
-﻿using Resources;
+﻿using Common.Enumerations;
+using Resources;
 using Resources.Enumerations;
 using Shared.DTOs.Base;
 using System.ComponentModel.DataAnnotations;

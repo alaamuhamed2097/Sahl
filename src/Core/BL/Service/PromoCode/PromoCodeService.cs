@@ -1,8 +1,10 @@
 ﻿using BL.Contracts.IMapper;
 using BL.Contracts.Service.ECommerce.Item;
 using BL.Contracts.Service.PromoCode;
+using Common.Enumerations;
 using DAL.Contracts.UnitOfWork;
 using DAL.Models;
+using Domains.Entities.PromoCode;
 using Microsoft.Extensions.Logging;
 using Resources;
 using Shared.DTOs.ECommerce.Order;

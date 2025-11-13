@@ -1,3 +1,4 @@
+using Domains.Entities.Setting;
 using Shared.DTOs.Setting;
 
 namespace BL.Mapper
