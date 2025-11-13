@@ -1,4 +1,4 @@
-using Microsoft.EntityFrameworkCore.Migrations;
+﻿using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
@@ -10,7 +10,7 @@ namespace DAL.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            // Update VwItems to get price from default combination or first combination
+            // Update VwItems to get default price/quantity and all combinations as JSON
             migrationBuilder.Sql(@"                
 CREATE OR ALTER VIEW [dbo].[VwItems]
 AS
@@ -31,7 +31,7 @@ SELECT
     u.TitleEn AS UnitTitleEn, 
     i.ThumbnailImage, 
     i.StockStatus,
-    -- Get quantity from default combination or first combination
+    -- Get default quantity from the default combination
     ISNULL((
         SELECT TOP 1 cp.Quantity 
         FROM dbo.TbItemAttributeCombinationPricings cp
@@ -40,8 +40,8 @@ SELECT
         ORDER BY 
             CASE WHEN cp.IsDefault = 1 THEN 0 ELSE 1 END,
             cp.CreatedDateUtc
-    ), 0) AS Quantity,
-    -- Get price from default combination or first combination
+    ), 0) AS DefaultQuantity,
+    -- Get default price from the default combination
     ISNULL((
         SELECT TOP 1 cp.Price 
         FROM dbo.TbItemAttributeCombinationPricings cp
@@ -50,11 +50,12 @@ SELECT
         ORDER BY 
             CASE WHEN cp.IsDefault = 1 THEN 0 ELSE 1 END,
             cp.CreatedDateUtc
-    ), 0) AS Price,
+    ), 0) AS DefaultPrice,
     i.CreatedDateUtc,
     i.IsNewArrival,
     i.IsBestSeller,
     i.IsRecommended,
+    -- Get all item images as JSON
     (
         SELECT 
             im.Id,
@@ -68,7 +69,25 @@ SELECT
         ORDER BY 
             im.[Order]
         FOR JSON PATH
-    ) AS ItemImagesJson
+    ) AS ItemImagesJson,
+    -- Get all pricing combinations as JSON
+    (
+        SELECT 
+            cp.AttributeIds,
+            cp.Price,
+            cp.SalesPrice,
+            cp.Quantity,
+            cp.IsDefault
+        FROM 
+            dbo.TbItemAttributeCombinationPricings cp
+        WHERE 
+            cp.ItemId = i.Id 
+            AND cp.CurrentState = 1
+        ORDER BY 
+            CASE WHEN cp.IsDefault = 1 THEN 0 ELSE 1 END,
+            cp.CreatedDateUtc
+        FOR JSON PATH
+    ) AS CombinationsJson
 FROM     
     dbo.TbItems AS i 
     INNER JOIN dbo.TbCategories AS c ON i.CategoryId = c.Id 
@@ -81,7 +100,7 @@ GO");
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            // Revert back to using AttributeIds = '' as default indicator
+            // Revert back to using Price and Quantity columns without combinations JSON
             migrationBuilder.Sql(@"                
 CREATE OR ALTER VIEW [dbo].[VwItems]
 AS
