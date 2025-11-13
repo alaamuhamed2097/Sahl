@@ -1,6 +1,4 @@
-﻿using Domains.Identity;
-
-namespace BL.Contracts.GeneralService.CMS
+﻿namespace BL.Contracts.GeneralService.CMS
 {
     public interface IRoleManagementService
     {

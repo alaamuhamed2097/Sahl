@@ -3,7 +3,7 @@ using RestSharp;
 using Shared.GeneralModels;
 using Shared.GeneralModels.Parameters.Notification;
 
-namespace Bl.GeneralService.Email
+namespace BL.GeneralService.Notification
 {
     public class MailGunProviderService : IEmailProviderService
     {

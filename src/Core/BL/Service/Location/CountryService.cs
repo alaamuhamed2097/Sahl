@@ -48,7 +48,7 @@ namespace BL.Service.Location
 
             // Create ordering function based on SortBy and SortDirection
             Func<IQueryable<TbCountry>, IOrderedQueryable<TbCountry>> orderBy = null;
-            
+
             if (!string.IsNullOrWhiteSpace(criteriaModel.SortBy))
             {
                 var sortBy = criteriaModel.SortBy.ToLower();

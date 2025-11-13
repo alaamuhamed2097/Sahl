@@ -1,5 +1,4 @@
-﻿using Common.Enumerations.PromoCode;
-using Resources;
+﻿using Resources;
 using Resources.Enumerations;
 using Shared.DTOs.Base;
 using System.ComponentModel.DataAnnotations;

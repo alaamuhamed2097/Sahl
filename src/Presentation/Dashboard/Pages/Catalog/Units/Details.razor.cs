@@ -68,7 +68,7 @@ namespace Dashboard.Pages.Catalog.Units
                     await JSRuntime.InvokeVoidAsync("swal", ValidationResources.Failed, NotifiAndAlertsResources.SaveFailed, "error");
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 await JSRuntime.InvokeVoidAsync("swal",
                     NotifiAndAlertsResources.FailedAlert,
@@ -112,7 +112,7 @@ namespace Dashboard.Pages.Catalog.Units
 
                 StateHasChanged();
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 await JSRuntime.InvokeVoidAsync("swal",
                     ValidationResources.Error,

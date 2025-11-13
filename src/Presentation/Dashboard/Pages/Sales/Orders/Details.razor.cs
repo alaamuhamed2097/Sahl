@@ -89,7 +89,7 @@ namespace Dashboard.Pages.Sales.Orders
                 }
                 return true;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 await JSRuntime.InvokeVoidAsync("swal",
                     NotifiAndAlertsResources.FailedAlert,

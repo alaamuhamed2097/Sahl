@@ -1,5 +1,4 @@
 using AutoMapper;
-using Domains.Entities.Page;
 using Shared.DTOs.Page;
 
 namespace BL.Mapper

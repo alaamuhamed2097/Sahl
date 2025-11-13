@@ -108,7 +108,7 @@ namespace Dashboard.Services.ECommerce.Category
             {
                 return await _apiService.PostAsync<Guid, DeleteResult>($"{ApiEndpoints.Attribute.Delete}", id);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 // Log error here
                 return new ResponseModel<DeleteResult>

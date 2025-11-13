@@ -49,7 +49,7 @@ namespace Dashboard.Pages
             {
                 loadAdminWidget = true;
                 StateHasChanged();
-                
+
                 // Wait for the component to render and then initialize charts
                 await Task.Delay(200);
                 try

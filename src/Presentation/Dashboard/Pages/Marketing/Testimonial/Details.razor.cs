@@ -94,7 +94,7 @@ namespace Dashboard.Pages.Marketing.Testimonial
                     await ShowErrorNotification(ValidationResources.Failed, NotifiAndAlertsResources.FailedToRetrieveData);
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 await ShowErrorNotification(ValidationResources.Error, NotifiAndAlertsResources.SomethingWentWrong);
             }
@@ -147,7 +147,7 @@ namespace Dashboard.Pages.Marketing.Testimonial
                         }
                     }
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
                     await ShowErrorNotification(
                         NotifiAndAlertsResources.Error,
@@ -156,7 +156,7 @@ namespace Dashboard.Pages.Marketing.Testimonial
                     previewImageUrl = null;
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 await ShowErrorNotification(
                     NotifiAndAlertsResources.Error,
@@ -193,7 +193,7 @@ namespace Dashboard.Pages.Marketing.Testimonial
                     await ShowErrorNotification(ValidationResources.Failed, NotifiAndAlertsResources.SaveFailed);
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 await ShowErrorNotification(NotifiAndAlertsResources.FailedAlert, NotifiAndAlertsResources.SomethingWentWrong);
             }

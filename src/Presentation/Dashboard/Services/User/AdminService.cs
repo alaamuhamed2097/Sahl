@@ -122,7 +122,7 @@ namespace Dashboard.Services.User
                     Errors = result.Errors
                 };
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 // Log error here
                 return new ResponseModel<bool>

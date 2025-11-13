@@ -1,4 +1,4 @@
-﻿namespace Common.Enumerations.PromoCode
+﻿namespace Common.Enumerations
 {
     public enum PromoCodeType
     {

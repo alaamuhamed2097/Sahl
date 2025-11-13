@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
-namespace Domains.Entities.Setting
+namespace Domins.Entities.Setting
 {
     public class TbSetting : BaseSeo
     {

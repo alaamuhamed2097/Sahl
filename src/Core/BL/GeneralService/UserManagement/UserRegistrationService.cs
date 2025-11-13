@@ -2,7 +2,6 @@ using BL.Contracts.GeneralService.CMS;
 using BL.Contracts.GeneralService.UserManagement;
 using BL.Contracts.IMapper;
 using Common.Enumerations.User;
-using Domains.Identity;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Resources;

@@ -1,7 +1,6 @@
-﻿using Domains.Entities.Base;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
-namespace Domains.Entities
+namespace Domins.Entities.Base
 {
     //Base class for entities common properties
     public class BaseSeo : BaseEntity

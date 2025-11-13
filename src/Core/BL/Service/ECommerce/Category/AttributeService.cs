@@ -8,7 +8,6 @@ using Domins.Entities.Category;
 using Domins.Entities.Item;
 using Domins.Views.Category;
 using Resources;
-using Shared.DTOs.ECommerce;
 using Shared.DTOs.ECommerce.Category;
 using Shared.DTOs.ECommerce.Item;
 using Shared.GeneralModels.SearchCriteriaModels;
@@ -53,7 +52,7 @@ namespace BL.Service.ECommerce.Category
 
             // Create ordering function based on SortBy and SortDirection
             Func<IQueryable<TbAttribute>, IOrderedQueryable<TbAttribute>> orderBy = null;
-            
+
             if (!string.IsNullOrWhiteSpace(criteriaModel.SortBy))
             {
                 var sortBy = criteriaModel.SortBy.ToLower();

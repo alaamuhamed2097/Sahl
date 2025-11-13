@@ -123,7 +123,7 @@ namespace Dashboard.Services.Order
                     Errors = result.Errors
                 };
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 // Log error here
                 return new ResponseModel<bool>

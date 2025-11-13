@@ -1,8 +1,7 @@
 using Common.Enumerations;
-using Domains.Entities.Base;
 using System.ComponentModel.DataAnnotations;
 
-namespace Domains.Entities.Page
+namespace Domins.Entities.Page
 {
     public class TbPage : BaseEntity
     {

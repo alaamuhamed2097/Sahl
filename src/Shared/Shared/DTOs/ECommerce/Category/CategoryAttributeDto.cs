@@ -66,13 +66,13 @@ namespace Shared.DTOs.ECommerce.Category
 
                     Console.WriteLine($"[AttributeOptions] Parsing for {TitleAr ?? TitleEn}");
                     Console.WriteLine($"[AttributeOptions] Type: {AttributeOptionsJson?.GetType().Name}");
-                    
+
                     var jsonOptions = new JsonSerializerOptions
                     {
                         PropertyNameCaseInsensitive = true,
                         PropertyNamingPolicy = JsonNamingPolicy.CamelCase
                     };
-                    
+
                     if (AttributeOptionsJson is string jsonString && !string.IsNullOrEmpty(jsonString) && jsonString != "[]")
                     {
                         Console.WriteLine($"[AttributeOptions] Parsing from string (length: {jsonString.Length})");

@@ -1,9 +1,7 @@
-﻿using Domains.Entities.Base;
-using Domains.Identity;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Domains.Entities.Notification
+namespace Domins.Entities.Notification
 {
     public class TbUserNotification : BaseEntity
     {

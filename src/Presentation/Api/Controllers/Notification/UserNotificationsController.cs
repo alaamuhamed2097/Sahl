@@ -34,7 +34,7 @@ namespace Api.Controllers.Notification
             try
             {
                 var userNotifications = _userNotificationService.GetAll(UserId);
-                
+
                 // Return OK even when there are no notifications instead of 404
                 if (userNotifications.Value == null || !userNotifications.Value.Any())
                 {
@@ -43,12 +43,12 @@ namespace Api.Controllers.Notification
                         Success = true,
                         Message = NotifiAndAlertsResources.NoDataFound,
                         Data = new UserNotificationResult<IEnumerable<UserNotificationRequest>>
-                                {
+                        {
                             Value = new List<UserNotificationRequest>(),
-                                 UnReadCount = 0,
-                                TotalCount = 0
-                               }
-                       });
+                            UnReadCount = 0,
+                            TotalCount = 0
+                        }
+                    });
                 }
 
                 return Ok(new ResponseModel<UserNotificationResult<IEnumerable<UserNotificationRequest>>>

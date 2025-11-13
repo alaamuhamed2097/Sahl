@@ -1,4 +1,3 @@
-using Domains.Entities.Base;
 using System.ComponentModel.DataAnnotations;
 
 namespace Domins.Entities.Currency

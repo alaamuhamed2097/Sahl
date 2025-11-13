@@ -144,7 +144,7 @@ public abstract partial class BaseListPage<TDto> : ComponentBase, IDisposable
                 await OnAfterSearchAsync();
             }
         }
-        catch (Exception ex)
+        catch (Exception)
         {
             await JSRuntime.InvokeVoidAsync("swal", ValidationResources.Error, NotifiAndAlertsResources.FailedToRetrieveData, "error");
         }
@@ -200,8 +200,8 @@ public abstract partial class BaseListPage<TDto> : ComponentBase, IDisposable
         if (searchModel.SortBy != columnName)
             return "fas fa-sort text-muted";
 
-        return searchModel.SortDirection == "asc" 
-            ? "fas fa-sort-up text-primary" 
+        return searchModel.SortDirection == "asc"
+            ? "fas fa-sort-up text-primary"
             : "fas fa-sort-down text-primary";
     }
 

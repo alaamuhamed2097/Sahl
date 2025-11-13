@@ -102,7 +102,7 @@ namespace Dashboard.Services.ECommerce.Item
                     Errors = result.Errors
                 };
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 // Log error here
                 return new ResponseModel<bool>

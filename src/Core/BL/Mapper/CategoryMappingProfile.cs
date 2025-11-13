@@ -1,7 +1,5 @@
 ﻿using Domins.Entities.Category;
-using Domins.Views;
 using Domins.Views.Category;
-using Shared.DTOs.ECommerce;
 using Shared.DTOs.ECommerce.Category;
 using Shared.DTOs.ECommerce.Item;
 using System.Text.Json;

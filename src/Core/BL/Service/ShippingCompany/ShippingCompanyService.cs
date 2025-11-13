@@ -4,7 +4,6 @@ using BL.Contracts.Service.ShippingCompny;
 using BL.Service.Base;
 using DAL.Contracts.Repositories;
 using DAL.Models;
-using Domains.Entities;
 using Microsoft.AspNetCore.Hosting;
 using Resources;
 using Serilog;
@@ -67,7 +66,7 @@ namespace BL.Service.ShippingCompany
 
             // Create ordering function based on SortBy and SortDirection
             Func<IQueryable<TbShippingCompany>, IOrderedQueryable<TbShippingCompany>> orderBy = null;
-            
+
             if (!string.IsNullOrWhiteSpace(criteriaModel.SortBy))
             {
                 var sortBy = criteriaModel.SortBy.ToLower();

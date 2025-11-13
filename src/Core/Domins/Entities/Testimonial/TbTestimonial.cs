@@ -1,7 +1,6 @@
-using Domains.Entities.Base;
 using System.ComponentModel.DataAnnotations;
 
-namespace Domains.Entities.Testimonial
+namespace Domins.Entities.Testimonial
 {
     public class TbTestimonial : BaseEntity
     {

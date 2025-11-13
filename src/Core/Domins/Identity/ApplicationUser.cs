@@ -1,7 +1,7 @@
 ﻿using Common.Enumerations.User;
 using Microsoft.AspNetCore.Identity;
 
-namespace Domains.Identity
+namespace Domins.Identity
 {
     public class ApplicationUser : IdentityUser
     {

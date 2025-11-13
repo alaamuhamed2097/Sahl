@@ -205,7 +205,7 @@ namespace Dashboard.Pages.Catalog.Products
                         Console.WriteLine($"    AffectsPricing: {attr.AffectsPricing}");
                         Console.WriteLine($"    FieldType: {attr.FieldType}");
                         Console.WriteLine($"    AttributeOptionsJson: {attr.AttributeOptionsJson}");
-                        
+
                         // Log parsed options
                         if (attr.AttributeOptions != null && attr.AttributeOptions.Any())
                         {
@@ -261,7 +261,7 @@ namespace Dashboard.Pages.Catalog.Products
                         }
                         Console.WriteLine($"✅ Total item attributes: {Model.ItemAttributes.Count}");
                     }
-                    
+
                     Console.WriteLine($"🔄 About to call StateHasChanged - categoryAttributes.Count: {categoryAttributes.Count}");
                 }
                 else
@@ -277,7 +277,7 @@ namespace Dashboard.Pages.Catalog.Products
                 isLoadingAttributes = false;
                 Console.WriteLine($"🔄 Calling StateHasChanged - isLoadingAttributes: {isLoadingAttributes}");
                 StateHasChanged();
-                
+
                 // Give Blazor time to render
                 await Task.Delay(100);
                 Console.WriteLine($"✅ LoadCategoryAttributes - COMPLETE - Attributes visible: {categoryAttributes.Count}");
@@ -357,11 +357,11 @@ namespace Dashboard.Pages.Catalog.Products
                 NotifiAndAlertsResources.FailedToRetrieveData);
                 }
             }
-catch (Exception ex)
-{
-await ShowErrorMessage(ValidationResources.Error, ex.Message);
-}
-}
+            catch (Exception ex)
+            {
+                await ShowErrorMessage(ValidationResources.Error, ex.Message);
+            }
+        }
 
         // ========== Event Handlers ==========
         private async Task HandleCategoryChange()
@@ -588,7 +588,7 @@ await ShowErrorMessage(ValidationResources.Error, ex.Message);
 
             // Mark this one as default
             combination.IsDefault = true;
-            
+
             Console.WriteLine($"✅ Set combination as default: {GetCombinationAttributesDisplay(combination.AttributeIds)}");
             StateHasChanged();
         }
@@ -598,7 +598,7 @@ await ShowErrorMessage(ValidationResources.Error, ex.Message);
             {
                 // Validate required fields
                 ValidateForm();
-                
+
                 // Validate attributes
                 if (!ValidateAttributes())
                 {
@@ -665,7 +665,7 @@ await ShowErrorMessage(ValidationResources.Error, ex.Message);
                 StateHasChanged();
             }
         }
-        
+
         /// <summary>
         /// Validates all required attributes have values
         /// </summary>
@@ -694,7 +694,7 @@ await ShowErrorMessage(ValidationResources.Error, ex.Message);
         {
             Console.WriteLine($"🔍 ValidateAttributeCombinations - START");
             Console.WriteLine($"📊 Total combinations: {Model.ItemAttributeCombinationPricings.Count}");
-            
+
             if (!Model.ItemAttributeCombinationPricings.Any())
             {
                 Console.WriteLine($"✅ No combinations to validate");
@@ -708,7 +708,7 @@ await ShowErrorMessage(ValidationResources.Error, ex.Message);
             {
                 var combination = Model.ItemAttributeCombinationPricings[i];
                 var displayName = GetCombinationAttributesDisplay(combination.AttributeIds);
-                
+
                 Console.WriteLine($"🔍 Validating combination {i + 1}: {displayName}");
 
                 // Validate Price
@@ -754,13 +754,13 @@ await ShowErrorMessage(ValidationResources.Error, ex.Message);
             if (hasErrors)
             {
                 Console.WriteLine($"❌ Validation FAILED - {errorMessages.Count} error(s)");
-                
+
                 // Show all errors in a single message
                 var errorMessage = string.Join("\n", errorMessages);
                 ShowErrorMessage(
                     ValidationResources.ValidationError,
                     $"Please fix the following errors in attribute combinations:\n\n{errorMessage}").Wait();
-                
+
                 return false;
             }
 

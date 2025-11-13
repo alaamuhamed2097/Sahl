@@ -116,7 +116,7 @@ namespace Dashboard.Pages.Authentication
                     }
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 _errorMessage = NotifiAndAlertsResources.SomethingWentWrong;
                 // يمكن إضافة لوج هنا إذا أردت تتبع الأخطاء

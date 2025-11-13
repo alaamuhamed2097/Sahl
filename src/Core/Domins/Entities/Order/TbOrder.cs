@@ -1,10 +1,7 @@
-﻿using Domains.Entities.Base;
-using Domains.Entities.PromoCode;
-using Domains.Identity;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Domains.Entities.Order
+namespace Domins.Entities.Order
 {
     public class TbOrder : BaseEntity
     {
