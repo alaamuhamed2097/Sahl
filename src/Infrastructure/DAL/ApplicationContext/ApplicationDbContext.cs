@@ -9,9 +9,11 @@ using Domains.Identity;
 using Domins.Entities.Brand;
 using Domins.Entities.Category;
 using Domins.Entities.Currency;
+using Domins.Entities.Customer;
 using Domins.Entities.Item;
 using Domins.Entities.Location;
 using Domins.Entities.Unit;
+using Domins.Entities.Vendor;
 using Domins.Entities.VideoProvider;
 using Domins.Views;
 using Domins.Views.Category;
@@ -80,9 +82,14 @@ namespace DAL.ApplicationContext
         public DbSet<TbCountry> TbCountries { get; set; }
         public DbSet<TbState> TbStates { get; set; }
         public DbSet<TbCity> TbCities { get; set; }
+		// Vendor
+		public DbSet<TbVendor> TbVendors { get; set; }
 
-        // Video Provider Management
-        public DbSet<TbVideoProvider> TbVideoProviders { get; set; }
+		// Customar
+		public DbSet<TbCustomer> TbCustomers { get; set; }
+
+		// Video Provider Management
+		public DbSet<TbVideoProvider> TbVideoProviders { get; set; }
 
         #endregion
 
