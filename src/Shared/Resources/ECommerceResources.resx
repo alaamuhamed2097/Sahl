@@ -801,4 +801,46 @@
   <data name="No Options Configured" xml:space="preserve">
     <value>لا يوجد خيارات</value>
   </data>
+  <data name="Vendor" xml:space="preserve">
+    <value>البائع</value>
+  </data>
+  <data name="Vendors" xml:space="preserve">
+    <value>البائعون</value>
+  </data>
+  <data name="CompanyName" xml:space="preserve">
+    <value>اسم الشركة</value>
+  </data>
+  <data name="ContactName" xml:space="preserve">
+    <value>اسم المسؤول</value>
+  </data>
+  <data name="VendorCode" xml:space="preserve">
+    <value>كود البائع</value>
+  </data>
+  <data name="Address" xml:space="preserve">
+    <value>العنوان</value>
+  </data>
+  <data name="PostalCode" xml:space="preserve">
+    <value>الرمز البريدي</value>
+  </data>
+  <data name="CommercialRegister" xml:space="preserve">
+    <value>السجل التجاري</value>
+  </data>
+  <data name="VATRegistered" xml:space="preserve">
+    <value>مسجل ضريبة القيمة المضافة</value>
+  </data>
+  <data name="TaxNumber" xml:space="preserve">
+    <value>الرقم الضريبي</value>
+  </data>
+  <data name="Notes" xml:space="preserve">
+    <value>ملاحظات</value>
+  </data>
+  <data name="IsActive" xml:space="preserve">
+    <value>نشط</value>
+  </data>
+  <data name="Rating" xml:space="preserve">
+    <value>التقييم</value>
+  </data>
+  <data name="VendorType" xml:space="preserve">
+    <value>نوع البائع</value>
+  </data>
 </root>

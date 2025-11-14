@@ -321,9 +321,6 @@
   <data name="ForgetPasswordText" xml:space="preserve">
     <value>هل نسيت كلمة المرور؟</value>
   </data>
-  <data name="ForgetPasswordTitle" xml:space="preserve">
-    <value>نسيت كلمة المرور</value>
-  </data>
   <data name="ResetPasswordTitle" xml:space="preserve">
     <value>إعادة تعيين كلمة المرور</value>
   </data>
@@ -353,5 +350,14 @@
   </data>
   <data name="Suspended" xml:space="preserve">
     <value>معلق</value>
+  </data>
+  <data name="ForgetPasswordTitle" xml:space="preserve">
+    <value>نسيت كلمة المرور</value>
+  </data>
+  <data name="Individual" xml:space="preserve">
+    <value>فردي</value>
+  </data>
+  <data name="Company" xml:space="preserve">
+    <value>شركات</value>
   </data>
 </root>

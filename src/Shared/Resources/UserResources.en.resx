@@ -141,6 +141,12 @@
   <data name="PasswordPlaceholder" xml:space="preserve">
     <value>Password</value>
   </data>
+  <data name="PasswordConfirmationLabel" xml:space="preserve">
+    <value>Confirm password</value>
+  </data>
+  <data name="PasswordConfirmationPlaceholder" xml:space="preserve">
+    <value>Re-enter your new password</value>
+  </data>
   <data name="KeepMeSignedIn" xml:space="preserve">
     <value>Keep me signed in</value>
   </data>
@@ -169,7 +175,7 @@
     <value>The new password and confirmation password do not match.</value>
   </data>
   <data name="NewPassword_Required" xml:space="preserve">
-    <value>New password is required.</value>
+    <value>A new password is required.</value>
   </data>
   <data name="UserName_Invalid" xml:space="preserve">
     <value>User name '{0}' is invalid, can only contain letters or digits.</value>
@@ -315,10 +321,43 @@
   <data name="ForgetPasswordText" xml:space="preserve">
     <value>Forgot password?</value>
   </data>
+  <data name="ResetPasswordTitle" xml:space="preserve">
+    <value>Reset password</value>
+  </data>
+  <data name="SendResetCodeButton" xml:space="preserve">
+    <value>Send verification code</value>
+  </data>
+  <data name="VerificationCodeLabel" xml:space="preserve">
+    <value>Verification code</value>
+  </data>
+  <data name="VerificationCodePlaceholder" xml:space="preserve">
+    <value>Enter the verification code</value>
+  </data>
+  <data name="NewPasswordLabel" xml:space="preserve">
+    <value>New Password</value>
+  </data>
+  <data name="NewPasswordPlaceholder" xml:space="preserve">
+    <value>Enter your new password</value>
+  </data>
+  <data name="ResetPasswordButton" xml:space="preserve">
+    <value>Reset password</value>
+  </data>
+  <data name="BackToLogin" xml:space="preserve">
+    <value>Return to login</value>
+  </data>
   <data name="UserType" xml:space="preserve">
     <value>UserType</value>
   </data>
   <data name="Suspended" xml:space="preserve">
     <value>Suspended</value>
+  </data>
+  <data name="ForgetPasswordTitle" xml:space="preserve">
+    <value>Forgot your password</value>
+  </data>
+  <data name="Individual" xml:space="preserve">
+    <value>Individual</value>
+  </data>
+  <data name="Company" xml:space="preserve">
+    <value>Company</value>
   </data>
 </root>
