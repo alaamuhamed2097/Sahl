@@ -1,4 +1,4 @@
-using Domins.Entities.Brand;
+using Domains.Entities.Brand;
 using Shared.DTOs.Brand;
 
 namespace BL.Mapper

@@ -10,7 +10,7 @@ namespace Dashboard.Services
     {
         // This service is kept for parsing only
         // Template generation is now handled by JavaScript (excelExportHelper.js)
-        
+
         /// <summary>
         /// These methods are placeholders - actual generation happens in JavaScript
         /// </summary>

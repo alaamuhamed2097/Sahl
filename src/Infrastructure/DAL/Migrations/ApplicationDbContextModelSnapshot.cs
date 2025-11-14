@@ -17,7 +17,7 @@ namespace DAL.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "9.0.10")
+                .HasAnnotation("ProductVersion", "10.0.0")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -726,7 +726,7 @@ namespace DAL.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
-            modelBuilder.Entity("Domins.Entities.Brand.TbBrand", b =>
+            modelBuilder.Entity("Domains.Entities.Brand.TbBrand", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -808,7 +808,7 @@ namespace DAL.Migrations
                     b.ToTable("TbBrands");
                 });
 
-            modelBuilder.Entity("Domins.Entities.Category.TbAttribute", b =>
+            modelBuilder.Entity("Domains.Entities.Category.TbAttribute", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -860,7 +860,7 @@ namespace DAL.Migrations
                     b.ToTable("TbAttributes");
                 });
 
-            modelBuilder.Entity("Domins.Entities.Category.TbAttributeOption", b =>
+            modelBuilder.Entity("Domains.Entities.Category.TbAttributeOption", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -912,7 +912,7 @@ namespace DAL.Migrations
                     b.ToTable("TbAttributeOptions");
                 });
 
-            modelBuilder.Entity("Domins.Entities.Category.TbCategory", b =>
+            modelBuilder.Entity("Domains.Entities.Category.TbCategory", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -989,7 +989,7 @@ namespace DAL.Migrations
                     b.ToTable("TbCategories");
                 });
 
-            modelBuilder.Entity("Domins.Entities.Category.TbCategoryAttribute", b =>
+            modelBuilder.Entity("Domains.Entities.Category.TbCategoryAttribute", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -1041,7 +1041,7 @@ namespace DAL.Migrations
                     b.ToTable("TbCategoryAttributes");
                 });
 
-            modelBuilder.Entity("Domins.Entities.Currency.TbCurrency", b =>
+            modelBuilder.Entity("Domains.Entities.Currency.TbCurrency", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -1205,12 +1205,6 @@ namespace DAL.Migrations
                         .HasColumnType("bit")
                         .HasDefaultValue(false);
 
-                    b.Property<decimal>("Price")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<int?>("Quantity")
-                        .HasColumnType("int");
-
                     b.Property<string>("SEODescription")
                         .IsRequired()
                         .HasMaxLength(1000)
@@ -1284,8 +1278,6 @@ namespace DAL.Migrations
 
                     b.HasIndex("IsRecommended");
 
-                    b.HasIndex("Price");
-
                     b.HasIndex("UnitId");
 
                     b.HasIndex("VideoProviderId");
@@ -1293,7 +1285,7 @@ namespace DAL.Migrations
                     b.ToTable("TbItems");
                 });
 
-            modelBuilder.Entity("Domins.Entities.Item.TbItemAttribute", b =>
+            modelBuilder.Entity("Domains.Entities.Item.TbItemAttribute", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -1341,7 +1333,7 @@ namespace DAL.Migrations
                     b.ToTable("TbItemAttribute");
                 });
 
-            modelBuilder.Entity("Domins.Entities.Item.TbItemAttributeCombinationPricing", b =>
+            modelBuilder.Entity("Domains.Entities.Item.TbItemAttributeCombinationPricing", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -1366,18 +1358,20 @@ namespace DAL.Migrations
                         .HasColumnType("int")
                         .HasDefaultValue(1);
 
-                    b.Property<decimal>("FinalPrice")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<string>("Image")
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
+                    b.Property<bool>("IsDefault")
+                        .HasColumnType("bit");
 
                     b.Property<Guid>("ItemId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<decimal>("Price")
+                        .HasColumnType("decimal(18,2)");
+
                     b.Property<int>("Quantity")
                         .HasColumnType("int");
+
+                    b.Property<decimal>("SalesPrice")
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<Guid?>("UpdatedBy")
                         .HasColumnType("uniqueidentifier");
@@ -1391,14 +1385,12 @@ namespace DAL.Migrations
 
                     b.HasIndex("CurrentState");
 
-                    b.HasIndex("FinalPrice");
-
                     b.HasIndex("ItemId");
 
                     b.ToTable("TbItemAttributeCombinationPricings");
                 });
 
-            modelBuilder.Entity("Domins.Entities.Item.TbItemImage", b =>
+            modelBuilder.Entity("Domains.Entities.Item.TbItemImage", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -1446,7 +1438,7 @@ namespace DAL.Migrations
                     b.ToTable("TbItemImages");
                 });
 
-            modelBuilder.Entity("Domins.Entities.Location.TbCity", b =>
+            modelBuilder.Entity("Domains.Entities.Location.TbCity", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -1496,7 +1488,7 @@ namespace DAL.Migrations
                     b.ToTable("TbCities");
                 });
 
-            modelBuilder.Entity("Domins.Entities.Location.TbCountry", b =>
+            modelBuilder.Entity("Domains.Entities.Location.TbCountry", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -1541,7 +1533,7 @@ namespace DAL.Migrations
                     b.ToTable("TbCountries");
                 });
 
-            modelBuilder.Entity("Domins.Entities.Location.TbState", b =>
+            modelBuilder.Entity("Domains.Entities.Location.TbState", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -1589,7 +1581,7 @@ namespace DAL.Migrations
                     b.ToTable("TbStates");
                 });
 
-            modelBuilder.Entity("Domins.Entities.Unit.TbUnit", b =>
+            modelBuilder.Entity("Domains.Entities.Unit.TbUnit", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -1632,7 +1624,7 @@ namespace DAL.Migrations
                     b.ToTable("TbUnits");
                 });
 
-            modelBuilder.Entity("Domins.Entities.Unit.TbUnitConversion", b =>
+            modelBuilder.Entity("Domains.Entities.Unit.TbUnitConversion", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -1750,7 +1742,7 @@ namespace DAL.Migrations
                     b.ToTable("TbVendors");
                 });
 
-            modelBuilder.Entity("Domins.Entities.VideoProvider.TbVideoProvider", b =>
+            modelBuilder.Entity("Domains.Entities.VideoProvider.TbVideoProvider", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -1793,7 +1785,7 @@ namespace DAL.Migrations
                     b.ToTable("TbVideoProviders");
                 });
 
-            modelBuilder.Entity("Domins.Views.Category.VwAttributeWithOptions", b =>
+            modelBuilder.Entity("Domains.Views.Category.VwAttributeWithOptions", b =>
                 {
                     b.Property<string>("AttributeOptionsJson")
                         .HasColumnType("nvarchar(max)");
@@ -1826,7 +1818,7 @@ namespace DAL.Migrations
                     b.ToView("VwAttributeWithOptions", (string)null);
                 });
 
-            modelBuilder.Entity("Domins.Views.Category.VwCategoryItems", b =>
+            modelBuilder.Entity("Domains.Views.Category.VwCategoryItems", b =>
                 {
                     b.Property<DateTime>("CreatedDateUtc")
                         .HasColumnType("datetime2");
@@ -1881,7 +1873,7 @@ namespace DAL.Migrations
                     b.ToView("VwCategoryItems", (string)null);
                 });
 
-            modelBuilder.Entity("Domins.Views.Item.VwItem", b =>
+            modelBuilder.Entity("Domains.Views.Item.VwItem", b =>
                 {
                     b.Property<Guid>("CategoryId")
                         .HasColumnType("uniqueidentifier");
@@ -1894,8 +1886,18 @@ namespace DAL.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("CombinationsJson")
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("CombinationsJson");
+
                     b.Property<DateTime>("CreatedDateUtc")
                         .HasColumnType("datetime2");
+
+                    b.Property<decimal>("DefaultPrice")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("DefaultQuantity")
+                        .HasColumnType("int");
 
                     b.Property<string>("DescriptionAr")
                         .IsRequired()
@@ -1920,12 +1922,6 @@ namespace DAL.Migrations
                     b.Property<string>("ItemImagesJson")
                         .HasColumnType("nvarchar(max)")
                         .HasColumnName("ItemImagesJson");
-
-                    b.Property<decimal>("Price")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<int>("Quantity")
-                        .HasColumnType("int");
 
                     b.Property<string>("ShortDescriptionAr")
                         .IsRequired()
@@ -1969,7 +1965,7 @@ namespace DAL.Migrations
                     b.ToView("VwItems", (string)null);
                 });
 
-            modelBuilder.Entity("Domins.Views.Unit.VwUnitWithConversionsUnits", b =>
+            modelBuilder.Entity("Domains.Views.Unit.VwUnitWithConversionsUnits", b =>
                 {
                     b.Property<string>("ConversionUnitsFromJson")
                         .HasColumnType("nvarchar(max)");
@@ -1993,7 +1989,7 @@ namespace DAL.Migrations
                     b.ToView("VwUnitWithConversionsUnits", (string)null);
                 });
 
-            modelBuilder.Entity("Domins.Views.UserNotification.VwUserNotification", b =>
+            modelBuilder.Entity("Domains.Views.UserNotification.VwUserNotification", b =>
                 {
                     b.Property<DateTime>("CreatedDateUtc")
                         .HasColumnType("datetime2");
@@ -2033,7 +2029,7 @@ namespace DAL.Migrations
                     b.ToView("VwUserNotifications", (string)null);
                 });
 
-            modelBuilder.Entity("Domins.Views.VwCategoryWithAttributes", b =>
+            modelBuilder.Entity("Domains.Views.VwCategoryWithAttributes", b =>
                 {
                     b.Property<string>("AttributesJson")
                         .HasColumnType("nvarchar(max)");
@@ -2264,7 +2260,7 @@ namespace DAL.Migrations
 
             modelBuilder.Entity("Domains.Entities.Order.TbOrderDetail", b =>
                 {
-                    b.HasOne("Domins.Entities.Item.TbItem", "Item")
+                    b.HasOne("Domains.Entities.Item.TbItem", "Item")
                         .WithMany()
                         .HasForeignKey("ItemId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -2281,9 +2277,9 @@ namespace DAL.Migrations
                     b.Navigation("Order");
                 });
 
-            modelBuilder.Entity("Domins.Entities.Category.TbAttributeOption", b =>
+            modelBuilder.Entity("Domains.Entities.Category.TbAttributeOption", b =>
                 {
-                    b.HasOne("Domins.Entities.Category.TbAttribute", "Attribute")
+                    b.HasOne("Domains.Entities.Category.TbAttribute", "Attribute")
                         .WithMany("AttributeOptions")
                         .HasForeignKey("AttributeId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -2292,15 +2288,15 @@ namespace DAL.Migrations
                     b.Navigation("Attribute");
                 });
 
-            modelBuilder.Entity("Domins.Entities.Category.TbCategoryAttribute", b =>
+            modelBuilder.Entity("Domains.Entities.Category.TbCategoryAttribute", b =>
                 {
-                    b.HasOne("Domins.Entities.Category.TbAttribute", "Attribute")
+                    b.HasOne("Domains.Entities.Category.TbAttribute", "Attribute")
                         .WithMany("CategoryAttributes")
                         .HasForeignKey("AttributeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Domins.Entities.Category.TbCategory", "Category")
+                    b.HasOne("Domains.Entities.Category.TbCategory", "Category")
                         .WithMany("CategoryAttributes")
                         .HasForeignKey("CategoryId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -2311,30 +2307,30 @@ namespace DAL.Migrations
                     b.Navigation("Category");
                 });
 
-            modelBuilder.Entity("Domins.Entities.Item.TbItem", b =>
+            modelBuilder.Entity("Domains.Entities.Item.TbItem", b =>
                 {
-                    b.HasOne("Domins.Entities.Brand.TbBrand", "Brand")
+                    b.HasOne("Domains.Entities.Brand.TbBrand", "Brand")
                         .WithMany("Items")
                         .HasForeignKey("BrandId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired()
                         .HasConstraintName("FK_TbItems_TbBrands_BrandId");
 
-                    b.HasOne("Domins.Entities.Category.TbCategory", "Category")
+                    b.HasOne("Domains.Entities.Category.TbCategory", "Category")
                         .WithMany("Items")
                         .HasForeignKey("CategoryId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("FK_TbItems_TbCategories_CategoryId");
 
-                    b.HasOne("Domins.Entities.Unit.TbUnit", "Unit")
+                    b.HasOne("Domains.Entities.Unit.TbUnit", "Unit")
                         .WithMany()
                         .HasForeignKey("UnitId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("FK_TbItems_TbUnits_UnitId");
 
-                    b.HasOne("Domins.Entities.VideoProvider.TbVideoProvider", "VideoProvider")
+                    b.HasOne("Domains.Entities.VideoProvider.TbVideoProvider", "VideoProvider")
                         .WithMany()
                         .HasForeignKey("VideoProviderId")
                         .OnDelete(DeleteBehavior.NoAction)
@@ -2349,16 +2345,16 @@ namespace DAL.Migrations
                     b.Navigation("VideoProvider");
                 });
 
-            modelBuilder.Entity("Domins.Entities.Item.TbItemAttribute", b =>
+            modelBuilder.Entity("Domains.Entities.Item.TbItemAttribute", b =>
                 {
-                    b.HasOne("Domins.Entities.Category.TbAttribute", "Attribute")
+                    b.HasOne("Domains.Entities.Category.TbAttribute", "Attribute")
                         .WithMany("ItemAttributes")
                         .HasForeignKey("AttributeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("FK_TbItemAttributes_TbAttributes_AttributeId");
 
-                    b.HasOne("Domins.Entities.Item.TbItem", "Item")
+                    b.HasOne("Domains.Entities.Item.TbItem", "Item")
                         .WithMany("ItemAttributes")
                         .HasForeignKey("ItemId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -2370,9 +2366,9 @@ namespace DAL.Migrations
                     b.Navigation("Item");
                 });
 
-            modelBuilder.Entity("Domins.Entities.Item.TbItemAttributeCombinationPricing", b =>
+            modelBuilder.Entity("Domains.Entities.Item.TbItemAttributeCombinationPricing", b =>
                 {
-                    b.HasOne("Domins.Entities.Item.TbItem", "Item")
+                    b.HasOne("Domains.Entities.Item.TbItem", "Item")
                         .WithMany("ItemAttributeCombinationPricings")
                         .HasForeignKey("ItemId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -2382,9 +2378,9 @@ namespace DAL.Migrations
                     b.Navigation("Item");
                 });
 
-            modelBuilder.Entity("Domins.Entities.Item.TbItemImage", b =>
+            modelBuilder.Entity("Domains.Entities.Item.TbItemImage", b =>
                 {
-                    b.HasOne("Domins.Entities.Item.TbItem", "Item")
+                    b.HasOne("Domains.Entities.Item.TbItem", "Item")
                         .WithMany("ItemImages")
                         .HasForeignKey("ItemId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -2394,9 +2390,9 @@ namespace DAL.Migrations
                     b.Navigation("Item");
                 });
 
-            modelBuilder.Entity("Domins.Entities.Location.TbCity", b =>
+            modelBuilder.Entity("Domains.Entities.Location.TbCity", b =>
                 {
-                    b.HasOne("Domins.Entities.Location.TbState", "State")
+                    b.HasOne("Domains.Entities.Location.TbState", "State")
                         .WithMany("Cities")
                         .HasForeignKey("StateId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -2406,9 +2402,9 @@ namespace DAL.Migrations
                     b.Navigation("State");
                 });
 
-            modelBuilder.Entity("Domins.Entities.Location.TbState", b =>
+            modelBuilder.Entity("Domains.Entities.Location.TbState", b =>
                 {
-                    b.HasOne("Domins.Entities.Location.TbCountry", "Country")
+                    b.HasOne("Domains.Entities.Location.TbCountry", "Country")
                         .WithMany("States")
                         .HasForeignKey("CountryId")
                         .OnDelete(DeleteBehavior.NoAction)
@@ -2417,15 +2413,15 @@ namespace DAL.Migrations
                     b.Navigation("Country");
                 });
 
-            modelBuilder.Entity("Domins.Entities.Unit.TbUnitConversion", b =>
+            modelBuilder.Entity("Domains.Entities.Unit.TbUnitConversion", b =>
                 {
-                    b.HasOne("Domins.Entities.Unit.TbUnit", "FromUnit")
+                    b.HasOne("Domains.Entities.Unit.TbUnit", "FromUnit")
                         .WithMany()
                         .HasForeignKey("FromUnitId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
-                    b.HasOne("Domins.Entities.Unit.TbUnit", "ToUnit")
+                    b.HasOne("Domains.Entities.Unit.TbUnit", "ToUnit")
                         .WithMany()
                         .HasForeignKey("ToUnitId")
                         .OnDelete(DeleteBehavior.NoAction)
@@ -2507,12 +2503,12 @@ namespace DAL.Migrations
                     b.Navigation("Orders");
                 });
 
-            modelBuilder.Entity("Domins.Entities.Brand.TbBrand", b =>
+            modelBuilder.Entity("Domains.Entities.Brand.TbBrand", b =>
                 {
                     b.Navigation("Items");
                 });
 
-            modelBuilder.Entity("Domins.Entities.Category.TbAttribute", b =>
+            modelBuilder.Entity("Domains.Entities.Category.TbAttribute", b =>
                 {
                     b.Navigation("AttributeOptions");
 
@@ -2521,14 +2517,14 @@ namespace DAL.Migrations
                     b.Navigation("ItemAttributes");
                 });
 
-            modelBuilder.Entity("Domins.Entities.Category.TbCategory", b =>
+            modelBuilder.Entity("Domains.Entities.Category.TbCategory", b =>
                 {
                     b.Navigation("CategoryAttributes");
 
                     b.Navigation("Items");
                 });
 
-            modelBuilder.Entity("Domins.Entities.Item.TbItem", b =>
+            modelBuilder.Entity("Domains.Entities.Item.TbItem", b =>
                 {
                     b.Navigation("ItemAttributeCombinationPricings");
 
@@ -2537,12 +2533,12 @@ namespace DAL.Migrations
                     b.Navigation("ItemImages");
                 });
 
-            modelBuilder.Entity("Domins.Entities.Location.TbCountry", b =>
+            modelBuilder.Entity("Domains.Entities.Location.TbCountry", b =>
                 {
                     b.Navigation("States");
                 });
 
-            modelBuilder.Entity("Domins.Entities.Location.TbState", b =>
+            modelBuilder.Entity("Domains.Entities.Location.TbState", b =>
                 {
                     b.Navigation("Cities");
                 });

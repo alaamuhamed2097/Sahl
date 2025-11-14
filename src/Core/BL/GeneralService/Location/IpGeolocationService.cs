@@ -127,8 +127,8 @@ namespace BL.GeneralService.Location
                     CountryName = countryInfo?.Name ?? response.Country?.Name ?? "Unknown",
                     Region = response.MostSpecificSubdivision?.Name,
                     City = response.City?.Name,
-                    Latitude = (double?)response.Location?.Latitude,
-                    Longitude = (double?)response.Location?.Longitude,
+                    Latitude = (response.Location?.Latitude),
+                    Longitude = (response.Location?.Longitude),
                     IsMiddleEast = countryInfo?.IsMiddleEast == true,
                     ServiceUsed = "MaxMind GeoIP2"
                 };

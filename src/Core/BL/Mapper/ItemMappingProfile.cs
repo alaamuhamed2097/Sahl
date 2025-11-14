@@ -1,5 +1,5 @@
-﻿using Domins.Entities.Item;
-using Domins.Views.Item;
+﻿using Domains.Entities.Item;
+using Domains.Views.Item;
 using Shared.DTOs.ECommerce.Item;
 using Shared.GeneralModels.Models;
 using System.Text.Json;
@@ -30,6 +30,14 @@ namespace BL.Mapper
                     string.IsNullOrWhiteSpace(src.ItemImagesJson)
                         ? new List<ItemImageViewDto>()
                         : DeserializeItemImages(src.ItemImagesJson)))
+                .ForMember(dest => dest.Combinations, opt => opt.MapFrom(src =>
+                    string.IsNullOrWhiteSpace(src.CombinationsJson)
+                        ? new List<ItemCombinationDto>()
+                        : DeserializeItemCombinations(src.CombinationsJson)))
+                .ReverseMap();
+
+            // Item combination mapping
+            CreateMap<ItemCombination, ItemCombinationDto>()
                 .ReverseMap();
 
             // Item attribute mappings
@@ -58,11 +66,32 @@ namespace BL.Mapper
 
                 return JsonSerializer.Deserialize<List<ItemImageViewDto>>(json, options) ?? new List<ItemImageViewDto>();
             }
-            catch (JsonException ex)
+            catch (JsonException)
             {
                 // You might want to log this exception
                 // For now, return empty list
                 return new List<ItemImageViewDto>();
+            }
+        }
+
+        private static List<ItemCombinationDto> DeserializeItemCombinations(string json)
+        {
+            try
+            {
+                var options = new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true,
+                    PropertyNamingPolicy = null, // Don't convert property names
+                    DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
+                };
+
+                return JsonSerializer.Deserialize<List<ItemCombinationDto>>(json, options) ?? new List<ItemCombinationDto>();
+            }
+            catch (JsonException)
+            {
+                // You might want to log this exception
+                // For now, return empty list
+                return new List<ItemCombinationDto>();
             }
         }
     }

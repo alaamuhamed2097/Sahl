@@ -1,4 +1,4 @@
-﻿using Common.Enumerations.PromoCode;
+﻿using Common.Enumerations;
 using Resources;
 using Resources.Enumerations;
 using Shared.DTOs.Base;

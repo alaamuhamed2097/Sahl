@@ -1,5 +1,5 @@
 using Dashboard.Constants;
-using Dashboard.Contracts;
+using Dashboard.Contracts.Location;
 using Microsoft.AspNetCore.Components;
 using Resources;
 using Shared.DTOs.Location;

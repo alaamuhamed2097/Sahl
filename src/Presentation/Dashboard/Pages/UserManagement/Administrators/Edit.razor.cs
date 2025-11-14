@@ -74,7 +74,7 @@ namespace Dashboard.Pages.UserManagement.Administrators
                     await JSRuntime.InvokeVoidAsync("swal", ValidationResources.Failed, NotifiAndAlertsResources.SaveFailed, "error");
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 await JSRuntime.InvokeVoidAsync("swal",
                     NotifiAndAlertsResources.FailedAlert,

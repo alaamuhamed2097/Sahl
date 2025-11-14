@@ -1,7 +1,7 @@
 ﻿using BL.Contracts.IMapper;
 using BL.Contracts.Service.ECommerce.Item;
 using BL.Contracts.Service.PromoCode;
-using Common.Enumerations.PromoCode;
+using Common.Enumerations;
 using DAL.Contracts.UnitOfWork;
 using DAL.Models;
 using Domains.Entities.PromoCode;
@@ -314,12 +314,13 @@ namespace BL.Service.PromoCode
                 foreach (var item in orderItems)
                 {
                     var product = _itemService.FindById(item.Id);
-                    decimal price = 0m;
 
                     if (product == null)
                         return ServiceResult<List<OrderItemPriceDto>>.FailureResult($"Product {item.Id} not found");
 
-                    price = product.Price ?? 0;
+                    // Use GetPrice() method instead of Price property (now handled by combinations)
+                    decimal price = product.GetPrice();
+
                     result.Add(new OrderItemPriceDto
                     {
                         ItemId = item.Id,

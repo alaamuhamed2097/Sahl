@@ -44,7 +44,7 @@ namespace Bl.GeneralService
                 //    }
                 //}
             }
-            catch (Exception d)
+            catch (Exception)
             {
                 return false;
             }
@@ -81,7 +81,7 @@ namespace Bl.GeneralService
                 //    }
                 //}
             }
-            catch (Exception d)
+            catch (Exception)
             {
                 return false;
             }
@@ -117,7 +117,7 @@ namespace Bl.GeneralService
                 //    }
                 //}
             }
-            catch (Exception d)
+            catch (Exception)
             {
                 return false;
             }

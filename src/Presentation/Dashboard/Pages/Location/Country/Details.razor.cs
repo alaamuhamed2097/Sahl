@@ -1,4 +1,4 @@
-using Dashboard.Contracts;
+using Dashboard.Contracts.Location;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 using Resources;
@@ -44,7 +44,7 @@ public partial class Details
                 await JSRuntime.InvokeVoidAsync("swal", ValidationResources.Failed, NotifiAndAlertsResources.SaveFailed, "error");
             }
         }
-        catch (Exception ex)
+        catch (Exception)
         {
             await JSRuntime.InvokeVoidAsync("swal",
                 NotifiAndAlertsResources.FailedAlert,

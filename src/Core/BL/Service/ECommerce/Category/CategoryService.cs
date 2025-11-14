@@ -4,12 +4,10 @@ using BL.Contracts.Service.ECommerce.Category;
 using BL.Service.Base;
 using DAL.Contracts.UnitOfWork;
 using DAL.Models;
-using Domins.Entities.Category;
-using Domins.Entities.Item;
-using Domins.Views;
-using Domins.Views.Category;
+using Domains.Entities.Category;
+using Domains.Entities.Item;
+using Domains.Views.Category;
 using Resources;
-using Shared.DTOs.ECommerce;
 using Shared.DTOs.ECommerce.Category;
 using Shared.DTOs.ECommerce.Item;
 using Shared.GeneralModels.SearchCriteriaModels;
@@ -65,7 +63,7 @@ namespace BL.Service.ECommerce.Category
 
             // Create ordering function based on SortBy and SortDirection
             Func<IQueryable<TbCategory>, IOrderedQueryable<TbCategory>> orderBy = null;
-            
+
             if (!string.IsNullOrWhiteSpace(criteriaModel.SortBy))
             {
                 var sortBy = criteriaModel.SortBy.ToLower();

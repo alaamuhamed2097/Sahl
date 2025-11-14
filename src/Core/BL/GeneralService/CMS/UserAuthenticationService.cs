@@ -1,7 +1,6 @@
 ﻿using BL.Contracts.GeneralService;
 using BL.Contracts.GeneralService.CMS;
 using Common.Enumerations.User;
-using Domains.Identity;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Resources;
@@ -128,7 +127,7 @@ namespace BL.GeneralService.CMS
                     Role = userRoles[0]
                 };
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 // Log the exception (ex)
                 return new Shared.GeneralModels.ResultModels.SignInResult

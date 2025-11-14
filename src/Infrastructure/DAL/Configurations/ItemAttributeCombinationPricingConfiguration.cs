@@ -1,4 +1,4 @@
-using Domins.Entities.Item;
+using Domains.Entities.Item;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -13,29 +13,33 @@ namespace DAL.Configurations
         {
             // Property configurations
             entity.Property(e => e.AttributeIds)
-          .IsRequired()
-              .HasMaxLength(500);
+                .IsRequired()
+                .HasMaxLength(500);
 
-            entity.Property(e => e.FinalPrice)
-            .IsRequired()
-        .HasColumnType("decimal(18,2)");
+            entity.Property(e => e.Price)
+                .IsRequired()
+                .HasColumnType("decimal(18,2)");
 
-            entity.Property(e => e.Image)
-     .HasMaxLength(200);
+            entity.Property(e => e.SalesPrice)
+                .IsRequired()
+                .HasColumnType("decimal(18,2)");
+
+            entity.Property(e => e.Quantity)
+                .IsRequired();
 
             // Indexes
             entity.HasIndex(e => e.AttributeIds)
-         .IsUnique(false);
+                .IsUnique(false);
 
-            entity.HasIndex(e => e.FinalPrice)
-         .IsUnique(false);
+            entity.HasIndex(e => e.Price)
+                .IsUnique(false);
 
             // Relationships
             entity.HasOne(icp => icp.Item)
-            .WithMany(i => i.ItemAttributeCombinationPricings)
-        .HasForeignKey(icp => icp.ItemId)
-       .HasConstraintName("FK_TbItemAttributeCombinationPricings_TbItems_ItemId")
-          .OnDelete(DeleteBehavior.Cascade);
+                .WithMany(i => i.ItemAttributeCombinationPricings)
+                .HasForeignKey(icp => icp.ItemId)
+                .HasConstraintName("FK_TbItemAttributeCombinationPricings_TbItems_ItemId")
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

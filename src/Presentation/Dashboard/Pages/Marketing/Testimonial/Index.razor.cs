@@ -104,7 +104,7 @@ namespace Dashboard.Pages.Marketing.Testimonial
 
                 await JSRuntime.InvokeVoidAsync("showTestimonialPreview", testimonialHtml);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 await ShowErrorNotification(ValidationResources.Error, "Failed to preview testimonial");
             }

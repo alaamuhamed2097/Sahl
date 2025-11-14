@@ -46,7 +46,7 @@ namespace Dashboard.Extensions
             services.AddScoped<ICountryPhoneCodeService, CountryPhoneCodeService>();
 
             services.AddScoped<ICurrencyService, CurrencyService>();
-            
+
             // Excel Template Service
             services.AddScoped<ExcelTemplateService>();
 

@@ -22,13 +22,13 @@ namespace Dashboard.Services.General
             try
             {
                 var queryString = $"PageNumber={model.PageNumber}&PageSize={model.PageSize}&SearchTerm={model.SearchTerm}";
-                
+
                 // Add sorting parameters if provided
                 if (!string.IsNullOrWhiteSpace(model.SortBy))
                 {
                     queryString += $"&SortBy={model.SortBy}&SortDirection={model.SortDirection}";
                 }
-                
+
                 string url = $"{Endpoint}?{queryString}";
                 return await _apiService.GetAsync<PaginatedDataModel<T>>(url);
             }

@@ -1,6 +1,5 @@
-﻿using Domains.Entities.Testimonial;
-using Domains.Identity;
-using Domins.Entities.Location;
+﻿using Domains.Entities.Location;
+using Domains.Entities.Testimonial;
 using Shared.DTOs.Location;
 using Shared.DTOs.Testimonial;
 using Shared.DTOs.User.Admin;

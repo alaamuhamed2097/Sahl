@@ -1,6 +1,6 @@
 ﻿using Dashboard.Constants;
-using Dashboard.Contracts;
 using Dashboard.Contracts.General;
+using Dashboard.Contracts.Location;
 using Resources;
 using Shared.DTOs.Location;
 using Shared.GeneralModels;
@@ -102,7 +102,7 @@ namespace Dashboard.Services.Location
                     Errors = result.Errors
                 };
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 // Log error here
                 return new ResponseModel<bool>

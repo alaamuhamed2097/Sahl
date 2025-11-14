@@ -1,6 +1,5 @@
 ﻿using BL.Contracts.GeneralService.CMS;
 using Common.Enumerations.User;
-using Domains.Identity;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
@@ -142,7 +141,7 @@ namespace BL.GeneralService.CMS
                 // Token is invalid
                 return null;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 // Log the exception (e.g., using Serilog, NLog, etc.)
                 return null;

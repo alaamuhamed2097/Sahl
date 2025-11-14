@@ -1,4 +1,4 @@
-using Domins.Entities.VideoProvider;
+using Domains.Entities.VideoProvider;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 

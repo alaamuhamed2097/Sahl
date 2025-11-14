@@ -67,7 +67,7 @@ namespace BL.Service.ShippingCompany
 
             // Create ordering function based on SortBy and SortDirection
             Func<IQueryable<TbShippingCompany>, IOrderedQueryable<TbShippingCompany>> orderBy = null;
-            
+
             if (!string.IsNullOrWhiteSpace(criteriaModel.SortBy))
             {
                 var sortBy = criteriaModel.SortBy.ToLower();

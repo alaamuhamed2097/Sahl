@@ -48,8 +48,17 @@ namespace Shared.DTOs.ECommerce.Item
         public string? VideoLink { get; set; }
         public string ThumbnailImage { get; set; } = string.Empty;
         public bool StockStatus { get; set; }
-        public int Quantity { get; set; }
-        public decimal Price { get; set; }
+
+        /// <summary>
+        /// Default quantity from the default combination
+        /// </summary>
+        public int DefaultQuantity { get; set; }
+
+        /// <summary>
+        /// Default price from the default combination
+        /// </summary>
+        public decimal DefaultPrice { get; set; }
+
         public bool IsNewArrival { get; set; }
         public bool IsBestSeller { get; set; }
         public bool IsRecommended { get; set; }
@@ -60,17 +69,44 @@ namespace Shared.DTOs.ECommerce.Item
         public string? FormattedPrice { get; set; }
 
         public List<ItemImageViewDto> ItemImages { get; set; } = new();
+
+        /// <summary>
+        /// List of all pricing combinations for this item
+        /// </summary>
+        public List<ItemCombinationDto> Combinations { get; set; } = new();
+
+        /// <summary>
+        /// Backward compatibility - returns DefaultQuantity
+        /// </summary>
+        [JsonIgnore]
+        public int Quantity => DefaultQuantity;
+
+        /// <summary>
+        /// Backward compatibility - returns DefaultPrice
+        /// </summary>
+        [JsonIgnore]
+        public decimal Price => DefaultPrice;
     }
 
     public partial class VwItemDto : ICurrencyConvertible
     {
         public string GetId() => Id.ToString();
-        public decimal GetPrice() => Price;
+        public decimal GetPrice() => DefaultPrice;
 
         public async Task ApplyCurrencyConversionAsync(CurrencyConversionDto conversion, string toCurrency)
         {
-            Price = conversion.ConvertedAmount;
+            DefaultPrice = conversion.ConvertedAmount;
             FormattedPrice = conversion.FormattedConvertedAmount;
+
+            // Convert all combinations
+            if (Combinations?.Any() == true)
+            {
+                foreach (var combo in Combinations)
+                {
+                    combo.Price *= conversion.ExchangeRate;
+                    combo.SalesPrice *= conversion.ExchangeRate;
+                }
+            }
         }
 
         public void SetCurrencyInfo(string currencyCode, CultureInfo culture)
@@ -78,5 +114,17 @@ namespace Shared.DTOs.ECommerce.Item
             CurrencyCode = currencyCode;
             CurrencySymbol = culture.NumberFormat.CurrencySymbol;
         }
+    }
+
+    /// <summary>
+    /// Represents a pricing combination for an item in the view
+    /// </summary>
+    public class ItemCombinationDto
+    {
+        public string AttributeIds { get; set; } = string.Empty;
+        public decimal Price { get; set; }
+        public decimal SalesPrice { get; set; }
+        public int Quantity { get; set; }
+        public bool IsDefault { get; set; }
     }
 }

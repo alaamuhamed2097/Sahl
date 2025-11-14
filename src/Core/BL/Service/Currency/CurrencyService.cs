@@ -3,7 +3,7 @@ using BL.Contracts.Service.Currency;
 using BL.Service.Base;
 using DAL.Contracts.Repositories;
 using DAL.ResultModels;
-using Domins.Entities.Currency;
+using Domains.Entities.Currency;
 using Resources;
 using Shared.DTOs.Currency;
 using Shared.GeneralModels;
@@ -266,7 +266,7 @@ namespace BL.Service.Currency
 
                 return result.Success;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 // Log the exception here if you have logging
                 // _logger.LogError(ex, "Error setting base currency {CurrencyId}", currencyId);

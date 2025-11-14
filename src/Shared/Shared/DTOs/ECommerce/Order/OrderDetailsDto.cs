@@ -3,7 +3,7 @@ using Resources.Enumerations;
 using Shared.DTOs.Base;
 using System.Text.Json.Serialization;
 
-namespace Shared.DTOs.ECommerce
+namespace Shared.DTOs.ECommerce.Order
 {
     public class OrderDetailsDto : BaseDto
     {

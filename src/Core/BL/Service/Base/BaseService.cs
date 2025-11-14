@@ -2,7 +2,6 @@
 using BL.Contracts.Service.Base;
 using DAL.Contracts.Repositories;
 using DAL.ResultModels;
-using Domains.Entities.Base;
 
 namespace BL.Service.Base
 {

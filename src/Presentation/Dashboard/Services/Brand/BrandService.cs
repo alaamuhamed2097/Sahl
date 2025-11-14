@@ -146,7 +146,7 @@ namespace Dashboard.Services.Brand
                     Errors = result.Errors
                 };
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 // Log error here
                 return new ResponseModel<bool>

@@ -1,4 +1,4 @@
-using Domins.Entities.Currency;
+using Domains.Entities.Currency;
 using Shared.DTOs.Currency;
 
 namespace BL.Mapper

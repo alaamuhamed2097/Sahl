@@ -122,7 +122,7 @@ namespace Dashboard.Pages.Catalog.Brands
                     await ShowErrorNotification(ValidationResources.Failed, NotifiAndAlertsResources.SaveFailed);
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 await ShowErrorNotification(NotifiAndAlertsResources.FailedAlert, NotifiAndAlertsResources.SomethingWentWrong);
             }
@@ -143,7 +143,7 @@ namespace Dashboard.Pages.Catalog.Brands
                 Model = result.Data ?? new();
                 StateHasChanged();
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 await ShowErrorNotification(ValidationResources.Error, NotifiAndAlertsResources.SomethingWentWrong);
             }
@@ -196,7 +196,7 @@ namespace Dashboard.Pages.Catalog.Brands
                         }
                     }
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
                     await ShowErrorNotification(
                     NotifiAndAlertsResources.Error,
@@ -206,7 +206,7 @@ namespace Dashboard.Pages.Catalog.Brands
 
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 await ShowErrorNotification(
                 NotifiAndAlertsResources.Error,

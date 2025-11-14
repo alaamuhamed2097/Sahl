@@ -66,7 +66,7 @@ namespace Dashboard.Pages.Catalog.Brands
                     await ShowErrorNotification(ValidationResources.Error, result.Message ?? BrandResources.FailedToUpdateFavoriteStatus);
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 await ShowErrorNotification(ValidationResources.Error, BrandResources.ErrorUpdatingFavoriteStatus);
             }

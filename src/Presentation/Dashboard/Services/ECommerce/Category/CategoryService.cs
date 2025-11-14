@@ -2,7 +2,7 @@ using Dashboard.Constants;
 using Dashboard.Contracts.ECommerce.Category;
 using Dashboard.Contracts.General;
 using Resources;
-using Shared.DTOs.ECommerce;
+using Shared.DTOs.ECommerce.Category;
 using Shared.GeneralModels;
 
 namespace Dashboard.Services.ECommerce.Category
@@ -113,7 +113,7 @@ namespace Dashboard.Services.ECommerce.Category
                 var result = await _apiService.PostAsync<Guid, bool>($"{ApiEndpoints.Category.Delete}", id);
                 return result;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 // Log error here
                 return new ResponseModel<bool>

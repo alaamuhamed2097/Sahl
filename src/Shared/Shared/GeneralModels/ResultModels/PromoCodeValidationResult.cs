@@ -1,4 +1,4 @@
-﻿using Common.Enumerations.PromoCode;
+﻿using Common.Enumerations;
 
 namespace Shared.GeneralModels.ResultModels
 {

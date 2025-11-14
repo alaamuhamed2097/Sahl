@@ -1762,6 +1762,15 @@ namespace Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to سعر البيع.
+        /// </summary>
+        public static string SalesPrice {
+            get {
+                return ResourceManager.GetString("SalesPrice", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to اختر الفئة التي تريد استيراد المنتجات إليها.
         /// </summary>
         public static string SelectCategoryInstructions {

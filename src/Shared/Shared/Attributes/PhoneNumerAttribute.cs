@@ -34,7 +34,7 @@ namespace Shared.Attributes
                 else
                     return new ValidationResult(ValidationResources.InvalidPhoneNumber, new[] { validationContext.MemberName });
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return new ValidationResult(ValidationResources.InvalidPhoneNumber, new[] { validationContext.MemberName });
             }

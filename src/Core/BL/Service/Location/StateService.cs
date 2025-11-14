@@ -3,7 +3,7 @@ using BL.Contracts.Service.Location;
 using BL.Service.Base;
 using DAL.Contracts.Repositories;
 using DAL.Models;
-using Domins.Entities.Location;
+using Domains.Entities.Location;
 using Resources;
 using Shared.DTOs.Location;
 using Shared.GeneralModels.SearchCriteriaModels;
@@ -48,7 +48,7 @@ namespace BL.Service.Location
 
             // Create ordering function based on SortBy and SortDirection
             Func<IQueryable<TbState>, IOrderedQueryable<TbState>> orderBy = null;
-            
+
             if (!string.IsNullOrWhiteSpace(criteriaModel.SortBy))
             {
                 var sortBy = criteriaModel.SortBy.ToLower();
