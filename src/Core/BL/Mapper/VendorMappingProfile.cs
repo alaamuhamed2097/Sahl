@@ -1,5 +1,5 @@
 ﻿using Domains.Entities.Setting;
-using Domins.Entities.Vendor;
+using Domains.Entities.Vendor;
 using Shared.DTOs.Setting;
 using Shared.DTOs.Vendor;
 using System;

@@ -1,5 +1,5 @@
 ﻿using Domains.Entities.Setting;
-using Domins.Entities.Customer;
+using Domains.Entities.Customer;
 using Shared.DTOs.Customer;
 using Shared.DTOs.Setting;
 using System;
