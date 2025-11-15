@@ -22,7 +22,6 @@ using BL.Service.Setting;
 using BL.Service.ShippingCompany;
 using BL.Service.Testimonial;
 using BL.Service.Vendor;
-using BL.Services.Items;
 
 namespace Api.Extensions
 {
