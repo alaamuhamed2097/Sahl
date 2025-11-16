@@ -1,6 +1,7 @@
 ﻿using BL.Contracts.GeneralService.Location;
 using BL.Contracts.Service.Brand;
 using BL.Contracts.Service.Currency;
+using BL.Contracts.Service.Customer;
 using BL.Contracts.Service.ECommerce.Category;
 using BL.Contracts.Service.ECommerce.Item;
 using BL.Contracts.Service.ECommerce.Unit;
@@ -8,9 +9,11 @@ using BL.Contracts.Service.PromoCode;
 using BL.Contracts.Service.Setting;
 using BL.Contracts.Service.ShippingCompny;
 using BL.Contracts.Service.Testimonial;
+using BL.Contracts.Service.Vendor;
 using BL.GeneralService.Location;
 using BL.Service.Brand;
 using BL.Service.Currency;
+using BL.Service.Customer;
 using BL.Service.ECommerce.Category;
 using BL.Service.ECommerce.Item;
 using BL.Service.ECommerce.Unit;
@@ -18,6 +21,7 @@ using BL.Service.PromoCode;
 using BL.Service.Setting;
 using BL.Service.ShippingCompany;
 using BL.Service.Testimonial;
+using BL.Service.Vendor;
 
 namespace Api.Extensions
 {
@@ -25,7 +29,12 @@ namespace Api.Extensions
     {
         public static IServiceCollection AddECommerceConfiguration(this IServiceCollection services, IConfiguration configuration)
         {
-            // General Application Services
+			// General Application Services
+
+			// Vendor Service
+			services.AddScoped<IVendorService, VendorService>();
+			// Customer Service
+			services.AddScoped<ICustomerService, CustomerService>();
 
             // Category Services
             services.AddScoped<ICategoryService, CategoryService>();

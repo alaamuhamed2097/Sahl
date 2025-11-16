@@ -1,0 +1,102 @@
+﻿@page "/users/vendors/create"
+
+@using Common.Enumerations.User
+@attribute [Authorize(Roles = nameof(UserRole.Vendor))]
+
+<PageTitle>@UserResources.AddAdmin</PageTitle>
+
+<div class="container-fluid p-0">
+    <div class="card shadow-sm border-0">
+        <div class="card-header d-flex bg-primary  justify-content-between align-items-center">
+            <h4 class="modal-title text-white">
+                <i class="bi bi-plus-circle fs-3 text-white"></i>
+                ➕ @ActionsResources.Add @ECommerceResources.Admin
+            </h4>
+        </div>
+        <EditForm Model="@Model" OnValidSubmit="Save">
+            <DataAnnotationsValidator />
+
+            <div class="card-body p-4">
+                <div class="row g-3">
+                    <!-- Personal Information -->
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>@FormResources.FirstName</label>
+                            <InputText type="text" placeholder="@($"{FormResources.Write} {FormResources.FirstName}")"
+                                       class="form-control" @bind-Value="Model.CompanyName" />
+                            <ValidationMessage For="@(() => Model.CompanyName)" />
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>@FormResources.LastName</label>
+                            <InputText type="text" placeholder="@($"{FormResources.Write} {FormResources.LastName}")"
+                                       class="form-control" @bind-Value="Model.ContactName" />
+                            <ValidationMessage For="@(() => Model.ContactName)" />
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Account Information -->
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>@FormResources.Username</label>
+                            <InputText type="userName" placeholder="@($"{FormResources.Username}")"
+                                       class="form-control" @bind-Value="Model.TaxNumber" />
+                            <ValidationMessage For="@(() => Model.TaxNumber)" />
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>@FormResources.Email</label>
+                            <InputText type="email" placeholder="@($"{FormResources.Write} {FormResources.Email}")"
+                                       class="form-control" @bind-Value="Model.CommercialRegister" />
+                            <ValidationMessage For="@(() => Model.CommercialRegister)" />
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Security Information -->
+                @* <div class="row g-3">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>@FormResources.Password</label>
+                            <InputText type="password" placeholder="@($"{FormResources.Write} {FormResources.Password}")"
+                                       class="form-control" @bind-Value="Model.Password" />
+                            <ValidationMessage For="@(() => Model.Password)" />
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>@FormResources.ConfirmPassword</label>
+                            <InputText type="password" placeholder="@($"{FormResources.Write} {FormResources.ConfirmPassword}")"
+                                       class="form-control" @bind-Value="Model.PasswordConfirmation" />
+                            <ValidationMessage For="@(() => Model.PasswordConfirmation)" />
+                        </div>
+                    </div>
+                </div> *@
+            </div>
+
+            <div class="card-footer bg-light  py-3 d-flex justify-content-end gap-2">
+                <button type="button" class="btn btn-responsive btn-secondary px-4" data-dismiss="modal" @onclick="CloseModal">
+                    <i class="feather icon-x-circle me-2 ms-2"></i>   @ActionsResources.Cancel
+                </button>
+                <button type="submit" class="btn btn-primary btn-responsive text-white px-4" disabled="@isSaving">
+                    @if (isSaving)
+                    {
+                        <span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
+                        <span class="sr-only">@GeneralResources.Loading ...</span>
+                    }
+                    else
+                    {
+                        <span>
+                            <i class="feather icon-save me-1 ms-2"></i>
+                            @ActionsResources.Save
+                        </span>
+                    }
+                </button>
+            </div>
+        </EditForm>
+    </div>
+</div>

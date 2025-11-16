@@ -145,19 +145,24 @@
             public const string Delete = "api/Admin/delete";
             public const string Search = "api/Admin/search";
         }
+		public static class Vendor
+		{
+			public const string Get = "api/Vendor";
+			public const string Create = "api/Vendor";
+			public const string Update = "api/Vendor";
+			public const string Delete = "api/Vendor/delete";
 
-        public static class Vendor
-        {
-            public const string Search = "api/Vendor/search";
-            public const string FindById = "api/Vendor";
-            public const string GetForSelect = "api/Vendor/forSelect";
-            public const string ChangeStatus = "api/Vendor/changeStatus";
-            public const string GetUserStatus = "api/Vendor/getStatus";
-            public const string GetVendorInfo = "api/Vendor/VendorInfo";
-        }
+			public const string Search = "api/Vendor/search";
+			public const string FindById = "api/Vendor";
+			public const string GetForSelect = "api/Vendor/forSelect";
+			public const string ChangeStatus = "api/Vendor/changeStatus";
+			public const string GetUserStatus = "api/Vendor/getStatus";
+			public const string GetVendorInfo = "api/Vendor/VendorInfo";
+		}
+		
+		
 
-
-        public static class VendorRegistration
+		public static class VendorRegistration
         {
             public const string Register = "api/VendorRegistration";
             public const string GetSponsor = "api/VendorRegistration/getSponsor";
@@ -171,7 +176,17 @@
             public const string WithdrawPoints = "api/VendorBusinessPoints/WithdrawPoints";
         }
 
-        public static class PromoCode
+		public static class Customer
+		{
+			public const string Search = "api/Customer/search";
+			public const string FindById = "api/Customer";
+			public const string GetForSelect = "api/Customer/forSelect";
+			public const string ChangeStatus = "api/Customer/changeStatus";
+			public const string GetUserStatus = "api/Customer/getStatus";
+			public const string GetVendorInfo = "api/Customer/VendorInfo";
+		}
+
+		public static class PromoCode
         {
             public const string Get = "api/PromoCodes";
             public const string Save = "api/PromoCodes/save";

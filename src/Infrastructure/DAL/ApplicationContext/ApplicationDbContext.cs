@@ -1,23 +1,25 @@
 ﻿using Domains.Entities;
 using Domains.Entities.Base;
+using Domains.Entities.Brand;
+using Domains.Entities.Category;
+using Domains.Entities.Currency;
+using Domains.Entities.Customer;
+using Domains.Entities.Item;
+using Domains.Entities.Location;
 using Domains.Entities.Notification;
 using Domains.Entities.Page;
 using Domains.Entities.PromoCode;
 using Domains.Entities.Setting;
 using Domains.Entities.Testimonial;
-using Domains.Identity;
-using Domains.Entities.Brand;
-using Domains.Entities.Category;
-using Domains.Entities.Currency;
-using Domains.Entities.Item;
-using Domains.Entities.Location;
 using Domains.Entities.Unit;
+using Domains.Entities.Vendor;
 using Domains.Entities.VideoProvider;
-using Domains.Views;
+using Domains.Identity;
 using Domains.Views.Category;
 using Domains.Views.Item;
 using Domains.Views.Unit;
 using Domains.Views.UserNotification;
+
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
@@ -80,9 +82,14 @@ namespace DAL.ApplicationContext
         public DbSet<TbCountry> TbCountries { get; set; }
         public DbSet<TbState> TbStates { get; set; }
         public DbSet<TbCity> TbCities { get; set; }
+		// Vendor
+		public DbSet<TbVendor> TbVendors { get; set; }
 
-        // Video Provider Management
-        public DbSet<TbVideoProvider> TbVideoProviders { get; set; }
+		// Customar
+		public DbSet<TbCustomer> TbCustomers { get; set; }
+
+		// Video Provider Management
+		public DbSet<TbVideoProvider> TbVideoProviders { get; set; }
 
         #endregion
 

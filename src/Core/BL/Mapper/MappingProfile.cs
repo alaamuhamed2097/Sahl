@@ -18,6 +18,9 @@ namespace BL.Mapper
             ConfigureMediaMappings();
             ConfigureOrderMappings();
             ConfigureSettingMappings();
-        }
+            ConfigureVendorMappings();
+            ConfigureCustomerMappings();
+
+		}
     }
 }

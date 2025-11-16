@@ -19,7 +19,7 @@ namespace Resources {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "18.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "17.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     public class ECommerceResources {
@@ -156,6 +156,15 @@ namespace Resources {
         public static string AddOption {
             get {
                 return ResourceManager.GetString("AddOption", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to العنوان.
+        /// </summary>
+        public static string Address {
+            get {
+                return ResourceManager.GetString("Address", resourceCulture);
             }
         }
         
@@ -475,11 +484,29 @@ namespace Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to السجل التجاري.
+        /// </summary>
+        public static string CommercialRegister {
+            get {
+                return ResourceManager.GetString("CommercialRegister", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to نسبة العمولة .
         /// </summary>
         public static string CommissionRate {
             get {
                 return ResourceManager.GetString("CommissionRate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to اسم الشركة.
+        /// </summary>
+        public static string CompanyName {
+            get {
+                return ResourceManager.GetString("CompanyName", resourceCulture);
             }
         }
         
@@ -498,6 +525,15 @@ namespace Resources {
         public static string ConditionName {
             get {
                 return ResourceManager.GetString("ConditionName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to اسم المسؤول.
+        /// </summary>
+        public static string ContactName {
+            get {
+                return ResourceManager.GetString("ContactName", resourceCulture);
             }
         }
         
@@ -898,6 +934,15 @@ namespace Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to نشط.
+        /// </summary>
+        public static string IsActive {
+            get {
+                return ResourceManager.GetString("IsActive", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to يؤثر على السعر.
         /// </summary>
         public static string IsAffectPrice {
@@ -1285,6 +1330,15 @@ namespace Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to ملاحظات.
+        /// </summary>
+        public static string Notes {
+            get {
+                return ResourceManager.GetString("Notes", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to الطلب.
         /// </summary>
         public static string Order {
@@ -1474,6 +1528,15 @@ namespace Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to الرمز البريدي.
+        /// </summary>
+        public static string PostalCode {
+            get {
+                return ResourceManager.GetString("PostalCode", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to أدخل سعر المنتج.
         /// </summary>
         public static string PricePlaceHolder {
@@ -1596,6 +1659,15 @@ namespace Resources {
         public static string Ranks {
             get {
                 return ResourceManager.GetString("Ranks", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to التقييم.
+        /// </summary>
+        public static string Rating {
+            get {
+                return ResourceManager.GetString("Rating", resourceCulture);
             }
         }
         
@@ -1942,6 +2014,15 @@ namespace Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to الرقم الضريبي.
+        /// </summary>
+        public static string TaxNumber {
+            get {
+                return ResourceManager.GetString("TaxNumber", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to يحتوي على أوراق مرجعية للفئات والعلامات التجارية والوحدات وخيارات الخصائص.
         /// </summary>
         public static string TemplateWithDataDescription {
@@ -2073,6 +2154,51 @@ namespace Resources {
         public static string UserState {
             get {
                 return ResourceManager.GetString("UserState", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to مسجل ضريبة القيمة المضافة.
+        /// </summary>
+        public static string VATRegistered {
+            get {
+                return ResourceManager.GetString("VATRegistered", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to البائع.
+        /// </summary>
+        public static string Vendor {
+            get {
+                return ResourceManager.GetString("Vendor", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to كود البائع.
+        /// </summary>
+        public static string VendorCode {
+            get {
+                return ResourceManager.GetString("VendorCode", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to البائعون.
+        /// </summary>
+        public static string Vendors {
+            get {
+                return ResourceManager.GetString("Vendors", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to نوع البائع.
+        /// </summary>
+        public static string VendorType {
+            get {
+                return ResourceManager.GetString("VendorType", resourceCulture);
             }
         }
         
