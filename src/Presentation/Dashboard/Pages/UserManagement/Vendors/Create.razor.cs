@@ -15,7 +15,7 @@ namespace Dashboard.Pages.UserManagement.Vendors
 
 		[Inject] private IJSRuntime JSRuntime { get; set; } = default!;
 		[Inject] protected NavigationManager Navigation { get; set; } = null!;
-		[Inject] protected IVendorService vendorService { get; set; } = null!;
+		[Inject] protected IVendorService _vendorService { get; set; } = null!;
 
 		protected async Task Save()
 		{
@@ -24,7 +24,7 @@ namespace Dashboard.Pages.UserManagement.Vendors
 				isSaving = true;
 				StateHasChanged(); // Force UI update to show spinner
 
-				var result = await vendorService.CreateAsync(Model);
+				var result = await _vendorService.CreateAsync(Model);
 				isSaving = false;
 
 				if (result.Success)
@@ -47,7 +47,7 @@ namespace Dashboard.Pages.UserManagement.Vendors
 
 		protected async Task CloseModal()
 		{
-			Navigation.NavigateTo("/users/administrators");
+			Navigation.NavigateTo("/users/vendors");
 		}
 	}
 }

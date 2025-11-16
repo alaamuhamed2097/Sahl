@@ -1,12 +1,13 @@
 ﻿using BL.Contracts.IMapper;
 using BL.Contracts.Service.Customer;
+using BL.Extensions;
 using BL.Service.Base;
 using Common.Enumerations.User;
 using DAL.Contracts.Repositories;
 using DAL.Models;
-using Domains.Identity;
 using Domains.Entities.Customer;
 using Domains.Entities.Vendor;
+using Domains.Identity;
 using Domains.Views.Unit;
 using Microsoft.AspNetCore.Identity;
 using Resources;
@@ -35,54 +36,99 @@ namespace BL.Service.Customer
 			_mapper = mapper;
 		}
 
-		
-
 		public Task<PaginatedDataModel<CustomerDto>> SearchAsync(BaseSearchCriteriaModel criteriaModel)
 		{
 			throw new NotImplementedException();
 		}
 
-		//public async Task<PaginatedDataModel<CustomerDto>> GetCustomerPage(BaseSearchCriteriaModel criteriaModel)
+
+
+		//public PaginatedDataModel<CustomerDto> GetPage(BaseSearchCriteriaModel criteriaModel)
 		//{
 		//	if (criteriaModel == null)
 		//		throw new ArgumentNullException(nameof(criteriaModel));
 
 		//	if (criteriaModel.PageNumber < 1)
-		//		throw new ArgumentOutOfRangeException(nameof(criteriaModel.PageNumber), "Page number must be greater than zero.");
+		//		throw new ArgumentOutOfRangeException(nameof(criteriaModel.PageNumber), ValidationResources.PageNumberGreaterThanZero);
 
 		//	if (criteriaModel.PageSize < 1 || criteriaModel.PageSize > 100)
-		//		throw new ArgumentOutOfRangeException(nameof(criteriaModel.PageSize), "Page size must be between 1 and 100.");
+		//		throw new ArgumentOutOfRangeException(nameof(criteriaModel.PageSize), ValidationResources.PageSizeRange);
 
-		//	//IEnumerable<ApplicationUser> users = await _userManager.GetUsersInRoleAsync("Customer");
-		//	//users = users.Where(u => u.UserState != UserStateType.Deleted);
+		//	// Base filter for active entities
+		//	Expression<Func<TbVendor, bool>> filter = x => x.CurrentState == 1;
 
 		//	// Apply search term if provided
-		//	//if (!string.IsNullOrWhiteSpace(criteriaModel.SearchTerm))
-		//	//{
-		//	//	string searchTerm = criteriaModel.SearchTerm.Trim().ToLower();
-		//	//	users = users.Where(u => (u.UserName.ToLower().Contains(searchTerm) || u.Email.ToLower().Contains(searchTerm)) ||
-		//	//							 ((u.FirstName + ' ' + u.LastName) != null && (u.FirstName + ' ' + u.LastName).ToLower().Contains(searchTerm)));
-		//	//}
+		//	if (!string.IsNullOrWhiteSpace(criteriaModel.SearchTerm))
+		//	{
+		//		string searchTerm = criteriaModel.SearchTerm.Trim().ToLower();
+		//		filter = x => x.CurrentState == 1 &&
+		//					 (x.CompanyName != null && x.CompanyName.ToLower().Contains(searchTerm) ||
+		//					 x.ContactName != null && x.ContactName.ToLower().Contains(searchTerm));
+		//	}
 
-		//	// Apply sorting if specified
+		//	// Create ordering function based on SortBy and SortDirection
+		//	Func<IQueryable<TbCustomer>, IOrderedQueryable<TbCustomer>> orderBy = null;
+
 		//	if (!string.IsNullOrWhiteSpace(criteriaModel.SortBy))
 		//	{
 		//		var sortBy = criteriaModel.SortBy.ToLower();
 		//		var isDescending = criteriaModel.SortDirection?.ToLower() == "desc";
 
-		//		users = sortBy switch
+		//		orderBy = query =>
 		//		{
-		//			"username" => isDescending ? users.OrderByDescending(x => x.UserName) : users.OrderBy(x => x.UserName),
-		//			"email" => isDescending ? users.OrderByDescending(x => x.Email) : users.OrderBy(x => x.Email),
-		//			"name" => isDescending ? users.OrderByDescending(x => x.FirstName + " " + x.LastName) : users.OrderBy(x => x.FirstName + " " + x.LastName),
-		//			"userstate" => isDescending ? users.OrderByDescending(x => x.UserState) : users.OrderBy(x => x.UserState),
-		//			_ => users.OrderBy(x => x.UserName) // Default sorting
+		//			return sortBy switch
+		//			{
+		//				"CompanyName" => isDescending ? query.OrderByDescending(x => x.CompanyName) : query.OrderBy(x => x.CompanyName),
+		//				"ContactName" => isDescending ? query.OrderByDescending(x => x.ContactName) : query.OrderBy(x => x.ContactName)
+		//			};
 		//		};
 		//	}
 
-		//	var totalRecords = users.Count();
-		//	users = users.Skip((criteriaModel.PageNumber - 1) * criteriaModel.PageSize).Take(criteriaModel.PageSize);
-		//	return new PaginatedDataModel<CustomerDto>(_mapper.MapList<ApplicationUser, CustomerDto>(users), totalRecords);
+		//	var entitiesList = _vendorRepository.GetPage(
+		//		criteriaModel.PageNumber,
+		//		criteriaModel.PageSize,
+		//		filter,
+		//		orderBy);
+
+		//	var dtoList = _mapper.MapList<TbVendor, VendorDto>(entitiesList.Items);
+
+		//	return new PaginatedDataModel<VendorDto>(dtoList, entitiesList.TotalRecords);
+		//}
+
+		//public async Task<PaginatedDataModel<VendorDto>> SearchAsync(BaseSearchCriteriaModel criteriaModel)
+		//{
+		//	if (criteriaModel == null)
+		//		throw new ArgumentNullException(nameof(criteriaModel));
+
+		//	if (criteriaModel.PageNumber < 1)
+		//		throw new ArgumentOutOfRangeException(nameof(criteriaModel.PageNumber), ValidationResources.PageNumberGreaterThanZero);
+
+		//	if (criteriaModel.PageSize < 1 || criteriaModel.PageSize > 100)
+		//		throw new ArgumentOutOfRangeException(nameof(criteriaModel.PageSize), ValidationResources.PageSizeRange);
+
+		//	// Base filter
+		//	Expression<Func<TbVendor, bool>> filter = x => x.CurrentState == 1;
+
+		//	// Combine expressions manually
+		//	var searchTerm = criteriaModel.SearchTerm?.Trim().ToLower();
+		//	if (!string.IsNullOrWhiteSpace(searchTerm))
+		//	{
+		//		filter = filter.And(x =>
+		//			x.CompanyName != null && x.CompanyName.ToLower().Contains(searchTerm) ||
+		//			x.CommercialRegister != null && x.CommercialRegister.ToLower().Contains(searchTerm) ||
+		//			x.ContactName != null && x.ContactName.ToLower().Contains(searchTerm)
+		//		);
+		//	}
+
+		//	var vendors = await _vendorRepository.GetPageAsync(
+		//		criteriaModel.PageNumber,
+		//		criteriaModel.PageSize,
+		//		filter,
+		//		orderBy: q => q.OrderBy(x => x.CreatedDateUtc));
+
+		//	var itemsDto = _mapper.MapList<TbVendor, VendorDto>(vendors.Items);
+
+		//	return new PaginatedDataModel<VendorDto>(itemsDto, vendors.TotalRecords);
 		//}
 
 
