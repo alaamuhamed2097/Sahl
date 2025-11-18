@@ -12,26 +12,26 @@ namespace Dashboard.Contracts.Customer
 		/// <summary>
 		/// Get all Customers.
 		/// </summary>
-		//Task<ResponseModel<IEnumerable<CustomerDto>>> GetAllAsync();
+		Task<ResponseModel<IEnumerable<CustomerDto>>> GetAllAsync();
 
-		///// <summary>
-		///// Get Customers by ID.
-		///// </summary>
-		//Task<ResponseModel<CustomerDto>> GetByIdAsync(Guid id);
+		/// <summary>
+		/// Get Customers by ID.
+		/// </summary>
+		Task<ResponseModel<CustomerDto>> GetByIdAsync(Guid id);
 
-		///// <summary>
-		///// Save or update a Customers.
-		///// </summary>
-		//Task<ResponseModel<CustomerDto>> SaveAsync(CustomerDto Customers);
+		/// <summary>
+		/// Save or update a Customers.
+		/// </summary>
+		Task<ResponseModel<CustomerDto>> SaveAsync(CustomerDto Customers);
 
-		///// <summary>
-		///// Delete a Customers by ID.
-		///// </summary>
-		//Task<ResponseModel<bool>> DeleteAsync(Guid id);
-		///// <summary>
-		///// Searching for customers by criteria.
-		///// </summary>
-		//Task<ResponseModel<PaginatedDataModel<CustomerDto>>> SearchAsync(BaseSearchCriteriaModel criteria);
+		/// <summary>
+		/// Delete a Customers by ID.
+		/// </summary>
+		Task<ResponseModel<bool>> DeleteAsync(Guid id);
+		/// <summary>
+		/// Searching for customers by criteria.
+		/// </summary>
+		Task<ResponseModel<PaginatedDataModel<CustomerDto>>> SearchAsync(BaseSearchCriteriaModel criteria);
 
 	}
 }

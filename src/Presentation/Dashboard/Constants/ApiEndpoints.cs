@@ -178,6 +178,12 @@
 
 		public static class Customer
 		{
+			public const string Get = "api/Customer";
+			public const string Create = "api/Customer";
+			public const string Update = "api/Customer";
+			public const string Delete = "api/Customer/delete";
+			public const string Save = "api/Customer/Save";
+
 			public const string Search = "api/Customer/search";
 			public const string FindById = "api/Customer";
 			public const string GetForSelect = "api/Customer/forSelect";

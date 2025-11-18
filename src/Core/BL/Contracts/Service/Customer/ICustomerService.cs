@@ -13,7 +13,7 @@ namespace BL.Contracts.Service.Customer
 {
 	public interface ICustomerService : IBaseService<TbCustomer, CustomerDto>
 	{
-		
+		PaginatedDataModel<CustomerDto> GetPage(BaseSearchCriteriaModel criteriaModel);
 		Task<PaginatedDataModel<CustomerDto>> SearchAsync(BaseSearchCriteriaModel criteriaModel);
 	}
 }
