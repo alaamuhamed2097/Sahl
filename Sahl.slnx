@@ -2,7 +2,9 @@
   <Folder Name="/api-specs/">
     <File Path="api-specs/README.md" />
   </Folder>
-  <Folder Name="/business/" />
+  <Folder Name="/docs/" >
+<File Path="docs/BusinessDetailed.html" />
+ </Folder>
   <Folder Name="/scripts/" />
   <Folder Name="/Solution Items/">
     <File Path="global.json" />
