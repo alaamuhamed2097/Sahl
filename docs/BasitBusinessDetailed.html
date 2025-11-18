@@ -937,17 +937,17 @@ FBM Fee (3%): 30 ج.م
                 <p>مثل: أقل من 200، تبدأ من 10 جنيه، من 999 فما فوق. تستهدف العملاء الحساسين للسعر.</p>
 
                 <!--<h4>3.4 Payment Promotions – عروض البنوك</h4>
-        <p>تظهر عروض البنوك والحلول المالية:</p>
-        <ul>
-            <li>خصومات على بطاقات معينة</li>
-            <li>تقسيط بدون فوائد</li>
-        </ul>-->
+                <p>تظهر عروض البنوك والحلول المالية:</p>
+                <ul>
+                    <li>خصومات على بطاقات معينة</li>
+                    <li>تقسيط بدون فوائد</li>
+                </ul>-->
 
                 <h4>3.5 Category Spotlight – إبراز الفئات</h4>
                 <p>أقسام مثل الأزياء، الإلكترونيات، المنزل. تساعد على رفع المرور نحو الفئات المهمة.</p>
 
                 <!--<h4>3.6 Bundle Promotions – عروض المجمّعات</h4>
-        <p>مثل: "اشتر 5 واحصل على 5% خصم". ترفع متوسط قيمة السلة.</p>-->
+                <p>مثل: "اشتر 5 واحصل على 5% خصم". ترفع متوسط قيمة السلة.</p>-->
 
                 <h4>3.7 Clearance Deals – التخفيضات النهائية</h4>
                 <p>تصريف المخزون أو المنتجات الموسمية ذات الطلب المنخفض.</p>
@@ -1401,7 +1401,7 @@ FBM Fee (3%): 30 ج.م
                     - أسعار مخازن FBA أفضل
                 </p>
             </div>
-            <!-- Page 11: Legal & Financial -->
+            <!-- Page 12: Legal & Financial -->
             <div class="page">
                 <h2>💰 Loyalty للمشتري (العملاء)</h2>
                 <h3>📊 Loyalty للمشتري (العملاء)</h3>
@@ -1430,7 +1430,7 @@ FBM Fee (3%): 30 ج.م
                 <h3>2) Redeem Points / استبدال النقاط</h3>
                 <p>
 
-                    
+
 
                     النقاط لها قيمة نقدية:
 
@@ -1448,7 +1448,7 @@ FBM Fee (3%): 30 ج.م
                 <h3> 3) Tier Levels / مستويات الولاء</h3>
                 <p>
 
-                   
+
 
                     أغلب مواقع التجارة تعمل 3 مستويات:
 
@@ -1457,9 +1457,480 @@ FBM Fee (3%): 30 ج.م
                     Gold	        +5000 جنيه            	 نقاط أعلى + شحن أسرع
                     Platinum    	+15000 جنيه        	أعلى نقاط + هدايا سنوية
                 </p>
-               
+
             </div>
-        </div>
+
+            <!-- Page 13: Pricing System -->
+            <div class="page">
+                <h1>✅ 📌 نظام التسعير في المنصة (Pricing System)</h1>
+                <p>المنصة تدعم 3 أنواع رئيسية من أسعار المنتجات. كل نوع منها يغيّر الطريقة التي يُحسب بها سعر المنتج عند عرضه للعميل.</p>
+
+                <hr>
+
+                <h2>🎯 1) Fixed Price – السعر الثابت</h2>
+                <h3>✔ تعريف</h3>
+                <p>السعر ثابت لا يتغيّر بأي مردود أو Attribute أو كمية. المنتج لديه سعر واحد فقط.</p>
+
+                <h3>✔ مثال</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>منتج</th>
+                            <th>سعر البيع</th>
+                            <th>الشرح</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>دفتر</td>
+                            <td>30 جنيه</td>
+                            <td>العميل يقدر يشتري 1 أو 10 أو 100 — السعر لكل قطعة = 30</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h3>✔ متى يُستخدم؟</h3>
+                <p>للمنتجات:</p>
+                <ul>
+                    <li>البسيطة</li>
+                    <li>التي لا تحتوي Variations</li>
+                    <li>التي تكون وحدتها واحدة فقط</li>
+                </ul>
+
+                <h3>✔ كيف يظهر في النظام؟</h3>
+                <p>في صفحة إضافة المنتج → يملأ البائع "سعر واحد فقط". لا يوجد جدول أسعار إضافي.</p>
+
+                <h3>✔ مثال بيانات (Database Example)</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Product</th>
+                            <th>ProductId</th>
+                            <th>BasePrice</th>
+                            <th>PricingType</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>دفتر</td>
+                            <td>123</td>
+                            <td>30</td>
+                            <td>Fixed</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <hr>
+
+                <h2>🎨 2) Attribute Combination Pricing (سعر حسب توليفة الصفات)</h2>
+                <h3>✔ تعريف</h3>
+                <p>السعر يختلف حسب توليفة Attributes يختارها العميل: مثلاً: (اللون + المقاس) أو (الرام + السعة) أو (الحجم + المادة).</p>
+
+                <h3>✔ مثال</h3>
+                <p><strong>منتج: تيشيرت</strong></p>
+                <p><strong>Attributes:</strong></p>
+                <ul>
+                    <li>المقاس (S, M, L, XL)</li>
+                    <li>اللون (أسود, أبيض)</li>
+                </ul>
+
+                <p><strong>الأسعار:</strong></p>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>المقاس</th>
+                            <th>اللون</th>
+                            <th>السعر</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>S</td>
+                            <td>أسود</td>
+                            <td>200</td>
+                        </tr>
+                        <tr>
+                            <td>S</td>
+                            <td>أبيض</td>
+                            <td>210</td>
+                        </tr>
+                        <tr>
+                            <td>M</td>
+                            <td>أسود</td>
+                            <td>220</td>
+                        </tr>
+                        <tr>
+                            <td>L</td>
+                            <td>أبيض</td>
+                            <td>240</td>
+                        </tr>
+                        <tr>
+                            <td>XL</td>
+                            <td>أسود</td>
+                            <td>260</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h3>✔ متى يُستخدم؟</h3>
+                <ul>
+                    <li>الملابس</li>
+                    <li>الإلكترونيات</li>
+                    <li>الأجهزة</li>
+                    <li>المنتجات متعددة المواصفات</li>
+                </ul>
+
+                <h3>✔ كيف يعمل هذا النظام؟</h3>
+                <ol>
+                    <li>يتم تعريف Attributes</li>
+                    <li>يتم إنشاء Combinations تلقائياً أو يدويًا</li>
+                    <li>
+                        لكل Combination يتم وضع:
+                        <ul>
+                            <li>السعر</li>
+                            <li>المخزون</li>
+                            <li>الباركود (اختياري)</li>
+                        </ul>
+                    </li>
+                </ol>
+
+                <h3>✔ كيف يظهر في النظام؟</h3>
+                <p>Dropdowns لاختيار (اللون، المقاس...) والسعر يتغيّر بمجرد اختيار Combination</p>
+
+                <h3>✔ مثال بيانات (Database Example)</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Product</th>
+                            <th>ProductId</th>
+                            <th>PricingType</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>تيشيرت</td>
+                            <td>456</td>
+                            <td>Combination</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <p><strong>ProductAttributes</strong></p>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>AttributeId</th>
+                            <th>Name</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>1</td>
+                            <td>Size</td>
+                        </tr>
+                        <tr>
+                            <td>2</td>
+                            <td>Color</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <p><strong>ProductCombinations</strong></p>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>CombinationId</th>
+                            <th>ProductId</th>
+                            <th>CombinationCode</th>
+                            <th>CombinationPrice</th>
+                            <th>Stock</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>1001</td>
+                            <td>456</td>
+                            <td>Color=Black;Size=M</td>
+                            <td>220</td>
+                            <td>10</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <hr>
+
+                <h2>🔢 3) Quantity-Based Pricing – السعر حسب الكمية (Tier Pricing)</h2>
+                <p>يسمّى أيضاً: Tier Pricing / Bulk Pricing / Volume Pricing</p>
+
+                <h3>✔ تعريف</h3>
+                <p>السعر يتغيّر حسب كمية الشراء. كل Tier له سعر خاص.</p>
+
+                <h3>✔ مثال</h3>
+                <p><strong>منتج: معقم يدين</strong></p>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>الكمية</th>
+                            <th>سعر القطعة</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>1–10</td>
+                            <td>50</td>
+                        </tr>
+                        <tr>
+                            <td>11–50</td>
+                            <td>45</td>
+                        </tr>
+                        <tr>
+                            <td>+50</td>
+                            <td>40</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <ul>
+                    <li>عميل اشترى 12 → يحاسب على 12 × 45</li>
+                    <li>عميل اشترى 60 → يحاسب على 60 × 40</li>
+                </ul>
+
+                <h3>✔ متى يُستخدم؟</h3>
+                <ul>
+                    <li>البيع بالجملة</li>
+                    <li>مستلزمات الشركات</li>
+                    <li>المنتجات الاستهلاكية</li>
+                    <li>المطاعم</li>
+                    <li>الأدوات المكتبية</li>
+                </ul>
+
+                <h3>✔ كيف يعمل في النظام؟</h3>
+                <p>يتم إدخال قائمة من السعر مقابل الكمية:</p>
+                <p>مثلاً:</p>
+                <ul>
+                    <li>MinQty = 1 → Price = 50</li>
+                    <li>MinQty = 11 → Price = 45</li>
+                    <li>MinQty = 50 → Price = 40</li>
+                </ul>
+                <p>وعند الشراء يقوم النظام بالآتي:</p>
+                <p>لو كمية الطلب >= MinQty ولها أعلى قيمة → استخدم هذا السعر</p>
+
+                <h3>✔ مثال بيانات (Database Example)</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Product</th>
+                            <th>PricingType</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>معقم يدين</td>
+                            <td>Quantity</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <p><strong>ProductTierPrices</strong></p>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>TierId</th>
+                            <th>ProductId</th>
+                            <th>MinQty</th>
+                            <th>Price</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>1</td>
+                            <td>789</td>
+                            <td>1</td>
+                            <td>50</td>
+                        </tr>
+                        <tr>
+                            <td>2</td>
+                            <td>789</td>
+                            <td>11</td>
+                            <td>45</td>
+                        </tr>
+                        <tr>
+                            <td>3</td>
+                            <td>789</td>
+                            <td>50</td>
+                            <td>40</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <hr>
+
+                <h2>🔥 📚 مقارنة بين الأنظمة الثلاثة</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>نظام التسعير</th>
+                            <th>خصائصه</th>
+                            <th>مناسب لـ</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Fixed Price</td>
+                            <td>سعر واحد ثابت</td>
+                            <td>المنتجات البسيطة</td>
+                        </tr>
+                        <tr>
+                            <td>Attribute Combination</td>
+                            <td>أسعار مختلفة حسب Variation</td>
+                            <td>ملابس – هواتف – أجهزة</td>
+                        </tr>
+                        <tr>
+                            <td>Quantity Pricing</td>
+                            <td>سعر يتغيّر حسب عدد القطع</td>
+                            <td>الجملة – شركات</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <hr>
+
+                <h2>🧩 📌 كيف يختار النظام السعر الصحيح عند عرض المنتج؟</h2>
+                <ol>
+                    <li>
+                        <strong>⿡ إذا كان PricingType = Fixed</strong><br>
+                        → ارجع BasePrice
+                    </li>
+                    <li>
+                        <strong>⿢ إذا كان PricingType = Combination</strong><br>
+                        → ابحث عن Combination حسب اختيارات العميل<br>
+                        → ارجع السعر الخاص بها
+                    </li>
+                    <li>
+                        <strong>⿣ إذا كان PricingType = Quantity</strong><br>
+                        → راجع Tier مناسب للكمية<br>
+                        → ارجع السعر الصحيح
+                    </li>
+                </ol>
+
+                <hr>
+
+                <h2>🎛 📌 كيف يظهر هذا للعميل؟ (Frontend Behavior)</h2>
+                <h3>Fixed</h3>
+                <p>السعر يظهر رقم واحد.</p>
+
+                <h3>Combination</h3>
+                <p>
+                    السعر يظهر بعد اختيار:<br>
+                    - اللون<br>
+                    - المقاس<br>
+                    أو أي Attribute
+                </p>
+
+                <h3>Quantity</h3>
+                <p>
+                    عند زيادة الكمية:<br>
+                    - السعر في السلة يتغير<br>
+                    - يظهر جدول Tiers
+                </p>
+
+                <hr>
+
+                <h2>🛠 📌 كيف يضعه البائع في لوحة التحكم؟</h2>
+                <h3>1) Fixed Price (أسهل شيء)</h3>
+                <ul>
+                    <li>يدخل سعر واحد فقط</li>
+                    <li>يدخل المخزون</li>
+                </ul>
+
+                <h3>2) Attribute Combination</h3>
+                <p>البائع يقوم بـ:</p>
+                <ul>
+                    <li>إضافة Attributes</li>
+                    <li>إنشاء Variants</li>
+                    <li>إدخال السعر لكل Variant</li>
+                </ul>
+
+                <h3>3) Quantity Pricing</h3>
+                <p>البائع يقوم بـ:</p>
+                <ul>
+                    <li>
+                        إضافة Tiers:<br>
+                        "من كمية X → السعر Y"
+                    </li>
+                </ul>
+
+                <hr>
+
+                <h2>🧱 📌 تصميم قاعدة البيانات (Database Structure) للأنواع الثلاثة</h2>
+                <h3>جدول المنتج الأساسي</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Product</th>
+                            <th>ProductId</th>
+                            <th>Name</th>
+                            <th>BasePrice</th>
+                            <th>PricingType</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td>(0=Fixed, 1=Combination, 2=Quantity)</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h3>جدول التوليفات (للنوع الثاني فقط)</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ProductAttribute</th>
+                            <th>ProductAttributeOption</th>
+                            <th>ProductCombination</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td></td>
+                            <td></td>
+                            <td>
+                                CombinationId<br>
+                                ProductId<br>
+                                CombinationCode<br>
+                                CombinationPrice<br>
+                                Stock
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h3>جدول تسعير الكمية (للنوع الثالث فقط)</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ProductTierPrice</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>
+                                TierId<br>
+                                ProductId<br>
+                                MinQty<br>
+                                Price
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        
+
+
+    </div>
     </div>
 
     <script>
@@ -1570,23 +2041,23 @@ FBM Fee (3%): 30 ج.م
 
                 // إنشاء HTML كامل لـ Word
                 const wordHtml = `
-                        <html xmlns:o='urn:schemas-microsoft-com:office:office'
-                              xmlns:w='urn:schemas-microsoft-com:office:word'
-                              xmlns='http://www.w3.org/TR/REC-html40'>
-                        <head>
-                            <meta charset='utf-8'>
-                            <style>
-                                body { font-family: 'Cairo', Arial, sans-serif; direction: rtl; }
-                                table { border-collapse: collapse; width: 100%; }
-                                th, td { border: 1px solid #ddd; padding: 12px; text-align: right; }
-                                th { background-color: #007bff; color: white; }
-                            </style>
-                        </head>
-                        <body dir="rtl">
-                            ${tempContainer.innerHTML}
-                        </body>
-                        </html>
-                    `;
+                            <html xmlns:o='urn:schemas-microsoft-com:office:office'
+                                  xmlns:w='urn:schemas-microsoft-com:office:word'
+                                  xmlns='http://www.w3.org/TR/REC-html40'>
+                            <head>
+                                <meta charset='utf-8'>
+                                <style>
+                                    body { font-family: 'Cairo', Arial, sans-serif; direction: rtl; }
+                                    table { border-collapse: collapse; width: 100%; }
+                                    th, td { border: 1px solid #ddd; padding: 12px; text-align: right; }
+                                    th { background-color: #007bff; color: white; }
+                                </style>
+                            </head>
+                            <body dir="rtl">
+                                ${tempContainer.innerHTML}
+                            </body>
+                            </html>
+                        `;
 
                 // Create a Blob with the HTML content
                 const blob = new Blob(['\ufeff' + wordHtml], {
