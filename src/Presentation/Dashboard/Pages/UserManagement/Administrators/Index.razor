@@ -81,6 +81,8 @@
                     </li>
                 </ul>
 
+
+<div class="d-none d-md-block">
                 <table id="order-table" class="table table-striped table-bordered nowrap">
                     <thead>
                         <tr>
@@ -174,7 +176,61 @@
                         }
                     </tbody>
                 </table>
+                </div>
+  <!-- MOBILE CARDS (Hidden on Desktop) -->
+                <div class="d-block d-md-none">
 
+                    @if (items != null && items.Any())
+                    {
+                        foreach (var item in items)
+                        {
+                            <div class="card shadow-sm mb-3 border-0">
+                                <div class="card-body">
+
+                                    <div class="d-flex justify-content-between">
+                                        <h5 class="fw-bold">@item.UserName</h5>
+                                        <span class="badge bg-primary">@item.UserState</span>
+                                    </div>
+
+                                    <p class="mb-1">
+                                        <i class="fas fa-envelope text-primary me-2"></i>
+                                        @item.Email
+                                    </p>
+
+                                    <p class="mb-1">
+                                        <i class="fas fa-user text-success me-2"></i>
+                                        @item.FirstName @item.LastName
+                                    </p>
+
+                                    <hr />
+
+                                    <div class="d-flex justify-content-between gap-2">
+                                        <button class="btn btn-primary w-50"
+                                                @onclick="() => Edit(item)">
+                                            <i class="feather icon-edit me-1"></i>
+                                            @ActionsResources.Edit
+                                        </button>
+
+                                        <button class="btn btn-danger w-50"
+                                                @onclick="() => Delete(new Guid(item.Id))">
+                                            <i class="feather icon-trash-2 me-1"></i>
+                                            @ActionsResources.Delete
+                                        </button>
+                                    </div>
+
+                                </div>
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <div class="text-center p-4">
+                            <i class="fas fa-database text-muted" style="font-size: 50px;"></i>
+                            <p class="text-muted mt-3">@NotifiAndAlertsResources.NoDataFound</p>
+                        </div>
+                    }
+
+                </div>
                 <!-- Pagination start -->
                <div class="pagination-wrapper d-flex flex-column justify-content-end flex-grow-1">
     <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mt-4 pagination-container" dir="ltr">

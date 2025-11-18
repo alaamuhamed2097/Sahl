@@ -72,7 +72,7 @@
 						</button>
 					</li>
 				</ul>
-
+<div class="d-none d-md-block">
 				<!-- MOBILE FILTRATION (New Mobile-First Design) -->
 				<!-- Table -->
 				<!-- Responsive Table Container -->
@@ -136,7 +136,7 @@
 							}
 						</tbody>
 					</table>
-
+					</div>
 					<!-- TABLET TABLE (New Condensed View for Medium Screens) -->
 					<table class="table table-hover mb-0 d-none d-md-table d-lg-none">
 						<thead class="bg-light">
@@ -173,58 +173,94 @@
 							}
 						</tbody>
 					</table>
-
-					<!-- MOBILE VIEW (New Enhanced Cards) -->
-					<div class="d-md-none">
-						@if (items != null)
-						{
-							@foreach (var item in items)
-							{
-								<div class="card mb-2 border-0 shadow-sm">
-									<div class="card-body p-3">
-										<!-- Header with Title and Actions -->
-										<div class="d-flex justify-content-between align-items-start mb-2">
-											<div class="flex-grow-1 me-2">
-												<h6 class="mb-1 fw-bold text-primary">@item.Title</h6>
-												<span class="badge @GetFieldTypeBadgeClass(item.FieldType) small">
-													@GetFieldTypeDisplayName(item.FieldType)
-												</span>
-											</div>
-											<div class="d-flex gap-1">
-												<button class="btn btn-primary btn-sm" title="@ActionsResources.Edit" @onclick="() => Edit(item)">
-													<i class="fas fa-pencil-alt m-0" style="font-size: 12px;"></i>
-												</button>
-												<button class="btn btn-danger btn-sm" title="@ActionsResources.Delete" @onclick="() => Delete(item.Id)">
-													<i class="feather icon-trash-2 m-0" style="font-size: 12px;"></i>
-												</button>
-											</div>
-										</div>
-
-										<!-- Additional Details (if MaxLength exists) -->
-										@if (!string.IsNullOrEmpty(item.MaxLength?.ToString()))
-										{
-											<div class="small text-muted">
-												<strong>@ECommerceResources.MaxLength:</strong> @item.MaxLength
-											</div>
-										}
-									</div>
-								</div>
-							}
-						}
-						else
-						{
-							<!-- Mobile Empty State -->
-							<div class="text-center py-5">
-								<i class="fas fa-inbox fa-3x text-muted mb-3"></i>
-								<h5 class="text-muted">No Attributes Found</h5>
-								<p class="text-muted mb-3">Get started by adding your first attribute</p>
-								<button class="btn btn-success" @onclick="Add">
-									<i class="feather icon-plus-circle me-2"></i>
-									@ActionsResources.Add
-								</button>
-							</div>
-						}
 					</div>
+
+					<!-- MOBILE VIEW (Improved Professional Card) -->
+<div class="d-md-none mt-3">
+
+    @if (items != null && items.Any())
+    {
+        foreach (var item in items)
+        {
+            <div class="card shadow-sm mb-3 border-0 rounded-3">
+                <div class="card-body p-3">
+
+                    <!-- HEADER -->
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <h6 class="fw-bold text-primary mb-1">@item.Title</h6>
+
+                            <span class="badge @GetFieldTypeBadgeClass(item.FieldType)">
+                                @GetFieldTypeDisplayName(item.FieldType)
+                            </span>
+                        </div>
+
+                        <!-- ACTION BUTTONS -->
+                        <div class="d-flex gap-1">
+                            <button class="btn btn-primary btn-sm"
+                                    @onclick="() => Edit(item)"
+                                    title="@ActionsResources.Edit">
+                                <i class="fas fa-pencil-alt m-0" style="font-size: 12px;"></i>
+                            </button>
+
+                            <button class="btn btn-danger btn-sm"
+                                    @onclick="() => Delete(item.Id)"
+                                    title="@ActionsResources.Delete">
+                                <i class="feather icon-trash-2 m-0" style="font-size: 12px;"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- DETAILS -->
+                    <div class="mt-2 small text-muted">
+
+                        @if (item.MaxLength.HasValue)
+                        {
+                            <div class="mb-1">
+                                <i class="fas fa-sort-numeric-up text-info me-1"></i>
+                                <strong>@ECommerceResources.MaxLength:</strong>
+                                @item.MaxLength
+                            </div>
+                        }
+
+                        @* @if (item.IsRequired.HasValue && item.IsRequired.Value)
+                        {
+                            <div class="mb-1">
+                                <i class="fas fa-exclamation-circle text-danger me-1"></i>
+                                <strong>@ValidationResources.RequiredField</strong>
+                            </div>
+                        }
+
+                        @if (item.DisplayOrder.HasValue)
+                        {
+                            <div class="mb-1">
+                                <i class="fas fa-list-ol text-warning me-1"></i>
+                                <strong>@ECommerceResources.DisplayOrder:</strong>
+                                @item.DisplayOrder
+                            </div>
+                        } *@
+
+                    </div>
+
+                </div>
+            </div>
+        }
+    }
+    else
+    {
+        <!-- Empty Mobile View -->
+        <div class="text-center py-5">
+            <i class="fas fa-box-open fa-3x text-muted mb-3"></i>
+							<h6 class="text-muted">@BrandResources.NoBrandsFound</h6>
+            <button class="btn btn-success mt-3" @onclick="Add">
+                <i class="feather icon-plus-circle me-1"></i>
+                @ActionsResources.Add
+            </button>
+        </div>
+    }
+
+</div>
+
 				</div>
 
 				<!-- MOBILE-OPTIMIZED PAGINATION (New) -->
@@ -317,4 +353,3 @@
 			</div>
 		</div>
 	</div>
-</div>
