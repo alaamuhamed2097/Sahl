@@ -67,17 +67,18 @@
        </button>
    </li>
         </ul>
+           <div class="d-none d-md-block">
         <table id="simpletable" class="text-center table   nowrap  "  >
         <thead>
      <tr>
- <th >@FormResources.Title</th>
+ @* <th >@FormResources.Title</th> *@
             <th >@FormResources.Code</th>
   <th class="sorting">@FormResources.StartDate</th>
                     <th class="sorting">@FormResources.EndDate</th>
-   <th class="sorting">@FormResources.Type</th>
+   @* <th class="sorting">@FormResources.Type</th> *@
             <th class="sorting">@FormResources.Value</th>
         <th class="sorting">@FormResources.UsageLimit</th>
-     <th class="sorting">@FormResources.UsageCount</th>
+     @* <th class="sorting">@FormResources.UsageCount</th> *@
       <th class="sorting">@FormResources.Status</th>
     <th class="text-center " >@ECommerceResources.Actions</th>
            </tr>
@@ -88,14 +89,14 @@
  @foreach (var item in items)
        {
     <tr>
-          <td class="text-center  p-1">@item.Title</td>
+          @* <td class="text-center  p-1">@item.Title</td> *@
            <td class="text-center p-1">@item.Code</td>
       <td class="text-center p-1">@item.StartDate.ToString("yyyy-MM-dd")</td>
  <td class="text-center p-1">@item.EndDate.ToString("yyyy-MM-dd")</td>
-       <td class="text-center p-1">@item.PromoCodeType</td>
+       @* <td class="text-center p-1">@item.PromoCodeType</td> *@
                  <td class="text-center p-1">@(((item.Value - Convert.ToInt32(item.Value)) > 0)? item.Value : Convert.ToInt32(item.Value))@(item.PromoCodeType == PromoCodeType.Percentage? "%":"$")</td>
         <td class="text-center p-3">@(item.UsageLimit?.ToString() ?? "∞")</td>
-             <td class="text-center p-3">@item.UsageCount</td>
+             @* <td class="text-center p-3">@item.UsageCount</td> *@
        
               @if(item.IsActive == true)
            {
@@ -219,6 +220,98 @@
         </nav>
     </div>
 </div>
+</div>
+
+                <!-- MOBILE VIEW (PromoCodes Cards) -->
+                <div class="d-md-none ">
+
+                    @if (items != null && items.Any())
+                    {
+                        foreach (var item in items)
+                        {
+                            <div class="card border-0 shadow-sm rounded-3 mb-3">
+                                <div class="card-body p-3">
+
+                                    <!-- Header -->
+                                    <div class="d-flex justify-content-between align-items-start">
+                                        <div>
+                                            <h6 class="fw-bold text-primary mb-1">
+                                                🏷️ @item.Code
+                                            </h6>
+
+                                            <small class="text-muted">
+                                                @item.StartDate.ToString("yyyy-MM-dd") → @item.EndDate.ToString("yyyy-MM-dd")
+                                            </small>
+                                        </div>
+
+                                        <!-- Action Buttons -->
+                                        <div class="d-flex gap-1">
+                                            <button class="btn btn-primary  btn-sm"
+                                                    @onclick="() => Edit(item)">
+                                                
+                                                 <i class="feather icon-edit "></i>
+                                            </button>
+                                            <button class="btn btn-danger btn-sm"
+                                                    @onclick="() => Delete(item.Id)">
+                                               
+                                                   <i class="feather icon-trash-2 "></i>
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <hr class="my-2" />
+
+                                    <!-- Details -->
+                                    <div class="row small">
+                                        <div class="col-6 mb-1">
+                                            <i class="fas fa-percentage text-info me-1"></i>
+                                            <strong>@FormResources.Value:</strong>
+                                            @(((item.Value - Convert.ToInt32(item.Value)) > 0)
+                                                                                ? item.Value
+                                                                                : Convert.ToInt32(item.Value))
+                                            @(item.PromoCodeType == PromoCodeType.Percentage ? "%" : "$")
+                                        </div>
+
+                                        <div class="col-6 mb-1">
+                                            <i class="fas fa-repeat text-secondary me-1"></i>
+                                            <strong>@FormResources.UsageLimit:</strong>
+                                            @(item.UsageLimit?.ToString() ?? "∞")
+                                        </div>
+
+                                        <div class="col-12 mt-1">
+                                            @if (item.IsActive)
+                                            {
+                                                <span class="badge bg-success w-100 py-2">
+                                                    @FormResources.Active
+                                                </span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge bg-warning text-dark w-100 py-2">
+                                                    @FormResources.InActive
+                                                </span>
+                                            }
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <!-- Empty State -->
+                        <div class="text-center py-5">
+                            <i class="fas fa-tags text-muted" style="font-size: 55px;"></i>
+                            <p class="mt-3 text-muted">@NotifiAndAlertsResources.NoDataFound</p>
+
+                            <button class="btn btn-success mt-2" @onclick="Add">
+                                <i class="feather icon-plus-circle me-1"></i>@ActionsResources.Add
+                            </button>
+                        </div>
+                    }
+
+                </div>
 
    <!-- Pagination end -->
           </div>
