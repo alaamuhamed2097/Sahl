@@ -3,7 +3,7 @@
     <File Path="api-specs/README.md" />
   </Folder>
   <Folder Name="/docs/">
-    <File Path="docs/BasitBusiness.html" />
+    <File Path="docs/BasitBusinessDetailed.html" />
 <File Path="docs/BusinessDetailed.html" />
     <File Path="docs/COMPLETE_FINAL_REPORT.md" />
     <File Path="docs/Excel-Dropdown-Fix.md" />
