@@ -1,0 +1,130 @@
+﻿<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>الصفحة 13 - سيناريوهات عملية</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="navigation-header">
+            <a href="index.html" class="btn-home">🏠 الفهرس الرئيسي</a>
+            <span class="page-number">صفحة 13 من 26</span>
+        </div>
+
+        <div class="content">
+            <h2>🎯 6. السيناريوهات العملية (Real Scenarios)</h2>
+
+            <div class="scenario-box">
+                <h3>⭐ سيناريو 1 — عميل اشترى منتج بـ 1000 جنيه</h3>
+                <ul>
+                    <li>المنصة تسجل 1000 في Treasury</li>
+                    <li>تحجز 1000 للبائع Pending</li>
+                    <li>تضيف 20 نقطة Loyalty</li>
+                    <li>لو العميل أرجع المنتج → 1000 تتحول لمحفظة العميل Wallet</li>
+                    <li>البائع لا يحصل على أي رصيد</li>
+                </ul>
+            </div>
+
+            <div class="scenario-box">
+                <h3>⭐ سيناريو 2 — بائع باع منتج بـ 800 جنيه</h3>
+                <ul>
+                    <li>عمولة المنصة 10% = 80</li>
+                    <li>رصيد البائع = 720</li>
+                    <li>يتم تحويله له بعد 7 أيام</li>
+                </ul>
+            </div>
+
+            <div class="scenario-box">
+                <h3>⭐ سيناريو 3 — Promo Code من المنصة (خصم 50 جنيه)</h3>
+                <ul>
+                    <li>Treasury يتحمل 50</li>
+                    <li>لا يتم خصمها من البائع</li>
+                    <li>تظهر كـ Marketing Expense</li>
+                </ul>
+            </div>
+
+            <div class="scenario-box">
+                <h3>⭐ سيناريو 4 — Wallet البائع عليه رسوم</h3>
+                <ul>
+                    <li>Fees = 200</li>
+                    <li>لو الرصيد 150 فقط</li>
+                    <li>→ البائع يصبح Negative Balance</li>
+                    <li>→ لا يسمح له بشحن الطلبات حتى يسدد</li>
+                </ul>
+            </div>
+
+            <hr>
+
+            <h2>🟪 7. نظام النزاعات (Dispute System)</h2>
+            <p>مهم جدًا للـ Marketplace</p>
+
+            <h3>7.1 حالات النزاع</h3>
+            <ul>
+                <li>منتج غير مطابق للوصف</li>
+                <li>منتج تالف</li>
+                <li>تأخر كبير في الشحن</li>
+                <li>البائع يرفض الإرجاع</li>
+                <li>العميل يفتح طلب استرجاع غير صحيح</li>
+            </ul>
+
+            <h3>7.2 خطوات النزاع</h3>
+            <ol>
+                <li><strong>العميل يقدّم نزاعًا</strong> - يشبه Amazon A-to-Z</li>
+                <li><strong>البائع يرد (Required Response)</strong> - خلال 48 ساعة</li>
+                <li>
+                    <strong>المنصة تدرس الأدلة:</strong>
+                    <ul>
+                        <li>صور</li>
+                        <li>فيديو</li>
+                        <li>Tracking</li>
+                        <li>فواتير</li>
+                        <li>رسائل</li>
+                    </ul>
+                </li>
+                <li><strong>اتخاذ القرار</strong></li>
+            </ol>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>نوع القرار</th>
+                        <th>مثال</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>لصالح العميل</td>
+                        <td>استرجاع كامل + رسوم شحن</td>
+                    </tr>
+                    <tr>
+                        <td>لصالح البائع</td>
+                        <td>رفض النزاع</td>
+                    </tr>
+                    <tr>
+                        <td>حل وسط</td>
+                        <td>Partial Refund</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>7.3 من يتحمل التكلفة؟</h3>
+            <div class="info-box">
+                <strong>مثل Amazon/Noon:</strong>
+                <ul>
+                    <li>لو المشكلة من البائع → البائع يتحمل</li>
+                    <li>لو المشكلة من الشحن → الشاحن يتحمل</li>
+                    <li>لو مشكلة تقنية → المنصة تتحمل</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="navigation-footer">
+            <a href="page-12.html" class="btn-nav">⬅️ الصفحة السابقة</a>
+            <a href="page-14.html" class="btn-nav btn-next">الصفحة التالية: لوحة تحكم الإدارة ➡️</a>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,316 @@
+﻿<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>الصفحة 03c - حالات المخزون</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="navigation-header">
+            <a href="index.html" class="btn-home">🏠 الفهرس الرئيسي</a>
+            <span class="page-number">صفحة 3c من 26</span>
+        </div>
+
+        <div class="content">
+            <h1>📦 حالات المخزون في المنصة (Stock States)</h1>
+            <p class="subtitle">Business Specification Document</p>
+
+            <div class="info-box">
+                <p>عادة الـ Stock بيكون له حالتين أساسيتين، لكن أفضل الأنظمة بتضيف حالات إضافية عشان تدعم التشغيل الفعلي.</p>
+                <p><strong>هذه الصفحة تشمل:</strong> الحالات الأساسية + الحالات المتقدمة</p>
+            </div>
+
+            <hr>
+
+            <h2>🔷 الحالات الأساسية للمخزون</h2>
+
+            <div class="tier-card" style="background-color: #d4edda;">
+                <h3>✅ 1) In Stock (متاح)</h3>
+                <p><strong>معناه:</strong> البائع عنده مخزون كافي للبيع.</p>
+                <p><strong>يظهر للعميل:</strong> "متوفر" – "In Stock"</p>
+            </div>
+
+            <div class="tier-card" style="background-color: #f8d7da;">
+                <h3>❌ 2) Out of Stock (غير متوفر)</h3>
+                <p><strong>معناه:</strong> البائع مخزونه = صفر أو أقل من الحد الأدنى.</p>
+                <p><strong>ملاحظة:</strong> المنتج لسه ظاهر في الصفحة لكن عرض البائع اتوقف فقط.</p>
+            </div>
+
+            <hr>
+
+            <h2>🔷 حالات المخزون المتقدمة</h2>
+
+            <h3>🔶 3) Low Stock (مخزون منخفض)</h3>
+            <div class="warning-box">
+                <p><strong>معناه:</strong> المخزون قليل (مثلاً أقل من 5 قطع).</p>
+                <p><strong>📌 ملحوظة:</strong> ده مش حالة للعميل، ده warning للبائع.</p>
+                <p><strong>يظهر للبائع في Dashboard:</strong> "تحذير: المخزون أقل من الكمية المطلوبة."</p>
+            </div>
+
+            <h3>🔄 4) Reserved Stock (مخزون محجوز)</h3>
+            <div class="info-box">
+                <p><strong>ده مش حالة تظهر للعميل،</strong> لكنه مهم للنظام.</p>
+                <p><strong>معناه:</strong> في طلبات تحت المعالجة، النظام بيحجز نفس العدد من المخزون.</p>
+                
+                <h4>مثال:</h4>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>البيان</th>
+                            <th>القيمة</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>البائع عنده</td>
+                            <td>10 قطع</td>
+                        </tr>
+                        <tr>
+                            <td>عميل اشترى</td>
+                            <td>3 قطع</td>
+                        </tr>
+                        <tr style="background-color: #fff3cd;">
+                            <td>Reserved Stock</td>
+                            <td>3 قطع</td>
+                        </tr>
+                        <tr style="background-color: #d4edda;">
+                            <td>Available Stock</td>
+                            <td>7 قطع</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h3>🕗 5) Coming Soon (متاح قريبًا)</h3>
+            <div class="tier-card">
+                <p><strong>معناه:</strong> المنتج مش موجود حاليًا، لكن البائع أعلن إنه هيكون متوفر قريبًا.</p>
+                <h4>تستخدم كتير في:</h4>
+                <ul>
+                    <li>أجهزة جديدة</li>
+                    <li>منتجات واردة من المورد</li>
+                    <li>Pre-Launch Items</li>
+                </ul>
+            </div>
+
+            <h3>📦 6) Pre-Order (طلب مسبق)</h3>
+            <div class="tier-card">
+                <p><strong>معناه:</strong> المنتج لسه مش متاح لكن العميل يقدر يحجزه.</p>
+                <p><strong>⚠️ مهم:</strong> لازم يكون له <strong>Estimated Delivery Time</strong>.</p>
+            </div>
+
+            <h3>🛠️ 7) Made To Order (يصنع عند الطلب)</h3>
+            <div class="scenario-box">
+                <p><strong>معناه:</strong> المخزون مش ثابت… تصنيع فقط بعد الطلب.</p>
+                <p><strong>Stock هنا مش رقم، لكن:</strong></p>
+                <ul>
+                    <li>حالة (State)</li>
+                    <li>مع وقت تجهيز (7–14 يوم)</li>
+                </ul>
+            </div>
+
+            <h3>🏷️ 8) Limited Stock (كمية محدودة)</h3>
+            <div class="tier-card" style="background-color: #fff3cd;">
+                <p><strong>بيظهر للعميل</strong> لما الكمية قليلة جدًا مثلاً 1–3 قطع.</p>
+                <p><strong>الفائدة:</strong> ده يزود التحويل (Conversion) ويشجع العميل على الشراء السريع.</p>
+            </div>
+
+            <hr>
+
+            <h2>🔷 حالات إدارية وتشغيلية</h2>
+
+            <h3>❗ 9) Suspended Stock (موقوف)</h3>
+            <div class="warning-box">
+                <p><strong>معناه:</strong> العرض متوقف لأسباب:</p>
+                <ul>
+                    <li>خرق سياسة</li>
+                    <li>شك في أصالة المنتج</li>
+                    <li>مشكلة في المخزون</li>
+                    <li>تقييم سيء</li>
+                    <li>سعر مخالف</li>
+                </ul>
+                <p><strong>📌 ملاحظة:</strong> ده يظهر للبائع فقط، والمنتج ما يظهرش للعملاء.</p>
+            </div>
+
+            <h3>🔒 10) Locked Stock (مغلق بسبب فحص أو شحن)</h3>
+            <div class="info-box">
+                <p><strong>يستخدم في FBA / FBN</strong></p>
+                <p><strong>المخزون مقفل لأن:</strong></p>
+                <ul>
+                    <li>جاري استلامه في مركز التنفيذ</li>
+                    <li>جاري فحصه</li>
+                    <li>جاري نقله</li>
+                    <li>Awaiting Quality Check</li>
+                </ul>
+            </div>
+
+            <h3>🧩 11) Damaged Stock (تالف)</h3>
+            <div class="tier-card" style="background-color: #f8d7da;">
+                <p><strong>معناه:</strong> مخزون غير قابل للبيع.</p>
+                <p><strong>يظهر فقط:</strong> للبائع والإدارة.</p>
+            </div>
+
+            <h3>🔃 12) Returned Stock (مرتجع)</h3>
+            <div class="tier-card">
+                <p><strong>معناه:</strong> مخزون راجع من العميل، لكنه لسه ما اتفحشش.</p>
+                <h4>حالاته:</h4>
+                <ul>
+                    <li>Returned Pending Inspection</li>
+                    <li>Returned Approved</li>
+                    <li>Returned Rejected</li>
+                </ul>
+                <p><strong>ممكن:</strong> يرجع للمخزون أو يتحول "Damaged".</p>
+            </div>
+
+            <h3>🚚 13) In Transit To Warehouse (في الطريق للمخزن)</h3>
+            <div class="info-box">
+                <p><strong>خاصة بخدمات Fulfillment Center</strong> (زي نون – أمازون FBA)</p>
+                <p><strong>يعني:</strong> البائع شحن مخزون جديد للمخازن.</p>
+            </div>
+
+            <hr>
+
+            <h2>📊 الحالات اللي العميل يشوفها فعليًا</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>الحالة</th>
+                        <th>تظهر للعميل؟</th>
+                        <th>الوصف</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr style="background-color: #d4edda;">
+                        <td>In Stock</td>
+                        <td>✔</td>
+                        <td>متوفر للشراء</td>
+                    </tr>
+                    <tr style="background-color: #f8d7da;">
+                        <td>Out of Stock</td>
+                        <td>✔</td>
+                        <td>غير متوفر حاليًا</td>
+                    </tr>
+                    <tr style="background-color: #fff3cd;">
+                        <td>Limited Stock</td>
+                        <td>✔</td>
+                        <td>كمية محدودة متبقية</td>
+                    </tr>
+                    <tr style="background-color: #e7f3ff;">
+                        <td>Pre-Order</td>
+                        <td>✔</td>
+                        <td>احجز الآن</td>
+                    </tr>
+                    <tr style="background-color: #e7f3ff;">
+                        <td>Coming Soon</td>
+                        <td>✔</td>
+                        <td>متاح قريبًا</td>
+                    </tr>
+                    <tr style="background-color: #e7f3ff;">
+                        <td>Made to Order</td>
+                        <td>✔</td>
+                        <td>يُصنع حسب الطلب</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <hr>
+
+            <h2>📊 الحالات اللي يشوفها البائع فقط</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>الحالة</th>
+                        <th>النوع</th>
+                        <th>الوصف</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Low Stock</td>
+                        <td>تحذير</td>
+                        <td>المخزون أقل من الحد الأدنى</td>
+                    </tr>
+                    <tr>
+                        <td>Reserved</td>
+                        <td>محجوز</td>
+                        <td>محجوز لطلبات قيد المعالجة</td>
+                    </tr>
+                    <tr>
+                        <td>Locked</td>
+                        <td>مقفل</td>
+                        <td>قيد الفحص أو النقل</td>
+                    </tr>
+                    <tr>
+                        <td>Suspended</td>
+                        <td>موقوف</td>
+                        <td>معلق بسبب مخالفة</td>
+                    </tr>
+                    <tr>
+                        <td>Damaged</td>
+                        <td>تالف</td>
+                        <td>غير قابل للبيع</td>
+                    </tr>
+                    <tr>
+                        <td>Returned</td>
+                        <td>مرتجع</td>
+                        <td>قيد الفحص بعد الإرجاع</td>
+                    </tr>
+                    <tr>
+                        <td>In Transit</td>
+                        <td>شحن</td>
+                        <td>في الطريق للمخزن</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <hr>
+
+            <h2>⭐ الخلاصة السريعة</h2>
+
+            <div class="tier-card">
+                <h3>📌 حالات للعميل (Customer-Facing):</h3>
+                <ul>
+                    <li>✅ In Stock</li>
+                    <li>❌ Out of Stock</li>
+                    <li>🏷️ Limited Stock</li>
+                    <li>📦 Pre-Order</li>
+                    <li>🕗 Coming Soon</li>
+                    <li>🛠️ Made To Order</li>
+                </ul>
+            </div>
+
+            <div class="tier-card" style="background-color: #f8f9fa;">
+                <h3>📌 حالات تشغيلية داخلية (Internal/Operational):</h3>
+                <ul>
+                    <li>🔶 Low Stock</li>
+                    <li>🔄 Reserved</li>
+                    <li>🔒 Locked</li>
+                    <li>❗ Suspended</li>
+                    <li>🧩 Damaged</li>
+                    <li>🔃 Returned</li>
+                    <li>🚚 In Transit</li>
+                </ul>
+            </div>
+
+            <div class="success-box">
+                <h3>💡 فائدة إضافية:</h3>
+                <p>استخدام حالات المخزون المتقدمة يساعد في:</p>
+                <ul>
+                    <li>تحسين تجربة العميل</li>
+                    <li>تقليل الإلغاءات</li>
+                    <li>إدارة أفضل للمخزون</li>
+                    <li>زيادة معدلات التحويل</li>
+                    <li>تقارير دقيقة</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="navigation-footer">
+            <a href="page-03b.html" class="btn-nav">⬅️ الصفحة السابقة</a>
+            <a href="page-04.html" class="btn-nav btn-next">الصفحة التالية: Buy Box ➡️</a>
+        </div>
+    </div>
+</body>
+</html>
