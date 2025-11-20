@@ -353,3 +353,108 @@ body {
         flex-direction: column;
     }
 }
+
+/* ===== PDF Export Buttons ===== */
+.pdf-buttons {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    margin: 20px 0 30px 0;
+    padding: 20px;
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    border-radius: 10px;
+    flex-wrap: wrap;
+}
+
+.btn-pdf {
+    padding: 12px 24px;
+    border: none;
+    border-radius: 8px;
+    font-family: 'Cairo', sans-serif;
+    font-size: 1em;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.btn-pdf-single {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+}
+
+.btn-pdf-single:hover {
+    background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+.btn-pdf-all {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    color: white;
+}
+
+.btn-pdf-all:hover {
+    background: linear-gradient(135deg, #f5576c 0%, #f093fb 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+.btn-pdf:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* ===== Print Styles for PDF Export ===== */
+@media print {
+    body {
+        background-color: white;
+        padding: 0;
+    }
+
+    .container {
+        max-width: 100%;
+        margin: 0;
+        padding: 20px;
+        box-shadow: none;
+        border: none;
+    }
+
+    .navigation-header,
+    .navigation-footer,
+    .pdf-buttons,
+    .btn-home,
+    .btn-nav,
+    .page-number {
+        display: none !important;
+    }
+
+    .content {
+        margin: 0;
+        padding: 0;
+    }
+
+    h1, h2, h3 {
+        page-break-after: avoid;
+    }
+
+    table {
+        page-break-inside: avoid;
+    }
+
+    .info-box,
+    .scenario-box,
+    .warning-box {
+        page-break-inside: avoid;
+    }
+
+    /* Ensure good contrast for printing */
+    * {
+        color: #000 !important;
+        background: white !important;
+    }
+
+    a {
+        text-decoration: underline;
+    }
+}

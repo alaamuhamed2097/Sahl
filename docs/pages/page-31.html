@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>الصفحة 31 - طلبات البراند في لوحة البائع</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <script src="pdf-export.js"></script>
+</head>
+<body>
+    <div class="container">
+        <div class="navigation-header">
+            <a href="index.html" class="btn-home">🏠 الفهرس الرئيسي</a>
+            <span class="page-number">صفحة 31 من 34</span>
+        </div>
+
+        <!-- أزرار تصدير PDF -->
+        <div class="pdf-buttons">
+            <button id="exportCurrentPage" class="btn-pdf btn-pdf-single">
+                📄 تصدير هذه الصفحة PDF
+            </button>
+            <button id="exportAllPages" class="btn-pdf btn-pdf-all">
+                📚 تصدير جميع الصفحات PDF
+            </button>
+        </div>
+
+        <div class="content">
+            <h1>📋 مركز طلبات البائع - طلبات البراند</h1>
+            <p class="subtitle">Vendor Requests Center — Brand Request Integration</p>
+
+            <div class="info-box">
+                <strong>📌 الهدف:</strong>
+                <p>صفحة <strong>Vendor Requests Center</strong> هي المكان المركزي الذي يرى فيه البائع كل الطلبات المرتبطة بحسابه، بما فيها طلبات إنشاء العلامات التجارية.</p>
+            </div>
+
+            <hr>
+
+            <h2>🔷 1. Purpose</h2>
+
+            <div class="tier-card">
+                <p><strong>مركز طلبات البائع يشمل:</strong></p>
+                <ul>
+                    <li>🏷️ طلبات إنشاء العلامات التجارية</li>
+                    <li>📢 طلبات الانضمام للحملات</li>
+                    <li>✏️ طلبات تعديل البيانات</li>
+                    <li>⚖️ النزاعات</li>
+                    <li>🔄 طلبات تغيير البراند للمنتجات القائمة</li>
+                </ul>
+            </div>
+
+            <hr>
+
+            <h2>⭐ 2. New Category: Brand Creation Requests</h2>
+
+            <p>يتم إضافة قسم جديد داخل لوحة التحكم:</p>
+
+            <div class="success-box">
+                <p><strong>المسار:</strong></p>
+                <p>Menu → Requests Center → <strong>Brand Requests</strong></p>
+            </div>
+
+            <h3>🔵 يعرض الطلبات التالية:</h3>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>العمود</th>
+                        <th>الوصف</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Request ID</td>
+                        <td>رقم الطلب</td>
+                    </tr>
+                    <tr>
+                        <td>Brand Name</td>
+                        <td>اسم البراند</td>
+                    </tr>
+                    <tr>
+                        <td>Type</td>
+                        <td>Local / Authorized</td>
+                    </tr>
+                    <tr>
+                        <td>Submitted Date</td>
+                        <td>تاريخ التقديم</td>
+                    </tr>
+                    <tr>
+                        <td>Status</td>
+                        <td>حالة الطلب</td>
+                    </tr>
+                    <tr>
+                        <td>Reviewer Notes</td>
+                        <td>ملاحظات فريق المراجعة</td>
+                    </tr>
+                    <tr>
+                        <td>Required Action</td>
+                        <td>رفع مستند – تعديل – متابعة</td>
+                    </tr>
+                    <tr>
+                        <td>Actions</td>
+                        <td>View / Edit / Re-submit</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <hr>
+
+            <h2>⭐ 3. Brand Request Status in Vendor Panel</h2>
+
+            <p><strong>البائع يشوف الحالة كالآتي:</strong></p>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>الحالة</th>
+                        <th>الوصف</th>
+                        <th>الإجراء المطلوب</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Pending Review</td>
+                        <td>طلب قيد المراجعة</td>
+                        <td>انتظار</td>
+                    </tr>
+                    <tr style="background-color: #fff3cd;">
+                        <td>Need More Info</td>
+                        <td>البائع يجب رفع مستند أو تعديل ملف</td>
+                        <td><strong>إجراء مطلوب</strong></td>
+                    </tr>
+                    <tr style="background-color: #d4edda;">
+                        <td>Approved</td>
+                        <td>يمكن إضافة منتجات داخل هذا البراند</td>
+                        <td>لا يوجد</td>
+                    </tr>
+                    <tr style="background-color: #f8d7da;">
+                        <td>Rejected</td>
+                        <td>طلب مرفوض مع ملاحظات</td>
+                        <td>إعادة تقديم أو إلغاء</td>
+                    </tr>
+                    <tr style="background-color: #fff3cd;">
+                        <td>Suspended</td>
+                        <td>البراند تم تعطيله بسبب مخالفة</td>
+                        <td>مراجعة المخالفة</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <hr>
+
+            <h2>⭐ 4. Brand Creation Request Lifecycle</h2>
+
+            <div class="scenario-box">
+                <h3>📍 1) البائع ينشئ الطلب</h3>
+                <p>→ يظهر فورًا في <strong>Requests Center</strong> بحالة <span style="color: orange;">Pending</span>.</p>
+
+                <h3>📍 2) نظام المنصة يعمل Auto-Validation</h3>
+                <p>→ لو المشكلة بسيطة، يظهر طلب <span style="color: orange;">Need More Info</span>.</p>
+
+                <h3>📍 3) الفريق يراجع الطلب يدويًا</h3>
+                <p>→ يتم تحديث الحالة داخل لوحة البائع مباشرة.</p>
+
+                <h3>📍 4) إذا تمت الموافقة</h3>
+                <p>→ ينقل البراند إلى <span style="color: green; font-weight: bold;">"Active Brands"</span><br>
+                → يظهر زر <strong>Add Product</strong> تحت البراند الجديد.</p>
+
+                <h3>📍 5) إذا تم الرفض</h3>
+                <p>→ تظهر ملاحظات واضحة للبائع مع إمكانية إعادة التقديم.</p>
+            </div>
+
+            <hr>
+
+            <h2>⭐ 5. Notifications to Vendor</h2>
+
+            <p><strong>يستلم البائع إشعارات في الحالات التالية:</strong></p>
+
+            <div class="tier-card">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>الحدث</th>
+                            <th>الإشعار</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>تم استقبال طلب إنشاء البراند</td>
+                            <td>✅ تم استلام طلبك بنجاح</td>
+                        </tr>
+                        <tr>
+                            <td>مطلوب مستندات إضافية</td>
+                            <td>⚠️ يرجى رفع المستندات المطلوبة</td>
+                        </tr>
+                        <tr style="background-color: #d4edda;">
+                            <td>تمت الموافقة على البراند</td>
+                            <td>🎉 تمت الموافقة على برانتك</td>
+                        </tr>
+                        <tr style="background-color: #f8d7da;">
+                            <td>تم رفض البراند</td>
+                            <td>❌ تم رفض طلب البراند</td>
+                        </tr>
+                        <tr style="background-color: #fff3cd;">
+                            <td>تم تعليق البراند بسبب مخالفات</td>
+                            <td>⚠️ تم تعليق البراند</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h3>🔵 الإشعارات عبر:</h3>
+
+            <div class="info-box">
+                <ul>
+                    <li>📧 <strong>Email</strong></li>
+                    <li>📱 <strong>SMS</strong> (اختياري)</li>
+                    <li>🔔 <strong>In-app Notifications</strong></li>
+                </ul>
+            </div>
+
+            <hr>
+
+            <h2>⭐ 6. UI/UX في لوحة البائع</h2>
+
+            <div class="scenario-box">
+                <h3>مثال على عرض الطلبات:</h3>
+
+                <div class="tier-card">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Request ID</th>
+                                <th>Brand Name</th>
+                                <th>Type</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>#BR-1024</td>
+                                <td>الفخامة</td>
+                                <td>Local</td>
+                                <td><span style="color: orange;">Pending Review</span></td>
+                                <td>👁️ View</td>
+                            </tr>
+                            <tr style="background-color: #fff3cd;">
+                                <td>#BR-1023</td>
+                                <td>تكنو برو</td>
+                                <td>Private Label</td>
+                                <td><span style="color: red;">Need More Info</span></td>
+                                <td>✏️ Edit | 📤 Re-submit</td>
+                            </tr>
+                            <tr style="background-color: #d4edda;">
+                                <td>#BR-1022</td>
+                                <td>العالمية</td>
+                                <td>Authorized</td>
+                                <td><span style="color: green;">Approved</span></td>
+                                <td>✅ Active</td>
+                            </tr>
+                            <tr style="background-color: #f8d7da;">
+                                <td>#BR-1021</td>
+                                <td>المستقبل</td>
+                                <td>Local</td>
+                                <td><span style="color: red;">Rejected</span></td>
+                                <td>🔄 Re-apply</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <hr>
+
+            <h2>⭐ 7. تفاصيل الطلب (Request Details Page)</h2>
+
+            <p>عند الضغط على <strong>View</strong>، يظهر للبائع:</p>
+
+            <div class="tier-card">
+                <h3>📄 معلومات الطلب:</h3>
+                <ul>
+                    <li><strong>Request ID:</strong> #BR-1024</li>
+                    <li><strong>Brand Name:</strong> الفخامة</li>
+                    <li><strong>Type:</strong> Local Brand</li>
+                    <li><strong>Submitted Date:</strong> 2025-11-15</li>
+                    <li><strong>Current Status:</strong> Pending Review</li>
+                </ul>
+
+                <h3>📎 المستندات المرفوعة:</h3>
+                <ul>
+                    <li>✅ Brand Logo (logo.png)</li>
+                    <li>✅ Trademark Certificate (certificate.pdf)</li>
+                    <li>❌ Product Images (مطلوب)</li>
+                </ul>
+
+                <h3>📝 ملاحظات المراجع:</h3>
+                <div class="warning-box">
+                    <p>"يرجى رفع صور للمنتجات يظهر فيها الشعار بوضوح."</p>
+                </div>
+
+                <h3>⚡ الإجراءات المتاحة:</h3>
+                <ul>
+                    <li>📤 <strong>Upload Additional Documents</strong></li>
+                    <li>✏️ <strong>Edit Brand Information</strong></li>
+                    <li>🔄 <strong>Re-submit Request</strong></li>
+                    <li>❌ <strong>Cancel Request</strong></li>
+                </ul>
+            </div>
+
+            <hr>
+
+            <h2>⭐ 8. Optional — Linking to Orders Page</h2>
+
+            <div class="info-box">
+                <p><strong>يمكن إضافة زر صغير داخل صفحة تفاصيل الطلب:</strong></p>
+                <p>"<strong>طلب إضافة براند لهذا المنتج؟</strong>"</p>
+                <ul>
+                    <li>لو المنتج <strong>Generic</strong> أو <strong>Brand Unverified</strong></li>
+                    <li>فيضغط البائع ويتوجه مباشرة لصفحة تسجيل علامة تجارية.</li>
+                </ul>
+            </div>
+
+            <hr>
+
+            <h2>⭐ 9. Integration with Main Request Center</h2>
+
+            <div class="scenario-box">
+                <h3>الربط مع صفحة الطلبات الرئيسية (page-22.html):</h3>
+                <p>يجب إضافة <strong>Brand Requests</strong> ضمن أنواع الطلبات في الصفحة 22.</p>
+
+                <div class="tier-card">
+                    <h4>أنواع الطلبات في المنصة:</h4>
+                    <ul>
+                        <li>📢 Campaign Join Requests</li>
+                        <li>💸 Withdrawal Requests</li>
+                        <li>🏷️ <strong>Brand Creation Requests</strong> (جديد)</li>
+                        <li>🎁 Promo Code Requests</li>
+                        <li>📦 Product Feature Requests</li>
+                        <li>🔄 Brand Change Requests</li>
+                    </ul>
+                </div>
+            </div>
+
+            <hr>
+
+            <h2>⭐ 10. Brand Request Filters</h2>
+
+            <p>البائع يستطيع تصفية الطلبات حسب:</p>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>الفلتر</th>
+                        <th>الخيارات</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Status</td>
+                        <td>All / Pending / Approved / Rejected / Need Info</td>
+                    </tr>
+                    <tr>
+                        <td>Brand Type</td>
+                        <td>All / Local / Authorized / Generic</td>
+                    </tr>
+                    <tr>
+                        <td>Date Range</td>
+                        <td>Last 7 days / Last 30 days / Custom</td>
+                    </tr>
+                    <tr>
+                        <td>Search</td>
+                        <td>بحث بـ Request ID أو Brand Name</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <hr>
+
+            <h2>🎯 الخلاصة</h2>
+
+            <div class="success-box">
+                <h3>✅ ما تم إضافته:</h3>
+                <ol>
+                    <li>قسم جديد: <strong>Brand Requests</strong> في مركز الطلبات</li>
+                    <li>عرض كامل لحالات طلبات البراند</li>
+                    <li>نظام إشعارات شامل للبائع</li>
+                    <li>صفحة تفاصيل الطلب مع إمكانية التعديل</li>
+                    <li>فلاتر بحث متقدمة</li>
+                    <li>ربط مع صفحة الطلبات والمنتجات</li>
+                </ol>
+            </div>
+
+            <div class="info-box">
+                <strong>📌 النتيجة:</strong>
+                <p>البائع الآن لديه رؤية كاملة ومركزية لجميع طلبات البراند، مع إمكانية المتابعة والتعديل والإعادة بسهولة، ضمن نظام موحد مع باقي الطلبات.</p>
+            </div>
+        </div>
+
+        <div class="navigation-footer">
+            <a href="page-30.html" class="btn-nav">⬅️ الصفحة السابقة</a>
+            <a href="index.html" class="btn-nav btn-next">🏠 العودة إلى الفهرس</a>
+        </div>
+    </div>
+</body>
+</html>
