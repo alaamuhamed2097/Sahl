@@ -25,7 +25,7 @@ function exportCurrentPageToPDF() {
     }, 100);
 }
 
-// Export all pages to PDF (batch export)
+// Export all pages to PDF (batch export) - Sequential printing
 async function exportAllPagesToPDF() {
     const pageFiles = [
         'page-01.html',
@@ -63,44 +63,103 @@ async function exportAllPagesToPDF() {
         'page-31.html'
     ];
     
-    alert('سيتم فتح نافذة طباعة لكل صفحة. يرجى اختيار "حفظ كـ PDF" من كل نافذة.\n\nعدد الصفحات: ' + pageFiles.length);
+    const confirmed = confirm(
+        `سيتم فتح جميع الصفحات (${pageFiles.length} صفحة) في نافذة واحدة للطباعة.\n\n` +
+        `في نافذة الطباعة:\n` +
+        `1. اختر "Microsoft Print to PDF" أو "Save as PDF"\n` +
+        `2. اضغط Print/Save\n\n` +
+        `هل تريد المتابعة؟`
+    );
     
-    for (let i = 0; i < pageFiles.length; i++) {
-        const pageFile = pageFiles[i];
-        const pageWindow = window.open(pageFile, '_blank');
-        
-        if (pageWindow) {
-            // Wait for page to load
-            await new Promise(resolve => {
-                pageWindow.addEventListener('load', () => {
-                    setTimeout(() => {
-                        // Hide navigation elements
-                        const header = pageWindow.document.querySelector('.navigation-header');
-                        const footer = pageWindow.document.querySelector('.navigation-footer');
-                        const pdfButtons = pageWindow.document.querySelector('.pdf-buttons');
-                        
-                        if (header) header.style.display = 'none';
-                        if (footer) footer.style.display = 'none';
-                        if (pdfButtons) pdfButtons.style.display = 'none';
-                        
-                        // Trigger print
-                        pageWindow.print();
-                        
-                        // Close window after print
-                        setTimeout(() => {
-                            pageWindow.close();
-                            resolve();
-                        }, 500);
-                    }, 500);
-                });
-            });
-        }
-        
-        // Small delay between pages
-        await new Promise(resolve => setTimeout(resolve, 1000));
+    if (!confirmed) {
+        return;
     }
     
-    alert('اكتمل تصدير جميع الصفحات!');
+    // Create a new window with all pages
+    const combinedWindow = window.open('', '_blank', 'width=1200,height=800');
+    
+    if (!combinedWindow) {
+        alert('تم حظر النافذة المنبثقة! يرجى السماح بالنوافذ المنبثقة من إعدادات المتصفح وإعادة المحاولة.');
+        return;
+    }
+    
+    // Write initial HTML structure
+    combinedWindow.document.write(`
+        <!DOCTYPE html>
+        <html lang="ar" dir="rtl">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>وثيقة متطلبات العمل - كاملة</title>
+            <link rel="preconnect" href="https://fonts.googleapis.com">
+            <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+            <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
+            <link rel="stylesheet" href="style.css">
+            <style>
+                @media print {
+                    .page-content { page-break-after: always; }
+                    .loading-msg { display: none !important; }
+                }
+                body { 
+                    background: white; 
+                    padding: 20px;
+                }
+                .loading-msg { 
+                    text-align: center; 
+                    padding: 50px; 
+                    font-size: 1.5em; 
+                    color: #667eea;
+                    font-weight: bold;
+                }
+                .page-content {
+                    margin-bottom: 40px;
+                    height: auto;
+                }
+                iframe {
+                    width: 100%;
+                    min-height: 800px;
+                    border: 2px solid #e0e0e0;
+                    margin-bottom: 20px;
+                    border-radius: 8px;
+                }
+            </style>
+        </head>
+        <body>
+            <div class="loading-msg">⏳ جاري تحميل الصفحات... الرجاء الانتظار</div>
+            <div id="pages-container"></div>
+        </body>
+        </html>
+    `);
+    
+    const container = combinedWindow.document.getElementById('pages-container');
+    const loadingMsg = combinedWindow.document.querySelector('.loading-msg');
+    
+    let loadedCount = 0;
+    
+    // Load all pages in iframes
+    for (let i = 0; i < pageFiles.length; i++) {
+        const iframe = combinedWindow.document.createElement('iframe');
+        iframe.src = pageFiles[i];
+        iframe.className = 'page-content';
+        
+        iframe.onload = function() {
+            loadedCount++;
+            loadingMsg.textContent = `⏳ تم تحميل ${loadedCount} من ${pageFiles.length} صفحة...`;
+            
+            // When all pages are loaded
+            if (loadedCount === pageFiles.length) {
+                loadingMsg.textContent = '✅ تم تحميل جميع الصفحات! جاري فتح نافذة الطباعة...';
+                
+                setTimeout(() => {
+                    loadingMsg.style.display = 'none';
+                    alert('✅ جاهز للطباعة!\n\nاختر "Save as PDF" أو "Microsoft Print to PDF" من نافذة الطباعة التالية.');
+                    combinedWindow.print();
+                }, 1000);
+            }
+        };
+        
+        container.appendChild(iframe);
+    }
 }
 
 // Initialize PDF export buttons when page loads

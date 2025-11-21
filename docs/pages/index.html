@@ -115,7 +115,33 @@
             margin: 20px 0;
             border-radius: 5px;
         }
+
+        .export-all-btn {
+            display: inline-block;
+            padding: 15px 35px;
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 1.1em;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
+        }
+
+        .export-all-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(40, 167, 69, 0.4);
+            background: linear-gradient(135deg, #20c997 0%, #28a745 100%);
+        }
+
+        .export-all-btn:active {
+            transform: translateY(0);
+        }
     </style>
+    <script src="pdf-export.js"></script>
 </head>
 <body>
     <div class="container">
@@ -125,6 +151,13 @@
         <div class="info-box">
             <strong>📌 ملاحظة:</strong> تم تقسيم الوثيقة إلى صفحات منفصلة لسهولة التصفح والتعديل. انقر على أي صفحة للانتقال إليها.<br>
             <strong>العدد الفعلي:</strong> 33 صفحة (الصفحات من 1 إلى 31 + صفحات 3a, 3b, 3c)
+        </div>
+
+        <div style="text-align: center; margin: 30px 0;">
+            <button onclick="exportAllPagesToPDF()" class="export-all-btn">
+                📥 تصدير جميع الصفحات PDF دفعة واحدة
+            </button>
+            <p style="color: #666; margin-top: 10px; font-size: 0.9em;">سيتم تصدير جميع الـ 33 صفحة في ملف PDF واحد</p>
         </div>
 
         <!-- القسم الأول: المقدمة والنموذج -->
@@ -192,32 +225,24 @@
                         <div class="page-description">Dashboard، إدارة المنتجات والطلبات</div>
                     </a>
                 </div>
-
-                <div class="page-card">
-                    <a href="page-06.html">
-                        <div class="page-number">06</div>
-                        <div class="page-title">💰 العمولات والمحفظة</div>
-                        <div class="page-description">هيكل العمولات، محفظة البائع، التسوية المالية</div>
-                    </a>
-                </div>
             </div>
         </div>
 
         <!-- القسم الثالث: العمليات اللوجستية -->
         <div class="section">
             <h2><span class="icon">🚚</span>القسم الثالث: الشحن والتسويق</h2>
-            <div class="page-grid">
+            <div class="page-grid">                
                 <div class="page-card">
-                    <a href="page-07.html">
-                        <div class="page-number">07</div>
+                    <a href="page-06.html">
+                        <div class="page-number">06</div>
                         <div class="page-title">🚚 نظام الشحن</div>
                         <div class="page-description">FBS vs FBM، التتبع، شركاء الشحن</div>
                     </a>
                 </div>
 
                 <div class="page-card">
-                    <a href="page-08.html">
-                        <div class="page-number">08</div>
+                    <a href="page-07.html">
+                        <div class="page-number">07</div>
                         <div class="page-title">📢 التسويق والإعلانات</div>
                         <div class="page-description">Coupons، Loyalty، Flash Sales</div>
                     </a>
@@ -229,17 +254,18 @@
         <div class="section">
             <h2><span class="icon">🛠️</span>القسم الرابع: الدعم والنزاعات</h2>
             <div class="page-grid">
+                
                 <div class="page-card">
-                    <a href="page-09.html">
-                        <div class="page-number">09</div>
+                    <a href="page-08.html">
+                        <div class="page-number">08</div>
                         <div class="page-title">🛠️ نظام الدعم (1)</div>
                         <div class="page-description">أنواع الدعم، قنوات الدعم، SLA</div>
                     </a>
                 </div>
 
                 <div class="page-card">
-                    <a href="page-10.html">
-                        <div class="page-number">10</div>
+                    <a href="page-09.html">
+                        <div class="page-number">09</div>
                         <div class="page-title">🛠️ نظام الدعم (2)</div>
                         <div class="page-description">دورة حياة التذكرة، النزاعات</div>
                     </a>
@@ -250,36 +276,43 @@
         <!-- القسم الخامس: الولاء والمحافظ -->
         <div class="section">
             <h2><span class="icon">💰</span>القسم الخامس: أنظمة الولاء والمحافظ</h2>
-            <div class="page-grid">
+            <div class="page-grid">                
                 <div class="page-card">
-                    <a href="page-11.html">
-                        <div class="page-number">11</div>
+                    <a href="page-10.html">
+                        <div class="page-number">10</div>
                         <div class="page-title">💎 ولاء المشتري</div>
                         <div class="page-description">نظام النقاط، المستويات، المكافآت</div>
                     </a>
                 </div>
-
                 <div class="page-card">
-                    <a href="page-12.html">
-                        <div class="page-number">12</div>
+                    <a href="page-11.html">
+                        <div class="page-number">11</div>
                         <div class="page-title">⭐ ولاء البائع</div>
                         <div class="page-description">مستويات الأداء، الامتيازات</div>
                     </a>
                 </div>
 
                 <div class="page-card">
-                    <a href="page-13.html">
-                        <div class="page-number">13</div>
+                    <a href="page-12.html">
+                        <div class="page-number">12</div>
                         <div class="page-title">💳 المحافظ المالية</div>
                         <div class="page-description">محفظة العميل، محفظة البائع، الخزنة</div>
                     </a>
                 </div>
 
                 <div class="page-card">
-                    <a href="page-14.html">
-                        <div class="page-number">14</div>
+                    <a href="page-13.html">
+                        <div class="page-number">13</div>
                         <div class="page-title">🎯 سيناريوهات عملية</div>
                         <div class="page-description">أمثلة واقعية للعمليات المالية</div>
+                    </a>
+                </div>
+
+                <div class="page-card">
+                    <a href="page-14.html">
+                        <div class="page-number">14</div>
+                        <div class="page-title">🎛️ لوحة تحكم الإدارة</div>
+                        <div class="page-description">إدارة البائعين، الكتالوج، التقارير</div>
                     </a>
                 </div>
             </div>
@@ -292,18 +325,11 @@
                 <div class="page-card">
                     <a href="page-15.html">
                         <div class="page-number">15</div>
-                        <div class="page-title">🎛️ لوحة تحكم الإدارة</div>
-                        <div class="page-description">إدارة البائعين، الكتالوج، التقارير</div>
-                    </a>
-                </div>
-
-                <div class="page-card">
-                    <a href="page-16.html">
-                        <div class="page-number">16</div>
                         <div class="page-title">📊 التقارير والتحليلات</div>
                         <div class="page-description">تقارير المبيعات، الأداء، التحليلات</div>
                     </a>
                 </div>
+
             </div>
         </div>
 
@@ -312,16 +338,16 @@
             <h2><span class="icon">🏪</span>القسم السابع: Merchandising والميزات الإضافية</h2>
             <div class="page-grid">
                 <div class="page-card">
-                    <a href="page-17.html">
-                        <div class="page-number">17</div>
+                    <a href="page-16.html">
+                        <div class="page-number">16</div>
                         <div class="page-title">🏪 نظام Merchandising</div>
                         <div class="page-description">الصفحة الرئيسية، البلوكات الديناميكية</div>
                     </a>
                 </div>
 
                 <div class="page-card">
-                    <a href="page-18.html">
-                        <div class="page-number">18</div>
+                    <a href="page-17.html">
+                        <div class="page-number">17</div>
                         <div class="page-title">🔧 ميزات إضافية</div>
                         <div class="page-description">الموقع الجغرافي، العملات، الإشعارات</div>
                     </a>
@@ -334,8 +360,8 @@
             <h2><span class="icon">💲</span>القسم الثامن: أنظمة التسعير</h2>
             <div class="page-grid">
                 <div class="page-card">
-                    <a href="page-19.html">
-                        <div class="page-number">19</div>
+                    <a href="page-18.html">
+                        <div class="page-number">18</div>
                         <div class="page-title">💲 نظام التسعير</div>
                         <div class="page-description">Fixed، Combination، Quantity Pricing</div>
                     </a>
@@ -348,8 +374,8 @@
             <h2><span class="icon">👤</span>القسم التاسع: عالم العميل</h2>
             <div class="page-grid">
                 <div class="page-card">
-                    <a href="page-20.html">
-                        <div class="page-number">20</div>
+                    <a href="page-19.html">
+                        <div class="page-number">19</div>
                         <div class="page-title">👤 عالم العميل</div>
                         <div class="page-description">Dashboard، المرتجعات، التقييمات</div>
                     </a>
@@ -362,10 +388,17 @@
             <h2><span class="icon">🎁</span>القسم العاشر: الحملات والخصومات</h2>
             <div class="page-grid">
                 <div class="page-card">
-                    <a href="page-21.html">
-                        <div class="page-number">21</div>
+                    <a href="page-20.html">
+                        <div class="page-number">20</div>
                         <div class="page-title">🎁 إدارة الحملات</div>
                         <div class="page-description">White Friday، أنواع الحملات، قواعد العمل</div>
+                    </a>
+                </div>
+                <div class="page-card">
+                    <a href="page-21.html">
+                        <div class="page-number">21</div>
+                        <div class="page-title">🎫 أكواد الخصم</div>
+                        <div class="page-description">Promo Codes، أنواع الأكواد، الشروط</div>
                     </a>
                 </div>
             </div>
@@ -474,11 +507,6 @@
                 <strong>📅 آخر تحديث:</strong> نوفمبر 2025<br>
                 <strong>📄 عدد الصفحات:</strong> 33 صفحة
             </p>
-            <div style="margin-top: 20px;">
-                <a href="test-pdf-export.html" style="display: inline-block; padding: 12px 25px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; text-decoration: none; border-radius: 8px; font-weight: bold; transition: transform 0.3s;">
-                    📄 اختبار ميزة تصدير PDF
-                </a>
-            </div>
         </div>
     </div>
 </body>
