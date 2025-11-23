@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Domains.Entities.Item
@@ -17,5 +18,8 @@ namespace Domains.Entities.Item
 
         [ForeignKey("ItemId")]
         public virtual TbItem Item { get; set; } = null!;
-    }
+
+		
+
+	}
 }

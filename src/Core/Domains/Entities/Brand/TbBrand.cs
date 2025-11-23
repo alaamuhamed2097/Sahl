@@ -5,38 +5,35 @@ namespace Domains.Entities.Brand
 {
     public class TbBrand : BaseEntity
     {
-        [Required]
-        [StringLength(50)]
-        public string NameEn { get; set; } = string.Empty;
+		[StringLength(50)]
+		public string NameAr { get; set; }
 
-        [Required]
-        [StringLength(50)]
-        public string NameAr { get; set; } = string.Empty;
+		[StringLength(50)]
+		public string NameEn { get; set; }
 
-        [StringLength(100)]
-        public string? TitleEn { get; set; }
+		[StringLength(100)]
+		public string TitleAr { get; set; }
 
-        [StringLength(100)]
-        public string? TitleAr { get; set; }
+		[StringLength(100)]
+		public string TitleEn { get; set; }
 
-        [StringLength(200)]
-        public string? DescriptionEn { get; set; }
+		[StringLength(100)]
+		public string DescriptionAr { get; set; }
 
-        [StringLength(200)]
-        public string? DescriptionAr { get; set; }
+		[StringLength(200)]
+		public string DescriptionEn { get; set; }
 
-        [Required]
-        [StringLength(200)]
-        public string LogoPath { get; set; } = string.Empty;
+		[StringLength(200)]
+		public string LogoPath { get; set; }
 
-        [StringLength(200)]
-        public string? WebsiteUrl { get; set; }
+		[StringLength(200)]
+		public string WebsiteUrl { get; set; }
 
-        public bool IsFavorite { get; set; } = false;
+		public bool IsPopular { get; set; }
 
-        public int DisplayOrder { get; set; } = 0;
+		public int DisplayOrder { get; set; }
 
-        // Navigation property for Items
-        public virtual ICollection<TbItem> Items { get; set; } = new List<TbItem>();
-    }
+		// Navigation Properties
+		public virtual ICollection<TbItem> Items { get; set; }
+	}
 }

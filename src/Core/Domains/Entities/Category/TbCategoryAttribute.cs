@@ -26,5 +26,12 @@ namespace Domains.Entities.Category
 
         [ForeignKey("AttributeId")]
         public virtual TbAttribute Attribute { get; set; }
-    }
+	
+
+	
+
+		//---
+		
+
+	}
 }

@@ -14,7 +14,20 @@ namespace Domains.Entities.Item
 
         public string Value { get; set; } = null!;
 
-        [ForeignKey("ItemId")]
+		[MaxLength(100)]
+		public string TitleAr { get; set; } 
+
+		[MaxLength(100)]
+		public string TitleEn { get; set; } 
+
+		public bool IsRangeFieldType { get; set; } 
+
+		public int FieldType { get; set; }
+
+		public int MaxLength { get; set; } 
+
+
+		[ForeignKey("ItemId")]
         public virtual TbItem Item { get; set; } = null!;
         [ForeignKey("AttributeId")]
         public virtual TbAttribute Attribute { get; set; } = null!;

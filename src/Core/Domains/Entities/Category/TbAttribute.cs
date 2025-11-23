@@ -6,25 +6,29 @@ namespace Domains.Entities.Category
 {
     public class TbAttribute : BaseEntity
     {
-        [Required]
-        [MaxLength(100)]
-        public string TitleAr { get; set; } = null!;
+        
+		
+		[StringLength(100)]
+		public string TitleAr { get; set; }
 
-        [Required]
-        [MaxLength(100)]
-        public string TitleEn { get; set; } = null!;
+		[StringLength(100)]
+		public string TitleEn { get; set; }
 
-        public bool IsRangeFieldType { get; set; } = false;
+		public bool IsRangeFieldType { get; set; }
 
-        [Required]
-        public FieldType FieldType { get; set; } // 1 = String, 2 = Integer, etc.
+		public int FieldType { get; set; }
 
-        public int MaxLength { get; set; }
+		public int? MaxLength { get; set; }
 
-        public virtual ICollection<TbCategoryAttribute> CategoryAttributes { get; set; }
+		// Navigation Properties
+		public virtual ICollection<TbCategoryAttribute> CategoryAttributes { get; set; }
+		public virtual ICollection<TbAttributeOption> AttributeOptions { get; set; }
+		public virtual ICollection<TbCombinationAttributesValue> CombinationAttributesValues { get; set; }
 
-        public virtual ICollection<TbAttributeOption> AttributeOptions { get; set; }
+		
 
-        public virtual ICollection<TbItemAttribute> ItemAttributes { get; set; }
-    }
+
+
+
+	}
 }
