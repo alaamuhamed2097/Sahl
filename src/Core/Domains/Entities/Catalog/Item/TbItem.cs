@@ -1,5 +1,6 @@
-﻿using Domains.Entities.Brand;
-using Domains.Entities.Category;
+﻿using Domains.Entities.Catalog.Brand;
+using Domains.Entities.Catalog.Category;
+using Domains.Entities.Catalog.Item.ItemAttribute;
 using Domains.Entities.Unit;
 using Domains.Entities.VideoProvider;
 using Domains.Views.Item;
@@ -7,7 +8,7 @@ using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Domains.Entities.Item
+namespace Domains.Entities.Catalog.Item
 {
     public class TbItem : BaseSeo
     {

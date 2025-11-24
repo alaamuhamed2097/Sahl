@@ -1,8 +1,9 @@
 ﻿using Common.Enumerations.FieldType;
-using Domains.Entities.Item;
+using Domains.Entities.Catalog.Category;
+using Domains.Entities.Catalog.Item.ItemAttribute;
 using System.ComponentModel.DataAnnotations;
 
-namespace Domains.Entities.Category
+namespace Domains.Entities.Catalog.Attribute
 {
     public class TbAttribute : BaseEntity
     {

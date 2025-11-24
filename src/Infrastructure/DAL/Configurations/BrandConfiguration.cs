@@ -1,4 +1,4 @@
-using Domains.Entities.Brand;
+using Domains.Entities.Catalog.Brand;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 

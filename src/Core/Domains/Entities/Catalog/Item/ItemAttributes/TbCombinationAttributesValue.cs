@@ -1,11 +1,11 @@
-﻿using Domains.Entities.Category;
+﻿using Domains.Entities.Catalog.Attribute;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text;
 
-namespace Domains.Entities.Item
+namespace Domains.Entities.Catalog.Item.ItemAttributes
 {
 	public class TbCombinationAttributesValue : BaseEntity
 	{

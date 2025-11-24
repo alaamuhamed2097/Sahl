@@ -1,8 +1,8 @@
-using Domains.Entities.Item;
+using Domains.Entities.Catalog.Item;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Domains.Entities.Category
+namespace Domains.Entities.Catalog.Category
 {
     public class TbCategory : BaseEntity
     {

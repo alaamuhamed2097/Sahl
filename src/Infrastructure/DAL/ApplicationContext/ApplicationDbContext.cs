@@ -1,10 +1,12 @@
 ﻿using Domains.Entities;
 using Domains.Entities.Base;
-using Domains.Entities.Brand;
-using Domains.Entities.Category;
+using Domains.Entities.Catalog.Attribute;
+using Domains.Entities.Catalog.Brand;
+using Domains.Entities.Catalog.Category;
+using Domains.Entities.Catalog.Item;
+using Domains.Entities.Catalog.Item.ItemAttribute;
 using Domains.Entities.Currency;
 using Domains.Entities.Customer;
-using Domains.Entities.Item;
 using Domains.Entities.Location;
 using Domains.Entities.Notification;
 using Domains.Entities.Page;

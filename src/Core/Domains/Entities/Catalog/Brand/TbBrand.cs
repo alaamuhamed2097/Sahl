@@ -1,7 +1,7 @@
-using Domains.Entities.Item;
+using Domains.Entities.Catalog.Item;
 using System.ComponentModel.DataAnnotations;
 
-namespace Domains.Entities.Brand
+namespace Domains.Entities.Catalog.Brand
 {
     public class TbBrand : BaseEntity
     {
