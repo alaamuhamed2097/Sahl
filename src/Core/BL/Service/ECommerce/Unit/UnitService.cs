@@ -3,7 +3,7 @@ using BL.Contracts.Service.ECommerce.Unit;
 using BL.Service.Base;
 using DAL.Contracts.UnitOfWork;
 using DAL.Models;
-using Domains.Entities.Unit;
+using Domains.Entities.Catalog.Unit;
 using Domains.Views.Unit;
 using Resources;
 using Shared.DTOs.ECommerce.Unit;

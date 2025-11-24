@@ -1,7 +1,7 @@
 ﻿using Domains.Entities.Catalog.Brand;
 using Domains.Entities.Catalog.Category;
 using Domains.Entities.Catalog.Item.ItemAttribute;
-using Domains.Entities.Unit;
+using Domains.Entities.Catalog.Unit;
 using Domains.Entities.VideoProvider;
 using Domains.Views.Item;
 using System.ComponentModel;

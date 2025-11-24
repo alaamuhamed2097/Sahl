@@ -1,4 +1,4 @@
-﻿using Domains.Entities.Unit;
+﻿using Domains.Entities.Catalog.Unit;
 using Domains.Views.Unit;
 using Shared.DTOs.ECommerce.Unit;
 using System.Text.Json;

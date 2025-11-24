@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Text;
 
-namespace Domains.Entities.OffersPricing
+namespace Domains.Entities.Offer
 {
 	public class TbOfferCondition : BaseEntity
 	{

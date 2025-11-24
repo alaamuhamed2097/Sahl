@@ -1,13 +1,14 @@
 ﻿using Domains.Entities.Catalog.Item;
+using Domains.Entities.Offer.Rating;
+using Domains.Entities.Offer.Warranty;
 using Domains.Entities.Shipping;
-using Domains.Entities.Warranty;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text;
 
-namespace Domains.Entities.OffersPricing
+namespace Domains.Entities.Offer
 {
 	public class TbOffer : BaseEntity
 	{
@@ -33,7 +34,7 @@ namespace Domains.Entities.OffersPricing
 		public virtual TbItem Item { get; set; }
 
 		[ForeignKey("UserId")]
-		public virtual AspNetUser User { get; set; }
+		public virtual ApplicationUser User { get; set; }
 
 		[ForeignKey("OfferConditionId")]
 		public virtual TbOfferCondition OfferCondition { get; set; }

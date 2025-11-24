@@ -1,4 +1,4 @@
-﻿namespace Domains.Entities
+﻿namespace Domains.Entities.Shipping
 {
     public class TbShippingCompany : BaseEntity
     {

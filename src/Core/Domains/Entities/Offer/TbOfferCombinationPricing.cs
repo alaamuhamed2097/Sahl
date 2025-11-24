@@ -1,11 +1,11 @@
-﻿using Domains.Entities.Catalog.Item.ItemAttribute;
+﻿using Domains.Entities.Catalog.Item.ItemAttributes;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text;
 
-namespace Domains.Entities.OffersPricing
+namespace Domains.Entities.Offer
 {
 	public class TbOfferCombinationPricing : BaseEntity
 	{

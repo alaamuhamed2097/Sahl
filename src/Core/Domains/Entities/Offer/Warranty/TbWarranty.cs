@@ -1,12 +1,11 @@
 ﻿using Domains.Entities.Location;
-using Domains.Entities.OffersPricing;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text;
 
-namespace Domains.Entities.Warranty
+namespace Domains.Entities.Offer.Warranty
 {
 	public class TbWarranty : BaseEntity
 	{
