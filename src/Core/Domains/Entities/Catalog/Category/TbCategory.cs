@@ -1,7 +1,8 @@
-using Domains.Entities.Item;
+using Domains.Entities.Catalog.Item;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Domains.Entities.Category
+namespace Domains.Entities.Catalog.Category
 {
     public class TbCategory : BaseEntity
     {
@@ -37,5 +38,21 @@ namespace Domains.Entities.Category
         public string? ImageUrl { get; set; }
         public virtual ICollection<TbCategoryAttribute> CategoryAttributes { get; set; } = new HashSet<TbCategoryAttribute>();
         public virtual ICollection<TbItem> Items { get; set; } = new HashSet<TbItem>();
-    }
+
+		//--------
+		
+
+		public bool IsRoot { get; set; }
+
+
+		public bool IsFeatureCategory { get; set; }
+
+	
+
+		// Navigation Properties
+		[ForeignKey("ParentId")]
+		public virtual TbCategory ParentCategory { get; set; }
+
+		public virtual ICollection<TbCategory> ChildCategories { get; set; }
+	}
 }

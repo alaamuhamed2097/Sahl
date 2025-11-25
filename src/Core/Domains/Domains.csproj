@@ -20,4 +20,8 @@
     <ProjectReference Include="..\..\Shared\Common\Common.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Entities\Bridge\" />
+  </ItemGroup>
+
 </Project>

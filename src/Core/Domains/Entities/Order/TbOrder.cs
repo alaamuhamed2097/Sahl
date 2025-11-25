@@ -1,4 +1,5 @@
 ﻿using Domains.Entities.PromoCode;
+using Domains.Entities.Shipping;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
