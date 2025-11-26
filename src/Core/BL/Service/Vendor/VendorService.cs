@@ -4,7 +4,7 @@ using BL.Extensions;
 using BL.Service.Base;
 using DAL.Contracts.Repositories;
 using DAL.Models;
-using Domains.Entities.Vendor;
+using Domains.Entities.ECommerceSystem.Vendor;
 using Resources;
 using Shared.DTOs.Vendor;
 using Shared.GeneralModels.SearchCriteriaModels;

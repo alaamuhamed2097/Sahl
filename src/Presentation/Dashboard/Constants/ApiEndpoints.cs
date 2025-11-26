@@ -270,6 +270,66 @@
             public const string Delete = "api/Testimonial/delete";
         }
 
+        // Warehouse endpoints
+        public static class Warehouse
+        {
+            public const string Get = "api/Warehouse";
+            public const string GetActive = "api/Warehouse/active";
+            public const string Search = "api/Warehouse/search";
+            public const string Save = "api/Warehouse/save";
+            public const string Delete = "api/Warehouse/delete";
+            public const string ToggleStatus = "api/Warehouse/toggle-status";
+        }
+
+        // Inventory Movement endpoints
+        public static class InventoryMovement
+        {
+            public const string Get = "api/InventoryMovement";
+            public const string GetById = "api/InventoryMovement";
+            public const string GetByDocument = "api/InventoryMovement/by-document";
+            public const string Search = "api/InventoryMovement/search";
+            public const string GenerateDocumentNumber = "api/InventoryMovement/generate-document-number";
+            public const string Save = "api/InventoryMovement/save";
+            public const string Delete = "api/InventoryMovement/delete";
+        }
+
+        // Return Movement endpoints
+        public static class ReturnMovement
+        {
+            public const string Get = "api/ReturnMovement";
+            public const string GetById = "api/ReturnMovement";
+            public const string Search = "api/ReturnMovement/search";
+            public const string GenerateDocumentNumber = "api/ReturnMovement/generate-document-number";
+            public const string Save = "api/ReturnMovement/save";
+            public const string UpdateStatus = "api/ReturnMovement/update-status";
+            public const string Delete = "api/ReturnMovement/delete";
+        }
+
+        // Content Area endpoints
+        public static class ContentArea
+        {
+            public const string Get = "api/ContentArea";
+            public const string GetActive = "api/ContentArea/active";
+            public const string GetByCode = "api/ContentArea/by-code";
+            public const string Search = "api/ContentArea/search";
+            public const string Save = "api/ContentArea/save";
+            public const string Delete = "api/ContentArea/delete";
+            public const string ToggleStatus = "api/ContentArea/toggle-status";
+        }
+
+        // Media Content endpoints
+        public static class MediaContent
+        {
+            public const string Get = "api/MediaContent";
+            public const string GetByArea = "api/MediaContent/by-area";
+            public const string GetByAreaCode = "api/MediaContent/by-area-code";
+            public const string Search = "api/MediaContent/search";
+            public const string Save = "api/MediaContent/save";
+            public const string Delete = "api/MediaContent/delete";
+            public const string ToggleStatus = "api/MediaContent/toggle-status";
+            public const string UpdateDisplayOrder = "api/MediaContent/update-display-order";
+        }
+
         public static class AdminStatistics
         {
             public const string Get = "api/AdminStatistics";

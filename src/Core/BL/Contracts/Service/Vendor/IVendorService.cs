@@ -1,6 +1,6 @@
 ﻿using BL.Contracts.Service.Base;
 using DAL.Models;
-using Domains.Entities.Vendor;
+using Domains.Entities.ECommerceSystem.Vendor;
 using Shared.DTOs.Vendor;
 using Shared.GeneralModels.SearchCriteriaModels;
 using System;

@@ -1,38 +1,35 @@
 ﻿using Domains.Entities.Location;
-using Domains.Entities.OffersPricing;
-using System;
-using System.Collections.Generic;
+using Domains.Entities.Offer;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Text;
 
 namespace Domains.Entities.Shipping
 {
-	public class TbShippingDetail : BaseEntity
-	{
-		[Required]
-		public Guid OfferId { get; set; }
+    public class TbShippingDetail : BaseEntity
+    {
+        [Required]
+        public Guid OfferId { get; set; }
 
-		[Required]
-		public Guid CityId { get; set; }
+        [Required]
+        public Guid CityId { get; set; }
 
-		[Column(TypeName = "decimal(18,2)")]
-		public decimal ShippingCost { get; set; }
+        [Column(TypeName = "decimal(18,2)")]
+        public decimal ShippingCost { get; set; }
 
-		public int ShippingMethod { get; set; }
+        public int ShippingMethod { get; set; }
 
-		public int MinimumEstimatedDays { get; set; }
+        public int MinimumEstimatedDays { get; set; }
 
-		public int MaximumEstimatedDays { get; set; }
+        public int MaximumEstimatedDays { get; set; }
 
-		public bool IsCODSupported { get; set; }
+        public bool IsCODSupported { get; set; }
 
-		public int FulfillmentType { get; set; }
+        public int FulfillmentType { get; set; }
 
-		[ForeignKey("OfferId")]
-		public virtual TbOffer Offer { get; set; }
+        [ForeignKey("OfferId")]
+        public virtual TbOffer Offer { get; set; }
 
-		[ForeignKey("CityId")]
-		public virtual TbCity City { get; set; }
-	}
+        [ForeignKey("CityId")]
+        public virtual TbCity City { get; set; }
+    }
 }

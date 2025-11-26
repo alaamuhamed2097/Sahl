@@ -86,30 +86,6 @@ namespace Api.Controllers.Catalog
         }
 
         /// <summary>
-        /// Retrieves favorite brands for public display.
-        /// </summary>
-        [HttpGet("favorites")]
-        [AllowAnonymous]
-        public async Task<IActionResult> GetFavorites()
-        {
-            try
-            {
-                var favoriteBrands = await _brandService.GetFavoritesAsync();
-
-                return Ok(new ResponseModel<IEnumerable<BrandDto>>
-                {
-                    Success = true,
-                    Message = GetResource<NotifiAndAlertsResources>(nameof(NotifiAndAlertsResources.DataRetrieved)),
-                    Data = favoriteBrands
-                });
-            }
-            catch (Exception ex)
-            {
-                return HandleException(ex);
-            }
-        }
-
-        /// <summary>
         /// Searches brands with pagination and filtering.
         /// </summary>
         /// <param name="criteriaModel">Search criteria including pagination and filters.</param>
@@ -230,43 +206,6 @@ namespace Api.Controllers.Catalog
                 {
                     Success = true,
                     Message = GetResource<NotifiAndAlertsResources>(nameof(NotifiAndAlertsResources.DeletedSuccessfully))
-                });
-            }
-            catch (Exception ex)
-            {
-                return HandleException(ex);
-            }
-        }
-
-        /// <summary>
-        /// Marks or unmarks a brand as favorite.
-        /// </summary>
-        /// <param name="brandId">The ID of the brand to mark/unmark as favorite.</param>
-        [HttpPost("mark-favorite")]
-        [Authorize(Roles = nameof(UserRole.Admin))]
-        public async Task<IActionResult> MarkAsFavorite([FromBody] Guid brandId)
-        {
-            try
-            {
-                if (brandId == Guid.Empty)
-                    return BadRequest(new ResponseModel<string>
-                    {
-                        Success = false,
-                        Message = GetResource<NotifiAndAlertsResources>(nameof(NotifiAndAlertsResources.InvalidInputAlert))
-                    });
-
-                var success = await _brandService.MarkAsFavoriteAsync(brandId, GuidUserId);
-                if (!success)
-                    return BadRequest(new ResponseModel<string>
-                    {
-                        Success = false,
-                        Message = GetResource<NotifiAndAlertsResources>(nameof(NotifiAndAlertsResources.SaveFailed))
-                    });
-
-                return Ok(new ResponseModel<string>
-                {
-                    Success = true,
-                    Message = GetResource<NotifiAndAlertsResources>(nameof(NotifiAndAlertsResources.SavedSuccessfully))
                 });
             }
             catch (Exception ex)

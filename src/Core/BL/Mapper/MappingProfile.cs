@@ -20,7 +20,10 @@ namespace BL.Mapper
             ConfigureSettingMappings();
             ConfigureVendorMappings();
             ConfigureCustomerMappings();
-
+            ConfigureSupportMappings();
+            ConfigureReviewMappings();
+            ConfigureWarehouseAndInventoryMappings();
+            ConfigureContentAndNotificationChannelMappings();
 		}
     }
 }

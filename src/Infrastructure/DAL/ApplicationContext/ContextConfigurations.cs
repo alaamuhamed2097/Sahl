@@ -14,13 +14,18 @@ namespace DAL.ApplicationContext
         public static void Configure(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<ApplicationUser>().ToTable("Users");
-            modelBuilder.Entity<IdentityRole>().ToTable("Roles");
+            modelBuilder.Entity<IdentityRole<Guid>>().ToTable("Roles");
+            modelBuilder.Entity<IdentityUserRole<Guid>>().ToTable("UserRoles");
+            modelBuilder.Entity<IdentityUserClaim<Guid>>().ToTable("UserClaims");
+            modelBuilder.Entity<IdentityUserLogin<Guid>>().ToTable("UserLogins");
+            modelBuilder.Entity<IdentityUserToken<Guid>>().ToTable("UserTokens");
+            modelBuilder.Entity<IdentityRoleClaim<Guid>>().ToTable("RoleClaims");
         }
 
         public static async Task SeedDataAsync(
             ApplicationDbContext context,
             UserManager<ApplicationUser> userManager,
-            RoleManager<IdentityRole> roleManager
+            RoleManager<IdentityRole<Guid>> roleManager
             )
         {
             await SeedRolesAsync(roleManager);
@@ -28,17 +33,17 @@ namespace DAL.ApplicationContext
             await SeedSettingAsync(context);
         }
 
-        private static async Task SeedRolesAsync(RoleManager<IdentityRole> roleManager)
+        private static async Task SeedRolesAsync(RoleManager<IdentityRole<Guid>> roleManager)
         {
             // Ensure roles exist
             if (!await roleManager.RoleExistsAsync("Admin"))
             {
-                await roleManager.CreateAsync(new IdentityRole("Admin"));
+                await roleManager.CreateAsync(new IdentityRole<Guid>("Admin") { Id = Guid.NewGuid() });
             }
 
             if (!await roleManager.RoleExistsAsync("Vendor"))
             {
-                await roleManager.CreateAsync(new IdentityRole("Vendor"));
+                await roleManager.CreateAsync(new IdentityRole<Guid>("Vendor") { Id = Guid.NewGuid() });
             }
         }
 
@@ -49,10 +54,9 @@ namespace DAL.ApplicationContext
             var adminUser = await userManager.FindByEmailAsync(adminEmail);
             if (adminUser == null)
             {
-                var id = Guid.NewGuid().ToString();
                 adminUser = new ApplicationUser
                 {
-                    Id = id,
+                    Id = Guid.NewGuid(),
                     UserName = adminEmail,
                     Email = adminEmail,
                     EmailConfirmed = true,
@@ -75,10 +79,9 @@ namespace DAL.ApplicationContext
             var VendorUser = await userManager.FindByEmailAsync(VendorEmail);
             if (VendorUser == null)
             {
-                var id = Guid.NewGuid().ToString();
                 VendorUser = new ApplicationUser
                 {
-                    Id = id,
+                    Id = Guid.NewGuid(),
                     UserName = VendorEmail,
                     Email = VendorEmail,
                     EmailConfirmed = true,

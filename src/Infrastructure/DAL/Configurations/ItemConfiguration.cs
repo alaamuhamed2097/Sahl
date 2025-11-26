@@ -28,8 +28,8 @@ namespace DAL.Configurations
             .IsRequired()
               .HasMaxLength(200);
 
-            entity.Property(e => e.VideoLink)
-                .HasMaxLength(200);
+            //entity.Property(e => e.VideoLink)
+            //    .HasMaxLength(200);
 
             entity.Property(e => e.ThumbnailImage)
    .IsRequired()
@@ -48,16 +48,8 @@ namespace DAL.Configurations
             entity.Property(e => e.IsNewArrival)
          .HasDefaultValue(false);
 
-            entity.Property(e => e.IsBestSeller)
-             .HasDefaultValue(false);
-
-            entity.Property(e => e.IsRecommended)
-                      .HasDefaultValue(false);
-
             // Indexes
             entity.HasIndex(e => e.IsNewArrival).IsUnique(false);
-            entity.HasIndex(e => e.IsBestSeller).IsUnique(false);
-            entity.HasIndex(e => e.IsRecommended).IsUnique(false);
             entity.HasIndex(e => e.CategoryId).IsUnique(false);
             entity.HasIndex(e => e.UnitId).IsUnique(false);
             entity.HasIndex(e => e.BrandId).IsUnique(false);
@@ -81,12 +73,6 @@ namespace DAL.Configurations
        .HasForeignKey(i => i.BrandId)
            .HasConstraintName("FK_TbItems_TbBrands_BrandId")
       .OnDelete(DeleteBehavior.NoAction);
-
-            entity.HasOne(i => i.VideoProvider)
-              .WithMany()
-               .HasForeignKey(i => i.VideoProviderId)
-                  .HasConstraintName("FK_TbItems_TbVideoProviders_VideoProviderId")
-             .OnDelete(DeleteBehavior.NoAction);
         }
     }
 }

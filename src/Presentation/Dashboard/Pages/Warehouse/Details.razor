@@ -1,0 +1,114 @@
+@page "/warehouse"
+@page "/warehouse/{id:guid}"
+
+@using Common.Enumerations.User
+@using Resources
+@attribute [Authorize(Roles = nameof(UserRole.Admin))]
+
+<PageTitle>Warehouse Management</PageTitle>
+
+<div class="container-fluid p-0">
+    <div class="card shadow-sm border-0">
+        <div class="card-header d-flex justify-content-between bg-primary align-items-center">
+            <h4 class="modal-title text-white">
+                @(Model.Id == Guid.Empty ? $"? {ActionsResources.Add}" : $"?? {ActionsResources.Edit}") Warehouse
+            </h4>
+        </div>
+        <EditForm Model="@Model" OnValidSubmit="Save">
+            <DataAnnotationsValidator />
+            
+            <div class="card-body p-4">
+                <!-- Name Fields -->
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">@FormResources.NameAr:</label>
+                        <InputText class="form-control" @bind-Value="Model.TitleAr"
+                                   placeholder="@String.Format(FormResources.Placeholder, FormResources.NameAr)" />
+                        <ValidationMessage For="@(() => Model.TitleAr)" />
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">@FormResources.NameEn:</label>
+                        <InputText class="form-control" @bind-Value="Model.TitleEn"
+                                   placeholder="@String.Format(FormResources.Placeholder, FormResources.NameEn)" />
+                        <ValidationMessage For="@(() => Model.TitleEn)" />
+                    </div>
+                </div>
+
+                <!-- Address -->
+                <div class="row">
+                    <div class="col-md-12 mb-3">
+                        <label class="form-label">@FormResources.Address:</label>
+                        <InputTextArea class="form-control" @bind-Value="Model.Address" rows="3"
+                                       placeholder="@String.Format(FormResources.Placeholder, FormResources.Address)" />
+                        <ValidationMessage For="@(() => Model.Address)" />
+                    </div>
+                </div>
+
+                <!-- Phone Number -->
+                <div class="row">
+                    <div class="col-md-3 mb-3">
+                        <label class="form-label">Phone Code:</label>
+                        <select class="form-select" @bind="Model.PhoneCode">
+                            <option value="">Select Code</option>
+                            @if (countries != null)
+                            {
+                                @foreach (var country in countries)
+                                {
+                                    <option value="@country.PhoneCode">
+                                        @country.Flag @country.PhoneCode (@country.NameEn)
+                                    </option>
+                                }
+                            }
+                        </select>
+                        <ValidationMessage For="@(() => Model.PhoneCode)" />
+                    </div>
+                    <div class="col-md-9 mb-3">
+                        <label class="form-label">@FormResources.PhoneNumber:</label>
+                        <InputText class="form-control" @bind-Value="Model.PhoneNumber"
+                                   placeholder="@String.Format(FormResources.Placeholder, FormResources.PhoneNumber)" />
+                        <ValidationMessage For="@(() => Model.PhoneNumber)" />
+                    </div>
+                </div>
+
+                <!-- Status -->
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <div class="form-check form-switch mt-4">
+                            <InputCheckbox class="form-check-input" @bind-Value="Model.IsActive" />
+                            <label class="form-check-label">Active</label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Show creation date for existing records -->
+                @if (Model.Id != Guid.Empty)
+                {
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">@FormResources.CreationDate:</label>
+                            <input type="text" class="form-control" readonly value="Created" />
+                        </div>
+                    </div>
+                }
+            </div>
+            
+            <div class="card-footer bg-light py-3 d-flex justify-content-end gap-2">
+                <button type="button" class="btn btn-secondary" @onclick="CloseModal">
+                    <i class="fas fa-times me-2 ms-2"></i>@ActionsResources.Cancel
+                </button>
+                <button type="submit" class="btn btn-primary" disabled="@isSaving">
+                    @if (isSaving)
+                    {
+                        <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                        <span>@FormResources.Saving...</span>
+                    }
+                    else
+                    {
+                        <i class="fas fa-save me-2 ms-2"></i>
+                        @ActionsResources.Save
+                    }
+                </button>
+            </div>
+        </EditForm>
+    </div>
+</div>

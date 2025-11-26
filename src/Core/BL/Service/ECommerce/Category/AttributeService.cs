@@ -7,7 +7,7 @@ using DAL.ResultModels;
 using Domains.Entities.Catalog.Attribute;
 using Domains.Entities.Catalog.Category;
 using Domains.Entities.Catalog.Item;
-using Domains.Entities.Catalog.Item.ItemAttribute;
+using Domains.Entities.Catalog.Item.ItemAttributes;
 using Domains.Views.Category;
 using Resources;
 using Shared.DTOs.ECommerce.Category;

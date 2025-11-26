@@ -27,15 +27,8 @@ namespace DAL.Configurations
             entity.Property(e => e.WebsiteUrl)
             .HasMaxLength(200);
 
-            entity.Property(e => e.IsFavorite)
-                     .HasDefaultValue(false);
-
             entity.Property(e => e.DisplayOrder)
             .HasDefaultValue(0);
-
-            // Indexes
-            entity.HasIndex(e => e.IsFavorite)
-                .IsUnique(false);
 
             entity.HasIndex(e => e.DisplayOrder)
                .IsUnique(false);

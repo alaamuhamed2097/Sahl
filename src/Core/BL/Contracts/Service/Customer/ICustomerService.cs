@@ -1,6 +1,6 @@
 ﻿using BL.Contracts.Service.Base;
 using DAL.Models;
-using Domains.Entities.Customer;
+using Domains.Entities.ECommerceSystem.Customer;
 using Shared.DTOs.Customer;
 using Shared.GeneralModels.SearchCriteriaModels;
 using System;

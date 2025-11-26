@@ -33,6 +33,11 @@ builder.Services.AddGeneralServices();
 // Configure E-Commerce Services
 builder.Services.AddECommerceConfiguration(builder.Configuration);
 
+// Configure New Services
+builder.Services.AddWarehouseAndInventoryServices();
+builder.Services.AddContentManagementServices();
+builder.Services.AddEnhancedNotificationServices();
+
 // Configure Infrastructure Services
 builder.Services.AddInfrastructureServices();
 
@@ -148,7 +153,7 @@ using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
     var userManager = services.GetRequiredService<UserManager<ApplicationUser>>();
-    var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
+    var roleManager = services.GetRequiredService<RoleManager<IdentityRole<Guid>>>();
     var dbContext = services.GetRequiredService<ApplicationDbContext>();
 
     // Apply migrations

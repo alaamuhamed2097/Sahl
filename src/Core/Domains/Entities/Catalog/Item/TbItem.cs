@@ -1,10 +1,7 @@
 ﻿using Domains.Entities.Catalog.Brand;
 using Domains.Entities.Catalog.Category;
-using Domains.Entities.Catalog.Item.ItemAttribute;
+using Domains.Entities.Catalog.Item.ItemAttributes;
 using Domains.Entities.Catalog.Unit;
-using Domains.Entities.VideoProvider;
-using Domains.Views.Item;
-using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -12,76 +9,78 @@ namespace Domains.Entities.Catalog.Item
 {
     public class TbItem : BaseSeo
     {
-		
-		[StringLength(100)]
-		public string TitleAr { get; set; }
 
-		[StringLength(100)]
-		public string TitleEn { get; set; }
+        [StringLength(100)]
+        public string TitleAr { get; set; }
 
-		[StringLength(200)]
-		public string ShortDescriptionAr { get; set; }
+        [StringLength(100)]
+        public string TitleEn { get; set; }
 
-		[StringLength(200)]
-		public string ShortDescriptionEn { get; set; }
+        [StringLength(200)]
+        public string ShortDescriptionAr { get; set; }
 
-		[StringLength(200)]
-		public string Barcode { get; set; }
+        [StringLength(200)]
+        public string ShortDescriptionEn { get; set; }
 
-		[StringLength(200)]
-		public string SKU { get; set; }
+        [StringLength(200)]
+        public string Barcode { get; set; }
 
-		public string DescriptionAr { get; set; }
+        [StringLength(200)]
+        public string SKU { get; set; }
 
-		public string DescriptionEn { get; set; }
+        public string DescriptionAr { get; set; }
 
-		[Required]
-		public Guid CategoryId { get; set; }
+        public string DescriptionEn { get; set; }
 
-		public Guid? SubCategoryId { get; set; }
+        [Required]
+        public Guid CategoryId { get; set; }
 
-		public Guid? UnitId { get; set; }
+        public Guid? SubCategoryId { get; set; }
 
-		public Guid? VideoProviderId { get; set; }
+        public Guid? UnitId { get; set; }
 
-		[StringLength(200)]
-		public string VideoUrl { get; set; }
+        public Guid? VideoProviderId { get; set; }
 
-		[StringLength(200)]
-		public string ThumbnailUrl { get; set; }
+        [StringLength(200)]
+        public string VideoUrl { get; set; }
 
-		[Column(TypeName = "decimal(18,2)")]
-		public decimal? MinimumPrice { get; set; }
+        [StringLength(200)]
+        public string ThumbnailImage { get; set; }
 
-		[Column(TypeName = "decimal(18,2)")]
-		public decimal? MaximumPrice { get; set; }
+        [Column(TypeName = "decimal(18,2)")]
+        public decimal? MinimumPrice { get; set; }
 
-		public bool IsNewArrival { get; set; }
+        [Column(TypeName = "decimal(18,2)")]
+        public decimal? MaximumPrice { get; set; }
 
-		[StringLength(100)]
-		public string SEOTitle { get; set; }
+        public bool IsNewArrival { get; set; }
 
-		[StringLength(1000)]
-		public string SEODescription { get; set; }
+        [StringLength(100)]
+        public string SEOTitle { get; set; }
 
-		[StringLength(200)]
-		public string SEOMetaTags { get; set; }
+        [StringLength(1000)]
+        public string SEODescription { get; set; }
 
-		public Guid? BrandId { get; set; }
+        [StringLength(200)]
+        public string SEOMetaTags { get; set; }
 
-		public int VisibilityScope { get; set; }
+        public Guid? BrandId { get; set; }
 
-		// Navigation Properties
-		[ForeignKey("CategoryId")]
-		public virtual TbCategory Category { get; set; }
+        public int VisibilityScope { get; set; }
 
-		[ForeignKey("BrandId")]
-		public virtual TbBrand Brand { get; set; }
+        // Navigation Properties
+        [ForeignKey("CategoryId")]
+        public virtual TbCategory Category { get; set; }
 
-		[ForeignKey("UnitId")]
-		public virtual TbUnit Unit { get; set; }
+        [ForeignKey("BrandId")]
+        public virtual TbBrand Brand { get; set; }
 
-		public virtual ICollection<TbItemImage> ItemImages { get; set; }
-		public virtual ICollection<TbItemCombination> ItemCombinations { get; set; }
-	}
+        [ForeignKey("UnitId")]
+        public virtual TbUnit Unit { get; set; }
+
+        public virtual ICollection<TbItemImage> ItemImages { get; set; }
+        public virtual ICollection<TbItemCombination> ItemCombinations { get; set; }
+        public virtual ICollection<TbItemAttribute> ItemAttributes { get; set; }
+        public virtual ICollection<TbItemAttributeCombinationPricing> ItemAttributeCombinationPricings { get; set; }
+    }
 }

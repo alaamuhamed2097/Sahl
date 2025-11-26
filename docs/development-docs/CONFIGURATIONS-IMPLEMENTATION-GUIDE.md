@@ -1,0 +1,333 @@
+# Entity Configurations - Implementation Guide
+
+## ? ?? ??????? (11 Configuration)
+
+### Loyalty System (3 files)
+1. ? LoyaltyTierConfiguration.cs
+2. ? CustomerLoyaltyConfiguration.cs
+3. ? LoyaltyPointsTransactionConfiguration.cs
+
+### Wallet System (4 files)
+4. ? CustomerWalletConfiguration.cs
+5. ? VendorWalletConfiguration.cs
+6. ? WalletTransactionConfiguration.cs
+7. ? PlatformTreasuryConfiguration.cs
+
+### Buy Box System (3 files)
+8. ? BuyBoxCalculationConfiguration.cs
+9. ? BuyBoxHistoryConfiguration.cs
+10. ? SellerPerformanceMetricsConfiguration.cs
+
+### Campaign System (1 file)
+11. ? CampaignConfiguration.cs
+
+---
+
+## ? ??????? ??????? (38 Configuration)
+
+### Campaign System (4 files remaining)
+12. ? CampaignProductConfiguration.cs
+13. ? CampaignVendorConfiguration.cs
+14. ? FlashSaleConfiguration.cs
+15. ? FlashSaleProductConfiguration.cs
+
+### Seller Request System (3 files)
+16. ? SellerRequestConfiguration.cs
+17. ? RequestCommentConfiguration.cs
+18. ? RequestDocumentConfiguration.cs
+
+### Fulfillment System (4 files)
+19. ? FulfillmentMethodConfiguration.cs
+20. ? FBMInventoryConfiguration.cs
+21. ? FulfillmentFeeConfiguration.cs
+22. ? FBMShipmentConfiguration.cs
+
+### Pricing System (3 files)
+23. ? QuantityPricingConfiguration.cs
+24. ? CustomerSegmentPricingConfiguration.cs
+25. ? PriceHistoryConfiguration.cs
+
+### Merchandising System (2 files)
+26. ? HomepageBlockConfiguration.cs
+27. ? BlockProductConfiguration.cs
+
+### Seller Tier System (3 files)
+28. ? SellerTierConfiguration.cs
+29. ? SellerTierBenefitConfiguration.cs
+30. ? VendorTierHistoryConfiguration.cs
+
+### Visibility System (3 files)
+31. ? ProductVisibilityRuleConfiguration.cs
+32. ? SuppressionReasonConfiguration.cs
+33. ? VisibilityLogConfiguration.cs
+
+### Brand Management System (3 files)
+34. ? BrandRegistrationRequestConfiguration.cs
+35. ? BrandDocumentConfiguration.cs
+36. ? AuthorizedDistributorConfiguration.cs
+
+---
+
+## ?? Configuration Template
+
+?????? ??? ??? Template ?????? ??? Configurations ????????:
+
+```csharp
+using Domains.Entities.{Namespace};
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
+
+namespace DAL.Configurations
+{
+    /// <summary>
+    /// Entity configuration for Tb{EntityName}
+    /// </summary>
+    public class {EntityName}Configuration : IEntityTypeConfiguration<Tb{EntityName}>
+    {
+        public void Configure(EntityTypeBuilder<Tb{EntityName}> entity)
+        {
+            // Table name
+            entity.ToTable("Tb{EntityName}s");
+
+            // Property configurations
+            // Add property configurations here
+            // Example:
+            // entity.Property(e => e.PropertyName)
+            //     .IsRequired()
+            //     .HasMaxLength(200);
+
+            // Relationships
+            // Add foreign key relationships here
+            // Example:
+            // entity.HasOne(e => e.RelatedEntity)
+            //     .WithMany()
+            //     .HasForeignKey(e => e.RelatedEntityId)
+            //     .OnDelete(DeleteBehavior.Cascade);
+
+            // Indexes
+            // Add indexes for performance
+            // Example:
+            // entity.HasIndex(e => e.PropertyName);
+        }
+    }
+}
+```
+
+---
+
+## ?? Configuration Best Practices
+
+### 1. Property Configurations:
+```csharp
+// Required strings
+entity.Property(e => e.Name)
+    .IsRequired()
+    .HasMaxLength(200);
+
+// Decimal values (money)
+entity.Property(e => e.Price)
+    .HasColumnType("decimal(18,2)");
+
+// Decimal values (percentages)
+entity.Property(e => e.Percentage)
+    .HasColumnType("decimal(5,2)");
+
+// Enums
+entity.Property(e => e.Status)
+    .HasConversion<int>();
+
+// Dates
+entity.Property(e => e.Date)
+    .HasColumnType("datetime2(2)");
+
+// Default values
+entity.Property(e => e.IsActive)
+    .HasDefaultValue(true);
+
+// Optional strings
+entity.Property(e => e.Notes)
+    .HasMaxLength(500);
+```
+
+### 2. Relationships:
+```csharp
+// One-to-Many (Cascade Delete)
+entity.HasOne(e => e.Parent)
+    .WithMany(p => p.Children)
+    .HasForeignKey(e => e.ParentId)
+    .OnDelete(DeleteBehavior.Cascade);
+
+// One-to-Many (Restrict Delete)
+entity.HasOne(e => e.Reference)
+    .WithMany()
+    .HasForeignKey(e => e.ReferenceId)
+    .OnDelete(DeleteBehavior.Restrict);
+
+// One-to-One
+entity.HasOne(e => e.Detail)
+    .WithOne(d => d.Master)
+    .HasForeignKey<TbDetail>(d => d.MasterId);
+```
+
+### 3. Indexes:
+```csharp
+// Simple index
+entity.HasIndex(e => e.PropertyName);
+
+// Unique index
+entity.HasIndex(e => e.Email)
+    .IsUnique();
+
+// Composite index
+entity.HasIndex(e => new { e.Property1, e.Property2 });
+
+// Filtered unique index (for nullable fields)
+entity.HasIndex(e => e.Code)
+    .IsUnique()
+    .HasFilter("[Code] IS NOT NULL");
+```
+
+---
+
+## ?? ????? ????? ???????
+
+### ?????? 1: ??? Template
+```bash
+# ???? template ????? ?? ??????
+cp ConfigurationTemplate.cs CampaignProductConfiguration.cs
+```
+
+### ?????? 2: ????? Namespace ??????
+```csharp
+// ????:
+using Domains.Entities.{Namespace};
+public class {EntityName}Configuration
+
+// ???:
+using Domains.Entities.Campaign;
+public class CampaignProductConfiguration
+```
+
+### ?????? 3: ????? Properties
+```csharp
+// ??? ?? property ?? ??? Entity
+entity.Property(e => e.OriginalPrice)
+    .IsRequired()
+    .HasColumnType("decimal(18,2)");
+```
+
+### ?????? 4: ????? Relationships
+```csharp
+// ??? ????????
+entity.HasOne(e => e.Campaign)
+    .WithMany(c => c.CampaignProducts)
+    .HasForeignKey(e => e.CampaignId)
+    .OnDelete(DeleteBehavior.Cascade);
+```
+
+### ?????? 5: ????? Indexes
+```csharp
+// ??? indexes ??????
+entity.HasIndex(e => e.CampaignId);
+entity.HasIndex(e => e.ItemId);
+entity.HasIndex(e => e.IsActive);
+```
+
+---
+
+## ?? Progress Tracker
+
+| ?????? | ????? ??????? | ?? ??????? | ??????? | ?????? |
+|--------|---------------|------------|---------|--------|
+| Loyalty | 3 | 3 | 0 | 100% ? |
+| Wallet | 4 | 4 | 0 | 100% ? |
+| Buy Box | 3 | 3 | 0 | 100% ? |
+| Campaign | 5 | 1 | 4 | 20% ? |
+| Seller Request | 3 | 0 | 3 | 0% ? |
+| Fulfillment | 4 | 0 | 4 | 0% ? |
+| Pricing | 3 | 0 | 3 | 0% ? |
+| Merchandising | 2 | 0 | 2 | 0% ? |
+| Seller Tier | 3 | 0 | 3 | 0% ? |
+| Visibility | 3 | 0 | 3 | 0% ? |
+| Brand Management | 3 | 0 | 3 | 0% ? |
+| **??????** | **49** | **11** | **38** | **22%** |
+
+---
+
+## ?? ????? ????
+
+### 1. ?????? ??? ??? ???????:
+- ?????: `{EntityName}Configuration.cs`
+- ??????: `{EntityName}Configuration`
+- ??????: `Tb{EntityName}s` (?? s ?????)
+
+### 2. ???? ?? ????????:
+- ?????? `Cascade` ???????? ???????
+- ?????? `Restrict` ???????? ????????
+- ?????? `NoAction` ??? ??????
+
+### 3. ??? Indexes ??????:
+- Foreign Keys
+- Search fields
+- Status fields
+- Date fields
+- Commonly queried fields
+
+### 4. ?????? ??? Data Types ???????:
+- `decimal(18,2)` ??????? ???????
+- `decimal(5,2)` ????? ???????
+- `decimal(3,2)` ????????? (0-5)
+- `datetime2(2)` ????????
+
+---
+
+## ?? Build ?????????
+
+??? ????? ?? configuration:
+
+```bash
+# 1. Build ???????
+dotnet build src/Infrastructure/DAL
+
+# 2. ??? ??? Build? ??? Migration
+dotnet ef migrations add Add{EntityName}Configuration --project src/Infrastructure/DAL
+
+# 3. ???? ?? Migration ???????
+# ???? ????? ??: src/Infrastructure/DAL/Migrations/
+```
+
+---
+
+## ? Checklist ????????
+
+??? ????? ?? Configuration? ???? ??:
+
+- [ ] Table name ????
+- [ ] ???? Properties ???????
+- [ ] Required fields ?????
+- [ ] MaxLength ???? ??? strings
+- [ ] Column types ????? ??? decimals
+- [ ] Default values ?????? ??? ????
+- [ ] ???? Relationships ??????
+- [ ] Delete behaviors ?????
+- [ ] Indexes ?????? ??????
+- [ ] Unique indexes ??? ????
+- [ ] Build ???? ???? ?????
+
+---
+
+## ?? ?? ????? ???????
+
+??? ??? ????? ?????? ?? configuration ????? ??? ???? ???? ??? Entity!
+
+????:
+- "???? CampaignProductConfiguration"
+- "???? ???? Seller Request Configurations"
+- "???? ??? Configurations ???????? ??? Campaign System"
+
+---
+
+**??????? ???????:** Configuration Creation (22% Complete)  
+**?????? ???????:** ????? ??? 38 Configuration ????????
+
+*??? ?????: ????? 2025*

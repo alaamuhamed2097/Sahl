@@ -36,7 +36,7 @@ namespace BL.GeneralService.CMS
             if (user != null && await _userManager.CheckPasswordAsync(user, loginDto.Password))
             {
                 var roles = await _userManager.GetRolesAsync(user);
-                return (await _tokenService.GenerateJwtTokenAsync(user.Id, roles)).Token;
+                return (await _tokenService.GenerateJwtTokenAsync(user.Id.ToString(), roles)).Token;
             }
 
             throw new UnauthorizedAccessException("Invalid login credentials.");
@@ -99,7 +99,7 @@ namespace BL.GeneralService.CMS
                 var userRoles = await _userManager.GetRolesAsync(user);
 
                 // Generate JWT token
-                var tokenResult = await _tokenService.GenerateJwtTokenAsync(user.Id, userRoles);
+                var tokenResult = await _tokenService.GenerateJwtTokenAsync(user.Id.ToString(), userRoles);
                 if (!tokenResult.Success)
                 {
                     return new Shared.GeneralModels.ResultModels.SignInResult
@@ -110,7 +110,7 @@ namespace BL.GeneralService.CMS
                 }
 
                 // Invalidate all previous refresh tokens (single session)
-                await InvalidateAllRefreshTokens(user.Id);
+                await InvalidateAllRefreshTokens(user.Id.ToString());
 
                 // create a refresh token
                 var refreshToken = await _tokenService.CreateRefreshTokenAsync(user, clientType);

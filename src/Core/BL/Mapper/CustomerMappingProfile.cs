@@ -1,5 +1,4 @@
 ﻿using Domains.Entities.Setting;
-using Domains.Entities.Customer;
 using Shared.DTOs.Customer;
 using Shared.DTOs.Setting;
 using System;
@@ -7,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Domains.Entities.ECommerceSystem.Customer;
 
 namespace BL.Mapper
 {

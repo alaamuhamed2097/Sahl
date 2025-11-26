@@ -4,7 +4,7 @@ using BL.Extensions;
 using BL.Service.Base;
 using DAL.Contracts.Repositories;
 using DAL.Models;
-using Domains.Entities.Customer;
+using Domains.Entities.ECommerceSystem.Customer;
 using Microsoft.AspNetCore.Identity;
 using Resources;
 using Shared.DTOs.Customer;
