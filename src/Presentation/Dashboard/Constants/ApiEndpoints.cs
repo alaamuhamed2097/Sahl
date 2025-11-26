@@ -342,5 +342,54 @@
             public const string Get = "api/VendorStatistics";
             public const string GetByDateRange = "api/VendorStatistics/dateRange";
         }
+
+        // Campaign endpoints
+        public static class Campaign
+        {
+            public const string Get = "api/Campaign";
+            public const string GetById = "api/Campaign/{0}";
+            public const string Search = "api/Campaign/search";
+            public const string Create = "api/Campaign";
+            public const string Update = "api/Campaign/{0}";
+            public const string Delete = "api/Campaign/{0}";
+            public const string Activate = "api/Campaign/{0}/activate";
+            public const string Deactivate = "api/Campaign/{0}/deactivate";
+            public const string Products = "api/Campaign/{0}/products";
+            public const string AddProduct = "api/Campaign/products";
+        }
+
+        // Wallet endpoints
+        public static class Wallet
+        {
+            public static class Customer
+            {
+                public const string Get = "api/Wallet/customer";
+                public const string GetByCustomerId = "api/Wallet/customer/{0}";
+                public const string MyWallet = "api/Wallet/customer/my-wallet";
+                public const string Create = "api/Wallet/customer/{0}";
+                public const string Balance = "api/Wallet/customer/{0}/balance";
+            }
+
+            public static class Vendor
+            {
+                public const string Get = "api/Wallet/vendor";
+                public const string GetByVendorId = "api/Wallet/vendor/{0}";
+                public const string Create = "api/Wallet/vendor/{0}";
+            }
+
+            public static class Transactions
+            {
+                public const string Get = "api/Wallet/transactions";
+                public const string Search = "api/Wallet/transactions/search";
+                public const string GetById = "api/Wallet/transactions/{0}";
+                public const string Approve = "api/Wallet/transactions/{0}/approve";
+                public const string Reject = "api/Wallet/transactions/{0}/reject";
+            }
+
+            public const string Deposit = "api/Wallet/deposit";
+            public const string Withdrawal = "api/Wallet/withdrawal";
+            public const string Treasury = "api/Wallet/treasury";
+            public const string TreasuryUpdate = "api/Wallet/treasury/update";
+        }
     }
 }
