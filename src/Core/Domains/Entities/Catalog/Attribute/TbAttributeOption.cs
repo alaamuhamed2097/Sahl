@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Domains.Entities.Category
+namespace Domains.Entities.Catalog.Attribute
 {
     public class TbAttributeOption : BaseEntity
     {
@@ -23,5 +23,9 @@ namespace Domains.Entities.Category
 
         [ForeignKey("AttributeId")]
         public virtual TbAttribute Attribute { get; set; } = null!;
-    }
+
+		//----
+
+
+	}
 }

@@ -1,4 +1,4 @@
-using Domains.Entities.Unit;
+using Domains.Entities.Catalog.Unit;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 

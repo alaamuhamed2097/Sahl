@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Domains.Entities.Unit
+namespace Domains.Entities.Catalog.Unit
 {
     public class TbUnit : BaseEntity
     {

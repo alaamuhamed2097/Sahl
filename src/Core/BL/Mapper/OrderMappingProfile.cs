@@ -1,5 +1,5 @@
-﻿using Domains.Entities;
-using Domains.Entities.PromoCode;
+﻿using Domains.Entities.PromoCode;
+using Domains.Entities.Shipping;
 using Shared.DTOs.ECommerce;
 using Shared.DTOs.ECommerce.PromoCode;
 

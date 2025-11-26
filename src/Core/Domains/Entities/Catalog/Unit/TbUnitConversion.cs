@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Domains.Entities.Unit
+namespace Domains.Entities.Catalog.Unit
 {
     public class TbUnitConversion : BaseEntity
     {

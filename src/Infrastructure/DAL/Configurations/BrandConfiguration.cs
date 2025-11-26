@@ -1,4 +1,4 @@
-using Domains.Entities.Brand;
+using Domains.Entities.Catalog.Brand;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -13,8 +13,8 @@ namespace DAL.Configurations
         {
             // Property configurations
             entity.Property(e => e.NameEn)
-    .IsRequired()
-    .HasMaxLength(50);
+                .IsRequired()
+                .HasMaxLength(50);
 
             entity.Property(e => e.NameAr)
               .IsRequired()
@@ -25,17 +25,17 @@ namespace DAL.Configurations
               .HasMaxLength(200);
 
             entity.Property(e => e.WebsiteUrl)
-           .HasMaxLength(200);
+            .HasMaxLength(200);
 
             entity.Property(e => e.IsFavorite)
                      .HasDefaultValue(false);
 
             entity.Property(e => e.DisplayOrder)
-        .HasDefaultValue(0);
+            .HasDefaultValue(0);
 
             // Indexes
             entity.HasIndex(e => e.IsFavorite)
-  .IsUnique(false);
+                .IsUnique(false);
 
             entity.HasIndex(e => e.DisplayOrder)
                .IsUnique(false);
