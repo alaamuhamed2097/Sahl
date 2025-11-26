@@ -33,13 +33,6 @@ namespace DAL.Configurations
 
             entity.HasIndex(e => e.Price)
                 .IsUnique(false);
-
-            // Relationships
-            entity.HasOne(icp => icp.Item)
-                .WithMany(i => i.ItemAttributeCombinationPricings)
-                .HasForeignKey(icp => icp.ItemId)
-                .HasConstraintName("FK_TbItemAttributeCombinationPricings_TbItems_ItemId")
-                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

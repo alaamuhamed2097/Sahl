@@ -1,37 +1,38 @@
 ﻿using Dashboard.Constants;
 using Dashboard.Contracts;
+using Dashboard.Services;
 using Microsoft.AspNetCore.Components;
 using Resources;
-using Shared.DTOs.ECommerce.PromoCode;
+using Shared.DTOs.ECommerce.CouponCode;
 using Shared.GeneralModels;
 
-namespace Dashboard.Pages.Sales.PromoCodes
+namespace Dashboard.Pages.Sales.CouponCode
 {
-    public partial class Index : BaseListPage<PromoCodeDto>
+    public partial class Index : BaseListPage<CouponCodeDto>
     {
         protected override string EntityName { get; } = FormResources.PromoCodes;
-        protected override string AddRoute { get; } = $"/promocode";
-        protected override string EditRouteTemplate { get; } = "/promocode/{id}";
-        protected override string SearchEndpoint { get; } = ApiEndpoints.PromoCode.Search;
-        protected override Dictionary<string, Func<PromoCodeDto, object>> ExportColumns { get; }
-        = new Dictionary<string, Func<PromoCodeDto, object>>
+        protected override string AddRoute { get; } = $"/couponCodee";
+        protected override string EditRouteTemplate { get; } = "/couponCode/{id}";
+        protected override string SearchEndpoint { get; } = ApiEndpoints.CouponCode.Search;
+        protected override Dictionary<string, Func<CouponCodeDto, object>> ExportColumns { get; }
+        = new Dictionary<string, Func<CouponCodeDto, object>>
         {
             [FormResources.ArabicTitle] = x => x.TitleAR,
             [FormResources.EnglishTitle] = x => x.TitleEN,
             [FormResources.Code] = x => x.Code,
             [FormResources.StartDate] = x => x.StartDate.ToString("yyyy-MM-dd"),
             [FormResources.EndDate] = x => x.EndDate.ToString("yyyy-MM-dd"),
-            [FormResources.Type] = x => x.PromoCodeType,
+            [FormResources.Type] = x => x.CouponCodeType,
             [FormResources.Value] = x => x.Value,
             [FormResources.UsageLimit] = x => x.UsageLimit?.ToString() ?? "∞",
             [FormResources.UsageCount] = x => x.UsageCount
         };
 
-        [Inject] protected IPromoCodeService PromoCodeService { get; set; } = null!;
+        [Inject] protected ICouponCodeService CouponCodeService { get; set; } = null!;
 
-        protected override async Task<ResponseModel<IEnumerable<PromoCodeDto>>> GetAllItemsAsync()
+        protected override async Task<ResponseModel<IEnumerable<CouponCodeDto>>> GetAllItemsAsync()
         {
-            var result = await PromoCodeService.GetAllAsync();
+            var result = await CouponCodeService.GetAllAsync();
             if (result.Success)
             {
                 return result;
@@ -44,12 +45,12 @@ namespace Dashboard.Pages.Sales.PromoCodes
 
         protected override async Task<ResponseModel<bool>> DeleteItemAsync(Guid id)
         {
-            return await PromoCodeService.DeleteAsync(id);
+            return await CouponCodeService.DeleteAsync(id);
         }
 
-        protected override async Task<string> GetItemId(PromoCodeDto item)
+        protected override async Task<string> GetItemId(CouponCodeDto item)
         {
-            var result = await PromoCodeService.GetByIdAsync(item.Id);
+            var result = await CouponCodeService.GetByIdAsync(item.Id);
             if (result.Success)
             {
                 return result.Data?.Id.ToString() ?? string.Empty;

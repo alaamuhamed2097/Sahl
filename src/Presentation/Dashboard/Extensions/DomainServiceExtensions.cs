@@ -46,7 +46,7 @@ namespace Dashboard.Extensions
             services.AddScoped<IStateService, StateService>();
             services.AddScoped<ICityService, CityService>();
             services.AddScoped<IAdminService, AdminService>();
-            services.AddScoped<IPromoCodeService, PromoCodeService>();
+            services.AddScoped<ICouponCodeService, CouponCodeService>();
             services.AddScoped<IShippingCompanyService, ShippingCompanyService>();
             services.AddScoped<ICountryPhoneCodeService, CountryPhoneCodeService>();
             services.AddScoped<ICurrencyService, CurrencyService>();

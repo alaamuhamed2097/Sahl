@@ -3,9 +3,9 @@ using Dashboard.Contracts.General;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 using Resources;
-using Shared.DTOs.ECommerce.PromoCode;
+using Shared.DTOs.ECommerce.CouponCode;
 
-namespace Dashboard.Pages.Sales.PromoCodes
+namespace Dashboard.Pages.Sales.CouponCode
 {
     public partial class Details
     {
@@ -13,7 +13,7 @@ namespace Dashboard.Pages.Sales.PromoCodes
         private bool _disposed;
 
         // Model
-        protected PromoCodeDto Model { get; set; } = new();
+        protected CouponCodeDto Model { get; set; } = new();
 
         // Parameters
         [Parameter] public Guid Id { get; set; }
@@ -22,7 +22,7 @@ namespace Dashboard.Pages.Sales.PromoCodes
         [Inject] private IJSRuntime JSRuntime { get; set; } = default!;
         [Inject] private NavigationManager Navigation { get; set; } = null!;
         [Inject] private IResourceLoaderService ResourceLoaderService { get; set; } = null!;
-        [Inject] private IPromoCodeService PromoCodeService { get; set; } = null!;
+        [Inject] private ICouponCodeService CouponCodeService { get; set; } = null!;
 
         protected override void OnParametersSet()
         {
@@ -50,7 +50,7 @@ namespace Dashboard.Pages.Sales.PromoCodes
             {
                 _isSaving = true;
 
-                var result = await PromoCodeService.SaveAsync(Model);
+                var result = await CouponCodeService.SaveAsync(Model);
 
                 if (result.Success)
                 {
@@ -77,14 +77,14 @@ namespace Dashboard.Pages.Sales.PromoCodes
         {
             try
             {
-                var result = await PromoCodeService.GetByIdAsync(id);
+                var result = await CouponCodeService.GetByIdAsync(id);
                 if (!result.Success)
                 {
                     await ShowErrorNotification(ValidationResources.Failed, NotifiAndAlertsResources.FailedToRetrieveData);
                     return;
                 }
 
-                Model = result.Data ?? new PromoCodeDto();
+                Model = result.Data ?? new CouponCodeDto();
                 StateHasChanged();
             }
             catch (Exception ex)
@@ -95,7 +95,7 @@ namespace Dashboard.Pages.Sales.PromoCodes
 
         private async Task CloseModal()
         {
-            Navigation.NavigateTo("/promoCodes", true);
+            Navigation.NavigateTo("/couponCodes", true);
         }
 
         #region Notification Helpers

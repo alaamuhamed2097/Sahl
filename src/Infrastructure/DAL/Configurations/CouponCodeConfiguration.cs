@@ -1,15 +1,15 @@
-using Domains.Entities.PromoCode;
+using Domains.Entities.CouponCode;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace DAL.Configurations
 {
     /// <summary>
-    /// Entity configuration for TbPromoCode
+    /// Entity configuration for TbCouponCode
     /// </summary>
-    public class PromoCodeConfiguration : IEntityTypeConfiguration<TbPromoCode>
+    public class CouponCodeConfiguration : IEntityTypeConfiguration<TbCouponCode>
     {
-        public void Configure(EntityTypeBuilder<TbPromoCode> entity)
+        public void Configure(EntityTypeBuilder<TbCouponCode> entity)
         {
             // Property configurations
             entity.Property(p => p.TitleAR)

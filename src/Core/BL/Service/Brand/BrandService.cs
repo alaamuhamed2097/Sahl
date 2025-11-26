@@ -143,6 +143,22 @@ namespace BL.Service.Brand
             return success;
         }
 
+        public async Task<bool> MarkAsFavoriteAsync(Guid brandId, Guid userId)
+        {
+            if (brandId == Guid.Empty)
+                throw new ArgumentNullException(nameof(brandId));
+            if (userId == Guid.Empty)
+                throw new ArgumentException(UserResources.UserNotFound, nameof(userId));
+
+            var brand = await _brandRepository.FindAsync(x => x.Id == brandId && x.CurrentState == 1);
+            if (brand == null) return false;
+
+            brand.IsFavorite = !brand.IsFavorite;
+            var result = await _brandRepository.UpdateAsync(brand, userId);
+
+            return result.Success;
+        }
+
         private async Task<string> _saveImageSync(string image)
         {
             // Check if the file is null or empty
