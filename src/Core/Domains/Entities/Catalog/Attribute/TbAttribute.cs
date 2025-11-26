@@ -1,6 +1,6 @@
 ﻿using Common.Enumerations.FieldType;
 using Domains.Entities.Catalog.Category;
-using Domains.Entities.Catalog.Item.ItemAttribute;
+using Domains.Entities.Catalog.Item.ItemAttributes;
 using System.ComponentModel.DataAnnotations;
 
 namespace Domains.Entities.Catalog.Attribute

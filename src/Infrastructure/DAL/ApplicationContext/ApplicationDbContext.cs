@@ -3,17 +3,16 @@ using Domains.Entities.Catalog.Attribute;
 using Domains.Entities.Catalog.Brand;
 using Domains.Entities.Catalog.Category;
 using Domains.Entities.Catalog.Item;
-using Domains.Entities.Catalog.Item.ItemAttribute;
+using Domains.Entities.Catalog.Item.ItemAttributes;
 using Domains.Entities.Catalog.Unit;
 using Domains.Entities.Currency;
 using Domains.Entities.Customer;
 using Domains.Entities.Location;
 using Domains.Entities.Notification;
 using Domains.Entities.Page;
-using Domains.Entities.PromoCode;
+using Domains.Entities.CouponCode;
 using Domains.Entities.Setting;
 using Domains.Entities.Shipping;
-using Domains.Entities.Testimonial;
 using Domains.Entities.Vendor;
 using Domains.Entities.VideoProvider;
 using Domains.Identity;
@@ -65,7 +64,7 @@ namespace DAL.ApplicationContext
         public DbSet<TbPage> TbPages { get; set; }
 
         // Promo Code Management
-        public DbSet<TbPromoCode> TbPromoCodes { get; set; }
+        public DbSet<TbCouponCode> TbCoupons { get; set; }
 
         // Settings
         public DbSet<TbSetting> TbSettings { get; set; }

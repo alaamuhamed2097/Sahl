@@ -51,13 +51,13 @@
 
                         <div class="col-md-6 mb-3">
                             <label class="form-label">@FormResources.PromoCodeType:</label>
-                            <InputSelect class="form-control" @bind-Value="Model.PromoCodeType">
-                                @foreach (var type in Enum.GetValues(typeof(PromoCodeType)))
+                            <InputSelect class="form-control" @bind-Value="Model.CouponCodeType">
+                                @foreach (var type in Enum.GetValues(typeof(CouponCodeType)))
                                 {
                                     <option value="@type">@type.ToString()</option>
                                 }
                             </InputSelect>
-                            <ValidationMessage For="@(() => Model.PromoCodeType)" />
+                            <ValidationMessage For="@(() => Model.CouponCodeType)" />
                         </div>
                     </div>
 

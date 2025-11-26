@@ -68,17 +68,6 @@ namespace BL.Service.Brand
             return brandDto;
         }
 
-        public async Task<IEnumerable<BrandDto>> GetFavoritesAsync()
-        {
-            var brands = await _brandRepository
-                .GetAsync(x => x.CurrentState == 1 && x.IsFavorite,
-                orderBy: q => q.OrderBy(x => x.DisplayOrder));
-
-            var brandDtos = _mapper.MapList<TbBrand, BrandDto>(brands).ToList();
-
-            return brandDtos;
-        }
-
         public async Task<PaginatedDataModel<BrandDto>> SearchAsync(BaseSearchCriteriaModel criteriaModel)
         {
             if (criteriaModel == null)
@@ -154,21 +143,6 @@ namespace BL.Service.Brand
             return success;
         }
 
-        public async Task<bool> MarkAsFavoriteAsync(Guid brandId, Guid userId)
-        {
-            if (brandId == Guid.Empty)
-                throw new ArgumentNullException(nameof(brandId));
-            if (userId == Guid.Empty)
-                throw new ArgumentException(UserResources.UserNotFound, nameof(userId));
-
-            var brand = await _brandRepository.FindAsync(x => x.Id == brandId && x.CurrentState == 1);
-            if (brand == null) return false;
-
-            brand.IsFavorite = !brand.IsFavorite;
-            var result = await _brandRepository.UpdateAsync(brand, userId);
-
-            return result.Success;
-        }
 
         private async Task<string> _saveImageSync(string image)
         {

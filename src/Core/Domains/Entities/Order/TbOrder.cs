@@ -1,4 +1,4 @@
-﻿using Domains.Entities.PromoCode;
+﻿using Domains.Entities.CouponCode;
 using Domains.Entities.Shipping;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -34,8 +34,8 @@ namespace Domains.Entities.Order
         [ForeignKey("DirectSaleLink")]
         public Guid? DirectSaleLinkId { get; set; }
 
-        [ForeignKey("PromoCode")]
-        public Guid? PromoCodeId { get; set; }
+        [ForeignKey("Coupon")]
+        public Guid? CouponId { get; set; }
 
         [ForeignKey("ShippingCompany")]
         public Guid? ShippingCompanyId { get; set; }
@@ -47,7 +47,7 @@ namespace Domains.Entities.Order
 
         public virtual ApplicationUser User { get; set; }
         // public virtual TbPaymentGatewayMethod PaymentGatewayMethod { get; set; }
-        public virtual TbPromoCode? PromoCode { get; set; }
+        public virtual TbCouponCode? Coupon { get; set; }
         public virtual TbShippingCompany? ShippingCompany { get; set; }
 
         public virtual ICollection<TbOrderDetail> OrderDetails { get; set; }

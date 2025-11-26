@@ -48,16 +48,9 @@ namespace DAL.Configurations
             entity.Property(e => e.IsNewArrival)
          .HasDefaultValue(false);
 
-            entity.Property(e => e.IsBestSeller)
-             .HasDefaultValue(false);
-
-            entity.Property(e => e.IsRecommended)
-                      .HasDefaultValue(false);
 
             // Indexes
             entity.HasIndex(e => e.IsNewArrival).IsUnique(false);
-            entity.HasIndex(e => e.IsBestSeller).IsUnique(false);
-            entity.HasIndex(e => e.IsRecommended).IsUnique(false);
             entity.HasIndex(e => e.CategoryId).IsUnique(false);
             entity.HasIndex(e => e.UnitId).IsUnique(false);
             entity.HasIndex(e => e.BrandId).IsUnique(false);

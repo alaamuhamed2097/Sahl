@@ -2,33 +2,33 @@
 using Dashboard.Contracts;
 using Dashboard.Contracts.General;
 using Resources;
-using Shared.DTOs.ECommerce.PromoCode;
+using Shared.DTOs.ECommerce.CouponCode;
 using Shared.GeneralModels;
 
 namespace Dashboard.Services
 {
-    public class PromoCodeService : IPromoCodeService
+    public class CouponCodeService : ICouponCodeService
     {
         private readonly IApiService _apiService;
 
-        public PromoCodeService(IApiService apiService)
+        public CouponCodeService(IApiService apiService)
         {
             _apiService = apiService;
         }
 
         /// <summary>
-        /// Get all PromoCodes with optional filters.
+        /// Get all CouponCodes with optional filters.
         /// </summary>
-        public async Task<ResponseModel<IEnumerable<PromoCodeDto>>> GetAllAsync()
+        public async Task<ResponseModel<IEnumerable<CouponCodeDto>>> GetAllAsync()
         {
             try
             {
-                return await _apiService.GetAsync<IEnumerable<PromoCodeDto>>($"{ApiEndpoints.PromoCode.Get}");
+                return await _apiService.GetAsync<IEnumerable<CouponCodeDto>>($"{ApiEndpoints.CouponCode.Get}");
             }
             catch (Exception ex)
             {
                 // Log error here
-                return new ResponseModel<IEnumerable<PromoCodeDto>>
+                return new ResponseModel<IEnumerable<CouponCodeDto>>
                 {
                     Success = false,
                     Message = ex.Message
@@ -37,18 +37,18 @@ namespace Dashboard.Services
         }
 
         /// <summary>
-        /// Get PromoCode by ID.
+        /// Get CouponCode by ID.
         /// </summary>
-        public async Task<ResponseModel<PromoCodeDto>> GetByIdAsync(Guid id)
+        public async Task<ResponseModel<CouponCodeDto>> GetByIdAsync(Guid id)
         {
             try
             {
-                return await _apiService.GetAsync<PromoCodeDto>($"{ApiEndpoints.PromoCode.Get}/{id}");
+                return await _apiService.GetAsync<CouponCodeDto>($"{ApiEndpoints.CouponCode.Get}/{id}");
             }
             catch (Exception ex)
             {
                 // Log error here
-                return new ResponseModel<PromoCodeDto>
+                return new ResponseModel<CouponCodeDto>
                 {
                     Success = false,
                     Message = ex.Message
@@ -57,15 +57,15 @@ namespace Dashboard.Services
         }
 
         /// <summary>
-        /// Save or update a PromoCode.
+        /// Save or update a CouponCode.
         /// </summary>
-        public async Task<ResponseModel<bool>> SaveAsync(PromoCodeDto PromoCode)
+        public async Task<ResponseModel<bool>> SaveAsync(CouponCodeDto CouponCode)
         {
-            if (PromoCode == null) throw new ArgumentNullException(nameof(PromoCode));
+            if (CouponCode == null) throw new ArgumentNullException(nameof(CouponCode));
 
             try
             {
-                return await _apiService.PostAsync<PromoCodeDto, bool>($"{ApiEndpoints.PromoCode.Save}", PromoCode);
+                return await _apiService.PostAsync<CouponCodeDto, bool>($"{ApiEndpoints.CouponCode.Save}", CouponCode);
             }
             catch (Exception ex)
             {
@@ -79,13 +79,13 @@ namespace Dashboard.Services
         }
 
         /// <summary>
-        /// Delete a PromoCode by ID.
+        /// Delete a CouponCode by ID.
         /// </summary>
         public async Task<ResponseModel<bool>> DeleteAsync(Guid id)
         {
             try
             {
-                var result = await _apiService.PostAsync<Guid, ResponseModel<bool>>($"{ApiEndpoints.PromoCode.Delete}", id);
+                var result = await _apiService.PostAsync<Guid, ResponseModel<bool>>($"{ApiEndpoints.CouponCode.Delete}", id);
                 if (result.Success)
                 {
                     return new ResponseModel<bool>

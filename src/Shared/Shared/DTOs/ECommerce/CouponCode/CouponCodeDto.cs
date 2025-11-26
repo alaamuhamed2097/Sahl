@@ -5,9 +5,9 @@ using Shared.DTOs.Base;
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 
-namespace Shared.DTOs.ECommerce.PromoCode
+namespace Shared.DTOs.ECommerce.CouponCode
 {
-    public class PromoCodeDto : BaseDto
+    public class CouponCodeDto : BaseDto
     {
         [Required(ErrorMessageResourceType = typeof(ValidationResources), ErrorMessageResourceName = "FieldRequired")]
         [StringLength(100, ErrorMessageResourceType = typeof(ValidationResources), ErrorMessageResourceName = "FieldLength100")]
@@ -38,7 +38,7 @@ namespace Shared.DTOs.ECommerce.PromoCode
         }
 
         [Required(ErrorMessageResourceType = typeof(ValidationResources), ErrorMessageResourceName = "FieldRequired")]
-        public PromoCodeType PromoCodeType { get; set; }
+        public CouponCodeType CouponCodeType { get; set; }
 
         [Required(ErrorMessageResourceType = typeof(ValidationResources), ErrorMessageResourceName = "FieldRequired")]
         [Range(0.01, double.MaxValue, ErrorMessageResourceType = typeof(ValidationResources), ErrorMessageResourceName = "FieldRange")]

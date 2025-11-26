@@ -8,7 +8,7 @@ using DAL.Contracts.Repositories;
 using DAL.Contracts.UnitOfWork;
 using DAL.Models;
 using Domains.Entities.Catalog.Item;
-using Domains.Entities.Catalog.Item.ItemAttribute;
+using Domains.Entities.Catalog.Item.ItemAttributes;
 using Domains.Views.Item;
 using Microsoft.EntityFrameworkCore;
 using Resources;

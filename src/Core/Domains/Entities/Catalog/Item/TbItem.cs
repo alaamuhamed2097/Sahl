@@ -1,6 +1,6 @@
 ﻿using Domains.Entities.Catalog.Brand;
 using Domains.Entities.Catalog.Category;
-using Domains.Entities.Catalog.Item.ItemAttribute;
+using Domains.Entities.Catalog.Item.ItemAttributes;
 using Domains.Entities.Catalog.Unit;
 using Domains.Entities.VideoProvider;
 using Domains.Views.Item;
@@ -45,10 +45,10 @@ namespace Domains.Entities.Catalog.Item
 		public Guid? VideoProviderId { get; set; }
 
 		[StringLength(200)]
-		public string VideoUrl { get; set; }
+		public string VideoLink { get; set; }
 
 		[StringLength(200)]
-		public string ThumbnailUrl { get; set; }
+		public string ThumbnailImage { get; set; }
 
 		[Column(TypeName = "decimal(18,2)")]
 		public decimal? MinimumPrice { get; set; }
@@ -80,6 +80,8 @@ namespace Domains.Entities.Catalog.Item
 
 		[ForeignKey("UnitId")]
 		public virtual TbUnit Unit { get; set; }
+		[ForeignKey("VideoProviderId")]
+		public virtual TbVideoProvider VideoProvider { get; set; }
 
 		public virtual ICollection<TbItemImage> ItemImages { get; set; }
 		public virtual ICollection<TbItemCombination> ItemCombinations { get; set; }

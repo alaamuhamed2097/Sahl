@@ -1,5 +1,5 @@
 ﻿using Domains.Entities.Location;
-using Domains.Entities.OffersPricing;
+using Domains.Entities.Offer;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;

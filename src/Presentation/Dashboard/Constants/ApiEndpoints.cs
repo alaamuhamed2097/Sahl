@@ -192,12 +192,12 @@
 			public const string GetVendorInfo = "api/Customer/VendorInfo";
 		}
 
-		public static class PromoCode
+		public static class CouponCode
         {
-            public const string Get = "api/PromoCodes";
-            public const string Save = "api/PromoCodes/save";
-            public const string Delete = "api/PromoCodes/delete";
-            public const string Search = "api/PromoCodes/search";
+            public const string Get = "api/CouponCode";
+            public const string Save = "api/CouponCode/save";
+            public const string Delete = "api/CouponCode/delete";
+            public const string Search = "api/CouponCode/search";
         }
 
         public static class ShippingCompany

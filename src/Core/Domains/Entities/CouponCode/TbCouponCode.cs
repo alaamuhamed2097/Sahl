@@ -1,8 +1,8 @@
 ﻿using Common.Enumerations;
 
-namespace Domains.Entities.PromoCode
+namespace Domains.Entities.CouponCode
 {
-    public class TbPromoCode : BaseEntity
+    public class TbCouponCode : BaseEntity
     {
         public string TitleAR { get; set; } = null!;
         public string TitleEN { get; set; } = null!;
@@ -14,7 +14,7 @@ namespace Domains.Entities.PromoCode
         public int? UsageLimit { get; set; }
         public int UsageCount { get; set; }
 
-        public PromoCodeType PromoCodeType { get; set; }
+        public CouponCodeType CouponCodeType { get; set; }
         public ICollection<TbOrder> Orders { get; set; } = new HashSet<TbOrder>();
     }
 }

@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Shared.GeneralModels.Parameters
 {
-    public class ApplyPromoCodeRequest
+    public class ApplyCouponCodeRequest
     {
         [Required]
         public string Code { get; set; } = null!;

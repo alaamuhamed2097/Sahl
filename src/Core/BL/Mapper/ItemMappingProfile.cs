@@ -1,5 +1,5 @@
 ﻿using Domains.Entities.Catalog.Item;
-using Domains.Entities.Catalog.Item.ItemAttribute;
+using Domains.Entities.Catalog.Item.ItemAttributes;
 using Domains.Views.Item;
 using Shared.DTOs.ECommerce.Item;
 using Shared.GeneralModels.Models;

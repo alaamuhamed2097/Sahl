@@ -1,23 +1,23 @@
 ﻿using BL.Contracts.GeneralService.Location;
 using BL.Contracts.Service.Brand;
+using BL.Contracts.Service.CouponCode;
 using BL.Contracts.Service.Currency;
 using BL.Contracts.Service.Customer;
 using BL.Contracts.Service.ECommerce.Category;
 using BL.Contracts.Service.ECommerce.Item;
 using BL.Contracts.Service.ECommerce.Unit;
-using BL.Contracts.Service.PromoCode;
 using BL.Contracts.Service.Setting;
 using BL.Contracts.Service.ShippingCompny;
 using BL.Contracts.Service.Testimonial;
 using BL.Contracts.Service.Vendor;
 using BL.GeneralService.Location;
 using BL.Service.Brand;
+using BL.Service.CouponCode;
 using BL.Service.Currency;
 using BL.Service.Customer;
 using BL.Service.ECommerce.Category;
 using BL.Service.ECommerce.Item;
 using BL.Service.ECommerce.Unit;
-using BL.Service.PromoCode;
 using BL.Service.Setting;
 using BL.Service.ShippingCompany;
 using BL.Service.Testimonial;
@@ -56,7 +56,7 @@ namespace Api.Extensions
             services.AddScoped<IShippingCompanyService, ShippingCompanyService>();
 
             // Promo code
-            services.AddScoped<IPromoCodeService, PromoCodeService>();
+            services.AddScoped<ICouponCodeService, CouponCodeService>();
 
             // Testimonial Services
             services.AddScoped<ITestimonialService, TestimonialService>();

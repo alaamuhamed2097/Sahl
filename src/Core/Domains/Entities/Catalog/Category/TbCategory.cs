@@ -23,6 +23,8 @@ namespace Domains.Entities.Catalog.Category
         public bool IsHomeCategory { get; set; } // Indicates if the category will be displayed on the homepage or not.
 
         [Required]
+		public bool IsRoot { get; set; }
+
         public bool IsFeaturedCategory { get; set; } // Indicates if category is featured on the homepage or not.
         [Required]
         public bool IsMainCategory { get; set; } // Indicates if the category is a main category.
@@ -37,22 +39,6 @@ namespace Domains.Entities.Catalog.Category
         [MaxLength(200)]
         public string? ImageUrl { get; set; }
         public virtual ICollection<TbCategoryAttribute> CategoryAttributes { get; set; } = new HashSet<TbCategoryAttribute>();
-        public virtual ICollection<TbItem> Items { get; set; } = new HashSet<TbItem>();
-
-		//--------
-		
-
-		public bool IsRoot { get; set; }
-
-
-		public bool IsFeatureCategory { get; set; }
-
-	
-
-		// Navigation Properties
-		[ForeignKey("ParentId")]
-		public virtual TbCategory ParentCategory { get; set; }
-
-		public virtual ICollection<TbCategory> ChildCategories { get; set; }
+        public virtual ICollection<TbItem> Items { get; set; } = new HashSet<TbItem>();	
 	}
 }

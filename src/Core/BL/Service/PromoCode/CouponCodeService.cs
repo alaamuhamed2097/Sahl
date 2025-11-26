@@ -1,32 +1,32 @@
 ﻿using BL.Contracts.IMapper;
 using BL.Contracts.Service.ECommerce.Item;
-using BL.Contracts.Service.PromoCode;
+using BL.Contracts.Service.CouponCode;
 using Common.Enumerations;
 using DAL.Contracts.UnitOfWork;
 using DAL.Models;
-using Domains.Entities.PromoCode;
+using Domains.Entities.CouponCode;
 using Microsoft.Extensions.Logging;
 using Resources;
 using Shared.DTOs.ECommerce.Order;
-using Shared.DTOs.ECommerce.PromoCode;
-using Shared.GeneralModels.Parameters;
+using Shared.DTOs.ECommerce.CouponCode;
 using Shared.GeneralModels.ResultModels;
 using Shared.GeneralModels.SearchCriteriaModels;
 using System.Linq.Expressions;
+using Shared.GeneralModels.Parameters;
 
-namespace BL.Service.PromoCode
+namespace BL.Service.CouponCode
 {
-    public class PromoCodeService : IPromoCodeService
+    public class CouponCodeService : ICouponCodeService
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IItemService _itemService;
         private readonly IBaseMapper _mapper;
-        private readonly ILogger<PromoCodeService> _logger;
+        private readonly ILogger<CouponCodeService> _logger;
 
-        public PromoCodeService(IUnitOfWork unitOfWork,
+        public CouponCodeService(IUnitOfWork unitOfWork,
             IItemService itemService,
             IBaseMapper mapper,
-            ILogger<PromoCodeService> logger)
+            ILogger<CouponCodeService> logger)
         {
             _unitOfWork = unitOfWork;
             _itemService = itemService;
@@ -34,7 +34,7 @@ namespace BL.Service.PromoCode
             _logger = logger;
         }
 
-        public PaginatedDataModel<PromoCodeDto> GetPage(BaseSearchCriteriaModel criteriaModel)
+        public PaginatedDataModel<CouponCodeDto> GetPage(BaseSearchCriteriaModel criteriaModel)
         {
             if (criteriaModel == null)
                 throw new ArgumentNullException(nameof(criteriaModel));
@@ -46,7 +46,7 @@ namespace BL.Service.PromoCode
                 throw new ArgumentOutOfRangeException(nameof(criteriaModel.PageSize), ValidationResources.PageSizeRange);
 
             // Base filter for active entities
-            Expression<Func<TbPromoCode, bool>> filter = x => x.CurrentState == 1;
+            Expression<Func<TbCouponCode, bool>> filter = x => x.CurrentState == 1;
 
             // Apply search term if provided
             if (!string.IsNullOrWhiteSpace(criteriaModel.SearchTerm))
@@ -58,41 +58,41 @@ namespace BL.Service.PromoCode
                                x.Code != null && x.Code.ToLower().Contains(searchTerm));
             }
 
-            var items = _unitOfWork.TableRepository<TbPromoCode>().GetPage(
+            var items = _unitOfWork.TableRepository<TbCouponCode>().GetPage(
                 criteriaModel.PageNumber,
                 criteriaModel.PageSize,
                 filter,
                 orderBy: i => i.OrderByDescending(q => q.CreatedDateUtc));
 
-            var itemsDto = _mapper.MapList<TbPromoCode, PromoCodeDto>(items.Items);
+            var itemsDto = _mapper.MapList<TbCouponCode, CouponCodeDto>(items.Items);
             foreach (var item in itemsDto)
             {
-                item.IsActive = IsActivePromoCode(item);
+                item.IsActive = IsActiveCouponCode(item);
             }
 
-            return new PaginatedDataModel<PromoCodeDto>(itemsDto, items.TotalRecords);
+            return new PaginatedDataModel<CouponCodeDto>(itemsDto, items.TotalRecords);
         }
 
-        public List<PromoCodeDto> GetAll()
+        public List<CouponCodeDto> GetAll()
         {
-            var promoCodes = _unitOfWork.TableRepository<TbPromoCode>()
+            var couponCodes = _unitOfWork.TableRepository<TbCouponCode>()
                 .Get(predicate: p => p.CurrentState == 1)
                 .ToList();
 
-            var itemsDto = _mapper.MapList<TbPromoCode, PromoCodeDto>(promoCodes).ToList();
+            var itemsDto = _mapper.MapList<TbCouponCode, CouponCodeDto>(couponCodes).ToList();
             foreach (var item in itemsDto)
             {
-                item.IsActive = IsActivePromoCode(item);
+                item.IsActive = IsActiveCouponCode(item);
             }
 
             return itemsDto;
         }
 
-        public PromoCodeDto GetById(Guid id)
+        public CouponCodeDto GetById(Guid id)
         {
             if (id == Guid.Empty) throw new ArgumentException("Invalid promo code ID");
 
-            var promo = _unitOfWork.TableRepository<TbPromoCode>()
+            var promo = _unitOfWork.TableRepository<TbCouponCode>()
                 .Get(
                     predicate: p => p.CurrentState == 1 && p.Id == id,
                     includeProperties: "Orders")
@@ -101,21 +101,21 @@ namespace BL.Service.PromoCode
             if (promo == null)
                 throw new KeyNotFoundException($"Promo code with ID {id} not found");
 
-            var itemDto = _mapper.MapModel<TbPromoCode, PromoCodeDto>(promo);
-            itemDto.IsActive = IsActivePromoCode(itemDto);
+            var itemDto = _mapper.MapModel<TbCouponCode, CouponCodeDto>(promo);
+            itemDto.IsActive = IsActiveCouponCode(itemDto);
             return itemDto;
         }
 
-        public async Task<bool> Save(PromoCodeDto dto, Guid userId)
+        public async Task<bool> Save(CouponCodeDto dto, Guid userId)
         {
             ValidateSaveParameters(dto, userId);
-            ValidatePromoCodeType(dto);
+            ValidateCouponCodeType(dto);
 
             try
             {
                 await _unitOfWork.BeginTransactionAsync();
 
-                SavePromoCodeEntity(dto, userId);
+                SaveCouponCodeEntity(dto, userId);
                 await _unitOfWork.CommitAsync();
                 return true;
             }
@@ -127,15 +127,15 @@ namespace BL.Service.PromoCode
             }
         }
 
-        private void ValidateSaveParameters(PromoCodeDto dto, Guid userId)
+        private void ValidateSaveParameters(CouponCodeDto dto, Guid userId)
         {
             if (dto == null) throw new ArgumentNullException(nameof(dto));
             if (userId == Guid.Empty) throw new ArgumentException("Invalid user ID");
         }
 
-        private void ValidatePromoCodeType(PromoCodeDto dto)
+        private void ValidateCouponCodeType(CouponCodeDto dto)
         {
-            if (dto.PromoCodeType == PromoCodeType.Percentage)
+            if (dto.CouponCodeType == CouponCodeType.Percentage)
             {
                 // Validate percentage value (should be between 0 and 100)
                 if (dto.Value <= 0 || dto.Value > 100)
@@ -143,7 +143,7 @@ namespace BL.Service.PromoCode
                     throw new ArgumentException("Percentage value must be between 0 and 100");
                 }
             }
-            else if (dto.PromoCodeType == PromoCodeType.FixedValue)
+            else if (dto.CouponCodeType == CouponCodeType.FixedValue)
             {
                 // Validate fixed value (should be positive)
                 if (dto.Value <= 0)
@@ -153,25 +153,25 @@ namespace BL.Service.PromoCode
             }
         }
 
-        private Guid SavePromoCodeEntity(PromoCodeDto dto, Guid userId)
+        private Guid SaveCouponCodeEntity(CouponCodeDto dto, Guid userId)
         {
-            var entity = _mapper.MapModel<PromoCodeDto, TbPromoCode>(dto);
+            var entity = _mapper.MapModel<CouponCodeDto, TbCouponCode>(dto);
 
             if (entity.Id != Guid.Empty)
             {
-                var exists = _unitOfWork.TableRepository<TbPromoCode>().Get(p => p.Id == entity.Id && p.CurrentState == 0).Any();
+                var exists = _unitOfWork.TableRepository<TbCouponCode>().Get(p => p.Id == entity.Id && p.CurrentState == 0).Any();
                 if (exists)
                     throw new ArgumentException("Invalid promo code ID");
             }
             else
             {
-                var codeExists = _unitOfWork.TableRepository<TbPromoCode>().IsExists("Code", dto.Code);
+                var codeExists = _unitOfWork.TableRepository<TbCouponCode>().IsExists("Code", dto.Code);
                 if (codeExists)
                     throw new ArgumentException("The code you entered already exists. Please enter a unique code.");
             }
 
-            _unitOfWork.TableRepository<TbPromoCode>().Save(entity, userId, out Guid promoCodeId);
-            return promoCodeId;
+            _unitOfWork.TableRepository<TbCouponCode>().Save(entity, userId, out Guid CouponCodeId);
+            return CouponCodeId;
         }
 
         public bool Delete(Guid id, Guid userId)
@@ -180,7 +180,7 @@ namespace BL.Service.PromoCode
 
             try
             {
-                return _unitOfWork.TableRepository<TbPromoCode>().UpdateCurrentState(id, userId);
+                return _unitOfWork.TableRepository<TbCouponCode>().UpdateCurrentState(id, userId);
             }
             catch (Exception ex)
             {
@@ -189,40 +189,40 @@ namespace BL.Service.PromoCode
             }
         }
 
-        public async Task<ServiceResult<AppliedPromoCodeResult>> ApplyPromoCode(ApplyPromoCodeRequest request)
+        public async Task<ServiceResult<AppliedCouponCodeResult>> ApplyCouponCode(ApplyCouponCodeRequest request)
         {
             try
             {
                 // Validate the promo code
-                var validationResult = await ValidatePromoCodeAsync(request.Code, request.UserId);
+                var validationResult = await ValidateCouponCodeAsync(request.Code, request.UserId);
 
                 // First get all prices from the database
                 var priceLookupResult = GetPricesForCartItems(request.OrderItems);
                 if (!priceLookupResult.Success)
-                    return ServiceResult<AppliedPromoCodeResult>.FailureResult(priceLookupResult.Message);
+                    return ServiceResult<AppliedCouponCodeResult>.FailureResult(priceLookupResult.Message);
 
                 var itemPrices = priceLookupResult.Data;
                 decimal cartTotal = itemPrices.Sum(x => x.Price * x.Quantity);
 
                 if (!validationResult.Success || !validationResult.Data.IsValid)
-                    return ServiceResult<AppliedPromoCodeResult>.FailureResult(validationResult.Message);
+                    return ServiceResult<AppliedCouponCodeResult>.FailureResult(validationResult.Message);
 
                 // Get the full promo code entity
-                var promoCode = _unitOfWork.TableRepository<TbPromoCode>()
-                    .Get(p => p.Id == validationResult.Data.PromoCodeId && p.CurrentState == 1)
+                var couponCode = _unitOfWork.TableRepository<TbCouponCode>()
+                    .Get(p => p.Id == validationResult.Data.CouponCodeId && p.CurrentState == 1)
                     .FirstOrDefault();
 
-                if (promoCode == null)
-                    return ServiceResult<AppliedPromoCodeResult>.FailureResult("Promo code not found");
+                if (couponCode == null)
+                    return ServiceResult<AppliedCouponCodeResult>.FailureResult("Promo code not found");
 
                 decimal totalDiscount = 0;
 
                 // Calculate cart-wide discount
-                totalDiscount = CalculateCartDiscount(_mapper.MapModel<TbPromoCode, PromoCodeDto>(promoCode), cartTotal);
+                totalDiscount = CalculateCartDiscount(_mapper.MapModel<TbCouponCode, CouponCodeDto>(couponCode), cartTotal);
 
                 // Update usage count
-                promoCode.UsageCount++;
-                _unitOfWork.TableRepository<TbPromoCode>().Save(promoCode, Guid.Empty);
+                couponCode.UsageCount++;
+                _unitOfWork.TableRepository<TbCouponCode>().Save(couponCode, Guid.Empty);
 
                 try
                 {
@@ -234,72 +234,72 @@ namespace BL.Service.PromoCode
                     throw;
                 }
 
-                var result = new AppliedPromoCodeResult
+                var result = new AppliedCouponCodeResult
                 {
-                    PromoCodeId = promoCode.Id,
-                    Code = promoCode.Code,
+                    CouponCodeId = couponCode.Id,
+                    Code = couponCode.Code,
                     TotalDiscount = totalDiscount,
-                    DiscountType = promoCode.PromoCodeType,
+                    DiscountType = couponCode.CouponCodeType,
                     NewTotal = cartTotal - totalDiscount,
                     OriginalTotal = cartTotal
                 };
 
-                return ServiceResult<AppliedPromoCodeResult>.SuccessResult(result);
+                return ServiceResult<AppliedCouponCodeResult>.SuccessResult(result);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, $"Error applying promo code {request.Code}");
-                return ServiceResult<AppliedPromoCodeResult>.FailureResult("Error applying promo code");
+                return ServiceResult<AppliedCouponCodeResult>.FailureResult("Error applying promo code");
             }
         }
 
-        public async Task<ServiceResult<PromoCodeValidationResult>> ValidatePromoCodeAsync(string code, string userId)
+        public async Task<ServiceResult<CouponCodeValidationResult>> ValidateCouponCodeAsync(string code, string userId)
         {
             try
             {
                 // Get active promo code
-                var promoCode = _unitOfWork.TableRepository<TbPromoCode>()
+                var couponCode = _unitOfWork.TableRepository<TbCouponCode>()
                     .Get(predicate: p => p.Code == code && p.CurrentState == 1,
                          includeProperties: "Orders").FirstOrDefault();
 
-                if (promoCode == null)
-                    return ServiceResult<PromoCodeValidationResult>.FailureResult("Invalid promo code");
+                if (couponCode == null)
+                    return ServiceResult<CouponCodeValidationResult>.FailureResult("Invalid promo code");
 
-                var promoCodeDto = _mapper.MapModel<TbPromoCode, PromoCodeDto>(promoCode);
+                var couponCodeDto = _mapper.MapModel<TbCouponCode, CouponCodeDto>(couponCode);
 
                 // Check date validity
-                if (DateTime.UtcNow < promoCodeDto.StartDateUTC)
-                    return ServiceResult<PromoCodeValidationResult>.FailureResult("Promo code not yet active");
+                if (DateTime.UtcNow < couponCodeDto.StartDateUTC)
+                    return ServiceResult<CouponCodeValidationResult>.FailureResult("Promo code not yet active");
 
-                if (DateTime.UtcNow > promoCodeDto.EndDateUTC)
-                    return ServiceResult<PromoCodeValidationResult>.FailureResult("Promo code expired");
+                if (DateTime.UtcNow > couponCodeDto.EndDateUTC)
+                    return ServiceResult<CouponCodeValidationResult>.FailureResult("Promo code expired");
 
                 // Check usage limits
-                if (promoCodeDto.UsageLimit > 0 && promoCodeDto.UsageCount >= promoCodeDto.UsageLimit)
-                    return ServiceResult<PromoCodeValidationResult>.FailureResult("Promo code usage limit reached");
+                if (couponCodeDto.UsageLimit > 0 && couponCodeDto.UsageCount >= couponCodeDto.UsageLimit)
+                    return ServiceResult<CouponCodeValidationResult>.FailureResult("Promo code usage limit reached");
 
                 //// Check the user is marketer
                 //if (!await _marketerService.IsMarketerAsync(userId))
-                //    return ServiceResult<PromoCodeValidationResult>.FailureResult("Promo code for marketers only");
+                //    return ServiceResult<CouponCodeValidationResult>.FailureResult("Promo code for marketers only");
 
-                return ValidateCartPromo(promoCodeDto);
+                return ValidateCartPromo(couponCodeDto);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, $"Error validating promo code {code}");
-                return ServiceResult<PromoCodeValidationResult>.FailureResult("Error validating promo code");
+                return ServiceResult<CouponCodeValidationResult>.FailureResult("Error validating promo code");
             }
         }
 
-        private bool IsActivePromoCode(PromoCodeDto promoCode)
+        private bool IsActiveCouponCode(CouponCodeDto couponCode)
         {
-            if (promoCode.StartDateUTC > DateTime.UtcNow)
+            if (couponCode.StartDateUTC > DateTime.UtcNow)
                 return false;
 
-            if (promoCode.EndDateUTC <= DateTime.UtcNow)
+            if (couponCode.EndDateUTC <= DateTime.UtcNow)
                 return false;
 
-            if (promoCode.UsageCount >= promoCode.UsageLimit)
+            if (couponCode.UsageCount >= couponCode.UsageLimit)
                 return false;
 
             return true;
@@ -338,26 +338,26 @@ namespace BL.Service.PromoCode
             }
         }
 
-        private ServiceResult<PromoCodeValidationResult> ValidateCartPromo(PromoCodeDto promoCode)
+        private ServiceResult<CouponCodeValidationResult> ValidateCartPromo(CouponCodeDto couponCode)
         {
-            var result = new PromoCodeValidationResult
+            var result = new CouponCodeValidationResult
             {
-                PromoCodeId = promoCode.Id,
-                Code = promoCode.Code,
-                DiscountValue = promoCode.Value,
-                DiscountType = promoCode.PromoCodeType,
+                CouponCodeId = couponCode.Id,
+                Code = couponCode.Code,
+                DiscountValue = couponCode.Value,
+                DiscountType = couponCode.CouponCodeType,
                 IsValid = true,
                 ApplicableItems = new List<Guid>() // All items are applicable for cart-wide discounts
             };
 
-            return ServiceResult<PromoCodeValidationResult>.SuccessResult(result);
+            return ServiceResult<CouponCodeValidationResult>.SuccessResult(result);
         }
 
-        private decimal CalculateCartDiscount(PromoCodeDto promoCode, decimal cartTotal)
+        private decimal CalculateCartDiscount(CouponCodeDto couponCode, decimal cartTotal)
         {
-            return promoCode.PromoCodeType == PromoCodeType.Percentage
-                ? cartTotal * (promoCode.Value / 100)
-                : Math.Min(promoCode.Value, cartTotal);
+            return couponCode.CouponCodeType == CouponCodeType.Percentage
+                ? cartTotal * (couponCode.Value / 100)
+                : Math.Min(couponCode.Value, cartTotal);
         }
     }
 }
