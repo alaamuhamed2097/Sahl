@@ -18,7 +18,7 @@ namespace Api.Extensions
             });
 
             // Add Identity services
-            services.AddIdentity<ApplicationUser, IdentityRole<Guid>>(options =>
+            services.AddIdentity<ApplicationUser, IdentityRole>(options =>
             {
                 // Configure password requirements
                 options.Password.RequireDigit = false;
