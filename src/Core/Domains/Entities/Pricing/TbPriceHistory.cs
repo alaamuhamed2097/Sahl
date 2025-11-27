@@ -28,7 +28,7 @@ namespace Domains.Entities.Pricing
         public DateTime ChangedAt { get; set; }
 
         [ForeignKey("ChangedByUser")]
-        public string? ChangedByUserId { get; set; }
+        public Guid? ChangedByUserId { get; set; }
 
         [StringLength(500)]
         public string? Reason { get; set; }

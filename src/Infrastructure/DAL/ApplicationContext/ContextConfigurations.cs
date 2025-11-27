@@ -116,7 +116,7 @@ namespace DAL.ApplicationContext
                 {
                     adminUser = new ApplicationUser
                     {
-                        Id = Guid.NewGuid().ToString(),
+                        Id = Guid.NewGuid(),
                         UserName = adminEmail,
                         Email = adminEmail,
                         EmailConfirmed = true,
@@ -145,7 +145,7 @@ namespace DAL.ApplicationContext
                 {
                     VendorUser = new ApplicationUser
                     {
-                        Id = Guid.NewGuid().ToString(),
+                        Id = Guid.NewGuid(),
                         UserName = VendorEmail,
                         Email = VendorEmail,
                         EmailConfirmed = true,

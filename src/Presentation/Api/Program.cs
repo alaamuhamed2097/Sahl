@@ -152,7 +152,7 @@ using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
     var userManager = services.GetRequiredService<UserManager<ApplicationUser>>();
-    var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
+    var roleManager = services.GetRequiredService<RoleManager<IdentityRole<Guid>>>();
     var dbContext = services.GetRequiredService<ApplicationDbContext>();
 
     // Apply migrations

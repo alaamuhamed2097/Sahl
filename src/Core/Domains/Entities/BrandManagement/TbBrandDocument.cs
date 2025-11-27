@@ -33,7 +33,7 @@ namespace Domains.Entities.BrandManagement
         public DateTime? VerifiedAt { get; set; }
 
         [ForeignKey("VerifiedByUser")]
-        public string? VerifiedByUserId { get; set; }
+        public Guid? VerifiedByUserId { get; set; }
 
         [StringLength(500)]
         public string? VerificationNotes { get; set; }

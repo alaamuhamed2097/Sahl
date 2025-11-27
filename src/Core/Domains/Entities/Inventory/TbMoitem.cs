@@ -19,7 +19,7 @@ namespace Domains.Entities.Inventory
         public string? Notes { get; set; }
 
         [ForeignKey("User")]
-        public string? UserId { get; set; }
+        public Guid? UserId { get; set; }
 
         public decimal TotalAmount { get; set; }
 

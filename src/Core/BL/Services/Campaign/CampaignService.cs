@@ -246,7 +246,7 @@ namespace BL.Services.Campaign
             if (product == null) return false;
 
             product.IsActive = true;
-            product.ApprovedByUserId = approvedByUserId.ToString();
+            product.ApprovedByUserId = approvedByUserId;
             product.ApprovedAt = DateTime.UtcNow;
             product.UpdatedDateUtc = DateTime.UtcNow;
 

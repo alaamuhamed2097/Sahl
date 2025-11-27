@@ -27,7 +27,7 @@ namespace Domains.Entities.Visibility
         public bool IsAutomatic { get; set; }
 
         [ForeignKey("ChangedByUser")]
-        public string? ChangedByUserId { get; set; }
+        public Guid? ChangedByUserId { get; set; }
 
         public virtual TbItem Item { get; set; } = null!;
         public virtual ApplicationUser? ChangedByUser { get; set; }

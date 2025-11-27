@@ -7,7 +7,7 @@ namespace Domains.Entities.Notification
     {
         [Required]
         [ForeignKey(nameof(User))]
-        public string UserId { get; set; }
+        public Guid UserId { get; set; }
 
         [Required]
         [ForeignKey(nameof(TbNotification))]

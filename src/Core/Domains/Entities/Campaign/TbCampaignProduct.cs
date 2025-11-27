@@ -49,7 +49,7 @@ namespace Domains.Entities.Campaign
         public DateTime? ApprovedAt { get; set; }
 
         [ForeignKey("ApprovedByUser")]
-        public string? ApprovedByUserId { get; set; }
+        public Guid? ApprovedByUserId { get; set; }
 
         public int DisplayOrder { get; set; }
 

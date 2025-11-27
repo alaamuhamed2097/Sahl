@@ -51,7 +51,7 @@ namespace Domains.Entities.Wallet
         public DateTime? ProcessedDate { get; set; }
 
         [ForeignKey("ProcessedByUser")]
-        public string? ProcessedByUserId { get; set; }
+        public Guid? ProcessedByUserId { get; set; }
 
         public virtual TbCustomerWallet? CustomerWallet { get; set; }
         public virtual TbVendorWallet? VendorWallet { get; set; }

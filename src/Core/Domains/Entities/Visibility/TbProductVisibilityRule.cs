@@ -33,7 +33,7 @@ namespace Domains.Entities.Visibility
         public DateTime? SuppressedAt { get; set; }
 
         [ForeignKey("SuppressedByUser")]
-        public string? SuppressedByUserId { get; set; }
+        public Guid? SuppressedByUserId { get; set; }
 
         public virtual TbItem Item { get; set; } = null!;
         public virtual ApplicationUser? SuppressedByUser { get; set; }

@@ -52,7 +52,7 @@ namespace BL.GeneralService.Notification
                 criteriaModel.PageNumber,
                 criteriaModel.PageSize,
                 filter, orderBy: q => q.OrderByDescending(n => n.CreatedDateUtc));
-            var userNotifications = _userNotificationUnitOfWork.TableRepository<TbUserNotification>().Get(n => n.UserId == userId);
+            var userNotifications = _userNotificationUnitOfWork.TableRepository<TbUserNotification>().Get(n => n.UserId == Guid.Parse(userId));
             var unReadCount = userNotifications.Count(n => n.IsRead == false);
             var totalCount = userNotifications.Count();
             var dtoList = _mapper.MapList<VwUserNotification, UserNotificationRequest>(entitiesList.Items);
@@ -108,7 +108,7 @@ namespace BL.GeneralService.Notification
                 if (dto.Id != Guid.Empty)
                 {
                     foreach (var userNotification in _userNotificationUnitOfWork.TableRepository<TbUserNotification>()
-                        .Get(un => un.NotificationId == dto.Id && un.UserId == dto.UserId))
+                        .Get(un => un.NotificationId == dto.Id && un.UserId == Guid.Parse(dto.UserId)))
                     {
                         var isDeleted = _userNotificationUnitOfWork.TableRepository<TbUserNotification>().HardDelete(userNotification.Id);
                         if (!isDeleted)
@@ -119,7 +119,7 @@ namespace BL.GeneralService.Notification
                 var userNotificationEntity = new TbUserNotification()
                 {
                     NotificationId = notificationId,
-                    UserId = dto.UserId,
+                    UserId = Guid.Parse(dto.UserId),
                     IsRead = dto.IsRead,
                 };
                 isSaved = _userNotificationUnitOfWork.TableRepository<TbUserNotification>().Create(userNotificationEntity, userId, out Guid userNotificationId);
@@ -148,13 +148,13 @@ namespace BL.GeneralService.Notification
                 foreach (var userNotificationRequest in userNotificationRequests)
                 {
                     var userNotification = _userNotificationUnitOfWork.TableRepository<TbUserNotification>()
-                          .Find(un => un.NotificationId == userNotificationRequest.Id && un.UserId == userId);
+                          .Find(un => un.NotificationId == userNotificationRequest.Id && un.UserId == Guid.Parse(userId));
                     userNotification.IsRead = true;
                     var isSaved = _userNotificationUnitOfWork.TableRepository<TbUserNotification>().Update(userNotification, Guid.Parse(userId), out Guid userNotificationId);
                     if (!isSaved)
                         throw new Exception(NotifiAndAlertsResources.SaveFailed);
                 }
-                var userNotifications = _userNotificationUnitOfWork.TableRepository<TbUserNotification>().Get(n => n.UserId == userId);
+                var userNotifications = _userNotificationUnitOfWork.TableRepository<TbUserNotification>().Get(n => n.UserId == Guid.Parse(userId));
                 var unReadCount = userNotifications.Count(n => n.IsRead == false);
                 var totalCount = userNotifications.Count();
                 await _userNotificationUnitOfWork.CommitAsync();

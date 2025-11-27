@@ -32,7 +32,7 @@ namespace BL.Service.Notification
                 throw new ArgumentNullException(nameof(userId));
 
             var preferences = await _preferencesRepository
-                .GetAsync(x => x.UserId == userId && x.CurrentState == 1);
+                .GetAsync(x => x.UserId == Guid.Parse(userId) && x.CurrentState == 1);
 
             return _mapper.MapList<TbNotificationPreferences, NotificationPreferencesDto>(preferences).ToList();
         }
@@ -43,7 +43,7 @@ namespace BL.Service.Notification
                 throw new ArgumentNullException(nameof(userId));
 
             var preference = _preferencesRepository
-                .Get(x => x.UserId == userId && x.NotificationType == notificationType && x.CurrentState == 1)
+                .Get(x => x.UserId == Guid.Parse(userId) && x.NotificationType == notificationType && x.CurrentState == 1)
                 .FirstOrDefault();
 
             if (preference == null) return null;
@@ -66,7 +66,7 @@ namespace BL.Service.Notification
         {
             // Check for existing preference
             var existing = _preferencesRepository
-                .Get(x => x.UserId == dto.UserId
+                .Get(x => x.UserId == Guid.Parse(dto.UserId)
                     && x.UserType == dto.UserType
                     && x.NotificationType == dto.NotificationType
                     && x.Id != dto.Id
@@ -102,7 +102,7 @@ namespace BL.Service.Notification
             Guid updaterId)
         {
             var preference = _preferencesRepository
-                .Get(x => x.UserId == userId && x.NotificationType == notificationType && x.CurrentState == 1)
+                .Get(x => x.UserId == Guid.Parse(userId) && x.NotificationType == notificationType && x.CurrentState == 1)
                 .FirstOrDefault();
 
             if (preference == null)

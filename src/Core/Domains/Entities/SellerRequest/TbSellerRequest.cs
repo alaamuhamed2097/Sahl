@@ -42,7 +42,7 @@ namespace Domains.Entities.SellerRequest
         public DateTime? ProcessedAt { get; set; }
 
         [ForeignKey("ReviewedByUser")]
-        public string? ReviewedByUserId { get; set; }
+        public Guid? ReviewedByUserId { get; set; }
 
         [StringLength(1000)]
         public string? ReviewNotes { get; set; }

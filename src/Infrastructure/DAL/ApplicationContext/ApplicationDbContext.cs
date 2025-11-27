@@ -48,7 +48,8 @@ namespace DAL.ApplicationContext
     /// Application database context for Entity Framework Core
     /// </summary>
     /// 
-    public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
+    public class ApplicationDbContext
+    : IdentityDbContext<ApplicationUser, IdentityRole<Guid>, Guid>
     {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
                 : base(options)

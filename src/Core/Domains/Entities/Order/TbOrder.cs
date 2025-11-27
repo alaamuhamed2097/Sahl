@@ -29,7 +29,7 @@ namespace Domains.Entities.Order
         public Guid PaymentGatewayMethodId { get; set; }
 
         [ForeignKey("User")]
-        public string UserId { get; set; } = null!;
+        public Guid UserId { get; set; } 
 
         [ForeignKey("DirectSaleLink")]
         public Guid? DirectSaleLinkId { get; set; }

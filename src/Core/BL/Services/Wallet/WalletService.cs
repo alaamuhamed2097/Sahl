@@ -274,7 +274,7 @@ namespace BL.Services.Wallet
 
             transaction.Status = WalletTransactionStatus.Completed;
             transaction.ProcessedDate = DateTime.UtcNow;
-            transaction.ProcessedByUserId = approvedByUserId.ToString();
+            transaction.ProcessedByUserId = approvedByUserId;
 
             // Update wallet balances
             if (transaction.CustomerWalletId.HasValue)
