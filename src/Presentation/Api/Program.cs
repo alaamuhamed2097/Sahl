@@ -3,7 +3,6 @@ using BL.GeneralService.Notification;
 using DAL.ApplicationContext;
 using Domains.Identity;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -157,10 +156,10 @@ using (var scope = app.Services.CreateScope())
     var dbContext = services.GetRequiredService<ApplicationDbContext>();
 
     // Apply migrations
-    await dbContext.Database.MigrateAsync();
+    //await dbContext.Database.MigrateAsync();
 
     // Seed data
-    await ContextConfigurations.SeedDataAsync(dbContext, userManager, roleManager);
+    // await ContextConfigurations.SeedDataAsync(dbContext, userManager, roleManager);
 }
 
 // Add debugging middleware for Swagger
