@@ -38,6 +38,7 @@ using Domains.Views.Category;
 using Domains.Views.Item;
 using Domains.Views.Unit;
 using Domains.Views.UserNotification;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
@@ -46,6 +47,7 @@ namespace DAL.ApplicationContext
     /// <summary>
     /// Application database context for Entity Framework Core
     /// </summary>
+    /// 
     public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
@@ -86,7 +88,7 @@ namespace DAL.ApplicationContext
         // Page Management
         public DbSet<TbPage> TbPages { get; set; }
 
-        // Promo Code Management
+        // Coupon Code Management
         public DbSet<TbCouponCode> TbCouponCodes { get; set; }
 
         // Settings
