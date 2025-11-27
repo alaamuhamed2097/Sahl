@@ -60,7 +60,7 @@ namespace BL.GeneralService.UserManagement
 
             // Map user DTO to ApplicationUser
             var applicationUser = _mapper.MapModel<AdminRegistrationDto, ApplicationUser>(userDto);
-            applicationUser.Id = Guid.NewGuid();
+            applicationUser.Id = Guid.NewGuid().ToString();
             applicationUser.PhoneNumber = "0000000000";
             applicationUser.ProfileImagePath = "uploads/Images/default.png";
             applicationUser.PhoneCode = "+000";

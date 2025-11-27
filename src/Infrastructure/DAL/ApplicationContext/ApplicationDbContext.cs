@@ -21,13 +21,14 @@ using Domains.Entities.Location;
 using Domains.Entities.Loyalty;
 using Domains.Entities.Merchandising;
 using Domains.Entities.Notification;
+using Domains.Entities.Offer.Rating;
+using Domains.Entities.Offer.Warranty;
 using Domains.Entities.Page;
 using Domains.Entities.Pricing;
 using Domains.Entities.SellerRequest;
 using Domains.Entities.SellerTier;
 using Domains.Entities.Setting;
 using Domains.Entities.Shipping;
-using Domains.Entities.Testimonial;
 using Domains.Entities.VideoProvider;
 using Domains.Entities.Visibility;
 using Domains.Entities.Wallet;
@@ -37,10 +38,8 @@ using Domains.Views.Category;
 using Domains.Views.Item;
 using Domains.Views.Unit;
 using Domains.Views.UserNotification;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using System;
 
 namespace DAL.ApplicationContext
 {
@@ -74,6 +73,9 @@ namespace DAL.ApplicationContext
         public DbSet<TbItemAttribute> TbItemAttribute { get; set; }
         public DbSet<TbItemAttributeCombinationPricing> TbItemAttributeCombinationPricings { get; set; }
         public DbSet<TbItemImage> TbItemImages { get; set; }
+        public DbSet<TbItemCombination> TbItemCombinations { get; set; }
+        public DbSet<TbCombinationAttribute> TbCombinationAttributes { get; set; }
+        public DbSet<TbCombinationAttributesValue> TbCombinationAttributesValues { get; set; }
 
         // Notification Management
         public DbSet<TbNotification> TbNotifications { get; set; }
@@ -93,9 +95,6 @@ namespace DAL.ApplicationContext
 
         // Shipping Management
         public DbSet<TbShippingCompany> TbShippingCompanies { get; set; }
-
-        // Testimonial Management
-        public DbSet<TbTestimonial> TbTestimonials { get; set; }
 
         // Unit Management
         public DbSet<TbUnit> TbUnits { get; set; }
@@ -197,6 +196,19 @@ namespace DAL.ApplicationContext
         public DbSet<TbBrandDocument> TbBrandDocuments { get; set; }
         public DbSet<TbAuthorizedDistributor> TbAuthorizedDistributors { get; set; }
 
+        // Offer Management - ADD THESE MISSING DbSets
+        public DbSet<Domains.Entities.Offer.TbOffer> TbOffers { get; set; }
+        public DbSet<Domains.Entities.Offer.TbOfferCombinationPricing> TbOfferCombinationPricings { get; set; }
+        public DbSet<Domains.Entities.Offer.TbOfferCondition> TbOfferConditions { get; set; }
+        public DbSet<TbWarranty> TbWarranties { get; set; }
+        public DbSet<TbUserOfferRating> TbUserOfferRatings { get; set; }
+
+        // Order Management - ADD THESE MISSING DbSets
+        public DbSet<Domains.Entities.Order.TbOrder> TbOrders { get; set; }
+        public DbSet<Domains.Entities.Order.TbOrderDetail> TbOrderDetails { get; set; }
+        public DbSet<Domains.Entities.Order.TbRefundRequest> TbRefundRequests { get; set; }
+        public DbSet<Domains.Entities.Shipping.TbShippingDetail> TbShippingDetails { get; set; }
+
         #endregion
 
         #region DbSets - Views
@@ -219,85 +231,121 @@ namespace DAL.ApplicationContext
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            base.OnModelCreating(modelBuilder);
-
-            #region Global Configuration - Base Entity
-
-            // Apply default NEWID() for all entities inheriting from BaseEntity
-            foreach (var entityType in modelBuilder.Model.GetEntityTypes())
+            try
             {
-                if (typeof(BaseEntity).IsAssignableFrom(entityType.ClrType))
+                base.OnModelCreating(modelBuilder);
+
+                #region Global Configuration - Base Entity
+
+                // Apply default NEWID() for all entities inheriting from BaseEntity
+                foreach (var entityType in modelBuilder.Model.GetEntityTypes())
                 {
-                    // Auto-generate NEWID() in SQL Server
-                    modelBuilder.Entity(entityType.ClrType)
-           .Property(nameof(BaseEntity.Id))
-             .HasDefaultValueSql("NEWID()")
-               .ValueGeneratedOnAdd();
+                    // FIXED: Single null-safe check instead of two consecutive if statements
+                    if (entityType.ClrType != null && typeof(BaseEntity).IsAssignableFrom(entityType.ClrType))
+                    {
+                        // Auto-generate NEWID() in SQL Server
+                        modelBuilder.Entity(entityType.ClrType)
+                            .Property(nameof(BaseEntity.Id))
+                            .HasDefaultValueSql("NEWID()")
+                            .ValueGeneratedOnAdd();
 
-                    // Configure CreatedDateUtc
-                    modelBuilder.Entity(entityType.ClrType)
-                  .Property(nameof(BaseEntity.CreatedDateUtc))
-                  .HasDefaultValueSql("GETUTCDATE()")
-                 .HasColumnType("datetime2(2)");
+                        // Configure CreatedDateUtc
+                        modelBuilder.Entity(entityType.ClrType)
+                            .Property(nameof(BaseEntity.CreatedDateUtc))
+                            .HasDefaultValueSql("GETUTCDATE()")
+                            .HasColumnType("datetime2(2)");
 
-                    // Configure UpdatedDateUtc
-                    modelBuilder.Entity(entityType.ClrType)
-                              .Property(nameof(BaseEntity.UpdatedDateUtc))
-                   .HasColumnType("datetime2(2)")
-                         .IsRequired(false);
+                        // Configure UpdatedDateUtc
+                        modelBuilder.Entity(entityType.ClrType)
+                            .Property(nameof(BaseEntity.UpdatedDateUtc))
+                            .HasColumnType("datetime2(2)")
+                            .IsRequired(false);
 
-                    // Configure CurrentState
-                    modelBuilder.Entity(entityType.ClrType)
-                         .Property(nameof(BaseEntity.CurrentState))
-                .HasDefaultValue(1);
+                        // Configure CurrentState
+                        modelBuilder.Entity(entityType.ClrType)
+                            .Property(nameof(BaseEntity.CurrentState))
+                            .HasDefaultValue(1);
 
-                    // Index on CurrentState
-                    modelBuilder.Entity(entityType.ClrType)
-                      .HasIndex(nameof(BaseEntity.CurrentState))
-                    .IsUnique(false);
+                        // Index on CurrentState
+                        modelBuilder.Entity(entityType.ClrType)
+                            .HasIndex(nameof(BaseEntity.CurrentState))
+                            .IsUnique(false);
+                    }
                 }
+
+                #endregion
+
+                #region Apply Configurations from Assembly
+
+                // This will automatically apply all IEntityTypeConfiguration<T> classes from the assembly
+                modelBuilder.ApplyConfigurationsFromAssembly(typeof(ApplicationDbContext).Assembly);
+
+                #endregion
+
+                #region View Configurations
+
+                // Category Views
+                modelBuilder.Entity<VwAttributeWithOptions>()
+                    .HasNoKey()
+                    .ToView("VwAttributeWithOptions");
+
+                modelBuilder.Entity<VwCategoryItems>()
+                    .HasNoKey()
+                    .ToView("VwCategoryItems");
+
+                modelBuilder.Entity<VwCategoryWithAttributes>()
+                    .HasNoKey()
+                    .ToView("VwCategoryWithAttributes");
+
+                // Item Views
+                modelBuilder.Entity<VwItem>()
+                    .HasNoKey()
+                    .ToView("VwItems");
+
+                // Unit Views
+                modelBuilder.Entity<VwUnitWithConversionsUnits>()
+                    .HasNoKey()
+                    .ToView("VwUnitWithConversionsUnits");
+
+                // User Views
+                modelBuilder.Entity<VwUserNotification>()
+                    .HasNoKey()
+                    .ToView("VwUserNotifications");
+
+                #endregion
+
+                // Explicitly configure ambiguous relationships
+                // Fix: Configure Offer <-> Warranty relationship to remove ambiguity
+                modelBuilder.Entity<Domains.Entities.Offer.TbOffer>(entity =>
+                {
+                    entity.HasOne(o => o.Warranty)
+                          .WithMany(w => w.OffersList)
+                          .HasForeignKey(o => o.WarrantyId)
+                          .OnDelete(DeleteBehavior.SetNull);
+                });
             }
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine("[OnModelCreating] Exception while building model: " + ex.Message);
+                Console.Error.WriteLine(ex.ToString());
 
-            #endregion
+                try
+                {
+                    // try to print some entity types for diagnostics
+                    var types = modelBuilder?.Model?.GetEntityTypes()?.Select(t => t.ClrType?.FullName ?? "<no-clr>").ToArray();
+                    if (types != null)
+                    {
+                        Console.Error.WriteLine("[OnModelCreating] Discovered entity CLR types:");
+                        foreach (var t in types.Take(20))
+                        {
+                            Console.Error.WriteLine(" - " + t);
+                        }
+                    }
+                }
+                catch { }
 
-            #region Apply Configurations from Assembly
-
-            // This will automatically apply all IEntityTypeConfiguration<T> classes from the assembly
-            modelBuilder.ApplyConfigurationsFromAssembly(typeof(ApplicationDbContext).Assembly);
-
-            #endregion
-
-            #region View Configurations
-
-            // Category Views
-            modelBuilder.Entity<VwAttributeWithOptions>()
-               .HasNoKey()
-               .ToView("VwAttributeWithOptions");
-
-            modelBuilder.Entity<VwCategoryItems>()
-                 .HasNoKey()
-                 .ToView("VwCategoryItems");
-
-            modelBuilder.Entity<VwCategoryWithAttributes>()
-                 .HasNoKey()
-                 .ToView("VwCategoryWithAttributes");
-
-            // Item Views
-            modelBuilder.Entity<VwItem>()
-                .HasNoKey()
-                .ToView("VwItems");
-
-            // Unit Views
-            modelBuilder.Entity<VwUnitWithConversionsUnits>()
-               .HasNoKey()
-               .ToView("VwUnitWithConversionsUnits");
-
-            // User Views
-            modelBuilder.Entity<VwUserNotification>()
-                .HasNoKey()
-                .ToView("VwUserNotifications");
-
-            #endregion
+                throw;
+            }
         }
     }
 }

@@ -2,12 +2,10 @@
 using Dashboard.Contracts.Notification;
 using Dashboard.Contracts.Page;
 using Dashboard.Contracts.Setting;
-using Dashboard.Contracts.Testimonial;
 using Dashboard.Services.General;
 using Dashboard.Services.Notification;
 using Dashboard.Services.Page;
 using Dashboard.Services.Setting;
-using Dashboard.Services.Testimonial;
 
 namespace Dashboard.Extensions
 {
@@ -19,7 +17,6 @@ namespace Dashboard.Extensions
             services.AddScoped<INotificationStateService, NotificationStateService>();
             services.AddScoped<IUserNotificationService, UserNotificationService>();
             services.AddScoped<ISettingService, SettingService>();
-            services.AddScoped<ITestimonialService, TestimonialService>();
             services.AddScoped<IPageService, PageService>();
             services.AddScoped(typeof(ISearchService<>), typeof(SearchService<>));
             services.AddScoped<IResourceLoaderService, ResourceLoaderService>();

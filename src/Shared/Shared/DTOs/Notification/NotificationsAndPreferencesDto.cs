@@ -45,7 +45,7 @@ namespace Shared.DTOs.Notification
         public Guid Id { get; set; }
 
         [Required]
-        public string UserId { get; set; } = string.Empty;
+        public string UserId { get; set; }
 
         [Required]
         public RecipientType UserType { get; set; }
