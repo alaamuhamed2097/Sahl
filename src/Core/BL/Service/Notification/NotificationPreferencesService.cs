@@ -66,9 +66,9 @@ namespace BL.Service.Notification
         {
             // Check for existing preference
             var existing = _preferencesRepository
-                .Get(x => x.UserId == dto.UserId 
-                    && x.UserType == dto.UserType 
-                    && x.NotificationType == dto.NotificationType 
+                .Get(x => x.UserId == dto.UserId
+                    && x.UserType == dto.UserType
+                    && x.NotificationType == dto.NotificationType
                     && x.Id != dto.Id
                     && x.CurrentState == 1)
                 .FirstOrDefault();
@@ -93,12 +93,12 @@ namespace BL.Service.Notification
         }
 
         public async Task<bool> UpdatePreferenceAsync(
-            string userId, 
-            NotificationType notificationType, 
-            bool enableEmail, 
-            bool enableSMS, 
-            bool enablePush, 
-            bool enableInApp, 
+            string userId,
+            NotificationType notificationType,
+            bool enableEmail,
+            bool enableSMS,
+            bool enablePush,
+            bool enableInApp,
             Guid updaterId)
         {
             var preference = _preferencesRepository

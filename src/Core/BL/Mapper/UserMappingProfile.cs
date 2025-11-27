@@ -1,7 +1,5 @@
-﻿using DAL.ApplicationContext;
-using Domains.Entities.Location;
+﻿using Domains.Entities.Location;
 using Shared.DTOs.Location;
-using Shared.DTOs.Testimonial;
 using Shared.DTOs.User.Admin;
 
 namespace BL.Mapper
@@ -23,9 +21,6 @@ namespace BL.Mapper
             CreateMap<TbCountry, CountryDto>().ReverseMap();
             CreateMap<TbState, StateDto>().ReverseMap();
             CreateMap<TbCity, CityDto>().ReverseMap();
-
-            // Add Testimonial mappings
-            CreateMap<TbTestimonial, TestimonialDto>().ReverseMap();
         }
     }
 }

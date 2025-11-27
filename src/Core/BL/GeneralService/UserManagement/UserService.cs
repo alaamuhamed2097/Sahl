@@ -83,7 +83,7 @@ namespace BL.GeneralService.UserManagement
 
         public async Task<TBaseDto> UpdateAsync(Guid id, TBaseUpdateDto updateDto, Guid updatorId)
         {
-            if (!_userManager.Users.Any(u => u.Id == updatorId))
+            if (!_userManager.Users.Any(u => u.Id == updatorId.ToString()))
                 throw new Exception("Updator not found");
 
             var user = await _userManager.FindByIdAsync(id.ToString());
@@ -123,7 +123,7 @@ namespace BL.GeneralService.UserManagement
 
         public async Task<bool> Delete(Guid id, Guid updatorId)
         {
-            if (!_userManager.Users.Any(u => u.Id == updatorId))
+            if (!_userManager.Users.Any(u => u.Id == updatorId.ToString()))
                 throw new Exception("updator not found");
 
             var user = await _userManager.FindByIdAsync(id.ToString());

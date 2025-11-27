@@ -1,10 +1,9 @@
 ﻿using Common.Enumerations.User;
 using Microsoft.AspNetCore.Identity;
-using System;
 
 namespace Domains.Identity
 {
-    public class ApplicationUser : IdentityUser<Guid> // Changed from IdentityUser to IdentityUser<Guid>
+    public class ApplicationUser : IdentityUser
     {
         public string FirstName { get; set; } = null!;
         public string LastName { get; set; } = null!;

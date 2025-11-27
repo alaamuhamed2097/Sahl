@@ -16,7 +16,8 @@ namespace DAL.Configurations
                 .HasDefaultValueSql("NEWID()");
 
             builder.Property(x => x.UserId)
-                .IsRequired();
+                .IsRequired()
+                .HasColumnType("uniqueidentifier");
 
             builder.Property(x => x.UserType)
                 .IsRequired();
@@ -46,11 +47,12 @@ namespace DAL.Configurations
             builder.Property(x => x.CurrentState)
                 .HasDefaultValue(1);
 
-            // Relationships
+            // Relationships: configure FK to ApplicationUser (Guid)
             builder.HasOne(x => x.User)
                 .WithMany()
                 .HasForeignKey(x => x.UserId)
-                .OnDelete(DeleteBehavior.NoAction);
+                .OnDelete(DeleteBehavior.NoAction)
+                .IsRequired();
 
             // Indexes
             builder.HasIndex(x => x.CurrentState);

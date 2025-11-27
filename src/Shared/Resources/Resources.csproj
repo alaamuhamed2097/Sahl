@@ -55,11 +55,6 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>BrandResources.resx</DependentUpon>
     </Compile>
-    <Compile Update="TestimonialResources.Designer.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>TestimonialResources.resx</DependentUpon>
-    </Compile>
     <Compile Update="OrderCompletionResources.Designer.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
@@ -106,10 +101,6 @@
     <EmbeddedResource Update="BrandResources.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>BrandResources.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-    <EmbeddedResource Update="TestimonialResources.resx">
-      <Generator>PublicResXFileCodeGenerator</Generator>
-      <LastGenOutput>TestimonialResources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <EmbeddedResource Update="OrderCompletionResources.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
