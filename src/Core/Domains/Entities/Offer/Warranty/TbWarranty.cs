@@ -19,16 +19,11 @@ namespace Domains.Entities.Offer.Warranty
 		[StringLength(500)]
 		public string WarrantyServiceCenter { get; set; }
 
-		public Guid? OfferId { get; set; }
-
 		public Guid? CityId { get; set; }
-
-		[ForeignKey("OfferId")]
-		public virtual TbOffer Offer { get; set; }
 
 		[ForeignKey("CityId")]
 		public virtual TbCity City { get; set; }
 
-		public virtual ICollection<TbOffer> OffersList { get; set; }
+		public virtual ICollection<TbOffer> OffersList { get; set; } = new HashSet<TbOffer>();
 	}
 }

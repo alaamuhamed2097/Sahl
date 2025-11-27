@@ -38,7 +38,8 @@ namespace Api.Extensions
                     {
                         TableName = "Log",
                         SchemaName = "dbo",
-                        AutoCreateSqlTable = false,
+                        // Allow sink to create the table if it does not exist (helps design-time/migrations)
+                        AutoCreateSqlTable = true,
                         BatchPostingLimit = 50,
                         BatchPeriod = TimeSpan.FromSeconds(5)
                     },
@@ -49,10 +50,8 @@ namespace Api.Extensions
             // Register Serilog.ILogger for dependency injection
             services.AddSingleton<Serilog.ILogger>(Log.Logger);
 
-            // Test the configuration
-            Log.Information("Serilog configured successfully - Application starting");
-            Log.Warning("Test warning message for database logging");
-            Log.Error("Test error message for database logging");
+            // Avoid emitting test log events here because the Log table might not yet exist (EF migrations / design-time).
+            // If you need to verify logging, use the console output or ensure the Log table exists before running.
 
             return services;
         }

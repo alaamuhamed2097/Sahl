@@ -15,6 +15,10 @@ namespace DAL.ApplicationContext
                 Console.WriteLine($"[Design-Time] Environment: {environment}");
                 Console.WriteLine($"[Design-Time] Current Directory: {Directory.GetCurrentDirectory()}");
 
+                // Ensure design-time flag is set so ApplicationDbContext.OnModelCreating can skip heavy initialization
+                Environment.SetEnvironmentVariable("EF_DESIGN_TIME", "true");
+                Console.WriteLine("[Design-Time] EF_DESIGN_TIME environment variable set to true.");
+
                 // Try a few candidate base paths to locate appsettings.json
                 string? basePath = FindBasePath();
 
@@ -93,22 +97,20 @@ namespace DAL.ApplicationContext
                 var optionsBuilder = new DbContextOptionsBuilder<ApplicationDbContext>();
                 optionsBuilder.UseSqlServer(connectionString);
 
-                // Instantiate the context and force model building so we can capture model creation exceptions now
-                var context = new ApplicationDbContext(optionsBuilder.Options);
-
+                // Try to create the context and provide rich diagnostics on failure
                 try
                 {
-                    // Accessing Model will trigger OnModelCreating and model validation
-                    var _ = context.Model;
+                    var context = new ApplicationDbContext(optionsBuilder.Options);
+                    Console.WriteLine("[Design-Time] Successfully created ApplicationDbContext instance.");
+                    return context;
                 }
-                catch (Exception modelEx)
+                catch (Exception createEx)
                 {
-                    Console.Error.WriteLine("[Design-Time] ERROR: Failed while building the EF model at design time.");
-                    Console.Error.WriteLine(modelEx.ToString());
-                    throw; // rethrow so EF tooling sees the failure
-                }
+                    Console.Error.WriteLine("[Design-Time] ERROR: Exception while creating ApplicationDbContext instance:");
+                    Console.Error.WriteLine(createEx.ToString());
 
-                return context;
+                    throw;
+                }
             }
             catch (Exception ex)
             {

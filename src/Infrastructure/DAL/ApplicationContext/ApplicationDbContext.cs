@@ -195,14 +195,14 @@ namespace DAL.ApplicationContext
         public DbSet<TbBrandDocument> TbBrandDocuments { get; set; }
         public DbSet<TbAuthorizedDistributor> TbAuthorizedDistributors { get; set; }
 
-        // Offer Management - ADD THESE MISSING DbSets
+        // Offer Management
         public DbSet<Domains.Entities.Offer.TbOffer> TbOffers { get; set; }
         public DbSet<Domains.Entities.Offer.TbOfferCombinationPricing> TbOfferCombinationPricings { get; set; }
         public DbSet<Domains.Entities.Offer.TbOfferCondition> TbOfferConditions { get; set; }
         public DbSet<TbWarranty> TbWarranties { get; set; }
         public DbSet<TbUserOfferRating> TbUserOfferRatings { get; set; }
 
-        // Order Management - ADD THESE MISSING DbSets
+        // Order Management
         public DbSet<Domains.Entities.Order.TbOrder> TbOrders { get; set; }
         public DbSet<Domains.Entities.Order.TbOrderDetail> TbOrderDetails { get; set; }
         public DbSet<Domains.Entities.Order.TbRefundRequest> TbRefundRequests { get; set; }
@@ -234,116 +234,236 @@ namespace DAL.ApplicationContext
             {
                 base.OnModelCreating(modelBuilder);
 
-                #region Global Configuration - Base Entity
+                // ✅ ADD THIS: Disable cascade delete globally to prevent cascade path issues
+                DisableCascadeDeleteGlobally(modelBuilder);
 
-                // Apply default NEWID() for all entities inheriting from BaseEntity
-                foreach (var entityType in modelBuilder.Model.GetEntityTypes())
+                // Check if we're in design-time (EF Core Tools)
+                var isDesignTime = IsDesignTimeEnvironment();
+
+                if (isDesignTime)
                 {
-                    // FIXED: Single null-safe check instead of two consecutive if statements
-                    if (entityType.ClrType != null && typeof(BaseEntity).IsAssignableFrom(entityType.ClrType))
-                    {
-                        // Auto-generate NEWID() in SQL Server
-                        modelBuilder.Entity(entityType.ClrType)
-                            .Property(nameof(BaseEntity.Id))
-                            .HasDefaultValueSql("NEWID()")
-                            .ValueGeneratedOnAdd();
-
-                        // Configure CreatedDateUtc
-                        modelBuilder.Entity(entityType.ClrType)
-                            .Property(nameof(BaseEntity.CreatedDateUtc))
-                            .HasDefaultValueSql("GETUTCDATE()")
-                            .HasColumnType("datetime2(2)");
-
-                        // Configure UpdatedDateUtc
-                        modelBuilder.Entity(entityType.ClrType)
-                            .Property(nameof(BaseEntity.UpdatedDateUtc))
-                            .HasColumnType("datetime2(2)")
-                            .IsRequired(false);
-
-                        // Configure CurrentState
-                        modelBuilder.Entity(entityType.ClrType)
-                            .Property(nameof(BaseEntity.CurrentState))
-                            .HasDefaultValue(1);
-
-                        // Index on CurrentState
-                        modelBuilder.Entity(entityType.ClrType)
-                            .HasIndex(nameof(BaseEntity.CurrentState))
-                            .IsUnique(false);
-                    }
+                    ConfigureForDesignTime(modelBuilder);
+                    return;
                 }
 
-                #endregion
-
-                #region Apply Configurations from Assembly
-
-                // This will automatically apply all IEntityTypeConfiguration<T> classes from the assembly
-                modelBuilder.ApplyConfigurationsFromAssembly(typeof(ApplicationDbContext).Assembly);
-
-                #endregion
-
-                #region View Configurations
-
-                // Category Views
-                modelBuilder.Entity<VwAttributeWithOptions>()
-                    .HasNoKey()
-                    .ToView("VwAttributeWithOptions");
-
-                modelBuilder.Entity<VwCategoryItems>()
-                    .HasNoKey()
-                    .ToView("VwCategoryItems");
-
-                modelBuilder.Entity<VwCategoryWithAttributes>()
-                    .HasNoKey()
-                    .ToView("VwCategoryWithAttributes");
-
-                // Item Views
-                modelBuilder.Entity<VwItem>()
-                    .HasNoKey()
-                    .ToView("VwItems");
-
-                // Unit Views
-                modelBuilder.Entity<VwUnitWithConversionsUnits>()
-                    .HasNoKey()
-                    .ToView("VwUnitWithConversionsUnits");
-
-                // User Views
-                modelBuilder.Entity<VwUserNotification>()
-                    .HasNoKey()
-                    .ToView("VwUserNotifications");
-
-                #endregion
-
-                // Explicitly configure ambiguous relationships
-                // Fix: Configure Offer <-> Warranty relationship to remove ambiguity
-                modelBuilder.Entity<Domains.Entities.Offer.TbOffer>(entity =>
-                {
-                    entity.HasOne(o => o.Warranty)
-                          .WithMany(w => w.OffersList)
-                          .HasForeignKey(o => o.WarrantyId)
-                          .OnDelete(DeleteBehavior.SetNull);
-                });
+                ConfigureForRuntime(modelBuilder);
             }
             catch (Exception ex)
             {
-                Console.Error.WriteLine("[OnModelCreating] Exception while building model: " + ex.Message);
-                Console.Error.WriteLine(ex.ToString());
+                LogModelCreatingError(ex, modelBuilder);
+                throw;
+            }
+        }
 
-                try
+        /// <summary>
+        /// Disables cascade delete globally for all relationships to prevent SQL Server cascade path errors
+        /// </summary>
+        private static void DisableCascadeDeleteGlobally(ModelBuilder modelBuilder)
+        {
+            foreach (var relationship in modelBuilder.Model.GetEntityTypes()
+                .SelectMany(e => e.GetForeignKeys()))
+            {
+                relationship.DeleteBehavior = DeleteBehavior.Restrict;
+            }
+
+            Console.WriteLine("[OnModelCreating] Disabled cascade delete globally for all relationships.");
+        }
+
+        /// <summary>
+        /// Configures the model for design-time operations (migrations, scaffolding)
+        /// </summary>
+        private void ConfigureForDesignTime(ModelBuilder modelBuilder)
+        {
+            Console.WriteLine("[OnModelCreating] Design-time detected: applying minimal configuration.");
+
+            // Apply only base entity configurations for design time
+            ConfigureBaseEntities(modelBuilder);
+
+            // Configure views as keyless for design time
+            ConfigureViews(modelBuilder);
+        }
+
+        /// <summary>
+        /// Configures the model for runtime operations
+        /// </summary>
+        private void ConfigureForRuntime(ModelBuilder modelBuilder)
+        {
+            Console.WriteLine("[OnModelCreating] Runtime detected: applying full configuration.");
+
+            // Apply base entity configurations
+            ConfigureBaseEntities(modelBuilder);
+
+            // Apply all entity configurations from assembly
+            modelBuilder.ApplyConfigurationsFromAssembly(typeof(ApplicationDbContext).Assembly);
+
+            // Configure views
+            ConfigureViews(modelBuilder);
+        }
+
+        /// <summary>
+        /// Configures common settings for all entities inheriting from BaseEntity
+        /// </summary>
+        private void ConfigureBaseEntities(ModelBuilder modelBuilder)
+        {
+            foreach (var entityType in modelBuilder.Model.GetEntityTypes())
+            {
+                if (entityType.ClrType != null && typeof(BaseEntity).IsAssignableFrom(entityType.ClrType))
                 {
-                    // try to print some entity types for diagnostics
-                    var types = modelBuilder?.Model?.GetEntityTypes()?.Select(t => t.ClrType?.FullName ?? "<no-clr>").ToArray();
-                    if (types != null)
+                    var entity = modelBuilder.Entity(entityType.ClrType);
+
+                    // Configure ID with NEWID() default
+                    entity.Property(nameof(BaseEntity.Id))
+                          .HasDefaultValueSql("NEWID()")
+                          .ValueGeneratedOnAdd();
+
+                    // Configure CreatedDateUtc with GETUTCDATE() default
+                    entity.Property(nameof(BaseEntity.CreatedDateUtc))
+                          .HasDefaultValueSql("GETUTCDATE()")
+                          .HasColumnType("datetime2(2)");
+
+                    // Configure UpdatedDateUtc as nullable
+                    entity.Property(nameof(BaseEntity.UpdatedDateUtc))
+                          .HasColumnType("datetime2(2)")
+                          .IsRequired(false);
+
+                    // Configure CurrentState with default value
+                    entity.Property(nameof(BaseEntity.CurrentState))
+                          .HasDefaultValue(1);
+
+                    // Add index for CurrentState for better query performance
+                    entity.HasIndex(nameof(BaseEntity.CurrentState))
+                          .IsUnique(false);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Configures database views as keyless entities
+        /// </summary>
+        private void ConfigureViews(ModelBuilder modelBuilder)
+        {
+            // Category Views
+            modelBuilder.Entity<VwAttributeWithOptions>(entity =>
+            {
+                entity.HasNoKey();
+                entity.ToView("VwAttributeWithOptions");
+            });
+
+            modelBuilder.Entity<VwCategoryItems>(entity =>
+            {
+                entity.HasNoKey();
+                entity.ToView("VwCategoryItems");
+            });
+
+            modelBuilder.Entity<VwCategoryWithAttributes>(entity =>
+            {
+                entity.HasNoKey();
+                entity.ToView("VwCategoryWithAttributes");
+            });
+
+            // Item Views
+            modelBuilder.Entity<VwItem>(entity =>
+            {
+                entity.HasNoKey();
+                entity.ToView("VwItems");
+            });
+
+            // Unit Views
+            modelBuilder.Entity<VwUnitWithConversionsUnits>(entity =>
+            {
+                entity.HasNoKey();
+                entity.ToView("VwUnitWithConversionsUnits");
+            });
+
+            // User Notification Views
+            modelBuilder.Entity<VwUserNotification>(entity =>
+            {
+                entity.HasNoKey();
+                entity.ToView("VwUserNotifications");
+            });
+        }
+
+        /// <summary>
+        /// Determines if the current environment is design-time (EF Core Tools)
+        /// </summary>
+        private static bool IsDesignTimeEnvironment()
+        {
+            return string.Equals(Environment.GetEnvironmentVariable("EF_DESIGN_TIME"), "true", StringComparison.OrdinalIgnoreCase) ||
+                   string.Equals(Environment.GetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER"), "false", StringComparison.OrdinalIgnoreCase) &&
+                   AppDomain.CurrentDomain.FriendlyName.Contains("ef.dll");
+        }
+
+        /// <summary>
+        /// Logs detailed error information when model creation fails
+        /// </summary>
+        private static void LogModelCreatingError(Exception ex, ModelBuilder modelBuilder)
+        {
+            Console.Error.WriteLine("[OnModelCreating] Exception while building model: " + ex.Message);
+            Console.Error.WriteLine(ex.ToString());
+
+            try
+            {
+                // Log discovered entity types for debugging
+                var entityTypes = modelBuilder?.Model?.GetEntityTypes()?
+                    .Select(t => t.ClrType?.FullName ?? "<no-clr>")
+                    .OrderBy(name => name)
+                    .ToArray();
+
+                if (entityTypes != null && entityTypes.Any())
+                {
+                    Console.Error.WriteLine("[OnModelCreating] Discovered entity CLR types:");
+                    foreach (var typeName in entityTypes.Take(25))
                     {
-                        Console.Error.WriteLine("[OnModelCreating] Discovered entity CLR types:");
-                        foreach (var t in types.Take(20))
-                        {
-                            Console.Error.WriteLine(" - " + t);
-                        }
+                        Console.Error.WriteLine(" - " + typeName);
+                    }
+
+                    if (entityTypes.Length > 25)
+                    {
+                        Console.Error.WriteLine($" - ... and {entityTypes.Length - 25} more");
                     }
                 }
-                catch { }
+            }
+            catch (Exception logEx)
+            {
+                Console.Error.WriteLine($"[OnModelCreating] Error logging entity types: {logEx.Message}");
+            }
+        }
 
-                throw;
+        /// <summary>
+        /// Saves changes with automatic UTC timestamp handling
+        /// </summary>
+        public override int SaveChanges()
+        {
+            UpdateTimestamps();
+            return base.SaveChanges();
+        }
+
+        /// <summary>
+        /// Saves changes asynchronously with automatic UTC timestamp handling
+        /// </summary>
+        public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+        {
+            UpdateTimestamps();
+            return await base.SaveChangesAsync(cancellationToken);
+        }
+
+        /// <summary>
+        /// Automatically sets CreatedDateUtc and UpdatedDateUtc for BaseEntity objects
+        /// </summary>
+        private void UpdateTimestamps()
+        {
+            var utcNow = DateTime.UtcNow;
+
+            foreach (var entry in ChangeTracker.Entries<BaseEntity>())
+            {
+                if (entry.State == EntityState.Added)
+                {
+                    entry.Entity.CreatedDateUtc = utcNow;
+                }
+                else if (entry.State == EntityState.Modified)
+                {
+                    entry.Entity.UpdatedDateUtc = utcNow;
+                }
             }
         }
     }
