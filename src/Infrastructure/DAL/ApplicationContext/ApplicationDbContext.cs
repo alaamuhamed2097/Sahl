@@ -9,6 +9,7 @@ using Domains.Entities.Catalog.Item;
 using Domains.Entities.Catalog.Item.ItemAttributes;
 using Domains.Entities.Catalog.Unit;
 using Domains.Entities.Content;
+using Domains.Entities.CouponCode;
 using Domains.Entities.Currency;
 using Domains.Entities.ECommerceSystem.Customer;
 using Domains.Entities.ECommerceSystem.Review;
@@ -22,7 +23,6 @@ using Domains.Entities.Merchandising;
 using Domains.Entities.Notification;
 using Domains.Entities.Page;
 using Domains.Entities.Pricing;
-using Domains.Entities.PromoCode;
 using Domains.Entities.SellerRequest;
 using Domains.Entities.SellerTier;
 using Domains.Entities.Setting;
@@ -47,6 +47,7 @@ namespace DAL.ApplicationContext
     /// <summary>
     /// Application database context for Entity Framework Core
     /// </summary>
+    /// 
     public class ApplicationDbContext : IdentityDbContext<ApplicationUser, IdentityRole<Guid>, Guid>
     {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
@@ -84,8 +85,8 @@ namespace DAL.ApplicationContext
         // Page Management
         public DbSet<TbPage> TbPages { get; set; }
 
-        // Promo Code Management
-        public DbSet<TbPromoCode> TbPromoCodes { get; set; }
+        // Coupon Code Management
+        public DbSet<TbCouponCode> TbCouponCodes { get; set; }
 
         // Settings
         public DbSet<TbSetting> TbSettings { get; set; }
