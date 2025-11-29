@@ -28,11 +28,11 @@ namespace Api.Controllers.Location
         /// </summary>
         [HttpGet]
         [AllowAnonymous]
-        public IActionResult Get()
+        public async Task<IActionResult> Get()
         {
             try
             {
-                var cities = _cityService.GetAll();
+                var cities = await _cityService.GetAllAsync();
                 if (cities == null || !cities.Any())
                     return NotFound(new ResponseModel<string>
                     {
@@ -57,7 +57,7 @@ namespace Api.Controllers.Location
         /// </summary>
         [HttpGet("{id}")]
         [AllowAnonymous]
-        public IActionResult Get(Guid id)
+        public async Task<IActionResult> Get(Guid id)
         {
             try
             {
@@ -68,7 +68,7 @@ namespace Api.Controllers.Location
                         Message = "Invalid city ID."
                     });
 
-                var city = _cityService.FindById(id);
+                var city = await _cityService.FindByIdAsync(id);
                 if (city == null)
                     return NotFound(new ResponseModel<string>
                     {
@@ -95,7 +95,7 @@ namespace Api.Controllers.Location
         /// <param name="criteria">Search criteria including pagination parameters</param>
         [HttpGet("search")]
         [Authorize(Roles = nameof(UserRole.Admin))]
-        public IActionResult Search([FromQuery] BaseSearchCriteriaModel criteria)
+        public async Task<IActionResult> Search([FromQuery] BaseSearchCriteriaModel criteria)
         {
             try
             {
@@ -103,7 +103,7 @@ namespace Api.Controllers.Location
                 criteria.PageNumber = criteria.PageNumber < 1 ? 1 : criteria.PageNumber;
                 criteria.PageSize = criteria.PageSize < 1 || criteria.PageSize > 100 ? 10 : criteria.PageSize;
 
-                var result = _cityService.GetPage(criteria);
+                var result = await _cityService.GetPage(criteria);
 
                 if (result == null || !result.Items.Any())
                 {
@@ -133,7 +133,7 @@ namespace Api.Controllers.Location
         /// </summary>
         [HttpPost("save")]
         [Authorize(Roles = nameof(UserRole.Admin))]
-        public IActionResult Save([FromBody] CityDto CityDto)
+        public async Task<IActionResult> Save([FromBody] CityDto CityDto)
         {
             try
             {
@@ -144,8 +144,8 @@ namespace Api.Controllers.Location
                         Message = "Invalid city data."
                     });
 
-                var success = _cityService.Save(CityDto, GuidUserId);
-                if (!success)
+                var result = await _cityService.SaveAsync(CityDto, GuidUserId);
+                if (!result.Success)
                     return BadRequest(new ResponseModel<string>
                     {
                         Success = false,
@@ -169,7 +169,7 @@ namespace Api.Controllers.Location
         /// </summary>
         [HttpPost("delete")]
         [Authorize(Roles = nameof(UserRole.Admin))]
-        public IActionResult Delete([FromBody] Guid id)
+        public async Task<IActionResult> Delete([FromBody] Guid id)
         {
             try
             {
@@ -180,7 +180,7 @@ namespace Api.Controllers.Location
                         Message = "Invalid city ID."
                     });
 
-                var success = _cityService.Delete(id, GuidUserId);
+                var success = await _cityService.DeleteAsync(id, GuidUserId);
                 if (!success)
                     return BadRequest(new ResponseModel<string>
                     {

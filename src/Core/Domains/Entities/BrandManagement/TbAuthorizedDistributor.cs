@@ -1,7 +1,5 @@
-using Domains.Entities.Base;
 using Domains.Entities.Catalog.Brand;
 using Domains.Entities.ECommerceSystem.Vendor;
-using Domains.Identity;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -34,7 +32,7 @@ namespace Domains.Entities.BrandManagement
         public DateTime? VerifiedAt { get; set; }
 
         [ForeignKey("VerifiedByUser")]
-        public Guid? VerifiedByUserId { get; set; }
+        public string? VerifiedByUserId { get; set; }
 
         [StringLength(500)]
         public string? Notes { get; set; }

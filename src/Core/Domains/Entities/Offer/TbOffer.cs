@@ -10,7 +10,7 @@ namespace Domains.Entities.Offer
     {
         // Required properties
         public Guid ItemId { get; set; }
-        public Guid UserId { get; set; } 
+        public string UserId { get; set; }
         public decimal Price { get; set; }
         public int Quantity { get; set; }
         public string Condition { get; set; }

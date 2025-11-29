@@ -7,7 +7,7 @@ namespace Domains.Entities.Notification
     {
         [Required]
         [ForeignKey(nameof(User))]
-        public Guid UserId { get; set; }
+        public string UserId { get; set; } = null!;
 
         [Required]
         [ForeignKey(nameof(TbNotification))]
@@ -16,7 +16,7 @@ namespace Domains.Entities.Notification
         [Required]
         public bool IsRead { get; set; } = false;
 
-        public virtual ApplicationUser User { get; set; }
-        public virtual TbNotification TbNotification { get; set; }
+        public virtual ApplicationUser User { get; set; } = null!;
+        public virtual TbNotification TbNotification { get; set; } = null!;
     }
 }

@@ -11,12 +11,14 @@ using System.Linq.Expressions;
 
 namespace DAL.Repositories
 {
+
     public class TableRepository<T> : Repository<T>, ITableRepository<T> where T : BaseEntity
     {
         private readonly ApplicationDbContext _dbContext;
         private readonly ILogger _logger;
 
-        protected DbSet<T> DbSet => _dbContext.Set<T>();
+        // Constants
+        private const int BULK_OPERATION_CHUNK_SIZE = 1000;
 
         public TableRepository(ApplicationDbContext dbContext, ILogger logger) : base(dbContext, logger)
         {
@@ -24,397 +26,84 @@ namespace DAL.Repositories
             _logger = logger ?? throw new ArgumentNullException(nameof(logger), "Logger instance cannot be null.");
         }
 
-        /// <summary>
-        /// Retrieves all active entities (CurrentState == 1).
-        /// </summary>
-        public override IEnumerable<T> GetAll()
+        // ============================================
+        // OVERRIDES - Filter Active Records Only
+        // ============================================
+
+        public override async Task<IEnumerable<T>> GetAllAsync(CancellationToken cancellationToken = default)
         {
             try
             {
-                return DbSet.AsNoTracking().Where(e => e.CurrentState == 1).ToList();
-            }
-            catch (Exception ex)
-            {
-                HandleException(nameof(GetAll), $"Error occurred while retrieving all active entities of type {typeof(T).Name}.", ex);
-                throw;
-            }
-        }
-
-        /// <summary>
-        /// Retrieves entities based on a predicate, filtering only active records.
-        /// </summary>
-        public override IEnumerable<T> Get(Expression<Func<T, bool>> predicate = null)
-        {
-            try
-            {
-                if (predicate == null)
-                    return DbSet.AsNoTracking().Where(e => e.CurrentState == 1).ToList();
-
-                return DbSet.Where(predicate)?.Where(e => e.CurrentState == 1).AsNoTracking().ToList();
-            }
-            catch (Exception ex)
-            {
-                HandleException(nameof(Get), $"Error occurred while filtering active entities of type {typeof(T).Name}.", ex);
-                throw;
-            }
-        }
-
-        /// <summary>
-        /// Retrieves paginated data.
-        /// </summary>
-        public override PaginatedDataModel<T> GetPage(
-            int pageNumber,
-            int pageSize,
-            Expression<Func<T, bool>> filter = null,
-            Func<IQueryable<T>, IOrderedQueryable<T>> orderBy = null)
-        {
-            try
-            {
-                IQueryable<T> query = DbSet.AsNoTracking();
-
-                // Apply the filter if it exists
-                if (filter != null)
-                {
-                    query = query.Where(filter);
-                }
-
-                // Apply ordering if provided
-                if (orderBy != null)
-                {
-                    query = orderBy(query);
-                }
-
-                // Get the total count before pagination
-                int totalCount = query.Count();
-
-                // Apply pagination
-                query = query.Skip((pageNumber - 1) * pageSize).Take(pageSize);
-
-                // Execute the query and return the paginated data
-                var data = query.ToList();
-
-                return new PaginatedDataModel<T>(data, totalCount);
-            }
-            catch (Exception ex)
-            {
-                throw new DataAccessException(
-                    $"Error occurred in {nameof(GetPage)} method for entity type {typeof(T).Name}.",
-                    ex,
-                    _logger
-                );
-            }
-        }
-
-        /// <summary>
-        /// Finds an entity by its ID.
-        /// </summary>
-        public T FindById(Guid id)
-        {
-            try
-            {
-                var data = DbSet.Find(id);
-                if (data == null)
-                    throw new NotFoundException($"Entity of type {typeof(T).Name} with ID {id} not found.", _logger);
-
-                return data;
-            }
-            catch (NotFoundException)
-            {
-                throw;
-            }
-            catch (Exception ex)
-            {
-                HandleException(nameof(FindById), $"Error occurred while finding an entity of type {typeof(T).Name} with ID {id}.", ex);
-                throw;
-            }
-        }
-
-
-        /// <summary>
-        /// Saves or updates an entity based on its key.
-        /// </summary>
-        public bool Save(T model, Guid userId)
-        {
-            try
-            {
-                if (model.Id == Guid.Empty)
-                    return Create(model, userId, out _);
-                else
-                    return Update(model, userId, out _);
-            }
-            catch (Exception ex)
-            {
-                HandleException(nameof(Save), $"Error occurred while saving or updating an entity of type {typeof(T).Name}.", ex);
-                throw;
-            }
-        }
-
-        /// <summary>
-        /// Saves or updates an entity based on its key and outputs the ID of the saved entity.
-        /// </summary>
-        public bool Save(T model, Guid userId, out Guid id)
-        {
-            try
-            {
-                if (model.Id == Guid.Empty)
-                    return Create(model, userId, out id);
-                else
-                    return Update(model, userId, out id);
-            }
-            catch (Exception ex)
-            {
-                HandleException(nameof(Save), $"Error occurred while saving or updating an entity of type {typeof(T).Name}.", ex);
-                throw;
-            }
-        }
-
-        /// <summary>
-        /// Creates a new entity.
-        /// </summary>
-        public bool Create(T model, Guid creatorId, out Guid id)
-        {
-            try
-            {
-                id = Guid.NewGuid();
-
-                model.Id = id;
-                model.CreatedDateUtc = DateTime.UtcNow;
-                model.CreatedBy = creatorId;
-                model.CurrentState = 1;
-
-                DbSet.Add(model);
-                return _dbContext.SaveChanges() > 0;
-            }
-            catch (DbUpdateException dbEx)
-            {
-                HandleException(nameof(Create), $"Conflict error while creating an entity of type {typeof(T).Name}.", dbEx);
-                throw;
-            }
-            catch (Exception ex)
-            {
-                HandleException(nameof(Create), $"Error occurred while creating an entity of type {typeof(T).Name}.", ex);
-                throw;
-            }
-        }
-
-        /// <summary>
-        /// Updates an existing entity.
-        /// </summary>
-        public bool Update(T model, Guid updaterId, out Guid id)
-        {
-            try
-            {
-                var existingEntity = DbSet.AsNoTracking().FirstOrDefault(e => e.Id == model.Id);
-                id = model.Id;
-
-                if (existingEntity == null)
-                    throw new DataAccessException($"Entity with key {id} not found.", _logger);
-
-                model.UpdatedDateUtc = DateTime.UtcNow;
-                model.UpdatedBy = updaterId;
-                model.CreatedBy = existingEntity.CreatedBy;
-                model.CurrentState = existingEntity.CurrentState;
-                model.CreatedDateUtc = existingEntity.CreatedDateUtc;
-
-                DbSet.Entry(model).State = EntityState.Modified;
-
-                return _dbContext.SaveChanges() > 0;
-            }
-            catch (DbUpdateConcurrencyException concurrencyEx)
-            {
-                HandleException(nameof(Update), $"Concurrency error while updating an entity of type {typeof(T).Name}, ID {model.Id}.", concurrencyEx);
-                throw;
-            }
-            catch (Exception ex)
-            {
-                HandleException(nameof(Update), $"Error occurred while updating an entity of type {typeof(T).Name}, ID {model.Id}.", ex);
-                throw;
-            }
-        }
-
-        /// <summary>
-        /// Updates the CurrentState of an entity.
-        /// </summary>
-        public bool UpdateCurrentState(Guid entityId, Guid updaterId, int newValue = 0)
-        {
-            try
-            {
-                var entity = DbSet.Find(entityId);
-
-                if (entity == null)
-                    throw new NotFoundException($"Entity of type {typeof(T).Name} with ID {entityId} not found.", _logger);
-
-                entity.CurrentState = newValue;
-                entity.UpdatedDateUtc = DateTime.UtcNow;
-                entity.UpdatedBy = updaterId;
-
-                DbSet.Update(entity);
-                return _dbContext.SaveChanges() > 0;
-            }
-            catch (DbUpdateException dbEx)
-            {
-                HandleException(nameof(UpdateCurrentState), $"Database update error while updating CurrentState for entity type {typeof(T).Name}, ID {entityId}.", dbEx);
-                throw;
-            }
-            catch (Exception ex)
-            {
-                HandleException(nameof(UpdateCurrentState), $"Error occurred while updating CurrentState for entity type {typeof(T).Name}, ID {entityId}.", ex);
-                throw;
-            }
-        }
-
-        /// <summary>
-        /// Permanently deletes an entity by its ID.
-        /// </summary>
-        public bool HardDelete(Guid id)
-        {
-            try
-            {
-                var entityToDelete = DbSet.SingleOrDefault(e => e.Id == id);
-
-                if (entityToDelete == null)
-                    throw new DataAccessException($"Entity with key {id} not found.", _logger);
-
-                DbSet.Remove(entityToDelete);
-
-                return _dbContext.SaveChanges() > 0;
-            }
-            catch (DbUpdateConcurrencyException concurrencyEx)
-            {
-                HandleException(nameof(HardDelete), $"Concurrency error while hard deleting an entity of type {typeof(T).Name}, ID {id}.", concurrencyEx);
-                throw;
-            }
-            catch (Exception ex)
-            {
-                HandleException(nameof(HardDelete), $"Error occurred while hard deleting an entity of type {typeof(T).Name}, ID {id}.", ex);
-                throw;
-            }
-        }
-
-        /// <summary>
-        /// Saves all pending changes to the database.
-        /// </summary>
-        public bool SaveChange()
-        {
-            try
-            {
-                return _dbContext.SaveChanges() > 0;
-            }
-            catch (DbUpdateConcurrencyException concurrencyEx)
-            {
-                HandleException(nameof(SaveChange), $"Concurrency error while saving changes for entity type {typeof(T).Name}.", concurrencyEx);
-                throw;
-            }
-            catch (Exception ex)
-            {
-                HandleException(nameof(SaveChange), $"Error occurred while saving changes for entity type {typeof(T).Name}.", ex);
-                throw;
-            }
-        }
-
-        /// <summary>
-        /// Logs and rethrows exceptions with detailed information.
-        /// </summary>
-        public bool AddRange(IEnumerable<T> entities, Guid userId)
-        {
-            try
-            {
-
-                var utcNow = DateTime.UtcNow;
-
-                foreach (var entity in entities)
-                {
-                    entity.Id = Guid.NewGuid();
-                    entity.CreatedDateUtc = utcNow;
-                    entity.CreatedBy = userId;
-                    entity.CurrentState = 1;
-                }
-
-                DbSet.AddRange(entities);
-                var changes = _dbContext.SaveChanges() > 0;
-
-                return changes;
-            }
-            catch (Exception ex)
-            {
-                HandleException(nameof(AddRange), $"Error occurred while adding multiple entities of type {typeof(T).Name}.", ex);
-                throw;
-            }
-        }
-
-        /// <summary>
-        /// Retrieves all active entities (CurrentState == 1).
-        /// </summary>
-        public override async Task<IEnumerable<T>> GetAllAsync()
-        {
-            try
-            {
-                return await DbSet.AsNoTracking().Where(e => e.CurrentState == 1).ToListAsync();
+                return await _dbContext.Set<T>()
+                    .AsNoTracking()
+                    .Where(e => e.CurrentState == (int)Common.Enumerations.EntityState.Active)
+                    .ToListAsync(cancellationToken);
             }
             catch (Exception ex)
             {
                 HandleException(nameof(GetAllAsync), $"Error occurred while retrieving all active entities of type {typeof(T).Name}.", ex);
-                throw;
+                return Enumerable.Empty<T>();
             }
         }
 
-        /// <summary>
-        /// Retrieves entities based on a predicate, filtering only active records.
-        /// </summary>
-        public override async Task<IEnumerable<T>> GetAsync(Expression<Func<T, bool>> predicate = null)
+        public override async Task<IEnumerable<T>> GetAsync(
+            Expression<Func<T, bool>> predicate = null,
+            CancellationToken cancellationToken = default)
         {
             try
             {
-                if (predicate == null)
-                    return await DbSet.AsNoTracking().Where(e => e.CurrentState == 1).ToListAsync();
+                var query = _dbContext.Set<T>().AsNoTracking();
 
-                return await DbSet.Where(predicate)?.Where(e => e.CurrentState == 1).AsNoTracking().ToListAsync();
+                if (predicate != null)
+                {
+                    query = query.Where(predicate);
+                }
+
+                query = query.Where(e => e.CurrentState == (int)Common.Enumerations.EntityState.Active);
+
+                return await query.ToListAsync(cancellationToken);
             }
             catch (Exception ex)
             {
                 HandleException(nameof(GetAsync), $"Error occurred while filtering active entities of type {typeof(T).Name}.", ex);
-                throw;
+                return Enumerable.Empty<T>();
             }
         }
 
-        /// <summary>
-        /// Retrieves paginated data.
-        /// </summary>
         public override async Task<PaginatedDataModel<T>> GetPageAsync(
             int pageNumber,
             int pageSize,
             Expression<Func<T, bool>> filter = null,
-            Func<IQueryable<T>, IOrderedQueryable<T>> orderBy = null)
+            Func<IQueryable<T>, IOrderedQueryable<T>> orderBy = null,
+            CancellationToken cancellationToken = default)
         {
             try
             {
-                IQueryable<T> query = DbSet.AsNoTracking();
+                ValidatePaginationParameters(pageNumber, pageSize);
 
-                // Apply the filter if it exists
+                IQueryable<T> query = _dbContext.Set<T>().AsNoTracking();
+
                 if (filter != null)
                 {
                     query = query.Where(filter);
                 }
 
-                // Apply ordering if provided
                 if (orderBy != null)
                 {
                     query = orderBy(query);
                 }
 
-                // Get the total count before pagination
-                int totalCount = await query.CountAsync();
+                int totalCount = await query.CountAsync(cancellationToken);
 
-                // Apply pagination
                 query = query.Skip((pageNumber - 1) * pageSize).Take(pageSize);
 
-                // Execute the query and return the paginated data
-                var data = await query.ToListAsync();
+                var data = await query.ToListAsync(cancellationToken);
 
                 return new PaginatedDataModel<T>(data, totalCount);
             }
             catch (Exception ex)
             {
+                _logger.Error(ex, $"Error occurred in {nameof(GetPageAsync)} method for entity type {typeof(T).Name}.");
                 throw new DataAccessException(
                     $"Error occurred in {nameof(GetPageAsync)} method for entity type {typeof(T).Name}.",
                     ex,
@@ -423,14 +112,18 @@ namespace DAL.Repositories
             }
         }
 
-        /// <summary>
-        /// Finds an entity by its ID.
-        /// </summary>
-        public async Task<T> FindByIdAsync(Guid id)
+        // ============================================
+        // READ OPERATIONS - By ID
+        // ============================================
+
+        public async Task<T> FindByIdAsync(Guid id, CancellationToken cancellationToken = default)
         {
             try
             {
-                var data = await DbSet.FindAsync(id);
+                var data = await _dbContext.Set<T>()
+                    .AsNoTracking()
+                    .FirstOrDefaultAsync(e => e.Id == id && e.CurrentState == (int)Common.Enumerations.EntityState.Active, cancellationToken);
+
                 if (data == null)
                     throw new NotFoundException($"Entity of type {typeof(T).Name} with ID {id} not found.", _logger);
 
@@ -443,33 +136,91 @@ namespace DAL.Repositories
             catch (Exception ex)
             {
                 HandleException(nameof(FindByIdAsync), $"Error occurred while finding an entity of type {typeof(T).Name} with ID {id}.", ex);
-                throw;
+                return null;
             }
         }
 
-        /// <summary>
-        /// Saves or updates an entity based on its key and outputs the ID of the saved entity.
-        /// </summary>
-        public async Task<SaveResult> SaveAsync(T model, Guid userId)
+        public async Task<T> FindByIdIncludingDeletedAsync(Guid id, CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                var data = await _dbContext.Set<T>().FindAsync(new object[] { id }, cancellationToken);
+
+                if (data == null)
+                    throw new NotFoundException($"Entity of type {typeof(T).Name} with ID {id} not found.", _logger);
+
+                return data;
+            }
+            catch (NotFoundException)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                HandleException(nameof(FindByIdIncludingDeletedAsync),
+                    $"Error occurred while finding an entity of type {typeof(T).Name} with ID {id}.", ex);
+                return null;
+            }
+        }
+
+        public IQueryable<T> GetWithInclude(Expression<Func<T, object>> include)
+        {
+            return _dbContext.Set<T>().Include(include);
+        }
+
+        public async Task<IEnumerable<T>> ListDeletedAsync(CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                return await _dbContext.Set<T>()
+                    .AsNoTracking()
+                    .Where(e => e.CurrentState == (int)Common.Enumerations.EntityState.Deleted)
+                    .ToListAsync(cancellationToken);
+            }
+            catch (Exception ex)
+            {
+                HandleException(nameof(ListDeletedAsync),
+                    $"Error occurred while retrieving deleted entities of type {typeof(T).Name}.", ex);
+                return Enumerable.Empty<T>();
+            }
+        }
+
+        // ============================================
+        // WRITE OPERATIONS - Single Entity
+        // ============================================
+
+        public async Task<SaveResult> SaveAsync(T model, Guid userId, CancellationToken cancellationToken = default)
         {
             try
             {
                 if (model.Id == Guid.Empty)
-                    return await CreateAsync(model, userId);
+                    return await CreateAsync(model, userId, cancellationToken);
                 else
-                    return await UpdateAsync(model, userId);
+                    return await UpdateAsync(model, userId, cancellationToken);
             }
             catch (Exception ex)
             {
                 HandleException(nameof(SaveAsync), $"Error occurred while saving or updating an entity of type {typeof(T).Name}.", ex);
-                throw;
+                return new SaveResult { Success = false };
             }
         }
 
-        /// <summary>
-        /// Creates a new entity.
-        /// </summary>
-        public async Task<SaveResult> CreateAsync(T model, Guid creatorId)
+        public async Task<bool> SaveAsyncWithoutId(T model, Guid userId, CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                var result = await SaveAsync(model, userId, cancellationToken);
+                return result.Success;
+            }
+            catch (Exception ex)
+            {
+                HandleException(nameof(SaveAsyncWithoutId),
+                    $"Error occurred while saving or updating an entity of type {typeof(T).Name}.", ex);
+                return false;
+            }
+        }
+
+        public async Task<SaveResult> CreateAsync(T model, Guid creatorId, CancellationToken cancellationToken = default)
         {
             try
             {
@@ -478,34 +229,35 @@ namespace DAL.Repositories
                 model.Id = id;
                 model.CreatedDateUtc = DateTime.UtcNow;
                 model.CreatedBy = creatorId;
-                model.CurrentState = 1;
+                model.CurrentState = (int)Common.Enumerations.EntityState.Active;
 
-                await DbSet.AddAsync(model);
-                var result = await _dbContext.SaveChangesAsync() > 0;
+                await _dbContext.Set<T>().AddAsync(model, cancellationToken);
+                var result = await _dbContext.SaveChangesAsync(cancellationToken) > 0;
+
                 if (!result)
                     throw new DataAccessException($"Failed to create entity of type {typeof(T).Name}.", _logger);
-                return new SaveResult() { Success = true, Id = id };
+
+                return new SaveResult { Success = true, Id = id };
             }
             catch (DbUpdateException dbEx)
             {
                 HandleException(nameof(CreateAsync), $"Conflict error while creating an entity of type {typeof(T).Name}.", dbEx);
-                throw;
+                return new SaveResult { Success = false };
             }
             catch (Exception ex)
             {
                 HandleException(nameof(CreateAsync), $"Error occurred while creating an entity of type {typeof(T).Name}.", ex);
-                throw;
+                return new SaveResult { Success = false };
             }
         }
 
-        /// <summary>
-        /// Updates an existing entity.
-        /// </summary>
-        public async Task<SaveResult> UpdateAsync(T model, Guid updaterId)
+        public async Task<SaveResult> UpdateAsync(T model, Guid updaterId, CancellationToken cancellationToken = default)
         {
             try
             {
-                var existingEntity = await DbSet.AsNoTracking().FirstOrDefaultAsync(e => e.Id == model.Id);
+                var existingEntity = await _dbContext.Set<T>()
+                    .AsNoTracking()
+                    .FirstOrDefaultAsync(e => e.Id == model.Id, cancellationToken);
 
                 if (existingEntity == null)
                     throw new DataAccessException($"Entity with key {model.Id} not found.", _logger);
@@ -516,112 +268,131 @@ namespace DAL.Repositories
                 model.CurrentState = existingEntity.CurrentState;
                 model.CreatedDateUtc = existingEntity.CreatedDateUtc;
 
-                DbSet.Entry(model).State = EntityState.Modified;
-                var result = await _dbContext.SaveChangesAsync() > 0;
+                _dbContext.Entry(model).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
+                var result = await _dbContext.SaveChangesAsync(cancellationToken) > 0;
+
                 if (!result)
                     throw new DataAccessException($"Failed to update entity with key {model.Id}.", _logger);
-                return new SaveResult() { Success = true, Id = model.Id };
+
+                return new SaveResult { Success = true, Id = model.Id };
             }
             catch (DbUpdateConcurrencyException concurrencyEx)
             {
-                HandleException(nameof(UpdateAsync), $"Concurrency error while updating an entity of type {typeof(T).Name}, ID {model.Id}.", concurrencyEx);
-                throw;
+                HandleException(nameof(UpdateAsync),
+                    $"Concurrency error while updating an entity of type {typeof(T).Name}, ID {model.Id}.", concurrencyEx);
+                return new SaveResult { Success = false };
             }
             catch (Exception ex)
             {
-                HandleException(nameof(UpdateAsync), $"Error occurred while updating an entity of type {typeof(T).Name}, ID {model.Id}.", ex);
-                throw;
+                HandleException(nameof(UpdateAsync),
+                    $"Error occurred while updating an entity of type {typeof(T).Name}, ID {model.Id}.", ex);
+                return new SaveResult { Success = false };
             }
         }
 
-        /// <summary>
-        /// Updates the CurrentState of an entity.
-        /// </summary>
-        public async Task<bool> UpdateCurrentStateAsync(Guid entityId, Guid updaterId, int newValue = 0)
+        public async Task<bool> UpdateCurrentStateAsync(
+            Guid entityId,
+            Guid updaterId,
+            Common.Enumerations.EntityState newState = Common.Enumerations.EntityState.Deleted,
+            CancellationToken cancellationToken = default)
         {
             try
             {
-                var entity = await DbSet.FindAsync(entityId);
+                var entity = await _dbContext.Set<T>().FindAsync(new object[] { entityId }, cancellationToken);
 
                 if (entity == null)
                     throw new NotFoundException($"Entity of type {typeof(T).Name} with ID {entityId} not found.", _logger);
 
-                entity.CurrentState = newValue;
+                entity.CurrentState = (int)newState;
                 entity.UpdatedDateUtc = DateTime.UtcNow;
                 entity.UpdatedBy = updaterId;
 
-                DbSet.Update(entity);
-                return await _dbContext.SaveChangesAsync() > 0;
+                _dbContext.Set<T>().Update(entity);
+                return await _dbContext.SaveChangesAsync(cancellationToken) > 0;
             }
             catch (DbUpdateException dbEx)
             {
-                HandleException(nameof(UpdateCurrentStateAsync), $"Database update error while updating CurrentState for entity type {typeof(T).Name}, ID {entityId}.", dbEx);
-                throw;
+                HandleException(nameof(UpdateCurrentStateAsync),
+                    $"Database update error while updating CurrentState for entity type {typeof(T).Name}, ID {entityId}.", dbEx);
+                return false;
             }
             catch (Exception ex)
             {
-                HandleException(nameof(UpdateCurrentStateAsync), $"Error occurred while updating CurrentState for entity type {typeof(T).Name}, ID {entityId}.", ex);
-                throw;
+                HandleException(nameof(UpdateCurrentStateAsync),
+                    $"Error occurred while updating CurrentState for entity type {typeof(T).Name}, ID {entityId}.", ex);
+                return false;
             }
         }
 
-        /// <summary>
-        /// Permanently deletes an entity by its ID.
-        /// </summary>
-        public async Task<bool> HardDeleteAsync(Guid id)
+        public async Task<bool> SoftDeleteAsync(Guid entityId, Guid updaterId, CancellationToken cancellationToken = default)
+        {
+            return await UpdateCurrentStateAsync(entityId, updaterId, Common.Enumerations.EntityState.Deleted, cancellationToken);
+        }
+
+        public async Task<bool> RestoreAsync(Guid entityId, Guid updaterId, CancellationToken cancellationToken = default)
+        {
+            return await UpdateCurrentStateAsync(entityId, updaterId, Common.Enumerations.EntityState.Active, cancellationToken);
+        }
+
+        public async Task<bool> HardDeleteAsync(Guid id, CancellationToken cancellationToken = default)
         {
             try
             {
-                var entityToDelete = await DbSet.SingleOrDefaultAsync(e => e.Id == id);
+                var entityToDelete = await _dbContext.Set<T>()
+                    .SingleOrDefaultAsync(e => e.Id == id, cancellationToken);
 
                 if (entityToDelete == null)
                     throw new DataAccessException($"Entity with key {id} not found.", _logger);
 
-                DbSet.Remove(entityToDelete);
+                _dbContext.Set<T>().Remove(entityToDelete);
 
-                return await _dbContext.SaveChangesAsync() > 0;
+                return await _dbContext.SaveChangesAsync(cancellationToken) > 0;
             }
             catch (DbUpdateConcurrencyException concurrencyEx)
             {
-                HandleException(nameof(HardDeleteAsync), $"Concurrency error while hard deleting an entity of type {typeof(T).Name}, ID {id}.", concurrencyEx);
-                throw;
+                HandleException(nameof(HardDeleteAsync),
+                    $"Concurrency error while hard deleting an entity of type {typeof(T).Name}, ID {id}.", concurrencyEx);
+                return false;
             }
             catch (Exception ex)
             {
-                HandleException(nameof(HardDeleteAsync), $"Error occurred while hard deleting an entity of type {typeof(T).Name}, ID {id}.", ex);
-                throw;
+                HandleException(nameof(HardDeleteAsync),
+                    $"Error occurred while hard deleting an entity of type {typeof(T).Name}, ID {id}.", ex);
+                return false;
             }
         }
 
-        /// <summary>
-        /// Saves all pending changes to the database.
-        /// </summary>
-        public async Task<bool> SaveChangeAsync()
+        public async Task<bool> SaveChangeAsync(CancellationToken cancellationToken = default)
         {
             try
             {
-                return await _dbContext.SaveChangesAsync() > 0;
+                return await _dbContext.SaveChangesAsync(cancellationToken) > 0;
             }
             catch (DbUpdateConcurrencyException concurrencyEx)
             {
-                HandleException(nameof(SaveChangeAsync), $"Concurrency error while saving changes for entity type {typeof(T).Name}.", concurrencyEx);
-                throw;
+                HandleException(nameof(SaveChangeAsync),
+                    $"Concurrency error while saving changes for entity type {typeof(T).Name}.", concurrencyEx);
+                return false;
             }
             catch (Exception ex)
             {
-                HandleException(nameof(SaveChangeAsync), $"Error occurred while saving changes for entity type {typeof(T).Name}.", ex);
-                throw;
+                HandleException(nameof(SaveChangeAsync),
+                    $"Error occurred while saving changes for entity type {typeof(T).Name}.", ex);
+                return false;
             }
         }
 
-        /// <summary>
-        /// Logs and rethrows exceptions with detailed information.
-        /// </summary>
-        public async Task<bool> AddRangeAsync(IEnumerable<T> entities, Guid userId)
+        // ============================================
+        // WRITE OPERATIONS - Bulk/Range
+        // ============================================
+
+        public async Task<bool> AddRangeAsync(
+            IEnumerable<T> entities,
+            Guid userId,
+            CancellationToken cancellationToken = default)
         {
             try
             {
-
                 var utcNow = DateTime.UtcNow;
 
                 foreach (var entity in entities)
@@ -629,61 +400,134 @@ namespace DAL.Repositories
                     entity.Id = Guid.NewGuid();
                     entity.CreatedDateUtc = utcNow;
                     entity.CreatedBy = userId;
-                    entity.CurrentState = 1;
+                    entity.CurrentState = (int)Common.Enumerations.EntityState.Active;
                 }
 
-                DbSet.AddRange(entities);
-                var changes = await _dbContext.SaveChangesAsync() > 0;
-
-                return changes;
+                _dbContext.Set<T>().AddRange(entities);
+                return await _dbContext.SaveChangesAsync(cancellationToken) > 0;
             }
             catch (Exception ex)
             {
-                HandleException(nameof(AddRangeAsync), $"Error occurred while adding multiple entities of type {typeof(T).Name}.", ex);
-                throw;
+                HandleException(nameof(AddRangeAsync),
+                    $"Error occurred while adding multiple entities of type {typeof(T).Name}.", ex);
+                return false;
             }
         }
 
-        /// <summary>
-        /// Saves or updates an entity based on its key asynchronously.
-        /// </summary>
-        public async Task<bool> SaveAsyncWithoutId(T model, Guid userId)
+        public async Task<bool> UpdateRangeAsync(
+            IEnumerable<T> entities,
+            Guid updaterId,
+            CancellationToken cancellationToken = default)
         {
             try
             {
-                if (model.Id == Guid.Empty)
+                var utcNow = DateTime.UtcNow;
+
+                foreach (var entity in entities)
                 {
-                    var createResult = await CreateAsync(model, userId);
-                    return createResult.Success;
-                }
-                else
-                {
-                    var updateResult = await UpdateAsync(model, userId);
-                    return updateResult.Success;
+                    entity.UpdatedDateUtc = utcNow;
+                    entity.UpdatedBy = updaterId;
                 }
 
+                _dbContext.Set<T>().UpdateRange(entities);
+                return await _dbContext.SaveChangesAsync(cancellationToken) > 0;
             }
             catch (Exception ex)
             {
-                HandleException(nameof(SaveAsync), $"Error occurred while saving or updating an entity of type {typeof(T).Name}.", ex);
-                throw;
+                HandleException(nameof(UpdateRangeAsync),
+                    $"Error occurred while updating multiple entities of type {typeof(T).Name}.", ex);
+                return false;
             }
         }
 
-        /// <summary>
-        /// Updates multiple entities with different values for the same field in a single SQL call.
-        /// OPTIMIZED for scenarios where each entity gets a unique value (like unique serials).
-        /// SECURE VERSION - Protected against SQL injection.
-        /// </summary>
+        public async Task<(bool Success, int DeletedCount)> SoftDeleteRangeAsync(
+            IEnumerable<Guid> entityIds,
+            Guid updaterId,
+            CancellationToken cancellationToken = default)
+        {
+            return await BulkUpdateSingleFieldAsync(
+                entityIds,
+                nameof(BaseEntity.CurrentState),
+                (int)Common.Enumerations.EntityState.Deleted,
+                updaterId,
+                cancellationToken);
+        }
+
+        public async Task<(bool Success, int RestoredCount)> RestoreRangeAsync(
+            IEnumerable<Guid> entityIds,
+            Guid updaterId,
+            CancellationToken cancellationToken = default)
+        {
+            return await BulkUpdateSingleFieldAsync(
+                entityIds,
+                nameof(BaseEntity.CurrentState),
+                (int)Common.Enumerations.EntityState.Active,
+                updaterId,
+                cancellationToken);
+        }
+
+        public async Task<(bool Success, int DeletedCount)> BulkHardDeleteByIdsAsync(
+            IEnumerable<Guid> ids,
+            CancellationToken cancellationToken = default)
+        {
+            var idList = ids?.ToList();
+
+            try
+            {
+                if (idList?.Any() != true)
+                    return (false, 0);
+
+                using var transaction = await _dbContext.Database.BeginTransactionAsync(cancellationToken);
+
+                try
+                {
+                    var entityType = _dbContext.Model.FindEntityType(typeof(T));
+                    var tableName = EscapeIdentifier(entityType.GetTableName());
+                    var schemaName = entityType.GetSchema();
+                    var fullTableName = string.IsNullOrEmpty(schemaName)
+                        ? $"[{tableName}]"
+                        : $"[{EscapeIdentifier(schemaName)}].[{tableName}]";
+
+                    var totalDeleted = 0;
+
+                    for (int i = 0; i < idList.Count; i += BULK_OPERATION_CHUNK_SIZE)
+                    {
+                        var chunk = idList.Skip(i).Take(BULK_OPERATION_CHUNK_SIZE).ToList();
+                        var chunkResult = await ExecuteHardDeleteChunk(chunk, fullTableName, cancellationToken);
+                        totalDeleted += chunkResult.DeletedCount;
+                    }
+
+                    await transaction.CommitAsync(cancellationToken);
+                    return (totalDeleted > 0, totalDeleted);
+                }
+                catch
+                {
+                    await transaction.RollbackAsync(cancellationToken);
+                    throw;
+                }
+            }
+            catch (Exception ex)
+            {
+                HandleException(nameof(BulkHardDeleteByIdsAsync),
+                    $"Error occurred while bulk hard deleting {idList?.Count} entities.", ex);
+                return (false, 0);
+            }
+        }
+
+        // ============================================
+        // ADVANCED BULK OPERATIONS
+        // ============================================
+
         public async Task<(bool Success, int UpdatedCount)> UpdateBulkFieldsAsync(
             Dictionary<Guid, Dictionary<string, object>> entityFieldValues,
-            Guid updaterId)
+            Guid updaterId,
+            CancellationToken cancellationToken = default)
         {
             try
             {
-                if (!entityFieldValues?.Any() == true) return (false, 0);
+                if (entityFieldValues?.Any() != true)
+                    return (false, 0);
 
-                // SECURITY: Validate field names against entity properties
                 var entityType = _dbContext.Model.FindEntityType(typeof(T));
                 var validColumns = entityType.GetProperties()
                     .Select(p => p.GetColumnName())
@@ -691,19 +535,18 @@ namespace DAL.Repositories
 
                 var allFields = entityFieldValues.SelectMany(x => x.Value.Keys).Distinct();
                 var invalidFields = allFields.Where(field => !validColumns.Contains(field)).ToList();
+
                 if (invalidFields.Any())
                 {
                     throw new ArgumentException($"Invalid field names: {string.Join(", ", invalidFields)}");
                 }
 
-                // SECURITY: Use parameterized queries and safe column name construction
-                var tableName = entityType.GetTableName();
+                var tableName = EscapeIdentifier(entityType.GetTableName());
                 var schemaName = entityType.GetSchema();
-                var fullTableName = string.IsNullOrEmpty(schemaName) ?
-                    $"[{tableName}]" :
-                    $"[{schemaName}].[{tableName}]";
+                var fullTableName = string.IsNullOrEmpty(schemaName)
+                    ? $"[{tableName}]"
+                    : $"[{EscapeIdentifier(schemaName)}].[{tableName}]";
 
-                // Build CASE statements for each field
                 var setClauses = new List<string>();
                 var parameters = new List<SqlParameter>();
                 var paramIndex = 0;
@@ -726,14 +569,13 @@ namespace DAL.Repositories
                     if (caseStatements.Any())
                     {
                         var caseClause = string.Join(" ", caseStatements);
-                        setClauses.Add($"[{fieldName}] = CASE [Id] {caseClause} END");
+                        setClauses.Add($"[{EscapeIdentifier(fieldName)}] = CASE [Id] {caseClause} END");
                     }
                 }
 
                 var entityIds = entityFieldValues.Keys.ToList();
                 var idParams = string.Join(", ", entityIds.Select((_, i) => $"@entityId{i}"));
 
-                // Add entity ID parameters for WHERE clause
                 for (int i = 0; i < entityIds.Count; i++)
                 {
                     parameters.Add(new SqlParameter($"@entityId{i}", entityIds[i]));
@@ -742,72 +584,119 @@ namespace DAL.Repositories
                 var setClause = string.Join(", ", setClauses);
 
                 var sql = $@"
-            UPDATE {fullTableName} 
-            SET {setClause},
-                [UpdatedDateUtc] = @UpdatedDateUtc,
-                [UpdatedBy] = @UpdatedBy
-            WHERE [Id] IN ({idParams})";
+                    UPDATE {fullTableName} 
+                    SET {setClause},
+                        [UpdatedDateUtc] = @UpdatedDateUtc,
+                        [UpdatedBy] = @UpdatedBy
+                    WHERE [Id] IN ({idParams})";
 
-                // Add metadata parameters
                 parameters.Add(new SqlParameter("@UpdatedDateUtc", DateTime.UtcNow));
                 parameters.Add(new SqlParameter("@UpdatedBy", updaterId));
 
-                var updatedCount = await _dbContext.Database.ExecuteSqlRawAsync(sql, parameters.ToArray());
+                var updatedCount = await _dbContext.Database.ExecuteSqlRawAsync(sql, parameters, cancellationToken);
                 return (updatedCount > 0, updatedCount);
             }
             catch (Exception ex)
             {
-                HandleException(nameof(UpdateBulkFieldsAsync), $"Error occurred while bulk updating fields with different values for entities of type {typeof(T).Name}.", ex);
-                throw;
+                HandleException(nameof(UpdateBulkFieldsAsync),
+                    $"Error occurred while bulk updating fields with different values for entities of type {typeof(T).Name}.", ex);
+                return (false, 0);
             }
         }
 
-        /// <summary>
-        /// Simple bulk hard delete by IDs - no caching, no metadata complexity
-        /// </summary>
-        public async Task<(bool Success, int DeletedCount)> BulkHardDeleteByIdsAsync(IEnumerable<Guid> ids)
+        public async Task<(bool Success, int UpdatedCount)> BulkUpdateSingleFieldAsync(
+            IEnumerable<Guid> entityIds,
+            string fieldName,
+            object newValue,
+            Guid updaterId,
+            CancellationToken cancellationToken = default)
         {
-            var idList = ids?.ToList();
+            var idList = entityIds?.ToList();
+
             try
             {
-                if (idList?.Any() != true) return (false, 0);
+                if (idList?.Any() != true)
+                    return (false, 0);
 
-                // Get table name directly from EF Core
+                if (string.IsNullOrWhiteSpace(fieldName))
+                    throw new ArgumentException("Field name cannot be null or empty.", nameof(fieldName));
+
                 var entityType = _dbContext.Model.FindEntityType(typeof(T));
-                var tableName = entityType.GetTableName();
-                var schemaName = entityType.GetSchema();
-                var fullTableName = string.IsNullOrEmpty(schemaName) ? $"[{tableName}]" : $"[{schemaName}].[{tableName}]";
+                var validColumns = entityType.GetProperties()
+                    .Select(p => p.GetColumnName())
+                    .ToHashSet(StringComparer.OrdinalIgnoreCase);
 
-                // Process in chunks to avoid parameter limits
-                const int chunkSize = 1000;
-                var totalDeleted = 0;
-
-                for (int i = 0; i < idList.Count; i += chunkSize)
+                if (!validColumns.Contains(fieldName))
                 {
-                    var chunk = idList.Skip(i).Take(chunkSize).ToList();
-                    var chunkResult = await ExecuteHardDeleteChunk(chunk, fullTableName);
-                    totalDeleted += chunkResult.DeletedCount;
+                    throw new ArgumentException($"Invalid field name: {fieldName}");
                 }
 
-                return (totalDeleted > 0, totalDeleted);
+                var tableName = EscapeIdentifier(entityType.GetTableName());
+                var schemaName = entityType.GetSchema();
+                var fullTableName = string.IsNullOrEmpty(schemaName)
+                    ? $"[{tableName}]"
+                    : $"[{EscapeIdentifier(schemaName)}].[{tableName}]";
+
+                using var transaction = await _dbContext.Database.BeginTransactionAsync(cancellationToken);
+
+                try
+                {
+                    var totalUpdated = 0;
+
+                    for (int i = 0; i < idList.Count; i += BULK_OPERATION_CHUNK_SIZE)
+                    {
+                        var chunk = idList.Skip(i).Take(BULK_OPERATION_CHUNK_SIZE).ToList();
+
+                        var parameters = new List<SqlParameter>
+                        {
+                            new SqlParameter("@FieldValue", newValue ?? DBNull.Value),
+                            new SqlParameter("@UpdatedDateUtc", DateTime.UtcNow),
+                            new SqlParameter("@UpdatedBy", updaterId)
+                        };
+
+                        for (int j = 0; j < chunk.Count; j++)
+                        {
+                            parameters.Add(new SqlParameter($"@id{j}", chunk[j]));
+                        }
+
+                        var idParams = string.Join(", ", chunk.Select((_, idx) => $"@id{idx}"));
+
+                        var sql = $@"
+                            UPDATE {fullTableName}
+                            SET [{EscapeIdentifier(fieldName)}] = @FieldValue,
+                                [UpdatedDateUtc] = @UpdatedDateUtc,
+                                [UpdatedBy] = @UpdatedBy
+                            WHERE [Id] IN ({idParams})";
+
+                        var updatedCount = await _dbContext.Database.ExecuteSqlRawAsync(sql, parameters, cancellationToken);
+                        totalUpdated += updatedCount;
+                    }
+
+                    await transaction.CommitAsync(cancellationToken);
+                    return (totalUpdated > 0, totalUpdated);
+                }
+                catch
+                {
+                    await transaction.RollbackAsync(cancellationToken);
+                    throw;
+                }
             }
             catch (Exception ex)
             {
-                HandleException(nameof(BulkHardDeleteByIdsAsync),
-                    $"Error occurred while bulk hard deleting {idList?.Count} entities .", ex);
-                throw;
+                HandleException(nameof(BulkUpdateSingleFieldAsync),
+                    $"Error occurred while bulk updating field '{fieldName}' for {idList?.Count} entities.", ex);
+                return (false, 0);
             }
         }
 
-        public IQueryable<T> GetWithInclude(Expression<Func<T, object>> include)
-        {
-            return _dbContext.Set<T>().Include(include);
-        }
+        // ============================================
+        // PRIVATE HELPER METHODS
+        // ============================================
 
-        /// <summary>
-        /// Execute hard delete for a chunk of IDs
-        /// </summary>
-        private async Task<(bool Success, int DeletedCount)> ExecuteHardDeleteChunk(List<Guid> ids, string fullTableName)
+        private async Task<(bool Success, int DeletedCount)> ExecuteHardDeleteChunk(
+            List<Guid> ids,
+            string fullTableName,
+            CancellationToken cancellationToken = default)
         {
             var idParams = string.Join(", ", ids.Select((_, i) => $"@id{i}"));
             var sql = $"DELETE FROM {fullTableName} WHERE [Id] IN ({idParams})";
@@ -818,17 +707,16 @@ namespace DAL.Repositories
                 parameters[i] = new SqlParameter($"@id{i}", ids[i]);
             }
 
-            var deletedCount = await _dbContext.Database.ExecuteSqlRawAsync(sql, parameters);
+            var deletedCount = await _dbContext.Database.ExecuteSqlRawAsync(sql, parameters, cancellationToken);
             return (deletedCount >= 0, deletedCount);
         }
 
-        private void HandleException(string methodName, string message, Exception ex)
+        private string EscapeIdentifier(string identifier)
         {
-            // Log detailed message for analysis
-            _logger.Error(ex, $"[{methodName}] {message}");
+            if (string.IsNullOrWhiteSpace(identifier))
+                throw new ArgumentException("Identifier cannot be null or empty.", nameof(identifier));
 
-            // Throw exception with a general message for users
-            throw new DataAccessException(message, ex, _logger);
+            return identifier.Replace("]", "]]");
         }
     }
 }

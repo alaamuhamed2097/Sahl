@@ -1,6 +1,4 @@
-using Domains.Entities.Base;
 using Domains.Entities.Catalog.Item;
-using Domains.Identity;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -27,7 +25,7 @@ namespace Domains.Entities.Visibility
         public bool IsAutomatic { get; set; }
 
         [ForeignKey("ChangedByUser")]
-        public Guid? ChangedByUserId { get; set; }
+        public string? ChangedByUserId { get; set; }
 
         public virtual TbItem Item { get; set; } = null!;
         public virtual ApplicationUser? ChangedByUser { get; set; }

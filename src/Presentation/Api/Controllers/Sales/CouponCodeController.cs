@@ -1,6 +1,5 @@
 ﻿using Api.Controllers.Base;
 using BL.Contracts.Service.CouponCode;
-using BL.Service.CouponCode;
 using Common.Enumerations.User;
 using DAL.Models;
 using Microsoft.AspNetCore.Authorization;
@@ -109,11 +108,11 @@ namespace Api.Controllers.Sales
         /// </summary>
         [HttpGet]
         [Authorize(Roles = nameof(UserRole.Admin))]
-        public IActionResult Get()
+        public async Task<IActionResult> Get()
         {
             try
             {
-                var couponCodes = _couponCodeService.GetAll();
+                var couponCodes = await _couponCodeService.GetAll();
                 if (couponCodes == null || !couponCodes.Any())
                     return NotFound(new ResponseModel<string>
                     {
@@ -140,7 +139,7 @@ namespace Api.Controllers.Sales
         /// <param name="id">The ID of the promo code.</param>
         [HttpGet("{id}")]
         [Authorize(Roles = nameof(UserRole.Admin))]
-        public IActionResult Get(Guid id)
+        public async Task<IActionResult> Get(Guid id)
         {
             try
             {
@@ -151,7 +150,7 @@ namespace Api.Controllers.Sales
                         Message = NotifiAndAlertsResources.InvalidInputAlert
                     });
 
-                var couponCode = _couponCodeService.GetById(id);
+                var couponCode = await _couponCodeService.GetById(id);
                 if (couponCode == null)
                     return NotFound(new ResponseModel<string>
                     {
@@ -178,7 +177,7 @@ namespace Api.Controllers.Sales
         /// <param name="criteria">Search criteria including pagination parameters.</param>
         [HttpGet("search")]
         [Authorize(Roles = nameof(UserRole.Admin))]
-        public IActionResult Search([FromQuery] BaseSearchCriteriaModel criteria)
+        public async Task<IActionResult> Search([FromQuery] BaseSearchCriteriaModel criteria)
         {
             try
             {
@@ -186,7 +185,7 @@ namespace Api.Controllers.Sales
                 criteria.PageNumber = criteria.PageNumber < 1 ? 1 : criteria.PageNumber;
                 criteria.PageSize = criteria.PageSize < 1 || criteria.PageSize > 100 ? 10 : criteria.PageSize;
 
-                var result = _couponCodeService.GetPage(criteria);
+                var result = await _couponCodeService.GetPage(criteria);
 
                 if (result == null || !result.Items.Any())
                 {
@@ -252,7 +251,7 @@ namespace Api.Controllers.Sales
         /// </summary>
         [HttpPost("delete")]
         [Authorize(Roles = nameof(UserRole.Admin))]
-        public IActionResult Delete([FromBody] Guid couponCodeId)
+        public async Task<IActionResult> Delete([FromBody] Guid couponCodeId)
         {
             try
             {
@@ -263,7 +262,7 @@ namespace Api.Controllers.Sales
                         Message = NotifiAndAlertsResources.InvalidInputAlert
                     });
 
-                var success = _couponCodeService.Delete(couponCodeId, GuidUserId);
+                var success = await _couponCodeService.Delete(couponCodeId, GuidUserId);
                 if (!success)
                     return Ok(new ResponseModel<string>
                     {

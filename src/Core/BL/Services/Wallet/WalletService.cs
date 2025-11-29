@@ -3,10 +3,6 @@ using DAL.ApplicationContext;
 using Domains.Entities.Wallet;
 using Microsoft.EntityFrameworkCore;
 using Shared.DTOs.Wallet;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace BL.Services.Wallet
 {
@@ -274,7 +270,7 @@ namespace BL.Services.Wallet
 
             transaction.Status = WalletTransactionStatus.Completed;
             transaction.ProcessedDate = DateTime.UtcNow;
-            transaction.ProcessedByUserId = approvedByUserId;
+            transaction.ProcessedByUserId = approvedByUserId.ToString();
 
             // Update wallet balances
             if (transaction.CustomerWalletId.HasValue)

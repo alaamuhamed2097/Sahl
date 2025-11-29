@@ -1,32 +1,32 @@
 ﻿using BL.Contracts.IMapper;
-using BL.Contracts.Service.ECommerce.Item;
 using BL.Contracts.Service.CouponCode;
+using BL.Contracts.Service.ECommerce.Item;
 using Common.Enumerations;
 using DAL.Contracts.UnitOfWork;
 using DAL.Models;
 using Domains.Entities.CouponCode;
-using Microsoft.Extensions.Logging;
 using Resources;
-using Shared.DTOs.ECommerce.Order;
+using Serilog;
 using Shared.DTOs.ECommerce.CouponCode;
+using Shared.DTOs.ECommerce.Order;
+using Shared.GeneralModels.Parameters;
 using Shared.GeneralModels.ResultModels;
 using Shared.GeneralModels.SearchCriteriaModels;
 using System.Linq.Expressions;
-using Shared.GeneralModels.Parameters;
 
-namespace BL.Service.CouponCode
+namespace BL.Service.PromoCode
 {
     public class CouponCodeService : ICouponCodeService
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IItemService _itemService;
         private readonly IBaseMapper _mapper;
-        private readonly ILogger<CouponCodeService> _logger;
+        private readonly ILogger _logger;
 
         public CouponCodeService(IUnitOfWork unitOfWork,
             IItemService itemService,
             IBaseMapper mapper,
-            ILogger<CouponCodeService> logger)
+            ILogger logger)
         {
             _unitOfWork = unitOfWork;
             _itemService = itemService;
@@ -34,7 +34,7 @@ namespace BL.Service.CouponCode
             _logger = logger;
         }
 
-        public PaginatedDataModel<CouponCodeDto> GetPage(BaseSearchCriteriaModel criteriaModel)
+        public async Task<PaginatedDataModel<CouponCodeDto>> GetPage(BaseSearchCriteriaModel criteriaModel)
         {
             if (criteriaModel == null)
                 throw new ArgumentNullException(nameof(criteriaModel));
@@ -58,7 +58,7 @@ namespace BL.Service.CouponCode
                                x.Code != null && x.Code.ToLower().Contains(searchTerm));
             }
 
-            var items = _unitOfWork.TableRepository<TbCouponCode>().GetPage(
+            var items = await _unitOfWork.TableRepository<TbCouponCode>().GetPageAsync(
                 criteriaModel.PageNumber,
                 criteriaModel.PageSize,
                 filter,
@@ -73,11 +73,10 @@ namespace BL.Service.CouponCode
             return new PaginatedDataModel<CouponCodeDto>(itemsDto, items.TotalRecords);
         }
 
-        public List<CouponCodeDto> GetAll()
+        public async Task<List<CouponCodeDto>> GetAll()
         {
-            var couponCodes = _unitOfWork.TableRepository<TbCouponCode>()
-                .Get(predicate: p => p.CurrentState == 1)
-                .ToList();
+            var couponCodes = await _unitOfWork.TableRepository<TbCouponCode>()
+                .GetAllAsync();
 
             var itemsDto = _mapper.MapList<TbCouponCode, CouponCodeDto>(couponCodes).ToList();
             foreach (var item in itemsDto)
@@ -88,14 +87,14 @@ namespace BL.Service.CouponCode
             return itemsDto;
         }
 
-        public CouponCodeDto GetById(Guid id)
+        public async Task<CouponCodeDto> GetById(Guid id)
         {
             if (id == Guid.Empty) throw new ArgumentException("Invalid promo code ID");
 
-            var promo = _unitOfWork.TableRepository<TbCouponCode>()
-                .Get(
+            var promo = (await _unitOfWork.TableRepository<TbCouponCode>()
+                .GetAsync(
                     predicate: p => p.CurrentState == 1 && p.Id == id,
-                    includeProperties: "Orders")
+                    includeProperties: "Orders"))
                 .FirstOrDefault();
 
             if (promo == null)
@@ -115,13 +114,13 @@ namespace BL.Service.CouponCode
             {
                 await _unitOfWork.BeginTransactionAsync();
 
-                SaveCouponCodeEntity(dto, userId);
+                await SaveCouponCodeEntityAsync(dto, userId);
                 await _unitOfWork.CommitAsync();
                 return true;
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error saving promo code");
+                _logger.Error(ex, "Error saving promo code");
                 _unitOfWork.Rollback();
                 throw;
             }
@@ -153,38 +152,38 @@ namespace BL.Service.CouponCode
             }
         }
 
-        private Guid SaveCouponCodeEntity(CouponCodeDto dto, Guid userId)
+        private async Task<Guid> SaveCouponCodeEntityAsync(CouponCodeDto dto, Guid userId)
         {
             var entity = _mapper.MapModel<CouponCodeDto, TbCouponCode>(dto);
 
             if (entity.Id != Guid.Empty)
             {
-                var exists = _unitOfWork.TableRepository<TbCouponCode>().Get(p => p.Id == entity.Id && p.CurrentState == 0).Any();
+                var exists = (await _unitOfWork.TableRepository<TbCouponCode>().GetAsync(p => p.Id == entity.Id && p.CurrentState == 0)).Any();
                 if (exists)
                     throw new ArgumentException("Invalid promo code ID");
             }
             else
             {
-                var codeExists = _unitOfWork.TableRepository<TbCouponCode>().IsExists("Code", dto.Code);
+                var codeExists = await _unitOfWork.TableRepository<TbCouponCode>().IsExistsAsync("Code", dto.Code);
                 if (codeExists)
                     throw new ArgumentException("The code you entered already exists. Please enter a unique code.");
             }
 
-            _unitOfWork.TableRepository<TbCouponCode>().Save(entity, userId, out Guid CouponCodeId);
-            return CouponCodeId;
+            var saveResult = await _unitOfWork.TableRepository<TbCouponCode>().SaveAsync(entity, userId);
+            return saveResult.Id;
         }
 
-        public bool Delete(Guid id, Guid userId)
+        public async Task<bool> Delete(Guid id, Guid userId)
         {
             if (id == Guid.Empty) throw new ArgumentException("Invalid ID");
 
             try
             {
-                return _unitOfWork.TableRepository<TbCouponCode>().UpdateCurrentState(id, userId);
+                return await _unitOfWork.TableRepository<TbCouponCode>().UpdateCurrentStateAsync(id, userId);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"Error deleting promo code {id}");
+                _logger.Error(ex, $"Error deleting promo code {id}");
                 throw;
             }
         }
@@ -197,7 +196,7 @@ namespace BL.Service.CouponCode
                 var validationResult = await ValidateCouponCodeAsync(request.Code, request.UserId);
 
                 // First get all prices from the database
-                var priceLookupResult = GetPricesForCartItems(request.OrderItems);
+                var priceLookupResult = await GetPricesForCartItemsAsync(request.OrderItems);
                 if (!priceLookupResult.Success)
                     return ServiceResult<AppliedCouponCodeResult>.FailureResult(priceLookupResult.Message);
 
@@ -208,8 +207,8 @@ namespace BL.Service.CouponCode
                     return ServiceResult<AppliedCouponCodeResult>.FailureResult(validationResult.Message);
 
                 // Get the full promo code entity
-                var couponCode = _unitOfWork.TableRepository<TbCouponCode>()
-                    .Get(p => p.Id == validationResult.Data.CouponCodeId && p.CurrentState == 1)
+                var couponCode = (await _unitOfWork.TableRepository<TbCouponCode>()
+                    .GetAsync(p => p.Id == validationResult.Data.CouponCodeId && p.CurrentState == 1))
                     .FirstOrDefault();
 
                 if (couponCode == null)
@@ -222,7 +221,7 @@ namespace BL.Service.CouponCode
 
                 // Update usage count
                 couponCode.UsageCount++;
-                _unitOfWork.TableRepository<TbCouponCode>().Save(couponCode, Guid.Empty);
+                await _unitOfWork.TableRepository<TbCouponCode>().SaveAsync(couponCode, Guid.Empty);
 
                 try
                 {
@@ -248,7 +247,7 @@ namespace BL.Service.CouponCode
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"Error applying promo code {request.Code}");
+                _logger.Error(ex, $"Error applying promo code {request.Code}");
                 return ServiceResult<AppliedCouponCodeResult>.FailureResult("Error applying promo code");
             }
         }
@@ -258,9 +257,9 @@ namespace BL.Service.CouponCode
             try
             {
                 // Get active promo code
-                var couponCode = _unitOfWork.TableRepository<TbCouponCode>()
-                    .Get(predicate: p => p.Code == code && p.CurrentState == 1,
-                         includeProperties: "Orders").FirstOrDefault();
+                var couponCode = (await _unitOfWork.TableRepository<TbCouponCode>()
+                    .GetAsync(predicate: p => p.Code == code && p.CurrentState == 1,
+                         includeProperties: "Orders")).FirstOrDefault();
 
                 if (couponCode == null)
                     return ServiceResult<CouponCodeValidationResult>.FailureResult("Invalid promo code");
@@ -279,14 +278,14 @@ namespace BL.Service.CouponCode
                     return ServiceResult<CouponCodeValidationResult>.FailureResult("Promo code usage limit reached");
 
                 //// Check the user is marketer
-                //if (!await _marketerService.IsMarketerAsync(userId))
+                //if (!await _marketer_service.IsMarketerAsync(userId))
                 //    return ServiceResult<CouponCodeValidationResult>.FailureResult("Promo code for marketers only");
 
                 return ValidateCartPromo(couponCodeDto);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"Error validating promo code {code}");
+                _logger.Error(ex, $"Error validating promo code {code}");
                 return ServiceResult<CouponCodeValidationResult>.FailureResult("Error validating promo code");
             }
         }
@@ -305,7 +304,7 @@ namespace BL.Service.CouponCode
             return true;
         }
 
-        private ServiceResult<List<OrderItemPriceDto>> GetPricesForCartItems(IEnumerable<OrderItemDto> orderItems)
+        private async Task<ServiceResult<List<OrderItemPriceDto>>> GetPricesForCartItemsAsync(IEnumerable<OrderItemDto> orderItems)
         {
             var result = new List<OrderItemPriceDto>();
 
@@ -313,7 +312,7 @@ namespace BL.Service.CouponCode
             {
                 foreach (var item in orderItems)
                 {
-                    var product = _itemService.FindById(item.Id);
+                    var product = await _itemService.FindByIdAsync(item.Id);
 
                     if (product == null)
                         return ServiceResult<List<OrderItemPriceDto>>.FailureResult($"Product {item.Id} not found");
@@ -333,7 +332,7 @@ namespace BL.Service.CouponCode
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error fetching prices for cart items");
+                _logger.Error(ex, "Error fetching prices for cart items");
                 return ServiceResult<List<OrderItemPriceDto>>.FailureResult("Error fetching item prices");
             }
         }

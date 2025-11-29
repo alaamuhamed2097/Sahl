@@ -32,7 +32,7 @@ namespace BL.Service.Notification
                 throw new ArgumentNullException(nameof(userId));
 
             var preferences = await _preferencesRepository
-                .GetAsync(x => x.UserId == Guid.Parse(userId) && x.CurrentState == 1);
+                .GetAsync(x => x.UserId == userId && x.CurrentState == 1);
 
             return _mapper.MapList<TbNotificationPreferences, NotificationPreferencesDto>(preferences).ToList();
         }
@@ -42,8 +42,8 @@ namespace BL.Service.Notification
             if (string.IsNullOrWhiteSpace(userId))
                 throw new ArgumentNullException(nameof(userId));
 
-            var preference = _preferencesRepository
-                .Get(x => x.UserId == Guid.Parse(userId) && x.NotificationType == notificationType && x.CurrentState == 1)
+            var preference = (await _preferencesRepository
+                .GetAsync(x => x.UserId == userId && x.NotificationType == notificationType && x.CurrentState == 1))
                 .FirstOrDefault();
 
             if (preference == null) return null;
@@ -65,12 +65,12 @@ namespace BL.Service.Notification
         public async Task<bool> SaveAsync(NotificationPreferencesDto dto, Guid userId)
         {
             // Check for existing preference
-            var existing = _preferencesRepository
-                .Get(x => x.UserId == Guid.Parse(dto.UserId)
+            var existing = (await _preferencesRepository
+                .GetAsync(x => x.UserId == dto.UserId
                     && x.UserType == dto.UserType
                     && x.NotificationType == dto.NotificationType
                     && x.Id != dto.Id
-                    && x.CurrentState == 1)
+                    && x.CurrentState == 1))
                 .FirstOrDefault();
 
             if (existing != null)
@@ -101,8 +101,8 @@ namespace BL.Service.Notification
             bool enableInApp,
             Guid updaterId)
         {
-            var preference = _preferencesRepository
-                .Get(x => x.UserId == Guid.Parse(userId) && x.NotificationType == notificationType && x.CurrentState == 1)
+            var preference = (await _preferencesRepository
+                .GetAsync(x => x.UserId == userId && x.NotificationType == notificationType && x.CurrentState == 1))
                 .FirstOrDefault();
 
             if (preference == null)

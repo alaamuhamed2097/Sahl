@@ -4,9 +4,9 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace DAL.Configurations
 {
-    public class NotificationsConfiguration : IEntityTypeConfiguration<TbNotifications>
+    public class NotificationsConfiguration : IEntityTypeConfiguration<TbNotification>
     {
-        public void Configure(EntityTypeBuilder<TbNotifications> builder)
+        public void Configure(EntityTypeBuilder<TbNotification> builder)
         {
             builder.ToTable("Notifications");
 

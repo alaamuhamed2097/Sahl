@@ -28,11 +28,11 @@ namespace Api.Controllers.Shipping
         /// Retrieves all shipping companies.
         /// </summary>
         [HttpGet]
-        public IActionResult Get()
+        public async Task<IActionResult> Get()
         {
             try
             {
-                var companies = _shippingCompanyService.GetAll();
+                var companies = await _shippingCompanyService.GetAllAsync();
                 if (companies == null || !companies.Any())
                     return NotFound(new ResponseModel<string>
                     {
@@ -57,7 +57,7 @@ namespace Api.Controllers.Shipping
         /// Retrieves a shipping company by ID.
         /// </summary>
         [HttpGet("{id}")]
-        public IActionResult Get(Guid id)
+        public async Task<IActionResult> Get(Guid id)
         {
             try
             {
@@ -68,7 +68,7 @@ namespace Api.Controllers.Shipping
                         Message = "Invalid company ID."
                     });
 
-                var company = _shippingCompanyService.FindById(id);
+                var company = await _shippingCompanyService.FindByIdAsync(id);
                 if (company == null)
                     return NotFound(new ResponseModel<string>
                     {
@@ -94,7 +94,7 @@ namespace Api.Controllers.Shipping
         /// </summary>
         /// <param name="criteria">Search criteria including pagination parameters</param>
         [HttpGet("search")]
-        public IActionResult Search([FromQuery] BaseSearchCriteriaModel criteria)
+        public async Task<IActionResult> Search([FromQuery] BaseSearchCriteriaModel criteria)
         {
             try
             {
@@ -102,7 +102,7 @@ namespace Api.Controllers.Shipping
                 criteria.PageNumber = criteria.PageNumber < 1 ? 1 : criteria.PageNumber;
                 criteria.PageSize = criteria.PageSize < 1 || criteria.PageSize > 100 ? 10 : criteria.PageSize;
 
-                var result = _shippingCompanyService.GetPage(criteria);
+                var result = await _shippingCompanyService.GetPage(criteria);
 
                 if (result == null || !result.Items.Any())
                 {
@@ -166,7 +166,7 @@ namespace Api.Controllers.Shipping
         /// Deletes a shipping company by ID.
         /// </summary>
         [HttpPost("delete")]
-        public IActionResult Delete([FromBody] Guid id)
+        public async Task<IActionResult> Delete([FromBody] Guid id)
         {
             try
             {
@@ -177,7 +177,7 @@ namespace Api.Controllers.Shipping
                         Message = "Invalid country ID."
                     });
 
-                var success = _shippingCompanyService.Delete(id, GuidUserId);
+                var success = await _shippingCompanyService.DeleteAsync(id, GuidUserId);
                 if (!success)
                     return BadRequest(new ResponseModel<string>
                     {

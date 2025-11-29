@@ -1,13 +1,8 @@
-using BL.Services.Campaign;
 using Common.Enumerations.Campaign;
 using DAL.ApplicationContext;
 using Domains.Entities.Campaign;
 using Microsoft.EntityFrameworkCore;
 using Shared.DTOs.Campaign;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace BL.Services.Campaign
 {
@@ -51,8 +46,8 @@ namespace BL.Services.Campaign
             var campaigns = await _context.TbCampaigns
                 .Include(c => c.CampaignProducts)
                 .Include(c => c.CampaignVendors)
-                .Where(c => c.IsActive && 
-                           c.StartDate <= now && 
+                .Where(c => c.IsActive &&
+                           c.StartDate <= now &&
                            c.EndDate >= now &&
                            c.Status == CampaignStatus.Active)
                 .OrderBy(c => c.StartDate)
@@ -101,7 +96,7 @@ namespace BL.Services.Campaign
         public async Task<CampaignDto> UpdateCampaignAsync(CampaignUpdateDto dto)
         {
             var campaign = await _context.TbCampaigns.FindAsync(dto.Id);
-            if (campaign == null) 
+            if (campaign == null)
                 throw new Exception("Campaign not found");
 
             campaign.TitleEn = dto.TitleEn;
@@ -128,7 +123,7 @@ namespace BL.Services.Campaign
 
             var hasProducts = await _context.TbCampaignProducts
                 .AnyAsync(cp => cp.CampaignId == id);
-            
+
             if (hasProducts)
                 throw new Exception("Cannot delete campaign with products");
 
@@ -145,7 +140,7 @@ namespace BL.Services.Campaign
             campaign.IsActive = true;
             campaign.Status = CampaignStatus.Active;
             campaign.UpdatedDateUtc = DateTime.UtcNow;
-            
+
             await _context.SaveChangesAsync();
             return true;
         }
@@ -158,7 +153,7 @@ namespace BL.Services.Campaign
             campaign.IsActive = false;
             campaign.Status = CampaignStatus.Paused;
             campaign.UpdatedDateUtc = DateTime.UtcNow;
-            
+
             await _context.SaveChangesAsync();
             return true;
         }
@@ -246,7 +241,7 @@ namespace BL.Services.Campaign
             if (product == null) return false;
 
             product.IsActive = true;
-            product.ApprovedByUserId = approvedByUserId;
+            product.ApprovedByUserId = approvedByUserId.ToString();
             product.ApprovedAt = DateTime.UtcNow;
             product.UpdatedDateUtc = DateTime.UtcNow;
 
@@ -285,8 +280,8 @@ namespace BL.Services.Campaign
             var now = DateTime.UtcNow;
             var flashSales = await _context.TbFlashSales
                 .Include(fs => fs.FlashSaleProducts)
-                .Where(fs => fs.IsActive && 
-                            fs.StartDate <= now && 
+                .Where(fs => fs.IsActive &&
+                            fs.StartDate <= now &&
                             fs.EndDate >= now)
                 .OrderBy(fs => fs.StartDate)
                 .ToListAsync();
@@ -330,7 +325,7 @@ namespace BL.Services.Campaign
         public async Task<FlashSaleDto> UpdateFlashSaleAsync(Guid id, FlashSaleCreateDto dto)
         {
             var flashSale = await _context.TbFlashSales.FindAsync(id);
-            if (flashSale == null) 
+            if (flashSale == null)
                 throw new Exception("Flash sale not found");
 
             flashSale.TitleEn = dto.TitleEn;
@@ -481,8 +476,8 @@ namespace BL.Services.Campaign
         private FlashSaleDto MapToFlashSaleDto(TbFlashSale flashSale)
         {
             var now = DateTime.UtcNow;
-            var timeRemaining = flashSale.EndDate > now 
-                ? flashSale.EndDate - now 
+            var timeRemaining = flashSale.EndDate > now
+                ? flashSale.EndDate - now
                 : TimeSpan.Zero;
 
             return new FlashSaleDto

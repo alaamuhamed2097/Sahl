@@ -8,7 +8,7 @@ namespace BL.Contracts.Service.ECommerce.Category
 {
     public interface ICategoryService : IBaseService<TbCategory, CategoryDto>
     {
-        Task<PaginatedDataModel<CategoryDto>> GetPage(BaseSearchCriteriaModel criteriaModel);
+        Task<PaginatedDataModel<CategoryDto>> GetPageAsync(BaseSearchCriteriaModel criteriaModel);
         Task<IEnumerable<MainCategoryDto>> GetMainCategoriesAsync();
         Task<IEnumerable<CategoryPreviewDto>> GetPreviewedCategories(bool isFeaturedCategory, bool isParent);
         Task<IEnumerable<VwCategoryItemsDto>> GetHomeCategories(string userId);

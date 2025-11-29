@@ -1,7 +1,5 @@
 using Common.Enumerations.Visibility;
-using Domains.Entities.Base;
 using Domains.Entities.Catalog.Item;
-using Domains.Identity;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -33,7 +31,7 @@ namespace Domains.Entities.Visibility
         public DateTime? SuppressedAt { get; set; }
 
         [ForeignKey("SuppressedByUser")]
-        public Guid? SuppressedByUserId { get; set; }
+        public string? SuppressedByUserId { get; set; }
 
         public virtual TbItem Item { get; set; } = null!;
         public virtual ApplicationUser? SuppressedByUser { get; set; }

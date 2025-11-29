@@ -14,14 +14,14 @@ using System.Linq.Expressions;
 
 namespace BL.Service.Notification
 {
-    public class NotificationsService : BaseService<TbNotifications, NotificationsDto>, INotificationsService
+    public class NotificationsService : BaseService<TbNotification, NotificationsDto>, INotificationsService
     {
-        private readonly ITableRepository<TbNotifications> _notificationsRepository;
+        private readonly ITableRepository<TbNotification> _notificationsRepository;
         private readonly ILogger _logger;
         private readonly IBaseMapper _mapper;
 
         public NotificationsService(
-            ITableRepository<TbNotifications> notificationsRepository,
+            ITableRepository<TbNotification> notificationsRepository,
             ILogger logger,
             IBaseMapper mapper)
             : base(notificationsRepository, mapper)
@@ -36,7 +36,7 @@ namespace BL.Service.Notification
             var notifications = await _notificationsRepository
                 .GetAsync(x => x.CurrentState == 1, orderBy: q => q.OrderByDescending(x => x.SentDate));
 
-            return _mapper.MapList<TbNotifications, NotificationsDto>(notifications).ToList();
+            return _mapper.MapList<TbNotification, NotificationsDto>(notifications).ToList();
         }
 
         public async Task<IEnumerable<NotificationsDto>> GetByRecipientAsync(int recipientId, RecipientType recipientType)
@@ -45,7 +45,7 @@ namespace BL.Service.Notification
                 .GetAsync(x => x.RecipientID == recipientId && x.RecipientType == recipientType && x.CurrentState == 1,
                     orderBy: q => q.OrderByDescending(x => x.SentDate));
 
-            return _mapper.MapList<TbNotifications, NotificationsDto>(notifications).ToList();
+            return _mapper.MapList<TbNotification, NotificationsDto>(notifications).ToList();
         }
 
         public async Task<IEnumerable<NotificationsDto>> GetUnreadByRecipientAsync(int recipientId, RecipientType recipientType)
@@ -57,7 +57,7 @@ namespace BL.Service.Notification
                     && x.CurrentState == 1,
                     orderBy: q => q.OrderByDescending(x => x.SentDate));
 
-            return _mapper.MapList<TbNotifications, NotificationsDto>(notifications).ToList();
+            return _mapper.MapList<TbNotification, NotificationsDto>(notifications).ToList();
         }
 
         public async Task<NotificationsDto?> GetByIdAsync(Guid id)
@@ -68,7 +68,7 @@ namespace BL.Service.Notification
             var notification = await _notificationsRepository.FindByIdAsync(id);
             if (notification == null) return null;
 
-            return _mapper.MapModel<TbNotifications, NotificationsDto>(notification);
+            return _mapper.MapModel<TbNotification, NotificationsDto>(notification);
         }
 
         public async Task<PaginatedDataModel<NotificationsDto>> SearchAsync(BaseSearchCriteriaModel criteriaModel)
@@ -82,7 +82,7 @@ namespace BL.Service.Notification
             if (criteriaModel.PageSize < 1 || criteriaModel.PageSize > 100)
                 throw new ArgumentOutOfRangeException(nameof(criteriaModel.PageSize), ValidationResources.PageSizeRange);
 
-            Expression<Func<TbNotifications, bool>> filter = x => x.CurrentState == 1;
+            Expression<Func<TbNotification, bool>> filter = x => x.CurrentState == 1;
 
             var searchTerm = criteriaModel.SearchTerm?.Trim().ToLower();
             if (!string.IsNullOrWhiteSpace(searchTerm))
@@ -99,14 +99,14 @@ namespace BL.Service.Notification
                 filter,
                 orderBy: q => q.OrderByDescending(x => x.SentDate));
 
-            var itemsDto = _mapper.MapList<TbNotifications, NotificationsDto>(notifications.Items).ToList();
+            var itemsDto = _mapper.MapList<TbNotification, NotificationsDto>(notifications.Items).ToList();
 
             return new PaginatedDataModel<NotificationsDto>(itemsDto, notifications.TotalRecords);
         }
 
         public async Task<bool> SaveAsync(NotificationsDto dto, Guid userId)
         {
-            var entity = _mapper.MapModel<NotificationsDto, TbNotifications>(dto);
+            var entity = _mapper.MapModel<NotificationsDto, TbNotification>(dto);
             var result = await _notificationsRepository.SaveAsync(entity, userId);
             return result.Success;
         }

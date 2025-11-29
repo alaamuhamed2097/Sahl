@@ -106,7 +106,7 @@ namespace BL.Service.Brand
         public async Task<bool> SaveAsync(BrandDto dto, Guid userId)
         {
             bool isUpdate = dto.Id != null && dto.Id != Guid.Empty;
-            var oldImagePathInDb = _brandRepository.Get(s => s.Id == dto.Id).Select(s => s.LogoPath).FirstOrDefault();
+            var oldImagePathInDb = (await _brandRepository.GetAsync(s => s.Id == dto.Id)).Select(s => s.LogoPath).FirstOrDefault();
 
             if (!string.IsNullOrWhiteSpace(dto.Base64Image))
             {
@@ -132,7 +132,7 @@ namespace BL.Service.Brand
                     throw new Exception(ValidationResources.ImageRequired);
             }
 
-            return base.Save(dto, userId);
+            return (await base.SaveAsync(dto, userId)).Success;
         }
 
         public async Task<bool> DeleteAsync(Guid id, Guid userId)

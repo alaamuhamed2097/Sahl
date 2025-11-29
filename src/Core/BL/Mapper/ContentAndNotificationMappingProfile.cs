@@ -21,7 +21,7 @@ namespace BL.Mapper
                 .ReverseMap();
 
             // Notifications and Preferences
-            CreateMap<TbNotifications, NotificationsDto>()
+            CreateMap<TbNotification, NotificationsDto>()
                 .ReverseMap();
 
             CreateMap<TbNotificationPreferences, NotificationPreferencesDto>()

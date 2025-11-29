@@ -62,9 +62,8 @@ namespace BL.Service.Content
             if (string.IsNullOrWhiteSpace(areaCode))
                 throw new ArgumentNullException(nameof(areaCode));
 
-            var area = _contentAreaRepository
-                .Get(x => x.AreaCode == areaCode && x.CurrentState == 1)
-                .FirstOrDefault();
+            var area = await _contentAreaRepository
+                .FindAsync(x => x.AreaCode == areaCode && x.CurrentState == 1);
 
             if (area == null) return null;
 
@@ -108,9 +107,8 @@ namespace BL.Service.Content
         public async Task<bool> SaveAsync(ContentAreaDto dto, Guid userId)
         {
             // Check for duplicate AreaCode
-            var existingArea = _contentAreaRepository
-                .Get(x => x.AreaCode == dto.AreaCode && x.Id != dto.Id && x.CurrentState == 1)
-                .FirstOrDefault();
+            var existingArea = await _contentAreaRepository
+                .FindAsync(x => x.AreaCode == dto.AreaCode && x.Id != dto.Id && x.CurrentState == 1);
 
             if (existingArea != null)
                 throw new InvalidOperationException($"Area code '{dto.AreaCode}' already exists");

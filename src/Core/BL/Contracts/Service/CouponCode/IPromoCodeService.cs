@@ -8,11 +8,11 @@ namespace BL.Contracts.Service.CouponCode
 {
     public interface ICouponCodeService
     {
-        public PaginatedDataModel<CouponCodeDto> GetPage(BaseSearchCriteriaModel criteriaModel);
-        public List<CouponCodeDto> GetAll();
-        public CouponCodeDto GetById(Guid id);
+        public Task<PaginatedDataModel<CouponCodeDto>> GetPage(BaseSearchCriteriaModel criteriaModel);
+        public Task<List<CouponCodeDto>> GetAll();
+        public Task<CouponCodeDto> GetById(Guid id);
         public Task<bool> Save(CouponCodeDto dto, Guid userId);
-        public bool Delete(Guid id, Guid userId);
+        public Task<bool> Delete(Guid id, Guid userId);
         public Task<ServiceResult<AppliedCouponCodeResult>> ApplyCouponCode(ApplyCouponCodeRequest request);
         public Task<ServiceResult<CouponCodeValidationResult>> ValidateCouponCodeAsync(string code, string userId);
     }

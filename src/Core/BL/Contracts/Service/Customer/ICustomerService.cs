@@ -3,17 +3,12 @@ using DAL.Models;
 using Domains.Entities.ECommerceSystem.Customer;
 using Shared.DTOs.Customer;
 using Shared.GeneralModels.SearchCriteriaModels;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace BL.Contracts.Service.Customer
 {
-	public interface ICustomerService : IBaseService<TbCustomer, CustomerDto>
-	{
-		PaginatedDataModel<CustomerDto> GetPage(BaseSearchCriteriaModel criteriaModel);
-		Task<PaginatedDataModel<CustomerDto>> SearchAsync(BaseSearchCriteriaModel criteriaModel);
-	}
+    public interface ICustomerService : IBaseService<TbCustomer, CustomerDto>
+    {
+        Task<PaginatedDataModel<CustomerDto>> GetPage(BaseSearchCriteriaModel criteriaModel);
+        Task<PaginatedDataModel<CustomerDto>> SearchAsync(BaseSearchCriteriaModel criteriaModel);
+    }
 }

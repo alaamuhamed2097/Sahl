@@ -25,7 +25,7 @@ namespace Domains.Entities.Order
         public PaymentGatewayMethod? RefundMethod { get; set; }
 
         [ForeignKey("Admin")]
-        public Guid? AdminUserId { get; set; }
+        public string? AdminUserId { get; set; }
 
         [ForeignKey("Order")]
         public Guid OrderId { get; set; }

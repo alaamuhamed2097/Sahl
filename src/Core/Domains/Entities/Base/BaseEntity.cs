@@ -12,10 +12,12 @@ namespace Domains.Entities.Base
 
         public int CurrentState { get; set; }
 
+        // Changed back to Guid from string
         public Guid CreatedBy { get; set; }
 
         public DateTime CreatedDateUtc { get; set; }
 
+        // Changed back to Guid? from string?
         public Guid? UpdatedBy { get; set; }
 
         public DateTime? UpdatedDateUtc { get; set; }

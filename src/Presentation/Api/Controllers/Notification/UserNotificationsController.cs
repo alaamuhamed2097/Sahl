@@ -29,11 +29,11 @@ namespace Api.Controllers.Notification
         /// </summary>
         [HttpGet]
         [Authorize]
-        public IActionResult Get()
+        public async Task<IActionResult> Get()
         {
             try
             {
-                var userNotifications = _userNotificationService.GetAll(UserId);
+                var userNotifications = await _userNotificationService.GetAll(UserId);
 
                 // Return OK even when there are no notifications instead of 404
                 if (userNotifications.Value == null || !userNotifications.Value.Any())
@@ -69,7 +69,7 @@ namespace Api.Controllers.Notification
         /// </summary>
         [HttpGet("{id}")]
         [Authorize]
-        public IActionResult Get(Guid id)
+        public async Task<IActionResult> Get(Guid id)
         {
             try
             {
@@ -80,7 +80,7 @@ namespace Api.Controllers.Notification
                         Message = NotifiAndAlertsResources.InvalidInputAlert
                     });
 
-                var userNotification = _userNotificationService.FindById(id);
+                var userNotification = await _userNotificationService.FindById(id);
                 if (userNotification == null)
                     return NotFound(new ResponseModel<UserNotificationRequest>
                     {
@@ -107,7 +107,7 @@ namespace Api.Controllers.Notification
         /// <param name="criteria">Search criteria including pagination parameters</param>
         [Authorize]
         [HttpGet("search")]
-        public IActionResult Search([FromQuery] BaseSearchCriteriaModel criteria)
+        public async Task<IActionResult> Search([FromQuery] BaseSearchCriteriaModel criteria)
         {
             try
             {
@@ -115,7 +115,7 @@ namespace Api.Controllers.Notification
                 criteria.PageNumber = criteria.PageNumber < 1 ? 1 : criteria.PageNumber;
                 criteria.PageSize = criteria.PageSize < 1 || criteria.PageSize > 100 ? 10 : criteria.PageSize;
 
-                var result = _userNotificationService.GetPage(criteria, UserId);
+                var result = await _userNotificationService.GetPage(criteria, UserId);
 
                 if (result.Value == null || !result.Value.Items.Any())
                 {

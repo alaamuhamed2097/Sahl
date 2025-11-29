@@ -10,7 +10,7 @@ namespace Domains.Entities.Notification
     {
         [Required]
         // FK moved to Fluent configuration. Use Guid to match ApplicationUser primary key.
-        public Guid UserId { get; set; }
+        public string UserId { get; set; }
 
         [Required]
         public RecipientType UserType { get; set; }

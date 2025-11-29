@@ -18,7 +18,7 @@ namespace Domains.Entities.Inventory
         public Guid? OrderId { get; set; }
 
         [ForeignKey("User")]
-        public Guid? UserId { get; set; }
+        public string? UserId { get; set; }
 
         public decimal TotalAmount { get; set; }
 

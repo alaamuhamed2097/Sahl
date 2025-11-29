@@ -28,12 +28,12 @@ namespace Api.Controllers.Location
         /// </summary>
         [HttpGet]
         [AllowAnonymous]
-        public IActionResult Get()
+        public async Task<IActionResult> Get()
         {
             try
             {
-                var country = _countryService.GetAll();
-                if (country == null || !country.Any())
+                var countries = await _countryService.GetAllAsync();
+                if (countries == null || !countries.Any())
                     return NotFound(new ResponseModel<string>
                     {
                         Success = false,
@@ -44,7 +44,7 @@ namespace Api.Controllers.Location
                 {
                     Success = true,
                     Message = "Country retrieved successfully.",
-                    Data = country
+                    Data = countries
                 });
             }
             catch (Exception ex)
@@ -58,7 +58,7 @@ namespace Api.Controllers.Location
         /// </summary>
         [HttpGet("{id}")]
         [AllowAnonymous]
-        public IActionResult Get(Guid id)
+        public async Task<IActionResult> Get(Guid id)
         {
             try
             {
@@ -69,7 +69,7 @@ namespace Api.Controllers.Location
                         Message = "Invalid country ID."
                     });
 
-                var country = _countryService.FindById(id);
+                var country = await _countryService.FindByIdAsync(id);
                 if (country == null)
                     return NotFound(new ResponseModel<string>
                     {
@@ -96,7 +96,7 @@ namespace Api.Controllers.Location
         /// <param name="criteria">Search criteria including pagination parameters</param>
         [Authorize(Roles = nameof(UserRole.Admin))]
         [HttpGet("search")]
-        public IActionResult Search([FromQuery] BaseSearchCriteriaModel criteria)
+        public async Task<IActionResult> Search([FromQuery] BaseSearchCriteriaModel criteria)
         {
             try
             {
@@ -104,7 +104,7 @@ namespace Api.Controllers.Location
                 criteria.PageNumber = criteria.PageNumber < 1 ? 1 : criteria.PageNumber;
                 criteria.PageSize = criteria.PageSize < 1 || criteria.PageSize > 100 ? 10 : criteria.PageSize;
 
-                var result = _countryService.GetPage(criteria);
+                var result = await _countryService.GetPageAsync(criteria);
 
                 if (result == null || !result.Items.Any())
                 {
@@ -134,7 +134,7 @@ namespace Api.Controllers.Location
         /// </summary>
         [Authorize(Roles = nameof(UserRole.Admin))]
         [HttpPost("save")]
-        public IActionResult Save([FromBody] CountryDto countryDto)
+        public async Task<IActionResult> Save([FromBody] CountryDto countryDto)
         {
             try
             {
@@ -145,8 +145,8 @@ namespace Api.Controllers.Location
                         Message = "Invalid country data."
                     });
 
-                var success = _countryService.Save(countryDto, GuidUserId);
-                if (!success)
+                var result = await _countryService.SaveAsync(countryDto, GuidUserId);
+                if (!result.Success)
                     return BadRequest(new ResponseModel<string>
                     {
                         Success = false,
@@ -170,7 +170,7 @@ namespace Api.Controllers.Location
         /// </summary>
         [Authorize(Roles = nameof(UserRole.Admin))]
         [HttpPost("delete")]
-        public IActionResult Delete([FromBody] Guid id)
+        public async Task<IActionResult> Delete([FromBody] Guid id)
         {
             try
             {
@@ -181,7 +181,7 @@ namespace Api.Controllers.Location
                         Message = "Invalid country ID."
                     });
 
-                var success = _countryService.Delete(id, GuidUserId);
+                var success = await _countryService.DeleteAsync(id, GuidUserId);
                 if (!success)
                     return BadRequest(new ResponseModel<string>
                     {

@@ -1,6 +1,4 @@
-using Domains.Entities.Base;
 using Domains.Entities.Offer;
-using Domains.Identity;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -28,7 +26,7 @@ namespace Domains.Entities.Pricing
         public DateTime ChangedAt { get; set; }
 
         [ForeignKey("ChangedByUser")]
-        public Guid? ChangedByUserId { get; set; }
+        public string? ChangedByUserId { get; set; }
 
         [StringLength(500)]
         public string? Reason { get; set; }

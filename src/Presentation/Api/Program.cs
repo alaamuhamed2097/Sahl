@@ -1,8 +1,9 @@
-using Api.Extensions;
+﻿using Api.Extensions;
 using BL.GeneralService.Notification;
 using DAL.ApplicationContext;
 using Domains.Identity;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -152,11 +153,12 @@ using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
     var userManager = services.GetRequiredService<UserManager<ApplicationUser>>();
-    var roleManager = services.GetRequiredService<RoleManager<IdentityRole<Guid>>>();
+    var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
     var dbContext = services.GetRequiredService<ApplicationDbContext>();
 
+
     // Apply migrations
-    //await dbContext.Database.MigrateAsync();
+    await dbContext.Database.MigrateAsync();
 
     // Seed data
     // await ContextConfigurations.SeedDataAsync(dbContext, userManager, roleManager);

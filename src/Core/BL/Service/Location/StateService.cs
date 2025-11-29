@@ -23,7 +23,7 @@ namespace BL.Service.Location
             _mapper = mapper;
         }
 
-        public PaginatedDataModel<StateDto> GetPage(BaseSearchCriteriaModel criteriaModel)
+        public async Task<PaginatedDataModel<StateDto>> GetPage(BaseSearchCriteriaModel criteriaModel)
         {
             if (criteriaModel == null)
                 throw new ArgumentNullException(nameof(criteriaModel));
@@ -67,7 +67,7 @@ namespace BL.Service.Location
                 };
             }
 
-            var entitiesList = _baseRepository.GetPage(
+            var entitiesList = await _baseRepository.GetPageAsync(
                 criteriaModel.PageNumber,
                 criteriaModel.PageSize,
                 filter,

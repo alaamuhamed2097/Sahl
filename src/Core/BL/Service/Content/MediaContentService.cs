@@ -52,17 +52,16 @@ namespace BL.Service.Content
 
         public async Task<IEnumerable<MediaContentDto>> GetActiveMediaByAreaCodeAsync(string areaCode)
         {
-            var area = _contentAreaRepository
-                .Get(x => x.AreaCode == areaCode && x.CurrentState == 1 && x.IsActive)
-                .FirstOrDefault();
+            var area = await _contentAreaRepository
+                .FindAsync(x => x.AreaCode == areaCode && x.CurrentState == 1 && x.IsActive);
 
             if (area == null)
                 return Enumerable.Empty<MediaContentDto>();
 
             var now = DateTime.UtcNow;
             var media = await _mediaContentRepository
-                .GetAsync(x => x.ContentAreaId == area.Id 
-                    && x.CurrentState == 1 
+                .GetAsync(x => x.ContentAreaId == area.Id
+                    && x.CurrentState == 1
                     && x.IsActive
                     && (!x.StartDate.HasValue || x.StartDate.Value <= now)
                     && (!x.EndDate.HasValue || x.EndDate.Value >= now),

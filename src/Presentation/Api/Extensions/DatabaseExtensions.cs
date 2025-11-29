@@ -2,6 +2,7 @@ using DAL.ApplicationContext;
 using Domains.Identity;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 
 namespace Api.Extensions
 {
@@ -15,10 +16,12 @@ namespace Api.Extensions
             services.AddDbContext<ApplicationDbContext>(options =>
             {
                 options.UseSqlServer(connectionString);
+                // Suppress pending model changes warning during runtime migrations.
+                options.ConfigureWarnings(w => w.Ignore(RelationalEventId.PendingModelChangesWarning));
             });
 
             // Add Identity services
-            services.AddIdentity<ApplicationUser, IdentityRole<Guid>>(options =>
+            services.AddIdentity<ApplicationUser, IdentityRole>(options =>
             {
                 // Configure password requirements
                 options.Password.RequireDigit = false;

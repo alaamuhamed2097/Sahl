@@ -21,8 +21,10 @@ using Domains.Entities.Location;
 using Domains.Entities.Loyalty;
 using Domains.Entities.Merchandising;
 using Domains.Entities.Notification;
+using Domains.Entities.Offer;
 using Domains.Entities.Offer.Rating;
 using Domains.Entities.Offer.Warranty;
+using Domains.Entities.Order;
 using Domains.Entities.Page;
 using Domains.Entities.Pricing;
 using Domains.Entities.SellerRequest;
@@ -47,9 +49,8 @@ namespace DAL.ApplicationContext
     /// <summary>
     /// Application database context for Entity Framework Core
     /// </summary>
-    /// 
     public class ApplicationDbContext
-    : IdentityDbContext<ApplicationUser, IdentityRole<Guid>, Guid>
+        : IdentityDbContext<ApplicationUser, IdentityRole, string>
     {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
                 : base(options)
@@ -83,8 +84,7 @@ namespace DAL.ApplicationContext
         public DbSet<TbNotification> TbNotifications { get; set; }
         public DbSet<TbUserNotification> TbUserNotifications { get; set; }
         public DbSet<TbNotificationChannel> TbNotificationChannels { get; set; }
-        public DbSet<TbNotifications> Notifications { get; set; }
-        public DbSet<TbNotificationPreferences> NotificationPreferences { get; set; }
+        public DbSet<TbNotificationPreferences> TbNotificationPreferences { get; set; }
 
         // Page Management
         public DbSet<TbPage> TbPages { get; set; }
@@ -199,17 +199,17 @@ namespace DAL.ApplicationContext
         public DbSet<TbAuthorizedDistributor> TbAuthorizedDistributors { get; set; }
 
         // Offer Management
-        public DbSet<Domains.Entities.Offer.TbOffer> TbOffers { get; set; }
-        public DbSet<Domains.Entities.Offer.TbOfferCombinationPricing> TbOfferCombinationPricings { get; set; }
-        public DbSet<Domains.Entities.Offer.TbOfferCondition> TbOfferConditions { get; set; }
+        public DbSet<TbOffer> TbOffers { get; set; }
+        public DbSet<TbOfferCombinationPricing> TbOfferCombinationPricings { get; set; }
+        public DbSet<TbOfferCondition> TbOfferConditions { get; set; }
         public DbSet<TbWarranty> TbWarranties { get; set; }
         public DbSet<TbUserOfferRating> TbUserOfferRatings { get; set; }
 
         // Order Management
-        public DbSet<Domains.Entities.Order.TbOrder> TbOrders { get; set; }
-        public DbSet<Domains.Entities.Order.TbOrderDetail> TbOrderDetails { get; set; }
-        public DbSet<Domains.Entities.Order.TbRefundRequest> TbRefundRequests { get; set; }
-        public DbSet<Domains.Entities.Shipping.TbShippingDetail> TbShippingDetails { get; set; }
+        public DbSet<TbOrder> TbOrders { get; set; }
+        public DbSet<TbOrderDetail> TbOrderDetails { get; set; }
+        public DbSet<TbRefundRequest> TbRefundRequests { get; set; }
+        public DbSet<TbShippingDetail> TbShippingDetails { get; set; }
 
         #endregion
 
@@ -233,73 +233,8 @@ namespace DAL.ApplicationContext
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            try
-            {
-                base.OnModelCreating(modelBuilder);
-
-                // ✅ ADD THIS: Disable cascade delete globally to prevent cascade path issues
-                DisableCascadeDeleteGlobally(modelBuilder);
-
-                // Check if we're in design-time (EF Core Tools)
-                var isDesignTime = IsDesignTimeEnvironment();
-
-                if (isDesignTime)
-                {
-                    ConfigureForDesignTime(modelBuilder);
-                    return;
-                }
-
-                ConfigureForRuntime(modelBuilder);
-            }
-            catch (Exception ex)
-            {
-                LogModelCreatingError(ex, modelBuilder);
-                throw;
-            }
-        }
-
-        /// <summary>
-        /// Disables cascade delete globally for all relationships to prevent SQL Server cascade path errors
-        /// </summary>
-        private static void DisableCascadeDeleteGlobally(ModelBuilder modelBuilder)
-        {
-            foreach (var relationship in modelBuilder.Model.GetEntityTypes()
-                .SelectMany(e => e.GetForeignKeys()))
-            {
-                relationship.DeleteBehavior = DeleteBehavior.Restrict;
-            }
-
-            Console.WriteLine("[OnModelCreating] Disabled cascade delete globally for all relationships.");
-        }
-
-        /// <summary>
-        /// Configures the model for design-time operations (migrations, scaffolding)
-        /// </summary>
-        private void ConfigureForDesignTime(ModelBuilder modelBuilder)
-        {
-            Console.WriteLine("[OnModelCreating] Design-time detected: applying minimal configuration.");
-
-            // Apply only base entity configurations for design time
+            base.OnModelCreating(modelBuilder);
             ConfigureBaseEntities(modelBuilder);
-
-            // Configure views as keyless for design time
-            ConfigureViews(modelBuilder);
-        }
-
-        /// <summary>
-        /// Configures the model for runtime operations
-        /// </summary>
-        private void ConfigureForRuntime(ModelBuilder modelBuilder)
-        {
-            Console.WriteLine("[OnModelCreating] Runtime detected: applying full configuration.");
-
-            // Apply base entity configurations
-            ConfigureBaseEntities(modelBuilder);
-
-            // Apply all entity configurations from assembly
-            modelBuilder.ApplyConfigurationsFromAssembly(typeof(ApplicationDbContext).Assembly);
-
-            // Configure views
             ConfigureViews(modelBuilder);
         }
 
@@ -365,11 +300,7 @@ namespace DAL.ApplicationContext
             });
 
             // Item Views
-            modelBuilder.Entity<VwItem>(entity =>
-            {
-                entity.HasNoKey();
-                entity.ToView("VwItems");
-            });
+            modelBuilder.Entity<VwItem>().HasNoKey().ToView("VwItems");
 
             // Unit Views
             modelBuilder.Entity<VwUnitWithConversionsUnits>(entity =>
@@ -384,52 +315,6 @@ namespace DAL.ApplicationContext
                 entity.HasNoKey();
                 entity.ToView("VwUserNotifications");
             });
-        }
-
-        /// <summary>
-        /// Determines if the current environment is design-time (EF Core Tools)
-        /// </summary>
-        private static bool IsDesignTimeEnvironment()
-        {
-            return string.Equals(Environment.GetEnvironmentVariable("EF_DESIGN_TIME"), "true", StringComparison.OrdinalIgnoreCase) ||
-                   string.Equals(Environment.GetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER"), "false", StringComparison.OrdinalIgnoreCase) &&
-                   AppDomain.CurrentDomain.FriendlyName.Contains("ef.dll");
-        }
-
-        /// <summary>
-        /// Logs detailed error information when model creation fails
-        /// </summary>
-        private static void LogModelCreatingError(Exception ex, ModelBuilder modelBuilder)
-        {
-            Console.Error.WriteLine("[OnModelCreating] Exception while building model: " + ex.Message);
-            Console.Error.WriteLine(ex.ToString());
-
-            try
-            {
-                // Log discovered entity types for debugging
-                var entityTypes = modelBuilder?.Model?.GetEntityTypes()?
-                    .Select(t => t.ClrType?.FullName ?? "<no-clr>")
-                    .OrderBy(name => name)
-                    .ToArray();
-
-                if (entityTypes != null && entityTypes.Any())
-                {
-                    Console.Error.WriteLine("[OnModelCreating] Discovered entity CLR types:");
-                    foreach (var typeName in entityTypes.Take(25))
-                    {
-                        Console.Error.WriteLine(" - " + typeName);
-                    }
-
-                    if (entityTypes.Length > 25)
-                    {
-                        Console.Error.WriteLine($" - ... and {entityTypes.Length - 25} more");
-                    }
-                }
-            }
-            catch (Exception logEx)
-            {
-                Console.Error.WriteLine($"[OnModelCreating] Error logging entity types: {logEx.Message}");
-            }
         }
 
         /// <summary>

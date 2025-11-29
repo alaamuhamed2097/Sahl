@@ -11,7 +11,7 @@ namespace Domains.Entities.SellerRequest
 
         [Required]
         [ForeignKey("User")]
-        public Guid UserId { get; set; } 
+        public string UserId { get; set; }
 
         [Required]
         public string Comment { get; set; } = string.Empty;

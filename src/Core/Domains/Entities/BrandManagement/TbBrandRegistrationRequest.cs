@@ -1,8 +1,6 @@
 using Common.Enumerations.Brand;
-using Domains.Entities.Base;
 using Domains.Entities.Catalog.Brand;
 using Domains.Entities.ECommerceSystem.Vendor;
-using Domains.Identity;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 

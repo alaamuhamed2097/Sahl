@@ -42,7 +42,7 @@ namespace BL.GeneralService.UserManagement
 
         public async Task<bool> DeleteAccount(Guid id, Guid updatorId)
         {
-            if (!_userManager.Users.Any(u => u.Id == updatorId))
+            if (!_userManager.Users.Any(u => u.Id == updatorId.ToString()))
                 throw new Exception("updator not found");
 
             var user = await _userManager.FindByIdAsync(id.ToString());

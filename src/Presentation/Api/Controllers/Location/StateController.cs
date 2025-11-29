@@ -28,11 +28,11 @@ namespace Api.Controllers.Location
         /// </summary>
         [HttpGet]
         [AllowAnonymous]
-        public IActionResult Get()
+        public async Task<IActionResult> Get()
         {
             try
             {
-                var states = _stateService.GetAll();
+                var states = await _stateService.GetAllAsync();
                 if (states == null || !states.Any())
                     return NotFound(new ResponseModel<string>
                     {
@@ -58,7 +58,7 @@ namespace Api.Controllers.Location
         /// </summary>
         [HttpGet("{id}")]
         [AllowAnonymous]
-        public IActionResult Get(Guid id)
+        public async Task<IActionResult> Get(Guid id)
         {
             try
             {
@@ -69,7 +69,7 @@ namespace Api.Controllers.Location
                         Message = "Invalid state ID."
                     });
 
-                var state = _stateService.FindById(id);
+                var state = await _stateService.FindByIdAsync(id);
                 if (state == null)
                     return NotFound(new ResponseModel<string>
                     {
@@ -96,7 +96,7 @@ namespace Api.Controllers.Location
         /// <param name="criteria">Search criteria including pagination parameters</param>
         [Authorize(Roles = nameof(UserRole.Admin))]
         [HttpGet("search")]
-        public IActionResult Search([FromQuery] BaseSearchCriteriaModel criteria)
+        public async Task<IActionResult> Search([FromQuery] BaseSearchCriteriaModel criteria)
         {
             try
             {
@@ -104,7 +104,7 @@ namespace Api.Controllers.Location
                 criteria.PageNumber = criteria.PageNumber < 1 ? 1 : criteria.PageNumber;
                 criteria.PageSize = criteria.PageSize < 1 || criteria.PageSize > 100 ? 10 : criteria.PageSize;
 
-                var result = _stateService.GetPage(criteria);
+                var result = await _stateService.GetPage(criteria);
 
                 if (result == null || !result.Items.Any())
                 {
@@ -134,7 +134,7 @@ namespace Api.Controllers.Location
         /// </summary>
         [Authorize(Roles = nameof(UserRole.Admin))]
         [HttpPost("save")]
-        public IActionResult Save([FromBody] StateDto StateDto)
+        public async Task<IActionResult> Save([FromBody] StateDto StateDto)
         {
             try
             {
@@ -145,8 +145,8 @@ namespace Api.Controllers.Location
                         Message = "Invalid state data."
                     });
 
-                var success = _stateService.Save(StateDto, GuidUserId);
-                if (!success)
+                var result = await _stateService.SaveAsync(StateDto, GuidUserId);
+                if (!result.Success)
                     return BadRequest(new ResponseModel<string>
                     {
                         Success = false,
@@ -170,7 +170,7 @@ namespace Api.Controllers.Location
         /// </summary>
         [Authorize(Roles = nameof(UserRole.Admin))]
         [HttpPost("delete")]
-        public IActionResult Delete([FromBody] Guid id)
+        public async Task<IActionResult> Delete([FromBody] Guid id)
         {
             try
             {
@@ -181,7 +181,7 @@ namespace Api.Controllers.Location
                         Message = "Invalid state ID."
                     });
 
-                var success = _stateService.Delete(id, GuidUserId);
+                var success = await _stateService.DeleteAsync(id, GuidUserId);
                 if (!success)
                     return BadRequest(new ResponseModel<string>
                     {

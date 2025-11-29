@@ -42,7 +42,7 @@ namespace BL.Service.ShippingCompany
             _mapper = mapper;
         }
 
-        public PaginatedDataModel<ShippingCompanyDto> GetPage(BaseSearchCriteriaModel criteriaModel)
+        public async Task<PaginatedDataModel<ShippingCompanyDto>> GetPage(BaseSearchCriteriaModel criteriaModel)
         {
             if (criteriaModel == null)
                 throw new ArgumentNullException(nameof(criteriaModel));
@@ -85,7 +85,61 @@ namespace BL.Service.ShippingCompany
                 };
             }
 
-            var entitiesList = _baseRepository.GetPage(
+            var entitiesList = await _baseRepository.GetPageAsync(
+                criteriaModel.PageNumber,
+                criteriaModel.PageSize,
+                filter,
+                orderBy);
+
+            var dtoList = _mapper.MapList<TbShippingCompany, ShippingCompanyDto>(entitiesList.Items);
+
+            return new PaginatedDataModel<ShippingCompanyDto>(dtoList, entitiesList.TotalRecords);
+        }
+
+        public async Task<PaginatedDataModel<ShippingCompanyDto>> GetPageAsync(BaseSearchCriteriaModel criteriaModel)
+        {
+            if (criteriaModel == null)
+                throw new ArgumentNullException(nameof(criteriaModel));
+
+            if (criteriaModel.PageNumber < 1)
+                throw new ArgumentOutOfRangeException(nameof(criteriaModel.PageNumber), ValidationResources.PageNumberGreaterThanZero);
+
+            if (criteriaModel.PageSize < 1 || criteriaModel.PageSize > 100)
+                throw new ArgumentOutOfRangeException(nameof(criteriaModel.PageSize), ValidationResources.PageSizeRange);
+
+            // Base filter for active entities
+            Expression<Func<TbShippingCompany, bool>> filter = x => x.CurrentState == 1;
+
+            // Apply search term if provided
+            if (!string.IsNullOrWhiteSpace(criteriaModel.SearchTerm))
+            {
+                string searchTerm = criteriaModel.SearchTerm.Trim().ToLower();
+                filter = x => x.CurrentState == 1 &&
+                             (x.Name != null && x.Name.ToLower().Contains(searchTerm) ||
+                             x.PhoneCode + x.PhoneNumber != null && (x.PhoneCode + x.PhoneNumber).ToLower().Contains(searchTerm));
+            }
+
+            // Create ordering function based on SortBy and SortDirection
+            Func<IQueryable<TbShippingCompany>, IOrderedQueryable<TbShippingCompany>> orderBy = null;
+
+            if (!string.IsNullOrWhiteSpace(criteriaModel.SortBy))
+            {
+                var sortBy = criteriaModel.SortBy.ToLower();
+                var isDescending = criteriaModel.SortDirection?.ToLower() == "desc";
+
+                orderBy = query =>
+                {
+                    return sortBy switch
+                    {
+                        "name" => isDescending ? query.OrderByDescending(x => x.Name) : query.OrderBy(x => x.Name),
+                        "phonenumber" => isDescending ? query.OrderByDescending(x => x.PhoneNumber) : query.OrderBy(x => x.PhoneNumber),
+                        "createddateutc" => isDescending ? query.OrderByDescending(x => x.CreatedDateUtc) : query.OrderBy(x => x.CreatedDateUtc),
+                        _ => query.OrderBy(x => x.Name) // Default sorting
+                    };
+                };
+            }
+
+            var entitiesList = await _baseRepository.GetPageAsync(
                 criteriaModel.PageNumber,
                 criteriaModel.PageSize,
                 filter,
@@ -99,7 +153,7 @@ namespace BL.Service.ShippingCompany
         public async Task<bool> Save(ShippingCompanyDto dto, Guid userId)
         {
             bool isUpdate = dto.Id != null && dto.Id != Guid.Empty;
-            var oldImagePathInDb = _baseRepository.Get(s => s.Id == dto.Id).Select(s => s.LogoImagePath).FirstOrDefault();
+            var oldImagePathInDb = (await _baseRepository.GetAsync(s => s.Id == dto.Id)).Select(s => s.LogoImagePath).FirstOrDefault();
 
             if (!string.IsNullOrWhiteSpace(dto.Base64Image))
             {
@@ -125,7 +179,7 @@ namespace BL.Service.ShippingCompany
                     throw new Exception(ValidationResources.ImageRequired);
             }
 
-            return base.Save(dto, userId);
+            return (await base.SaveAsync(dto, userId)).Success;
         }
 
         private async Task<string> _saveImageSync(string image)

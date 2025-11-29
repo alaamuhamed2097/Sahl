@@ -12,21 +12,13 @@ namespace DAL.Configurations
         public void Configure(EntityTypeBuilder<TbNotification> entity)
         {
             // Property configurations
-            entity.Property(e => e.TitleAr)
+            entity.Property(e => e.Title)
               .IsRequired()
              .HasMaxLength(200);
 
-            entity.Property(e => e.TitleEn)
-               .IsRequired()
-          .HasMaxLength(200);
-
-            entity.Property(e => e.DescriptionAr)
+            entity.Property(e => e.Message)
                .IsRequired()
                .HasMaxLength(1000);
-
-            entity.Property(e => e.DescriptionEn)
-               .IsRequired()
-            .HasMaxLength(1000);
         }
     }
 }

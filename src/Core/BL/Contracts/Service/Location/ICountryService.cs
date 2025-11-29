@@ -8,6 +8,6 @@ namespace BL.Contracts.Service.Location
 {
     public interface ICountryService : IBaseService<TbCountry, CountryDto>
     {
-        PaginatedDataModel<CountryDto> GetPage(BaseSearchCriteriaModel criteriaModel);
+        Task<PaginatedDataModel<CountryDto>> GetPageAsync(BaseSearchCriteriaModel criteriaModel);
     }
 }

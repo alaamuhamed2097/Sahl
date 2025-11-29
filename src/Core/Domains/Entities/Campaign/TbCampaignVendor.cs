@@ -1,6 +1,4 @@
-using Domains.Entities.Base;
 using Domains.Entities.ECommerceSystem.Vendor;
-using Domains.Identity;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -23,7 +21,7 @@ namespace Domains.Entities.Campaign
         public DateTime? ApprovedAt { get; set; }
 
         [ForeignKey("ApprovedByUser")]
-        public Guid? ApprovedByUserId { get; set; }
+        public string? ApprovedByUserId { get; set; }
 
         public int TotalProductsSubmitted { get; set; } = 0;
 

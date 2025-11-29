@@ -60,8 +60,8 @@ namespace BL.Service.Notification
 
         public async Task<NotificationChannelDto?> GetByChannelTypeAsync(NotificationChannel channelType)
         {
-            var channel = _channelRepository
-                .Get(x => x.Channel == channelType && x.CurrentState == 1)
+            var channel = (await _channelRepository
+                .GetAsync(x => x.Channel == channelType && x.CurrentState == 1))
                 .FirstOrDefault();
 
             if (channel == null) return null;

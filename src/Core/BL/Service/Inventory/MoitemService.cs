@@ -54,9 +54,8 @@ namespace BL.Service.Inventory
             if (string.IsNullOrWhiteSpace(documentNumber))
                 throw new ArgumentNullException(nameof(documentNumber));
 
-            var moitem = _moitemRepository
-                .Get(x => x.DocumentNumber == documentNumber && x.CurrentState == 1)
-                .FirstOrDefault();
+            var moitem = await _moitemRepository
+                .FindAsync(x => x.DocumentNumber == documentNumber && x.CurrentState == 1);
 
             if (moitem == null) return null;
 
@@ -111,8 +110,8 @@ namespace BL.Service.Inventory
 
         public async Task<string> GenerateDocumentNumberAsync()
         {
-            var lastDocument = _moitemRepository
-                .Get(x => x.CurrentState == 1)
+            var lastDocument = (await _moitemRepository
+                .GetAsync(x => x.CurrentState == 1))
                 .OrderByDescending(x => x.CreatedDateUtc)
                 .FirstOrDefault();
 

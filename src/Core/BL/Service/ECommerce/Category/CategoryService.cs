@@ -20,7 +20,6 @@ namespace BL.Service.ECommerce.Category
     public class CategoryService : BaseService<TbCategory, CategoryDto>, ICategoryService
     {
         private readonly IUnitOfWork _categoryUnitOfWork;
-        //private readonly IUserCurrencyService _userCurrencyService;
         private readonly IFileUploadService _fileUploadService;
         private readonly IImageProcessingService _imageProcessingService;
         private readonly IBaseMapper _mapper;
@@ -29,17 +28,15 @@ namespace BL.Service.ECommerce.Category
             IUnitOfWork categoryUnitOfWork,
             IFileUploadService fileUploadService,
             IImageProcessingService imageProcessingService)
-            //IUserCurrencyService userCurrencyService)
             : base(categoryUnitOfWork.TableRepository<TbCategory>(), mapper)
         {
             _mapper = mapper;
             _categoryUnitOfWork = categoryUnitOfWork;
             _fileUploadService = fileUploadService;
             _imageProcessingService = imageProcessingService;
-            //_userCurrencyService = userCurrencyService;
         }
 
-        public async Task<PaginatedDataModel<CategoryDto>> GetPage(BaseSearchCriteriaModel criteriaModel)
+        public async Task<PaginatedDataModel<CategoryDto>> GetPageAsync(BaseSearchCriteriaModel criteriaModel)
         {
             if (criteriaModel == null)
                 throw new ArgumentNullException(nameof(criteriaModel));
@@ -359,7 +356,8 @@ namespace BL.Service.ECommerce.Category
                 }
 
                 // Save entity
-                var result1 = _categoryUnitOfWork.TableRepository<TbCategory>().Save(entity, userId, out Guid categoryId);
+                var result1 = await _categoryUnitOfWork.TableRepository<TbCategory>().SaveAsync(entity, userId);
+                var categoryId = result1.Id;
 
                 // Handle display order update for existing categories
                 if (dto.Id != Guid.Empty)
@@ -395,8 +393,8 @@ namespace BL.Service.ECommerce.Category
                         attribute.CategoryId = categoryId;
                     }
                     var categoryAttributes = _mapper.MapList<CategoryAttributeDto, TbCategoryAttribute>(dto.CategoryAttributes);
-                    _categoryUnitOfWork.TableRepository<TbCategoryAttribute>()
-                        .AddRange(categoryAttributes, userId);
+                    await _categoryUnitOfWork.TableRepository<TbCategoryAttribute>()
+                        .AddRangeAsync(categoryAttributes, userId);
                 }
 
                 await _categoryUnitOfWork.CommitAsync();
@@ -438,7 +436,7 @@ namespace BL.Service.ECommerce.Category
             {
                 var errors = new List<string>();
                 await _categoryUnitOfWork.BeginTransactionAsync();
-                var entity = _categoryUnitOfWork.TableRepository<TbCategory>().Get(x => x.Id == id).FirstOrDefault();
+                var entity = await _categoryUnitOfWork.TableRepository<TbCategory>().FindAsync(x => x.Id == id);
                 if (entity == null)
                 {
                     _categoryUnitOfWork.Rollback();
@@ -457,7 +455,7 @@ namespace BL.Service.ECommerce.Category
                 Guid? parentId = entity.ParentId;
 
                 // Check if the item exists
-                var categoryItemsEntities = _categoryUnitOfWork.TableRepository<TbItem>().Get(i => i.CategoryId == id && i.CurrentState == 1);
+                var categoryItemsEntities = await _categoryUnitOfWork.TableRepository<TbItem>().GetAsync(i => i.CategoryId == id && i.CurrentState == 1);
                 var categoryItems = _mapper.MapList<TbItem, ItemDto>(categoryItemsEntities);
 
                 // Prevent deletion if category is in use by items
@@ -488,8 +486,8 @@ namespace BL.Service.ECommerce.Category
                     return (false, errors);
                 }
 
-                var hasChild = _categoryUnitOfWork.TableRepository<TbCategory>()
-                    .Get(x => x.ParentId == id && x.CurrentState == 1).Any();
+                var hasChild = (await _categoryUnitOfWork.TableRepository<TbCategory>()
+                    .GetAsync(x => x.ParentId == id && x.CurrentState == 1)).Any();
                 if (hasChild)
                 {
                     _categoryUnitOfWork.Rollback();
@@ -502,19 +500,19 @@ namespace BL.Service.ECommerce.Category
 
                 // Reset display order to 0 before deletion
                 entity.DisplayOrder = 0;
-                _categoryUnitOfWork.TableRepository<TbCategory>().Update(entity, userId, out Guid categoryId);
+                await _categoryUnitOfWork.TableRepository<TbCategory>().UpdateAsync(entity, userId);
 
                 // Update current state (soft delete)
-                _categoryUnitOfWork.TableRepository<TbCategory>().UpdateCurrentState(id, userId, 0);
+                await _categoryUnitOfWork.TableRepository<TbCategory>().UpdateCurrentStateAsync(id, userId, 0);
 
                 // Handle category attributes
-                var categoryAttributes = _categoryUnitOfWork.TableRepository<TbCategoryAttribute>()
-                    .GetAll().Where(x => x.CategoryId == id);
+                var categoryAttributes = (await _categoryUnitOfWork.TableRepository<TbCategoryAttribute>()
+                    .GetAsync()).Where(x => x.CategoryId == id);
                 if (categoryAttributes?.Count() > 0)
                 {
                     foreach (var attribute in categoryAttributes)
                     {
-                        _categoryUnitOfWork.TableRepository<TbCategoryAttribute>().UpdateCurrentState(attribute.Id, userId, 0);
+                        await _categoryUnitOfWork.TableRepository<TbCategoryAttribute>().UpdateCurrentStateAsync(attribute.Id, userId, 0);
                     }
                 }
 
@@ -670,7 +668,7 @@ namespace BL.Service.ECommerce.Category
                 if (category == null)
                     return new CategoryTreeDto();
 
-                var categoryTree = MapCategoryWithChildren(category);
+                var categoryTree = await MapCategoryWithChildren(category);
                 if (categoryTree.Children != null && categoryTree.Children.Any())
                     categoryTree.Children = categoryTree.Children.OrderBy(c => c.TreeViewSerial, new TreeViewSerialComparer()).ToList();
                 return categoryTree;
@@ -704,13 +702,13 @@ namespace BL.Service.ECommerce.Category
 
             return descendants;
         }
-        private void UpdateSiblingsSerialAfterDelete(string deletedSerial, Guid? parentId, Guid userId)
+        private async Task UpdateSiblingsSerialAfterDelete(string deletedSerial, Guid? parentId, Guid userId)
         {
             try
             {
                 // Get all active categories
-                var allCategories = _categoryUnitOfWork.TableRepository<TbCategory>()
-                    .Get(c => c.CurrentState == 1).ToList();
+                var allCategories = await _categoryUnitOfWork.TableRepository<TbCategory>()
+                    .GetAsync(c => c.CurrentState == 1);
 
                 // Determine the parent serial for siblings
                 string parentSerial = "";
@@ -764,7 +762,7 @@ namespace BL.Service.ECommerce.Category
                             sibling.TreeViewSerial = newSerial;
 
                             // Update the sibling in the database
-                            _categoryUnitOfWork.TableRepository<TbCategory>().Update(sibling, userId, out _);
+                            await (_categoryUnitOfWork.TableRepository<TbCategory>()).UpdateAsync(sibling, userId);
 
                             // Update descendants' serials
                             UpdateDescendantsSerials(oldSerial, newSerial, userId);
@@ -778,14 +776,13 @@ namespace BL.Service.ECommerce.Category
                 Console.WriteLine($"Error updating siblings serials: {ex.Message}");
             }
         }
-        private void UpdateDescendantsSerials(string oldParentSerial, string newParentSerial, Guid userId)
+        private async Task UpdateDescendantsSerials(string oldParentSerial, string newParentSerial, Guid userId)
         {
             try
             {
                 // Get all descendants of the parent
-                var descendants = _categoryUnitOfWork.TableRepository<TbCategory>()
-                    .Get(c => c.TreeViewSerial.StartsWith(oldParentSerial + ".") && c.CurrentState == 1)
-                    .ToList();
+                var descendants = await _categoryUnitOfWork.TableRepository<TbCategory>()
+                    .GetAsync(c => c.TreeViewSerial.StartsWith(oldParentSerial + ".") && c.CurrentState == 1);
 
                 foreach (var descendant in descendants)
                 {
@@ -795,7 +792,7 @@ namespace BL.Service.ECommerce.Category
                     descendant.TreeViewSerial = newParentSerial + suffix;
 
                     // Update the descendant in the database
-                    _categoryUnitOfWork.TableRepository<TbCategory>().Update(descendant, userId, out _);
+                    await _categoryUnitOfWork.TableRepository<TbCategory>().UpdateAsync(descendant, userId);
                 }
             }
             catch (Exception ex)
@@ -807,9 +804,8 @@ namespace BL.Service.ECommerce.Category
         private async Task ShiftDisplayOrderAfterDeleteAsync(int deletedDisplayOrder, Guid userId)
         {
             // Get all active categories with display order greater than the deleted category
-            var categoriesToShift = _categoryUnitOfWork.TableRepository<TbCategory>()
-                .Get(c => c.CurrentState == 1 && c.DisplayOrder > deletedDisplayOrder)
-                .ToList();
+            var categoriesToShift = await _categoryUnitOfWork.TableRepository<TbCategory>()
+                .GetAsync(c => c.CurrentState == 1 && c.DisplayOrder > deletedDisplayOrder);
 
             if (!categoriesToShift.Any()) return;
 
@@ -830,9 +826,8 @@ namespace BL.Service.ECommerce.Category
         private async Task ShiftDisplayOrderForInsertAsync(int insertPosition, Guid userId)
         {
             // Get all categories at or after the insert position
-            var categoriesToShift = _categoryUnitOfWork.TableRepository<TbCategory>()
-                .Get(c => c.CurrentState == 1 && c.DisplayOrder >= insertPosition)
-                .ToList();
+            var categoriesToShift = await _categoryUnitOfWork.TableRepository<TbCategory>()
+                .GetAsync(c => c.CurrentState == 1 && c.DisplayOrder >= insertPosition);
 
             if (!categoriesToShift.Any()) return;
 
@@ -875,8 +870,8 @@ namespace BL.Service.ECommerce.Category
             newDisplayOrder = Math.Max(1, Math.Min(newDisplayOrder, maxDisplayOrder.Value));
 
             // Get the target category
-            var targetCategory = _categoryUnitOfWork.TableRepository<TbCategory>()
-                .Get(c => c.Id == categoryId).FirstOrDefault();
+            var targetCategory = (await _categoryUnitOfWork.TableRepository<TbCategory>()
+                .GetAsync(c => c.Id == categoryId)).FirstOrDefault();
 
             if (targetCategory == null) return;
 
@@ -934,9 +929,14 @@ namespace BL.Service.ECommerce.Category
                     .UpdateBulkFieldsAsync(updates, userId);
             }
         }
-        private CategoryTreeDto MapCategoryWithChildren(TbCategory category)
+        private async Task<CategoryTreeDto> MapCategoryWithChildren(TbCategory category)
         {
-            var children = _categoryUnitOfWork.TableRepository<TbCategory>().Get(c => c.ParentId == category.Id).OrderBy(c => c.TreeViewSerial).ToList();
+            var children = await _categoryUnitOfWork.TableRepository<TbCategory>()
+                .GetAsync(c => c.ParentId == category.Id,
+                orderBy: q => q.OrderBy(x => x.TreeViewSerial));
+
+            var childTasks = children.Select(child => MapCategoryWithChildren(child));
+            var childDtos = (await Task.WhenAll(childTasks)).ToList();
 
             return new CategoryTreeDto
             {
@@ -946,7 +946,7 @@ namespace BL.Service.ECommerce.Category
                 ImageUrl = category.ImageUrl,
                 TreeViewSerial = category.TreeViewSerial,
                 PriceRequired = category.PriceRequired,
-                Children = children.Select(child => MapCategoryWithChildren(child)).ToList()
+                Children = childDtos
             };
         }
         private async Task<string> SaveImageSync(string image)
@@ -986,6 +986,7 @@ namespace BL.Service.ECommerce.Category
                 throw new ApplicationException(ValidationResources.ErrorProcessingImage, ex);
             }
         }
+
         private async Task UpdateParentFinalStatus(Guid childId, Guid parentId, Guid userId, bool isNew)
         {
             var parent = (await _categoryUnitOfWork.TableRepository<TbCategory>()
@@ -994,7 +995,7 @@ namespace BL.Service.ECommerce.Category
 
             parent.IsFinal = parent.ParentId == null || parent.ParentId == Guid.Empty;
 
-            _categoryUnitOfWork.TableRepository<TbCategory>().Update(parent, userId, out _);
+            await _categoryUnitOfWork.TableRepository<TbCategory>().UpdateAsync(parent, userId);
         }
     }
 }

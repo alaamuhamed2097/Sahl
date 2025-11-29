@@ -52,7 +52,7 @@ namespace BL.Service.ECommerce.Item
             _logger = logger;
         }
 
-        public PaginatedDataModel<VwItemDto> GetPage(ItemSearchCriteriaModel criteriaModel)
+        public async Task<PaginatedDataModel<VwItemDto>> GetPage(ItemSearchCriteriaModel criteriaModel)
         {
             if (criteriaModel == null)
                 throw new ArgumentNullException(nameof(criteriaModel));
@@ -132,7 +132,7 @@ namespace BL.Service.ECommerce.Item
             }
 
             // Get paginated data from repository
-            var items = _repository.GetPage(
+            var items = await _repository.GetPageAsync(
                 criteriaModel.PageNumber,
                 criteriaModel.PageSize,
                 filter,
@@ -144,16 +144,22 @@ namespace BL.Service.ECommerce.Item
             return new PaginatedDataModel<VwItemDto>(itemsDto, items.TotalRecords);
         }
 
-        public override ItemDto FindById(Guid Id)
+        public override async Task<ItemDto> FindByIdAsync(Guid Id)
         {
             if (Id == Guid.Empty)
                 throw new ArgumentNullException(nameof(Id));
-            var item = _tableRepository.Get(
+
+            var items = await _tableRepository.GetAsync(
                 x => x.Id == Id,
+                orderBy: null,
+                take: null,
                 includeProperties: "ItemImages,Category,ItemAttributes,ItemAttributeCombinationPricings"
-            ).FirstOrDefault();
+            );
+
+            var item = items.FirstOrDefault();
             if (item == null)
                 throw new KeyNotFoundException(ValidationResources.EntityNotFound);
+
             return _mapper.MapModel<TbItem, ItemDto>(item);
         }
 
@@ -240,9 +246,9 @@ namespace BL.Service.ECommerce.Item
                 if (dto.Id != Guid.Empty)
                 {
                     // Get existing images for this item
-                    var existingImages = _unitOfWork
+                    var existingImages = await _unitOfWork
                         .TableRepository<TbItemImage>()
-                        .Get(ii => ii.ItemId == dto.Id);
+                        .GetAsync(ii => ii.ItemId == dto.Id);
 
                     var newImagesPaths = dto.Images?.Select(i => i.Path) ?? Enumerable.Empty<string>();
 
@@ -252,39 +258,39 @@ namespace BL.Service.ECommerce.Item
                     {
                         foreach (var image in imagesToDelete)
                         {
-                            _unitOfWork
+                            await _unitOfWork
                             .TableRepository<TbItemImage>()
-                            .HardDelete(image.Id);
+                            .HardDeleteAsync(image.Id);
                         }
                     }
 
                     // Delete existing attributes
-                    var existingAttributes = _unitOfWork
+                    var existingAttributes = await _unitOfWork
                         .TableRepository<TbItemAttribute>()
-                        .Get(ia => ia.ItemId == dto.Id);
+                        .GetAsync(ia => ia.ItemId == dto.Id);
 
                     if (existingAttributes.Any())
                     {
                         foreach (var attr in existingAttributes)
                         {
-                            _unitOfWork
+                            await _unitOfWork
                                 .TableRepository<TbItemAttribute>()
-                                .HardDelete(attr.Id);
+                                .HardDeleteAsync(attr.Id);
                         }
                     }
 
                     // Delete existing combinations
-                    var existingCombinations = _unitOfWork
+                    var existingCombinations = await _unitOfWork
                         .TableRepository<TbItemAttributeCombinationPricing>()
-                        .Get(c => c.ItemId == dto.Id);
+                        .GetAsync(c => c.ItemId == dto.Id);
 
                     if (existingCombinations.Any())
                     {
                         foreach (var combo in existingCombinations)
                         {
-                            _unitOfWork
+                            await _unitOfWork
                                 .TableRepository<TbItemAttributeCombinationPricing>()
-                                .HardDelete(combo.Id);
+                                .HardDeleteAsync(combo.Id);
                         }
                     }
                 }
@@ -293,8 +299,9 @@ namespace BL.Service.ECommerce.Item
                 entity.Brand = null;
                 entity.Category = null;
 
-                var itemSaved = _unitOfWork.TableRepository<TbItem>().Save(entity, userId, out Guid itemId);
+                var itemSaved = await _unitOfWork.TableRepository<TbItem>().SaveAsync(entity, userId);
 
+                var itemId = itemSaved.Id;
                 if (imageEntities.Any())
                 {
                     foreach (var imageEntity in imageEntities)
@@ -305,7 +312,7 @@ namespace BL.Service.ECommerce.Item
 
                 var imagesSaved = true;
                 if (dto.Images?.Count(x => x.IsNew) > 0)
-                    imagesSaved = _unitOfWork.TableRepository<TbItemImage>().AddRange(imageEntities, userId);
+                    imagesSaved = await _unitOfWork.TableRepository<TbItemImage>().AddRangeAsync(imageEntities, userId);
 
                 // Save ItemAttributes
                 var attributesSaved = true;
@@ -325,7 +332,7 @@ namespace BL.Service.ECommerce.Item
 
                     if (attributeEntities.Any())
                     {
-                        attributesSaved = _unitOfWork.TableRepository<TbItemAttribute>().AddRange(attributeEntities, userId);
+                        attributesSaved = await _unitOfWork.TableRepository<TbItemAttribute>().AddRangeAsync(attributeEntities, userId);
                     }
                 }
 
@@ -343,13 +350,13 @@ namespace BL.Service.ECommerce.Item
 
                     if (combinationEntities.Any())
                     {
-                        combinationsSaved = _unitOfWork.TableRepository<TbItemAttributeCombinationPricing>().AddRange(combinationEntities, userId);
+                        combinationsSaved = await _unitOfWork.TableRepository<TbItemAttributeCombinationPricing>().AddRangeAsync(combinationEntities, userId);
                     }
                 }
 
                 await _unitOfWork.CommitAsync();
 
-                return itemSaved && imagesSaved && attributesSaved && combinationsSaved;
+                return itemSaved.Success && imagesSaved && attributesSaved && combinationsSaved;
             }
             catch (Exception ex)
             {
@@ -364,7 +371,7 @@ namespace BL.Service.ECommerce.Item
         {
             try
             {
-                var item = FindById(id);
+                var item = await FindByIdAsync(id);
                 if (item == null) return null;
 
                 var (targetCurrency, baseCurrency) = await _locationBasedCurrencyService.GetCurrencyInfoAsync(applyConversion ? clientIp : "0");
@@ -381,7 +388,7 @@ namespace BL.Service.ECommerce.Item
         {
             try
             {
-                var items = GetAll();
+                var items = await GetAllAsync();
                 if (items?.Any() != true) return items ?? Enumerable.Empty<ItemDto>();
 
                 var (targetCurrency, baseCurrency) = await _locationBasedCurrencyService.GetCurrencyInfoAsync(applyConversion ? clientIp : "0");
@@ -398,7 +405,7 @@ namespace BL.Service.ECommerce.Item
         {
             try
             {
-                var result = GetPage(criteriaModel);
+                var result = await GetPage(criteriaModel);
                 if (result?.Items?.Any() != true) return result;
 
                 var (targetCurrency, baseCurrency) = await _locationBasedCurrencyService.GetCurrencyInfoAsync(applyConversion ? clientIp : "0");

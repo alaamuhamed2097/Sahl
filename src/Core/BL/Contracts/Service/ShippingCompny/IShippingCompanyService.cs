@@ -8,7 +8,8 @@ namespace BL.Contracts.Service.ShippingCompny
 {
     public interface IShippingCompanyService : IBaseService<TbShippingCompany, ShippingCompanyDto>
     {
-        PaginatedDataModel<ShippingCompanyDto> GetPage(BaseSearchCriteriaModel criteriaModel);
+        Task<PaginatedDataModel<ShippingCompanyDto>> GetPage(BaseSearchCriteriaModel criteriaModel);
+        Task<PaginatedDataModel<ShippingCompanyDto>> GetPageAsync(BaseSearchCriteriaModel criteriaModel);
         Task<bool> Save(ShippingCompanyDto dto, Guid userId);
     }
 }

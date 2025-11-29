@@ -6,7 +6,7 @@ namespace Domains.Entities.Offer.Rating
     public class TbUserOfferRating : BaseEntity
     {
         [Required]
-        public Guid UserId { get; set; }
+        public string UserId { get; set; }
 
         [Required]
         public Guid OfferId { get; set; }

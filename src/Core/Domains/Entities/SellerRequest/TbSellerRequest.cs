@@ -1,7 +1,5 @@
 using Common.Enumerations.SellerRequest;
-using Domains.Entities.Base;
 using Domains.Entities.ECommerceSystem.Vendor;
-using Domains.Identity;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -42,7 +40,7 @@ namespace Domains.Entities.SellerRequest
         public DateTime? ProcessedAt { get; set; }
 
         [ForeignKey("ReviewedByUser")]
-        public Guid? ReviewedByUserId { get; set; }
+        public string? ReviewedByUserId { get; set; }
 
         [StringLength(1000)]
         public string? ReviewNotes { get; set; }
