@@ -23,7 +23,7 @@ namespace Domains.Entities.SellerRequest
         public long FileSize { get; set; }
 
         [ForeignKey("UploadedByUser")]
-        public string? UploadedByUserId { get; set; }
+        public Guid? UploadedByUserId { get; set; }
 
         public DateTime? UploadedAt { get; set; }
 

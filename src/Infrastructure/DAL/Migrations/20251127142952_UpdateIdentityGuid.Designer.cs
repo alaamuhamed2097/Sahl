@@ -4,6 +4,7 @@ using DAL.ApplicationContext;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DAL.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251127142952_UpdateIdentityGuid")]
+    partial class UpdateIdentityGuid
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -3742,42 +3745,22 @@ namespace DAL.Migrations
                         .HasColumnType("int")
                         .HasDefaultValue(1);
 
-                    b.Property<string>("Data")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("DeliveryChannel")
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
-
-                    b.Property<int>("DeliveryStatus")
-                        .HasColumnType("int");
-
-                    b.Property<bool>("IsRead")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("Message")
+                    b.Property<string>("DescriptionAr")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
 
-                    b.Property<int>("NotificationType")
-                        .HasColumnType("int");
+                    b.Property<string>("DescriptionEn")
+                        .IsRequired()
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
 
-                    b.Property<DateTime?>("ReadDate")
-                        .HasColumnType("datetime2");
+                    b.Property<string>("TitleAr")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
 
-                    b.Property<int>("RecipientID")
-                        .HasColumnType("int");
-
-                    b.Property<int>("RecipientType")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("SentDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("Severity")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Title")
+                    b.Property<string>("TitleEn")
                         .IsRequired()
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
@@ -3901,7 +3884,80 @@ namespace DAL.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("TbNotificationPreferences");
+                    b.ToTable("NotificationPreferences");
+                });
+
+            modelBuilder.Entity("Domains.Entities.Notification.TbNotifications", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier")
+                        .HasDefaultValueSql("NEWID()");
+
+                    b.Property<Guid>("CreatedBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedDateUtc")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2(2)")
+                        .HasDefaultValueSql("GETUTCDATE()");
+
+                    b.Property<int>("CurrentState")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(1);
+
+                    b.Property<string>("Data")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("DeliveryChannel")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<int>("DeliveryStatus")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsRead")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Message")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("NotificationType")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("ReadDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("RecipientID")
+                        .HasColumnType("int");
+
+                    b.Property<int>("RecipientType")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("SentDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("Severity")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<Guid?>("UpdatedBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("UpdatedDateUtc")
+                        .HasColumnType("datetime2(2)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CurrentState");
+
+                    b.ToTable("Notifications");
                 });
 
             modelBuilder.Entity("Domains.Entities.Notification.TbUserNotification", b =>

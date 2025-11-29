@@ -48,7 +48,7 @@ namespace Domains.Entities.BrandManagement
         public DateTime? ReviewedAt { get; set; }
 
         [ForeignKey("ReviewedByUser")]
-        public string? ReviewedByUserId { get; set; }
+        public Guid? ReviewedByUserId { get; set; }
 
         [StringLength(1000)]
         public string? ReviewNotes { get; set; }
