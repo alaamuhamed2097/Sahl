@@ -14,7 +14,6 @@ using BL.Service.Brand;
 using BL.Service.Currency;
 using BL.Service.Customer;
 using BL.Service.ECommerce.Category;
-using BL.Service.ECommerce.Item;
 using BL.Service.ECommerce.Unit;
 using BL.Service.PromoCode;
 using BL.Service.Setting;

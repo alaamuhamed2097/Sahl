@@ -9,6 +9,7 @@ namespace BL.Contracts.Service.ECommerce.Item
     public interface IItemService : IBaseService<TbItem, ItemDto>
     {
         Task<PaginatedDataModel<VwItemDto>> GetPage(ItemSearchCriteriaModel criteriaModel);
+        new Task<VwItemDto> FindByIdAsync(Guid Id);
         new Task<bool> Save(ItemDto dto, Guid userId);
 
         // Add new currency conversion methods with optional conversion
