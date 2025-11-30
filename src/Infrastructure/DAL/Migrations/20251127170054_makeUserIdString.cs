@@ -1,5 +1,4 @@
-﻿using System;
-using Microsoft.EntityFrameworkCore.Migrations;
+﻿using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
@@ -13,17 +12,17 @@ namespace DAL.Migrations
         {
             migrationBuilder.DropForeignKey(
                 name: "FK_NotificationPreferences_AspNetUsers_UserId",
-                table: "NotificationPreferences");
+                table: "TbNotificationPreferences");
 
             migrationBuilder.DropTable(
                 name: "Notifications");
 
             migrationBuilder.DropPrimaryKey(
                 name: "PK_NotificationPreferences",
-                table: "NotificationPreferences");
+                table: "TbNotificationPreferences");
 
             migrationBuilder.RenameTable(
-                name: "NotificationPreferences",
+                name: "TbNotificationPreferences",
                 newName: "TbNotificationPreferences");
 
             migrationBuilder.RenameIndex(
@@ -214,16 +213,16 @@ namespace DAL.Migrations
 
             migrationBuilder.RenameTable(
                 name: "TbNotificationPreferences",
-                newName: "NotificationPreferences");
+                newName: "TbNotificationPreferences");
 
             migrationBuilder.RenameIndex(
                 name: "IX_TbNotificationPreferences_UserId",
-                table: "NotificationPreferences",
+                table: "TbNotificationPreferences",
                 newName: "IX_NotificationPreferences_UserId");
 
             migrationBuilder.RenameIndex(
                 name: "IX_TbNotificationPreferences_CurrentState",
-                table: "NotificationPreferences",
+                table: "TbNotificationPreferences",
                 newName: "IX_NotificationPreferences_CurrentState");
 
             migrationBuilder.AlterColumn<string>(
@@ -248,7 +247,7 @@ namespace DAL.Migrations
 
             migrationBuilder.AddPrimaryKey(
                 name: "PK_NotificationPreferences",
-                table: "NotificationPreferences",
+                table: "TbNotificationPreferences",
                 column: "Id");
 
             migrationBuilder.CreateTable(
@@ -286,7 +285,7 @@ namespace DAL.Migrations
 
             migrationBuilder.AddForeignKey(
                 name: "FK_NotificationPreferences_AspNetUsers_UserId",
-                table: "NotificationPreferences",
+                table: "TbNotificationPreferences",
                 column: "UserId",
                 principalTable: "AspNetUsers",
                 principalColumn: "Id",

@@ -1,5 +1,4 @@
-﻿using System;
-using Microsoft.EntityFrameworkCore.Migrations;
+﻿using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
@@ -545,7 +544,7 @@ namespace DAL.Migrations
                 column: "Id");
 
             migrationBuilder.CreateTable(
-                name: "NotificationPreferences",
+                name: "TbNotificationPreferences",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false, defaultValueSql: "NEWID()"),
@@ -2683,12 +2682,12 @@ namespace DAL.Migrations
 
             migrationBuilder.CreateIndex(
                 name: "IX_NotificationPreferences_CurrentState",
-                table: "NotificationPreferences",
+                table: "TbNotificationPreferences",
                 column: "CurrentState");
 
             migrationBuilder.CreateIndex(
                 name: "IX_NotificationPreferences_UserId",
-                table: "NotificationPreferences",
+                table: "TbNotificationPreferences",
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
@@ -3818,7 +3817,7 @@ namespace DAL.Migrations
                 table: "TbUserNotifications");
 
             migrationBuilder.DropTable(
-                name: "NotificationPreferences");
+                name: "TbNotificationPreferences");
 
             migrationBuilder.DropTable(
                 name: "Notifications");

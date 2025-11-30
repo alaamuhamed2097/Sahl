@@ -3885,7 +3885,7 @@ namespace DAL.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("NotificationPreferences");
+                    b.ToTable("TbNotificationPreferences");
                 });
 
             modelBuilder.Entity("Domains.Entities.Notification.TbNotifications", b =>
