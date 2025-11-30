@@ -1,4 +1,4 @@
-using Api.Extensions;
+﻿using Api.Extensions;
 using BL.GeneralService.Notification;
 using DAL.ApplicationContext;
 using Domains.Identity;
@@ -32,6 +32,11 @@ builder.Services.AddGeneralServices();
 
 // Configure E-Commerce Services
 builder.Services.AddECommerceConfiguration(builder.Configuration);
+
+// Configure New Services
+builder.Services.AddWarehouseAndInventoryServices();
+builder.Services.AddContentManagementServices();
+builder.Services.AddEnhancedNotificationServices();
 
 // Configure Infrastructure Services
 builder.Services.AddInfrastructureServices();
@@ -151,11 +156,12 @@ using (var scope = app.Services.CreateScope())
     var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
     var dbContext = services.GetRequiredService<ApplicationDbContext>();
 
+
     // Apply migrations
     await dbContext.Database.MigrateAsync();
 
     // Seed data
-    await ContextConfigurations.SeedDataAsync(dbContext, userManager, roleManager);
+    // await ContextConfigurations.SeedDataAsync(dbContext, userManager, roleManager);
 }
 
 // Add debugging middleware for Swagger

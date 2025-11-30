@@ -28,11 +28,11 @@ namespace Api.Controllers.Catalog
         /// </summary>
         [HttpGet]
         [AllowAnonymous]
-        public IActionResult Get()
+        public async Task<IActionResult> Get()
         {
             try
             {
-                var units = _unitService.GetAll();
+                var units = await _unitService.GetAllAsync();
                 if (units == null || !units.Any())
                     return NotFound(new ResponseModel<string>
                     {
@@ -58,7 +58,7 @@ namespace Api.Controllers.Catalog
         /// </summary>
         [HttpGet("{id}")]
         [AllowAnonymous]
-        public IActionResult Get(Guid id)
+        public async Task<IActionResult> Get(Guid id)
         {
             try
             {
@@ -69,7 +69,7 @@ namespace Api.Controllers.Catalog
                         Message = NotifiAndAlertsResources.InvalidInputAlert
                     });
 
-                var unit = _unitService.FindById(id);
+                var unit = await _unitService.FindByIdAsync(id);
                 if (unit == null)
                     return NotFound(new ResponseModel<string>
                     {
@@ -96,7 +96,7 @@ namespace Api.Controllers.Catalog
         /// <param name="criteria">Search criteria including pagination parameters</param>
         [HttpGet("search")]
         [Authorize(Roles = nameof(UserRole.Admin))]
-        public IActionResult Search([FromQuery] BaseSearchCriteriaModel criteria)
+        public async Task<IActionResult> Search([FromQuery] BaseSearchCriteriaModel criteria)
         {
             try
             {
@@ -104,7 +104,7 @@ namespace Api.Controllers.Catalog
                 criteria.PageNumber = criteria.PageNumber < 1 ? 1 : criteria.PageNumber;
                 criteria.PageSize = criteria.PageSize < 1 || criteria.PageSize > 100 ? 10 : criteria.PageSize;
 
-                var result = _unitService.GetPage(criteria);
+                var result = await _unitService.GetPageAsync(criteria);
 
                 if (result == null || !result.Items.Any())
                 {
@@ -134,7 +134,7 @@ namespace Api.Controllers.Catalog
         /// </summary>
         [HttpPost("save")]
         [Authorize(Roles = nameof(UserRole.Admin))]
-        public IActionResult Save([FromBody] UnitDto unitDto)
+        public async Task<IActionResult> Save([FromBody] UnitDto unitDto)
         {
             try
             {
@@ -145,8 +145,8 @@ namespace Api.Controllers.Catalog
                         Message = NotifiAndAlertsResources.InvalidInputAlert
                     });
 
-                var success = _unitService.Save(unitDto, GuidUserId);
-                if (!success)
+                var result = await _unitService.SaveAsync(unitDto, GuidUserId);
+                if (!result.Success)
                     return BadRequest(new ResponseModel<string>
                     {
                         Success = false,
@@ -170,7 +170,7 @@ namespace Api.Controllers.Catalog
         /// </summary>
         [HttpPost("delete")]
         [Authorize(Roles = nameof(UserRole.Admin))]
-        public IActionResult Delete([FromBody] Guid id)
+        public async Task<IActionResult> Delete([FromBody] Guid id)
         {
             try
             {
@@ -181,7 +181,7 @@ namespace Api.Controllers.Catalog
                         Message = "Invalid unit ID."
                     });
 
-                var success = _unitService.Delete(id, GuidUserId);
+                var success = await _unitService.DeleteAsync(id, GuidUserId);
                 if (!success)
                     return BadRequest(new ResponseModel<string>
                     {

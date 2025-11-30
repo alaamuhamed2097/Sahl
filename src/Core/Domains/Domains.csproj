@@ -7,8 +7,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Entities\Bridge\**" />
     <Compile Remove="Views\User\**" />
+    <EmbeddedResource Remove="Entities\Bridge\**" />
     <EmbeddedResource Remove="Views\User\**" />
+    <None Remove="Entities\Bridge\**" />
     <None Remove="Views\User\**" />
   </ItemGroup>
 
@@ -18,6 +21,11 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\Shared\Common\Common.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Entities\Review\" />
+    <Folder Include="Entities\Support\" />
   </ItemGroup>
 
 </Project>

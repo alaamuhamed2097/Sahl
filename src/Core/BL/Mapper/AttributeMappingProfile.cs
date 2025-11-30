@@ -1,4 +1,4 @@
-﻿using Domains.Entities.Category;
+﻿using Domains.Entities.Catalog.Attribute;
 using Domains.Views.Category;
 using Shared.DTOs.ECommerce.Category;
 using System.Text.Json;

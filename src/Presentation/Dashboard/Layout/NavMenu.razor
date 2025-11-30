@@ -58,6 +58,12 @@
                                         <span class="pcoded-micon"><i class="fas fa-bullhorn"></i></span>
 										<span class="pcoded-mtext">@ECommerceResources.Vendors</span>
                                     </NavLink>
+								<li class="nav-item">
+									<NavLink href="/users/customers" class="nav-link" onclick="closeNavMenu()">
+										<span class="pcoded-micon"><i class="fas fa-bullhorn"></i></span>
+										<span class="pcoded-mtext">@ECommerceResources.Customers</span>
+									</NavLink>
+								</li>
                                 </li>
 							</ul>
 						</li>
@@ -127,12 +133,6 @@
 										<span class="pcoded-mtext">@FormResources.PromoCodes</span>
 									</NavLink>
 								</li>
-								<li class="nav-item">
-									<NavLink href="/testimonials" class="nav-link" Match="NavLinkMatch.Prefix" onclick="closeNavMenu()">
-										<span class="pcoded-micon"><i class="fas fa-comments"></i></span>
-										<span class="pcoded-mtext">@TestimonialResources.Testimonials</span>
-									</NavLink>
-								</li>
 								@*   <li class="nav-item">
                                     <NavLink href="/marketing/vendor-settings" class="nav-link" onclick="closeNavMenu()">
                                         <span class="pcoded-micon"><i class="fas fa-cog"></i></span>
@@ -171,6 +171,37 @@
 							</ul>
 						</li>
 
+						<!-- 📦 Warehouse Management -->
+						<li data-username="warehouse" class="nav-item">
+							<NavLink href="/warehouses" class="nav-link" Match="NavLinkMatch.Prefix" onclick="closeNavMenu()">
+								<span class="pcoded-micon"><i class="fas fa-warehouse"></i></span>
+								<span class="pcoded-mtext">Warehouses</span>
+							</NavLink>
+						</li>
+
+						<!-- 📊 Inventory Management -->
+						<li data-username="inventory" class="nav-item pcoded-hasmenu @(IsSubmenuOpen("inventory") ? "pcoded-trigger" : "")">
+							<a href="javascript:void(0)" class="nav-link" @onclick="@(() => ToggleSubmenu("inventory"))">
+								<span class="pcoded-micon"><i class="fas fa-boxes"></i></span>
+								<span class="pcoded-mtext">Inventory</span>
+								<span class="pcoded-mcaret"></span>
+							</a>
+							<ul class="pcoded-submenu" style="display: @(IsSubmenuOpen("inventory") ? "block" : "none")">
+								<li class="nav-item">
+									<NavLink href="/inventory/movements" class="nav-link" Match="NavLinkMatch.Prefix" onclick="closeNavMenu()">
+										<span class="pcoded-micon"><i class="fas fa-exchange-alt"></i></span>
+										<span class="pcoded-mtext">Movements</span>
+									</NavLink>
+								</li>
+								<li class="nav-item">
+									<NavLink href="/inventory/returns" class="nav-link" Match="NavLinkMatch.Prefix" onclick="closeNavMenu()">
+										<span class="pcoded-micon"><i class="fas fa-undo-alt"></i></span>
+										<span class="pcoded-mtext">Returns</span>
+									</NavLink>
+								</li>
+							</ul>
+						</li>
+
 						<!-- 📄 Content Management -->
 						<li data-username="content" class="nav-item pcoded-hasmenu @(IsSubmenuOpen("content") ? "pcoded-trigger" : "")">
 							<a href="javascript:void(0)" class="nav-link" @onclick="@(() => ToggleSubmenu("content"))">
@@ -183,6 +214,18 @@
 									<NavLink href="/content/pages" class="nav-link" Match="NavLinkMatch.Prefix" onclick="closeNavMenu()">
 										<span class="pcoded-micon"><i class="fas fa-file-alt"></i></span>
 										<span class="pcoded-mtext">@GeneralResources.StaticPages</span>
+									</NavLink>
+								</li>
+								<li class="nav-item">
+									<NavLink href="/content/areas" class="nav-link" Match="NavLinkMatch.Prefix" onclick="closeNavMenu()">
+										<span class="pcoded-micon"><i class="fas fa-th-large"></i></span>
+										<span class="pcoded-mtext">Content Areas</span>
+									</NavLink>
+								</li>
+								<li class="nav-item">
+									<NavLink href="/content/media" class="nav-link" Match="NavLinkMatch.Prefix" onclick="closeNavMenu()">
+										<span class="pcoded-micon"><i class="fas fa-images"></i></span>
+										<span class="pcoded-mtext">Media Content</span>
 									</NavLink>
 								</li>
 							</ul>

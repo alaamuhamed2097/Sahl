@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>الصفحة 09 - نظام الدعم (2)</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <script src="pdf-export.js"></script>
+</head>
+<body>
+    <div class="container">
+        <div class="navigation-header">
+            <a href="index.html" class="btn-home">🏠 الفهرس الرئيسي</a>
+            <span class="page-number">صفحة 9 من 26</span>
+        </div>
+
+        <!-- أزرار تصدير PDF -->
+        <div class="pdf-buttons">
+            <button onclick="exportCurrentPageToPDF()" class="btn-pdf btn-pdf-single">
+                📄 تصدير هذه الصفحة PDF
+            </button>
+        </div>
+
+
+        <div class="content">
+            <h2>🟨 4. دورة حياة تذكرة الدعم (Ticket Life Cycle)</h2>
+            <div class="ticket-lifecycle">
+                <div class="ticket-stage">
+                    <h4>الإنشاء</h4>
+                    <p>Created</p>
+                    <p>المستخدم يفتح تذكرة</p>
+                </div>
+                <div class="ticket-stage">
+                    <h4>الاستلام</h4>
+                    <p>Acknowledged</p>
+                    <p>المنصة تستقبل الطلب وتحدّد الأولوية</p>
+                </div>
+                <div class="ticket-stage">
+                    <h4>التوجيه</h4>
+                    <p>Assigned</p>
+                    <p>إلى فريق العملاء أو البائعين أو الفريق الفني</p>
+                </div>
+                <div class="ticket-stage">
+                    <h4>الرد الأولي</h4>
+                    <p>First Response</p>
+                    <p>يتم خلال SLA</p>
+                </div>
+            </div>
+            <div class="ticket-lifecycle">
+                <div class="ticket-stage">
+                    <h4>المعالجة</h4>
+                    <p>In Progress</p>
+                    <p>إما حل مباشر أو طلب مستندات أو تواصل مع البائع/العميل</p>
+                </div>
+                <div class="ticket-stage">
+                    <h4>التصعيد</h4>
+                    <p>Escalated</p>
+                    <p>لو المشكلة معقدة → تذهب لـ Level 2 أو 3</p>
+                </div>
+                <div class="ticket-stage">
+                    <h4>الحلّ</h4>
+                    <p>Resolved</p>
+                    <p>إرسال الحل للمستخدم</p>
+                </div>
+                <div class="ticket-stage">
+                    <h4>الإغلاق</h4>
+                    <p>Closed</p>
+                    <p>بعد موافقة الطرف أو بعد فترة زمنية</p>
+                </div>
+            </div>
+
+            <hr>
+
+            <h2>🟫 5. الـ SLA (مدة الرد والمعالجة)</h2>
+            <h3>دعم العملاء (Customer SLA)</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>نوع المشكلة</th>
+                        <th>الرد الأول</th>
+                        <th>الحل النهائي</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>تأخر الشحن</td>
+                        <td>6 ساعات</td>
+                        <td>24 ساعة</td>
+                    </tr>
+                    <tr>
+                        <td>منتج تالف</td>
+                        <td>12 ساعة</td>
+                        <td>48 ساعة</td>
+                    </tr>
+                    <tr>
+                        <td>استرجاع</td>
+                        <td>12 ساعة</td>
+                        <td>5 أيام</td>
+                    </tr>
+                    <tr>
+                        <td>مشكلة دفع</td>
+                        <td>6 ساعات</td>
+                        <td>72 ساعة</td>
+                    </tr>
+                    <tr>
+                        <td>Loyalty/Wallet</td>
+                        <td>12 ساعة</td>
+                        <td>24 ساعة</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>دعم البائعين (Seller SLA)</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>نوع القضية</th>
+                        <th>الرد الأول</th>
+                        <th>الحل</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>مشكلة الدفع (Payouts)</td>
+                        <td>24 ساعة</td>
+                        <td>3 أيام</td>
+                    </tr>
+                    <tr>
+                        <td>تعليق الحساب</td>
+                        <td>12 ساعة</td>
+                        <td>48 ساعة</td>
+                    </tr>
+                    <tr>
+                        <td>رفض منتج</td>
+                        <td>6 ساعات</td>
+                        <td>12 ساعة</td>
+                    </tr>
+                    <tr>
+                        <td>مشكلة الشحن</td>
+                        <td>6 ساعات</td>
+                        <td>24 ساعة</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="navigation-footer">
+            <a href="page-08.html" class="btn-nav">⬅️ الصفحة السابقة</a>
+            <a href="page-10.html" class="btn-nav btn-next">الصفحة التالية: ولاء المشتري ➡️</a>
+        </div>
+    </div>
+</body>
+</html>

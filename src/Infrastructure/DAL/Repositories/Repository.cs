@@ -6,6 +6,7 @@ using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
 using System.Linq.Expressions;
+using System.Text;
 
 namespace DAL.Repositories
 {
@@ -13,6 +14,9 @@ namespace DAL.Repositories
     {
         private readonly ApplicationDbContext _dbContext;
         private readonly ILogger _logger;
+
+        // Constants for SQL error codes
+        private const int SQL_CUSTOM_ERROR_NUMBER = 50000;
 
         protected DbSet<T> DbSet => _dbContext.Set<T>();
 
@@ -23,367 +27,52 @@ namespace DAL.Repositories
         }
 
         /// <summary>
-        /// Retrieves all entities.
+        /// Retrieves all entities asynchronously.
         /// </summary>
-        public virtual IEnumerable<T> GetAll()
+        public virtual async Task<IEnumerable<T>> GetAllAsync(CancellationToken cancellationToken = default)
         {
             try
             {
-                return DbSet.AsNoTracking().ToList();
+                return await DbSet.AsNoTracking().ToListAsync(cancellationToken);
             }
             catch (Exception ex)
             {
-                HandleException(nameof(GetAll), "An error occurred while retrieving data.", $"Error occurred while retrieving all entities of type {typeof(T).Name}.", ex);
-                throw; // Rethrow the exception after logging
+                HandleException(nameof(GetAllAsync), $"Error occurred while retrieving all entities of type {typeof(T).Name}.", ex);
+                return Enumerable.Empty<T>(); // Never reached due to throw in HandleException
             }
         }
 
         /// <summary>
-        /// Retrieves entities based on a predicate.
+        /// Retrieves entities based on a predicate asynchronously.
         /// </summary>
-        public virtual IEnumerable<T> Get(Expression<Func<T, bool>> predicate = null)
-        {
-            try
-            {
-                if (predicate == null)
-                    return DbSet.AsNoTracking().ToList();
-
-                return DbSet.Where(predicate).AsNoTracking().ToList();
-            }
-            catch (Exception ex)
-            {
-                HandleException(nameof(Get), "An error occurred while filtering data.", $"Error occurred while filtering entities of type {typeof(T).Name}.", ex);
-                throw; // Rethrow the exception after logging
-            }
-        }
-
-        /// <summary>
-        /// Retrieves entities with optional filtering, ordering, and eager loading.
-        /// </summary>
-        public virtual IEnumerable<T> Get(
+        public virtual async Task<IEnumerable<T>> GetAsync(
             Expression<Func<T, bool>> predicate = null,
-            Func<IQueryable<T>, IOrderedQueryable<T>> orderBy = null,
-            int? take = null,
-            string includeProperties = "",
-            params Expression<Func<T, object>>[] thenIncludeProperties)
+            CancellationToken cancellationToken = default)
         {
             try
             {
-                IQueryable<T> query = DbSet.AsNoTracking();
+                var query = predicate == null
+                    ? DbSet.AsNoTracking()
+                    : DbSet.Where(predicate).AsNoTracking();
 
-                if (predicate != null)
-                {
-                    query = query.Where(predicate);
-                }
-
-                if (!string.IsNullOrEmpty(includeProperties))
-                {
-                    foreach (var includeProperty in includeProperties.Split(',', StringSplitOptions.RemoveEmptyEntries))
-                    {
-                        query = query.Include(includeProperty.Trim());
-                    }
-
-                    if (thenIncludeProperties.Length > 0)
-                    {
-                        foreach (var thenIncludeProperty in thenIncludeProperties)
-                        {
-                            query = query.Include(thenIncludeProperty);
-                        }
-                    }
-                }
-
-                if (orderBy != null)
-                {
-                    query = orderBy(query);
-                }
-
-                if (take.HasValue && take.Value > 0)
-                {
-                    query = query.Take(take.Value);
-                }
-
-                return query.ToList();
+                return await query.ToListAsync(cancellationToken);
             }
             catch (Exception ex)
             {
-                HandleException(nameof(Get), "An error occurred while retrieving data with advanced options.", $"Error occurred while retrieving entities of type {typeof(T).Name} with advanced options.", ex);
-                throw; // Rethrow the exception after logging
+                HandleException(nameof(GetAsync), $"Error occurred while filtering entities of type {typeof(T).Name}.", ex);
+                return Enumerable.Empty<T>();
             }
         }
 
         /// <summary>
-        /// Retrieves paginated data.
-        /// </summary>
-        public virtual PaginatedDataModel<T> GetPage(
-            int pageNumber,
-            int pageSize,
-            Expression<Func<T, bool>> filter = null,
-            Func<IQueryable<T>, IOrderedQueryable<T>> orderBy = null)
-        {
-            try
-            {
-                IQueryable<T> query = DbSet.AsNoTracking();
-
-                // Apply the filter if it exists
-                if (filter != null)
-                {
-                    query = query.Where(filter);
-                }
-
-                // Apply ordering if provided
-                if (orderBy != null)
-                {
-                    query = orderBy(query);
-                }
-
-                // Get the total count before pagination
-                int totalCount = query.Count();
-
-                // Apply pagination
-                query = query.Skip((pageNumber - 1) * pageSize).Take(pageSize);
-
-                // Execute the query and return the paginated data
-                var data = query.ToList();
-
-                return new PaginatedDataModel<T>(data, totalCount);
-            }
-            catch (Exception ex)
-            {
-                throw new DataAccessException(
-                    $"Error occurred in {nameof(GetPage)} method for entity type {typeof(T).Name}.",
-                    ex,
-                    _logger
-                );
-            }
-        }
-
-        /// <summary>
-        /// Finds the first entity matching the predicate.
-        /// </summary>
-        public virtual T Find(Expression<Func<T, bool>> predicate)
-        {
-            try
-            {
-                return DbSet.FirstOrDefault(predicate);
-            }
-            catch (Exception ex)
-            {
-                HandleException(nameof(Find), "An error occurred while finding an entity.", $"Error occurred while finding an entity of type {typeof(T).Name}.", ex);
-                throw; // Rethrow the exception after logging
-            }
-        }
-
-        /// <summary>
-        /// Counts entities matching the predicate.
-        /// </summary>
-        public virtual int Count(Expression<Func<T, bool>> predicate)
-        {
-            try
-            {
-                return DbSet.Count(predicate);
-            }
-            catch (Exception ex)
-            {
-                HandleException(nameof(Count), "An error occurred while counting entities.", $"Error occurred while counting entities of type {typeof(T).Name}.", ex);
-                throw; // Rethrow the exception after logging
-            }
-        }
-
-        /// <summary>
-        /// Checks if an entity exists based on a key-value pair.
-        /// </summary>
-        public bool IsExists<TValue>(string key, TValue value)
-        {
-            try
-            {
-                if (string.IsNullOrWhiteSpace(key))
-                    throw new ArgumentException("Key cannot be null or empty.", nameof(key));
-
-                var parameter = Expression.Parameter(typeof(T), "x");
-                var property = Expression.Property(parameter, key);
-                var constant = Expression.Constant(value);
-                var equality = Expression.Equal(property, constant);
-                var lambda = Expression.Lambda<Func<T, bool>>(equality, parameter);
-
-                return DbSet.Any(lambda);
-            }
-            catch (Exception ex)
-            {
-                HandleException(nameof(IsExists), "An error occurred while checking existence.", $"Error occurred while checking existence for entity type {typeof(T).Name}, key '[SensitiveData]', value '[SensitiveData]'.", ex);
-                throw; // Rethrow the exception after logging
-            }
-        }
-
-        /// <summary>
-        /// Executes a stored procedure and maps the results to the entity class.
-        /// </summary>
-        public List<T> ExecuteStoredProcedure(string storedProcedureName, params SqlParameter[] parameters)
-        {
-            try
-            {
-                if (string.IsNullOrWhiteSpace(storedProcedureName))
-                    throw new ArgumentException("Stored procedure name cannot be null or empty.", nameof(storedProcedureName));
-
-                // Handle null parameters safely
-                var safeParameters = parameters?.Select(param =>
-                {
-                    if (param.Value == null)
-                    {
-                        param.Value = DBNull.Value; // Convert null to DBNull.Value
-                    }
-                    return param;
-                }).ToArray() ?? Array.Empty<SqlParameter>();
-
-                // Build the explicit EXEC command with parameter mapping
-                var commandText = $"EXEC {storedProcedureName} ";
-
-                // Add parameter mappings (exactly as you suggested)
-                if (safeParameters.Length > 0)
-                {
-                    var paramMappings = safeParameters.Select(p => $"{p.ParameterName}={p.ParameterName}").ToArray();
-                    commandText += string.Join(", ", paramMappings);
-                }
-
-                return DbSet.FromSqlRaw(commandText, safeParameters).AsNoTracking().ToList();
-            }
-            catch (SqlException sqlEx)
-            {
-                if (sqlEx.Number == 50000) // Custom error from stored procedure
-                {
-                    _logger.Error(sqlEx, nameof(ExecuteStoredProcedure), $"Custom error from stored procedure: {storedProcedureName}");
-                    throw new DataAccessException(sqlEx.Message, sqlEx, _logger);
-                }
-                HandleException(nameof(ExecuteStoredProcedure), "An SQL error occurred while executing the stored procedure.",
-                    $"SQL error occurred while executing stored procedure '[SensitiveData]'.", sqlEx);
-                throw; // Rethrow the exception after logging
-            }
-            catch (Exception ex)
-            {
-                HandleException(nameof(ExecuteStoredProcedure), "An error occurred while executing the stored procedure.",
-                    $"Error occurred while executing stored procedure '[SensitiveData]'.", ex);
-                throw; // Rethrow the exception after logging
-            }
-        }
-
-        /// <summary>
-        /// Executes a custom SQL function and returns a single scalar value.
-        /// </summary>
-        public TResult ExecuteScalarSqlFunction<TResult>(string sqlFunctionQuery, params object[] parameters)
-        {
-            try
-            {
-                if (string.IsNullOrWhiteSpace(sqlFunctionQuery))
-                    throw new ArgumentException("SQL function query cannot be null or empty.", nameof(sqlFunctionQuery));
-
-                // Use ADO.NET to execute the scalar query
-                return ExecuteScalar<TResult>(sqlFunctionQuery, parameters);
-            }
-            catch (Exception ex)
-            {
-                HandleException(nameof(ExecuteScalarSqlFunction), "An error occurred while executing the scalar SQL function.", $"Error occurred while executing scalar SQL function '[SensitiveData]'.", ex);
-                throw; // Rethrow the exception after logging
-            }
-        }
-
-        /// <summary>
-        /// Executes a raw SQL query and returns a single scalar value.
-        /// </summary>
-        public TResult ExecuteScalarRawSql<TResult>(string sqlQuery, params object[] parameters)
-        {
-            try
-            {
-                if (string.IsNullOrWhiteSpace(sqlQuery))
-                    throw new ArgumentException("SQL query cannot be null or empty.", nameof(sqlQuery));
-
-                // Use ADO.NET to execute the scalar query
-                return ExecuteScalar<TResult>(sqlQuery, parameters);
-            }
-            catch (Exception ex)
-            {
-                HandleException(nameof(ExecuteScalarRawSql), "An error occurred while executing the scalar raw SQL query.", $"Error occurred while executing scalar raw SQL query '[SensitiveData]'.", ex);
-                throw; // Rethrow the exception after logging
-            }
-        }
-
-        /// <summary>
-        /// Internal method to execute a scalar query using ADO.NET.
-        /// </summary>
-        private TResult ExecuteScalar<TResult>(string sql, params object[] parameters)
-        {
-            using (var command = _dbContext.Database.GetDbConnection().CreateCommand())
-            {
-                command.CommandText = sql;
-                command.CommandType = System.Data.CommandType.Text;
-
-                // Add parameters to the command
-                if (parameters != null && parameters.Length > 0)
-                {
-                    for (int i = 0; i < parameters.Length; i++)
-                    {
-                        var parameter = command.CreateParameter();
-                        parameter.ParameterName = $"@p{i}";
-                        parameter.Value = parameters[i] ?? DBNull.Value;
-                        command.Parameters.Add(parameter);
-                    }
-                }
-
-                // Open the connection if it's closed
-                if (command.Connection.State == System.Data.ConnectionState.Closed)
-                {
-                    command.Connection.Open();
-                }
-
-                // Execute the scalar query
-                var result = command.ExecuteScalar();
-
-                // Convert the result to the desired type
-                return result == DBNull.Value ? default(TResult) : (TResult)Convert.ChangeType(result, typeof(TResult));
-            }
-        }
-
-        /// <summary>
-        /// Retrieves all entities.
-        /// </summary>
-        public virtual async Task<IEnumerable<T>> GetAllAsync()
-        {
-            try
-            {
-                return await DbSet.AsNoTracking().ToListAsync();
-            }
-            catch (Exception ex)
-            {
-                HandleException(nameof(GetAllAsync), "An error occurred while retrieving data.", $"Error occurred while retrieving all entities of type {typeof(T).Name}.", ex);
-                throw; // Rethrow the exception after logging
-            }
-        }
-
-        /// <summary>
-        /// Retrieves entities based on a predicate.
-        /// </summary>
-        public virtual async Task<IEnumerable<T>> GetAsync(Expression<Func<T, bool>> predicate = null)
-        {
-            try
-            {
-                if (predicate == null)
-                    return await DbSet.AsNoTracking().ToListAsync();
-
-                return await DbSet.Where(predicate).AsNoTracking().ToListAsync();
-            }
-            catch (Exception ex)
-            {
-                HandleException(nameof(GetAsync), "An error occurred while filtering data.", $"Error occurred while filtering entities of type {typeof(T).Name}.", ex);
-                throw; // Rethrow the exception after logging
-            }
-        }
-
-        /// <summary>
-        /// Retrieves entities with optional filtering, ordering, and eager loading.
+        /// Retrieves entities with optional filtering, ordering, and eager loading asynchronously.
         /// </summary>
         public virtual async Task<IEnumerable<T>> GetAsync(
             Expression<Func<T, bool>> predicate = null,
             Func<IQueryable<T>, IOrderedQueryable<T>> orderBy = null,
             int? take = null,
             string includeProperties = "",
+            CancellationToken cancellationToken = default,
             params Expression<Func<T, object>>[] thenIncludeProperties)
         {
             try
@@ -402,7 +91,7 @@ namespace DAL.Repositories
                         query = query.Include(includeProperty.Trim());
                     }
 
-                    if (thenIncludeProperties.Length > 0)
+                    if (thenIncludeProperties?.Length > 0)
                     {
                         foreach (var thenIncludeProperty in thenIncludeProperties)
                         {
@@ -421,53 +110,52 @@ namespace DAL.Repositories
                     query = query.Take(take.Value);
                 }
 
-                return await query.ToListAsync();
+                return await query.ToListAsync(cancellationToken);
             }
             catch (Exception ex)
             {
-                HandleException(nameof(GetAsync), "An error occurred while retrieving data with advanced options.", $"Error occurred while retrieving entities of type {typeof(T).Name} with advanced options.", ex);
-                throw; // Rethrow the exception after logging
+                HandleException(nameof(GetAsync), $"Error occurred while retrieving entities of type {typeof(T).Name} with advanced options.", ex);
+                return Enumerable.Empty<T>();
             }
         }
 
         /// <summary>
-        /// Retrieves paginated data.
+        /// Retrieves paginated data asynchronously.
         /// </summary>
         public virtual async Task<PaginatedDataModel<T>> GetPageAsync(
             int pageNumber,
             int pageSize,
             Expression<Func<T, bool>> filter = null,
-            Func<IQueryable<T>, IOrderedQueryable<T>> orderBy = null)
+            Func<IQueryable<T>, IOrderedQueryable<T>> orderBy = null,
+            CancellationToken cancellationToken = default)
         {
             try
             {
+                ValidatePaginationParameters(pageNumber, pageSize);
+
                 IQueryable<T> query = DbSet.AsNoTracking();
 
-                // Apply the filter if it exists
                 if (filter != null)
                 {
                     query = query.Where(filter);
                 }
 
-                // Apply ordering if provided
                 if (orderBy != null)
                 {
                     query = orderBy(query);
                 }
 
-                // Get the total count before pagination
-                int totalCount = query.Count();
+                int totalCount = await query.CountAsync(cancellationToken);
 
-                // Apply pagination
                 query = query.Skip((pageNumber - 1) * pageSize).Take(pageSize);
 
-                // Execute the query and return the paginated data
-                var data = await query.ToListAsync();
+                var data = await query.ToListAsync(cancellationToken);
 
                 return new PaginatedDataModel<T>(data, totalCount);
             }
             catch (Exception ex)
             {
+                _logger.Error(ex, $"Error occurred in {nameof(GetPageAsync)} method for entity type {typeof(T).Name}.");
                 throw new DataAccessException(
                     $"Error occurred in {nameof(GetPageAsync)} method for entity type {typeof(T).Name}.",
                     ex,
@@ -477,41 +165,48 @@ namespace DAL.Repositories
         }
 
         /// <summary>
-        /// Finds the first entity matching the predicate.
+        /// Finds the first entity matching the predicate asynchronously.
         /// </summary>
-        public virtual async Task<T> FindAsync(Expression<Func<T, bool>> predicate)
+        public virtual async Task<T> FindAsync(
+            Expression<Func<T, bool>> predicate,
+            CancellationToken cancellationToken = default)
         {
             try
             {
-                return await DbSet.FirstOrDefaultAsync(predicate);
+                return await DbSet.FirstOrDefaultAsync(predicate, cancellationToken);
             }
             catch (Exception ex)
             {
-                HandleException(nameof(FindAsync), "An error occurred while finding an entity.", $"Error occurred while finding an entity of type {typeof(T).Name}.", ex);
-                throw; // Rethrow the exception after logging
+                HandleException(nameof(FindAsync), $"Error occurred while finding an entity of type {typeof(T).Name}.", ex);
+                return null;
             }
         }
 
         /// <summary>
-        /// Counts entities matching the predicate.
+        /// Counts entities matching the predicate asynchronously.
         /// </summary>
-        public virtual async Task<int> CountAsync(Expression<Func<T, bool>> predicate)
+        public virtual async Task<int> CountAsync(
+            Expression<Func<T, bool>> predicate,
+            CancellationToken cancellationToken = default)
         {
             try
             {
-                return await DbSet.CountAsync(predicate);
+                return await DbSet.CountAsync(predicate, cancellationToken);
             }
             catch (Exception ex)
             {
-                HandleException(nameof(CountAsync), "An error occurred while counting entities.", $"Error occurred while counting entities of type {typeof(T).Name}.", ex);
-                throw; // Rethrow the exception after logging
+                HandleException(nameof(CountAsync), $"Error occurred while counting entities of type {typeof(T).Name}.", ex);
+                return 0;
             }
         }
 
         /// <summary>
-        /// Checks if an entity exists based on a key-value pair.
+        /// Checks if an entity exists based on a key-value pair asynchronously.
         /// </summary>
-        public async Task<bool> IsExistsAsync<TValue>(string key, TValue value)
+        public async Task<bool> IsExistsAsync<TValue>(
+            string key,
+            TValue value,
+            CancellationToken cancellationToken = default)
         {
             try
             {
@@ -524,118 +219,136 @@ namespace DAL.Repositories
                 var equality = Expression.Equal(property, constant);
                 var lambda = Expression.Lambda<Func<T, bool>>(equality, parameter);
 
-                return await DbSet.AnyAsync(lambda);
+                return await DbSet.AnyAsync(lambda, cancellationToken);
             }
             catch (Exception ex)
             {
-                HandleException(nameof(IsExistsAsync), "An error occurred while checking existence.", $"Error occurred while checking existence for entity type {typeof(T).Name}, key '[SensitiveData]', value '[SensitiveData]'.", ex);
-                throw; // Rethrow the exception after logging
+                HandleException(nameof(IsExistsAsync), $"Error occurred while checking existence for entity type {typeof(T).Name}.", ex);
+                return false;
             }
         }
 
         /// <summary>
-        /// Executes a stored procedure and maps the results to the entity class.
+        /// Executes a stored procedure and maps the results to the entity class asynchronously.
         /// </summary>
-        public async Task<List<T>> ExecuteStoredProcedureAsync(string storedProcedureName, params SqlParameter[] parameters)
+        public async Task<List<T>> ExecuteStoredProcedureAsync(
+            string storedProcedureName,
+            CancellationToken cancellationToken = default,
+            params SqlParameter[] parameters)
         {
             try
             {
                 if (string.IsNullOrWhiteSpace(storedProcedureName))
                     throw new ArgumentException("Stored procedure name cannot be null or empty.", nameof(storedProcedureName));
 
-                // Handle null parameters safely
                 var safeParameters = parameters?.Select(param =>
                 {
                     if (param.Value == null)
                     {
-                        param.Value = DBNull.Value; // Convert null to DBNull.Value
+                        param.Value = DBNull.Value;
                     }
                     return param;
                 }).ToArray() ?? Array.Empty<SqlParameter>();
 
-                // Build the explicit EXEC command with parameter mapping
-                var commandText = $"EXEC {storedProcedureName} ";
+                var commandText = BuildStoredProcedureCommand(storedProcedureName, safeParameters);
 
-                // Add parameter mappings (exactly as you suggested)
-                if (safeParameters.Length > 0)
-                {
-                    var paramMappings = safeParameters.Select(p => $"{p.ParameterName}={p.ParameterName}").ToArray();
-                    commandText += string.Join(", ", paramMappings);
-                }
-
-                return await DbSet.FromSqlRaw(commandText, safeParameters).AsNoTracking().ToListAsync();
+                return await DbSet.FromSqlRaw(commandText, safeParameters)
+                    .AsNoTracking()
+                    .ToListAsync(cancellationToken);
             }
-            catch (SqlException sqlEx)
+            catch (SqlException sqlEx) when (sqlEx.Number == SQL_CUSTOM_ERROR_NUMBER)
             {
-                if (sqlEx.Number == 50000) // Custom error from stored procedure
-                {
-                    _logger.Error(sqlEx, nameof(ExecuteStoredProcedureAsync), $"Custom error from stored procedure: {storedProcedureName}");
-                    throw new DataAccessException(sqlEx.Message, sqlEx, _logger);
-                }
-                HandleException(nameof(ExecuteStoredProcedureAsync), "An SQL error occurred while executing the stored procedure.",
-                    $"SQL error occurred while executing stored procedure '[SensitiveData]'.", sqlEx);
-                throw; // Rethrow the exception after logging
+                _logger.Error(sqlEx, $"{nameof(ExecuteStoredProcedureAsync)}: Custom error from stored procedure: {storedProcedureName}");
+                throw new DataAccessException(sqlEx.Message, sqlEx, _logger);
             }
             catch (Exception ex)
             {
-                HandleException(nameof(ExecuteStoredProcedureAsync), "An error occurred while executing the stored procedure.",
-                    $"Error occurred while executing stored procedure '[SensitiveData]'.", ex);
-                throw; // Rethrow the exception after logging
+                HandleException(nameof(ExecuteStoredProcedureAsync), $"Error occurred while executing stored procedure.", ex);
+                return new List<T>();
             }
         }
 
         /// <summary>
-        /// Executes a custom SQL function and returns a single scalar value.
+        /// Builds a safe stored procedure command with parameters.
         /// </summary>
-        public async Task<TResult> ExecuteScalarSqlFunctionAsync<TResult>(string sqlFunctionQuery, params object[] parameters)
+        private string BuildStoredProcedureCommand(string storedProcedureName, SqlParameter[] parameters)
+        {
+            var commandBuilder = new StringBuilder();
+            commandBuilder.Append($"EXEC {storedProcedureName}");
+
+            if (parameters?.Length > 0)
+            {
+                commandBuilder.Append(" ");
+                var paramMappings = parameters.Select(p => $"{p.ParameterName}={p.ParameterName}");
+                commandBuilder.Append(string.Join(", ", paramMappings));
+            }
+
+            return commandBuilder.ToString();
+        }
+
+        /// <summary>
+        /// Executes a custom SQL function and returns a single scalar value asynchronously.
+        /// </summary>
+        public async Task<TResult> ExecuteScalarSqlFunctionAsync<TResult>(
+            string sqlFunctionQuery,
+            CancellationToken cancellationToken = default,
+            params object[] parameters)
         {
             try
             {
                 if (string.IsNullOrWhiteSpace(sqlFunctionQuery))
                     throw new ArgumentException("SQL function query cannot be null or empty.", nameof(sqlFunctionQuery));
 
-                // Use ADO.NET to execute the scalar query
-                return await ExecuteScalarAsync<TResult>(sqlFunctionQuery, parameters);
+                return await ExecuteScalarAsync<TResult>(sqlFunctionQuery, cancellationToken, parameters);
             }
             catch (Exception ex)
             {
-                HandleException(nameof(ExecuteScalarSqlFunctionAsync), "An error occurred while executing the scalar SQL function.", $"Error occurred while executing scalar SQL function '[SensitiveData]'.", ex);
-                throw; // Rethrow the exception after logging
+                HandleException(nameof(ExecuteScalarSqlFunctionAsync), $"Error occurred while executing scalar SQL function.", ex);
+                return default;
             }
         }
 
         /// <summary>
-        /// Executes a raw SQL query and returns a single scalar value.
+        /// Executes a raw SQL query and returns a single scalar value asynchronously.
         /// </summary>
-        public async Task<TResult> ExecuteScalarRawSqlAsync<TResult>(string sqlQuery, params object[] parameters)
+        public async Task<TResult> ExecuteScalarRawSqlAsync<TResult>(
+            string sqlQuery,
+            CancellationToken cancellationToken = default,
+            params object[] parameters)
         {
             try
             {
                 if (string.IsNullOrWhiteSpace(sqlQuery))
                     throw new ArgumentException("SQL query cannot be null or empty.", nameof(sqlQuery));
 
-                // Use ADO.NET to execute the scalar query
-                return await ExecuteScalarAsync<TResult>(sqlQuery, parameters);
+                return await ExecuteScalarAsync<TResult>(sqlQuery, cancellationToken, parameters);
             }
             catch (Exception ex)
             {
-                HandleException(nameof(ExecuteScalarRawSqlAsync), "An error occurred while executing the scalar raw SQL query.", $"Error occurred while executing scalar raw SQL query '[SensitiveData]'.", ex);
-                throw; // Rethrow the exception after logging
+                HandleException(nameof(ExecuteScalarRawSqlAsync), $"Error occurred while executing scalar raw SQL query.", ex);
+                return default;
             }
         }
 
         /// <summary>
-        /// Internal method to execute a scalar query using ADO.NET.
+        /// Internal method to execute a scalar query using ADO.NET asynchronously.
         /// </summary>
-        private async Task<TResult> ExecuteScalarAsync<TResult>(string sql, params object[] parameters)
+        private async Task<TResult> ExecuteScalarAsync<TResult>(
+            string sql,
+            CancellationToken cancellationToken = default,
+            params object[] parameters)
         {
-            using (var command = _dbContext.Database.GetDbConnection().CreateCommand())
+            var connection = _dbContext.Database.GetDbConnection();
+
+            if (connection == null)
+                throw new InvalidOperationException("Database connection is not available.");
+
+            using (var command = connection.CreateCommand())
             {
                 command.CommandText = sql;
                 command.CommandType = System.Data.CommandType.Text;
 
-                // Add parameters to the command
-                if (parameters != null && parameters.Length > 0)
+                if (parameters?.Length > 0)
                 {
                     for (int i = 0; i < parameters.Length; i++)
                     {
@@ -646,36 +359,39 @@ namespace DAL.Repositories
                     }
                 }
 
-                // Open the connection if it's closed
                 if (command.Connection.State == System.Data.ConnectionState.Closed)
                 {
-                    command.Connection.Open();
+                    await command.Connection.OpenAsync(cancellationToken);
                 }
 
-                // Execute the scalar query
-                var result = await command.ExecuteScalarAsync();
-
-                // Convert the result to the desired type
-                return result == DBNull.Value ? default(TResult) : (TResult)Convert.ChangeType(result, typeof(TResult));
+                try
+                {
+                    var result = await command.ExecuteScalarAsync(cancellationToken);
+                    return result == DBNull.Value ? default : (TResult)Convert.ChangeType(result, typeof(TResult));
+                }
+                finally
+                {
+                    if (command.Connection.State == System.Data.ConnectionState.Open)
+                    {
+                        await command.Connection.CloseAsync();
+                    }
+                }
             }
         }
 
         /// <summary>
-        /// Logs and rethrows exceptions with detailed information.
+        /// Logs and throws exceptions with detailed information.
         /// </summary>
-        private void HandleException(string methodName, string userMessage, string logMessage, Exception ex)
+        protected void HandleException(string methodName, string message, Exception ex)
         {
-            // Log detailed message for analysis
-            _logger.Error(ex, $"[{methodName}] {logMessage}");
-
-            // Throw exception with a general message for users
-            throw new DataAccessException(userMessage, ex, _logger);
+            _logger.Error(ex, $"[{methodName}] {message}");
+            throw new DataAccessException(message, ex, _logger);
         }
 
         /// <summary>
         /// Validates pagination parameters.
         /// </summary>
-        private void ValidatePaginationParameters(int pageNumber, int pageSize)
+        protected void ValidatePaginationParameters(int pageNumber, int pageSize)
         {
             if (pageNumber <= 0)
                 throw new ArgumentException("Page number must be greater than zero.", nameof(pageNumber));

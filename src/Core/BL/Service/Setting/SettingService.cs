@@ -92,7 +92,7 @@ namespace BL.Service.Setting
 
         private async Task HandleImage(SettingDto dto)
         {
-            var oldIMainBannerInDb = _settingRepository.Get(s => s.Id == dto.Id).Select(s => s.MainBannerPath).FirstOrDefault();
+            var oldIMainBannerInDb = (await _settingRepository.GetAsync(s => s.Id == dto.Id)).Select(s => s.MainBannerPath).FirstOrDefault();
 
             if (!string.IsNullOrWhiteSpace(dto.Base64Image))
             {

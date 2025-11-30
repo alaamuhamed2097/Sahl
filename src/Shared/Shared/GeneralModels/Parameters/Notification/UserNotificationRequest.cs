@@ -10,6 +10,9 @@ namespace Shared.GeneralModels.Parameters.Notification
 
         public string UserId { get; set; }
 
+        // Message property was missing and referenced in BL service
+        public string Message { get; set; } = string.Empty;
+
         public string TitleAr { get; set; }
         public string TitleEn { get; set; }
         [JsonIgnore]

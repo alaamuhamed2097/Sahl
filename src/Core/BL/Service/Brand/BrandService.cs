@@ -5,7 +5,7 @@ using BL.Extensions;
 using BL.Service.Base;
 using DAL.Contracts.Repositories;
 using DAL.Models;
-using Domains.Entities.Brand;
+using Domains.Entities.Catalog.Brand;
 using Microsoft.AspNetCore.Hosting;
 using Resources;
 using Serilog;
@@ -68,17 +68,6 @@ namespace BL.Service.Brand
             return brandDto;
         }
 
-        public async Task<IEnumerable<BrandDto>> GetFavoritesAsync()
-        {
-            var brands = await _brandRepository
-                .GetAsync(x => x.CurrentState == 1 && x.IsFavorite,
-                orderBy: q => q.OrderBy(x => x.DisplayOrder));
-
-            var brandDtos = _mapper.MapList<TbBrand, BrandDto>(brands).ToList();
-
-            return brandDtos;
-        }
-
         public async Task<PaginatedDataModel<BrandDto>> SearchAsync(BaseSearchCriteriaModel criteriaModel)
         {
             if (criteriaModel == null)
@@ -117,7 +106,7 @@ namespace BL.Service.Brand
         public async Task<bool> SaveAsync(BrandDto dto, Guid userId)
         {
             bool isUpdate = dto.Id != null && dto.Id != Guid.Empty;
-            var oldImagePathInDb = _brandRepository.Get(s => s.Id == dto.Id).Select(s => s.LogoPath).FirstOrDefault();
+            var oldImagePathInDb = (await _brandRepository.GetAsync(s => s.Id == dto.Id)).Select(s => s.LogoPath).FirstOrDefault();
 
             if (!string.IsNullOrWhiteSpace(dto.Base64Image))
             {
@@ -143,7 +132,7 @@ namespace BL.Service.Brand
                     throw new Exception(ValidationResources.ImageRequired);
             }
 
-            return base.Save(dto, userId);
+            return (await base.SaveAsync(dto, userId)).Success;
         }
 
         public async Task<bool> DeleteAsync(Guid id, Guid userId)
@@ -152,22 +141,6 @@ namespace BL.Service.Brand
                 .UpdateCurrentStateAsync(id, userId, 0);
 
             return success;
-        }
-
-        public async Task<bool> MarkAsFavoriteAsync(Guid brandId, Guid userId)
-        {
-            if (brandId == Guid.Empty)
-                throw new ArgumentNullException(nameof(brandId));
-            if (userId == Guid.Empty)
-                throw new ArgumentException(UserResources.UserNotFound, nameof(userId));
-
-            var brand = await _brandRepository.FindAsync(x => x.Id == brandId && x.CurrentState == 1);
-            if (brand == null) return false;
-
-            brand.IsFavorite = !brand.IsFavorite;
-            var result = await _brandRepository.UpdateAsync(brand, userId);
-
-            return result.Success;
         }
 
         private async Task<string> _saveImageSync(string image)

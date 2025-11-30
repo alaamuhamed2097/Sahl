@@ -1,4 +1,4 @@
-using Domains.Entities;
+using Domains.Entities.Shipping;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 

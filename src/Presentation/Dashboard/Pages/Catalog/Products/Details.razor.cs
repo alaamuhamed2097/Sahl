@@ -9,7 +9,6 @@ using Microsoft.Extensions.Options;
 using Microsoft.JSInterop;
 using Resources;
 using Shared.DTOs.Brand;
-using Shared.DTOs.ECommerce;
 using Shared.DTOs.ECommerce.Category;
 using Shared.DTOs.ECommerce.Item;
 using Shared.DTOs.ECommerce.Unit;

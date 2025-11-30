@@ -178,6 +178,12 @@
 
 		public static class Customer
 		{
+			public const string Get = "api/Customer";
+			public const string Create = "api/Customer";
+			public const string Update = "api/Customer";
+			public const string Delete = "api/Customer/delete";
+			public const string Save = "api/Customer/Save";
+
 			public const string Search = "api/Customer/search";
 			public const string FindById = "api/Customer";
 			public const string GetForSelect = "api/Customer/forSelect";
@@ -186,12 +192,12 @@
 			public const string GetVendorInfo = "api/Customer/VendorInfo";
 		}
 
-		public static class PromoCode
+		public static class CouponCode
         {
-            public const string Get = "api/PromoCodes";
-            public const string Save = "api/PromoCodes/save";
-            public const string Delete = "api/PromoCodes/delete";
-            public const string Search = "api/PromoCodes/search";
+            public const string Get = "api/CouponCode";
+            public const string Save = "api/CouponCode/save";
+            public const string Delete = "api/CouponCode/delete";
+            public const string Search = "api/CouponCode/search";
         }
 
         public static class ShippingCompany
@@ -264,6 +270,66 @@
             public const string Delete = "api/Testimonial/delete";
         }
 
+        // Warehouse endpoints
+        public static class Warehouse
+        {
+            public const string Get = "api/Warehouse";
+            public const string GetActive = "api/Warehouse/active";
+            public const string Search = "api/Warehouse/search";
+            public const string Save = "api/Warehouse/save";
+            public const string Delete = "api/Warehouse/delete";
+            public const string ToggleStatus = "api/Warehouse/toggle-status";
+        }
+
+        // Inventory Movement endpoints
+        public static class InventoryMovement
+        {
+            public const string Get = "api/InventoryMovement";
+            public const string GetById = "api/InventoryMovement";
+            public const string GetByDocument = "api/InventoryMovement/by-document";
+            public const string Search = "api/InventoryMovement/search";
+            public const string GenerateDocumentNumber = "api/InventoryMovement/generate-document-number";
+            public const string Save = "api/InventoryMovement/save";
+            public const string Delete = "api/InventoryMovement/delete";
+        }
+
+        // Return Movement endpoints
+        public static class ReturnMovement
+        {
+            public const string Get = "api/ReturnMovement";
+            public const string GetById = "api/ReturnMovement";
+            public const string Search = "api/ReturnMovement/search";
+            public const string GenerateDocumentNumber = "api/ReturnMovement/generate-document-number";
+            public const string Save = "api/ReturnMovement/save";
+            public const string UpdateStatus = "api/ReturnMovement/update-status";
+            public const string Delete = "api/ReturnMovement/delete";
+        }
+
+        // Content Area endpoints
+        public static class ContentArea
+        {
+            public const string Get = "api/ContentArea";
+            public const string GetActive = "api/ContentArea/active";
+            public const string GetByCode = "api/ContentArea/by-code";
+            public const string Search = "api/ContentArea/search";
+            public const string Save = "api/ContentArea/save";
+            public const string Delete = "api/ContentArea/delete";
+            public const string ToggleStatus = "api/ContentArea/toggle-status";
+        }
+
+        // Media Content endpoints
+        public static class MediaContent
+        {
+            public const string Get = "api/MediaContent";
+            public const string GetByArea = "api/MediaContent/by-area";
+            public const string GetByAreaCode = "api/MediaContent/by-area-code";
+            public const string Search = "api/MediaContent/search";
+            public const string Save = "api/MediaContent/save";
+            public const string Delete = "api/MediaContent/delete";
+            public const string ToggleStatus = "api/MediaContent/toggle-status";
+            public const string UpdateDisplayOrder = "api/MediaContent/update-display-order";
+        }
+
         public static class AdminStatistics
         {
             public const string Get = "api/AdminStatistics";
@@ -275,6 +341,55 @@
         {
             public const string Get = "api/VendorStatistics";
             public const string GetByDateRange = "api/VendorStatistics/dateRange";
+        }
+
+        // Campaign endpoints
+        public static class Campaign
+        {
+            public const string Get = "api/Campaign";
+            public const string GetById = "api/Campaign/{0}";
+            public const string Search = "api/Campaign/search";
+            public const string Create = "api/Campaign";
+            public const string Update = "api/Campaign/{0}";
+            public const string Delete = "api/Campaign/{0}";
+            public const string Activate = "api/Campaign/{0}/activate";
+            public const string Deactivate = "api/Campaign/{0}/deactivate";
+            public const string Products = "api/Campaign/{0}/products";
+            public const string AddProduct = "api/Campaign/products";
+        }
+
+        // Wallet endpoints
+        public static class Wallet
+        {
+            public static class Customer
+            {
+                public const string Get = "api/Wallet/customer";
+                public const string GetByCustomerId = "api/Wallet/customer/{0}";
+                public const string MyWallet = "api/Wallet/customer/my-wallet";
+                public const string Create = "api/Wallet/customer/{0}";
+                public const string Balance = "api/Wallet/customer/{0}/balance";
+            }
+
+            public static class Vendor
+            {
+                public const string Get = "api/Wallet/vendor";
+                public const string GetByVendorId = "api/Wallet/vendor/{0}";
+                public const string Create = "api/Wallet/vendor/{0}";
+            }
+
+            public static class Transactions
+            {
+                public const string Get = "api/Wallet/transactions";
+                public const string Search = "api/Wallet/transactions/search";
+                public const string GetById = "api/Wallet/transactions/{0}";
+                public const string Approve = "api/Wallet/transactions/{0}/approve";
+                public const string Reject = "api/Wallet/transactions/{0}/reject";
+            }
+
+            public const string Deposit = "api/Wallet/deposit";
+            public const string Withdrawal = "api/Wallet/withdrawal";
+            public const string Treasury = "api/Wallet/treasury";
+            public const string TreasuryUpdate = "api/Wallet/treasury/update";
         }
     }
 }

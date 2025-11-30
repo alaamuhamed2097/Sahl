@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>الصفحة 03 - نظام العروض المفصل</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <script src="pdf-export.js"></script>
+</head>
+<body>
+    <div class="container">
+        <div class="navigation-header">
+            <a href="index.html" class="btn-home">🏠 الفهرس الرئيسي</a>
+            <span class="page-number">صفحة 3 من 26</span>
+        </div>
+
+        <!-- أزرار تصدير PDF -->
+        <div class="pdf-buttons">
+            <button onclick="exportCurrentPageToPDF()" class="btn-pdf btn-pdf-single">
+                📄 تصدير هذه الصفحة PDF
+            </button>
+        </div>
+
+
+        <div class="content">
+            <h1>🏷️ نظام العروض في المنصة (Seller Offers System)</h1>
+            <p class="subtitle">ضمن وثيقة البزنس – Business Specification Document</p>
+
+            <h2>🔷 1. المقدمة</h2>
+            <p>في نظام الـ Marketplace، يمكن أن يحتوي المنتج الواحد (Product) على عدد غير محدود من عروض البيع (Seller Offers).</p>
+            <p>كل عرض يتم إنشاؤه من بائع مختلف، ويعكس البيانات الخاصة بهذا البائع فقط مثل السعر، المخزون، الشحن، الضمان، وغيرها.</p>
+
+            <div class="info-box">
+                <strong>النظام يهدف إلى:</strong>
+                <ul>
+                    <li>تمكين تعدد البائعين لنفس المنتج</li>
+                    <li>عرض أفضل سعر وخيار للعميل</li>
+                    <li>دعم خوارزمية الـ Buy Box</li>
+                    <li>تمكين المنافسة الشريفة بين البائعين</li>
+                </ul>
+            </div>
+
+            <hr>
+
+            <h2>🔷 2. تعريفات مهمة</h2>
+            
+            <div class="tier-card">
+                <h3>Product (المنتج)</h3>
+                <p>المنتج الأساسي الذي يحتوي على المعلومات الثابتة مثل:</p>
+                <ul>
+                    <li>الاسم، الوصف، الصور</li>
+                    <li>المواصفات، العلامة التجارية</li>
+                    <li>الفئة</li>
+                </ul>
+            </div>
+
+            <div class="tier-card">
+                <h3>Seller Offer (عرض البائع)</h3>
+                <p>العرض الذي يقدمه بائع واحد لبيع هذا المنتج، ويحتوي على:</p>
+                <ul>
+                    <li>السعر، المخزون، الشحن</li>
+                    <li>وقت التجهيز، الحالة، الضمان</li>
+                </ul>
+            </div>
+
+            <div class="warning-box">
+                <strong>📌 القاعدة الأساسية:</strong>
+                <ul>
+                    <li>المنتج = <strong>ثابت</strong></li>
+                    <li>العرض = <strong>متغير</strong> حسب كل بائع</li>
+                </ul>
+            </div>
+
+            <hr>
+
+            <h2>🔷 3. مكوّنات عرض البائع (Offer Components)</h2>
+            <p>يتكون كل عرض للبائع من العناصر التالية:</p>
+
+            <h3>3.1 السعر (Price)</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>المكون</th>
+                        <th>الوصف</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>السعر الأساسي</td>
+                        <td>Base Price</td>
+                    </tr>
+                    <tr>
+                        <td>السعر قبل الخصم</td>
+                        <td>Price Before Sale</td>
+                    </tr>
+                    <tr>
+                        <td>السعر الحالي بعد الخصم</td>
+                        <td>Sale Price</td>
+                    </tr>
+                    <tr>
+                        <td>أقل سعر مسموح</td>
+                        <td>Minimum Allowed Price (اختياري)</td>
+                    </tr>
+                    <tr>
+                        <td>أعلى سعر مسموح</td>
+                        <td>Maximum Allowed Price (اختياري)</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>3.2 المخزون (Stock)</h3>
+            <ul>
+                <li><strong>المخزون المتاح:</strong> Available Stock</li>
+                <li><strong>المخزون المحجوز:</strong> Reserved Stock (للطلبات)</li>
+                <li><strong>نوع التخزين:</strong>
+                    <ul>
+                        <li>مخازن البائع (FBM)</li>
+                        <li>مخازن المنصة (FBA)</li>
+                    </ul>
+                </li>
+            </ul>
+
+            <h3>3.3 وقت التجهيز (Handling Time)</h3>
+            <p>مدة تجهيز الطلب قبل تسليمه لشركة الشحن.</p>
+            <div class="scenario-box">
+                <strong>أمثلة:</strong>
+                <ul>
+                    <li>1 يوم</li>
+                    <li>2 أيام</li>
+                    <li>5 أيام</li>
+                    <li>منتج مُصنّع حسب الطلب (Made to Order)</li>
+                </ul>
+            </div>
+
+            <h3>3.4 بيانات الشحن (Shipping Details)</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>البيان</th>
+                        <th>الخيارات</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>تكلفة الشحن</td>
+                        <td>Shipping Cost</td>
+                    </tr>
+                    <tr>
+                        <td>طريقة الشحن</td>
+                        <td>Standard / Express / Same-Day / Pickup Point</td>
+                    </tr>
+                    <tr>
+                        <td>مدة التوصيل المتوقعة</td>
+                        <td>Delivery Time Range</td>
+                    </tr>
+                    <tr>
+                        <td>الدفع عند الاستلام</td>
+                        <td>COD Support (نعم/لا)</td>
+                    </tr>
+                    <tr>
+                        <td>نوع الشحن</td>
+                        <td>FBA / FBM</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>3.5 حالة المنتج (Condition)</h3>
+            <ul>
+                <li>✅ جديد (New)</li>
+                <li>📦 جديد – مفتوح (Open Box)</li>
+                <li>🔧 مجدد (Refurbished)</li>
+                <li>♻️ مستعمل بحالات مختلفة (Grade A/B/C)</li>
+            </ul>
+
+            <h3>3.6 الضمان (Warranty)</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>العنصر</th>
+                        <th>التفاصيل</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>نوع الضمان</td>
+                        <td>ضمان المصنع / ضمان البائع / بدون ضمان</td>
+                    </tr>
+                    <tr>
+                        <td>مدة الضمان</td>
+                        <td>بالشهور</td>
+                    </tr>
+                    <tr>
+                        <td>سياسة الضمان</td>
+                        <td>تفاصيل الضمان</td>
+                    </tr>
+                    <tr>
+                        <td>مركز الخدمة</td>
+                        <td>Service Center</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>3.7 بيانات إضافية مهمة</h3>
+            <ul>
+                <li>تقييم البائع وقت إنشاء العرض</li>
+                <li>سياسة الإرجاع الخاصة بالبائع (Return Policy)</li>
+                <li>حالة العرض: Active / Out of Stock / Suspended</li>
+                <li>مشاركة العرض في الحملات:
+                    <ul>
+                        <li>White Friday</li>
+                        <li>Flash Sales</li>
+                        <li>Coupons</li>
+                        <li>Promo Codes</li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+
+        <div class="navigation-footer">
+            <a href="page-02.html" class="btn-nav">⬅️ الصفحة السابقة</a>
+            <a href="page-03b.html" class="btn-nav btn-next">الصفحة التالية: نظام العروض (تابع) ➡️</a>
+        </div>
+    </div>
+</body>
+</html>

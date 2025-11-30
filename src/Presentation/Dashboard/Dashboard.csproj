@@ -176,6 +176,7 @@
 	</ItemGroup>
 	<ItemGroup>
 		<Folder Include="Pages\Catalog\Orders\" />
+		<Folder Include="Pages\Marketing\" />
 	</ItemGroup>
 
 </Project>

@@ -183,7 +183,7 @@ namespace Api.Controllers.User
                 // Create response DTO
                 var userInfo = new UserInfoDto
                 {
-                    UserId = user.Id,
+                    UserId = user.Id.ToString(),
                     UserName = user.UserName,
                     Email = user.Email,
                     FullName = $"{user.FirstName} {user.LastName}".Trim(),

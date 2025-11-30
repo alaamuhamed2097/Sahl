@@ -88,12 +88,12 @@ namespace BL.GeneralService.CMS
             var claims = new List<Claim>
             {
                 // Standard claims
-                new Claim(JwtRegisteredClaimNames.Sub, user.Id),
+                new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                 new Claim(JwtRegisteredClaimNames.Iat, DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString(), ClaimValueTypes.Integer64),
         
                 // Identity claims
-                new Claim(ClaimTypes.NameIdentifier, user.Id),
+                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
                 new Claim(ClaimTypes.Name, user.UserName),
         
                 // Additional useful claims
@@ -206,7 +206,7 @@ namespace BL.GeneralService.CMS
             return new ValidateRefreshTokenResult
             {
                 Success = true,
-                UserId = user.Id,
+                UserId = user.Id.ToString(),
                 UserRoles = userRoles.ToList(),
             };
         }

@@ -1,4 +1,4 @@
-﻿using Domains.Entities.Item;
+﻿using Domains.Entities.Catalog.Item;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Domains.Entities.Order

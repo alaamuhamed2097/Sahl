@@ -70,11 +70,11 @@ namespace BL.Service.Currency
 
         public async Task<decimal> GetExchangeRateAsync(string fromCurrency, string toCurrency)
         {
-            var fromCurrencyEntity = _unitOfWork.TableRepository<TbCurrency>()
-                .Find(x => x.Code == fromCurrency && x.CurrentState == 1);
+            var fromCurrencyEntity = await _unitOfWork.TableRepository<TbCurrency>()
+                .FindAsync(x => x.Code == fromCurrency && x.CurrentState == 1);
 
-            var toCurrencyEntity = _unitOfWork.TableRepository<TbCurrency>()
-                .Find(x => x.Code == toCurrency && x.CurrentState == 1);
+            var toCurrencyEntity = await _unitOfWork.TableRepository<TbCurrency>()
+                .FindAsync(x => x.Code == toCurrency && x.CurrentState == 1);
 
             if (fromCurrencyEntity == null || toCurrencyEntity == null)
                 return 1m;
@@ -95,8 +95,8 @@ namespace BL.Service.Currency
 
         public async Task<string> FormatCurrencyAsync(decimal amount, string currencyCode)
         {
-            var currency = _unitOfWork.TableRepository<TbCurrency>()
-                .Find(x => x.Code == currencyCode && x.CurrentState == 1);
+            var currency = await _unitOfWork.TableRepository<TbCurrency>()
+                .FindAsync(x => x.Code == currencyCode && x.CurrentState == 1);
 
             if (currency == null)
                 return amount.ToString("N2");
@@ -116,8 +116,8 @@ namespace BL.Service.Currency
         {
             if (_countryToCurrency.TryGetValue(countryCode.ToUpper(), out var currencyCode))
             {
-                var currency = _unitOfWork.TableRepository<TbCurrency>()
-                    .Find(x => x.Code == currencyCode && x.CurrentState == 1);
+                var currency = await _unitOfWork.TableRepository<TbCurrency>()
+                    .FindAsync(x => x.Code == currencyCode && x.CurrentState == 1);
 
                 return currency != null ? _mapper.MapModel<TbCurrency, CurrencyDto>(currency) : null;
             }

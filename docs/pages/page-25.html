@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>الصفحة 25 - نظام الإشعارات (تابع)</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <script src="pdf-export.js"></script>
+</head>
+<body>
+    <div class="container">
+        <div class="navigation-header">
+            <a href="index.html" class="btn-home">🏠 الفهرس الرئيسي</a>
+            <span class="page-number">صفحة 25 من 28</span>
+        </div>
+
+        <!-- أزرار تصدير PDF -->
+        <div class="pdf-buttons">
+            <button onclick="exportCurrentPageToPDF()" class="btn-pdf btn-pdf-single">
+                📄 تصدير هذه الصفحة PDF
+            </button>
+        </div>
+
+
+        <div class="content">
+            <h2>🔷 6. سيناريوهات الإشعارات</h2>
+
+            <h3>🟦 6.1 للعميل</h3>
+
+            <div class="scenario-box">
+                <h4>✔ عند إنشاء طلب</h4>
+                <p>"تم استلام طلبك رقم X وهو الآن قيد المعالجة"</p>
+            </div>
+
+            <div class="scenario-box">
+                <h4>✔ عند بدء تجهيز الطلب</h4>
+                <p>"جاري تجهيز طلبك رقم X"</p>
+            </div>
+
+            <div class="scenario-box">
+                <h4>✔ عند شحن الطلب</h4>
+                <p>"تم شحن طلبك، رقم الشحنة X"</p>
+            </div>
+
+            <div class="scenario-box">
+                <h4>✔ عند الوصول للمدينة</h4>
+                <p>"الشحنة وصلت إلى مقر التوزيع وستصل إليك خلال 24 ساعة"</p>
+            </div>
+
+            <div class="scenario-box">
+                <h4>✔ عند إلغاء الطلب</h4>
+                <p>"تم إلغاء طلبك رقم X وتم رد المبلغ إلى محفظتك"</p>
+            </div>
+
+            <hr>
+
+            <h3>🟩 6.2 للبائع</h3>
+
+            <div class="scenario-box">
+                <h4>✔ وصول طلب جديد</h4>
+                <p>"طلب جديد جاهز للتجهيز #X"</p>
+            </div>
+
+            <div class="scenario-box">
+                <h4>✔ نقص المخزون</h4>
+                <p>"المخزون لعرضك على المنتج X أقل من 3 قطع"</p>
+            </div>
+
+            <div class="scenario-box">
+                <h4>✔ تعليق أحد عروضه</h4>
+                <p>"تم تعليق عرضك رقم X لمخالفة سياسة التسعير"</p>
+            </div>
+
+            <div class="scenario-box">
+                <h4>✔ رد الأموال</h4>
+                <p>"تم خصم مبلغ X من رصيدك بسبب إرجاع منتج من العميل"</p>
+            </div>
+
+            <hr>
+
+            <h3>🟧 6.3 للإدارة</h3>
+
+            <div class="scenario-box">
+                <h4>✔ بائع جديد ينتظر الموافقة</h4>
+                <p>"طلب انضمام جديد من البائع X"</p>
+            </div>
+
+            <div class="scenario-box">
+                <h4>✔ طلب حملة</h4>
+                <p>"طلب جديد للمشاركة في حملة White Friday"</p>
+            </div>
+
+            <div class="scenario-box">
+                <h4>✔ نزاع Customer Dispute</h4>
+                <p>"عميل فتح نزاع على طلب رقم X"</p>
+            </div>
+
+            <hr>
+
+            <h2>🔷 7. إدارة إعدادات الإشعارات (Notification Preferences)</h2>
+            <p>كل مستخدم (عميل / بائع) يستطيع:</p>
+
+            <div class="tier-card">
+                <ul>
+                    <li>تفعيل/تعطيل الإشعارات</li>
+                    <li>اختيار القنوات المفضلة</li>
+                    <li>تعطيل إشعارات العروض التسويقية فقط</li>
+                    <li>تحديد ساعات صامتة (Do Not Disturb)</li>
+                    <li>تخصيص نوع الإشعارات</li>
+                </ul>
+            </div>
+
+            <h3>مثال للخيارات:</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>الإشعار</th>
+                        <th>Email</th>
+                        <th>SMS</th>
+                        <th>Push</th>
+                        <th>In-App</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>طلب جديد</td>
+                        <td>✔</td>
+                        <td>✔</td>
+                        <td>✔</td>
+                        <td>✔</td>
+                    </tr>
+                    <tr>
+                        <td>عروض</td>
+                        <td>✔</td>
+                        <td>✖</td>
+                        <td>✔</td>
+                        <td>✔</td>
+                    </tr>
+                    <tr>
+                        <td>تحديث الشحن</td>
+                        <td>✔</td>
+                        <td>✔</td>
+                        <td>✔</td>
+                        <td>✔</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <hr>
+
+            <h2>🔷 8. قوالب الإشعارات (Notification Templates)</h2>
+            <p>يجب أن يدعم النظام قوالب مثل:</p>
+
+            <div class="tier-card">
+                <ul>
+                    <li>Order_Confirmed</li>
+                    <li>Order_Shipped</li>
+                    <li>Seller_New_Order</li>
+                    <li>Wallet_Withdraw_Approved</li>
+                    <li>Promo_Start</li>
+                    <li>Campaign_Approved</li>
+                    <li>Offer_Suspended</li>
+                </ul>
+            </div>
+
+            <div class="info-box">
+                <h4>ويجب أن تكون Dynamic via variables:</h4>
+                <p><strong>مثال:</strong></p>
+                <pre style="background: #f5f5f5; padding: 15px; border-radius: 5px; direction: ltr; text-align: left;">
+Dear {CustomerName},
+Your order #{OrderNumber} has been shipped.
+Tracking Number: {TrackingNumber}
+                </pre>
+            </div>
+
+            <hr>
+
+            <h2>🔷 9. متطلبات فنية (Technical Requirements)</h2>
+
+            <h3>✔ نظام Queue</h3>
+            <p>(مثل RabbitMQ أو Azure Service Bus)</p>
+            <div class="tier-card">
+                <p><strong>لضمان:</strong></p>
+                <ul>
+                    <li>المعالجة على دفعات</li>
+                    <li>عدم فقدان الرسائل</li>
+                    <li>retry عند الفشل</li>
+                </ul>
+            </div>
+
+            <h3>✔ Retry Mechanism</h3>
+            <p>محاولة الإرسال 3 مرات في حال الفشل.</p>
+
+            <h3>✔ Log لكل إشعار</h3>
+            <div class="tier-card">
+                <p><strong>يشمل:</strong></p>
+                <ul>
+                    <li>وقت الإرسال</li>
+                    <li>حالة الإرسال</li>
+                    <li>قناة الإرسال</li>
+                    <li>بيانات الإشعار</li>
+                </ul>
+            </div>
+
+            <h3>✔ Rate Limiting</h3>
+            <p>ضبط عدد الإشعارات حتى لا يتحول النظام لـ Spam.</p>
+
+            <h3>✔ API لمزامنة الإشعارات</h3>
+            <p>في الـ Mobile App.</p>
+
+            <hr>
+
+            <h2>🔷 10. شاشة الإشعارات (UI Requirements)</h2>
+
+            <h3>✔ للعميل:</h3>
+            <div class="tier-card">
+                <ul>
+                    <li>قائمة الإشعارات</li>
+                    <li>فلترة حسب النوع</li>
+                    <li>إظهار/إخفاء المقروء</li>
+                    <li>حذف الإشعار</li>
+                    <li>Mark All As Read</li>
+                </ul>
+            </div>
+
+            <h3>✔ للبائع:</h3>
+            <div class="tier-card">
+                <ul>
+                    <li>إشعارات الطلبات</li>
+                    <li>إشعارات المخزون</li>
+                    <li>إشعارات التعليق</li>
+                    <li>إشعارات حملات</li>
+                </ul>
+            </div>
+
+            <h3>✔ للإدارة:</h3>
+            <div class="tier-card">
+                <ul>
+                    <li>Inbox</li>
+                    <li>فلترة (نوع – بائع – تاريخ – حالة)</li>
+                    <li>تعيين لموظف</li>
+                    <li>أرشفة</li>
+                </ul>
+            </div>
+
+            <hr>
+
+            <div class="success-box">
+                <h2>✅ تم الانتهاء من جميع صفحات الوثيقة</h2>
+                <p>هذا النظام يغطي جميع جوانب منصة Marketplace من نموذج البزنس إلى الأنظمة الفنية والإدارية.</p>
+            </div>
+        </div>
+
+        <div class="navigation-footer">
+            <a href="page-24.html" class="btn-nav">⬅️ الصفحة السابقة</a>
+            <a href="page-26.html" class="btn-nav btn-next">الصفحة التالية: تفاصيل البائع ➡️</a>
+        </div>
+    </div>
+</body>
+</html>

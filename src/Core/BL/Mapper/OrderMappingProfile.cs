@@ -1,7 +1,7 @@
-﻿using Domains.Entities;
-using Domains.Entities.PromoCode;
+﻿using Domains.Entities.CouponCode;
+using Domains.Entities.Shipping;
 using Shared.DTOs.ECommerce;
-using Shared.DTOs.ECommerce.PromoCode;
+using Shared.DTOs.ECommerce.CouponCode;
 
 namespace BL.Mapper
 {
@@ -10,7 +10,7 @@ namespace BL.Mapper
         private void ConfigureOrderMappings()
         {
             CreateMap<TbShippingCompany, ShippingCompanyDto>().ReverseMap();
-            CreateMap<TbPromoCode, PromoCodeDto>().ReverseMap();
+            CreateMap<TbCouponCode, CouponCodeDto>().ReverseMap();
         }
     }
 }

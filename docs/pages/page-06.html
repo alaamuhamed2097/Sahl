@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>الصفحة 06 - نظام الشحن</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <script src="pdf-export.js"></script>
+</head>
+<body>
+    <div class="container">
+        <div class="navigation-header">
+            <a href="index.html" class="btn-home">🏠 الفهرس الرئيسي</a>
+            <span class="page-number">صفحة 6 من 26</span>
+        </div>
+
+        <!-- أزرار تصدير PDF -->
+        <div class="pdf-buttons">
+            <button onclick="exportCurrentPageToPDF()" class="btn-pdf btn-pdf-single">
+                📄 تصدير هذه الصفحة PDF
+            </button>
+        </div>
+
+
+        <div class="content">
+            <h2>🚚 10. نظام الشحن</h2>
+            <h3>10.1 📦 النماذج المتاحة</h3>
+            
+            <h4>🅰️ FBS - Fulfilled by Seller</h4>
+            <ul>
+                <li>البائع يشحن بنفسه</li>
+                <li>مسؤول عن التغليف والشحن</li>
+                <li>يتحمل تكاليف الشحن</li>
+                <li>أقل عمولة للمنصة</li>
+            </ul>
+
+            <h4>🅱️ FBM - Fulfilled by Marketplace</h4>
+            <ul>
+                <li>البائع يرسل المخزون لمستودعات المنصة</li>
+                <li>المنصة تخزن، تغلف، وتشحن</li>
+                <li>شحن أسرع</li>
+                <li>رضا عملاء أعلى</li>
+                <li><strong>أولوية في Buy Box</strong></li>
+                <li>عمولة أعلى</li>
+            </ul>
+
+            <h3>10.2 📊 مقارنة</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>الميزة</th>
+                        <th>FBS</th>
+                        <th>FBM</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>التكلفة</td>
+                        <td>أقل</td>
+                        <td>أعلى</td>
+                    </tr>
+                    <tr>
+                        <td>السرعة</td>
+                        <td>متوسطة</td>
+                        <td>عالية جداً</td>
+                    </tr>
+                    <tr>
+                        <td>Buy Box</td>
+                        <td>عادي</td>
+                        <td>أولوية ⭐</td>
+                    </tr>
+                    <tr>
+                        <td>المرتجعات</td>
+                        <td>البائع</td>
+                        <td>المنصة</td>
+                    </tr>
+                    <tr>
+                        <td>التغليف</td>
+                        <td>البائع</td>
+                        <td>المنصة</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>10.3 🚀 التكامل مع شركات الشحن</h3>
+            <ul>
+                <li>تكامل API مع شركات الشحن الرئيسية</li>
+                <li>حساب تلقائي لتكاليف الشحن</li>
+                <li>توليد ملصقات الشحن</li>
+                <li>تتبع الشحنات في الوقت الفعلي</li>
+            </ul>
+
+            <h3>10.4 📍 التتبع والإشعارات</h3>
+            <div class="info-box">
+                <strong>خدمات التتبع:</strong>
+                <ul>
+                    <li>رقم تتبع فريد لكل طلب</li>
+                    <li>تحديثات فورية عبر البريد الإلكتروني والرسائل النصية</li>
+                    <li>خريطة توضح موقع الشحنة</li>
+                    <li>تاريخ التوصيل المتوقع</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="navigation-footer">
+            <a href="page-05.html" class="btn-nav">⬅️ الصفحة السابقة</a>
+            <a href="page-07.html" class="btn-nav btn-next">الصفحة التالية: التسويق والإعلانات ➡️</a>
+        </div>
+    </div>
+</body>
+</html>

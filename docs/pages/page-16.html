@@ -1,0 +1,839 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>الصفحة 16 - نظام Merchandising</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <script src="pdf-export.js"></script>
+</head>
+<body>
+    <div class="container">
+        <div class="navigation-header">
+            <a href="index.html" class="btn-home">🏠 الفهرس الرئيسي</a>
+            <span class="page-number">صفحة 16 من 26</span>
+        </div>
+
+        <!-- أزرار تصدير PDF -->
+        <div class="pdf-buttons">
+            <button onclick="exportCurrentPageToPDF()" class="btn-pdf btn-pdf-single">
+                📄 تصدير هذه الصفحة PDF
+            </button>
+        </div>
+
+
+        <div class="content">
+            <h1>🏪 نظام الـ Merchandising – وثيقة متطلبات مفصلة مع ERD</h1>
+            <p class="subtitle">Merchandising System – Detailed BRD with Database Tables</p>
+
+            <div class="info-box">
+                <strong>📌 الغرض:</strong>
+                <p>نظام Merchandising يتحكم في البلوكات الديناميكية في الصفحة الرئيسية لزيادة المبيعات وتحسين تجربة المستخدم.</p>
+            </div>
+
+            <hr>
+
+            <h2>1. Flash Deals Block – عروض فلاش ⚡</h2>
+            
+            <h3>1.1 الوصف</h3>
+            <p>عروض قصيرة المدة تُعرض في الصفحة الرئيسية وتقدم خصومات قوية لتحفّز العملاء على الشراء السريع.</p>
+
+            <h3>1.2 قواعد الاختيار</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Rule</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Discount Minimum</strong></td>
+                        <td>≥ 20%</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Duration</strong></td>
+                        <td>6–48 ساعة</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Min Stock</strong></td>
+                        <td>منتج لديه مخزون كافٍ</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Seller Score</strong></td>
+                        <td>فوق الحد الأدنى (مثلاً ≥ 80%)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Product Rating</strong></td>
+                        <td>≥ 3 نجوم</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>1.3 جدول قاعدة البيانات</h3>
+            <div class="scenario-box">
+                <h4>📊 Table: Merch_FlashDeals</h4>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Field</th>
+                            <th>Type</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>FlashDealID</td>
+                            <td>PK</td>
+                            <td>رقم تعريف العرض</td>
+                        </tr>
+                        <tr>
+                            <td>ProductID</td>
+                            <td>FK</td>
+                            <td>المنتج المشمول</td>
+                        </tr>
+                        <tr>
+                            <td>SellerID</td>
+                            <td>FK</td>
+                            <td>البائع</td>
+                        </tr>
+                        <tr>
+                            <td>DiscountPercentage</td>
+                            <td>decimal</td>
+                            <td>نسبة الخصم</td>
+                        </tr>
+                        <tr>
+                            <td>OriginalPrice</td>
+                            <td>decimal</td>
+                            <td>السعر قبل الخصم</td>
+                        </tr>
+                        <tr>
+                            <td>FinalPrice</td>
+                            <td>decimal</td>
+                            <td>السعر بعد الخصم</td>
+                        </tr>
+                        <tr>
+                            <td>StartDate</td>
+                            <td>datetime</td>
+                            <td>بداية العرض</td>
+                        </tr>
+                        <tr>
+                            <td>EndDate</td>
+                            <td>datetime</td>
+                            <td>نهاية العرض</td>
+                        </tr>
+                        <tr>
+                            <td>MinStockRequired</td>
+                            <td>int</td>
+                            <td>الحد الأدنى للمخزون</td>
+                        </tr>
+                        <tr>
+                            <td>Priority</td>
+                            <td>int</td>
+                            <td>ترتيب الظهور</td>
+                        </tr>
+                        <tr>
+                            <td>Status</td>
+                            <td>enum</td>
+                            <td>Active / Ended / Hidden</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <hr>
+
+            <h2>2. Seasonal Campaign Block – الحملات الموسمية 🎉</h2>
+            
+            <h3>2.1 الوصف</h3>
+            <p>صفحة وقسم خاص لتجميع منتجات موسم معين مثل Ramadan, Back to School, White Friday.</p>
+
+            <h3>2.2 قواعد العرض</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Rule</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Campaign Duration</strong></td>
+                        <td>حسب الموسم</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Campaign Banner</strong></td>
+                        <td>صورة رئيسية</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Participating Sellers</strong></td>
+                        <td>بائعين مشاركين</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Category Target</strong></td>
+                        <td>فئات معينة</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>2.3 جداول قاعدة البيانات</h3>
+            <div class="scenario-box">
+                <h4>📊 Table: Merch_Campaigns</h4>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Field</th>
+                            <th>Type</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>CampaignID</td>
+                            <td>PK</td>
+                            <td>كود الحملة</td>
+                        </tr>
+                        <tr>
+                            <td>Title</td>
+                            <td>nvarchar</td>
+                            <td>اسم الحملة</td>
+                        </tr>
+                        <tr>
+                            <td>Description</td>
+                            <td>nvarchar</td>
+                            <td>وصف الحملة</td>
+                        </tr>
+                        <tr>
+                            <td>BannerImage</td>
+                            <td>nvarchar</td>
+                            <td>صورة رئيسية</td>
+                        </tr>
+                        <tr>
+                            <td>StartDate</td>
+                            <td>datetime</td>
+                            <td>البداية</td>
+                        </tr>
+                        <tr>
+                            <td>EndDate</td>
+                            <td>datetime</td>
+                            <td>النهاية</td>
+                        </tr>
+                        <tr>
+                            <td>Priority</td>
+                            <td>int</td>
+                            <td>ترتيب الظهور</td>
+                        </tr>
+                        <tr>
+                            <td>Status</td>
+                            <td>enum</td>
+                            <td>Active / Scheduled / Ended</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="scenario-box">
+                <h4>📊 Table: Merch_CampaignProducts</h4>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Field</th>
+                            <th>Type</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>CampaignProductID</td>
+                            <td>PK</td>
+                            <td>رقم التعريف</td>
+                        </tr>
+                        <tr>
+                            <td>CampaignID</td>
+                            <td>FK</td>
+                            <td>الحملة</td>
+                        </tr>
+                        <tr>
+                            <td>ProductID</td>
+                            <td>FK</td>
+                            <td>المنتج</td>
+                        </tr>
+                        <tr>
+                            <td>SellerID</td>
+                            <td>FK</td>
+                            <td>البائع</td>
+                        </tr>
+                        <tr>
+                            <td>FinalPrice</td>
+                            <td>decimal</td>
+                            <td>السعر داخل الحملة</td>
+                        </tr>
+                        <tr>
+                            <td>IsRecommended</td>
+                            <td>bool</td>
+                            <td>هل يظهر ضمن Top Picks</td>
+                        </tr>
+                        <tr>
+                            <td>Position</td>
+                            <td>int</td>
+                            <td>ترتيب داخل الحملة</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <hr>
+
+            <h2>3. Price Based Block – حسب السعر 💰</h2>
+            
+            <h3>3.1 الوصف</h3>
+            <p>يعرض منتجات ضمن حدود سعرية ثابتة مثل: أقل من 200، من 500–1000، أكثر من 1000.</p>
+
+            <h3>3.2 قواعد العرض</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Rule</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>MinPrice</strong></td>
+                        <td>حد أدنى</td>
+                    </tr>
+                    <tr>
+                        <td><strong>MaxPrice</strong></td>
+                        <td>حد أقصى</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Sort Logic</strong></td>
+                        <td>الأكثر مبيعًا – الأكثر تقييمًا</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>3.3 جداول قاعدة البيانات</h3>
+            <div class="scenario-box">
+                <h4>📊 Table: Merch_PriceBlocks</h4>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Field</th>
+                            <th>Type</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>PriceBlockID</td>
+                            <td>PK</td>
+                            <td>رقم التعريف</td>
+                        </tr>
+                        <tr>
+                            <td>Title</td>
+                            <td>nvarchar</td>
+                            <td>عنوان البلوك</td>
+                        </tr>
+                        <tr>
+                            <td>MinPrice</td>
+                            <td>decimal</td>
+                            <td>السعر الأدنى</td>
+                        </tr>
+                        <tr>
+                            <td>MaxPrice</td>
+                            <td>decimal</td>
+                            <td>السعر الأقصى</td>
+                        </tr>
+                        <tr>
+                            <td>Priority</td>
+                            <td>int</td>
+                            <td>ترتيب الظهور</td>
+                        </tr>
+                        <tr>
+                            <td>Status</td>
+                            <td>enum</td>
+                            <td>Active / Hidden</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="scenario-box">
+                <h4>📊 Table: Merch_PriceBlockProducts</h4>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Field</th>
+                            <th>Type</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>RowID</td>
+                            <td>PK</td>
+                            <td>رقم السجل</td>
+                        </tr>
+                        <tr>
+                            <td>PriceBlockID</td>
+                            <td>FK</td>
+                            <td>البلوك</td>
+                        </tr>
+                        <tr>
+                            <td>ProductID</td>
+                            <td>FK</td>
+                            <td>المنتج</td>
+                        </tr>
+                        <tr>
+                            <td>SellerID</td>
+                            <td>FK</td>
+                            <td>البائع</td>
+                        </tr>
+                        <tr>
+                            <td>Position</td>
+                            <td>int</td>
+                            <td>الترتيب</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <hr>
+
+            <h2>4. Category Spotlight – إبراز الفئات 🏷️</h2>
+            
+            <h3>4.1 الوصف</h3>
+            <p>بلوك يعرض أهم الفئات (Categories) بهدف توجيه العميل لمناطق مهمة في المنصة.</p>
+
+            <h3>4.2 قواعد العرض</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Rule</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Categories Count</strong></td>
+                        <td>من 4 إلى 12</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Manual or Auto</strong></td>
+                        <td>اختياري</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Must Have Icon</strong></td>
+                        <td>نعم</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>4.3 جداول قاعدة البيانات</h3>
+            <div class="scenario-box">
+                <h4>📊 Table: Merch_CategorySpotlight</h4>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Field</th>
+                            <th>Type</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>SpotlightID</td>
+                            <td>PK</td>
+                            <td>رقم التعريف</td>
+                        </tr>
+                        <tr>
+                            <td>Title</td>
+                            <td>nvarchar</td>
+                            <td>عنوان البلوك</td>
+                        </tr>
+                        <tr>
+                            <td>Priority</td>
+                            <td>int</td>
+                            <td>الترتيب</td>
+                        </tr>
+                        <tr>
+                            <td>Status</td>
+                            <td>enum</td>
+                            <td>Active / Hidden</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="scenario-box">
+                <h4>📊 Table: Merch_CategorySpotlightItems</h4>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Field</th>
+                            <th>Type</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>RowID</td>
+                            <td>PK</td>
+                            <td>رقم السجل</td>
+                        </tr>
+                        <tr>
+                            <td>SpotlightID</td>
+                            <td>FK</td>
+                            <td>البلوك</td>
+                        </tr>
+                        <tr>
+                            <td>CategoryID</td>
+                            <td>FK</td>
+                            <td>الفئة</td>
+                        </tr>
+                        <tr>
+                            <td>IconImage</td>
+                            <td>nvarchar</td>
+                            <td>أيقونة الفئة</td>
+                        </tr>
+                        <tr>
+                            <td>Position</td>
+                            <td>int</td>
+                            <td>الترتيب</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <hr>
+
+            <h2>5. Clearance Deals – عروض التصفية 🔥</h2>
+            
+            <h3>5.1 الوصف</h3>
+            <p>قسم مخصص لبيع منتجات المخزون الزائد أو التي تحتاج التخلص منها بخصومات عالية.</p>
+
+            <h3>5.2 قواعد العرض</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Rule</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Discount ≥</strong></td>
+                        <td>30%</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Product Condition</strong></td>
+                        <td>جديد فقط</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Stock Aging</strong></td>
+                        <td>قديم (Old Stock)</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>5.3 جدول قاعدة البيانات</h3>
+            <div class="scenario-box">
+                <h4>📊 Table: Merch_Clearance</h4>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Field</th>
+                            <th>Type</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>ClearanceID</td>
+                            <td>PK</td>
+                            <td>رقم التعريف</td>
+                        </tr>
+                        <tr>
+                            <td>ProductID</td>
+                            <td>FK</td>
+                            <td>المنتج</td>
+                        </tr>
+                        <tr>
+                            <td>SellerID</td>
+                            <td>FK</td>
+                            <td>البائع</td>
+                        </tr>
+                        <tr>
+                            <td>DiscountPercentage</td>
+                            <td>decimal</td>
+                            <td>نسبة الخصم</td>
+                        </tr>
+                        <tr>
+                            <td>Reason</td>
+                            <td>nvarchar</td>
+                            <td>مثل Overstock, Old Model</td>
+                        </tr>
+                        <tr>
+                            <td>StartDate</td>
+                            <td>datetime</td>
+                            <td>بداية العرض</td>
+                        </tr>
+                        <tr>
+                            <td>EndDate</td>
+                            <td>datetime</td>
+                            <td>نهاية العرض</td>
+                        </tr>
+                        <tr>
+                            <td>Priority</td>
+                            <td>int</td>
+                            <td>الترتيب</td>
+                        </tr>
+                        <tr>
+                            <td>Status</td>
+                            <td>enum</td>
+                            <td>Active / Ended</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <hr>
+
+            <h2>6. Personalized Recommendations – اقتراحات مخصصة 🎯</h2>
+            
+            <h3>6.1 الوصف</h3>
+            <p>يعرض منتجات تناسب كل مستخدم وفقًا لسلوكه واهتماماته.</p>
+
+            <h3>6.2 مصادر البيانات</h3>
+            <ul>
+                <li>سجل الشراء</li>
+                <li>سجل التصفح</li>
+                <li>سجل البحث</li>
+                <li>العملاء المشابهين (Lookalike Model)</li>
+                <li>CTL (Click-Through Logs)</li>
+            </ul>
+
+            <h3>6.3 جدول قاعدة البيانات</h3>
+            <div class="scenario-box">
+                <h4>📊 Table: Merch_Personalized</h4>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Field</th>
+                            <th>Type</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>RowID</td>
+                            <td>PK</td>
+                            <td>رقم السجل</td>
+                        </tr>
+                        <tr>
+                            <td>UserID</td>
+                            <td>FK</td>
+                            <td>المستخدم</td>
+                        </tr>
+                        <tr>
+                            <td>ProductID</td>
+                            <td>FK</td>
+                            <td>المنتج</td>
+                        </tr>
+                        <tr>
+                            <td>Score</td>
+                            <td>decimal</td>
+                            <td>درجة الترشيح</td>
+                        </tr>
+                        <tr>
+                            <td>Reason</td>
+                            <td>nvarchar</td>
+                            <td>"Viewed Similar", "Popular in your area"</td>
+                        </tr>
+                        <tr>
+                            <td>Position</td>
+                            <td>int</td>
+                            <td>الترتيب</td>
+                        </tr>
+                        <tr>
+                            <td>GeneratedDate</td>
+                            <td>datetime</td>
+                            <td>تاريخ التوليد</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <hr>
+
+            <h2>7. Merchandising Blocks Master Table 📋</h2>
+            
+            <h3>7.1 الوصف</h3>
+            <p>جدول التحكم الرئيسي في الصفحة الرئيسية - يدير جميع أنواع البلوكات.</p>
+
+            <div class="scenario-box">
+                <h4>📊 Table: Merch_Blocks</h4>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Field</th>
+                            <th>Type</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>BlockID</td>
+                            <td>PK</td>
+                            <td>رقم التعريف</td>
+                        </tr>
+                        <tr>
+                            <td>BlockType</td>
+                            <td>enum</td>
+                            <td>Flash / Campaign / PriceBlock / CategorySpotlight / Clearance / Personalized</td>
+                        </tr>
+                        <tr>
+                            <td>Title</td>
+                            <td>nvarchar</td>
+                            <td>عنوان البلوك</td>
+                        </tr>
+                        <tr>
+                            <td>Subtitle</td>
+                            <td>nvarchar</td>
+                            <td>عنوان فرعي</td>
+                        </tr>
+                        <tr>
+                            <td>Image</td>
+                            <td>nvarchar</td>
+                            <td>صورة (اختياري)</td>
+                        </tr>
+                        <tr>
+                            <td>Priority</td>
+                            <td>int</td>
+                            <td>ترتيب الظهور</td>
+                        </tr>
+                        <tr>
+                            <td>VisibleFrom</td>
+                            <td>datetime</td>
+                            <td>بداية العرض</td>
+                        </tr>
+                        <tr>
+                            <td>VisibleTo</td>
+                            <td>datetime</td>
+                            <td>نهاية العرض</td>
+                        </tr>
+                        <tr>
+                            <td>Status</td>
+                            <td>enum</td>
+                            <td>Active / Hidden</td>
+                        </tr>
+                        <tr>
+                            <td>CreatedBy</td>
+                            <td>FK</td>
+                            <td>المنشئ</td>
+                        </tr>
+                        <tr>
+                            <td>CreatedDate</td>
+                            <td>datetime</td>
+                            <td>تاريخ الإنشاء</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <hr>
+
+            <h2>8. متطلبات لوحة التحكم (Admin Panel) 🎛️</h2>
+            
+            <h3>8.1 وظائف أساسية</h3>
+            <ul>
+                <li>إضافة بلوك جديد</li>
+                <li>تحديد نوع البلوك</li>
+                <li>إضافة المنتجات / الفئات / الأسعار / البائعين</li>
+                <li>الترتيب عبر Drag & Drop</li>
+                <li>العرض المسبق Preview</li>
+                <li>التحكم في المدة</li>
+                <li>استهداف المستخدمين (اختياري)</li>
+            </ul>
+
+            <h3>8.2 الوظائف التقنية</h3>
+            <ul>
+                <li>API لعرض البلوكات</li>
+                <li>Cache للصفحة الرئيسية</li>
+                <li>نظام Priorities</li>
+                <li>نظام Scheduling للبدء والانتهاء</li>
+            </ul>
+
+            <hr>
+
+            <h2>9. ملخص ERD (Entity-Relationship Diagram) 📊</h2>
+            
+            <h3>9.1 الجداول المنشأة</h3>
+            <div class="info-box">
+                <ol>
+                    <li><strong>Merch_Blocks</strong> - الجدول الرئيسي</li>
+                    <li><strong>Merch_FlashDeals</strong> - عروض الفلاش</li>
+                    <li><strong>Merch_Campaigns</strong> - الحملات</li>
+                    <li><strong>Merch_CampaignProducts</strong> - منتجات الحملات</li>
+                    <li><strong>Merch_PriceBlocks</strong> - بلوكات الأسعار</li>
+                    <li><strong>Merch_PriceBlockProducts</strong> - منتجات بلوكات الأسعار</li>
+                    <li><strong>Merch_CategorySpotlight</strong> - الفئات المميزة</li>
+                    <li><strong>Merch_CategorySpotlightItems</strong> - عناصر الفئات</li>
+                    <li><strong>Merch_Clearance</strong> - عروض التصفية</li>
+                    <li><strong>Merch_Personalized</strong> - الاقتراحات الشخصية</li>
+                </ol>
+            </div>
+
+            <h3>9.2 العلاقات (Relations)</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>From</th>
+                        <th>To</th>
+                        <th>Type</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Campaign</td>
+                        <td>Products</td>
+                        <td>1:N</td>
+                    </tr>
+                    <tr>
+                        <td>CategorySpotlight</td>
+                        <td>Categories</td>
+                        <td>1:N</td>
+                    </tr>
+                    <tr>
+                        <td>PriceBlock</td>
+                        <td>Products</td>
+                        <td>1:N</td>
+                    </tr>
+                    <tr>
+                        <td>BlockMaster</td>
+                        <td>Any Block</td>
+                        <td>1:1</td>
+                    </tr>
+                    <tr>
+                        <td>Personalized</td>
+                        <td>User</td>
+                        <td>N:1</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="info-box">
+                <strong>💡 ملاحظة نهائية:</strong>
+                <p>هذا النظام يوفر مرونة كاملة في إدارة الصفحة الرئيسية ويسمح بإنشاء تجربة تسويقية ديناميكية وفعالة.</p>
+            </div>
+        </div>
+
+        <div class="navigation-footer">
+            <a href="page-15.html" class="btn-nav">⬅️ الصفحة السابقة</a>
+            <a href="page-17.html" class="btn-nav btn-next">الصفحة التالية: ميزات إضافية ➡️</a>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>الصفحة 12 - المحافظ المالية</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <script src="pdf-export.js"></script>
+</head>
+<body>
+    <div class="container">
+        <div class="navigation-header">
+            <a href="index.html" class="btn-home">🏠 الفهرس الرئيسي</a>
+            <span class="page-number">صفحة 12 من 26</span>
+        </div>
+
+        <!-- أزرار تصدير PDF -->
+        <div class="pdf-buttons">
+            <button onclick="exportCurrentPageToPDF()" class="btn-pdf btn-pdf-single">
+                📄 تصدير هذه الصفحة PDF
+            </button>
+        </div>
+
+
+        <div class="content">
+            <h2>🟧 3. نظام المحفظة للمشتري (Customer Wallet)</h2>
+            <h3>3.1 مقدمة</h3>
+            <p>محفظة العميل هي رصيد مالي موجود داخل حساب المستخدم، يمكن استخدامه لسداد قيمة الطلبات.</p>
+            
+            <div class="info-box">
+                <strong>موجود بشكل مشابه في:</strong>
+                <ul>
+                    <li>Amazon Pay Balance</li>
+                    <li>Noon Wallet</li>
+                    <li>JumiaPay</li>
+                    <li>Talabat Wallet</li>
+                </ul>
+            </div>
+
+            <h3>3.2 مصادر رصيد المحفظة</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>المصدر</th>
+                        <th>مثال</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Refund مبلغ المرتجع</td>
+                        <td>عند إرجاع منتج</td>
+                    </tr>
+                    <tr>
+                        <td>Cashback / نقاط</td>
+                        <td>يتم تحويلها لمحفظة</td>
+                    </tr>
+                    <tr>
+                        <td>Promo Credits</td>
+                        <td>كوبونات تتضاف للمحفظة</td>
+                    </tr>
+                    <tr>
+                        <td>هدايا (Gift Balance)</td>
+                        <td>من المنصة</td>
+                    </tr>
+                    <tr>
+                        <td>إيداع يدوي</td>
+                        <td>عبر وسائل الدفع</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>3.3 استخدام المحفظة</h3>
+            <ul>
+                <li>دفع كامل قيمة الطلب</li>
+                <li>دفع جزء من الطلب (Split Payment)</li>
+                <li>شراء قسائم</li>
+                <li>استخدام في الشحن</li>
+            </ul>
+
+            <h3>3.4 قواعد العمل</h3>
+            <ul>
+                <li>رصيد المحفظة لا يمكن سحبه نقدًا (على حسب سياسة المنصة)</li>
+                <li>رصيد الاسترجاع يدخل المحفظة فور معالجة المرتجع</li>
+                <li>كل عملية محفظة يتم تسجيلها في Ledger محاسبي</li>
+                <li>لا يمكن نقل الرصيد بين العملاء</li>
+            </ul>
+
+            <hr>
+
+            <h2>🟫 4. نظام المحفظة للبائع (Seller Wallet)</h2>
+            <h3>4.1 مقدمة</h3>
+            <p>محفظة البائع تمثل الحساب المالي للبائع داخل المنصة.</p>
+
+            <h3>4.2 ما الذي يدخل محفظة البائع؟</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>بند</th>
+                        <th>شرح</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>صافي أرباح الطلبات</td>
+                        <td>بعد خصم العمولة</td>
+                    </tr>
+                    <tr>
+                        <td>تعويضات المنصة</td>
+                        <td>عند حدوث أخطاء</td>
+                    </tr>
+                    <tr>
+                        <td>Bonus من الحملات</td>
+                        <td>Co-Funded Campaigns</td>
+                    </tr>
+                    <tr>
+                        <td>رصيد الإعلانات المتبقي</td>
+                        <td>من Sponsored Ads</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>4.3 ما الذي يخرج من المحفظة؟</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>بند</th>
+                        <th>شرح</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>عمولة المنصة</td>
+                        <td>Fees & Commission</td>
+                    </tr>
+                    <tr>
+                        <td>رسوم الشحن</td>
+                        <td>Fulfillment</td>
+                    </tr>
+                    <tr>
+                        <td>رسوم الحملات</td>
+                        <td>Participation Fees</td>
+                    </tr>
+                    <tr>
+                        <td>تكلفة الإعلانات</td>
+                        <td>Sponsored Ads</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>4.4 التحويل البنكي (Withdrawals)</h3>
+            <ul>
+                <li>البائع يستطيع سحب رصيده أسبوعيًا أو شهريًا</li>
+                <li>بعد خصم كل الرسوم</li>
+                <li>التحويل يتم عبر Bank Transfer أو STC Pay أو Wallets</li>
+                <li>كل عملية تحويل لها Invoice + Statement</li>
+            </ul>
+
+            <hr>
+
+            <h2>🟩 5. خزنة المنصة (Platform Treasury)</h2>
+            <p>أكبر عنصر محاسبي في النظام المالي كله.</p>
+
+            <h3>5.1 وظائف الخزنة</h3>
+            <p>الخزنة تتحكم في:</p>
+            <ul>
+                <li>كل العمليات المالية</li>
+                <li>كل المحافظ</li>
+                <li>كل الإضافات والخصومات</li>
+                <li>أرصدة المنصة والبائعين والعملاء</li>
+                <li>رسوم العمولة</li>
+                <li>المدفوعات الصادرة والواردة</li>
+            </ul>
+
+            <h3>5.2 أنواع الحسابات في الخزنة</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>الحساب</th>
+                        <th>النوع</th>
+                        <th>الاستخدام</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Customer Wallet</td>
+                        <td>Liability</td>
+                        <td>أموال مستحقة للعميل</td>
+                    </tr>
+                    <tr>
+                        <td>Seller Wallet</td>
+                        <td>Liability</td>
+                        <td>أموال مستحقة للبائع</td>
+                    </tr>
+                    <tr>
+                        <td>Marketplace Commission</td>
+                        <td>Revenue</td>
+                        <td>دخل المنصة</td>
+                    </tr>
+                    <tr>
+                        <td>Refund Account</td>
+                        <td>Liability</td>
+                        <td>مبالغ في انتظار الإرجاع</td>
+                    </tr>
+                    <tr>
+                        <td>Platform Treasury</td>
+                        <td>Asset</td>
+                        <td>إجمالي أموال المنصة</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="navigation-footer">
+            <a href="page-11.html" class="btn-nav">⬅️ الصفحة السابقة</a>
+            <a href="page-13.html" class="btn-nav btn-next">الصفحة التالية: سيناريوهات عملية ➡️</a>
+        </div>
+    </div>
+</body>
+</html>

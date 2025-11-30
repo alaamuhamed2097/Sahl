@@ -204,14 +204,14 @@ namespace Api.Controllers.Catalog
         /// </summary>
         [HttpPost("delete")]
         [Authorize(Roles = nameof(UserRole.Admin))]
-        public IActionResult Delete([FromBody] Guid id)
+        public async Task<IActionResult> Delete([FromBody] Guid id)
         {
             try
             {
                 if (id == Guid.Empty)
                     return BadRequest(CreateErrorResponse(NotifiAndAlertsResources.InvalidInputAlert));
 
-                var success = _itemService.Delete(id, GuidUserId);
+                var success = await _itemService.DeleteAsync(id, GuidUserId);
                 if (!success)
                     return BadRequest(CreateErrorResponse(NotifiAndAlertsResources.DeleteFailed));
 

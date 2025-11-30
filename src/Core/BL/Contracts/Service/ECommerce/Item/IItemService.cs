@@ -1,6 +1,6 @@
 ﻿using BL.Contracts.Service.Base;
 using DAL.Models;
-using Domains.Entities.Item;
+using Domains.Entities.Catalog.Item;
 using Shared.DTOs.ECommerce.Item;
 using Shared.GeneralModels.SearchCriteriaModels;
 
@@ -8,7 +8,7 @@ namespace BL.Contracts.Service.ECommerce.Item
 {
     public interface IItemService : IBaseService<TbItem, ItemDto>
     {
-        PaginatedDataModel<VwItemDto> GetPage(ItemSearchCriteriaModel criteriaModel);
+        Task<PaginatedDataModel<VwItemDto>> GetPage(ItemSearchCriteriaModel criteriaModel);
         new Task<bool> Save(ItemDto dto, Guid userId);
 
         // Add new currency conversion methods with optional conversion

@@ -1,0 +1,135 @@
+﻿@page "/users/customer/create"
+
+@using Common.Enumerations.User
+@using Common.Enumerations.VendorType
+@attribute [Authorize(Roles = nameof(UserRole.Admin))]
+
+<PageTitle>@ECommerceResources.Vendor</PageTitle>
+
+<div class="container-fluid p-0">
+    <div class="card shadow-sm border-0">
+        <div class="card-header d-flex bg-primary  justify-content-between align-items-center">
+            <h4 class="modal-title text-white">
+                <i class="bi bi-plus-circle fs-3 text-white"></i>
+                ➕ @ActionsResources.Add @ECommerceResources.Vendor
+            </h4>
+        </div>
+    @*     <EditForm Model="@Model" OnValidSubmit="Save">
+            <DataAnnotationsValidator />
+
+            <div class="card-body p-4">
+                <div class="row g-3">
+                    <!-- Personal Information -->
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>@ECommerceResources.CompanyName</label>
+                            <InputText type="text" placeholder="@($"{FormResources.Write} {ECommerceResources.CompanyName}")"
+                                       class="form-control" @bind-Value="Model.CompanyName" />
+                            <ValidationMessage For="@(() => Model.CompanyName)" />
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>@ECommerceResources.ContactName</label>
+                            <InputText type="text" placeholder="@($"{FormResources.Write} {ECommerceResources.ContactName}")"
+                                       class="form-control" @bind-Value="Model.ContactName" />
+                            <ValidationMessage For="@(() => Model.ContactName)" />
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Account Information -->
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>@ECommerceResources.Address</label>
+                            <InputText type="text" placeholder="@($"{ECommerceResources.Address}")"
+                                       class="form-control" @bind-Value="Model.Address" />
+                            <ValidationMessage For="@(() => Model.Address)" />
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>@ECommerceResources.PostalCode</label>
+                            <InputText type="text" placeholder="@($"{FormResources.Write} {ECommerceResources.PostalCode}")"
+                                       class="form-control" @bind-Value="Model.PostalCode" />
+                            <ValidationMessage For="@(() => Model.PostalCode)" />
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Security Information -->
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>@ECommerceResources.TaxNumber</label>
+                            <InputText type="text" placeholder="@($"{FormResources.Write} {ECommerceResources.TaxNumber}")"
+                                       class="form-control" @bind-Value="Model.TaxNumber" />
+                            <ValidationMessage For="@(() => Model.TaxNumber)" />
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>@ECommerceResources.VendorType</label>
+
+                            <InputSelect @bind-Value="Model.VendorType" class="form-control">
+                                @foreach (var item in Enum.GetValues(typeof(VendorType)))
+                                {
+                                    <option value="@item">@item</option>
+                                }
+                            </InputSelect>
+
+                            <ValidationMessage For="@(() => Model.VendorType)" />
+                        </div>
+                    </div>
+
+                    @* <div class="col-md-6">
+                        <div class="form-group">
+                            <label>@ECommerceResources.TaxNumber</label>
+                            <InputText type="text" placeholder="@($"{FormResources.Write} {ECommerceResources.TaxNumber}")"
+                                       class="form-control" @bind-Value="Model.VendorType" />
+                            <ValidationMessage For="@(() => Model.TaxNumber)" />
+                        </div>
+                    </div> *@
+                    @* <div class="col-md-6">
+                        <div class="form-group">
+                            <label>@ECommerceResources.VATRegistered</label>
+                            <InputText type="text" placeholder="@($"{FormResources.Write} {ECommerceResources.VATRegistered}")"
+                                       class="form-control" @bind-Value="Model.VATRegistered" />
+                            <ValidationMessage For="@(() => Model.PasswordConfirmation)" />
+                        </div>
+                    </div> *@
+        @*<div class="col-md-6">
+                        <div class="form-group form-check mt-4">
+                            <InputCheckbox @bind-Value="Model.VATRegistered" class="form-check-input" />
+                            <label class="form-check-label">@ECommerceResources.VATRegistered</label>
+
+                            <ValidationMessage For="@(() => Model.VATRegistered)" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-footer bg-light  py-3 d-flex justify-content-end gap-2">
+                <button type="button" class="btn btn-responsive btn-secondary px-4" data-dismiss="modal" @onclick="CloseModal">
+                    <i class="feather icon-x-circle me-2 ms-2"></i>   @ActionsResources.Cancel
+                </button>
+                <button type="submit" class="btn btn-primary btn-responsive text-white px-4" disabled="@isSaving">
+                    @if (isSaving)
+                    {
+                        <span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
+                        <span class="sr-only">@GeneralResources.Loading ...</span>
+                    }
+                    else
+                    {
+                        <span>
+                            <i class="feather icon-save me-1 ms-2"></i>
+                            @ActionsResources.Save
+                        </span>
+                    }
+                </button>
+            </div>
+        </EditForm>
+    *@
+    </div> 
+</div>

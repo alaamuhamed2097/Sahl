@@ -7,6 +7,7 @@ namespace Domains.Identity
     {
         public string FirstName { get; set; } = null!;
         public string LastName { get; set; } = null!;
+        public string FullName => $"{FirstName} {LastName}";
         public string ProfileImagePath { get; set; } = null!;
         public string PhoneCode { get; set; } = null!;
 

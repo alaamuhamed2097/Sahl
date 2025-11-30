@@ -2,7 +2,29 @@
   <Folder Name="/api-specs/">
     <File Path="api-specs/README.md" />
   </Folder>
-  <Folder Name="/business/" />
+  <Folder Name="/docs/">
+    <File Path="docs/BasitBusinessERD.drawio" />
+    <File Path="docs/BasitBusinessDetailed.html" />
+<File Path="docs/BusinessDetailed.html" />
+    <File Path="docs/COMPLETE_FINAL_REPORT.md" />
+    <File Path="docs/Excel-Dropdown-Fix.md" />
+    <File Path="docs/Excel-Import-Complete-Solution.md" />
+    <File Path="docs/Excel-Import-Final-Summary.md" />
+    <File Path="docs/Excel-Import-Guide.md" />
+    <File Path="docs/Excel-Import-Updates.md" />
+    <File Path="docs/Excel-JavaScript-Solution.md" />
+    <File Path="docs/FINAL_COMPLETION_REPORT.md" />
+    <File Path="docs/FINAL_SUMMARY.md" />
+    <File Path="docs/Import-Page-Resources.md" />
+    <File Path="docs/ORDER_BY_FINAL_REPORT.md" />
+    <File Path="docs/README_SORTING.md" />
+    <File Path="docs/REMAINING_TASKS_AR.md" />
+    <File Path="docs/Required-Resources-Excel-Import.md" />
+    <File Path="docs/SORTING_FEATURE_GUIDE.md" />
+    <File Path="docs/SORTING_IMPLEMENTATION_REPORT_AR.md" />
+    <File Path="docs/SORTING_QUICK_GUIDE_AR.md" />
+    <File Path="docs/SUMMARY.md" />
+ </Folder>
   <Folder Name="/scripts/" />
   <Folder Name="/Solution Items/">
     <File Path="global.json" />

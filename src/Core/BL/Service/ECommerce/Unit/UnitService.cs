@@ -3,11 +3,12 @@ using BL.Contracts.Service.ECommerce.Unit;
 using BL.Service.Base;
 using DAL.Contracts.UnitOfWork;
 using DAL.Models;
-using Domains.Entities.Unit;
+using Domains.Entities.Catalog.Unit;
 using Domains.Views.Unit;
 using Resources;
 using Shared.DTOs.ECommerce.Unit;
 using Shared.GeneralModels.SearchCriteriaModels;
+using DAL.ResultModels;
 using System.Linq.Expressions;
 
 namespace BL.Service.ECommerce.Unit
@@ -24,7 +25,7 @@ namespace BL.Service.ECommerce.Unit
             _unitRepository = unitRepository;
         }
 
-        public PaginatedDataModel<UnitDto> GetPage(BaseSearchCriteriaModel criteriaModel)
+        public async Task<PaginatedDataModel<UnitDto>> GetPageAsync(BaseSearchCriteriaModel criteriaModel)
         {
             if (criteriaModel == null)
                 throw new ArgumentNullException(nameof(criteriaModel));
@@ -67,7 +68,7 @@ namespace BL.Service.ECommerce.Unit
                 };
             }
 
-            var entitiesList = _unitRepository.Repository<VwUnitWithConversionsUnits>().GetPage(
+            var entitiesList = await _unitRepository.Repository<VwUnitWithConversionsUnits>().GetPageAsync(
                 criteriaModel.PageNumber,
                 criteriaModel.PageSize,
                 filter,
@@ -77,95 +78,92 @@ namespace BL.Service.ECommerce.Unit
 
             return new PaginatedDataModel<UnitDto>(units, entitiesList.TotalRecords);
         }
-        public override UnitDto FindById(Guid Id)
+
+        // Async implementations
+        public override async Task<UnitDto> FindByIdAsync(Guid Id)
         {
             Expression<Func<VwUnitWithConversionsUnits, bool>> filter = x => x.Id == Id;
-            var vwUnitWithConversionsUnits = _unitRepository.Repository<VwUnitWithConversionsUnits>().Find(filter);
+            var vwUnitWithConversionsUnits = await _unitRepository.Repository<VwUnitWithConversionsUnits>().FindAsync(filter);
 
             if (vwUnitWithConversionsUnits == null)
                 throw new Exception(string.Format(ValidationResources.EntityNotFound, ECommerceResources.Unit));
 
             return _mapper.MapModel<VwUnitWithConversionsUnits, UnitDto>(vwUnitWithConversionsUnits);
         }
-        public override bool Save(UnitDto dto, Guid userId)
+
+        public override async Task<SaveResult> SaveAsync(UnitDto dto, Guid userId)
         {
             try
             {
-                // Validate input
                 if (dto == null) throw new ArgumentNullException(nameof(dto));
                 if (userId == Guid.Empty) throw new ArgumentException(UserResources.UserNotFound, nameof(userId));
 
-                // Map and create main attribute entity
                 var entity = _mapper.MapModel<UnitDto, TbUnit>(dto);
 
-                // Begin transaction
-                _unitRepository.BeginTransactionAsync();
+                await _unitRepository.BeginTransactionAsync();
 
-                // delete old conversion Units if any
-                if (dto.Id != Guid.Empty &&
-                    dto.ConversionUnitsFrom.Any() || dto.ConversionUnitsFrom != null ||
-                    dto.ConversionUnitsTo.Any() || dto.ConversionUnitsTo != null)
+                if (dto.Id != Guid.Empty && ((dto.ConversionUnitsFrom != null && dto.ConversionUnitsFrom.Any()) || (dto.ConversionUnitsTo != null && dto.ConversionUnitsTo.Any())))
                 {
-                    var conversionUnits = _unitRepository.TableRepository<TbUnitConversion>().Get(c => c.ToUnitId == dto.Id || c.FromUnitId == dto.Id);
+                    var conversionUnits = await _unitRepository.TableRepository<TbUnitConversion>().GetAsync(c => c.ToUnitId == dto.Id || c.FromUnitId == dto.Id);
                     foreach (var conversionUnit in conversionUnits)
                     {
-                        _unitRepository.TableRepository<TbUnitConversion>().UpdateCurrentState(conversionUnit.Id, userId, 0);
+                        await _unitRepository.TableRepository<TbUnitConversion>().UpdateCurrentStateAsync(conversionUnit.Id, userId, 0);
                     }
                 }
-                // Save main unit
-                _unitRepository.TableRepository<TbUnit>().Save(entity, userId, out Guid unitId);
 
-                // Save conversion Units From if any
-                foreach (var conversionUnitFromDto in dto.ConversionUnitsFrom ?? new())
+                var saveResult = await _unitRepository.TableRepository<TbUnit>().SaveAsync(entity, userId);
+
+                // Save conversion Units From
+                foreach (var conversionUnitFromDto in dto.ConversionUnitsFrom ?? new List<ConversionUnitDto>())
                 {
-
                     var conversionUnitFrom = _mapper.MapModel<UnitConversionDto, TbUnitConversion>(new UnitConversionDto()
                     {
                         FromUnitId = conversionUnitFromDto.ConversionUnitId,
                         ConversionFactor = (decimal)conversionUnitFromDto.ConversionFactor
                     });
-                    conversionUnitFrom.ToUnitId = unitId;
-                    _unitRepository.TableRepository<TbUnitConversion>().Create(conversionUnitFrom, userId, out _);
+                    conversionUnitFrom.ToUnitId = saveResult.Id;
+                    await _unitRepository.TableRepository<TbUnitConversion>().CreateAsync(conversionUnitFrom, userId);
                 }
-                // Save conversion Units To if any
-                foreach (var conversionUnitToDto in dto.ConversionUnitsTo ?? new())
-                {
 
+                // Save conversion Units To
+                foreach (var conversionUnitToDto in dto.ConversionUnitsTo ?? new List<ConversionUnitDto>())
+                {
                     var conversionUnitTo = _mapper.MapModel<UnitConversionDto, TbUnitConversion>(new UnitConversionDto()
                     {
                         ToUnitId = conversionUnitToDto.ConversionUnitId,
                         ConversionFactor = (decimal)conversionUnitToDto.ConversionFactor
                     });
-                    conversionUnitTo.FromUnitId = unitId;
-                    _unitRepository.TableRepository<TbUnitConversion>().Create(conversionUnitTo, userId, out _);
+                    conversionUnitTo.FromUnitId = saveResult.Id;
+                    await _unitRepository.TableRepository<TbUnitConversion>().CreateAsync(conversionUnitTo, userId);
                 }
 
-                // Commit transaction
-                _unitRepository.CommitAsync();
-                return true;
+                await _unitRepository.CommitAsync();
+                return saveResult;
             }
             catch (Exception ex)
             {
-                // Rollback on error
                 _unitRepository.Rollback();
                 throw new Exception(string.Format(ValidationResources.SaveEntityError, ECommerceResources.Unit), ex);
             }
         }
-        public override bool Delete(Guid id, Guid userId)
+
+        public override async Task<bool> DeleteAsync(Guid id, Guid userId)
         {
             try
             {
-                _unitRepository.BeginTransactionAsync();
-                _unitRepository.TableRepository<TbUnit>().UpdateCurrentState(id, userId);
-                var conversionUnits = _unitRepository.TableRepository<TbUnitConversion>().Get(c => c.ToUnitId == id || c.FromUnitId == id);
-                if (conversionUnits?.Count() > 0)
+                await _unitRepository.BeginTransactionAsync();
+                await _unitRepository.TableRepository<TbUnit>().UpdateCurrentStateAsync(id, userId);
+
+                var conversionUnits = await _unitRepository.TableRepository<TbUnitConversion>().GetAsync(c => c.ToUnitId == id || c.FromUnitId == id);
+                if (conversionUnits?.Any() == true)
                 {
                     foreach (var conversionUnit in conversionUnits)
                     {
-                        _unitRepository.TableRepository<TbUnitConversion>().UpdateCurrentState(conversionUnit.Id, userId, 0);
+                        await _unitRepository.TableRepository<TbUnitConversion>().UpdateCurrentStateAsync(conversionUnit.Id, userId, 0);
                     }
                 }
-                _unitRepository.CommitAsync();
+
+                await _unitRepository.CommitAsync();
                 return true;
             }
             catch (Exception ex)
