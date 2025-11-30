@@ -21,6 +21,9 @@ namespace Domains.Entities.Offer
 		[Column(TypeName = "decimal(18,2)")]
 		public decimal SalesPrice { get; set; }
 
+		[Column(TypeName = "decimal(18,2)")]
+		public decimal? CostPrice { get; set; }
+
 		public int AvailableQuantity { get; set; }
 
 		public int ReservedQuantity { get; set; }
@@ -36,6 +39,21 @@ namespace Domains.Entities.Offer
 		public int LockedQuantity { get; set; }
 
 		public int StockStatus { get; set; }
+
+		// Stock Management
+		public int MinOrderQuantity { get; set; } = 1;
+		public int MaxOrderQuantity { get; set; } = 999;
+		public int LowStockThreshold { get; set; } = 5;
+
+		// Seller specific SKU
+		[StringLength(100)]
+		public string? SellerSKU { get; set; }
+
+		public bool IsActive { get; set; } = true;
+
+		// Timestamps
+		public DateTime? LastPriceUpdate { get; set; }
+		public DateTime? LastStockUpdate { get; set; }
 
 		[ForeignKey("ItemCombinationId")]
 		public virtual TbItemCombination ItemCombination { get; set; }

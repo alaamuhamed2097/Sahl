@@ -127,6 +127,7 @@ namespace DAL.ApplicationContext
         public DbSet<TbSalesReview> TbSalesReviews { get; set; }
         public DbSet<TbDeliveryReview> TbDeliveryReviews { get; set; }
         public DbSet<TbReviewVote> TbReviewVotes { get; set; }
+        public DbSet<TbReviewReport> TbReviewReports { get; set; }
 
         // Warehouse Management
         public DbSet<TbWarehouse> TbWarehouses { get; set; }

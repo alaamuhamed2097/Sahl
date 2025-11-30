@@ -27,21 +27,9 @@ namespace DAL.Configurations
                 .IsRequired()
                 .HasColumnType("nvarchar(max)");
 
-            entity.Property(e => e.Images)
-                .HasColumnType("nvarchar(max)");
-
-            entity.Property(e => e.Videos)
-                .HasColumnType("nvarchar(max)");
-
             entity.Property(e => e.Status)
                 .IsRequired()
-                .HasMaxLength(50);
-
-            entity.Property(e => e.ModerationNotes)
-                .HasColumnType("nvarchar(max)");
-
-            entity.Property(e => e.VendorResponse)
-                .HasColumnType("nvarchar(max)");
+                .HasConversion<int>();
 
             entity.Property(e => e.IsVerifiedPurchase)
                 .HasDefaultValue(false);
@@ -51,15 +39,6 @@ namespace DAL.Configurations
 
             entity.Property(e => e.NotHelpfulCount)
                 .HasDefaultValue(0);
-
-            entity.Property(e => e.ReviewDate)
-                .HasColumnType("datetime2(2)");
-
-            entity.Property(e => e.ApprovedDate)
-                .HasColumnType("datetime2(2)");
-
-            entity.Property(e => e.VendorResponseDate)
-                .HasColumnType("datetime2(2)");
 
             entity.Property(e => e.CurrentState)
                 .HasDefaultValue(1);
@@ -80,13 +59,17 @@ namespace DAL.Configurations
             entity.HasIndex(e => e.Rating);
             entity.HasIndex(e => e.IsVerifiedPurchase);
             entity.HasIndex(e => e.ReviewNumber).IsUnique();
-            entity.HasIndex(e => e.ReviewDate);
             entity.HasIndex(e => new { e.ProductID, e.CustomerID });
 
             // Relationships
             entity.HasMany(e => e.ReviewVotes)
                 .WithOne(v => v.Review)
                 .HasForeignKey(v => v.ReviewID)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasMany(e => e.ReviewReports)
+                .WithOne(r => r.Review)
+                .HasForeignKey(r => r.ReviewID)
                 .OnDelete(DeleteBehavior.Cascade);
         }
     }

@@ -21,6 +21,7 @@ namespace BL.Mapper
             CreateMap<TbSalesReview, SalesReviewDto>().ReverseMap();
             CreateMap<TbDeliveryReview, DeliveryReviewDto>().ReverseMap();
             CreateMap<TbReviewVote, ReviewVoteDto>().ReverseMap();
+            CreateMap<TbReviewReport, ReviewReportDto>().ReverseMap();
         }
     }
 }
