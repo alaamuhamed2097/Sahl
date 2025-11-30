@@ -1,4 +1,3 @@
-using Dashboard.Constants;
 using Dashboard.Contracts.Brand;
 using Microsoft.AspNetCore.Components;
 using Resources;
@@ -15,7 +14,7 @@ namespace Dashboard.Pages.Catalog.Brands
         protected override string EntityName => BrandResources.BrandManagement;
         protected override string AddRoute => $"/brand";
         protected override string EditRouteTemplate => "/brand/{id}";
-        protected override string SearchEndpoint => ApiEndpoints.Brand.Search;
+        protected override string SearchEndpoint => "api/Brand/search";
 
         // Export columns configuration
         protected override Dictionary<string, Func<BrandDto, object>> ExportColumns => new()
