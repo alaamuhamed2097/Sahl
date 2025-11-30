@@ -8,7 +8,8 @@ namespace DAL.Configurations
     {
         public void Configure(EntityTypeBuilder<TbNotificationPreferences> builder)
         {
-            builder.ToTable("NotificationPreferences");
+            // Use the same table name used by existing migrations/snapshot
+            builder.ToTable("TbNotificationPreferences");
 
             builder.HasKey(x => x.Id);
 
@@ -17,7 +18,8 @@ namespace DAL.Configurations
 
             builder.Property(x => x.UserId)
                 .IsRequired()
-                .HasColumnType("uniqueidentifier");
+                // ApplicationUser uses string Id (nvarchar(450))
+                .HasColumnType("nvarchar(450)");
 
             builder.Property(x => x.UserType)
                 .IsRequired();
@@ -47,11 +49,11 @@ namespace DAL.Configurations
             builder.Property(x => x.CurrentState)
                 .HasDefaultValue(1);
 
-            // Relationships: configure FK to ApplicationUser (Guid)
+            // Relationships: configure FK to ApplicationUser (string id)
             builder.HasOne(x => x.User)
                 .WithMany()
                 .HasForeignKey(x => x.UserId)
-                .OnDelete(DeleteBehavior.NoAction)
+                .OnDelete(DeleteBehavior.Cascade)
                 .IsRequired();
 
             // Indexes
