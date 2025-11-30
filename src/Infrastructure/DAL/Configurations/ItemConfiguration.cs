@@ -43,13 +43,6 @@ namespace DAL.Configurations
         .IsRequired()
      .HasMaxLength(200);
 
-            // Price and Quantity removed - handled by combinations only
-
-            entity.Property(e => e.IsNewArrival)
-         .HasDefaultValue(false);
-
-            // Indexes
-            entity.HasIndex(e => e.IsNewArrival).IsUnique(false);
             entity.HasIndex(e => e.CategoryId).IsUnique(false);
             entity.HasIndex(e => e.UnitId).IsUnique(false);
             entity.HasIndex(e => e.BrandId).IsUnique(false);

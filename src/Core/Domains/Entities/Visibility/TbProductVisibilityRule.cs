@@ -14,19 +14,11 @@ namespace Domains.Entities.Visibility
         [Required]
         public ProductVisibilityStatus VisibilityStatus { get; set; }
 
-        public bool IsVisible { get; set; } = true;
-
         public bool HasActiveOffers { get; set; }
 
         public bool HasStock { get; set; }
 
         public bool IsApproved { get; set; }
-
-        public bool HasValidCategory { get; set; }
-
-        public bool AllSellersActive { get; set; }
-
-        public DateTime? LastCheckedAt { get; set; }
 
         public DateTime? SuppressedAt { get; set; }
 

@@ -35,13 +35,13 @@ namespace Domains.Entities.Catalog.Item
         [Required]
         public Guid CategoryId { get; set; }
 
-        public Guid? UnitId { get; set; }
+        public Guid UnitId { get; set; }
 
         public Guid? VideoProviderId { get; set; }
         public Guid? ByBoxOfferId { get; set; }
 
         [StringLength(200)]
-        public string VideoUrl { get; set; }
+        public string? VideoUrl { get; set; }
 
         [StringLength(200)]
         public string ThumbnailImage { get; set; } = null!;
@@ -52,9 +52,7 @@ namespace Domains.Entities.Catalog.Item
         [Column(TypeName = "decimal(18,2)")]
         public decimal? MaximumPrice { get; set; }
 
-        public bool IsNewArrival { get; set; }
-
-        public Guid? BrandId { get; set; }
+        public Guid BrandId { get; set; }
 
         public int VisibilityScope { get; set; }
 

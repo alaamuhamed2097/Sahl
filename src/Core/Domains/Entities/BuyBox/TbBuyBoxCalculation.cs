@@ -9,49 +9,80 @@ namespace Domains.Entities.BuyBox
     public class TbBuyBoxCalculation : BaseEntity
     {
         [Required]
-        [ForeignKey("Item")]
         public Guid ItemId { get; set; }
 
+        /// <summary>
+        /// CRITICAL: BuyBox is calculated per combination, not just item
+        /// </summary>
         [Required]
-        [ForeignKey("WinningOffer")]
+        public Guid ItemCombinationId { get; set; }
+
+        /// <summary>
+        /// The winning offer for this specific combination
+        /// </summary>
+        [Required]
         public Guid WinningOfferId { get; set; }
 
-        [Required]
+        /// <summary>
+        /// Backwards-compatible individual score components (0-100 scaled using decimal(5,2))
+        /// These fields are kept for existing configuration & indexes.
+        /// </summary>
         [Column(TypeName = "decimal(5,2)")]
         public decimal PriceScore { get; set; }
 
-        [Required]
         [Column(TypeName = "decimal(5,2)")]
         public decimal SellerRatingScore { get; set; }
 
-        [Required]
         [Column(TypeName = "decimal(5,2)")]
         public decimal ShippingSpeedScore { get; set; }
 
-        [Required]
         [Column(TypeName = "decimal(5,2)")]
         public decimal FBMUsageScore { get; set; }
 
-        [Required]
         [Column(TypeName = "decimal(5,2)")]
         public decimal StockLevelScore { get; set; }
 
-        [Required]
         [Column(TypeName = "decimal(5,2)")]
         public decimal ReturnRateScore { get; set; }
 
-        [Required]
+        /// <summary>
+        /// Backwards-compatible total score (0-100)
+        /// </summary>
         [Column(TypeName = "decimal(5,2)")]
         public decimal TotalScore { get; set; }
 
+        /// <summary>
+        /// New unified score with higher precision
+        /// </summary>
+        [Column(TypeName = "decimal(18,4)")]
+        public decimal Score { get; set; }
+
+        /// <summary>
+        /// When this calculation was performed
+        /// </summary>
         public DateTime CalculatedAt { get; set; }
 
+        /// <summary>
+        /// How long this BuyBox is valid (cache duration)
+        /// </summary>
         public DateTime? ExpiresAt { get; set; }
 
         [StringLength(1000)]
         public string? CalculationDetails { get; set; }
 
+        /// <summary>
+        /// Breakdown of score components for transparency (JSON)
+        /// </summary>
+        public string? ScoreBreakdown { get; set; }
+
+        // Navigation Properties
+        [ForeignKey("ItemId")]
         public virtual TbItem Item { get; set; } = null!;
+
+        [ForeignKey("ItemCombinationId")]
+        public virtual Domains.Entities.Catalog.Item.ItemAttributes.TbItemCombination ItemCombination { get; set; } = null!;
+
+        [ForeignKey("WinningOfferId")]
         public virtual TbOffer WinningOffer { get; set; } = null!;
     }
 }

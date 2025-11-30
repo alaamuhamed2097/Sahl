@@ -15,15 +15,7 @@ namespace DAL.Configurations
 
             entity.Property(e => e.VoteType)
                 .IsRequired()
-                .HasMaxLength(50);
-
-            entity.Property(e => e.VoteValue)
-                .IsRequired()
-                .HasMaxLength(50);
-
-            entity.Property(e => e.WithType)
-                .IsRequired()
-                .HasMaxLength(50);
+                .HasConversion<int>();
 
             entity.Property(e => e.CurrentState)
                 .HasDefaultValue(1);
@@ -40,7 +32,6 @@ namespace DAL.Configurations
             entity.HasIndex(e => e.ReviewID);
             entity.HasIndex(e => e.CustomerID);
             entity.HasIndex(e => e.VoteType);
-            entity.HasIndex(e => e.VoteValue);
             entity.HasIndex(e => new { e.ReviewID, e.CustomerID, e.VoteType }).IsUnique();
 
             // Relationships are configured in ProductReviewConfiguration
