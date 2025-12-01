@@ -14,10 +14,5 @@ namespace Domains.Entities.Catalog.Item.ItemAttributes
 		// Navigation Properties
 		[ForeignKey("ItemCombinationId")]
 		public virtual TbItemCombination ItemCombination { get; set; }
-
-		// NOTE: The design keeps a minimal linking table.
-		// The actual attribute values are stored in TbCombinationAttributesValue which
-		// references this entity via CombinationAttributeId. Keeping this entity allows
-		// future extension (ordering, group metadata) without heavy schema changes.
 	}
 }

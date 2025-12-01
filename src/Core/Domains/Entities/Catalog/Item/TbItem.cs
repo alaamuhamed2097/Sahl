@@ -38,6 +38,7 @@ namespace Domains.Entities.Catalog.Item
         public Guid UnitId { get; set; }
 
         public Guid? VideoProviderId { get; set; }
+        public Guid? ByBoxOfferId { get; set; }
 
         [StringLength(200)]
         public string? VideoUrl { get; set; }
@@ -67,7 +68,5 @@ namespace Domains.Entities.Catalog.Item
 
         public virtual ICollection<TbItemImage> ItemImages { get; set; }
         public virtual ICollection<TbItemCombination> ItemCombinations { get; set; }
-        public virtual ICollection<TbItemAttribute> ItemAttributes { get; set; }
-        public virtual ICollection<TbItemAttributeCombinationPricing> ItemAttributeCombinationPricings { get; set; }
     }
 }

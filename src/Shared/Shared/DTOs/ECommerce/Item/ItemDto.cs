@@ -10,7 +10,7 @@ using System.Text.Json.Serialization;
 
 namespace Shared.DTOs.ECommerce.Item
 {
-    public class ItemDto : BaseSeoDto, ICurrencyConvertible
+    public class ItemDto : BaseSeoDto
     {
         [Required(ErrorMessageResourceName = "FieldRequired", ErrorMessageResourceType = typeof(ValidationResources))]
         [StringLength(100, MinimumLength = 2, ErrorMessageResourceName = "OutOfMaxLength", ErrorMessageResourceType = typeof(ValidationResources))]
@@ -90,47 +90,8 @@ namespace Shared.DTOs.ECommerce.Item
         [MinLength(1, ErrorMessageResourceName = "ImagesRequired", ErrorMessageResourceType = typeof(ValidationResources))]
         public List<ItemImageDto> Images { get; set; } = new();
 
-        public List<ItemAttributeDto> ItemAttributes { get; set; } = new();
-        public List<ItemAttributeCombinationPricingDto> ItemAttributeCombinationPricings { get; set; } = new();
+        //public List<ItemCombinationDto> ItemCombinationDto { get; set; } = new();
+        //public List<ItemAttributeCombinationPricingDto> ItemAttributeCombinationPricings { get; set; } = new();
 
-        /// <summary>
-        /// Get price from default combination or first combination
-        /// </summary>
-        public decimal GetPrice()
-        {
-            if (ItemAttributeCombinationPricings?.Any() == true)
-            {
-                var defaultCombination = ItemAttributeCombinationPricings.FirstOrDefault(c => c.IsDefault);
-                return defaultCombination?.Price ?? ItemAttributeCombinationPricings.First().Price;
-            }
-
-            return 0;
-        }
-
-        public string GetId() => Id.ToString();
-
-        public async Task ApplyCurrencyConversionAsync(CurrencyConversionDto conversion, string toCurrency)
-        {
-            // Convert attribute pricings if they exist
-            if (ItemAttributeCombinationPricings?.Any() == true)
-            {
-                foreach (var pricing in ItemAttributeCombinationPricings)
-                {
-                    // Apply conversion to both Price and SalesPrice
-                    pricing.Price *= conversion.ExchangeRate;
-                    pricing.SalesPrice *= conversion.ExchangeRate;
-                }
-            }
-
-            ExchangeRate = conversion.ExchangeRate;
-            OriginalPrice = conversion.Amount;
-            FormattedPrice = conversion.FormattedConvertedAmount;
-        }
-
-        public void SetCurrencyInfo(string currencyCode, CultureInfo culture)
-        {
-            CurrencyCode = currencyCode;
-            CurrencySymbol = culture.NumberFormat.CurrencySymbol;
-        }
     }
 }
