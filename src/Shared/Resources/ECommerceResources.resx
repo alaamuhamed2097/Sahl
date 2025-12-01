@@ -346,49 +346,19 @@
     <value>أنواع الحسابات </value>
   </data>
   <data name="StartBy" xml:space="preserve">
-    <value>يبدأ من </value>
-  </data>
-  <data name="MinLimitPVs" xml:space="preserve">
-    <value>الحد الأدنى لـ PVs   </value>
-  </data>
-  <data name="EquivalentDollars" xml:space="preserve">
-    <value>القيمة المكافئة بالدولار </value>
-  </data>
-  <data name="MaxLimitPVs" xml:space="preserve">
-    <value>الحد الأقصى لـ PVs  </value>
-  </data>
-  <data name="MaxEarnsWeek" xml:space="preserve">
-    <value>الحد الأقصى للأرباح/الأسبوع </value>
+    <value>يبدأ من</value>
   </data>
   <data name="ForEveryWeek" xml:space="preserve">
-    <value>لكل أسبوع </value>
+    <value>لكل أسبوع</value>
   </data>
   <data name="ActivatedAccounts" xml:space="preserve">
-    <value>الحسابات المفعلّة </value>
+    <value>الحسابات المفعلّة</value>
   </data>
   <data name="CommissionRate" xml:space="preserve">
     <value>نسبة العمولة </value>
   </data>
-  <data name="RightPVsAmount" xml:space="preserve">
-    <value>قيمة PVs اليمنى </value>
-  </data>
-  <data name="LeftPVsAmount" xml:space="preserve">
-    <value>قيمة PVs اليسرى </value>
-  </data>
   <data name="EnglishBenefit" xml:space="preserve">
-    <value>الفائدة بالإنجليزية </value>
-  </data>
-  <data name="ArabicBenefit" xml:space="preserve">
-    <value>الفائدة بالعربية </value>
-  </data>
-  <data name="StartingPVsValuePlaceHolder" xml:space="preserve">
-    <value>أدخل قيمة PVs الابتدائية</value>
-  </data>
-  <data name="PVValidationMessage" xml:space="preserve">
-    <value>يرجى إدخال قيم صحيحة لليسار، اليمين والدولار.</value>
-  </data>
-  <data name="BenefitValidationMessage" xml:space="preserve">
-    <value>يرجى إدخال نص الميزة باللغة العربية والإنجليزية.</value>
+    <value>الفائدة بالإنجليزية</value>
   </data>
   <data name="Ranks" xml:space="preserve">
     <value>الرتب</value>
@@ -399,15 +369,6 @@
   <data name="Bonus" xml:space="preserve">
     <value>المكافأة</value>
   </data>
-  <data name="Level1PercentageCommission" xml:space="preserve">
-    <value>نسبة العمولة للمستوى الأول</value>
-  </data>
-  <data name="Level2PercentageCommission" xml:space="preserve">
-    <value>نسبة العمولة للمستوى الثاني</value>
-  </data>
-  <data name="Level3PercentageCommission" xml:space="preserve">
-    <value>نسبة العمولة للمستوى الثالث</value>
-  </data>
   <data name="BonusPerMonth" xml:space="preserve">
     <value>المكافأة / الشهر</value>
   </data>
@@ -415,7 +376,7 @@
     <value>كلمة المرور غير صالحة.</value>
   </data>
   <data name="IsMainCategory" xml:space="preserve">
-    <value> ضمن القائمة الرئيسية</value>
+    <value>ضمن القائمة الرئيسية</value>
   </data>
   <data name="IsFeaturedCategory" xml:space="preserve">
     <value>ضمن التصنيف المميز</value>
@@ -597,8 +558,8 @@
   <data name="AdvertiserProfile" xml:space="preserve">
     <value>ملف المعلن</value>
   </data>
-  <data name="PriceRequired" xml:space="preserve">
-    <value>السعر مطلوب</value>
+  <data name="PricingSystemRequired" xml:space="preserve">
+    <value>نظام التسعير مطلوب</value>
   </data>
   <data name="PricePlaceHolder" xml:space="preserve">
     <value>أدخل سعر المنتج</value>
@@ -842,5 +803,14 @@
   </data>
   <data name="VendorType" xml:space="preserve">
     <value>نوع البائع</value>
+  </data>
+  <data name="PricingSystem" xml:space="preserve">
+    <value>نظام التسعير</value>
+  </data>
+  <data name="PriceRequired" xml:space="preserve">
+    <value>السعر مطلوب</value>
+  </data>
+  <data name="SalesPrice" xml:space="preserve">
+    <value>سعر البيع</value>
   </data>
 </root>

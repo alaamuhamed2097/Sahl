@@ -24,6 +24,7 @@ namespace BL.Mapper
             ConfigureReviewMappings();
             ConfigureWarehouseAndInventoryMappings();
             ConfigureContentAndNotificationChannelMappings();
+            ConfigurePricingMappings();
 		}
     }
 }

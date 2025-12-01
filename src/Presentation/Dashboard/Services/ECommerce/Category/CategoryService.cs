@@ -28,6 +28,7 @@ namespace Dashboard.Services.ECommerce.Category
             catch (Exception ex)
             {
                 // Log error here
+                Console.WriteLine($"GetAllAsync Error: {ex}");
                 return new ResponseModel<IEnumerable<CategoryDto>>
                 {
                     Success = false,
@@ -48,6 +49,7 @@ namespace Dashboard.Services.ECommerce.Category
             catch (Exception ex)
             {
                 // Log error here
+                Console.WriteLine($"GetByIdAsync Error: {ex}");
                 return new ResponseModel<CategoryDto>
                 {
                     Success = false,
@@ -66,11 +68,34 @@ namespace Dashboard.Services.ECommerce.Category
             try
             {
                 var response = await _apiService.PostAsync<CategoryDto, bool>($"{ApiEndpoints.Category.Save}", category);
+
+                // Log response for easier debugging when save fails
+                if (response == null)
+                {
+                    Console.WriteLine("SaveAsync: null response received from API.");
+                    return new ResponseModel<bool> { Success = false, Message = "No response from server" };
+                }
+
+                if (!response.Success)
+                {
+                    // Print detailed response to console to help debug
+                    Console.WriteLine($"SaveAsync failed. Message: {response.Message}");
+                    if (response.Errors != null && response.Errors.Any())
+                    {
+                        Console.WriteLine("Errors:");
+                        foreach (var err in response.Errors)
+                        {
+                            Console.WriteLine(err);
+                        }
+                    }
+                }
+
                 return response;
             }
             catch (Exception ex)
             {
                 // Log error here
+                Console.WriteLine($"SaveAsync Exception: {ex}");
                 return new ResponseModel<bool>
                 {
                     Success = false,
@@ -94,6 +119,7 @@ namespace Dashboard.Services.ECommerce.Category
             catch (Exception ex)
             {
                 // Log error here
+                Console.WriteLine($"ReorderTreeAsync Error: {ex}");
                 return new ResponseModel<bool>
                 {
                     Success = false,
@@ -116,6 +142,7 @@ namespace Dashboard.Services.ECommerce.Category
             catch (Exception)
             {
                 // Log error here
+                Console.WriteLine($"DeleteAsync failed for id: {id}");
                 return new ResponseModel<bool>
                 {
                     Success = false,

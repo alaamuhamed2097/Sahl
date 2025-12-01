@@ -191,10 +191,12 @@ namespace Api.Controllers.Catalog
                         Message = NotifiAndAlertsResources.SaveFailed
                     });
 
-                return Ok(new ResponseModel<string>
+                // Return boolean Data so clients expecting ResponseModel<bool> can deserialize
+                return Ok(new ResponseModel<bool>
                 {
                     Success = true,
-                    Message = NotifiAndAlertsResources.SavedSuccessfully
+                    Message = NotifiAndAlertsResources.SavedSuccessfully,
+                    Data = true
                 });
             }
             catch (Exception ex)
@@ -220,10 +222,11 @@ namespace Api.Controllers.Catalog
                         Message = NotifiAndAlertsResources.InvalidInputAlert
                     });
 
-                return Ok(new ResponseModel<string>
+                return Ok(new ResponseModel<bool>
                 {
                     Success = true,
-                    Message = NotifiAndAlertsResources.SavedSuccessfully
+                    Message = NotifiAndAlertsResources.SavedSuccessfully,
+                    Data = true
                 });
             }
             catch (Exception ex)
@@ -250,10 +253,11 @@ namespace Api.Controllers.Catalog
                         Errors = errors
                     });
 
-                return Ok(new ResponseModel<string>
+                return Ok(new ResponseModel<bool>
                 {
                     Success = true,
-                    Message = NotifiAndAlertsResources.DeletedSuccessfully
+                    Message = NotifiAndAlertsResources.DeletedSuccessfully,
+                    Data = true
                 });
             }
             catch (Exception ex)

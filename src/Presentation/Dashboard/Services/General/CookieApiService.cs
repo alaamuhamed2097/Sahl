@@ -53,8 +53,32 @@ namespace Dashboard.Services.General
                     return ConvertHttpError<T>(result);
                 }
 
-                var response = JsonSerializer.Deserialize<ResponseModel<T>>(result.Body, _jsonOptions);
-                return response ?? new ResponseModel<T> { Success = false, Message = "Invalid response" };
+                // Try to deserialize to expected generic type, fallback to loose mapping when server uses different generic
+                try
+                {
+                    var response = JsonSerializer.Deserialize<ResponseModel<T>>(result.Body, _jsonOptions);
+                    return response ?? new ResponseModel<T> { Success = false, Message = "Invalid response" };
+                }
+                catch (JsonException)
+                {
+                    // Fallback: parse as ResponseModel<object> and map
+                    try
+                    {
+                        var alt = JsonSerializer.Deserialize<ResponseModel<object>>(result.Body, _jsonOptions);
+                        return new ResponseModel<T>
+                        {
+                            Success = alt?.Success ?? false,
+                            Message = alt?.Message ?? string.Empty,
+                            StatusCode = alt?.StatusCode ?? 200,
+                            Errors = alt?.Errors ?? Enumerable.Empty<string>(),
+                            Data = default
+                        };
+                    }
+                    catch
+                    {
+                        return new ResponseModel<T> { Success = false, Message = "Invalid response format" };
+                    }
+                }
             }
             catch (Exception ex)
             {
@@ -86,8 +110,32 @@ namespace Dashboard.Services.General
                     return ConvertHttpError<TResponse>(result);
                 }
 
-                var response = JsonSerializer.Deserialize<ResponseModel<TResponse>>(result.Body, _jsonOptions);
-                return response ?? new ResponseModel<TResponse> { Success = false, Message = "Invalid response" };
+                try
+                {
+                    var response = JsonSerializer.Deserialize<ResponseModel<TResponse>>(result.Body, _jsonOptions);
+                    return response ?? new ResponseModel<TResponse> { Success = false, Message = "Invalid response" };
+                }
+                catch (JsonException)
+                {
+                    // Fallback: server returned different generic type (e.g. ResponseModel<string>) — map its Success/Message and keep Data default
+                    try
+                    {
+                        var alt = JsonSerializer.Deserialize<ResponseModel<object>>(result.Body, _jsonOptions);
+                        return new ResponseModel<TResponse>
+                        {
+                            Success = alt?.Success ?? false,
+                            Message = alt?.Message ?? string.Empty,
+                            StatusCode = alt?.StatusCode ?? 200,
+                            Errors = alt?.Errors ?? Enumerable.Empty<string>(),
+                            Data = default
+                        };
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"POST Deserialize fallback failed: {ex.Message}");
+                        return new ResponseModel<TResponse> { Success = false, Message = "Invalid response format" };
+                    }
+                }
             }
             catch (Exception ex)
             {
@@ -119,8 +167,30 @@ namespace Dashboard.Services.General
                     return ConvertHttpError<TResponse>(result);
                 }
 
-                var response = JsonSerializer.Deserialize<ResponseModel<TResponse>>(result.Body, _jsonOptions);
-                return response ?? new ResponseModel<TResponse> { Success = false, Message = "Invalid response" };
+                try
+                {
+                    var response = JsonSerializer.Deserialize<ResponseModel<TResponse>>(result.Body, _jsonOptions);
+                    return response ?? new ResponseModel<TResponse> { Success = false, Message = "Invalid response" };
+                }
+                catch (JsonException)
+                {
+                    try
+                    {
+                        var alt = JsonSerializer.Deserialize<ResponseModel<object>>(result.Body, _jsonOptions);
+                        return new ResponseModel<TResponse>
+                        {
+                            Success = alt?.Success ?? false,
+                            Message = alt?.Message ?? string.Empty,
+                            StatusCode = alt?.StatusCode ?? 200,
+                            Errors = alt?.Errors ?? Enumerable.Empty<string>(),
+                            Data = default
+                        };
+                    }
+                    catch
+                    {
+                        return new ResponseModel<TResponse> { Success = false, Message = "Invalid response format" };
+                    }
+                }
             }
             catch (Exception ex)
             {
@@ -150,8 +220,30 @@ namespace Dashboard.Services.General
                     return ConvertHttpError<T>(result);
                 }
 
-                var response = JsonSerializer.Deserialize<ResponseModel<T>>(result.Body, _jsonOptions);
-                return response ?? new ResponseModel<T> { Success = false, Message = "Invalid response" };
+                try
+                {
+                    var response = JsonSerializer.Deserialize<ResponseModel<T>>(result.Body, _jsonOptions);
+                    return response ?? new ResponseModel<T> { Success = false, Message = "Invalid response" };
+                }
+                catch (JsonException)
+                {
+                    try
+                    {
+                        var alt = JsonSerializer.Deserialize<ResponseModel<object>>(result.Body, _jsonOptions);
+                        return new ResponseModel<T>
+                        {
+                            Success = alt?.Success ?? false,
+                            Message = alt?.Message ?? string.Empty,
+                            StatusCode = alt?.StatusCode ?? 200,
+                            Errors = alt?.Errors ?? Enumerable.Empty<string>(),
+                            Data = default
+                        };
+                    }
+                    catch
+                    {
+                        return new ResponseModel<T> { Success = false, Message = "Invalid response format" };
+                    }
+                }
             }
             catch (Exception ex)
             {
@@ -162,6 +254,22 @@ namespace Dashboard.Services.General
 
         private ResponseModel<T> ConvertHttpError<T>(FetchResponse response)
         {
+            // First try to parse ResponseModel<T> returned by the API (detailed errors)
+            if (!string.IsNullOrWhiteSpace(response.Body))
+            {
+                try
+                {
+                    var apiResponse = JsonSerializer.Deserialize<ResponseModel<T>>(response.Body, _jsonOptions);
+                    if (apiResponse != null)
+                    {
+                        // Ensure status code is carried
+                        apiResponse.StatusCode = response.Status;
+                        return apiResponse;
+                    }
+                }
+                catch { /* ignore */ }
+            }
+
             var errorMessage = response.Status switch
             {
                 400 => "Invalid data was submitted",
@@ -172,7 +280,7 @@ namespace Dashboard.Services.General
                 _ => "An error occurred while processing your request"
             };
 
-            // Try to parse error response
+            // Try to parse ApiErrorResponse or include raw body for debugging
             if (!string.IsNullOrWhiteSpace(response.Body))
             {
                 try
@@ -182,8 +290,17 @@ namespace Dashboard.Services.General
                     {
                         errorMessage = errorObj.Message;
                     }
+                    else
+                    {
+                        // include raw body if parsing didn't yield a message
+                        errorMessage = errorMessage + " | " + response.Body;
+                    }
                 }
-                catch { /* Ignore parsing errors */ }
+                catch
+                {
+                    // include raw body when parsing fails
+                    errorMessage = errorMessage + " | " + response.Body;
+                }
             }
 
             return new ResponseModel<T>

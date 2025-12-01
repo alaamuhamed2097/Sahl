@@ -212,6 +212,9 @@ namespace DAL.ApplicationContext
         public DbSet<TbRefundRequest> TbRefundRequests { get; set; }
         public DbSet<TbShippingDetail> TbShippingDetails { get; set; }
 
+        // Pricing System Settings
+        public DbSet<TbPricingSystemSetting> TbPricingSystemSettings { get; set; }
+
         #endregion
 
         #region DbSets - Views

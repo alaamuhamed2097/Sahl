@@ -20,6 +20,8 @@ using BL.Service.PromoCode;
 using BL.Service.Setting;
 using BL.Service.ShippingCompany;
 using BL.Service.Vendor;
+using BL.Contracts.Service.Pricing;
+using BL.Service.Pricing;
 
 namespace Api.Extensions
 {
@@ -58,6 +60,9 @@ namespace Api.Extensions
 
             // Setting Services
             services.AddScoped<ISettingService, SettingService>();
+
+            // Pricing Services
+            services.AddScoped<IPricingService, PricingService>();
 
             return services;
         }

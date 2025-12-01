@@ -7,8 +7,8 @@ using Microsoft.Extensions.Options;
 using Microsoft.JSInterop;
 using Resources;
 using Resources.Enumerations;
-using Shared.DTOs.ECommerce;
 using Shared.DTOs.ECommerce.Category;
+using Shared.DTOs.Pricing;
 
 namespace Dashboard.Pages.Catalog.Categories;
 
@@ -26,6 +26,10 @@ public partial class Details : IDisposable
     private bool select2Initialized = false;
     private bool dataLoaded = false;
 
+    // EditContext for programmatic validation
+    protected EditContext? editContext;
+    private ValidationMessageStore? messageStore;
+
     private Guid parent
     {
         get => Model.ParentId;
@@ -36,6 +40,9 @@ public partial class Details : IDisposable
     protected List<CategoryDto> AllCategories { get; set; } = new();
     protected IEnumerable<AttributeDto> availableAttributes { get; set; } = Enumerable.Empty<AttributeDto>();
     protected List<CategoryDto> parents => AllCategories.Where(c => c.Id != Model.Id).ToList();
+    protected List<PricingSystemSettingDto> PricingSystems { get; set; } = new();
+    // Show selector whenever there's at least one pricing system configured
+    protected bool ShowPricingSelector => PricingSystems != null && PricingSystems.Count > 0;
 
     [Parameter] public Guid Id { get; set; }
     [Inject] protected ICategoryService CategoryService { get; set; } = null!;
@@ -44,21 +51,27 @@ public partial class Details : IDisposable
     [Inject] private IJSRuntime JSRuntime { get; set; } = default!;
     [Inject] protected NavigationManager Navigation { get; set; } = null!;
     [Inject] IOptions<ApiSettings> ApiOptions { get; set; } = null!;
+    [Inject] protected Dashboard.Contracts.General.IApiService ApiService { get; set; } = null!;
 
     protected override async Task OnInitializedAsync()
     {
         baseUrl = ApiOptions.Value.BaseUrl;
         await Task.WhenAll(
             LoadAllCategories(),
-            LoadAvailableAttributes()
+            LoadAvailableAttributes(),
+            LoadPricingSystems()
         );
 
-        dataLoaded = true;
-
+        // Initialize model and edit context
         if (Id == Guid.Empty)
         {
             Model = CreateNewCategory();
         }
+
+        editContext = new EditContext(Model);
+        messageStore = new ValidationMessageStore(editContext);
+
+        dataLoaded = true;
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -90,6 +103,21 @@ public partial class Details : IDisposable
             // Reset initialization flag to force reinitialization
             select2Initialized = false;
             StateHasChanged();
+        }
+        else
+        {
+            // new category: default pricing system if only one available
+            if (PricingSystems.Count == 1)
+            {
+                Model.PricingSystemType = PricingSystems.First().SystemType;
+            }
+        }
+
+        // Ensure EditContext is bound to latest model instance
+        if (editContext == null || editContext.Model != Model)
+        {
+            editContext = new EditContext(Model);
+            messageStore = new ValidationMessageStore(editContext);
         }
     }
 
@@ -273,17 +301,54 @@ public partial class Details : IDisposable
         {
             IsSaving = true;
             StateHasChanged();
+
+            // programmatic validation: clear previous pricing errors
+            messageStore?.Clear();
+
+            // Custom validation for pricing system when selector is shown
+            var pricingValid = ValidatePricingSystem();
+
             // Validate display order for new categories
             if (Model.Id == Guid.Empty && Model.DisplayOrder <= 0)
             {
                 Model.DisplayOrder = GetNextDisplayOrder();
             }
+
+            // If there are no pricing systems configured, ensure a safe default
+            if (PricingSystems == null || PricingSystems.Count == 0)
+            {
+                Model.PricingSystemType = Common.Enumerations.Pricing.PricingSystemType.Standard;
+            }
+            else if (PricingSystems.Count == 1)
+            {
+                // If only one available, force selection to that system
+                Model.PricingSystemType = PricingSystems.First().SystemType;
+            }
+
             if (Model.CategoryAttributes != null && Model.CategoryAttributes.Any())
             {
                 Model.CategoryAttributes.RemoveAll(attribute => attribute.AttributeId == Guid.Empty);
             }
+
             // Ensure display order doesn't conflict with existing categories
             await ValidateAndAdjustDisplayOrder();
+
+            // Notify validation state if we added errors
+            if (!pricingValid)
+            {
+                editContext?.NotifyValidationStateChanged();
+                await ShowErrorNotification(ValidationResources.Failed, ECommerceResources.PricingSystemRequired);
+                return;
+            }
+
+            // Before submit ensure EditContext validation passes
+            if (editContext != null && !editContext.Validate())
+            {
+                // Validation errors exist; show generic error
+                await ShowErrorNotification(ValidationResources.Failed, NotifiAndAlertsResources.SaveFailed);
+                return;
+            }
+
             var result = await CategoryService.SaveAsync(Model);
             if (result.Success)
             {
@@ -292,11 +357,13 @@ public partial class Details : IDisposable
             }
             else
             {
+                Console.WriteLine($"Error saving category: {result.Message}");
                 await ShowErrorNotification(ValidationResources.Failed, NotifiAndAlertsResources.SaveFailed);
             }
         }
         catch (Exception ex)
         {
+            Console.WriteLine($"Error saving category: {ex.Message}");
             await ShowErrorNotification(ValidationResources.Error, ex.Message);
         }
         finally
@@ -304,6 +371,22 @@ public partial class Details : IDisposable
             IsSaving = false;
             StateHasChanged();
         }
+    }
+
+    private bool ValidatePricingSystem()
+    {
+        if (!ShowPricingSelector)
+            return true;
+
+        // If pricing systems available, ensure model value exists in the list
+        var exists = PricingSystems.Any(p => p.SystemType == Model.PricingSystemType);
+        if (!exists)
+        {
+            var field = new FieldIdentifier(Model, nameof(Model.PricingSystemType));
+            messageStore?.Add(field, ECommerceResources.PricingSystemRequired);
+            return false;
+        }
+        return true;
     }
 
     private async Task ValidateAndAdjustDisplayOrder()
@@ -346,6 +429,16 @@ public partial class Details : IDisposable
             Model.CategoryAttributes = Model.CategoryAttributes
                 .OrderBy(attr => attr.DisplayOrder)
                 .ToList();
+            // If only one pricing system exists, ensure model reflects it for bind to selector
+            if (PricingSystems.Count == 1)
+            {
+                Model.PricingSystemType = PricingSystems.First().SystemType;
+            }
+
+            // Recreate EditContext for new model instance
+            editContext = new EditContext(Model);
+            messageStore = new ValidationMessageStore(editContext);
+
             StateHasChanged();
         }
         catch (Exception ex)
@@ -385,6 +478,34 @@ public partial class Details : IDisposable
         {
             Console.WriteLine($"Error loading attributes: {ex.Message}");
             availableAttributes = Enumerable.Empty<AttributeDto>();
+        }
+    }
+
+    private async Task LoadPricingSystems()
+    {
+        try
+        {
+            var res = await ApiService.GetAsync<IEnumerable<PricingSystemSettingDto>>("api/PricingSystem");
+            if (res != null && res.Success && res.Data != null)
+                PricingSystems = res.Data.OrderBy(s => s.DisplayOrder).ToList();
+
+            // If only one pricing system exists and model is new, set it
+            if (PricingSystems.Count == 1 && Model != null && Model.Id == Guid.Empty)
+            {
+                Model.PricingSystemType = PricingSystems.First().SystemType;
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error loading pricing systems: {ex.Message}");
+            PricingSystems = new List<PricingSystemSettingDto>();
+        }
+
+        // Ensure EditContext exists after loading pricing systems
+        if (editContext == null)
+        {
+            editContext = new EditContext(Model);
+            messageStore = new ValidationMessageStore(editContext);
         }
     }
 

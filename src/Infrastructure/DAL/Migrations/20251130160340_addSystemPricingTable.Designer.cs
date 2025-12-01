@@ -4,6 +4,7 @@ using DAL.ApplicationContext;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DAL.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251130160340_addSystemPricingTable")]
+    partial class addSystemPricingTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -5373,6 +5376,14 @@ namespace DAL.Migrations
                         .HasColumnType("int")
                         .HasDefaultValue(1);
 
+                    b.Property<string>("DescriptionAr")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("DescriptionEn")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
                     b.Property<int>("DisplayOrder")
                         .HasColumnType("int");
 
@@ -5381,12 +5392,7 @@ namespace DAL.Migrations
                         .HasColumnType("bit")
                         .HasDefaultValue(true);
 
-                    b.Property<string>("SystemNameAr")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<string>("SystemNameEn")
+                    b.Property<string>("SystemName")
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
@@ -5417,10 +5423,11 @@ namespace DAL.Migrations
                             CreatedBy = new Guid("00000000-0000-0000-0000-000000000001"),
                             CreatedDateUtc = new DateTime(2025, 11, 30, 0, 0, 0, 0, DateTimeKind.Utc),
                             CurrentState = 1,
+                            DescriptionAr = "????? ???? - ??? ?????",
+                            DescriptionEn = "Standard pricing - Price and quantity",
                             DisplayOrder = 1,
                             IsEnabled = true,
-                            SystemNameAr = "التسعير القياسي",
-                            SystemNameEn = "Standard Pricing",
+                            SystemName = "Standard Pricing",
                             SystemType = 0
                         },
                         new
@@ -5429,10 +5436,11 @@ namespace DAL.Migrations
                             CreatedBy = new Guid("00000000-0000-0000-0000-000000000001"),
                             CreatedDateUtc = new DateTime(2025, 11, 30, 0, 0, 0, 0, DateTimeKind.Utc),
                             CurrentState = 1,
+                            DescriptionAr = "????? ??????????",
+                            DescriptionEn = "Combination-based pricing",
                             DisplayOrder = 2,
                             IsEnabled = true,
-                            SystemNameAr = "تسعير بالتركيبات",
-                            SystemNameEn = "Combination Pricing",
+                            SystemName = "Combination Pricing",
                             SystemType = 1
                         },
                         new
@@ -5441,10 +5449,11 @@ namespace DAL.Migrations
                             CreatedBy = new Guid("00000000-0000-0000-0000-000000000001"),
                             CreatedDateUtc = new DateTime(2025, 11, 30, 0, 0, 0, 0, DateTimeKind.Utc),
                             CurrentState = 1,
+                            DescriptionAr = "????? ????????",
+                            DescriptionEn = "Quantity tier pricing",
                             DisplayOrder = 3,
                             IsEnabled = true,
-                            SystemNameAr = "تسعير حسب الكمية",
-                            SystemNameEn = "Quantity Pricing",
+                            SystemName = "Quantity Pricing",
                             SystemType = 2
                         },
                         new
@@ -5453,10 +5462,11 @@ namespace DAL.Migrations
                             CreatedBy = new Guid("00000000-0000-0000-0000-000000000001"),
                             CreatedDateUtc = new DateTime(2025, 11, 30, 0, 0, 0, 0, DateTimeKind.Utc),
                             CurrentState = 1,
+                            DescriptionAr = "??????? ?? ?????",
+                            DescriptionEn = "Combinations with quantity tiers",
                             DisplayOrder = 4,
                             IsEnabled = true,
-                            SystemNameAr = "التركيبات مع مستويات الكمية",
-                            SystemNameEn = "Combination + Quantity",
+                            SystemName = "Combination + Quantity",
                             SystemType = 3
                         },
                         new
@@ -5465,10 +5475,11 @@ namespace DAL.Migrations
                             CreatedBy = new Guid("00000000-0000-0000-0000-000000000001"),
                             CreatedDateUtc = new DateTime(2025, 11, 30, 0, 0, 0, 0, DateTimeKind.Utc),
                             CurrentState = 1,
+                            DescriptionAr = "????? ??? ????? ???????",
+                            DescriptionEn = "Customer segment pricing",
                             DisplayOrder = 5,
                             IsEnabled = true,
-                            SystemNameAr = "تسعير حسب شريحة العميل",
-                            SystemNameEn = "Customer Segment Pricing",
+                            SystemName = "Customer Segment Pricing",
                             SystemType = 4
                         });
                 });

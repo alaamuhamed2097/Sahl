@@ -121,8 +121,6 @@ app.MapGet("/openapi/export", async context =>
 //        c.EnableDeepLinking();
 //        c.DisplayRequestDuration();
 //        c.EnableFilter();
-//        c.ShowExtensions();
-//        c.EnableValidator();
 //    });
 //}
 
