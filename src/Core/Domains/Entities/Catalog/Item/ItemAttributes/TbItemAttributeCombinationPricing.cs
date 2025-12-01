@@ -75,8 +75,6 @@ namespace Domains.Entities.Catalog.Item.ItemAttributes
         [StringLength(100)]
         public string? Barcode { get; set; }
 
-        public bool IsActive { get; set; } = true;
-
         public DateTime? LastPriceUpdate { get; set; }
 
         // Navigation Properties
