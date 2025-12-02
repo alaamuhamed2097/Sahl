@@ -24,8 +24,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Entities\Fulfillment\" />
-    <Folder Include="Entities\Review\" />
     <Folder Include="Entities\Support\" />
   </ItemGroup>
 
