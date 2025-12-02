@@ -4,9 +4,11 @@ using BL.Contracts.IMapper;
 using BL.Contracts.Service.ECommerce.Item;
 using BL.Extensions;
 using BL.Service.Base;
+using Common.Enumerations.Pricing;
 using DAL.Contracts.Repositories;
 using DAL.Contracts.UnitOfWork;
 using DAL.Models;
+using Domains.Entities.Catalog.Category;
 using Domains.Entities.Catalog.Item;
 using Domains.Entities.Catalog.Item.ItemAttributes;
 using Domains.Views.Item;
@@ -25,6 +27,7 @@ namespace BL.Service.ECommerce.Item
         private const int MaxImageCount = 10;
         private readonly ITableRepository<TbItem> _tableRepository;
         private readonly IRepository<VwItem> _repository;
+        private readonly ITableRepository<TbCategory> _categoryRepository;
         private readonly IFileUploadService _fileUploadService;
         private readonly IImageProcessingService _imageProcessingService;
         private readonly IUnitOfWork _unitOfWork;
@@ -39,7 +42,8 @@ namespace BL.Service.ECommerce.Item
             IFileUploadService fileUploadService,
             IImageProcessingService imageProcessingService,
             ILocationBasedCurrencyService locationBasedCurrencyService,
-            ILogger logger)
+            ILogger logger,
+            ITableRepository<TbCategory> categoryRepository)
             : base(tableRepository, mapper)
         {
             _mapper = mapper;
@@ -50,6 +54,7 @@ namespace BL.Service.ECommerce.Item
             _imageProcessingService = imageProcessingService;
             _locationBasedCurrencyService = locationBasedCurrencyService;
             _logger = logger;
+            _categoryRepository = categoryRepository;
         }
 
         public async Task<PaginatedDataModel<VwItemDto>> GetPage(ItemSearchCriteriaModel criteriaModel)
@@ -126,208 +131,211 @@ namespace BL.Service.ECommerce.Item
             return _mapper.MapModel<VwItem, VwItemDto>(item);
         }
 
-        //public new async Task<bool> Save(ItemDto dto, Guid userId)
-        //{
-        //    if (dto == null)
-        //        throw new ArgumentNullException(nameof(dto));
-        //    if (userId == Guid.Empty)
-        //        throw new ArgumentException(UserResources.UserNotFound, nameof(userId));
+        public new async Task<bool> Save(ItemDto dto, Guid userId)
+        {
+            if (dto == null)
+                throw new ArgumentNullException(nameof(dto));
+            if (userId == Guid.Empty)
+                throw new ArgumentException(UserResources.UserNotFound, nameof(userId));
 
-        //    // Fix: Check if Images is null or empty, but allow saving without image count validation for updates
-        //    if (dto.Images == null)
-        //        dto.Images = new List<ItemImageDto>();
+            // Fix: Check if Images is null or empty, but allow saving without image count validation for updates
+            if (dto.Images == null)
+                dto.Images = new List<ItemImageDto>();
 
-        //    // Only validate image count for new items
-        //    if (dto.Id == Guid.Empty && (!dto.Images.Any() || dto.Images.Count > MaxImageCount))
-        //    {
-        //        throw new ArgumentException($"{ValidationResources.MaximumOf} {MaxImageCount} {ValidationResources.ImagesAllowed}", nameof(dto.Images));
-        //    }
+            // Only validate image count for new items
+            if (dto.Id == Guid.Empty && (!dto.Images.Any() || dto.Images.Count > MaxImageCount))
+                throw new ArgumentException($"{ValidationResources.MaximumOf} {MaxImageCount} {ValidationResources.ImagesAllowed}", nameof(dto.Images));
+            if(dto.CategoryId == Guid.Empty)
+                throw new ValidationException("Category is required !! ");
 
-        //    // Ensure every item has at least one combination (default combination)
-        //    if (dto.ItemAttributeCombinationPricings == null || !dto.ItemAttributeCombinationPricings.Any())
-        //    {
-        //        _logger.Information("No combinations found, creating default combination for item {ItemId}", dto.Id);
 
-        //        // Create a default combination with no attributes
-        //        dto.ItemAttributeCombinationPricings = new List<ItemAttributeCombinationPricingDto>
-        //        {
-        //            new ItemAttributeCombinationPricingDto
-        //            {
-        //                AttributeIds = string.Empty, // Empty means default/no attributes
-        //                Price = 0,
-        //                SalesPrice = 0,
-        //                Quantity = 0,
-        //                IsDefault = true
-        //            }
-        //        };
-        //    }
+            // pre-Load related entities
+            var category = await _categoryRepository.FindByIdAsync(dto.CategoryId);
 
-        //    // Ensure only one combination is marked as default
-        //    var defaultCombinations = dto.ItemAttributeCombinationPricings.Where(c => c.IsDefault).ToList();
-        //    if (defaultCombinations.Count == 0)
-        //    {
-        //        // No default set, mark the first one as default
-        //        _logger.Information("No default combination found, setting first combination as default for item {ItemId}", dto.Id);
-        //        dto.ItemAttributeCombinationPricings.First().IsDefault = true;
-        //    }
-        //    else if (defaultCombinations.Count > 1)
-        //    {
-        //        // Multiple defaults found, keep only the first one
-        //        _logger.Warning("Multiple default combinations found for item {ItemId}, keeping only the first", dto.Id);
-        //        foreach (var combo in defaultCombinations.Skip(1))
-        //        {
-        //            combo.IsDefault = false;
-        //        }
-        //    }
+            try
+            {
+                await _unitOfWork.BeginTransactionAsync();
 
-        //    try
-        //    {
-        //        await _unitOfWork.BeginTransactionAsync();
+                // Handle thumbnail image
+                if (!string.IsNullOrEmpty(dto.ThumbnailImage) && _fileUploadService.ValidateFile(dto.ThumbnailImage).isValid)
+                    dto.ThumbnailImage = await SaveImageSync(dto.ThumbnailImage);
 
-        //        // Handle thumbnail image
-        //        if (!string.IsNullOrEmpty(dto.ThumbnailImage) && _fileUploadService.ValidateFile(dto.ThumbnailImage).isValid)
-        //            dto.ThumbnailImage = await SaveImageSync(dto.ThumbnailImage);
+                var imageEntities = new List<TbItemImage>();
+                if (dto.Images?.Any() == true)
+                {
+                    foreach (var image in dto.Images)
+                    {
+                        if (image.IsNew)
+                        {
+                            if (!string.IsNullOrEmpty(image.Path) && _fileUploadService.ValidateFile(image.Path).isValid)
+                            {
+                                image.Path = await SaveImageSync(image.Path);
+                                var imageEntity = _mapper.MapModel<ItemImageDto, TbItemImage>(image);
+                                imageEntities.Add(imageEntity);
+                            }
+                        }
+                    }
+                }
 
-        //        var imageEntities = new List<TbItemImage>();
-        //        if (dto.Images?.Any() == true)
-        //        {
-        //            foreach (var image in dto.Images)
-        //            {
-        //                if (image.IsNew)
-        //                {
-        //                    if (!string.IsNullOrEmpty(image.Path) && _fileUploadService.ValidateFile(image.Path).isValid)
-        //                    {
-        //                        image.Path = await SaveImageSync(image.Path);
-        //                        var imageEntity = _mapper.MapModel<ItemImageDto, TbItemImage>(image);
-        //                        imageEntities.Add(imageEntity);
-        //                    }
-        //                }
-        //            }
-        //        }
+                // If this is an update (item has an ID), fetch existing item to get old image paths
+                if (dto.Id != Guid.Empty)
+                {
+                    // Get existing images for this item
+                    var existingImages = await _unitOfWork
+                        .TableRepository<TbItemImage>()
+                        .GetAsync(ii => ii.ItemId == dto.Id);
 
-        //        // If this is an update (item has an ID), fetch existing item to get old image paths
-        //        if (dto.Id != Guid.Empty)
-        //        {
-        //            // Get existing images for this item
-        //            var existingImages = await _unitOfWork
-        //                .TableRepository<TbItemImage>()
-        //                .GetAsync(ii => ii.ItemId == dto.Id);
+                    var newImagesPaths = dto.Images?.Select(i => i.Path) ?? Enumerable.Empty<string>();
 
-        //            var newImagesPaths = dto.Images?.Select(i => i.Path) ?? Enumerable.Empty<string>();
+                    var imagesToDelete = existingImages.Where(i => !newImagesPaths.Contains(i.Path));
 
-        //            var imagesToDelete = existingImages.Where(i => !newImagesPaths.Contains(i.Path));
+                    if (imagesToDelete.Any())
+                    {
+                        foreach (var image in imagesToDelete)
+                        {
+                            await _unitOfWork
+                            .TableRepository<TbItemImage>()
+                            .HardDeleteAsync(image.Id);
+                        }
+                    }
 
-        //            if (imagesToDelete.Any())
-        //            {
-        //                foreach (var image in imagesToDelete)
-        //                {
-        //                    await _unitOfWork
-        //                    .TableRepository<TbItemImage>()
-        //                    .HardDeleteAsync(image.Id);
-        //                }
-        //            }
+                    // Delete existing attributes
+                    var existingAttributes = await _unitOfWork
+                        .TableRepository<TbItemAttribute>()
+                        .GetAsync(ia => ia.ItemId == dto.Id);
 
-        //            // Delete existing attributes
-        //            var existingAttributes = await _unitOfWork
-        //                .TableRepository<TbItemAttribute>()
-        //                .GetAsync(ia => ia.ItemId == dto.Id);
+                    if (existingAttributes.Any())
+                    {
+                        foreach (var attr in existingAttributes)
+                        {
+                            await _unitOfWork
+                                .TableRepository<TbItemAttribute>()
+                                .HardDeleteAsync(attr.Id);
+                        }
+                    }
+                    if (category.PricingSystemType == PricingSystemType.CombinationWithQuantity || category.PricingSystemType == PricingSystemType.Combination)
+                    {
+                        // Delete existing combinations attributes
+                        var existingCombinations = await _unitOfWork
+                            .TableRepository<TbItemCombination>()
+                            .GetAsync(c => c.ItemId == dto.Id, includeProperties: "CombinationAttributes");
 
-        //            if (existingAttributes.Any())
-        //            {
-        //                foreach (var attr in existingAttributes)
-        //                {
-        //                    await _unitOfWork
-        //                        .TableRepository<TbItemAttribute>()
-        //                        .HardDeleteAsync(attr.Id);
-        //                }
-        //            }
+                        if (existingCombinations.Any())
+                        {
+                            foreach (var combo in existingCombinations)
+                            {
+                                var combinationAttributesIds = combo.CombinationAttributes.Select(c=>c.Id).ToList() ?? new List<Guid>();
+                                var CombinationAttributeValuesIds = (await _unitOfWork.TableRepository<TbCombinationAttributesValue>().GetAsync(c=> combinationAttributesIds.Contains(c.CombinationAttributeId))).Select(v=>v.Id);
+                                var AttributeValuesPriceModifierIds = (await _unitOfWork.TableRepository<TbAttributeValuePriceModifier>().GetAsync(c=> CombinationAttributeValuesIds.Contains(c.CombinationAttributeValueId))).Select(v=>v.Id);
+                                await _unitOfWork.TableRepository<TbAttributeValuePriceModifier>().BulkHardDeleteByIdsAsync(AttributeValuesPriceModifierIds);
+                                await _unitOfWork.TableRepository<TbCombinationAttributesValue>().BulkHardDeleteByIdsAsync(CombinationAttributeValuesIds);
+                                await _unitOfWork.TableRepository<TbCombinationAttribute>().BulkHardDeleteByIdsAsync(combinationAttributesIds);
+                            }
+                        }
+                    }
+                }
 
-        //            // Delete existing combinations
-        //            var existingCombinations = await _unitOfWork
-        //                .TableRepository<TbItemAttributeCombinationPricing>()
-        //                .GetAsync(c => c.ItemId == dto.Id);
+                var entity = _mapper.MapModel<ItemDto, TbItem>(dto);
+                entity.Brand = null;
+                entity.Category = null;
 
-        //            if (existingCombinations.Any())
-        //            {
-        //                foreach (var combo in existingCombinations)
-        //                {
-        //                    await _unitOfWork
-        //                        .TableRepository<TbItemAttributeCombinationPricing>()
-        //                        .HardDeleteAsync(combo.Id);
-        //                }
-        //            }
-        //        }
+                var itemSaved = await _unitOfWork.TableRepository<TbItem>().SaveAsync(entity, userId);
 
-        //        var entity = _mapper.MapModel<ItemDto, TbItem>(dto);
-        //        entity.Brand = null;
-        //        entity.Category = null;
+                var itemId = itemSaved.Id;
+                if (imageEntities.Any())
+                {
+                    foreach (var imageEntity in imageEntities)
+                    {
+                        imageEntity.ItemId = itemId;
+                    }
+                }
 
-        //        var itemSaved = await _unitOfWork.TableRepository<TbItem>().SaveAsync(entity, userId);
+                var imagesSaved = true;
+                if (dto.Images?.Count(x => x.IsNew) > 0)
+                    imagesSaved = await _unitOfWork.TableRepository<TbItemImage>().AddRangeAsync(imageEntities, userId);
 
-        //        var itemId = itemSaved.Id;
-        //        if (imageEntities.Any())
-        //        {
-        //            foreach (var imageEntity in imageEntities)
-        //            {
-        //                imageEntity.ItemId = itemId;
-        //            }
-        //        }
+                // Save ItemAttributes
+                var attributesSaved = true;
+                if (dto.ItemAttributes?.Any() == true)
+                {
+                    var attributeEntities = new List<TbItemAttribute>();
+                    foreach (var attr in dto.ItemAttributes)
+                    {
+                        // Only save attributes with values
+                        if (!string.IsNullOrWhiteSpace(attr.Value))
+                        {
+                            var attributeEntity = _mapper.MapModel<ItemAttributeDto, TbItemAttribute>(attr);
+                            attributeEntity.ItemId = itemId;
+                            attributeEntities.Add(attributeEntity);
+                        }
+                    }
 
-        //        var imagesSaved = true;
-        //        if (dto.Images?.Count(x => x.IsNew) > 0)
-        //            imagesSaved = await _unitOfWork.TableRepository<TbItemImage>().AddRangeAsync(imageEntities, userId);
+                    if (attributeEntities.Any())
+                    {
+                        attributesSaved = await _unitOfWork.TableRepository<TbItemAttribute>().AddRangeAsync(attributeEntities, userId);
+                    }
+                }
 
-        //        // Save ItemAttributes
-        //        var attributesSaved = true;
-        //        if (dto.ItemAttributes?.Any() == true)
-        //        {
-        //            var attributeEntities = new List<TbItemAttribute>();
-        //            foreach (var attr in dto.ItemAttributes)
-        //            {
-        //                // Only save attributes with values
-        //                if (!string.IsNullOrWhiteSpace(attr.Value))
-        //                {
-        //                    var attributeEntity = _mapper.MapModel<ItemAttributeDto, TbItemAttribute>(attr);
-        //                    attributeEntity.ItemId = itemId;
-        //                    attributeEntities.Add(attributeEntity);
-        //                }
-        //            }
+                // Ensure every item has at least one combination (default combination)
+                if (dto.ItemCombinations == null || !dto.ItemCombinations.Any())
+                {
+                    // Create a default combination with no attributes
+                    dto.ItemCombinations = new List<ItemCombinationDto>
+                    {
+                        new ItemCombinationDto
+                        {
+                            ItemId = itemId ,
+                            Barcode = "111111",
+                            SKU = "DEFAULT",
+                            IsDefault = true
+                        }
+                    };
+                }
 
-        //            if (attributeEntities.Any())
-        //            {
-        //                attributesSaved = await _unitOfWork.TableRepository<TbItemAttribute>().AddRangeAsync(attributeEntities, userId);
-        //            }
-        //        }
+                // Ensure only one combination is marked as default
+                var defaultCombinations = dto.ItemCombinations.Where(c => c.IsDefault).ToList();
+                if (defaultCombinations.Count == 0)
+                {
+                    // No default set, mark the first one as default
+                    dto.ItemCombinations.First().IsDefault = true;
+                }
+                else if (defaultCombinations.Count > 1)
+                {
+                    // Multiple defaults found, keep only the first one
+                    foreach (var combo in defaultCombinations.Skip(1))
+                    {
+                        combo.IsDefault = false;
+                    }
+                }
+                // Save ItemAttributeCombinationPricings
+                var combinationsSaved = true;
+                if (dto.ItemCombinations?.Any() == true)
+                {
+                    var combinationEntities = new List<TbItemCombination>();
+                    foreach (var combo in dto.ItemCombinations)
+                    {
+                        var combinationEntity = _mapper.MapModel<ItemCombinationDto, TbItemCombination>(combo);
+                        combinationEntity.ItemId = itemId;
+                        combinationEntities.Add(combinationEntity);
+                    }
 
-        //        // Save ItemAttributeCombinationPricings
-        //        var combinationsSaved = true;
-        //        if (dto.ItemAttributeCombinationPricings?.Any() == true)
-        //        {
-        //            var combinationEntities = new List<TbItemAttributeCombinationPricing>();
-        //            foreach (var combo in dto.ItemAttributeCombinationPricings)
-        //            {
-        //                var combinationEntity = _mapper.MapModel<ItemAttributeCombinationPricingDto, TbItemAttributeCombinationPricing>(combo);
-        //                combinationEntity.ItemId = itemId;
-        //                combinationEntities.Add(combinationEntity);
-        //            }
+                    if (combinationEntities.Any())
+                    {
+                        combinationsSaved = await _unitOfWork.TableRepository<TbItemCombination>().AddRangeAsync(combinationEntities, userId);
+                    }
+                }
 
-        //            if (combinationEntities.Any())
-        //            {
-        //                combinationsSaved = await _unitOfWork.TableRepository<TbItemAttributeCombinationPricing>().AddRangeAsync(combinationEntities, userId);
-        //            }
-        //        }
+                await _unitOfWork.CommitAsync();
 
-        //        await _unitOfWork.CommitAsync();
-
-        //        return itemSaved.Success && imagesSaved && attributesSaved && combinationsSaved;
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        _unitOfWork.Rollback();
-        //        _logger.Error(ex, "Error saving item {ItemId}", dto.Id);
-        //        throw;
-        //    }
-        //}
+                return itemSaved.Success && imagesSaved && attributesSaved && combinationsSaved;
+            }
+            catch (Exception ex)
+            {
+                _unitOfWork.Rollback();
+                _logger.Error(ex, "Error saving item {ItemId}", dto.Id);
+                throw;
+            }
+        }
 
         // Helper functions
         private async Task<string> SaveImageSync(string image)

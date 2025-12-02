@@ -10,6 +10,6 @@ namespace BL.Contracts.Service.ECommerce.Item
     {
         Task<PaginatedDataModel<VwItemDto>> GetPage(ItemSearchCriteriaModel criteriaModel);
         new Task<VwItemDto> FindByIdAsync(Guid Id);
-        //new Task<bool> Save(ItemDto dto, Guid userId);
+        new Task<bool> Save(ItemDto dto, Guid userId);
     }
 }
