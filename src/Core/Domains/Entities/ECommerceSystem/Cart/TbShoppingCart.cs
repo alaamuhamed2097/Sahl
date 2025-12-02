@@ -8,8 +8,6 @@ namespace Domains.Entities.ECommerceSystem.Cart
         [ForeignKey("Customer")]
         public Guid CustomerId { get; set; }
 
-        public string? SessionId { get; set; }
-
         public bool IsActive { get; set; } = true;
 
         public DateTime? ExpiresAt { get; set; }

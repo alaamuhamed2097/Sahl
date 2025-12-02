@@ -1,13 +1,8 @@
-using BL.Services.Loyalty;
 using Common.Enumerations.Loyalty;
 using DAL.ApplicationContext;
 using Domains.Entities.Loyalty;
 using Microsoft.EntityFrameworkCore;
 using Shared.DTOs.Loyalty;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace BL.Services.Loyalty
 {
@@ -357,7 +352,7 @@ namespace BL.Services.Loyalty
             {
                 var loyalty = await _context.TbCustomerLoyalties
                     .FirstOrDefaultAsync(cl => cl.CustomerId == request.CustomerId.Value);
-                
+
                 if (loyalty != null)
                     query = query.Where(t => t.CustomerLoyaltyId == loyalty.Id);
             }
@@ -516,7 +511,7 @@ namespace BL.Services.Loyalty
                 .OrderBy(t => t.MinimumOrdersPerYear)
                 .FirstOrDefault();
 
-            var customerName = loyalty.Customer != null 
+            var customerName = loyalty.Customer != null
                 ? $"{loyalty.Customer.FirstName ?? ""} {loyalty.Customer.LastName ?? ""}".Trim()
                 : "N/A";
 

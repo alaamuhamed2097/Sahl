@@ -247,26 +247,14 @@ namespace Dashboard.Pages.Sales.Orders
         {
             try
             {
-                // Validate shipping information
-                //if (string.IsNullOrEmpty(Model.ShippingCompany))
-                //{
-                //    await JSRuntime.InvokeVoidAsync("swal", ValidationResources.Failed, "Please select a shipping company", "warning");
-                //    return;
-                //}
-
+                // Validate delivery date
                 if (Model.OrderDeliveryDate == default || Model.OrderDeliveryDate < DateTime.Now)
                 {
                     await JSRuntime.InvokeVoidAsync("swal", ValidationResources.Failed, ECommerceResources.SelectValidDeliveryDate, "warning");
                     return;
                 }
 
-                if (Model.ShippingCompanyId == null || Model.ShippingCompanyId == Guid.Empty)
-                {
-                    await JSRuntime.InvokeVoidAsync("swal", ValidationResources.Failed, ECommerceResources.SelectShippingCompany, "warning");
-                    return;
-                }
-
-                // Save the model first (includes shipping info)
+                // Save the model first
                 if ((int)Model.CurrentState == 5)
                 {
                     var saveResult = await Save();

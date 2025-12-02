@@ -32,6 +32,9 @@ namespace DAL.Configurations
             builder.Property(x => x.PhoneCode)
                 .HasMaxLength(4);
 
+            builder.Property(x => x.IsDefaultPlatformWarehouse)
+                .HasDefaultValue(false);
+
             builder.Property(x => x.IsActive)
                 .HasDefaultValue(true);
 
@@ -45,8 +48,17 @@ namespace DAL.Configurations
             builder.Property(x => x.CurrentState)
                 .HasDefaultValue(1);
 
+            // Relationships
+            builder.HasOne(x => x.Vendor)
+                .WithMany()
+                .HasForeignKey(x => x.VendorId)
+                .OnDelete(DeleteBehavior.SetNull);
+
+            // Indexes
             builder.HasIndex(x => x.CurrentState);
             builder.HasIndex(x => x.IsActive);
+            builder.HasIndex(x => x.IsDefaultPlatformWarehouse);
+            builder.HasIndex(x => x.VendorId);
         }
     }
 }

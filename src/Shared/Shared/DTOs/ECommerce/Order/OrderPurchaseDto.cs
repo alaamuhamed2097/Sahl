@@ -23,30 +23,6 @@ namespace Shared.DTOs.ECommerce.Order
         [MinLength(1, ErrorMessageResourceName = "FieldRequired", ErrorMessageResourceType = typeof(ValidationResources))]
         public IEnumerable<OrderItemDto> Items { get; set; }
 
-        /// <summary>
-        /// Whether to use Business Points for this payment
-        /// </summary>
-        public bool ApplyBusinessPoints { get; set; } = false;
-
-        // Internal tracking properties (populated during processing)
-        /// <summary>
-        /// Points consumed for this order (set after consumption)
-        /// </summary>
-        [JsonIgnore]
-        public int PointsConsumed { get; set; }
-
-        /// <summary>
-        /// Dollar value of points consumed (set after consumption)
-        /// </summary>
-        [JsonIgnore]
-        public decimal PointsValue { get; set; }
-
-        /// <summary>
-        /// Total price before points were applied (set after consumption)
-        /// </summary>
-        [JsonIgnore]
-        public decimal TotalBeforePoints { get; set; }
-
         [JsonIgnore]
         public decimal TaxAmount { get; set; }
 
