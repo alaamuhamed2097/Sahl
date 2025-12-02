@@ -1,4 +1,5 @@
 using Shared.DTOs.Base;
+using System.ComponentModel.DataAnnotations;
 
 namespace Shared.DTOs.ECommerce.Item
 {

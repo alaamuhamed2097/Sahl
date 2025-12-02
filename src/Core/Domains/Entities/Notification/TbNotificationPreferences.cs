@@ -1,5 +1,6 @@
 using Common.Enumerations.Notification;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Domains.Entities.Notification
 {
@@ -9,8 +10,7 @@ namespace Domains.Entities.Notification
     public class TbNotificationPreferences : BaseEntity
     {
         [Required]
-        // FK moved to Fluent configuration. Use Guid to match ApplicationUser primary key.
-        public string? UserId { get; set; }
+        public string UserId { get; set; }
 
         [Required]
         public RecipientType UserType { get; set; }
@@ -25,7 +25,7 @@ namespace Domains.Entities.Notification
         public bool EnablePush { get; set; } = true;
 
         public bool EnableInApp { get; set; } = true;
-
+        [ForeignKey (nameof(UserId))]
         public virtual ApplicationUser User { get; set; } = null!;
     }
 }

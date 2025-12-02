@@ -37,7 +37,8 @@ namespace Api.Controllers.Catalog
             {
                 var clientIp = HttpContext.GetClientIpAddress();
                 var shouldApplyConversion = ShouldApplyCurrencyConversion();
-                var items = await _itemService.GetAllWithCurrencyConversionAsync(clientIp, shouldApplyConversion);
+                //var items = await _itemService.GetAllAsync(clientIp, shouldApplyConversion);
+                var items = await _itemService.GetAllAsync();
 
                 if (items?.Any() != true)
                     return NotFound(CreateErrorResponse(NotifiAndAlertsResources.NoDataFound));
@@ -65,7 +66,8 @@ namespace Api.Controllers.Catalog
 
                 var clientIp = HttpContext.GetClientIpAddress();
                 var shouldApplyConversion = ShouldApplyCurrencyConversion();
-                var item = await _itemService.GetByIdWithCurrencyConversionAsync(id, clientIp, shouldApplyConversion);
+                //var item = await _itemService.GetByIdWithCurrencyConversionAsync(id, clientIp, shouldApplyConversion);
+                var item = await _itemService.FindByIdAsync(id);
 
                 if (item == null)
                     return NotFound(CreateErrorResponse(NotifiAndAlertsResources.NoDataFound));
@@ -92,7 +94,8 @@ namespace Api.Controllers.Catalog
 
                 var clientIp = HttpContext.GetClientIpAddress();
                 var shouldApplyConversion = ShouldApplyCurrencyConversion();
-                var result = await _itemService.GetPageWithCurrencyConversionAsync(criteria, clientIp, shouldApplyConversion);
+                //var result = await _itemService.GetPageWithCurrencyConversionAsync(criteria, clientIp, shouldApplyConversion);
+                var result = await _itemService.GetPage(criteria);
 
                 if (result?.Items?.Any() != true)
                     return Ok(CreateSuccessResponse(result, NotifiAndAlertsResources.NoDataFound));
@@ -105,99 +108,84 @@ namespace Api.Controllers.Catalog
             }
         }
 
-        /// <summary>
-        /// Retrieves new arrival items with currency conversion.
-        /// </summary>
-        [HttpGet("new-arrivals")]
-        [AllowAnonymous]
-        public async Task<IActionResult> GetNewArrivals([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
-        {
-            return await GetItemsByCategory(new ItemSearchCriteriaModel
-            {
-                IsNewArrival = true,
-                PageNumber = pageNumber,
-                PageSize = pageSize
-            });
-        }
+        ///// <summary>
+        ///// Retrieves best seller items with currency conversion.
+        ///// </summary>
+        //[HttpGet("best-sellers")]
+        //[AllowAnonymous]
+        //public async Task<IActionResult> GetBestSellers([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
+        //{
+        //    return await GetItemsByCategory(new ItemSearchCriteriaModel
+        //    {
+        //        IsBestSeller = true,
+        //        PageNumber = pageNumber,
+        //        PageSize = pageSize
+        //    });
+        //}
 
-        /// <summary>
-        /// Retrieves best seller items with currency conversion.
-        /// </summary>
-        [HttpGet("best-sellers")]
-        [AllowAnonymous]
-        public async Task<IActionResult> GetBestSellers([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
-        {
-            return await GetItemsByCategory(new ItemSearchCriteriaModel
-            {
-                IsBestSeller = true,
-                PageNumber = pageNumber,
-                PageSize = pageSize
-            });
-        }
+        ///// <summary>
+        ///// Retrieves recommended items with currency conversion.
+        ///// </summary>
+        //[HttpGet("recommended")]
+        //[AllowAnonymous]
+        //public async Task<IActionResult> GetRecommended([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
+        //{
+        //    return await GetItemsByCategory(new ItemSearchCriteriaModel
+        //    {
+        //        IsRecommended = true,
+        //        PageNumber = pageNumber,
+        //        PageSize = pageSize
+        //    });
+        //}
 
-        /// <summary>
-        /// Retrieves recommended items with currency conversion.
-        /// </summary>
-        [HttpGet("recommended")]
-        [AllowAnonymous]
-        public async Task<IActionResult> GetRecommended([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
-        {
-            return await GetItemsByCategory(new ItemSearchCriteriaModel
-            {
-                IsRecommended = true,
-                PageNumber = pageNumber,
-                PageSize = pageSize
-            });
-        }
+        ///// <summary>
+        ///// Adds a new item.
+        ///// </summary>
+        //[HttpPost("save")]
+        //[Authorize(Roles = nameof(UserRole.Admin))]
+        //public async Task<IActionResult> Save([FromBody] ItemDto itemDto)
+        //{
+        //    try
+        //    {
+        //        if (!ModelState.IsValid)
+        //            return BadRequest(CreateErrorResponse(NotifiAndAlertsResources.InvalidInputAlert));
 
-        /// <summary>
-        /// Adds a new item.
-        /// </summary>
-        [HttpPost("save")]
-        [Authorize(Roles = nameof(UserRole.Admin))]
-        public async Task<IActionResult> Save([FromBody] ItemDto itemDto)
-        {
-            try
-            {
-                if (!ModelState.IsValid)
-                    return BadRequest(CreateErrorResponse(NotifiAndAlertsResources.InvalidInputAlert));
+        //        var success = await _itemService.Save(itemDto, GuidUserId);
+        //        if (!success)
+        //            return BadRequest(CreateErrorResponse(NotifiAndAlertsResources.SaveFailed));
 
-                var success = await _itemService.Save(itemDto, GuidUserId);
-                if (!success)
-                    return BadRequest(CreateErrorResponse(NotifiAndAlertsResources.SaveFailed));
+        //        return Ok(CreateSuccessResponse<string>(null, NotifiAndAlertsResources.SavedSuccessfully));
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return HandleException(ex);
+        //    }
+        //}
 
-                return Ok(CreateSuccessResponse<string>(null, NotifiAndAlertsResources.SavedSuccessfully));
-            }
-            catch (Exception ex)
-            {
-                return HandleException(ex);
-            }
-        }
+        ///// <summary>
+        ///// Updates an existing item.
+        ///// </summary>
+        //[HttpPost("update/{id:guid}")]
+        //[Authorize(Roles = nameof(UserRole.Admin))]
+        //public async Task<IActionResult> Update(Guid id, [FromBody] ItemDto itemDto)
+        //{
+        //    try
+        //    {
+        //        if (id == Guid.Empty || !ModelState.IsValid)
+        //            return BadRequest(CreateErrorResponse(NotifiAndAlertsResources.InvalidInputAlert));
 
-        /// <summary>
-        /// Updates an existing item.
-        /// </summary>
-        [HttpPost("update/{id:guid}")]
-        [Authorize(Roles = nameof(UserRole.Admin))]
-        public async Task<IActionResult> Update(Guid id, [FromBody] ItemDto itemDto)
-        {
-            try
-            {
-                if (id == Guid.Empty || !ModelState.IsValid)
-                    return BadRequest(CreateErrorResponse(NotifiAndAlertsResources.InvalidInputAlert));
+        //        itemDto.Id = id;
+        //        var success = await _itemService.Save(itemDto, GuidUserId);
+        //        if (!success)
+        //            return BadRequest(CreateErrorResponse(NotifiAndAlertsResources.SaveFailed));
 
-                itemDto.Id = id;
-                var success = await _itemService.Save(itemDto, GuidUserId);
-                if (!success)
-                    return BadRequest(CreateErrorResponse(NotifiAndAlertsResources.SaveFailed));
-
-                return Ok(CreateSuccessResponse<string>(null, NotifiAndAlertsResources.SavedSuccessfully));
-            }
-            catch (Exception ex)
-            {
-                return HandleException(ex);
-            }
-        }
+        //        return Ok(CreateSuccessResponse<string>(null, NotifiAndAlertsResources.SavedSuccessfully));
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return HandleException(ex);
+        //    }
+        //}
 
         /// <summary>
         /// Deletes an item by ID.
@@ -238,33 +226,33 @@ namespace Api.Controllers.Catalog
             return true;
         }
 
-        /// <summary>
-        /// Common method for retrieving categorized items
-        /// </summary>
-        private async Task<IActionResult> GetItemsByCategory(ItemSearchCriteriaModel criteria)
-        {
-            try
-            {
-                ValidateAndNormalizePagination(criteria);
+        ///// <summary>
+        ///// Common method for retrieving categorized items
+        ///// </summary>
+        //private async Task<IActionResult> GetItemsByCategory(ItemSearchCriteriaModel criteria)
+        //{
+        //    try
+        //    {
+        //        ValidateAndNormalizePagination(criteria);
 
-                var clientIp = HttpContext.GetClientIpAddress();
-                var shouldApplyConversion = ShouldApplyCurrencyConversion();
-                var result = await _itemService.GetPageWithCurrencyConversionAsync(criteria, clientIp, shouldApplyConversion);
+        //        var clientIp = HttpContext.GetClientIpAddress();
+        //        var shouldApplyConversion = ShouldApplyCurrencyConversion();
+        //        var result = await _itemService.GetPageWithCurrencyConversionAsync(criteria, clientIp, shouldApplyConversion);
 
-                if (result?.Items?.Any() != true)
-                {
-                    return Ok(CreateSuccessResponse(
-                        new PaginatedDataModel<VwItemDto>(new List<VwItemDto>(), 0),
-                        NotifiAndAlertsResources.NoDataFound));
-                }
+        //        if (result?.Items?.Any() != true)
+        //        {
+        //            return Ok(CreateSuccessResponse(
+        //                new PaginatedDataModel<VwItemDto>(new List<VwItemDto>(), 0),
+        //                NotifiAndAlertsResources.NoDataFound));
+        //        }
 
-                return Ok(CreateSuccessResponse(result, NotifiAndAlertsResources.DataRetrieved));
-            }
-            catch (Exception ex)
-            {
-                return HandleException(ex);
-            }
-        }
+        //        return Ok(CreateSuccessResponse(result, NotifiAndAlertsResources.DataRetrieved));
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return HandleException(ex);
+        //    }
+        //}
 
         /// <summary>
         /// Validates and normalizes pagination parameters

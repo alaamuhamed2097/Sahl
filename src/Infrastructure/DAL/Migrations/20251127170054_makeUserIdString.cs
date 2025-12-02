@@ -10,9 +10,9 @@ namespace DAL.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropForeignKey(
-                name: "FK_NotificationPreferences_AspNetUsers_UserId",
-                table: "TbNotificationPreferences");
+            //migrationBuilder.DropForeignKey(
+            //    name: "FK_NotificationPreferences_AspNetUsers_UserId",
+            //    table: "TbNotificationPreferences");
 
             migrationBuilder.DropTable(
                 name: "Notifications");

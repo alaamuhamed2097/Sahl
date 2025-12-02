@@ -1,4 +1,4 @@
-﻿@page "/products"
+﻿@* @page "/products"
 
 @inherits BaseListPage<ItemDto>
 
@@ -225,7 +225,7 @@
 									</a>
 								</li>
 
-								@* أرقام الصفحات *@
+
 								@{
 																const int maxVisiblePages = 5;
 								int startPage = Math.Max(1, currentPage - 2);
@@ -275,4 +275,4 @@
 			</div>
 		</div>
 	</div>
-</div>
+</div> *@

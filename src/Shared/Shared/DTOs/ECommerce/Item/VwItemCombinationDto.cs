@@ -1,4 +1,7 @@
 ﻿using Shared.DTOs.Base;
+using Shared.GeneralModels.Models;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Shared.DTOs.ECommerce.Item
 {

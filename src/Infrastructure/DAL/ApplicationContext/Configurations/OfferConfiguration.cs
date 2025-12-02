@@ -15,34 +15,6 @@ namespace DAL.ApplicationContext.Configurations
 
             builder.HasKey(o => o.Id);
 
-            // Property configurations
-            builder.Property(o => o.Price)
-                .IsRequired()
-                .HasColumnType("decimal(18,2)");
-
-            builder.Property(o => o.OriginalPrice)
-                .HasColumnType("decimal(18,2)");
-
-            builder.Property(o => o.Quantity)
-                .IsRequired()
-                .HasDefaultValue(0);
-
-            builder.Property(o => o.ShippingCost)
-                .HasColumnType("decimal(18,2)")
-                .HasDefaultValue(0);
-
-            builder.Property(o => o.IsActive)
-                .IsRequired()
-                .HasDefaultValue(true);
-
-            builder.Property(o => o.Condition)
-                .IsRequired()
-                .HasMaxLength(50);
-
-            builder.Property(o => o.SellerRating)
-                .HasColumnType("decimal(3,2)");
-
-            // CRITICAL FIX: Change all Cascade/ClientSetNull to Restrict
             // Offer -> Item (many-to-one)
             builder.HasOne<TbItem>(o => o.Item)
                    .WithMany()
@@ -88,17 +60,8 @@ namespace DAL.ApplicationContext.Configurations
             builder.HasIndex(o => o.WarrantyId)
                    .HasDatabaseName("IX_TbOffers_WarrantyId");
 
-            builder.HasIndex(o => o.IsActive)
-                   .HasDatabaseName("IX_TbOffers_IsActive");
-
-            builder.HasIndex(o => o.Price)
-                   .HasDatabaseName("IX_TbOffers_Price");
-
-            builder.HasIndex(o => new { o.ItemId, o.IsActive, o.Price })
-                   .HasDatabaseName("IX_TbOffers_Item_Active_Price");
-
             // Query filter for active offers
-            builder.HasQueryFilter(o => o.IsActive && o.CurrentState == 1);
+            builder.HasQueryFilter(o =>o.CurrentState == 1);
         }
     }
 }

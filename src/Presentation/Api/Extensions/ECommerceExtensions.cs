@@ -21,6 +21,7 @@ using BL.Service.ShippingCompany;
 using BL.Service.Vendor;
 using BL.Contracts.Service.Pricing;
 using BL.Service.Pricing;
+using BL.Service.ECommerce.Item;
 
 namespace Api.Extensions
 {

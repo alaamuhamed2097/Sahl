@@ -1,23 +1,21 @@
+using Domains.Entities.Catalog.Item;
+using Domains.Entities.Catalog.Item.ItemAttributes;
+using Domains.Entities.Warehouse;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Domains.Entities.Inventory
 {
     public class TbMovitemsdetail : BaseEntity
     {
-        [ForeignKey("Moitem")]
         public Guid? MoitemId { get; set; }
 
-        [ForeignKey("Mortem")]
         public Guid? MortemId { get; set; }
 
-        [ForeignKey("Item")]
         public Guid ItemId { get; set; }
 
-        [ForeignKey("Warehouse")]
         public Guid WarehouseId { get; set; }
 
-        [ForeignKey("ItemAttributeCombinationPricing")]
-        public Guid? ItemAttributeCombinationPricingId { get; set; }
+        public Guid? ItemCombinationId { get; set; }
 
         public int Quantity { get; set; }
 
@@ -25,10 +23,15 @@ namespace Domains.Entities.Inventory
 
         public decimal TotalPrice { get; set; }
 
+        [ForeignKey("MoitemId")]
         public virtual TbMoitem? Moitem { get; set; }
+        [ForeignKey("MortemId")]
         public virtual TbMortem? Mortem { get; set; }
-        public virtual Catalog.Item.TbItem Item { get; set; } = null!;
-        public virtual Warehouse.TbWarehouse Warehouse { get; set; } = null!;
-        public virtual Catalog.Item.ItemAttributes.TbItemAttributeCombinationPricing? ItemAttributeCombinationPricing { get; set; }
+        [ForeignKey("ItemId")]
+        public virtual TbItem Item { get; set; } = null!;
+        [ForeignKey("WarehouseId")]
+        public virtual TbWarehouse Warehouse { get; set; } = null!;
+        [ForeignKey("ItemCombinationId")]
+        public virtual TbItemCombination? ItemCombination { get; set; }
     }
 }

@@ -22,14 +22,10 @@ namespace Domains.Entities.Catalog.Item
         [StringLength(200)]
         public string ShortDescriptionEn { get; set; }
 
-        [StringLength(200)]
-        public string Barcode { get; set; }
-
-        [StringLength(200)]
-        public string SKU { get; set; }
-
+        [StringLength(500)]
         public string DescriptionAr { get; set; }
-
+       
+        [StringLength(500)]
         public string DescriptionEn { get; set; }
 
         [Required]
@@ -38,7 +34,6 @@ namespace Domains.Entities.Catalog.Item
         public Guid UnitId { get; set; }
 
         public Guid? VideoProviderId { get; set; }
-        public Guid? ByBoxOfferId { get; set; }
 
         [StringLength(200)]
         public string? VideoUrl { get; set; }
@@ -46,6 +41,9 @@ namespace Domains.Entities.Catalog.Item
         [StringLength(200)]
         public string ThumbnailImage { get; set; } = null!;
 
+        [Column(TypeName = "decimal(18,2)")]
+        public decimal? BasePrice { get; set; }
+       
         [Column(TypeName = "decimal(18,2)")]
         public decimal? MinimumPrice { get; set; }
 

@@ -1,462 +1,373 @@
-﻿//using BL.Contracts.GeneralService.CMS;
-//using BL.Contracts.GeneralService.Location;
-//using BL.Contracts.IMapper;
-//using BL.Contracts.Service.ECommerce.Item;
-//using BL.Extensions;
-//using BL.Service.Base;
-//using DAL.Contracts.Repositories;
-//using DAL.Contracts.UnitOfWork;
-//using DAL.Models;
-//using Domains.Entities.Catalog.Item;
-//using Domains.Entities.Catalog.Item.ItemAttributes;
-//using Domains.Views.Item;
-//using Microsoft.EntityFrameworkCore;
-//using Resources;
-//using Serilog;
-//using Shared.DTOs.ECommerce.Item;
-//using Shared.GeneralModels.SearchCriteriaModels;
-//using System.ComponentModel.DataAnnotations;
-//using System.Linq.Expressions;
-
-//namespace BL.Service.ECommerce.Item
-//{
-//    public class ItemService : BaseService<TbItem, ItemDto>, IItemService
-//    {
-//        private const int MaxImageCount = 10;
-//        private readonly ITableRepository<TbItem> _tableRepository;
-//        private readonly IRepository<VwItem> _repository;
-//        private readonly IFileUploadService _fileUploadService;
-//        private readonly IImageProcessingService _imageProcessingService;
-//        private readonly IUnitOfWork _unitOfWork;
-//        private readonly IBaseMapper _mapper;
-//        private readonly ILocationBasedCurrencyService _locationBasedCurrencyService;
-//        private readonly ILogger _logger;
-
-//        public ItemService(IBaseMapper mapper,
-//            IUnitOfWork unitOfWork,
-//            ITableRepository<TbItem> tableRepository,
-//            IRepository<VwItem> repository,
-//            IFileUploadService fileUploadService,
-//            IImageProcessingService imageProcessingService,
-//            ILocationBasedCurrencyService locationBasedCurrencyService,
-//            ILogger logger)
-//            : base(tableRepository, mapper)
-//        {
-//            _mapper = mapper;
-//            _unitOfWork = unitOfWork;
-//            _tableRepository = tableRepository;
-//            _repository = repository;
-//            _fileUploadService = fileUploadService;
-//            _imageProcessingService = imageProcessingService;
-//            _locationBasedCurrencyService = locationBasedCurrencyService;
-//            _logger = logger;
-//        }
-
-//        public async Task<PaginatedDataModel<VwItemDto>> GetPage(ItemSearchCriteriaModel criteriaModel)
-//        {
-//            if (criteriaModel == null)
-//                throw new ArgumentNullException(nameof(criteriaModel));
-
-//            if (criteriaModel.PageNumber < 1)
-//                throw new ArgumentOutOfRangeException(nameof(criteriaModel.PageNumber), ValidationResources.PageNumberGreaterThanZero);
-
-//            if (criteriaModel.PageSize < 1 || criteriaModel.PageSize > 100)
-//                throw new ArgumentOutOfRangeException(nameof(criteriaModel.PageSize), ValidationResources.PageSizeRange);
-
-//            // Base filter
-//            Expression<Func<VwItem, bool>> filter = x => true;
-
-//            // Combine expressions manually
-//            var searchTerm = criteriaModel.SearchTerm?.Trim().ToLower();
-//            if (!string.IsNullOrWhiteSpace(searchTerm))
-//            {
-//                filter = filter.And(x =>
-//                    (x.TitleAr != null && x.TitleAr.ToLower().Contains(searchTerm)) ||
-//                    (x.TitleEn != null && x.TitleEn.ToLower().Contains(searchTerm)) ||
-//                    (x.ShortDescriptionAr != null && x.ShortDescriptionAr.ToLower().Contains(searchTerm)) ||
-//                    (x.ShortDescriptionEn != null && x.ShortDescriptionEn.ToLower().Contains(searchTerm)) ||
-//                    (x.CategoryTitleAr != null && x.CategoryTitleAr.ToLower().Contains(searchTerm)) ||
-//                    (x.CategoryTitleEn != null && x.CategoryTitleEn.ToLower().Contains(searchTerm))
-//                );
-//            }
-
-//            if (criteriaModel.CategoryIds?.Any() == true)
-//            {
-//                filter = filter.And(x => criteriaModel.CategoryIds.Contains(x.CategoryId));
-//            }
-
-//            if (criteriaModel.UnitIds?.Any() == true)
-//            {
-//                filter = filter.And(x => criteriaModel.UnitIds.Contains(x.UnitId));
-//            }
-
-//            if (criteriaModel.IsInStock.HasValue)
-//            {
-//                filter = filter.And(x => x.StockStatus == criteriaModel.IsInStock.Value);
-//            }
-
-//            if (criteriaModel.PriceFrom.HasValue)
-//            {
-//                filter = filter.And(x => x.DefaultPrice >= criteriaModel.PriceFrom.Value);
-//            }
-
-//            if (criteriaModel.PriceTo.HasValue)
-//            {
-//                filter = filter.And(x => x.DefaultPrice <= criteriaModel.PriceTo.Value);
-//            }
-
-//            if (criteriaModel.QuantityFrom.HasValue)
-//            {
-//                filter = filter.And(x => x.DefaultQuantity >= criteriaModel.QuantityFrom.Value);
-//            }
-
-//            if (criteriaModel.QuantityTo.HasValue)
-//            {
-//                filter = filter.And(x => x.DefaultQuantity <= criteriaModel.QuantityTo.Value);
-//            }
-
-//            // New Item Flags Filters
-//            if (criteriaModel.IsNewArrival.HasValue)
-//            {
-//                filter = filter.And(x => x.IsNewArrival == criteriaModel.IsNewArrival.Value);
-//            }
-
-//            if (criteriaModel.IsBestSeller.HasValue)
-//            {
-//                filter = filter.And(x => x.IsBestSeller == criteriaModel.IsBestSeller.Value);
-//            }
-
-//            if (criteriaModel.IsRecommended.HasValue)
-//            {
-//                filter = filter.And(x => x.IsRecommended == criteriaModel.IsRecommended.Value);
-//            }
-
-//            // Get paginated data from repository
-//            var items = await _repository.GetPageAsync(
-//                criteriaModel.PageNumber,
-//                criteriaModel.PageSize,
-//                filter,
-//                orderBy: q => q.OrderByDescending(x => x.CreatedDateUtc)
-//            );
-
-//            var itemsDto = _mapper.MapList<VwItem, VwItemDto>(items.Items);
-
-//            return new PaginatedDataModel<VwItemDto>(itemsDto, items.TotalRecords);
-//        }
-
-//        public new async Task<VwItemDto> FindByIdAsync(Guid Id)
-//        {
-//            if (Id == Guid.Empty)
-//                throw new ArgumentNullException(nameof(Id));
-
-//            var items = await _repository.GetAsync(
-//                x => x.Id == Id,
-//                orderBy: i=>i.OrderByDescending(x => x.CreatedDateUtc)
-//            );
-
-//            var item = items.FirstOrDefault();
-//            if (item == null)
-//                throw new KeyNotFoundException(ValidationResources.EntityNotFound);
-
-//            return _mapper.MapModel<VwItem, VwItemDto>(item);
-//        }
-
-//        public new async Task<bool> Save(ItemDto dto, Guid userId)
-//        {
-//            if (dto == null)
-//                throw new ArgumentNullException(nameof(dto));
-//            if (userId == Guid.Empty)
-//                throw new ArgumentException(UserResources.UserNotFound, nameof(userId));
-
-//            // Fix: Check if Images is null or empty, but allow saving without image count validation for updates
-//            if (dto.Images == null)
-//                dto.Images = new List<ItemImageDto>();
-
-//            // Only validate image count for new items
-//            if (dto.Id == Guid.Empty && (!dto.Images.Any() || dto.Images.Count > MaxImageCount))
-//            {
-//                throw new ArgumentException($"{ValidationResources.MaximumOf} {MaxImageCount} {ValidationResources.ImagesAllowed}", nameof(dto.Images));
-//            }
-
-//            // Ensure every item has at least one combination (default combination)
-//            if (dto.ItemAttributeCombinationPricings == null || !dto.ItemAttributeCombinationPricings.Any())
-//            {
-//                _logger.Information("No combinations found, creating default combination for item {ItemId}", dto.Id);
-
-//                // Create a default combination with no attributes
-//                dto.ItemAttributeCombinationPricings = new List<ItemAttributeCombinationPricingDto>
-//                {
-//                    new ItemAttributeCombinationPricingDto
-//                    {
-//                        AttributeIds = string.Empty, // Empty means default/no attributes
-//                        Price = 0,
-//                        SalesPrice = 0,
-//                        Quantity = 0,
-//                        IsDefault = true
-//                    }
-//                };
-//            }
-
-//            // Ensure only one combination is marked as default
-//            var defaultCombinations = dto.ItemAttributeCombinationPricings.Where(c => c.IsDefault).ToList();
-//            if (defaultCombinations.Count == 0)
-//            {
-//                // No default set, mark the first one as default
-//                _logger.Information("No default combination found, setting first combination as default for item {ItemId}", dto.Id);
-//                dto.ItemAttributeCombinationPricings.First().IsDefault = true;
-//            }
-//            else if (defaultCombinations.Count > 1)
-//            {
-//                // Multiple defaults found, keep only the first one
-//                _logger.Warning("Multiple default combinations found for item {ItemId}, keeping only the first", dto.Id);
-//                foreach (var combo in defaultCombinations.Skip(1))
-//                {
-//                    combo.IsDefault = false;
-//                }
-//            }
-
-//            try
-//            {
-//                await _unitOfWork.BeginTransactionAsync();
-
-//                // Handle thumbnail image
-//                if (!string.IsNullOrEmpty(dto.ThumbnailImage) && _fileUploadService.ValidateFile(dto.ThumbnailImage).isValid)
-//                    dto.ThumbnailImage = await SaveImageSync(dto.ThumbnailImage);
-
-//                var imageEntities = new List<TbItemImage>();
-//                if (dto.Images?.Any() == true)
-//                {
-//                    foreach (var image in dto.Images)
-//                    {
-//                        if (image.IsNew)
-//                        {
-//                            if (!string.IsNullOrEmpty(image.Path) && _fileUploadService.ValidateFile(image.Path).isValid)
-//                            {
-//                                image.Path = await SaveImageSync(image.Path);
-//                                var imageEntity = _mapper.MapModel<ItemImageDto, TbItemImage>(image);
-//                                imageEntities.Add(imageEntity);
-//                            }
-//                        }
-//                    }
-//                }
-
-//                // If this is an update (item has an ID), fetch existing item to get old image paths
-//                if (dto.Id != Guid.Empty)
-//                {
-//                    // Get existing images for this item
-//                    var existingImages = await _unitOfWork
-//                        .TableRepository<TbItemImage>()
-//                        .GetAsync(ii => ii.ItemId == dto.Id);
-
-//                    var newImagesPaths = dto.Images?.Select(i => i.Path) ?? Enumerable.Empty<string>();
-
-//                    var imagesToDelete = existingImages.Where(i => !newImagesPaths.Contains(i.Path));
-
-//                    if (imagesToDelete.Any())
-//                    {
-//                        foreach (var image in imagesToDelete)
-//                        {
-//                            await _unitOfWork
-//                            .TableRepository<TbItemImage>()
-//                            .HardDeleteAsync(image.Id);
-//                        }
-//                    }
-
-//                    // Delete existing attributes
-//                    var existingAttributes = await _unitOfWork
-//                        .TableRepository<TbItemAttribute>()
-//                        .GetAsync(ia => ia.ItemId == dto.Id);
-
-//                    if (existingAttributes.Any())
-//                    {
-//                        foreach (var attr in existingAttributes)
-//                        {
-//                            await _unitOfWork
-//                                .TableRepository<TbItemAttribute>()
-//                                .HardDeleteAsync(attr.Id);
-//                        }
-//                    }
-
-//                    // Delete existing combinations
-//                    var existingCombinations = await _unitOfWork
-//                        .TableRepository<TbItemAttributeCombinationPricing>()
-//                        .GetAsync(c => c.ItemId == dto.Id);
-
-//                    if (existingCombinations.Any())
-//                    {
-//                        foreach (var combo in existingCombinations)
-//                        {
-//                            await _unitOfWork
-//                                .TableRepository<TbItemAttributeCombinationPricing>()
-//                                .HardDeleteAsync(combo.Id);
-//                        }
-//                    }
-//                }
-
-//                var entity = _mapper.MapModel<ItemDto, TbItem>(dto);
-//                entity.Brand = null;
-//                entity.Category = null;
-
-//                var itemSaved = await _unitOfWork.TableRepository<TbItem>().SaveAsync(entity, userId);
-
-//                var itemId = itemSaved.Id;
-//                if (imageEntities.Any())
-//                {
-//                    foreach (var imageEntity in imageEntities)
-//                    {
-//                        imageEntity.ItemId = itemId;
-//                    }
-//                }
-
-//                var imagesSaved = true;
-//                if (dto.Images?.Count(x => x.IsNew) > 0)
-//                    imagesSaved = await _unitOfWork.TableRepository<TbItemImage>().AddRangeAsync(imageEntities, userId);
-
-//                // Save ItemAttributes
-//                var attributesSaved = true;
-//                if (dto.ItemAttributes?.Any() == true)
-//                {
-//                    var attributeEntities = new List<TbItemAttribute>();
-//                    foreach (var attr in dto.ItemAttributes)
-//                    {
-//                        // Only save attributes with values
-//                        if (!string.IsNullOrWhiteSpace(attr.Value))
-//                        {
-//                            var attributeEntity = _mapper.MapModel<ItemAttributeDto, TbItemAttribute>(attr);
-//                            attributeEntity.ItemId = itemId;
-//                            attributeEntities.Add(attributeEntity);
-//                        }
-//                    }
-
-//                    if (attributeEntities.Any())
-//                    {
-//                        attributesSaved = await _unitOfWork.TableRepository<TbItemAttribute>().AddRangeAsync(attributeEntities, userId);
-//                    }
-//                }
-
-//                // Save ItemAttributeCombinationPricings
-//                var combinationsSaved = true;
-//                if (dto.ItemAttributeCombinationPricings?.Any() == true)
-//                {
-//                    var combinationEntities = new List<TbItemAttributeCombinationPricing>();
-//                    foreach (var combo in dto.ItemAttributeCombinationPricings)
-//                    {
-//                        var combinationEntity = _mapper.MapModel<ItemAttributeCombinationPricingDto, TbItemAttributeCombinationPricing>(combo);
-//                        combinationEntity.ItemId = itemId;
-//                        combinationEntities.Add(combinationEntity);
-//                    }
-
-//                    if (combinationEntities.Any())
-//                    {
-//                        combinationsSaved = await _unitOfWork.TableRepository<TbItemAttributeCombinationPricing>().AddRangeAsync(combinationEntities, userId);
-//                    }
-//                }
-
-//                await _unitOfWork.CommitAsync();
-
-//                return itemSaved.Success && imagesSaved && attributesSaved && combinationsSaved;
-//            }
-//            catch (Exception ex)
-//            {
-//                _unitOfWork.Rollback();
-//                _logger.Error(ex, "Error saving item {ItemId}", dto.Id);
-//                throw;
-//            }
-//        }
-
-//        // Currency conversion methods
-//        public async Task<ItemDto?> GetByIdWithCurrencyConversionAsync(Guid id, string clientIp, bool applyConversion = true)
-//        {
-//            try
-//            {
-//                var item = await FindByIdAsync(id);
-//                if (item == null) return null;
-
-//                var (targetCurrency, baseCurrency) = await _locationBasedCurrencyService.GetCurrencyInfoAsync(applyConversion ? clientIp : "0");
-//                return await _locationBasedCurrencyService.ApplyCurrencyConversionAsync(item, baseCurrency?.Code, targetCurrency?.Code);
-//            }
-//            catch (Exception ex)
-//            {
-//                _logger.Error(ex, "Error getting item by ID with currency conversion. ItemId: {ItemId}, ClientIp: {ClientIp}, ApplyConversion: {ApplyConversion}", id, clientIp, applyConversion);
-//                throw;
-//            }
-//        }
-
-//        public async Task<IEnumerable<ItemDto>> GetAllWithCurrencyConversionAsync(string clientIp, bool applyConversion = true)
-//        {
-//            try
-//            {
-//                var items = await GetAllAsync();
-//                if (items?.Any() != true) return items ?? Enumerable.Empty<ItemDto>();
-
-//                var (targetCurrency, baseCurrency) = await _locationBasedCurrencyService.GetCurrencyInfoAsync(applyConversion ? clientIp : "0");
-//                return await _locationBasedCurrencyService.ApplyCurrencyConversionAsync(items, baseCurrency?.Code, targetCurrency?.Code);
-//            }
-//            catch (Exception ex)
-//            {
-//                _logger.Error(ex, "Error getting all items with currency conversion. ClientIp: {ClientIp}, ApplyConversion: {ApplyConversion}", clientIp, applyConversion);
-//                throw;
-//            }
-//        }
-
-//        public async Task<PaginatedDataModel<VwItemDto>> GetPageWithCurrencyConversionAsync(ItemSearchCriteriaModel criteriaModel, string clientIp, bool applyConversion = true)
-//        {
-//            try
-//            {
-//                var result = await GetPage(criteriaModel);
-//                if (result?.Items?.Any() != true) return result;
-
-//                var (targetCurrency, baseCurrency) = await _locationBasedCurrencyService.GetCurrencyInfoAsync(applyConversion ? clientIp : "0");
-//                var convertedItems = await _locationBasedCurrencyService.ApplyCurrencyConversionAsync(result.Items, baseCurrency?.Code, targetCurrency?.Code);
-
-//                return new PaginatedDataModel<VwItemDto>(convertedItems, result.TotalRecords);
-//            }
-//            catch (Exception ex)
-//            {
-//                _logger.Error(ex, "Error getting paginated items with currency conversion. ClientIp: {ClientIp}, ApplyConversion: {ApplyConversion}", clientIp, applyConversion);
-//                throw;
-//            }
-//        }
-
-//        // Helper functions
-//        private async Task<string> SaveImageSync(string image)
-//        {
-//            // Check if the file is null or empty
-//            if (string.IsNullOrEmpty(image))
-//            {
-//                throw new ValidationException(ValidationResources.ImageRequired);
-//            }
-
-//            // Validate the file
-//            var imageValidation = _fileUploadService.ValidateFile(image);
-//            if (!imageValidation.isValid)
-//            {
-//                throw new ValidationException(imageValidation.errorMessage);
-//            }
-
-//            try
-//            {
-//                // Convert the file to byte array
-//                var imageBytes = await _fileUploadService.GetFileBytesAsync(image);
-
-//                // Resize the image
-//                var resizedImage = _imageProcessingService.ResizeImagePreserveAspectRatio(imageBytes, 800, 600);
-
-//                // Convert the resized image to WebP format
-//                var webpImage = _imageProcessingService.ConvertToWebP(resizedImage);
-
-//                // Upload the WebP image to the specified location
-//                var imagePath = await _fileUploadService.UploadFileAsync(webpImage, "Images");
-
-//                // Return the path of the uploaded image
-//                return imagePath;
-//            }
-//            catch (Exception ex)
-//            {
-//                // Log the exception and rethrow it
-//                _logger.Error(ex, ValidationResources.ErrorProcessingImage);
-//                throw new ApplicationException(ValidationResources.ErrorProcessingImage, ex);
-//            }
-//        }
-//    }
-//}
+﻿using BL.Contracts.GeneralService.CMS;
+using BL.Contracts.GeneralService.Location;
+using BL.Contracts.IMapper;
+using BL.Contracts.Service.ECommerce.Item;
+using BL.Extensions;
+using BL.Service.Base;
+using DAL.Contracts.Repositories;
+using DAL.Contracts.UnitOfWork;
+using DAL.Models;
+using Domains.Entities.Catalog.Item;
+using Domains.Entities.Catalog.Item.ItemAttributes;
+using Domains.Views.Item;
+using Microsoft.EntityFrameworkCore;
+using Resources;
+using Serilog;
+using Shared.DTOs.ECommerce.Item;
+using Shared.GeneralModels.SearchCriteriaModels;
+using System.ComponentModel.DataAnnotations;
+using System.Linq.Expressions;
+
+namespace BL.Service.ECommerce.Item
+{
+    public class ItemService : BaseService<TbItem, ItemDto>, IItemService
+    {
+        private const int MaxImageCount = 10;
+        private readonly ITableRepository<TbItem> _tableRepository;
+        private readonly IRepository<VwItem> _repository;
+        private readonly IFileUploadService _fileUploadService;
+        private readonly IImageProcessingService _imageProcessingService;
+        private readonly IUnitOfWork _unitOfWork;
+        private readonly IBaseMapper _mapper;
+        private readonly ILocationBasedCurrencyService _locationBasedCurrencyService;
+        private readonly ILogger _logger;
+
+        public ItemService(IBaseMapper mapper,
+            IUnitOfWork unitOfWork,
+            ITableRepository<TbItem> tableRepository,
+            IRepository<VwItem> repository,
+            IFileUploadService fileUploadService,
+            IImageProcessingService imageProcessingService,
+            ILocationBasedCurrencyService locationBasedCurrencyService,
+            ILogger logger)
+            : base(tableRepository, mapper)
+        {
+            _mapper = mapper;
+            _unitOfWork = unitOfWork;
+            _tableRepository = tableRepository;
+            _repository = repository;
+            _fileUploadService = fileUploadService;
+            _imageProcessingService = imageProcessingService;
+            _locationBasedCurrencyService = locationBasedCurrencyService;
+            _logger = logger;
+        }
+
+        public async Task<PaginatedDataModel<VwItemDto>> GetPage(ItemSearchCriteriaModel criteriaModel)
+        {
+            if (criteriaModel == null)
+                throw new ArgumentNullException(nameof(criteriaModel));
+
+            if (criteriaModel.PageNumber < 1)
+                throw new ArgumentOutOfRangeException(nameof(criteriaModel.PageNumber), ValidationResources.PageNumberGreaterThanZero);
+
+            if (criteriaModel.PageSize < 1 || criteriaModel.PageSize > 100)
+                throw new ArgumentOutOfRangeException(nameof(criteriaModel.PageSize), ValidationResources.PageSizeRange);
+
+            // Base filter
+            Expression<Func<VwItem, bool>> filter = x => true;
+
+            // Combine expressions manually
+            var searchTerm = criteriaModel.SearchTerm?.Trim().ToLower();
+            if (!string.IsNullOrWhiteSpace(searchTerm))
+            {
+                filter = filter.And(x =>
+                    (x.TitleAr != null && x.TitleAr.ToLower().Contains(searchTerm)) ||
+                    (x.TitleEn != null && x.TitleEn.ToLower().Contains(searchTerm)) ||
+                    (x.ShortDescriptionAr != null && x.ShortDescriptionAr.ToLower().Contains(searchTerm)) ||
+                    (x.ShortDescriptionEn != null && x.ShortDescriptionEn.ToLower().Contains(searchTerm)) ||
+                    (x.CategoryTitleAr != null && x.CategoryTitleAr.ToLower().Contains(searchTerm)) ||
+                    (x.CategoryTitleEn != null && x.CategoryTitleEn.ToLower().Contains(searchTerm))
+                );
+            }
+
+            if (criteriaModel.CategoryIds?.Any() == true)
+            {
+                filter = filter.And(x => criteriaModel.CategoryIds.Contains(x.CategoryId));
+            }
+
+            if (criteriaModel.UnitIds?.Any() == true)
+            {
+                filter = filter.And(x => criteriaModel.UnitIds.Contains(x.UnitId));
+            }
+
+            // New Item Flags Filters
+            if (criteriaModel.IsNewArrival.HasValue)
+            {
+                filter = filter.And(x => x.IsNewArrival == criteriaModel.IsNewArrival.Value);
+            }
+
+            // Get paginated data from repository
+            var items = await _repository.GetPageAsync(
+                criteriaModel.PageNumber,
+                criteriaModel.PageSize,
+                filter,
+                orderBy: q => q.OrderByDescending(x => x.CreatedDateUtc)
+            );
+
+            var itemsDto = _mapper.MapList<VwItem, VwItemDto>(items.Items);
+
+            return new PaginatedDataModel<VwItemDto>(itemsDto, items.TotalRecords);
+        }
+
+        public new async Task<VwItemDto> FindByIdAsync(Guid Id)
+        {
+            if (Id == Guid.Empty)
+                throw new ArgumentNullException(nameof(Id));
+
+            var items = await _repository.GetAsync(
+                x => x.Id == Id,
+                orderBy: i => i.OrderByDescending(x => x.CreatedDateUtc)
+            );
+
+            var item = items.FirstOrDefault();
+            if (item == null)
+                throw new KeyNotFoundException(ValidationResources.EntityNotFound);
+
+            return _mapper.MapModel<VwItem, VwItemDto>(item);
+        }
+
+        //public new async Task<bool> Save(ItemDto dto, Guid userId)
+        //{
+        //    if (dto == null)
+        //        throw new ArgumentNullException(nameof(dto));
+        //    if (userId == Guid.Empty)
+        //        throw new ArgumentException(UserResources.UserNotFound, nameof(userId));
+
+        //    // Fix: Check if Images is null or empty, but allow saving without image count validation for updates
+        //    if (dto.Images == null)
+        //        dto.Images = new List<ItemImageDto>();
+
+        //    // Only validate image count for new items
+        //    if (dto.Id == Guid.Empty && (!dto.Images.Any() || dto.Images.Count > MaxImageCount))
+        //    {
+        //        throw new ArgumentException($"{ValidationResources.MaximumOf} {MaxImageCount} {ValidationResources.ImagesAllowed}", nameof(dto.Images));
+        //    }
+
+        //    // Ensure every item has at least one combination (default combination)
+        //    if (dto.ItemAttributeCombinationPricings == null || !dto.ItemAttributeCombinationPricings.Any())
+        //    {
+        //        _logger.Information("No combinations found, creating default combination for item {ItemId}", dto.Id);
+
+        //        // Create a default combination with no attributes
+        //        dto.ItemAttributeCombinationPricings = new List<ItemAttributeCombinationPricingDto>
+        //        {
+        //            new ItemAttributeCombinationPricingDto
+        //            {
+        //                AttributeIds = string.Empty, // Empty means default/no attributes
+        //                Price = 0,
+        //                SalesPrice = 0,
+        //                Quantity = 0,
+        //                IsDefault = true
+        //            }
+        //        };
+        //    }
+
+        //    // Ensure only one combination is marked as default
+        //    var defaultCombinations = dto.ItemAttributeCombinationPricings.Where(c => c.IsDefault).ToList();
+        //    if (defaultCombinations.Count == 0)
+        //    {
+        //        // No default set, mark the first one as default
+        //        _logger.Information("No default combination found, setting first combination as default for item {ItemId}", dto.Id);
+        //        dto.ItemAttributeCombinationPricings.First().IsDefault = true;
+        //    }
+        //    else if (defaultCombinations.Count > 1)
+        //    {
+        //        // Multiple defaults found, keep only the first one
+        //        _logger.Warning("Multiple default combinations found for item {ItemId}, keeping only the first", dto.Id);
+        //        foreach (var combo in defaultCombinations.Skip(1))
+        //        {
+        //            combo.IsDefault = false;
+        //        }
+        //    }
+
+        //    try
+        //    {
+        //        await _unitOfWork.BeginTransactionAsync();
+
+        //        // Handle thumbnail image
+        //        if (!string.IsNullOrEmpty(dto.ThumbnailImage) && _fileUploadService.ValidateFile(dto.ThumbnailImage).isValid)
+        //            dto.ThumbnailImage = await SaveImageSync(dto.ThumbnailImage);
+
+        //        var imageEntities = new List<TbItemImage>();
+        //        if (dto.Images?.Any() == true)
+        //        {
+        //            foreach (var image in dto.Images)
+        //            {
+        //                if (image.IsNew)
+        //                {
+        //                    if (!string.IsNullOrEmpty(image.Path) && _fileUploadService.ValidateFile(image.Path).isValid)
+        //                    {
+        //                        image.Path = await SaveImageSync(image.Path);
+        //                        var imageEntity = _mapper.MapModel<ItemImageDto, TbItemImage>(image);
+        //                        imageEntities.Add(imageEntity);
+        //                    }
+        //                }
+        //            }
+        //        }
+
+        //        // If this is an update (item has an ID), fetch existing item to get old image paths
+        //        if (dto.Id != Guid.Empty)
+        //        {
+        //            // Get existing images for this item
+        //            var existingImages = await _unitOfWork
+        //                .TableRepository<TbItemImage>()
+        //                .GetAsync(ii => ii.ItemId == dto.Id);
+
+        //            var newImagesPaths = dto.Images?.Select(i => i.Path) ?? Enumerable.Empty<string>();
+
+        //            var imagesToDelete = existingImages.Where(i => !newImagesPaths.Contains(i.Path));
+
+        //            if (imagesToDelete.Any())
+        //            {
+        //                foreach (var image in imagesToDelete)
+        //                {
+        //                    await _unitOfWork
+        //                    .TableRepository<TbItemImage>()
+        //                    .HardDeleteAsync(image.Id);
+        //                }
+        //            }
+
+        //            // Delete existing attributes
+        //            var existingAttributes = await _unitOfWork
+        //                .TableRepository<TbItemAttribute>()
+        //                .GetAsync(ia => ia.ItemId == dto.Id);
+
+        //            if (existingAttributes.Any())
+        //            {
+        //                foreach (var attr in existingAttributes)
+        //                {
+        //                    await _unitOfWork
+        //                        .TableRepository<TbItemAttribute>()
+        //                        .HardDeleteAsync(attr.Id);
+        //                }
+        //            }
+
+        //            // Delete existing combinations
+        //            var existingCombinations = await _unitOfWork
+        //                .TableRepository<TbItemAttributeCombinationPricing>()
+        //                .GetAsync(c => c.ItemId == dto.Id);
+
+        //            if (existingCombinations.Any())
+        //            {
+        //                foreach (var combo in existingCombinations)
+        //                {
+        //                    await _unitOfWork
+        //                        .TableRepository<TbItemAttributeCombinationPricing>()
+        //                        .HardDeleteAsync(combo.Id);
+        //                }
+        //            }
+        //        }
+
+        //        var entity = _mapper.MapModel<ItemDto, TbItem>(dto);
+        //        entity.Brand = null;
+        //        entity.Category = null;
+
+        //        var itemSaved = await _unitOfWork.TableRepository<TbItem>().SaveAsync(entity, userId);
+
+        //        var itemId = itemSaved.Id;
+        //        if (imageEntities.Any())
+        //        {
+        //            foreach (var imageEntity in imageEntities)
+        //            {
+        //                imageEntity.ItemId = itemId;
+        //            }
+        //        }
+
+        //        var imagesSaved = true;
+        //        if (dto.Images?.Count(x => x.IsNew) > 0)
+        //            imagesSaved = await _unitOfWork.TableRepository<TbItemImage>().AddRangeAsync(imageEntities, userId);
+
+        //        // Save ItemAttributes
+        //        var attributesSaved = true;
+        //        if (dto.ItemAttributes?.Any() == true)
+        //        {
+        //            var attributeEntities = new List<TbItemAttribute>();
+        //            foreach (var attr in dto.ItemAttributes)
+        //            {
+        //                // Only save attributes with values
+        //                if (!string.IsNullOrWhiteSpace(attr.Value))
+        //                {
+        //                    var attributeEntity = _mapper.MapModel<ItemAttributeDto, TbItemAttribute>(attr);
+        //                    attributeEntity.ItemId = itemId;
+        //                    attributeEntities.Add(attributeEntity);
+        //                }
+        //            }
+
+        //            if (attributeEntities.Any())
+        //            {
+        //                attributesSaved = await _unitOfWork.TableRepository<TbItemAttribute>().AddRangeAsync(attributeEntities, userId);
+        //            }
+        //        }
+
+        //        // Save ItemAttributeCombinationPricings
+        //        var combinationsSaved = true;
+        //        if (dto.ItemAttributeCombinationPricings?.Any() == true)
+        //        {
+        //            var combinationEntities = new List<TbItemAttributeCombinationPricing>();
+        //            foreach (var combo in dto.ItemAttributeCombinationPricings)
+        //            {
+        //                var combinationEntity = _mapper.MapModel<ItemAttributeCombinationPricingDto, TbItemAttributeCombinationPricing>(combo);
+        //                combinationEntity.ItemId = itemId;
+        //                combinationEntities.Add(combinationEntity);
+        //            }
+
+        //            if (combinationEntities.Any())
+        //            {
+        //                combinationsSaved = await _unitOfWork.TableRepository<TbItemAttributeCombinationPricing>().AddRangeAsync(combinationEntities, userId);
+        //            }
+        //        }
+
+        //        await _unitOfWork.CommitAsync();
+
+        //        return itemSaved.Success && imagesSaved && attributesSaved && combinationsSaved;
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        _unitOfWork.Rollback();
+        //        _logger.Error(ex, "Error saving item {ItemId}", dto.Id);
+        //        throw;
+        //    }
+        //}
+
+        // Helper functions
+        private async Task<string> SaveImageSync(string image)
+        {
+            // Check if the file is null or empty
+            if (string.IsNullOrEmpty(image))
+            {
+                throw new ValidationException(ValidationResources.ImageRequired);
+            }
+
+            // Validate the file
+            var imageValidation = _fileUploadService.ValidateFile(image);
+            if (!imageValidation.isValid)
+            {
+                throw new ValidationException(imageValidation.errorMessage);
+            }
+
+            try
+            {
+                // Convert the file to byte array
+                var imageBytes = await _fileUploadService.GetFileBytesAsync(image);
+
+                // Resize the image
+                var resizedImage = _imageProcessingService.ResizeImagePreserveAspectRatio(imageBytes, 800, 600);
+
+                // Convert the resized image to WebP format
+                var webpImage = _imageProcessingService.ConvertToWebP(resizedImage);
+
+                // Upload the WebP image to the specified location
+                var imagePath = await _fileUploadService.UploadFileAsync(webpImage, "Images");
+
+                // Return the path of the uploaded image
+                return imagePath;
+            }
+            catch (Exception ex)
+            {
+                // Log the exception and rethrow it
+                _logger.Error(ex, ValidationResources.ErrorProcessingImage);
+                throw new ApplicationException(ValidationResources.ErrorProcessingImage, ex);
+            }
+        }
+    }
+}

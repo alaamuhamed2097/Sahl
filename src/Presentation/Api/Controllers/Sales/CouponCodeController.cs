@@ -25,43 +25,43 @@ namespace Api.Controllers.Sales
             _couponCodeService = couponCodeService;
         }
 
-        /// <summary>
-        /// Applies a coupon code to a shopping cart.
-        /// </summary>
-        [HttpPost("apply")]
-        [Authorize(Roles = nameof(UserRole.Customer))]
-        public async Task<IActionResult> ApplyCouponCode([FromBody] ApplyCouponCodeRequest request)
-        {
-            try
-            {
-                if (!ModelState.IsValid)
-                    return BadRequest(new ResponseModel<string>
-                    {
-                        Success = false,
-                        Message = NotifiAndAlertsResources.InvalidInputAlert
-                    });
+        ///// <summary>
+        ///// Applies a coupon code to a shopping cart.
+        ///// </summary>
+        //[HttpPost("apply")]
+        //[Authorize(Roles = nameof(UserRole.Customer))]
+        //public async Task<IActionResult> ApplyCouponCode([FromBody] ApplyCouponCodeRequest request)
+        //{
+        //    try
+        //    {
+        //        if (!ModelState.IsValid)
+        //            return BadRequest(new ResponseModel<string>
+        //            {
+        //                Success = false,
+        //                Message = NotifiAndAlertsResources.InvalidInputAlert
+        //            });
 
-                var result = await _couponCodeService.ApplyCouponCode(request);
+        //        var result = await _couponCodeService.ApplyCouponCode(request);
 
-                if (!result.Success)
-                    return Ok(new ResponseModel<AppliedCouponCodeResult>
-                    {
-                        Success = false,
-                        Message = result.Message
-                    });
+        //        if (!result.Success)
+        //            return Ok(new ResponseModel<AppliedCouponCodeResult>
+        //            {
+        //                Success = false,
+        //                Message = result.Message
+        //            });
 
-                return Ok(new ResponseModel<AppliedCouponCodeResult>
-                {
-                    Success = true,
-                    Message = NotifiAndAlertsResources.PromoCodeAppliedSuccessfully,
-                    Data = result.Data
-                });
-            }
-            catch (Exception ex)
-            {
-                return HandleException(ex);
-            }
-        }
+        //        return Ok(new ResponseModel<AppliedCouponCodeResult>
+        //        {
+        //            Success = true,
+        //            Message = NotifiAndAlertsResources.PromoCodeAppliedSuccessfully,
+        //            Data = result.Data
+        //        });
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return HandleException(ex);
+        //    }
+        //}
 
         /// <summary>
         /// Validates a coupon code against specified products.

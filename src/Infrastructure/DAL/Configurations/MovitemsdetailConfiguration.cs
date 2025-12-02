@@ -54,9 +54,9 @@ namespace DAL.Configurations
                 .HasForeignKey(x => x.WarehouseId)
                 .OnDelete(DeleteBehavior.NoAction);
 
-            builder.HasOne(x => x.ItemAttributeCombinationPricing)
+            builder.HasOne(x => x.ItemCombination)
                 .WithMany()
-                .HasForeignKey(x => x.ItemAttributeCombinationPricingId)
+                .HasForeignKey(x => x.ItemCombinationId)
                 .OnDelete(DeleteBehavior.NoAction);
 
             builder.HasIndex(x => x.CurrentState);

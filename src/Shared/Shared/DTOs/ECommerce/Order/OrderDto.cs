@@ -19,7 +19,6 @@ namespace Shared.DTOs.ECommerce.Order
         public OrderStatus CurrentState { get; set; }
         public DateTime CreatedDateUtc { get; set; }
         public DateTime? OrderDeliveryDate { get; set; }
-        public Guid? DirectSaleLinkId { get; set; }
 
         [JsonIgnore]
         public string CreatedDateLocalFormatted =>

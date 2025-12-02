@@ -73,8 +73,8 @@ namespace DAL.ApplicationContext
 
         // Item Management
         public DbSet<TbItem> TbItems { get; set; }
-        public DbSet<TbItemAttribute> TbItemAttribute { get; set; }
-        public DbSet<TbItemAttributeCombinationPricing> TbItemAttributeCombinationPricings { get; set; }
+        public DbSet<TbItemAttribute> TbItemAttributes { get; set; }
+        public DbSet<TbAttributeValuePriceModifier> TbAttributeValuePriceModifiers { get; set; }
         public DbSet<TbItemImage> TbItemImages { get; set; }
         public DbSet<TbItemCombination> TbItemCombinations { get; set; }
         public DbSet<TbCombinationAttribute> TbCombinationAttributes { get; set; }
@@ -205,6 +205,8 @@ namespace DAL.ApplicationContext
         public DbSet<TbOfferCondition> TbOfferConditions { get; set; }
         public DbSet<TbWarranty> TbWarranties { get; set; }
         public DbSet<TbUserOfferRating> TbUserOfferRatings { get; set; }
+        public DbSet<TbOfferStatusHistory> TbOfferStatusHistories { get; set; }
+        public DbSet<TbOfferPriceHistory> TbOfferPriceHistories { get; set; }
 
         // Order Management
         public DbSet<TbOrder> TbOrders { get; set; }
@@ -250,28 +252,44 @@ namespace DAL.ApplicationContext
         /// </summary>
         private void ConfigureBaseEntities(ModelBuilder modelBuilder)
         {
-            foreach (var entityType in modelBuilder.Model.GetEntityTypes())
-            {
-                if (entityType.ClrType != null && typeof(BaseEntity).IsAssignableFrom(entityType.ClrType))
-                {
-                    var entity = modelBuilder.Entity(entityType.ClrType);
+            // Take a snapshot of entity types to avoid mutating the model while enumerating
+            var entityTypes = modelBuilder.Model
+                .GetEntityTypes()
+                .Where(t => t.ClrType != null && typeof(BaseEntity).IsAssignableFrom(t.ClrType))
+                .ToList();
 
-                    // Configure ID with NEWID() default
+            foreach (var entityType in entityTypes)
+            {
+                var clrType = entityType.ClrType!;
+                var entity = modelBuilder.Entity(clrType);
+
+                // Configure ID with NEWID() default if property exists
+                if (entityType.FindProperty(nameof(BaseEntity.Id)) != null)
+                {
                     entity.Property(nameof(BaseEntity.Id))
                           .HasDefaultValueSql("NEWID()")
                           .ValueGeneratedOnAdd();
+                }
 
-                    // Configure CreatedDateUtc with GETUTCDATE() default
+                // Configure CreatedDateUtc with GETUTCDATE() default if property exists
+                if (entityType.FindProperty(nameof(BaseEntity.CreatedDateUtc)) != null)
+                {
                     entity.Property(nameof(BaseEntity.CreatedDateUtc))
                           .HasDefaultValueSql("GETUTCDATE()")
                           .HasColumnType("datetime2(2)");
+                }
 
-                    // Configure UpdatedDateUtc as nullable
+                // Configure UpdatedDateUtc as nullable if property exists
+                if (entityType.FindProperty(nameof(BaseEntity.UpdatedDateUtc)) != null)
+                {
                     entity.Property(nameof(BaseEntity.UpdatedDateUtc))
                           .HasColumnType("datetime2(2)")
                           .IsRequired(false);
+                }
 
-                    // Configure CurrentState with default value
+                // Configure CurrentState with default value and index if property exists
+                if (entityType.FindProperty(nameof(BaseEntity.CurrentState)) != null)
+                {
                     entity.Property(nameof(BaseEntity.CurrentState))
                           .HasDefaultValue(1);
 
