@@ -1,11 +1,9 @@
-using BL.Contracts.Service.Warehouse;
-using BL.Contracts.Service.Inventory;
 using BL.Contracts.Service.Content;
 using BL.Contracts.Service.Notification;
-using BL.Service.Warehouse;
-using BL.Service.Inventory;
+using BL.Contracts.Service.Warehouse;
 using BL.Service.Content;
 using BL.Service.Notification;
+using BL.Service.Warehouse;
 
 namespace Api.Extensions
 {
@@ -15,11 +13,6 @@ namespace Api.Extensions
         {
             // Warehouse Services
             services.AddScoped<IWarehouseService, WarehouseService>();
-
-            // Inventory Services
-            services.AddScoped<IMoitemService, MoitemService>();
-            services.AddScoped<IMortemService, MortemService>();
-            services.AddScoped<IMovitemsdetailService, MovitemsdetailService>();
 
             return services;
         }

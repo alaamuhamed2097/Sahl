@@ -1,7 +1,9 @@
-﻿using Domains.Entities.CouponCode;
-using Domains.Entities.Shipping;
+﻿using Common.Enumerations.Payment;
+using Domains.Entities.CouponCode;
+using Domains.Entities.ECommerceSystem;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Common.Enumerations.Order;
 
 namespace Domains.Entities.Order
 {
@@ -14,31 +16,25 @@ namespace Domains.Entities.Order
         [MaxLength(50)]
         public string? InvoiceId { get; set; }
 
-        [MaxLength(100)]
-        public string Address { get; set; }
+        // Address is stored as a reference to customer's saved address
+        [ForeignKey("CustomerAddress")]
+        public Guid DeliveryAddressId { get; set; }
 
-        public int PVs { get; set; }
+        // PaymentStatus stored as enum
+        public PaymentStatus PaymentStatus { get; set; }
 
-        public int PaymentStatus { get; set; }
+        // New OrderStatus column to reflect progress (default 0 -> Pending)
+        public OrderProgressStatus OrderStatus { get; set; } = OrderProgressStatus.Pending;
 
         public DateTime? OrderDeliveryDate { get; set; }
 
         public DateTime? PaymentDate { get; set; }
 
-        [ForeignKey("PaymentGatewayMethod")]
-        public Guid PaymentGatewayMethodId { get; set; }
-
         [ForeignKey("User")]
         public string UserId { get; set; }
 
-        [ForeignKey("DirectSaleLink")]
-        public Guid? DirectSaleLinkId { get; set; }
-
         [ForeignKey("Coupon")]
         public Guid? CouponId { get; set; }
-
-        [ForeignKey("ShippingCompany")]
-        public Guid? ShippingCompanyId { get; set; }
 
         public decimal ShippingAmount { get; set; } = 0m;
 
@@ -46,9 +42,10 @@ namespace Domains.Entities.Order
 
 
         public virtual ApplicationUser User { get; set; }
-        // public virtual TbPaymentGatewayMethod PaymentGatewayMethod { get; set; }
         public virtual TbCouponCode? Coupon { get; set; }
-        public virtual TbShippingCompany? ShippingCompany { get; set; }
+
+        // Navigation to the saved customer address used for this order
+        public virtual TbCustomerAddress? CustomerAddress { get; set; }
 
         public virtual ICollection<TbOrderDetail> OrderDetails { get; set; }
     }

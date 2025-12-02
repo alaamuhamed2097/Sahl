@@ -17,8 +17,6 @@ using Domains.Entities.ECommerceSystem.Customer;
 using Domains.Entities.ECommerceSystem.Review;
 using Domains.Entities.ECommerceSystem.Support;
 using Domains.Entities.ECommerceSystem.Vendor;
-using Domains.Entities.Fulfillment;
-using Domains.Entities.Inventory;
 using Domains.Entities.Location;
 using Domains.Entities.Loyalty;
 using Domains.Entities.Merchandising;
@@ -135,10 +133,6 @@ namespace DAL.ApplicationContext
         // Warehouse Management
         public DbSet<TbWarehouse> TbWarehouses { get; set; }
 
-        // Inventory Management
-        public DbSet<TbMoitem> TbMoitems { get; set; }
-        public DbSet<TbMortem> TbMortems { get; set; }
-        public DbSet<TbMovitemsdetail> TbMovitemsdetails { get; set; }
 
         // Content Management
         public DbSet<TbContentArea> TbContentAreas { get; set; }
@@ -172,11 +166,6 @@ namespace DAL.ApplicationContext
         public DbSet<TbFlashSale> TbFlashSales { get; set; }
         public DbSet<TbFlashSaleProduct> TbFlashSaleProducts { get; set; }
 
-        // Fulfillment System (FBS/FBM)
-        public DbSet<TbFulfillmentMethod> TbFulfillmentMethods { get; set; }
-        public DbSet<TbFBMInventory> TbFBMInventories { get; set; }
-        public DbSet<TbFulfillmentFee> TbFulfillmentFees { get; set; }
-        public DbSet<TbFBMShipment> TbFBMShipments { get; set; }
 
         // Advanced Pricing
         public DbSet<TbQuantityPricing> TbQuantityPricings { get; set; }
@@ -223,6 +212,7 @@ namespace DAL.ApplicationContext
         public DbSet<TbOrderShipment> TbOrderShipments { get; set; }
         public DbSet<TbOrderShipmentItem> TbOrderShipmentItems { get; set; }
         public DbSet<TbCustomerAddress> TbCustomerAddresses { get; set; }
+        public DbSet<TbPaymentMethod> TbPaymentMethods { get; set; }
         public DbSet<TbOrderPayment> TbOrderPayments { get; set; }
 
         // Pricing System Settings

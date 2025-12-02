@@ -1,14 +1,19 @@
-using Domains.Entities.Order;
 using Domains.Entities.Catalog.Item;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Domains.Entities.Shipping
 {
     public class TbOrderShipmentItem : BaseEntity
     {
+        [ForeignKey("Shipment")]
         public Guid ShipmentId { get; set; }
+
+        [ForeignKey("OrderDetail")]
         public Guid OrderDetailId { get; set; }
+
+        [ForeignKey("Item")]
         public Guid ItemId { get; set; }
-        public Guid? ItemCombinationId { get; set; }
+
         public int Quantity { get; set; }
         public decimal UnitPrice { get; set; }
         public decimal SubTotal { get; set; }

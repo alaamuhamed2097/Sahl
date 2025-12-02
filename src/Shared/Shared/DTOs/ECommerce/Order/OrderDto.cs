@@ -13,7 +13,6 @@ namespace Shared.DTOs.ECommerce.Order
         public decimal Price { get; set; }
         public decimal ShippingAmount { get; set; } = 0m;
         public string Address { get; set; }
-        public int PVs { get; set; }
         public PaymentStatus PaymentStatus { get; set; }
         public string? InvoiceId { get; set; }
         public OrderStatus CurrentState { get; set; }
@@ -44,33 +43,9 @@ namespace Shared.DTOs.ECommerce.Order
         public string? SponsorLastName { get; set; }
         public string? SponsorUserName { get; set; }
 
-        public Guid PaymentGatewayMethodId { get; set; }
         public string PaymentGatewayMethodTitleEn { get; set; } = null!;
         public string PaymentGatewayMethodTitleAr { get; set; } = null!;
         public PaymentGatewayMethod PaymentGatewayMethodType { get; set; }
-        public Guid? ShippingCompanyId { get; set; }
-
-        [JsonIgnore]
-        public string PaymentGatewayMethodTitle => ResourceManager.CurrentLanguage == Language.Arabic ? PaymentGatewayMethodTitleAr : PaymentGatewayMethodTitleEn;
-
-        // Business Points Information
-        /// <summary>
-        /// Number of business points used for this order
-        /// </summary>
-        public int BusinessPointsUsed { get; set; }
-
-        /// <summary>
-        /// Dollar value of business points consumed
-        /// </summary>
-        public decimal BusinessPointsValue { get; set; }
-
-        /// <summary>
-        /// Total order price before business points were applied
-        /// </summary>
-        public decimal TotalBeforePoints { get; set; }
-
-        [JsonIgnore]
-        public bool UsedBusinessPoints => BusinessPointsUsed > 0;
 
         public List<OrderDetailsDto> OrderDetails { get; set; }
     }
