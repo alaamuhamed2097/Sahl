@@ -11,6 +11,8 @@ using Domains.Entities.Catalog.Unit;
 using Domains.Entities.Content;
 using Domains.Entities.CouponCode;
 using Domains.Entities.Currency;
+using Domains.Entities.ECommerceSystem;
+using Domains.Entities.ECommerceSystem.Cart;
 using Domains.Entities.ECommerceSystem.Customer;
 using Domains.Entities.ECommerceSystem.Review;
 using Domains.Entities.ECommerceSystem.Support;
@@ -26,6 +28,7 @@ using Domains.Entities.Offer.Rating;
 using Domains.Entities.Offer.Warranty;
 using Domains.Entities.Order;
 using Domains.Entities.Page;
+using Domains.Entities.Payment;
 using Domains.Entities.Pricing;
 using Domains.Entities.SellerRequest;
 using Domains.Entities.SellerTier;
@@ -213,6 +216,14 @@ namespace DAL.ApplicationContext
         public DbSet<TbOrderDetail> TbOrderDetails { get; set; }
         public DbSet<TbRefundRequest> TbRefundRequests { get; set; }
         public DbSet<TbShippingDetail> TbShippingDetails { get; set; }
+
+        // New E-commerce tables: Shopping Cart, Shipments, Payments, Customer Addresses
+        public DbSet<TbShoppingCart> TbShoppingCarts { get; set; }
+        public DbSet<TbShoppingCartItem> TbShoppingCartItems { get; set; }
+        public DbSet<TbOrderShipment> TbOrderShipments { get; set; }
+        public DbSet<TbOrderShipmentItem> TbOrderShipmentItems { get; set; }
+        public DbSet<TbCustomerAddress> TbCustomerAddresses { get; set; }
+        public DbSet<TbOrderPayment> TbOrderPayments { get; set; }
 
         // Pricing System Settings
         public DbSet<TbPricingSystemSetting> TbPricingSystemSettings { get; set; }
