@@ -15,6 +15,14 @@ namespace Domains.Entities.Order
         [ForeignKey("Item")]
         public Guid ItemId { get; set; }
 
+        // New fields
+        public Guid? ItemCombinationId { get; set; }
+        public Guid? OfferId { get; set; }
+        public Guid? VendorId { get; set; }
+        public Guid? WarehouseId { get; set; }
+        public decimal DiscountAmount { get; set; } = 0m;
+        public decimal TaxAmount { get; set; } = 0m;
+
         public virtual TbOrder Order { get; set; }
         public virtual TbItem Item { get; set; } = null!;
     }
