@@ -14,5 +14,6 @@ namespace Domains.Entities.Catalog.Item.ItemAttributes
 		// Navigation Properties
 		[ForeignKey("ItemCombinationId")]
 		public virtual TbItemCombination ItemCombination { get; set; }
-	}
+		public virtual ICollection<TbCombinationAttributesValue> CombinationAttributesValues { get; set; }
+    }
 }

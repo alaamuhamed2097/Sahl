@@ -24,5 +24,7 @@ namespace Domains.Entities.Catalog.Item.ItemAttributes
 
 		[ForeignKey("AttributeId")]
 		public virtual TbAttribute Attribute { get; set; }
-	}
+
+		public virtual ICollection<TbAttributeValuePriceModifier> AttributeValuePriceModifiers { get; set; }
+    }
 }

@@ -8,6 +8,7 @@ namespace Shared.DTOs.ECommerce.Item
         public Guid CombinationAttributeValueId { get; set; }
         public Guid AttributeId { get; set; }
         public PriceModifierType ModifierType { get; set; }
+        public PriceModifierCategory PriceModifierCategory { get; set; }
         public decimal ModifierValue { get; set; }
         public int DisplayOrder { get; set; }
     }

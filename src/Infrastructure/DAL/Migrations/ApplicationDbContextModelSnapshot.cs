@@ -4365,6 +4365,9 @@ namespace DAL.Migrations
                     b.Property<int>("StockStatus")
                         .HasColumnType("int");
 
+                    b.Property<Guid?>("TbItemCombinationId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<Guid?>("UpdatedBy")
                         .HasColumnType("uniqueidentifier");
 
@@ -4378,6 +4381,8 @@ namespace DAL.Migrations
                     b.HasIndex("ItemCombinationId");
 
                     b.HasIndex("OfferId");
+
+                    b.HasIndex("TbItemCombinationId");
 
                     b.ToTable("TbOfferCombinationPricings");
                 });
@@ -4464,6 +4469,12 @@ namespace DAL.Migrations
                     b.Property<decimal>("OldPrice")
                         .HasColumnType("decimal(18,2)");
 
+                    b.Property<Guid?>("TbItemCombinationId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("TbOfferCombinationPricingId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<Guid?>("UpdatedBy")
                         .HasColumnType("uniqueidentifier");
 
@@ -4477,6 +4488,10 @@ namespace DAL.Migrations
                     b.HasIndex("ItemCombinationId");
 
                     b.HasIndex("OfferCombinationPricingId");
+
+                    b.HasIndex("TbItemCombinationId");
+
+                    b.HasIndex("TbOfferCombinationPricingId");
 
                     b.ToTable("TbOfferPriceHistories");
                 });
@@ -4514,6 +4529,9 @@ namespace DAL.Migrations
                     b.Property<decimal>("OldStatus")
                         .HasColumnType("decimal(18,2)");
 
+                    b.Property<Guid?>("TbOfferId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<Guid?>("UpdatedBy")
                         .HasColumnType("uniqueidentifier");
 
@@ -4525,6 +4543,8 @@ namespace DAL.Migrations
                     b.HasIndex("CurrentState");
 
                     b.HasIndex("OfferId");
+
+                    b.HasIndex("TbOfferId");
 
                     b.ToTable("TbOfferStatusHistories");
                 });
@@ -7698,13 +7718,13 @@ namespace DAL.Migrations
                     b.HasOne("Domains.Entities.Catalog.Attribute.TbAttribute", "Attribute")
                         .WithMany()
                         .HasForeignKey("AttributeId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("Domains.Entities.Catalog.Item.ItemAttributes.TbCombinationAttributesValue", "CombinationAttributesValue")
                         .WithMany()
                         .HasForeignKey("CombinationAttributeValueId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Attribute");
@@ -8107,9 +8127,9 @@ namespace DAL.Migrations
             modelBuilder.Entity("Domains.Entities.Offer.TbOfferCombinationPricing", b =>
                 {
                     b.HasOne("Domains.Entities.Catalog.Item.ItemAttributes.TbItemCombination", "ItemCombination")
-                        .WithMany("OfferCombinationPricings")
+                        .WithMany()
                         .HasForeignKey("ItemCombinationId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("Domains.Entities.Offer.TbOffer", "Offer")
@@ -8117,6 +8137,10 @@ namespace DAL.Migrations
                         .HasForeignKey("OfferId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
+
+                    b.HasOne("Domains.Entities.Catalog.Item.ItemAttributes.TbItemCombination", null)
+                        .WithMany("OfferCombinationPricings")
+                        .HasForeignKey("TbItemCombinationId");
 
                     b.Navigation("ItemCombination");
 
@@ -8126,16 +8150,24 @@ namespace DAL.Migrations
             modelBuilder.Entity("Domains.Entities.Offer.TbOfferPriceHistory", b =>
                 {
                     b.HasOne("Domains.Entities.Catalog.Item.ItemAttributes.TbItemCombination", "ItemCombination")
-                        .WithMany("OfferPriceHistories")
+                        .WithMany()
                         .HasForeignKey("ItemCombinationId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("Domains.Entities.Offer.TbOfferCombinationPricing", "OfferCombinationPricing")
-                        .WithMany("OfferPriceHistories")
+                        .WithMany()
                         .HasForeignKey("OfferCombinationPricingId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
+
+                    b.HasOne("Domains.Entities.Catalog.Item.ItemAttributes.TbItemCombination", null)
+                        .WithMany("OfferPriceHistories")
+                        .HasForeignKey("TbItemCombinationId");
+
+                    b.HasOne("Domains.Entities.Offer.TbOfferCombinationPricing", null)
+                        .WithMany("OfferPriceHistories")
+                        .HasForeignKey("TbOfferCombinationPricingId");
 
                     b.Navigation("ItemCombination");
 
@@ -8145,10 +8177,14 @@ namespace DAL.Migrations
             modelBuilder.Entity("Domains.Entities.Offer.TbOfferStatusHistory", b =>
                 {
                     b.HasOne("Domains.Entities.Offer.TbOffer", "Offer")
-                        .WithMany("OfferStatusHistories")
+                        .WithMany()
                         .HasForeignKey("OfferId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
+
+                    b.HasOne("Domains.Entities.Offer.TbOffer", null)
+                        .WithMany("OfferStatusHistories")
+                        .HasForeignKey("TbOfferId");
 
                     b.Navigation("Offer");
                 });
@@ -8269,6 +8305,17 @@ namespace DAL.Migrations
                     b.Navigation("Order");
 
                     b.Navigation("PaymentMethod");
+                });
+
+            modelBuilder.Entity("Domains.Entities.Payment.TbOrderPayment", b =>
+                {
+                    b.HasOne("Domains.Entities.Order.TbOrder", "Order")
+                        .WithMany()
+                        .HasForeignKey("OrderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Order");
                 });
 
             modelBuilder.Entity("Domains.Entities.Pricing.TbCustomerSegmentPricing", b =>
@@ -8445,6 +8492,44 @@ namespace DAL.Migrations
 
                     b.HasOne("Domains.Entities.Shipping.TbOrderShipment", "Shipment")
                         .WithMany("Items")
+                        .HasForeignKey("ShipmentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Item");
+
+                    b.Navigation("OrderDetail");
+
+                    b.Navigation("Shipment");
+                });
+
+            modelBuilder.Entity("Domains.Entities.Shipping.TbOrderShipment", b =>
+                {
+                    b.HasOne("Domains.Entities.Order.TbOrder", "Order")
+                        .WithMany()
+                        .HasForeignKey("OrderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Order");
+                });
+
+            modelBuilder.Entity("Domains.Entities.Shipping.TbOrderShipmentItem", b =>
+                {
+                    b.HasOne("Domains.Entities.Catalog.Item.TbItem", "Item")
+                        .WithMany()
+                        .HasForeignKey("ItemId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Domains.Entities.Order.TbOrderDetail", "OrderDetail")
+                        .WithMany()
+                        .HasForeignKey("OrderDetailId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Domains.Entities.Shipping.TbOrderShipment", "Shipment")
+                        .WithMany()
                         .HasForeignKey("ShipmentId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();

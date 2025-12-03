@@ -246,6 +246,88 @@ namespace DAL.ApplicationContext
 
             ConfigureBaseEntities(modelBuilder);
             ConfigureViews(modelBuilder);
+
+            // Apply missing/explicit relationship configurations that might not be covered
+            // by IEntityTypeConfiguration classes in the DAL assembly (or are defined elsewhere)
+            ConfigureMissingRelations(modelBuilder);
+        }
+
+        /// <summary>
+        /// Explicitly configures relations that may be missing or defined in other assemblies.
+        /// This avoids relying solely on conventions when some configuration classes live
+        /// outside the DAL assembly or are not yet implemented.
+        /// </summary>
+        private void ConfigureMissingRelations(ModelBuilder modelBuilder)
+        {
+            // Offer price history relations
+            modelBuilder.Entity<TbOfferPriceHistory>(entity =>
+            {
+                entity.HasKey(e => e.Id);
+
+                entity.HasOne(e => e.ItemCombination)
+                      .WithMany()
+                      .HasForeignKey(e => e.ItemCombinationId)
+                      .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasOne(e => e.OfferCombinationPricing)
+                      .WithMany()
+                      .HasForeignKey(e => e.OfferCombinationPricingId)
+                      .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasIndex(e => e.ItemCombinationId);
+                entity.HasIndex(e => e.OfferCombinationPricingId);
+            });
+
+            // Offer status history relations
+            modelBuilder.Entity<TbOfferStatusHistory>(entity =>
+            {
+                entity.HasKey(e => e.Id);
+
+                entity.HasOne(e => e.Offer)
+                      .WithMany()
+                      .HasForeignKey(e => e.OfferId)
+                      .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasIndex(e => e.OfferId);
+            });
+
+            // Offer combination pricing relations (ensure FKs for item combination and offer)
+            modelBuilder.Entity<TbOfferCombinationPricing>(entity =>
+            {
+                entity.HasKey(e => e.Id);
+
+                entity.HasOne(e => e.ItemCombination)
+                      .WithMany()
+                      .HasForeignKey(e => e.ItemCombinationId)
+                      .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasOne(e => e.Offer)
+                      .WithMany(o => o.OfferCombinationPricings)
+                      .HasForeignKey(e => e.OfferId)
+                      .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasIndex(e => e.ItemCombinationId);
+                entity.HasIndex(e => e.OfferId);
+            });
+
+            // Attribute value price modifier relations
+            modelBuilder.Entity<TbAttributeValuePriceModifier>(entity =>
+            {
+                entity.HasKey(e => e.Id);
+
+                entity.HasOne(e => e.CombinationAttributesValue)
+                      .WithMany()
+                      .HasForeignKey(e => e.CombinationAttributeValueId)
+                      .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasOne(e => e.Attribute)
+                      .WithMany()
+                      .HasForeignKey(e => e.AttributeId)
+                      .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasIndex(e => e.CombinationAttributeValueId);
+                entity.HasIndex(e => e.AttributeId);
+            });
         }
 
         /// <summary>

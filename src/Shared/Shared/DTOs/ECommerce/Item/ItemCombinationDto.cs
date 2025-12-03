@@ -8,7 +8,7 @@ namespace Shared.DTOs.ECommerce.Item
         public string Barcode { get; set; }
         public string SKU { get; set; }
         public bool IsDefault { get; set; } = false;
-        public decimal? BasePrice { get; set; }
-        //public virtual TbCombinationAttribute CombinationAttributes { get; set; }
+        public decimal BasePrice { get; set; }
+        public List<CombinationAttributeDto> CombinationAttributes { get; set; } = new List<CombinationAttributeDto>();
     }
 }
