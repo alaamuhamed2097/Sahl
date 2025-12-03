@@ -30,26 +30,19 @@ namespace Api.Controllers.Location
         [AllowAnonymous]
         public async Task<IActionResult> Get()
         {
-            try
-            {
-                var cities = await _cityService.GetAllAsync();
-                if (cities == null || !cities.Any())
-                    return NotFound(new ResponseModel<string>
-                    {
-                        Success = false,
-                        Message = "No cities found."
-                    });
-                return Ok(new ResponseModel<IEnumerable<CityDto>>
+            var cities = await _cityService.GetAllAsync();
+            if (cities == null || !cities.Any())
+                return NotFound(new ResponseModel<string>
                 {
-                    Success = true,
-                    Message = "cities retrieved successfully.",
-                    Data = cities
+                    Success = false,
+                    Message = "No cities found."
                 });
-            }
-            catch (Exception ex)
+            return Ok(new ResponseModel<IEnumerable<CityDto>>
             {
-                return HandleException(ex);
-            }
+                Success = true,
+                Message = "cities retrieved successfully.",
+                Data = cities
+            });
         }
 
         /// <summary>
@@ -59,34 +52,27 @@ namespace Api.Controllers.Location
         [AllowAnonymous]
         public async Task<IActionResult> Get(Guid id)
         {
-            try
-            {
-                if (id == Guid.Empty)
-                    return BadRequest(new ResponseModel<string>
-                    {
-                        Success = false,
-                        Message = "Invalid city ID."
-                    });
-
-                var city = await _cityService.FindByIdAsync(id);
-                if (city == null)
-                    return NotFound(new ResponseModel<string>
-                    {
-                        Success = false,
-                        Message = "city not found."
-                    });
-
-                return Ok(new ResponseModel<CityDto>
+            if (id == Guid.Empty)
+                return BadRequest(new ResponseModel<string>
                 {
-                    Success = true,
-                    Message = "city retrieved successfully.",
-                    Data = city
+                    Success = false,
+                    Message = "Invalid city ID."
                 });
-            }
-            catch (Exception ex)
+
+            var city = await _cityService.FindByIdAsync(id);
+            if (city == null)
+                return NotFound(new ResponseModel<string>
+                {
+                    Success = false,
+                    Message = "city not found."
+                });
+
+            return Ok(new ResponseModel<CityDto>
             {
-                return HandleException(ex);
-            }
+                Success = true,
+                Message = "city retrieved successfully.",
+                Data = city
+            });
         }
 
         /// <summary>
@@ -97,35 +83,27 @@ namespace Api.Controllers.Location
         [Authorize(Roles = nameof(UserRole.Admin))]
         public async Task<IActionResult> Search([FromQuery] BaseSearchCriteriaModel criteria)
         {
-            try
+            criteria.PageNumber = criteria.PageNumber < 1 ? 1 : criteria.PageNumber;
+            criteria.PageSize = criteria.PageSize < 1 || criteria.PageSize > 100 ? 10 : criteria.PageSize;
+
+            var result = await _cityService.GetPage(criteria);
+
+            if (result == null || !result.Items.Any())
             {
-                // Validate and set default pagination values if not provided
-                criteria.PageNumber = criteria.PageNumber < 1 ? 1 : criteria.PageNumber;
-                criteria.PageSize = criteria.PageSize < 1 || criteria.PageSize > 100 ? 10 : criteria.PageSize;
-
-                var result = await _cityService.GetPage(criteria);
-
-                if (result == null || !result.Items.Any())
-                {
-                    return Ok(new ResponseModel<PaginatedDataModel<CityDto>>
-                    {
-                        Success = false,
-                        Message = NotifiAndAlertsResources.NoDataFound,
-                        Data = result
-                    });
-                }
-
                 return Ok(new ResponseModel<PaginatedDataModel<CityDto>>
                 {
-                    Success = true,
-                    Message = NotifiAndAlertsResources.DataRetrieved,
+                    Success = false,
+                    Message = NotifiAndAlertsResources.NoDataFound,
                     Data = result
                 });
             }
-            catch (Exception ex)
+
+            return Ok(new ResponseModel<PaginatedDataModel<CityDto>>
             {
-                return HandleException(ex);
-            }
+                Success = true,
+                Message = NotifiAndAlertsResources.DataRetrieved,
+                Data = result
+            });
         }
 
         /// <summary>
@@ -135,33 +113,26 @@ namespace Api.Controllers.Location
         [Authorize(Roles = nameof(UserRole.Admin))]
         public async Task<IActionResult> Save([FromBody] CityDto CityDto)
         {
-            try
-            {
-                if (!ModelState.IsValid)
-                    return BadRequest(new ResponseModel<string>
-                    {
-                        Success = false,
-                        Message = "Invalid city data."
-                    });
-
-                var result = await _cityService.SaveAsync(CityDto, GuidUserId);
-                if (!result.Success)
-                    return BadRequest(new ResponseModel<string>
-                    {
-                        Success = false,
-                        Message = NotifiAndAlertsResources.SaveFailed
-                    });
-
-                return Ok(new ResponseModel<string>
+            if (!ModelState.IsValid)
+                return BadRequest(new ResponseModel<string>
                 {
-                    Success = true,
-                    Message = NotifiAndAlertsResources.SavedSuccessfully
+                    Success = false,
+                    Message = "Invalid city data."
                 });
-            }
-            catch (Exception ex)
+
+            var result = await _cityService.SaveAsync(CityDto, GuidUserId);
+            if (!result.Success)
+                return BadRequest(new ResponseModel<string>
+                {
+                    Success = false,
+                    Message = NotifiAndAlertsResources.SaveFailed
+                });
+
+            return Ok(new ResponseModel<string>
             {
-                return HandleException(ex);
-            }
+                Success = true,
+                Message = NotifiAndAlertsResources.SavedSuccessfully
+            });
         }
 
         /// <summary>
@@ -171,33 +142,26 @@ namespace Api.Controllers.Location
         [Authorize(Roles = nameof(UserRole.Admin))]
         public async Task<IActionResult> Delete([FromBody] Guid id)
         {
-            try
-            {
-                if (id == Guid.Empty)
-                    return BadRequest(new ResponseModel<string>
-                    {
-                        Success = false,
-                        Message = "Invalid city ID."
-                    });
-
-                var success = await _cityService.DeleteAsync(id, GuidUserId);
-                if (!success)
-                    return BadRequest(new ResponseModel<string>
-                    {
-                        Success = false,
-                        Message = NotifiAndAlertsResources.DeleteFailed
-                    });
-
-                return Ok(new ResponseModel<string>
+            if (id == Guid.Empty)
+                return BadRequest(new ResponseModel<string>
                 {
-                    Success = true,
-                    Message = NotifiAndAlertsResources.DeletedSuccessfully
+                    Success = false,
+                    Message = "Invalid city ID."
                 });
-            }
-            catch (Exception ex)
+
+            var success = await _cityService.DeleteAsync(id, GuidUserId);
+            if (!success)
+                return BadRequest(new ResponseModel<string>
+                {
+                    Success = false,
+                    Message = NotifiAndAlertsResources.DeleteFailed
+                });
+
+            return Ok(new ResponseModel<string>
             {
-                return HandleException(ex);
-            }
+                Success = true,
+                Message = NotifiAndAlertsResources.DeletedSuccessfully
+            });
         }
     }
 }

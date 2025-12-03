@@ -28,27 +28,20 @@ namespace Api.Controllers.Catalog
         [HttpGet]
         public async Task<IActionResult> Get()
         {
-            try
-            {
-                var categories = await _categoryService.GetAllAsync();
-                if (categories == null || !categories.Any())
-                    return NotFound(new ResponseModel<string>
-                    {
-                        Success = false,
-                        Message = NotifiAndAlertsResources.NoDataFound
-                    });
-
-                return Ok(new ResponseModel<IEnumerable<CategoryDto>>
+            var categories = await _categoryService.GetAllAsync();
+            if (categories == null || !categories.Any())
+                return NotFound(new ResponseModel<string>
                 {
-                    Success = true,
-                    Message = NotifiAndAlertsResources.DataRetrieved,
-                    Data = categories
+                    Success = false,
+                    Message = NotifiAndAlertsResources.NoDataFound
                 });
-            }
-            catch (Exception ex)
+
+            return Ok(new ResponseModel<IEnumerable<CategoryDto>>
             {
-                return HandleException(ex);
-            }
+                Success = true,
+                Message = NotifiAndAlertsResources.DataRetrieved,
+                Data = categories
+            });
         }
 
         /// <summary>
@@ -57,27 +50,20 @@ namespace Api.Controllers.Catalog
         [HttpGet("{id}")]
         public async Task<IActionResult> Get(Guid id)
         {
-            try
-            {
-                var category = await _categoryService.FindByIdAsync(id);
-                if (category == null)
-                    return NotFound(new ResponseModel<string>
-                    {
-                        Success = false,
-                        Message = NotifiAndAlertsResources.NoDataFound
-                    });
-
-                return Ok(new ResponseModel<CategoryDto>
+            var category = await _categoryService.FindByIdAsync(id);
+            if (category == null)
+                return NotFound(new ResponseModel<string>
                 {
-                    Success = true,
-                    Message = NotifiAndAlertsResources.DataRetrieved,
-                    Data = category
+                    Success = false,
+                    Message = NotifiAndAlertsResources.NoDataFound
                 });
-            }
-            catch (Exception ex)
+
+            return Ok(new ResponseModel<CategoryDto>
             {
-                return HandleException(ex);
-            }
+                Success = true,
+                Message = NotifiAndAlertsResources.DataRetrieved,
+                Data = category
+            });
         }
 
         /// <summary>
@@ -88,35 +74,28 @@ namespace Api.Controllers.Catalog
         //[Authorize(Roles = nameof(UserType.Admin))]
         public async Task<IActionResult> Search([FromQuery] BaseSearchCriteriaModel criteria)
         {
-            try
+            // Validate and set default pagination values if not provided
+            criteria.PageNumber = criteria.PageNumber < 1 ? 1 : criteria.PageNumber;
+            criteria.PageSize = criteria.PageSize < 1 || criteria.PageSize > 100 ? 10 : criteria.PageSize;
+
+            var result = await _categoryService.GetPageAsync(criteria);
+
+            if (result == null || !result.Items.Any())
             {
-                // Validate and set default pagination values if not provided
-                criteria.PageNumber = criteria.PageNumber < 1 ? 1 : criteria.PageNumber;
-                criteria.PageSize = criteria.PageSize < 1 || criteria.PageSize > 100 ? 10 : criteria.PageSize;
-
-                var result = await _categoryService.GetPageAsync(criteria);
-
-                if (result == null || !result.Items.Any())
-                {
-                    return Ok(new ResponseModel<PaginatedDataModel<CategoryDto>>
-                    {
-                        Success = true,
-                        Message = NotifiAndAlertsResources.NoDataFound,
-                        Data = result
-                    });
-                }
-
                 return Ok(new ResponseModel<PaginatedDataModel<CategoryDto>>
                 {
                     Success = true,
-                    Message = NotifiAndAlertsResources.DataRetrieved,
+                    Message = NotifiAndAlertsResources.NoDataFound,
                     Data = result
                 });
             }
-            catch (Exception ex)
+
+            return Ok(new ResponseModel<PaginatedDataModel<CategoryDto>>
             {
-                return HandleException(ex);
-            }
+                Success = true,
+                Message = NotifiAndAlertsResources.DataRetrieved,
+                Data = result
+            });
         }
 
         /// <summary>
@@ -127,20 +106,13 @@ namespace Api.Controllers.Catalog
         [AllowAnonymous]
         public async Task<IActionResult> GetMainCategories()
         {
-            try
+            var categories = await _categoryService.GetMainCategoriesAsync();
+            return Ok(new ResponseModel<IEnumerable<MainCategoryDto>>
             {
-                var categories = await _categoryService.GetMainCategoriesAsync();
-                return Ok(new ResponseModel<IEnumerable<MainCategoryDto>>
-                {
-                    Success = true,
-                    Message = NotifiAndAlertsResources.DataRetrieved,
-                    Data = categories
-                });
-            }
-            catch (Exception ex)
-            {
-                return HandleException(ex);
-            }
+                Success = true,
+                Message = NotifiAndAlertsResources.DataRetrieved,
+                Data = categories
+            });
         }
 
         /// <summary>
@@ -151,20 +123,13 @@ namespace Api.Controllers.Catalog
         [AllowAnonymous]
         public async Task<IActionResult> GetFeaturedCategories(bool IsFeaturedCategory, bool isParent)
         {
-            try
+            var categories = await _categoryService.GetPreviewedCategories(IsFeaturedCategory, isParent);
+            return Ok(new ResponseModel<IEnumerable<CategoryPreviewDto>>
             {
-                var categories = await _categoryService.GetPreviewedCategories(IsFeaturedCategory, isParent);
-                return Ok(new ResponseModel<IEnumerable<CategoryPreviewDto>>
-                {
-                    Success = true,
-                    Message = NotifiAndAlertsResources.DataRetrieved,
-                    Data = categories
-                });
-            }
-            catch (Exception ex)
-            {
-                return HandleException(ex);
-            }
+                Success = true,
+                Message = NotifiAndAlertsResources.DataRetrieved,
+                Data = categories
+            });
         }
 
         /// <summary>
@@ -174,35 +139,28 @@ namespace Api.Controllers.Catalog
         [Authorize(Roles = nameof(UserType.Admin))]
         public async Task<IActionResult> Save([FromBody] CategoryDto categoryDto)
         {
-            try
-            {
-                if (!ModelState.IsValid)
-                    return BadRequest(new ResponseModel<string>
-                    {
-                        Success = false,
-                        Message = NotifiAndAlertsResources.InvalidInput
-                    });
-
-                var success = await _categoryService.Save(categoryDto, GuidUserId);
-                if (!success)
-                    return BadRequest(new ResponseModel<string>
-                    {
-                        Success = false,
-                        Message = NotifiAndAlertsResources.SaveFailed
-                    });
-
-                // Return boolean Data so clients expecting ResponseModel<bool> can deserialize
-                return Ok(new ResponseModel<bool>
+            if (!ModelState.IsValid)
+                return BadRequest(new ResponseModel<string>
                 {
-                    Success = true,
-                    Message = NotifiAndAlertsResources.SavedSuccessfully,
-                    Data = true
+                    Success = false,
+                    Message = NotifiAndAlertsResources.InvalidInput
                 });
-            }
-            catch (Exception ex)
+
+            var success = await _categoryService.Save(categoryDto, GuidUserId);
+            if (!success)
+                return BadRequest(new ResponseModel<string>
+                {
+                    Success = false,
+                    Message = NotifiAndAlertsResources.SaveFailed
+                });
+
+            // Return boolean Data so clients expecting ResponseModel<bool> can deserialize
+            return Ok(new ResponseModel<bool>
             {
-                return HandleException(ex);
-            }
+                Success = true,
+                Message = NotifiAndAlertsResources.SavedSuccessfully,
+                Data = true
+            });
         }
 
         /// <summary>
@@ -212,27 +170,20 @@ namespace Api.Controllers.Catalog
         [Authorize(Roles = nameof(UserType.Admin))]
         public async Task<IActionResult> ChangeTreeViewSerialsAsyns([FromBody] Dictionary<Guid, string> serialAssignments)
         {
-            try
-            {
-                var updated = await _categoryService.UpdateSerialsAsync(serialAssignments, GuidUserId);
-                if (!updated)
-                    return BadRequest(new ResponseModel<string>
-                    {
-                        Success = false,
-                        Message = NotifiAndAlertsResources.InvalidInputAlert
-                    });
-
-                return Ok(new ResponseModel<bool>
+            var updated = await _categoryService.UpdateSerialsAsync(serialAssignments, GuidUserId);
+            if (!updated)
+                return BadRequest(new ResponseModel<string>
                 {
-                    Success = true,
-                    Message = NotifiAndAlertsResources.SavedSuccessfully,
-                    Data = true
+                    Success = false,
+                    Message = NotifiAndAlertsResources.InvalidInputAlert
                 });
-            }
-            catch (Exception ex)
+
+            return Ok(new ResponseModel<bool>
             {
-                return HandleException(ex);
-            }
+                Success = true,
+                Message = NotifiAndAlertsResources.SavedSuccessfully,
+                Data = true
+            });
         }
 
         /// <summary>
@@ -242,28 +193,21 @@ namespace Api.Controllers.Catalog
         [Authorize(Roles = nameof(UserType.Admin))]
         public async Task<IActionResult> Delete([FromBody] Guid id)
         {
-            try
-            {
-                var (success, errors) = await _categoryService.Delete(id, GuidUserId);
-                if (!success)
-                    return BadRequest(new ResponseModel<IEnumerable<string>>
-                    {
-                        Success = false,
-                        Message = NotifiAndAlertsResources.DeleteFailed,
-                        Errors = errors
-                    });
-
-                return Ok(new ResponseModel<bool>
+            var (success, errors) = await _categoryService.Delete(id, GuidUserId);
+            if (!success)
+                return BadRequest(new ResponseModel<IEnumerable<string>>
                 {
-                    Success = true,
-                    Message = NotifiAndAlertsResources.DeletedSuccessfully,
-                    Data = true
+                    Success = false,
+                    Message = NotifiAndAlertsResources.DeleteFailed,
+                    Errors = errors
                 });
-            }
-            catch (Exception ex)
+
+            return Ok(new ResponseModel<bool>
             {
-                return HandleException(ex);
-            }
+                Success = true,
+                Message = NotifiAndAlertsResources.DeletedSuccessfully,
+                Data = true
+            });
         }
 
         /// <summary>
@@ -272,20 +216,13 @@ namespace Api.Controllers.Catalog
         [HttpGet("tree")]
         public async Task<IActionResult> GetCategoryTree()
         {
-            try
+            var tree = await _categoryService.BuildCategoryTree();
+            return Ok(new ResponseModel<IEnumerable<CategoryTreeDto>>
             {
-                var tree = await _categoryService.BuildCategoryTree();
-                return Ok(new ResponseModel<IEnumerable<CategoryTreeDto>>
-                {
-                    Success = true,
-                    Message = NotifiAndAlertsResources.DataRetrieved,
-                    Data = tree
-                });
-            }
-            catch (Exception ex)
-            {
-                return HandleException(ex);
-            }
+                Success = true,
+                Message = NotifiAndAlertsResources.DataRetrieved,
+                Data = tree
+            });
         }
 
         /// <summary>
@@ -294,20 +231,13 @@ namespace Api.Controllers.Catalog
         [HttpGet("previews")]
         public async Task<IActionResult> GetAllCategoryPreviews([FromQuery] bool IsFeaturedCategory, bool isParent)
         {
-            try
+            var previews = await _categoryService.GetPreviewedCategories(IsFeaturedCategory, isParent);
+            return Ok(new ResponseModel<IEnumerable<CategoryPreviewDto>>
             {
-                var previews = await _categoryService.GetPreviewedCategories(IsFeaturedCategory, isParent);
-                return Ok(new ResponseModel<IEnumerable<CategoryPreviewDto>>
-                {
-                    Success = true,
-                    Message = NotifiAndAlertsResources.DataRetrieved,
-                    Data = previews
-                });
-            }
-            catch (Exception ex)
-            {
-                return HandleException(ex);
-            }
+                Success = true,
+                Message = NotifiAndAlertsResources.DataRetrieved,
+                Data = previews
+            });
         }
 
         /// <summary>
@@ -316,21 +246,13 @@ namespace Api.Controllers.Catalog
         [HttpGet("CategoryWithChildren")]
         public async Task<IActionResult> GetCategoryWithChildren([FromQuery] Guid categoryId)
         {
-            try
+            var category = await _categoryService.GetCategoryWithChildren(categoryId);
+            return Ok(new ResponseModel<CategoryTreeDto>
             {
-                var category = await _categoryService.GetCategoryWithChildren(categoryId);
-                return Ok(new ResponseModel<CategoryTreeDto>
-                {
-                    Success = true,
-                    Message = NotifiAndAlertsResources.DataRetrieved,
-                    Data = category
-                });
-            }
-            catch (Exception ex)
-            {
-                return HandleException(ex);
-            }
+                Success = true,
+                Message = NotifiAndAlertsResources.DataRetrieved,
+                Data = category
+            });
         }
-
     }
 }

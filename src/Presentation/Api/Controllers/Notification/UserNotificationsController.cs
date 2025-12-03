@@ -31,37 +31,30 @@ namespace Api.Controllers.Notification
         [Authorize]
         public async Task<IActionResult> Get()
         {
-            try
+            var userNotifications = await _userNotificationService.GetAll(UserId);
+
+            // Return OK even when there are no notifications instead of 404
+            if (userNotifications.Value == null || !userNotifications.Value.Any())
             {
-                var userNotifications = await _userNotificationService.GetAll(UserId);
-
-                // Return OK even when there are no notifications instead of 404
-                if (userNotifications.Value == null || !userNotifications.Value.Any())
-                {
-                    return Ok(new ResponseModel<UserNotificationResult<IEnumerable<UserNotificationRequest>>>
-                    {
-                        Success = true,
-                        Message = NotifiAndAlertsResources.NoDataFound,
-                        Data = new UserNotificationResult<IEnumerable<UserNotificationRequest>>
-                        {
-                            Value = new List<UserNotificationRequest>(),
-                            UnReadCount = 0,
-                            TotalCount = 0
-                        }
-                    });
-                }
-
                 return Ok(new ResponseModel<UserNotificationResult<IEnumerable<UserNotificationRequest>>>
                 {
                     Success = true,
-                    Message = NotifiAndAlertsResources.DataRetrieved,
-                    Data = userNotifications
+                    Message = NotifiAndAlertsResources.NoDataFound,
+                    Data = new UserNotificationResult<IEnumerable<UserNotificationRequest>>
+                    {
+                        Value = new List<UserNotificationRequest>(),
+                        UnReadCount = 0,
+                        TotalCount = 0
+                    }
                 });
             }
-            catch (Exception ex)
+
+            return Ok(new ResponseModel<UserNotificationResult<IEnumerable<UserNotificationRequest>>>
             {
-                return HandleException(ex);
-            }
+                Success = true,
+                Message = NotifiAndAlertsResources.DataRetrieved,
+                Data = userNotifications
+            });
         }
 
         /// <summary>
@@ -71,34 +64,27 @@ namespace Api.Controllers.Notification
         [Authorize]
         public async Task<IActionResult> Get(Guid id)
         {
-            try
-            {
-                if (id == Guid.Empty)
-                    return BadRequest(new ResponseModel<string>
-                    {
-                        Success = false,
-                        Message = NotifiAndAlertsResources.InvalidInputAlert
-                    });
-
-                var userNotification = await _userNotificationService.FindById(id);
-                if (userNotification == null)
-                    return NotFound(new ResponseModel<UserNotificationRequest>
-                    {
-                        Success = false,
-                        Message = NotifiAndAlertsResources.NoDataFound
-                    });
-
-                return Ok(new ResponseModel<UserNotificationRequest>
+            if (id == Guid.Empty)
+                return BadRequest(new ResponseModel<string>
                 {
-                    Success = true,
-                    Message = NotifiAndAlertsResources.DataRetrieved,
-                    Data = userNotification
+                    Success = false,
+                    Message = NotifiAndAlertsResources.InvalidInputAlert
                 });
-            }
-            catch (Exception ex)
+
+            var userNotification = await _userNotificationService.FindById(id);
+            if (userNotification == null)
+                return NotFound(new ResponseModel<UserNotificationRequest>
+                {
+                    Success = false,
+                    Message = NotifiAndAlertsResources.NoDataFound
+                });
+
+            return Ok(new ResponseModel<UserNotificationRequest>
             {
-                return HandleException(ex);
-            }
+                Success = true,
+                Message = NotifiAndAlertsResources.DataRetrieved,
+                Data = userNotification
+            });
         }
 
         /// <summary>
@@ -109,35 +95,27 @@ namespace Api.Controllers.Notification
         [HttpGet("search")]
         public async Task<IActionResult> Search([FromQuery] BaseSearchCriteriaModel criteria)
         {
-            try
+            criteria.PageNumber = criteria.PageNumber < 1 ? 1 : criteria.PageNumber;
+            criteria.PageSize = criteria.PageSize < 1 || criteria.PageSize > 100 ? 10 : criteria.PageSize;
+
+            var result = await _userNotificationService.GetPage(criteria, UserId);
+
+            if (result.Value == null || !result.Value.Items.Any())
             {
-                // Validate and set default pagination values if not provided
-                criteria.PageNumber = criteria.PageNumber < 1 ? 1 : criteria.PageNumber;
-                criteria.PageSize = criteria.PageSize < 1 || criteria.PageSize > 100 ? 10 : criteria.PageSize;
-
-                var result = await _userNotificationService.GetPage(criteria, UserId);
-
-                if (result.Value == null || !result.Value.Items.Any())
-                {
-                    return Ok(new ResponseModel<UserNotificationResult<PaginatedDataModel<UserNotificationRequest>>>
-                    {
-                        Success = true,
-                        Message = NotifiAndAlertsResources.NoDataFound,
-                        Data = result
-                    });
-                }
-
                 return Ok(new ResponseModel<UserNotificationResult<PaginatedDataModel<UserNotificationRequest>>>
                 {
                     Success = true,
-                    Message = NotifiAndAlertsResources.DataRetrieved,
+                    Message = NotifiAndAlertsResources.NoDataFound,
                     Data = result
                 });
             }
-            catch (Exception ex)
+
+            return Ok(new ResponseModel<UserNotificationResult<PaginatedDataModel<UserNotificationRequest>>>
             {
-                return HandleException(ex);
-            }
+                Success = true,
+                Message = NotifiAndAlertsResources.DataRetrieved,
+                Data = result
+            });
         }
 
         /// <summary>
@@ -147,34 +125,27 @@ namespace Api.Controllers.Notification
         [Authorize]
         public async Task<IActionResult> Save([FromBody] UserNotificationRequest userNotificationRequest)
         {
-            try
-            {
-                if (!ModelState.IsValid)
-                    return BadRequest(new ResponseModel<bool>
-                    {
-                        Success = false,
-                        Message = NotifiAndAlertsResources.InvalidInputAlert
-                    });
-                userNotificationRequest.UserId = UserId;
-                var success = await _userNotificationService.Save(userNotificationRequest, GuidUserId);
-                if (!success)
-                    return BadRequest(new ResponseModel<bool>
-                    {
-                        Success = false,
-                        Message = NotifiAndAlertsResources.SaveFailed
-                    });
-
-                return Ok(new ResponseModel<bool>
+            if (!ModelState.IsValid)
+                return BadRequest(new ResponseModel<bool>
                 {
-                    Success = true,
-                    Data = true,
-                    Message = NotifiAndAlertsResources.SavedSuccessfully
+                    Success = false,
+                    Message = NotifiAndAlertsResources.InvalidInputAlert
                 });
-            }
-            catch (Exception ex)
+            userNotificationRequest.UserId = UserId;
+            var success = await _userNotificationService.Save(userNotificationRequest, GuidUserId);
+            if (!success)
+                return BadRequest(new ResponseModel<bool>
+                {
+                    Success = false,
+                    Message = NotifiAndAlertsResources.SaveFailed
+                });
+
+            return Ok(new ResponseModel<bool>
             {
-                return HandleException(ex);
-            }
+                Success = true,
+                Data = true,
+                Message = NotifiAndAlertsResources.SavedSuccessfully
+            });
         }
 
         /// <summary>
@@ -184,37 +155,30 @@ namespace Api.Controllers.Notification
         [Authorize]
         public async Task<IActionResult> MarkAsRead([FromBody] IEnumerable<UserNotificationRequest> userNotificationRequests)
         {
-            try
-            {
-                if (!ModelState.IsValid)
-                    return BadRequest(new ResponseModel<UserNotificationResult<bool>>
-                    {
-                        Success = false,
-                        Message = NotifiAndAlertsResources.InvalidInputAlert
-                    });
-                var result = await _userNotificationService.MarkAsRead(userNotificationRequests, UserId);
-                if (!result.Value)
-                    return BadRequest(new ResponseModel<UserNotificationResult<bool>>
-                    {
-                        Success = false,
-                        Message = NotifiAndAlertsResources.SaveFailed
-                    });
-
-                return Ok(new ResponseModel<UserNotificationResult<bool>>
+            if (!ModelState.IsValid)
+                return BadRequest(new ResponseModel<UserNotificationResult<bool>>
                 {
-                    Success = true,
-                    Data = new UserNotificationResult<bool>()
-                    {
-                        Value = true,
-                        UnReadCount = result.UnReadCount
-                    },
-                    Message = NotifiAndAlertsResources.SavedSuccessfully
+                    Success = false,
+                    Message = NotifiAndAlertsResources.InvalidInputAlert
                 });
-            }
-            catch (Exception ex)
+            var result = await _userNotificationService.MarkAsRead(userNotificationRequests, UserId);
+            if (!result.Value)
+                return BadRequest(new ResponseModel<UserNotificationResult<bool>>
+                {
+                    Success = false,
+                    Message = NotifiAndAlertsResources.SaveFailed
+                });
+
+            return Ok(new ResponseModel<UserNotificationResult<bool>>
             {
-                return HandleException(ex);
-            }
+                Success = true,
+                Data = new UserNotificationResult<bool>()
+                {
+                    Value = true,
+                    UnReadCount = result.UnReadCount
+                },
+                Message = NotifiAndAlertsResources.SavedSuccessfully
+            });
         }
 
         /// <summary>
@@ -224,34 +188,27 @@ namespace Api.Controllers.Notification
         [Authorize(Roles = nameof(UserRole.Admin))]
         public async Task<IActionResult> Delete([FromBody] Guid id)
         {
-            try
-            {
-                if (id == Guid.Empty)
-                    return BadRequest(new ResponseModel<bool>
-                    {
-                        Success = false,
-                        Message = NotifiAndAlertsResources.InvalidInputAlert
-                    });
-
-                var success = await _userNotificationService.Delete(id, GuidUserId);
-                if (!success)
-                    return BadRequest(new ResponseModel<bool>
-                    {
-                        Success = false,
-                        Message = NotifiAndAlertsResources.DeleteFailed
-                    });
-
-                return Ok(new ResponseModel<bool>
+            if (id == Guid.Empty)
+                return BadRequest(new ResponseModel<bool>
                 {
-                    Success = true,
-                    Data = true,
-                    Message = NotifiAndAlertsResources.DeletedSuccessfully
+                    Success = false,
+                    Message = NotifiAndAlertsResources.InvalidInputAlert
                 });
-            }
-            catch (Exception ex)
+
+            var success = await _userNotificationService.Delete(id, GuidUserId);
+            if (!success)
+                return BadRequest(new ResponseModel<bool>
+                {
+                    Success = false,
+                    Message = NotifiAndAlertsResources.DeleteFailed
+                });
+
+            return Ok(new ResponseModel<bool>
             {
-                return HandleException(ex);
-            }
+                Success = true,
+                Data = true,
+                Message = NotifiAndAlertsResources.DeletedSuccessfully
+            });
         }
     }
 }

@@ -30,27 +30,20 @@ namespace Api.Controllers.Location
         [AllowAnonymous]
         public async Task<IActionResult> Get()
         {
-            try
-            {
-                var countries = await _countryService.GetAllAsync();
-                if (countries == null || !countries.Any())
-                    return NotFound(new ResponseModel<string>
-                    {
-                        Success = false,
-                        Message = "No countries found."
-                    });
-
-                return Ok(new ResponseModel<IEnumerable<CountryDto>>
+            var countries = await _countryService.GetAllAsync();
+            if (countries == null || !countries.Any())
+                return NotFound(new ResponseModel<string>
                 {
-                    Success = true,
-                    Message = "Country retrieved successfully.",
-                    Data = countries
+                    Success = false,
+                    Message = "No countries found."
                 });
-            }
-            catch (Exception ex)
+
+            return Ok(new ResponseModel<IEnumerable<CountryDto>>
             {
-                return HandleException(ex);
-            }
+                Success = true,
+                Message = "Country retrieved successfully.",
+                Data = countries
+            });
         }
 
         /// <summary>
@@ -60,34 +53,27 @@ namespace Api.Controllers.Location
         [AllowAnonymous]
         public async Task<IActionResult> Get(Guid id)
         {
-            try
-            {
-                if (id == Guid.Empty)
-                    return BadRequest(new ResponseModel<string>
-                    {
-                        Success = false,
-                        Message = "Invalid country ID."
-                    });
-
-                var country = await _countryService.FindByIdAsync(id);
-                if (country == null)
-                    return NotFound(new ResponseModel<string>
-                    {
-                        Success = false,
-                        Message = "country not found."
-                    });
-
-                return Ok(new ResponseModel<CountryDto>
+            if (id == Guid.Empty)
+                return BadRequest(new ResponseModel<string>
                 {
-                    Success = true,
-                    Message = "Country retrieved successfully.",
-                    Data = country
+                    Success = false,
+                    Message = "Invalid country ID."
                 });
-            }
-            catch (Exception ex)
+
+            var country = await _countryService.FindByIdAsync(id);
+            if (country == null)
+                return NotFound(new ResponseModel<string>
+                {
+                    Success = false,
+                    Message = "country not found."
+                });
+
+            return Ok(new ResponseModel<CountryDto>
             {
-                return HandleException(ex);
-            }
+                Success = true,
+                Message = "Country retrieved successfully.",
+                Data = country
+            });
         }
 
         /// <summary>
@@ -98,35 +84,27 @@ namespace Api.Controllers.Location
         [HttpGet("search")]
         public async Task<IActionResult> Search([FromQuery] BaseSearchCriteriaModel criteria)
         {
-            try
+            criteria.PageNumber = criteria.PageNumber < 1 ? 1 : criteria.PageNumber;
+            criteria.PageSize = criteria.PageSize < 1 || criteria.PageSize > 100 ? 10 : criteria.PageSize;
+
+            var result = await _countryService.GetPageAsync(criteria);
+
+            if (result == null || !result.Items.Any())
             {
-                // Validate and set default pagination values if not provided
-                criteria.PageNumber = criteria.PageNumber < 1 ? 1 : criteria.PageNumber;
-                criteria.PageSize = criteria.PageSize < 1 || criteria.PageSize > 100 ? 10 : criteria.PageSize;
-
-                var result = await _countryService.GetPageAsync(criteria);
-
-                if (result == null || !result.Items.Any())
-                {
-                    return Ok(new ResponseModel<PaginatedDataModel<CountryDto>>
-                    {
-                        Success = true,
-                        Message = NotifiAndAlertsResources.NoDataFound,
-                        Data = result
-                    });
-                }
-
                 return Ok(new ResponseModel<PaginatedDataModel<CountryDto>>
                 {
                     Success = true,
-                    Message = NotifiAndAlertsResources.DataRetrieved,
+                    Message = NotifiAndAlertsResources.NoDataFound,
                     Data = result
                 });
             }
-            catch (Exception ex)
+
+            return Ok(new ResponseModel<PaginatedDataModel<CountryDto>>
             {
-                return HandleException(ex);
-            }
+                Success = true,
+                Message = NotifiAndAlertsResources.DataRetrieved,
+                Data = result
+            });
         }
 
         /// <summary>
@@ -136,33 +114,26 @@ namespace Api.Controllers.Location
         [HttpPost("save")]
         public async Task<IActionResult> Save([FromBody] CountryDto countryDto)
         {
-            try
-            {
-                if (!ModelState.IsValid)
-                    return BadRequest(new ResponseModel<string>
-                    {
-                        Success = false,
-                        Message = "Invalid country data."
-                    });
-
-                var result = await _countryService.SaveAsync(countryDto, GuidUserId);
-                if (!result.Success)
-                    return BadRequest(new ResponseModel<string>
-                    {
-                        Success = false,
-                        Message = NotifiAndAlertsResources.SaveFailed
-                    });
-
-                return Ok(new ResponseModel<string>
+            if (!ModelState.IsValid)
+                return BadRequest(new ResponseModel<string>
                 {
-                    Success = true,
-                    Message = NotifiAndAlertsResources.SavedSuccessfully
+                    Success = false,
+                    Message = "Invalid country data."
                 });
-            }
-            catch (Exception ex)
+
+            var result = await _countryService.SaveAsync(countryDto, GuidUserId);
+            if (!result.Success)
+                return BadRequest(new ResponseModel<string>
+                {
+                    Success = false,
+                    Message = NotifiAndAlertsResources.SaveFailed
+                });
+
+            return Ok(new ResponseModel<string>
             {
-                return HandleException(ex);
-            }
+                Success = true,
+                Message = NotifiAndAlertsResources.SavedSuccessfully
+            });
         }
 
         /// <summary>
@@ -172,34 +143,26 @@ namespace Api.Controllers.Location
         [HttpPost("delete")]
         public async Task<IActionResult> Delete([FromBody] Guid id)
         {
-            try
-            {
-                if (id == Guid.Empty)
-                    return BadRequest(new ResponseModel<string>
-                    {
-                        Success = false,
-                        Message = "Invalid country ID."
-                    });
-
-                var success = await _countryService.DeleteAsync(id, GuidUserId);
-                if (!success)
-                    return BadRequest(new ResponseModel<string>
-                    {
-                        Success = false,
-                        Message = NotifiAndAlertsResources.DeleteFailed
-                    });
-
-                return Ok(new ResponseModel<string>
+            if (id == Guid.Empty)
+                return BadRequest(new ResponseModel<string>
                 {
-                    Success = true,
-                    Message = NotifiAndAlertsResources.DeletedSuccessfully
+                    Success = false,
+                    Message = "Invalid country ID."
                 });
-            }
-            catch (Exception ex)
-            {
-                return HandleException(ex);
-            }
-        }
 
+            var success = await _countryService.DeleteAsync(id, GuidUserId);
+            if (!success)
+                return BadRequest(new ResponseModel<string>
+                {
+                    Success = false,
+                    Message = NotifiAndAlertsResources.DeleteFailed
+                });
+
+            return Ok(new ResponseModel<string>
+            {
+                Success = true,
+                Message = NotifiAndAlertsResources.DeletedSuccessfully
+            });
+        }
     }
 }

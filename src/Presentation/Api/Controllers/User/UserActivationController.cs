@@ -37,29 +37,22 @@ namespace Api.Controllers.User
                 });
             }
 
-            try
+            var result = await _userActivationService.VerifyActivationCodeAsync(request.Mobile, request.ActivationCode);
+
+            if (result.Success)
             {
-                var result = await _userActivationService.VerifyActivationCodeAsync(request.Mobile, request.ActivationCode);
-
-                if (result.Success)
-                {
-                    return Ok(new ResponseModel<object>
-                    {
-                        Success = true,
-                        Message = result.Message ?? ValidationResources.ActivationCodeVerified
-                    });
-                }
-
                 return Ok(new ResponseModel<object>
                 {
-                    Success = false,
-                    Message = result.Message ?? UserResources.VerificationCodeError
+                    Success = true,
+                    Message = result.Message ?? ValidationResources.ActivationCodeVerified
                 });
             }
-            catch (Exception ex)
+
+            return Ok(new ResponseModel<object>
             {
-                return HandleException(ex);
-            }
+                Success = false,
+                Message = result.Message ?? UserResources.VerificationCodeError
+            });
         }
 
         /// <summary>
@@ -79,29 +72,22 @@ namespace Api.Controllers.User
                 });
             }
 
-            try
+            var success = await _userActivationService.ResendActivationCodeAsync(request.Mobile);
+
+            if (success)
             {
-                var success = await _userActivationService.ResendActivationCodeAsync(request.Mobile);
-
-                if (success)
-                {
-                    return Ok(new ResponseModel<object>
-                    {
-                        Success = true,
-                        Message = UserResources.ActivationCodeResent
-                    });
-                }
-
                 return Ok(new ResponseModel<object>
                 {
-                    Success = false,
-                    Message = UserResources.VerificationCodeError
+                    Success = true,
+                    Message = UserResources.ActivationCodeResent
                 });
             }
-            catch (Exception ex)
+
+            return Ok(new ResponseModel<object>
             {
-                return HandleException(ex);
-            }
+                Success = false,
+                Message = UserResources.VerificationCodeError
+            });
         }
     }
 }

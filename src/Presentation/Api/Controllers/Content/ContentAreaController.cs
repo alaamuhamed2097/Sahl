@@ -27,184 +27,128 @@ namespace Api.Controllers.Content
         [Authorize(Roles = nameof(UserRole.Admin))]
         public async Task<IActionResult> Get()
         {
-            try
+            var areas = await _contentAreaService.GetAllAsync();
+            return Ok(new ResponseModel<IEnumerable<ContentAreaDto>>
             {
-                var areas = await _contentAreaService.GetAllAsync();
-                return Ok(new ResponseModel<IEnumerable<ContentAreaDto>>
-                {
-                    Success = true,
-                    Message = GetResource<NotifiAndAlertsResources>(nameof(NotifiAndAlertsResources.DataRetrieved)),
-                    Data = areas
-                });
-            }
-            catch (Exception ex)
-            {
-                return HandleException(ex);
-            }
+                Success = true,
+                Message = GetResource<NotifiAndAlertsResources>(nameof(NotifiAndAlertsResources.DataRetrieved)),
+                Data = areas
+            });
         }
 
         [HttpGet("active")]
         [AllowAnonymous]
         public async Task<IActionResult> GetActive()
         {
-            try
+            var areas = await _contentAreaService.GetActiveAreasAsync();
+            return Ok(new ResponseModel<IEnumerable<ContentAreaDto>>
             {
-                var areas = await _contentAreaService.GetActiveAreasAsync();
-                return Ok(new ResponseModel<IEnumerable<ContentAreaDto>>
-                {
-                    Success = true,
-                    Message = GetResource<NotifiAndAlertsResources>(nameof(NotifiAndAlertsResources.DataRetrieved)),
-                    Data = areas
-                });
-            }
-            catch (Exception ex)
-            {
-                return HandleException(ex);
-            }
+                Success = true,
+                Message = GetResource<NotifiAndAlertsResources>(nameof(NotifiAndAlertsResources.DataRetrieved)),
+                Data = areas
+            });
         }
 
         [HttpGet("{id}")]
         [Authorize(Roles = nameof(UserRole.Admin))]
         public async Task<IActionResult> Get(Guid id)
         {
-            try
-            {
-                var area = await _contentAreaService.GetByIdAsync(id);
-                if (area == null)
-                    return NotFound(new ResponseModel<string>
-                    {
-                        Success = false,
-                        Message = GetResource<NotifiAndAlertsResources>(nameof(NotifiAndAlertsResources.NoDataFound))
-                    });
-
-                return Ok(new ResponseModel<ContentAreaDto>
+            var area = await _contentAreaService.GetByIdAsync(id);
+            if (area == null)
+                return NotFound(new ResponseModel<string>
                 {
-                    Success = true,
-                    Message = GetResource<NotifiAndAlertsResources>(nameof(NotifiAndAlertsResources.DataRetrieved)),
-                    Data = area
+                    Success = false,
+                    Message = GetResource<NotifiAndAlertsResources>(nameof(NotifiAndAlertsResources.NoDataFound))
                 });
-            }
-            catch (Exception ex)
+
+            return Ok(new ResponseModel<ContentAreaDto>
             {
-                return HandleException(ex);
-            }
+                Success = true,
+                Message = GetResource<NotifiAndAlertsResources>(nameof(NotifiAndAlertsResources.DataRetrieved)),
+                Data = area
+            });
         }
 
         [HttpGet("by-code/{areaCode}")]
         [AllowAnonymous]
         public async Task<IActionResult> GetByCode(string areaCode)
         {
-            try
-            {
-                var area = await _contentAreaService.GetByAreaCodeAsync(areaCode);
-                if (area == null)
-                    return NotFound(new ResponseModel<string>
-                    {
-                        Success = false,
-                        Message = GetResource<NotifiAndAlertsResources>(nameof(NotifiAndAlertsResources.NoDataFound))
-                    });
-
-                return Ok(new ResponseModel<ContentAreaDto>
+            var area = await _contentAreaService.GetByAreaCodeAsync(areaCode);
+            if (area == null)
+                return NotFound(new ResponseModel<string>
                 {
-                    Success = true,
-                    Message = GetResource<NotifiAndAlertsResources>(nameof(NotifiAndAlertsResources.DataRetrieved)),
-                    Data = area
+                    Success = false,
+                    Message = GetResource<NotifiAndAlertsResources>(nameof(NotifiAndAlertsResources.NoDataFound))
                 });
-            }
-            catch (Exception ex)
+
+            return Ok(new ResponseModel<ContentAreaDto>
             {
-                return HandleException(ex);
-            }
+                Success = true,
+                Message = GetResource<NotifiAndAlertsResources>(nameof(NotifiAndAlertsResources.DataRetrieved)),
+                Data = area
+            });
         }
 
         [HttpGet("search")]
         [Authorize(Roles = nameof(UserRole.Admin))]
         public async Task<IActionResult> Search([FromQuery] BaseSearchCriteriaModel criteriaModel)
         {
-            try
-            {
-                criteriaModel.PageNumber = criteriaModel.PageNumber < 1 ? 1 : criteriaModel.PageNumber;
-                criteriaModel.PageSize = criteriaModel.PageSize < 1 || criteriaModel.PageSize > 100 ? 10 : criteriaModel.PageSize;
+            criteriaModel.PageNumber = criteriaModel.PageNumber < 1 ? 1 : criteriaModel.PageNumber;
+            criteriaModel.PageSize = criteriaModel.PageSize < 1 || criteriaModel.PageSize > 100 ? 10 : criteriaModel.PageSize;
 
-                var result = await _contentAreaService.SearchAsync(criteriaModel);
+            var result = await _contentAreaService.SearchAsync(criteriaModel);
 
-                return Ok(new ResponseModel<PaginatedDataModel<ContentAreaDto>>
-                {
-                    Success = true,
-                    Message = GetResource<NotifiAndAlertsResources>(nameof(NotifiAndAlertsResources.DataRetrieved)),
-                    Data = result
-                });
-            }
-            catch (Exception ex)
+            return Ok(new ResponseModel<PaginatedDataModel<ContentAreaDto>>
             {
-                return HandleException(ex);
-            }
+                Success = true,
+                Message = GetResource<NotifiAndAlertsResources>(nameof(NotifiAndAlertsResources.DataRetrieved)),
+                Data = result
+            });
         }
 
         [HttpPost("save")]
         [Authorize(Roles = nameof(UserRole.Admin))]
         public async Task<IActionResult> Save([FromBody] ContentAreaDto dto)
         {
-            try
-            {
-                if (!ModelState.IsValid)
-                    return BadRequest(new ResponseModel<string> { Success = false, Message = "Invalid data." });
+            if (!ModelState.IsValid)
+                return BadRequest(new ResponseModel<string> { Success = false, Message = "Invalid data." });
 
-                var success = await _contentAreaService.SaveAsync(dto, GuidUserId);
-                return Ok(new ResponseModel<string>
-                {
-                    Success = success,
-                    Message = success 
-                        ? GetResource<NotifiAndAlertsResources>(nameof(NotifiAndAlertsResources.SavedSuccessfully))
-                        : GetResource<NotifiAndAlertsResources>(nameof(NotifiAndAlertsResources.SaveFailed))
-                });
-            }
-            catch (Exception ex)
+            var success = await _contentAreaService.SaveAsync(dto, GuidUserId);
+            return Ok(new ResponseModel<string>
             {
-                return HandleException(ex);
-            }
+                Success = success,
+                Message = success 
+                    ? GetResource<NotifiAndAlertsResources>(nameof(NotifiAndAlertsResources.SavedSuccessfully))
+                    : GetResource<NotifiAndAlertsResources>(nameof(NotifiAndAlertsResources.SaveFailed))
+            });
         }
 
         [HttpPost("delete")]
         [Authorize(Roles = nameof(UserRole.Admin))]
         public async Task<IActionResult> Delete([FromBody] Guid id)
         {
-            try
+            var success = await _contentAreaService.DeleteAsync(id, GuidUserId);
+            return Ok(new ResponseModel<string>
             {
-                var success = await _contentAreaService.DeleteAsync(id, GuidUserId);
-                return Ok(new ResponseModel<string>
-                {
-                    Success = success,
-                    Message = success 
-                        ? GetResource<NotifiAndAlertsResources>(nameof(NotifiAndAlertsResources.DeletedSuccessfully))
-                        : GetResource<NotifiAndAlertsResources>(nameof(NotifiAndAlertsResources.DeleteFailed))
-                });
-            }
-            catch (Exception ex)
-            {
-                return HandleException(ex);
-            }
+                Success = success,
+                Message = success 
+                    ? GetResource<NotifiAndAlertsResources>(nameof(NotifiAndAlertsResources.DeletedSuccessfully))
+                    : GetResource<NotifiAndAlertsResources>(nameof(NotifiAndAlertsResources.DeleteFailed))
+            });
         }
 
         [HttpPost("toggle-status")]
         [Authorize(Roles = nameof(UserRole.Admin))]
         public async Task<IActionResult> ToggleStatus([FromBody] Guid id)
         {
-            try
+            var success = await _contentAreaService.ToggleActiveStatusAsync(id, GuidUserId);
+            return Ok(new ResponseModel<string>
             {
-                var success = await _contentAreaService.ToggleActiveStatusAsync(id, GuidUserId);
-                return Ok(new ResponseModel<string>
-                {
-                    Success = success,
-                    Message = success 
-                        ? "Status updated successfully."
-                        : "Failed to update status."
-                });
-            }
-            catch (Exception ex)
-            {
-                return HandleException(ex);
-            }
+                Success = success,
+                Message = success 
+                    ? "Status updated successfully."
+                    : "Failed to update status."
+            });
         }
     }
 }

@@ -35,21 +35,14 @@ namespace Api.Controllers.User
 		//[Authorize(Roles = nameof(UserRole.Admin))]
 		public async Task<IActionResult> Get()
 		{
-			try
-			{
-				var customer = await _customerService.GetAllAsync();
+			var customer = await _customerService.GetAllAsync();
 
-				return Ok(new ResponseModel<IEnumerable<CustomerDto>>
-				{
-					Success = true,
-					Message = GetResource<NotifiAndAlertsResources>(nameof(NotifiAndAlertsResources.DataRetrieved)),
-					Data = customer
-				});
-			}
-			catch (Exception ex)
+			return Ok(new ResponseModel<IEnumerable<CustomerDto>>
 			{
-				return HandleException(ex);
-			}
+				Success = true,
+				Message = GetResource<NotifiAndAlertsResources>(nameof(NotifiAndAlertsResources.DataRetrieved)),
+				Data = customer
+			});
 		}
 
 		/// <summary>
@@ -60,34 +53,27 @@ namespace Api.Controllers.User
 		//[Authorize(Roles = nameof(UserRole.Admin))]
 		public async Task<IActionResult> Get(Guid id)
 		{
-			try
-			{
-				if (id == Guid.Empty)
-					return BadRequest(new ResponseModel<string>
-					{
-						Success = false,
-						Message = GetResource<NotifiAndAlertsResources>(nameof(NotifiAndAlertsResources.InvalidInputAlert))
-					});
-
-				var customer = await _customerService.FindByIdAsync(id);
-				if (customer == null)
-					return NotFound(new ResponseModel<string>
-					{
-						Success = false,
-						Message = GetResource<NotifiAndAlertsResources>(nameof(NotifiAndAlertsResources.NoDataFound))
-					});
-
-				return Ok(new ResponseModel<CustomerDto>
+			if (id == Guid.Empty)
+				return BadRequest(new ResponseModel<string>
 				{
-					Success = true,
-					Message = GetResource<NotifiAndAlertsResources>(nameof(NotifiAndAlertsResources.DataRetrieved)),
-					Data = customer
+					Success = false,
+					Message = GetResource<NotifiAndAlertsResources>(nameof(NotifiAndAlertsResources.InvalidInputAlert))
 				});
-			}
-			catch (Exception ex)
+
+			var customer = await _customerService.FindByIdAsync(id);
+			if (customer == null)
+				return NotFound(new ResponseModel<string>
+				{
+					Success = false,
+					Message = GetResource<NotifiAndAlertsResources>(nameof(NotifiAndAlertsResources.NoDataFound))
+				});
+
+			return Ok(new ResponseModel<CustomerDto>
 			{
-				return HandleException(ex);
-			}
+				Success = true,
+				Message = GetResource<NotifiAndAlertsResources>(nameof(NotifiAndAlertsResources.DataRetrieved)),
+				Data = customer
+			});
 		}
 
 		
@@ -99,51 +85,28 @@ namespace Api.Controllers.User
 		//[Authorize(Roles = nameof(UserRole.Admin))]
 		public async Task<IActionResult> Search([FromQuery] BaseSearchCriteriaModel criteriaModel)
 		{
-			try
+			// Validate and set default pagination values if not provided
+			criteriaModel.PageNumber = criteriaModel.PageNumber < 1 ? 1 : criteriaModel.PageNumber;
+			criteriaModel.PageSize = criteriaModel.PageSize < 1 || criteriaModel.PageSize > 100 ? 10 : criteriaModel.PageSize;
+
+			var result = await _customerService.SearchAsync(criteriaModel);
+
+			if (result == null || !result.Items.Any())
 			{
-				// Validate and set default pagination values if not provided
-				criteriaModel.PageNumber = criteriaModel.PageNumber < 1 ? 1 : criteriaModel.PageNumber;
-				criteriaModel.PageSize = criteriaModel.PageSize < 1 || criteriaModel.PageSize > 100 ? 10 : criteriaModel.PageSize;
-
-				var result = await _customerService.SearchAsync(criteriaModel);
-
-				if (result == null || !result.Items.Any())
-				{
-					return Ok(new ResponseModel<PaginatedDataModel<CustomerDto>>
-					{
-						Success = true,
-						Message = GetResource<NotifiAndAlertsResources>(nameof(NotifiAndAlertsResources.NoDataFound)),
-						Data = result
-					});
-				}
-
 				return Ok(new ResponseModel<PaginatedDataModel<CustomerDto>>
 				{
 					Success = true,
-					Message = GetResource<NotifiAndAlertsResources>(nameof(NotifiAndAlertsResources.DataRetrieved)),
+					Message = GetResource<NotifiAndAlertsResources>(nameof(NotifiAndAlertsResources.NoDataFound)),
 					Data = result
 				});
 			}
-			catch (ArgumentNullException)
+
+			return Ok(new ResponseModel<PaginatedDataModel<CustomerDto>>
 			{
-				return BadRequest(new ResponseModel<string>
-				{
-					Success = false,
-					Message = GetResource<NotifiAndAlertsResources>(nameof(NotifiAndAlertsResources.InvalidInputAlert))
-				});
-			}
-			catch (ArgumentOutOfRangeException ex)
-			{
-				return BadRequest(new ResponseModel<string>
-				{
-					Success = false,
-					Message = ex.Message
-				});
-			}
-			catch (Exception ex)
-			{
-				return HandleException(ex);
-			}
+				Success = true,
+				Message = GetResource<NotifiAndAlertsResources>(nameof(NotifiAndAlertsResources.DataRetrieved)),
+				Data = result
+			});
 		}
 
 	
@@ -155,33 +118,26 @@ namespace Api.Controllers.User
 		//[Authorize(Roles = nameof(UserRole.Admin))]
 		public async Task<IActionResult> Save([FromBody] CustomerDto dto)
 		{
-			try
-			{
-				if (!ModelState.IsValid)
-					return BadRequest(new ResponseModel<string>
-					{
-						Success = false,
-						Message = "Invalid customer data."
-					});
+			if (!ModelState.IsValid)
+				return BadRequest(new ResponseModel<string>
+				{
+					Success = false,
+					Message = "Invalid customer data."
+				});
 
-				var result = await _customerService.SaveAsync(dto, GuidUserId);
-				if (!result.Success)
-					return Ok(new ResponseModel<string>
-					{
-						Success = false,
-						Message = GetResource<NotifiAndAlertsResources>(nameof(NotifiAndAlertsResources.SaveFailed))
-					});
-
+			var result = await _customerService.SaveAsync(dto, GuidUserId);
+			if (!result.Success)
 				return Ok(new ResponseModel<string>
 				{
-					Success = true,
-					Message = GetResource<NotifiAndAlertsResources>(nameof(NotifiAndAlertsResources.SavedSuccessfully))
+					Success = false,
+					Message = GetResource<NotifiAndAlertsResources>(nameof(NotifiAndAlertsResources.SaveFailed))
 				});
-			}
-			catch (Exception ex)
+
+			return Ok(new ResponseModel<string>
 			{
-				return HandleException(ex);
-			}
+				Success = true,
+				Message = GetResource<NotifiAndAlertsResources>(nameof(NotifiAndAlertsResources.SavedSuccessfully))
+			});
 		}
 
 		/// <summary>
@@ -192,37 +148,27 @@ namespace Api.Controllers.User
 		//[Authorize(Roles = nameof(UserRole.Admin))]
 		public async Task<IActionResult> Delete([FromBody] Guid id)
 		{
-			try
-			{
-				if (id == Guid.Empty)
-					return BadRequest(new ResponseModel<string>
-					{
-						Success = false,
-						Message = "Invalid customer ID."
-					});
-
-				var success = await _customerService.DeleteAsync(id, GuidUserId);
-				if (!success)
-					return BadRequest(new ResponseModel<string>
-					{
-						Success = false,
-						Message = GetResource<NotifiAndAlertsResources>(nameof(NotifiAndAlertsResources.DeleteFailed))
-					});
-
-				return Ok(new ResponseModel<string>
+			if (id == Guid.Empty)
+				return BadRequest(new ResponseModel<string>
 				{
-					Success = true,
-					Message = GetResource<NotifiAndAlertsResources>(nameof(NotifiAndAlertsResources.DeletedSuccessfully))
+					Success = false,
+					Message = "Invalid customer ID."
 				});
-			}
-			catch (Exception ex)
+
+			var success = await _customerService.DeleteAsync(id, GuidUserId);
+			if (!success)
+				return BadRequest(new ResponseModel<string>
+				{
+					Success = false,
+					Message = GetResource<NotifiAndAlertsResources>(nameof(NotifiAndAlertsResources.DeleteFailed))
+				});
+
+			return Ok(new ResponseModel<string>
 			{
-				return HandleException(ex);
-			}
+				Success = true,
+				Message = GetResource<NotifiAndAlertsResources>(nameof(NotifiAndAlertsResources.DeletedSuccessfully))
+			});
 		}
-
-		
 	}
-
 }
 

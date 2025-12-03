@@ -30,27 +30,20 @@ namespace Api.Controllers.Catalog
         [AllowAnonymous]
         public async Task<IActionResult> Get()
         {
-            try
-            {
-                var units = await _unitService.GetAllAsync();
-                if (units == null || !units.Any())
-                    return NotFound(new ResponseModel<string>
-                    {
-                        Success = false,
-                        Message = NotifiAndAlertsResources.NoDataFound
-                    });
-
-                return Ok(new ResponseModel<IEnumerable<UnitDto>>
+            var units = await _unitService.GetAllAsync();
+            if (units == null || !units.Any())
+                return NotFound(new ResponseModel<string>
                 {
-                    Success = true,
-                    Message = NotifiAndAlertsResources.DataRetrieved,
-                    Data = units
+                    Success = false,
+                    Message = NotifiAndAlertsResources.NoDataFound
                 });
-            }
-            catch (Exception ex)
+
+            return Ok(new ResponseModel<IEnumerable<UnitDto>>
             {
-                return HandleException(ex);
-            }
+                Success = true,
+                Message = NotifiAndAlertsResources.DataRetrieved,
+                Data = units
+            });
         }
 
         /// <summary>
@@ -60,34 +53,27 @@ namespace Api.Controllers.Catalog
         [AllowAnonymous]
         public async Task<IActionResult> Get(Guid id)
         {
-            try
-            {
-                if (id == Guid.Empty)
-                    return BadRequest(new ResponseModel<string>
-                    {
-                        Success = false,
-                        Message = NotifiAndAlertsResources.InvalidInputAlert
-                    });
-
-                var unit = await _unitService.FindByIdAsync(id);
-                if (unit == null)
-                    return NotFound(new ResponseModel<string>
-                    {
-                        Success = false,
-                        Message = NotifiAndAlertsResources.NoDataFound
-                    });
-
-                return Ok(new ResponseModel<UnitDto>
+            if (id == Guid.Empty)
+                return BadRequest(new ResponseModel<string>
                 {
-                    Success = true,
-                    Message = NotifiAndAlertsResources.DataRetrieved,
-                    Data = unit
+                    Success = false,
+                    Message = NotifiAndAlertsResources.InvalidInputAlert
                 });
-            }
-            catch (Exception ex)
+
+            var unit = await _unitService.FindByIdAsync(id);
+            if (unit == null)
+                return NotFound(new ResponseModel<string>
+                {
+                    Success = false,
+                    Message = NotifiAndAlertsResources.NoDataFound
+                });
+
+            return Ok(new ResponseModel<UnitDto>
             {
-                return HandleException(ex);
-            }
+                Success = true,
+                Message = NotifiAndAlertsResources.DataRetrieved,
+                Data = unit
+            });
         }
 
         /// <summary>
@@ -98,35 +84,27 @@ namespace Api.Controllers.Catalog
         [Authorize(Roles = nameof(UserRole.Admin))]
         public async Task<IActionResult> Search([FromQuery] BaseSearchCriteriaModel criteria)
         {
-            try
+            criteria.PageNumber = criteria.PageNumber < 1 ? 1 : criteria.PageNumber;
+            criteria.PageSize = criteria.PageSize < 1 || criteria.PageSize > 100 ? 10 : criteria.PageSize;
+
+            var result = await _unitService.GetPageAsync(criteria);
+
+            if (result == null || !result.Items.Any())
             {
-                // Validate and set default pagination values if not provided
-                criteria.PageNumber = criteria.PageNumber < 1 ? 1 : criteria.PageNumber;
-                criteria.PageSize = criteria.PageSize < 1 || criteria.PageSize > 100 ? 10 : criteria.PageSize;
-
-                var result = await _unitService.GetPageAsync(criteria);
-
-                if (result == null || !result.Items.Any())
-                {
-                    return Ok(new ResponseModel<PaginatedDataModel<UnitDto>>
-                    {
-                        Success = true,
-                        Message = NotifiAndAlertsResources.NoDataFound,
-                        Data = result
-                    });
-                }
-
                 return Ok(new ResponseModel<PaginatedDataModel<UnitDto>>
                 {
                     Success = true,
-                    Message = NotifiAndAlertsResources.DataRetrieved,
+                    Message = NotifiAndAlertsResources.NoDataFound,
                     Data = result
                 });
             }
-            catch (Exception ex)
+
+            return Ok(new ResponseModel<PaginatedDataModel<UnitDto>>
             {
-                return HandleException(ex);
-            }
+                Success = true,
+                Message = NotifiAndAlertsResources.DataRetrieved,
+                Data = result
+            });
         }
 
         /// <summary>
@@ -136,33 +114,26 @@ namespace Api.Controllers.Catalog
         [Authorize(Roles = nameof(UserRole.Admin))]
         public async Task<IActionResult> Save([FromBody] UnitDto unitDto)
         {
-            try
-            {
-                if (!ModelState.IsValid)
-                    return BadRequest(new ResponseModel<string>
-                    {
-                        Success = false,
-                        Message = NotifiAndAlertsResources.InvalidInputAlert
-                    });
-
-                var result = await _unitService.SaveAsync(unitDto, GuidUserId);
-                if (!result.Success)
-                    return BadRequest(new ResponseModel<string>
-                    {
-                        Success = false,
-                        Message = NotifiAndAlertsResources.SaveFailed
-                    });
-
-                return Ok(new ResponseModel<string>
+            if (!ModelState.IsValid)
+                return BadRequest(new ResponseModel<string>
                 {
-                    Success = true,
-                    Message = NotifiAndAlertsResources.SavedSuccessfully
+                    Success = false,
+                    Message = NotifiAndAlertsResources.InvalidInputAlert
                 });
-            }
-            catch (Exception ex)
+
+            var result = await _unitService.SaveAsync(unitDto, GuidUserId);
+            if (!result.Success)
+                return BadRequest(new ResponseModel<string>
+                {
+                    Success = false,
+                    Message = NotifiAndAlertsResources.SaveFailed
+                });
+
+            return Ok(new ResponseModel<string>
             {
-                return HandleException(ex);
-            }
+                Success = true,
+                Message = NotifiAndAlertsResources.SavedSuccessfully
+            });
         }
 
         /// <summary>
@@ -172,34 +143,26 @@ namespace Api.Controllers.Catalog
         [Authorize(Roles = nameof(UserRole.Admin))]
         public async Task<IActionResult> Delete([FromBody] Guid id)
         {
-            try
-            {
-                if (id == Guid.Empty)
-                    return BadRequest(new ResponseModel<string>
-                    {
-                        Success = false,
-                        Message = "Invalid unit ID."
-                    });
-
-                var success = await _unitService.DeleteAsync(id, GuidUserId);
-                if (!success)
-                    return BadRequest(new ResponseModel<string>
-                    {
-                        Success = false,
-                        Message = NotifiAndAlertsResources.DeleteFailed
-                    });
-
-                return Ok(new ResponseModel<string>
+            if (id == Guid.Empty)
+                return BadRequest(new ResponseModel<string>
                 {
-                    Success = true,
-                    Message = NotifiAndAlertsResources.DeletedSuccessfully
+                    Success = false,
+                    Message = "Invalid unit ID."
                 });
-            }
-            catch (Exception ex)
-            {
-                return HandleException(ex);
-            }
-        }
 
+            var success = await _unitService.DeleteAsync(id, GuidUserId);
+            if (!success)
+                return BadRequest(new ResponseModel<string>
+                {
+                    Success = false,
+                    Message = NotifiAndAlertsResources.DeleteFailed
+                });
+
+            return Ok(new ResponseModel<string>
+            {
+                Success = true,
+                Message = NotifiAndAlertsResources.DeletedSuccessfully
+            });
+        }
     }
 }

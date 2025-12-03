@@ -23,15 +23,8 @@ namespace Api.Controllers.Pricing
         [Authorize(Roles = nameof(UserType.Admin))]
         public async Task<IActionResult> Get()
         {
-            try
-            {
-                var list = await _pricingService.GetAllSystemsAsync();
-                return Ok(new ResponseModel<IEnumerable<PricingSystemSettingDto>> { Success = true, Data = list });
-            }
-            catch (Exception ex)
-            {
-                return HandleException(ex);
-            }
+            var list = await _pricingService.GetAllSystemsAsync();
+            return Ok(new ResponseModel<IEnumerable<PricingSystemSettingDto>> { Success = true, Data = list });
         }
     }
 }

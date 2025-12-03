@@ -37,78 +37,64 @@ public class AuthController : ControllerBase
     [ProducesResponseType(typeof(ResponseModel<object>), StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> Login([FromBody] IdentifierLoginDto loginDto)
     {
-        try
+        // Validate model state
+        if (!ModelState.IsValid)
         {
-            // Validate model state
-            if (!ModelState.IsValid)
-            {
-                var errors = ModelState.Values
-                    .SelectMany(v => v.Errors)
-                    .Select(e => e.ErrorMessage)
-                    .ToList();
+            var errors = ModelState.Values
+                .SelectMany(v => v.Errors)
+                .Select(e => e.ErrorMessage)
+                .ToList();
 
-                return Ok(new ResponseModel<SignInResult>
-                {
-                    Success = false,
-                    Errors = errors,
-                    Message = ValidationResources.PleaseFixValidationErrors
-                });
-            }
-
-            var clientType = Request.Headers.ContainsKey("X-Platform")
-                ? Request.Headers["X-Platform"].ToString().ToLower()
-                : "website";
-
-            // Attempt to sign in the user
-            var result = await _authenticationService
-                .EmailOrUserNameSignInAsync(loginDto.Identifier, loginDto.Password, clientType);
-
-            if (result.Success)
-            {
-                // ✅ NEW: Set HTTP-only cookies for tokens
-                SetAuthCookies(result.Token, result.RefreshToken);
-
-                // ✅ UPDATED: Return user info WITHOUT tokens in response body
-                var response = new ResponseModel<SignInResult>
-                {
-                    //Data = new SignInResult
-                    //{
-                    //    Success = true,
-                    //    FirstName = result.FirstName,
-                    //    LastName = result.LastName,
-                    //    Email = result.Email,
-                    //    HasReachTargetAccountType = result.HasReachTargetAccountType,
-                    //    ProfileImagePath = result.ProfileImagePath,
-                    //    Role = result.Role,
-                    //    // ✅ Don't send tokens in response body
-                    //    Token = result.Token,
-                    //    RefreshToken = result.RefreshToken
-                    //}
-                    Data = result
-                };
-
-                response.SetSuccessMessage(NotifiAndAlertsResources.LoginSuccessful);
-                return Ok(response);
-            }
-
-            // Handle login failure
             return Ok(new ResponseModel<SignInResult>
             {
                 Success = false,
-                Message = result.Message ?? ValidationResources.InvalidLoginAttempt
+                Errors = errors,
+                Message = ValidationResources.PleaseFixValidationErrors
             });
         }
-        catch (Exception ex)
+
+        var clientType = Request.Headers.ContainsKey("X-Platform")
+            ? Request.Headers["X-Platform"].ToString().ToLower()
+            : "website";
+
+        // Attempt to sign in the user
+        var result = await _authenticationService
+            .EmailOrUserNameSignInAsync(loginDto.Identifier, loginDto.Password, clientType);
+
+        if (result.Success)
         {
-            _logger.Error(ex, "An error occurred during email or username login for user: {Identifier}", loginDto.Identifier);
-            var response = new ResponseModel<object>
+            // ✅ NEW: Set HTTP-only cookies for tokens
+            SetAuthCookies(result.Token, result.RefreshToken);
+
+            // ✅ UPDATED: Return user info WITHOUT tokens in response body
+            var response = new ResponseModel<SignInResult>
             {
-                Success = false,
-                Message = NotifiAndAlertsResources.SomethingWentWrongAlert,
-                Errors = new List<string> { "An unexpected error occurred. Please try again later." } // Avoid exposing ex.Message in production
+                //Data = new SignInResult
+                //{
+                //    Success = true,
+                //    FirstName = result.FirstName,
+                //    LastName = result.LastName,
+                //    Email = result.Email,
+                //    HasReachTargetAccountType = result.HasReachTargetAccountType,
+                //    ProfileImagePath = result.ProfileImagePath,
+                //    Role = result.Role,
+                //    // ✅ Don't send tokens in response body
+                //    Token = result.Token,
+                //    RefreshToken = result.RefreshToken
+                //}
+                Data = result
             };
-            return StatusCode(StatusCodes.Status500InternalServerError, response);
+
+            response.SetSuccessMessage(NotifiAndAlertsResources.LoginSuccessful);
+            return Ok(response);
         }
+
+        // Handle login failure
+        return Ok(new ResponseModel<SignInResult>
+        {
+            Success = false,
+            Message = result.Message ?? ValidationResources.InvalidLoginAttempt
+        });
     }
 
     /// <summary>
@@ -118,26 +104,14 @@ public class AuthController : ControllerBase
     [ProducesResponseType(typeof(ResponseModel<object>), StatusCodes.Status200OK)]
     public IActionResult Logout()
     {
-        try
-        {
-            // Clear authentication cookies
-            ClearAuthCookies();
+        // Clear authentication cookies
+        ClearAuthCookies();
 
-            return Ok(new ResponseModel<object>
-            {
-                Success = true,
-                Message = "Logged out successfully"
-            });
-        }
-        catch (Exception ex)
+        return Ok(new ResponseModel<object>
         {
-            _logger.Error(ex, "An error occurred during logout");
-            return Ok(new ResponseModel<object>
-            {
-                Success = false,
-                Message = "Logout failed"
-            });
-        }
+            Success = true,
+            Message = "Logged out successfully"
+        });
     }
 
     /// <summary>

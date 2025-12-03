@@ -33,38 +33,31 @@ namespace Api.Controllers.User
         [AllowAnonymous]
         public async Task<IActionResult> InitiatePasswordReset([FromBody] ForgetPasswordRequestDto request)
         {
-            try
+            if (string.IsNullOrEmpty(request.Email))
             {
-                if (string.IsNullOrEmpty(request.Email))
-                {
-                    return Ok(new ResponseModel<object>
-                    {
-                        Success = false,
-                        Message = ValidationResources.EmailRequired
-                    });
-                }
-
-                var result = await _userAuthenticationService.SendResetCodeAsync(request.Email);
-
-                if (result.Success)
-                {
-                    return Ok(new ResponseModel<object>
-                    {
-                        Success = true,
-                        Message = ValidationResources.PasswordResetCodeSent
-                    });
-                }
-
                 return Ok(new ResponseModel<object>
                 {
                     Success = false,
-                    Message = result.Message ?? ValidationResources.PasswordResetCodeFailed
+                    Message = ValidationResources.EmailRequired
                 });
             }
-            catch (Exception ex)
+
+            var result = await _userAuthenticationService.SendResetCodeAsync(request.Email);
+
+            if (result.Success)
             {
-                return HandleException(ex);
+                return Ok(new ResponseModel<object>
+                {
+                    Success = true,
+                    Message = ValidationResources.PasswordResetCodeSent
+                });
             }
+
+            return Ok(new ResponseModel<object>
+            {
+                Success = false,
+                Message = result.Message ?? ValidationResources.PasswordResetCodeFailed
+            });
         }
 
         /// <summary>
@@ -74,40 +67,32 @@ namespace Api.Controllers.User
         [AllowAnonymous]
         public async Task<IActionResult> CompletePasswordReset([FromBody] ResetPasswordWithCodeDto resetDto)
         {
-            try
+            if (!ModelState.IsValid)
             {
-                if (!ModelState.IsValid)
-                {
-                    return Ok(new ResponseModel<string>
-                    {
-                        Success = false,
-                        Message = NotifiAndAlertsResources.InvalidInput,
-                        Errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList()
-                    });
-                }
-
-                var result = await _userAuthenticationService.ResetPasswordWithCodeAsync(resetDto.Email, resetDto.VerificationCode, resetDto.NewPassword);
-
-                if (result.Success)
-                {
-                    return Ok(new ResponseModel<object>
-                    {
-                        Success = true,
-                        Message = ValidationResources.PasswordResetSuccess
-                    });
-                }
-
-                return Ok(new ResponseModel<object>
+                return Ok(new ResponseModel<string>
                 {
                     Success = false,
-                    Message = ValidationResources.PasswordResetFailed
+                    Message = NotifiAndAlertsResources.InvalidInput,
+                    Errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList()
                 });
+            }
 
-            }
-            catch (Exception ex)
+            var result = await _userAuthenticationService.ResetPasswordWithCodeAsync(resetDto.Email, resetDto.VerificationCode, resetDto.NewPassword);
+
+            if (result.Success)
             {
-                return HandleException(ex);
+                return Ok(new ResponseModel<object>
+                {
+                    Success = true,
+                    Message = ValidationResources.PasswordResetSuccess
+                });
             }
+
+            return Ok(new ResponseModel<object>
+            {
+                Success = false,
+                Message = ValidationResources.PasswordResetFailed
+            });
         }
 
         /// <summary>
@@ -117,30 +102,22 @@ namespace Api.Controllers.User
         [Authorize]
         public async Task<IActionResult> DeleteAccount()
         {
-            try
+            var result = await _userAuthenticationService.DeleteAccountAsync(UserId);
+
+            if (result.Success)
             {
-                var result = await _userAuthenticationService.DeleteAccountAsync(UserId);
-
-                if (result.Success)
+                return Ok(new ResponseModel<object>
                 {
-                    return Ok(new ResponseModel<object>
-                    {
-                        Success = true,
-                        Message = ValidationResources.DeleteSuccess
-                    });
-                }
-
-                return BadRequest(new ResponseModel<object>
-                {
-                    Success = false,
-                    Message = result.Message ?? NotifiAndAlertsResources.DeleteFailed
+                    Success = true,
+                    Message = ValidationResources.DeleteSuccess
                 });
+            }
 
-            }
-            catch (Exception ex)
+            return BadRequest(new ResponseModel<object>
             {
-                return HandleException(ex);
-            }
+                Success = false,
+                Message = result.Message ?? NotifiAndAlertsResources.DeleteFailed
+            });
         }
 
         /// <summary>
@@ -153,55 +130,47 @@ namespace Api.Controllers.User
         [ProducesResponseType(typeof(ResponseModel<string>), StatusCodes.Status401Unauthorized)]
         public async Task<IActionResult> GetUserInfo()
         {
-            try
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if (string.IsNullOrEmpty(userId))
             {
-                var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-
-                if (string.IsNullOrEmpty(userId))
+                return Unauthorized(new ResponseModel<UserInfoDto>
                 {
-                    return Unauthorized(new ResponseModel<UserInfoDto>
-                    {
-                        Success = false,
-                        Message = "User not authenticated"
-                    });
-                }
-
-                // Get user from database
-                var user = await _userManager.FindByIdAsync(userId);
-                if (user == null)
-                {
-                    return Unauthorized(new ResponseModel<UserInfoDto>
-                    {
-                        Success = false,
-                        Message = "User not found"
-                    });
-                }
-
-                // Get user roles
-                var roles = await _userManager.GetRolesAsync(user);
-
-                // Create response DTO
-                var userInfo = new UserInfoDto
-                {
-                    UserId = user.Id.ToString(),
-                    UserName = user.UserName,
-                    Email = user.Email,
-                    FullName = $"{user.FirstName} {user.LastName}".Trim(),
-                    ProfileImagePath = user.ProfileImagePath,
-                    Roles = roles.ToList()
-                };
-
-                return Ok(new ResponseModel<UserInfoDto>
-                {
-                    Success = true,
-                    Data = userInfo
+                    Success = false,
+                    Message = "User not authenticated"
                 });
             }
-            catch (Exception ex)
+
+            // Get user from database
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null)
             {
-                _logger.Error(ex, "Error getting user info");
-                return HandleException(ex);
+                return Unauthorized(new ResponseModel<UserInfoDto>
+                {
+                    Success = false,
+                    Message = "User not found"
+                });
             }
+
+            // Get user roles
+            var roles = await _userManager.GetRolesAsync(user);
+
+            // Create response DTO
+            var userInfo = new UserInfoDto
+            {
+                UserId = user.Id.ToString(),
+                UserName = user.UserName,
+                Email = user.Email,
+                FullName = $"{user.FirstName} {user.LastName}".Trim(),
+                ProfileImagePath = user.ProfileImagePath,
+                Roles = roles.ToList()
+            };
+
+            return Ok(new ResponseModel<UserInfoDto>
+            {
+                Success = true,
+                Data = userInfo
+            });
         }
     }
 }
