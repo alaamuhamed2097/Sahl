@@ -18,6 +18,12 @@ namespace DAL.Configurations
             builder.Property(x => x.ShipmentNumber)
                 .IsRequired();
 
+            // Configure relationship with shipment items
+            builder.HasMany(x => x.Items)
+                .WithOne(x => x.Shipment)
+                .HasForeignKey(x => x.ShipmentId)
+                .OnDelete(DeleteBehavior.Cascade);
+
             // Indexes
             builder.HasIndex(e => e.OrderId).HasDatabaseName("IX_OrderShipments_OrderId");
             builder.HasIndex(e => e.VendorId).HasDatabaseName("IX_OrderShipments_VendorId");
