@@ -111,8 +111,8 @@ namespace Api.Middleware
 
                 default:
                     context.Response.StatusCode = StatusCodes.Status500InternalServerError;
-                    response.Message = NotifiAndAlertsResources.SomethingWentWrongAlert;
-                    response.Errors = new List<string> { "An unexpected error occurred. Please try again later." };
+                    response.Message = exception.Message;
+                    response.Errors = new List<string> { exception.Message };
                     response.StatusCode = StatusCodes.Status500InternalServerError;
                     break;
             }
