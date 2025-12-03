@@ -1,14 +1,17 @@
-﻿using Common.Enumerations.Order;
+using Common.Enumerations.Order;
 using Common.Enumerations.Payment;
+using Resources;
+using Resources.Enumerations;
 using Shared.DTOs.Base;
 using System.Text.Json.Serialization;
 
 namespace Shared.DTOs.ECommerce.Order
 {
     /// <summary>
-    /// Complete Order DTO for full details in Dashboard and comprehensive views
+    /// API Response DTO ???? ?????? ????? ?????? ??? ??????? ?????
+    /// API Response DTO for returning order data to customer without sensitive information
     /// </summary>
-    public class OrderDto : BaseDto
+    public class OrderResponseDto : BaseDto
     {
         public string Number { get; set; } = null!;
         public decimal Price { get; set; }
@@ -31,19 +34,12 @@ namespace Shared.DTOs.ECommerce.Order
         // Calculated property to check if refund is still valid (within 15 days)
         public bool IsWithinRefundPeriod => DateTime.UtcNow.Subtract(CreatedDateUtc).Days <= 15;
 
-        // User Information
-        public string UserId { get; set; } = null!;
+        // Limited User Information (non-sensitive)
         public string UserName { get; set; } = null!;
-        public string Email { get; set; } = null!;
-        public string PhoneNumber { get; set; } = null!;
-        public string RoleName { get; set; } = null!;
         public string FirstName { get; set; } = null!;
         public string LastName { get; set; } = null!;
-        public string ProfileImagePath { get; set; } = null!;
 
         // Sponsor Information
-        public string? SponsorFirstName { get; set; }
-        public string? SponsorLastName { get; set; }
         public string? SponsorUserName { get; set; }
 
         // Payment Gateway Information
