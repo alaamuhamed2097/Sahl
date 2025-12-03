@@ -181,9 +181,7 @@ namespace BL.Service.ECommerce.Item
                 if (dto.Id != Guid.Empty)
                 {
                     // Get existing images for this item
-                    var existingImages = await _unitOfWork
-                        .TableRepository<TbItemImage>()
-                        .GetAsync(ii => ii.ItemId == dto.Id);
+                    var existingImages = await _unitOfWork.TableRepository<TbItemImage>().GetAsync(ii => ii.ItemId == dto.Id);
 
                     var newImagesPaths = dto.Images?.Select(i => i.Path) ?? Enumerable.Empty<string>();
 
@@ -307,21 +305,252 @@ namespace BL.Service.ECommerce.Item
                         combo.IsDefault = false;
                     }
                 }
-                // Save ItemAttributeCombinationPricings
+                // Save ItemAttributeCombinationPricings and nested combination attributes/values/modifiers
                 var combinationsSaved = true;
                 if (dto.ItemCombinations?.Any() == true)
                 {
-                    var combinationEntities = new List<TbItemCombination>();
-                    foreach (var combo in dto.ItemCombinations)
+                    // Load category attributes to determine which affect pricing
+                    var categoryAttributes = (await _unitOfWork.TableRepository<TbCategoryAttribute>().GetAsync(ca => ca.CategoryId == dto.CategoryId)).ToList();
+
+                    var comboEntitiesToCreate = new List<TbItemCombination>();
+                    var comboEntitiesToUpdate = new List<TbItemCombination>();
+                    // Maintain entity objects in DTO order so we can link nested attributes later
+                    var comboEntityPerDto = new List<TbItemCombination>();
+
+                    // If editing existing item, fetch existing combos (we will not delete them)
+                    var existingCombinationsDb = new List<TbItemCombination>();
+                    if (dto.Id != Guid.Empty)
                     {
-                        var combinationEntity = _mapper.MapModel<ItemCombinationDto, TbItemCombination>(combo);
-                        combinationEntity.ItemId = itemId;
-                        combinationEntities.Add(combinationEntity);
+                        existingCombinationsDb = (await _unitOfWork.TableRepository<TbItemCombination>().GetAsync(c => c.ItemId == dto.Id)).ToList();
                     }
 
-                    if (combinationEntities.Any())
+                    // Handle pricing system types
+                    var pricingType = category.PricingSystemType;
+
+                    // For standard-like pricing systems, ensure we only save/update a single combination and no combination attributes
+                    if (pricingType == PricingSystemType.Standard || pricingType == PricingSystemType.Quantity || pricingType == PricingSystemType.CustomerSegmentPricing)
                     {
-                        combinationsSaved = await _unitOfWork.TableRepository<TbItemCombination>().AddRangeAsync(combinationEntities, userId);
+                        // Determine single DTO to use
+                        var singleDto = dto.ItemCombinations.FirstOrDefault();
+                        if (singleDto == null)
+                        {
+                            singleDto = new ItemCombinationDto { ItemId = itemId, Barcode = "111111", SKU = "DEFAULT", IsDefault = true };
+                            dto.ItemCombinations = new List<ItemCombinationDto> { singleDto };
+                        }
+
+                        // If creating new item, create one combination
+                        if (dto.Id == Guid.Empty)
+                        {
+                            var comboToCreate = _mapper.MapModel<ItemCombinationDto, TbItemCombination>(singleDto);
+                            comboToCreate.ItemId = itemId;
+                            comboEntitiesToCreate.Add(comboToCreate);
+                            comboEntityPerDto.Add(comboToCreate);
+                        }
+                        else
+                        {
+                            // Editing: try to match DTO id to existing, otherwise update first existing, otherwise create
+                            if (singleDto.Id != Guid.Empty)
+                            {
+                                var comboToUpdate = _mapper.MapModel<ItemCombinationDto, TbItemCombination>(singleDto);
+                                comboToUpdate.ItemId = itemId;
+                                comboEntitiesToUpdate.Add(comboToUpdate);
+                                comboEntityPerDto.Add(comboToUpdate);
+                            }
+                            else if (existingCombinationsDb.Any())
+                            {
+                                var firstExisting = existingCombinationsDb.First();
+                                var comboToUpdateExisting = _mapper.MapModel<ItemCombinationDto, TbItemCombination>(singleDto);
+                                comboToUpdateExisting.Id = firstExisting.Id;
+                                comboToUpdateExisting.ItemId = itemId;
+                                comboEntitiesToUpdate.Add(comboToUpdateExisting);
+                                comboEntityPerDto.Add(comboToUpdateExisting);
+                            }
+                            else
+                            {
+                                var comboToCreate2 = _mapper.MapModel<ItemCombinationDto, TbItemCombination>(singleDto);
+                                comboToCreate2.ItemId = itemId;
+                                comboEntitiesToCreate.Add(comboToCreate2);
+                                comboEntityPerDto.Add(comboToCreate2);
+                            }
+                        }
+
+                        // Persist creates/updates
+                        if (comboEntitiesToCreate.Any())
+                            combinationsSaved &= await _unitOfWork.TableRepository<TbItemCombination>().AddRangeAsync(comboEntitiesToCreate, userId);
+
+                        if (comboEntitiesToUpdate.Any())
+                            combinationsSaved &= await _unitOfWork.TableRepository<TbItemCombination>().UpdateRangeAsync(comboEntitiesToUpdate, userId);
+                    }
+                    else
+                    {
+                        // Combination-based systems: create/update combinations and then create combination attributes only for attributes that affect pricing
+                        for (int i = 0; i < dto.ItemCombinations.Count; i++)
+                        {
+                            var comboDto = dto.ItemCombinations[i];
+                            var comboEntityModel = _mapper.MapModel<ItemCombinationDto, TbItemCombination>(comboDto);
+                            comboEntityModel.ItemId = itemId;
+
+                            if (dto.Id != Guid.Empty && comboDto.Id != Guid.Empty)
+                            {
+                                // Update existing combination
+                                comboEntityModel.Id = comboDto.Id;
+                                comboEntitiesToUpdate.Add(comboEntityModel);
+                                comboEntityPerDto.Add(comboEntityModel);
+                            }
+                            else
+                            {
+                                // Create new combination
+                                comboEntitiesToCreate.Add(comboEntityModel);
+                                comboEntityPerDto.Add(comboEntityModel);
+                            }
+                        }
+
+                        if (comboEntitiesToCreate.Any())
+                            combinationsSaved &= await _unitOfWork.TableRepository<TbItemCombination>().AddRangeAsync(comboEntitiesToCreate, userId);
+
+                        if (comboEntitiesToUpdate.Any())
+                            combinationsSaved &= await _unitOfWork.TableRepository<TbItemCombination>().UpdateRangeAsync(comboEntitiesToUpdate, userId);
+
+                        // Now create combination attributes/values/modifiers, but only for attributes that affect pricing
+                        if (combinationsSaved)
+                        {
+                            var combinationAttributeEntities = new List<TbCombinationAttribute>();
+                            var createdAttrEntitiesPerCombo = new List<List<TbCombinationAttribute>>();
+
+                            for (int comboIndex = 0; comboIndex < dto.ItemCombinations.Count; comboIndex++)
+                            {
+                                var comboDto = dto.ItemCombinations[comboIndex];
+                                var comboEntity = comboEntityPerDto[comboIndex];
+                                var createdForCombo = new List<TbCombinationAttribute>();
+
+                                if (comboDto.CombinationAttributes?.Any() == true)
+                                {
+                                    foreach (var attrDto in comboDto.CombinationAttributes)
+                                    {
+                                        // Determine if any of the values of this attribute affect pricing (based on category attributes)
+                                        var hasPricingValues = attrDto.combinationAttributeValueDtos?.Any(v => categoryAttributes.Any(ca => ca.AttributeId == v.AttributeId && ca.AffectsPricing)) == true;
+                                        if (!hasPricingValues)
+                                            continue; // skip creating combination attribute for non-pricing attribute
+
+                                        var attrEntity = new TbCombinationAttribute { ItemCombinationId = comboEntity.Id };
+                                        combinationAttributeEntities.Add(attrEntity);
+                                        createdForCombo.Add(attrEntity);
+                                    }
+                                }
+
+                                createdAttrEntitiesPerCombo.Add(createdForCombo);
+                            }
+
+                            var combinationAttributesSaved = true;
+                            if (combinationAttributeEntities.Any())
+                            {
+                                combinationAttributesSaved = await _unitOfWork.TableRepository<TbCombinationAttribute>().AddRangeAsync(combinationAttributeEntities, userId);
+                                combinationsSaved &= combinationAttributesSaved;
+                            }
+
+                            // Prepare values
+                            var combinationAttributeValueEntities = new List<TbCombinationAttributesValue>();
+                            var createdValuesPerAttrPerCombo = new List<List<List<TbCombinationAttributesValue>>>();
+
+                            for (int comboIndex = 0; comboIndex < dto.ItemCombinations.Count; comboIndex++)
+                            {
+                                var comboDto = dto.ItemCombinations[comboIndex];
+                                var attrDtos = comboDto.CombinationAttributes;
+                                var createdAttrs = createdAttrEntitiesPerCombo.ElementAtOrDefault(comboIndex) ?? new List<TbCombinationAttribute>();
+                                var valuesPerAttr = new List<List<TbCombinationAttributesValue>>();
+
+                                if (attrDtos?.Any() == true)
+                                {
+                                    for (int attrIndex = 0; attrIndex < attrDtos.Count; attrIndex++)
+                                    {
+                                        var attrDto = attrDtos[attrIndex];
+                                        var createdAttrEntity = createdAttrs.ElementAtOrDefault(attrIndex);
+                                        var createdValuesForAttr = new List<TbCombinationAttributesValue>();
+
+                                        if (attrDto?.combinationAttributeValueDtos?.Any() == true && createdAttrEntity != null)
+                                        {
+                                            foreach (var valDto in attrDto.combinationAttributeValueDtos)
+                                            {
+                                                // Only create values that affect pricing according to category
+                                                if (!categoryAttributes.Any(ca => ca.AttributeId == valDto.AttributeId && ca.AffectsPricing))
+                                                    continue;
+
+                                                var valEntity = new TbCombinationAttributesValue
+                                                {
+                                                    CombinationAttributeId = createdAttrEntity.Id,
+                                                    AttributeId = valDto.AttributeId,
+                                                    Value = valDto.Value
+                                                };
+                                                combinationAttributeValueEntities.Add(valEntity);
+                                                createdValuesForAttr.Add(valEntity);
+                                            }
+                                        }
+
+                                        valuesPerAttr.Add(createdValuesForAttr);
+                                    }
+                                }
+
+                                createdValuesPerAttrPerCombo.Add(valuesPerAttr);
+                            }
+
+                            var combinationAttributeValuesSaved = true;
+                            if (combinationAttributeValueEntities.Any())
+                            {
+                                combinationAttributeValuesSaved = await _unitOfWork.TableRepository<TbCombinationAttributesValue>().AddRangeAsync(combinationAttributeValueEntities, userId);
+                                combinationsSaved &= combinationAttributeValuesSaved;
+                            }
+
+                            // Prepare attribute value price modifiers
+                            var attributeValuePriceModifierEntities = new List<TbAttributeValuePriceModifier>();
+
+                            for (int comboIndex = 0; comboIndex < dto.ItemCombinations.Count; comboIndex++)
+                            {
+                                var comboDto = dto.ItemCombinations[comboIndex];
+                                var attrDtos = comboDto.CombinationAttributes;
+                                var valuesPerAttr = createdValuesPerAttrPerCombo.ElementAtOrDefault(comboIndex) ?? new List<List<TbCombinationAttributesValue>>();
+
+                                if (attrDtos?.Any() == true)
+                                {
+                                    for (int attrIndex = 0; attrIndex < attrDtos.Count; attrIndex++)
+                                    {
+                                        var attrDto = attrDtos[attrIndex];
+                                        var createdValuesForAttr = valuesPerAttr.ElementAtOrDefault(attrIndex) ?? new List<TbCombinationAttributesValue>();
+
+                                        if (attrDto?.combinationAttributeValueDtos?.Any() == true)
+                                        {
+                                            for (int valIndex = 0; valIndex < attrDto.combinationAttributeValueDtos.Count; valIndex++)
+                                            {
+                                                var valDto = attrDto.combinationAttributeValueDtos[valIndex];
+                                                var createdValEntity = createdValuesForAttr.ElementAtOrDefault(valIndex);
+
+                                                if (createdValEntity != null && valDto.AttributeValuePriceModifiers?.Any() == true)
+                                                {
+                                                    foreach (var modDto in valDto.AttributeValuePriceModifiers)
+                                                    {
+                                                        var modEntity = new TbAttributeValuePriceModifier
+                                                        {
+                                                            CombinationAttributeValueId = createdValEntity.Id,
+                                                            AttributeId = modDto.AttributeId,
+                                                            ModifierType = modDto.ModifierType,
+                                                            PriceModifierCategory = modDto.PriceModifierCategory,
+                                                            ModifierValue = modDto.ModifierValue,
+                                                            DisplayOrder = modDto.DisplayOrder
+                                                        };
+                                                        attributeValuePriceModifierEntities.Add(modEntity);
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+
+                            if (attributeValuePriceModifierEntities.Any())
+                            {
+                                var modifiersSaved = await _unitOfWork.TableRepository<TbAttributeValuePriceModifier>().AddRangeAsync(attributeValuePriceModifierEntities, userId);
+                                combinationsSaved &= modifiersSaved;
+                            }
+                        }
                     }
                 }
 

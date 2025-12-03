@@ -20,6 +20,7 @@ namespace Shared.DTOs.ECommerce.Item
         [Required(ErrorMessageResourceName = "FieldRequired", ErrorMessageResourceType = typeof(ValidationResources))]
         [StringLength(100, MinimumLength = 2, ErrorMessageResourceName = "OutOfMaxLength", ErrorMessageResourceType = typeof(ValidationResources))]
         public string TitleEn { get; set; } = string.Empty;
+        public string Title=> ResourceManager.CurrentLanguage == Language.Arabic ? TitleAr : TitleEn;
 
         [Required(ErrorMessageResourceName = "FieldRequired", ErrorMessageResourceType = typeof(ValidationResources))]
         [StringLength(1000, MinimumLength = 10, ErrorMessageResourceName = "ShortDescriptionArLength", ErrorMessageResourceType = typeof(ValidationResources))]
@@ -46,6 +47,11 @@ namespace Shared.DTOs.ECommerce.Item
         [NotEmptyGuid]
         public Guid UnitId { get; set; }
 
+        // Convenience/display properties used by mappings and other services
+        public string CategoryTitleAr { get; set; } = string.Empty;
+        public string CategoryTitleEn { get; set; } = string.Empty;
+        public string CategoryTitle=> ResourceManager.CurrentLanguage == Language.Arabic ? CategoryTitleAr : CategoryTitleEn;
+
         public Guid? VideoProviderId { get; set; }
         public string? VideoUrl { get; set; }
 
@@ -60,6 +66,6 @@ namespace Shared.DTOs.ECommerce.Item
         public List<ItemImageDto> Images { get; set; } = new();
 
        public List<ItemCombinationDto> ItemCombinations { get; set; } = new();
-       public List<ItemAttributeDto> ItemAttributes { get; set; } = new();
+       public List<ItemAttributeDto>? ItemAttributes { get; set; } = new();
     }
 }

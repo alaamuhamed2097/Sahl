@@ -138,54 +138,54 @@ namespace Api.Controllers.Catalog
         //    });
         //}
 
-        ///// <summary>
-        ///// Adds a new item.
-        ///// </summary>
-        //[HttpPost("save")]
-        //[Authorize(Roles = nameof(UserRole.Admin))]
-        //public async Task<IActionResult> Save([FromBody] ItemDto itemDto)
-        //{
-        //    try
-        //    {
-        //        if (!ModelState.IsValid)
-        //            return BadRequest(CreateErrorResponse(NotifiAndAlertsResources.InvalidInputAlert));
+        /// <summary>
+        /// Adds a new item.
+        /// </summary>
+        [HttpPost("save")]
+        [Authorize(Roles = nameof(UserRole.Admin))]
+        public async Task<IActionResult> Save([FromBody] ItemDto itemDto)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                    return BadRequest(CreateErrorResponse(NotifiAndAlertsResources.InvalidInputAlert));
 
-        //        var success = await _itemService.Save(itemDto, GuidUserId);
-        //        if (!success)
-        //            return BadRequest(CreateErrorResponse(NotifiAndAlertsResources.SaveFailed));
+                var success = await _itemService.Save(itemDto, GuidUserId);
+                if (!success)
+                    return BadRequest(CreateErrorResponse(NotifiAndAlertsResources.SaveFailed));
 
-        //        return Ok(CreateSuccessResponse<string>(null, NotifiAndAlertsResources.SavedSuccessfully));
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        return HandleException(ex);
-        //    }
-        //}
+                return Ok(CreateSuccessResponse<string>(null, NotifiAndAlertsResources.SavedSuccessfully));
+            }
+            catch (Exception ex)
+            {
+                return HandleException(ex);
+            }
+        }
 
-        ///// <summary>
-        ///// Updates an existing item.
-        ///// </summary>
-        //[HttpPost("update/{id:guid}")]
-        //[Authorize(Roles = nameof(UserRole.Admin))]
-        //public async Task<IActionResult> Update(Guid id, [FromBody] ItemDto itemDto)
-        //{
-        //    try
-        //    {
-        //        if (id == Guid.Empty || !ModelState.IsValid)
-        //            return BadRequest(CreateErrorResponse(NotifiAndAlertsResources.InvalidInputAlert));
+        /// <summary>
+        /// Updates an existing item.
+        /// </summary>
+        [HttpPost("update/{id:guid}")]
+        [Authorize(Roles = nameof(UserRole.Admin))]
+        public async Task<IActionResult> Update(Guid id, [FromBody] ItemDto itemDto)
+        {
+            try
+            {
+                if (id == Guid.Empty || !ModelState.IsValid)
+                    return BadRequest(CreateErrorResponse(NotifiAndAlertsResources.InvalidInputAlert));
 
-        //        itemDto.Id = id;
-        //        var success = await _itemService.Save(itemDto, GuidUserId);
-        //        if (!success)
-        //            return BadRequest(CreateErrorResponse(NotifiAndAlertsResources.SaveFailed));
+                itemDto.Id = id;
+                var success = await _itemService.Save(itemDto, GuidUserId);
+                if (!success)
+                    return BadRequest(CreateErrorResponse(NotifiAndAlertsResources.SaveFailed));
 
-        //        return Ok(CreateSuccessResponse<string>(null, NotifiAndAlertsResources.SavedSuccessfully));
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        return HandleException(ex);
-        //    }
-        //}
+                return Ok(CreateSuccessResponse<string>(null, NotifiAndAlertsResources.SavedSuccessfully));
+            }
+            catch (Exception ex)
+            {
+                return HandleException(ex);
+            }
+        }
 
         /// <summary>
         /// Deletes an item by ID.
