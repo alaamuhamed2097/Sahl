@@ -31,6 +31,10 @@ namespace DAL.Configurations
                 .HasConversion<int>()
                 .IsRequired()
                 .HasDefaultValue(PricingSystemType.Standard);
+            entity.HasOne(e => e.PricingSystemSetting)
+                .WithMany()
+                .HasForeignKey(e => e.PricingSystemId)
+                .OnDelete(DeleteBehavior.NoAction);
         }
     }
 }

@@ -1,11 +1,14 @@
 ﻿using Api.Extensions;
+using Api.Middleware;
+using Asp.Versioning.ApiExplorer;
 using BL.GeneralService.Notification;
 using DAL.ApplicationContext;
 using Domains.Identity;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Asp.Versioning.ApiExplorer;
-using Api.Middleware;
+using Microsoft.Extensions.Options;
+using Microsoft.OpenApi;
+using Swashbuckle.AspNetCore.SwaggerGen;
 
 var builder = WebApplication.CreateBuilder(args);
 

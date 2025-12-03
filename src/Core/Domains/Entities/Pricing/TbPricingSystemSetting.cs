@@ -1,4 +1,5 @@
 using Common.Enumerations.Pricing;
+using Domains.Entities.Catalog.Category;
 using System.ComponentModel.DataAnnotations;
 
 namespace Domains.Entities.Pricing
@@ -19,5 +20,7 @@ namespace Domains.Entities.Pricing
         public bool IsEnabled { get; set; } = true;
 
         public int DisplayOrder { get; set; }
+
+        public virtual ICollection<TbCategory> Categories { get; set; } = new HashSet<TbCategory>();
     }
 }

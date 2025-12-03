@@ -86,6 +86,70 @@ namespace Api.Controllers.Catalog
 
             return Ok(CreateSuccessResponse(result, NotifiAndAlertsResources.DataRetrieved));
         }
+        ///// <summary>
+        ///// Retrieves best seller items with currency conversion.
+        ///// </summary>
+        //[HttpGet("best-sellers")]
+        //[AllowAnonymous]
+        //public async Task<IActionResult> GetBestSellers([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
+        //{
+        //    return await GetItemsByCategory(new ItemSearchCriteriaModel
+        //    {
+        //        IsBestSeller = true,
+        //        PageNumber = pageNumber,
+        //        PageSize = pageSize
+        //    });
+        //}
+
+        ///// <summary>
+        ///// Retrieves recommended items with currency conversion.
+        ///// </summary>
+        //[HttpGet("recommended")]
+        //[AllowAnonymous]
+        //public async Task<IActionResult> GetRecommended([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
+        //{
+        //    return await GetItemsByCategory(new ItemSearchCriteriaModel
+        //    {
+        //        IsRecommended = true,
+        //        PageNumber = pageNumber,
+        //        PageSize = pageSize
+        //    });
+        //}
+
+        /// <summary>
+        /// Adds a new item.
+        /// </summary>
+        [HttpPost("save")]
+        [Authorize(Roles = nameof(UserRole.Admin))]
+        public async Task<IActionResult> Save([FromBody] ItemDto itemDto)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(CreateErrorResponse(NotifiAndAlertsResources.InvalidInputAlert));
+
+            var success = await _itemService.Save(itemDto, GuidUserId);
+            if (!success)
+                return BadRequest(CreateErrorResponse(NotifiAndAlertsResources.SaveFailed));
+
+            return Ok(CreateSuccessResponse<string>(null, NotifiAndAlertsResources.SavedSuccessfully));
+        }
+
+        /// <summary>
+        /// Updates an existing item.
+        /// </summary>
+        [HttpPost("update/{id:guid}")]
+        [Authorize(Roles = nameof(UserRole.Admin))]
+        public async Task<IActionResult> Update(Guid id, [FromBody] ItemDto itemDto)
+        {
+            if (id == Guid.Empty || !ModelState.IsValid)
+                return BadRequest(CreateErrorResponse(NotifiAndAlertsResources.InvalidInputAlert));
+
+            itemDto.Id = id;
+            var success = await _itemService.Save(itemDto, GuidUserId);
+            if (!success)
+                return BadRequest(CreateErrorResponse(NotifiAndAlertsResources.SaveFailed));
+
+            return Ok(CreateSuccessResponse<string>(null, NotifiAndAlertsResources.SavedSuccessfully));
+        }
 
         /// <summary>
         /// Deletes an item by ID.

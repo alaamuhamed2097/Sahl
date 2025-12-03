@@ -1,7 +1,9 @@
-using System.Reflection;
-using Asp.Versioning.ApiExplorer;
+﻿using Asp.Versioning.ApiExplorer;
 using Microsoft.Extensions.Options;
+using Microsoft.OpenApi;
 using Swashbuckle.AspNetCore.SwaggerGen;
+using System;
+using System.Reflection;
 
 namespace Api.Extensions
 {
@@ -36,6 +38,7 @@ namespace Api.Extensions
 
         public static IApplicationBuilder UseSwaggerConfiguration(this IApplicationBuilder app, IApiVersionDescriptionProvider provider)
         {
+            
             app.UseSwagger(options =>
             {
                 options.RouteTemplate = "openapi/{documentName}.json";
@@ -59,6 +62,13 @@ namespace Api.Extensions
                 options.EnableFilter();
                 options.ShowExtensions();
                 options.EnableValidator();
+                // Show the JSON link
+                // ⬅ Show the JSON link in Swagger UI
+                options.ConfigObject.AdditionalItems["urls"] = provider.ApiVersionDescriptions
+                       .Select(desc => new {
+                    url = $"/openapi/{desc.GroupName}.json",
+                    name = $"OpenAPI JSON — {desc.GroupName.ToUpperInvariant()}"
+                       }).ToList();
             });
 
             return app;
@@ -77,20 +87,20 @@ namespace Api.Extensions
             _provider = provider;
         }
 
-        public void Configure(string name, SwaggerGenOptions options)
-        {
-            Configure(options);
-        }
+        public void Configure(string name, SwaggerGenOptions options) => Configure(options);
 
         public void Configure(SwaggerGenOptions options)
         {
-            // Generate swagger document for each API version
             foreach (var description in _provider.ApiVersionDescriptions)
             {
-                // Create a swagger doc for each version
-                // The OpenApiInfo will be generated dynamically by Swagger based on the groupName
-                options.SwaggerDoc(description.GroupName, null);
+                options.SwaggerDoc(description.GroupName, new OpenApiInfo
+                {
+                    Title = $"Sahl API {description.ApiVersion}",
+                    Version = description.GroupName,
+                    Description = "API Documentation for Sahl"
+                });
             }
         }
     }
+
 }

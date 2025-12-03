@@ -40,11 +40,11 @@ namespace Domains.Entities.Catalog.Category
         public string? Icon { get; set; }
         [MaxLength(200)]
         public string? ImageUrl { get; set; }
+        public Guid PricingSystemId { get; set; } 
 
         // Pricing system type for this category
         [Required]
         public PricingSystemType PricingSystemType { get; set; } = PricingSystemType.Standard;
-        public Guid PricingSystemId { get; set; } = Guid.Empty;
         [ForeignKey("PricingSystemId")]
         public virtual TbPricingSystemSetting PricingSystemSetting { get; set; }
         public virtual ICollection<TbCategoryAttribute> CategoryAttributes { get; set; } = new HashSet<TbCategoryAttribute>();
