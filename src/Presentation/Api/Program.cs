@@ -5,6 +5,7 @@ using Domains.Identity;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Asp.Versioning.ApiExplorer;
+using Api.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -135,6 +136,12 @@ app.UseAuthorization();
 // SignalR hub mapping
 app.MapHub<NotificationHub>("/notificationHub");
 
+// Use the ClientIP middleware
+app.UseMiddleware<ClientIPMiddleware>();
+
+// Use the Exception Handling middleware (must be placed after routing but before map endpoints)
+app.UseMiddleware<ExceptionHandlingMiddleware>();
+
 app.MapControllers();
 
 // Apply migrations and seed data
@@ -152,9 +159,6 @@ using (var scope = app.Services.CreateScope())
     // Seed data
     // await ContextConfigurations.SeedDataAsync(dbContext, userManager, roleManager);
 }
-
-// Use the ClientIP middleware
-app.UseMiddleware<Api.Middleware.ClientIPMiddleware>();
 
 // run
 app.Run();

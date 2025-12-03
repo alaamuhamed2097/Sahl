@@ -35,21 +35,14 @@ namespace Api.Controllers.User
 		//[Authorize(Roles = nameof(UserRole.Admin))]
 		public async Task<IActionResult> Get()
 		{
-			try
-			{
-				var vendor = await _vendorService.GetAllAsync();
+			var vendor = await _vendorService.GetAllAsync();
 
-				return Ok(new ResponseModel<IEnumerable<VendorDto>>
-				{
-					Success = true,
-					Message = GetResource<NotifiAndAlertsResources>(nameof(NotifiAndAlertsResources.DataRetrieved)),
-					Data = vendor
-				});
-			}
-			catch (Exception ex)
+			return Ok(new ResponseModel<IEnumerable<VendorDto>>
 			{
-				return HandleException(ex);
-			}
+				Success = true,
+				Message = GetResource<NotifiAndAlertsResources>(nameof(NotifiAndAlertsResources.DataRetrieved)),
+				Data = vendor
+			});
 		}
 
 		/// <summary>
@@ -60,39 +53,28 @@ namespace Api.Controllers.User
 		//[Authorize(Roles = nameof(UserRole.Admin))]
 		public async Task<IActionResult> Get(Guid id)
 		{
-			try
-			{
-				if (id == Guid.Empty)
-					return BadRequest(new ResponseModel<string>
-					{
-						Success = false,
-						Message = GetResource<NotifiAndAlertsResources>(nameof(NotifiAndAlertsResources.InvalidInputAlert))
-					});
-
-				var vendor = await _vendorService.FindByIdAsync(id);
-				if (vendor == null)
-					return NotFound(new ResponseModel<string>
-					{
-						Success = false,
-						Message = GetResource<NotifiAndAlertsResources>(nameof(NotifiAndAlertsResources.NoDataFound))
-					});
-
-				return Ok(new ResponseModel<VendorDto>
+			if (id == Guid.Empty)
+				return BadRequest(new ResponseModel<string>
 				{
-					Success = true,
-					Message = GetResource<NotifiAndAlertsResources>(nameof(NotifiAndAlertsResources.DataRetrieved)),
-					Data = vendor
+					Success = false,
+					Message = GetResource<NotifiAndAlertsResources>(nameof(NotifiAndAlertsResources.InvalidInputAlert))
 				});
-			}
-			catch (Exception ex)
-			{
-				return HandleException(ex);
-			}
-		}
 
-		/// <summary>
-		/// Retrieves favorite vendors for public display.
-		/// </summary>
+			var vendor = await _vendorService.FindByIdAsync(id);
+			if (vendor == null)
+				return NotFound(new ResponseModel<string>
+				{
+					Success = false,
+					Message = GetResource<NotifiAndAlertsResources>(nameof(NotifiAndAlertsResources.NoDataFound))
+				});
+
+			return Ok(new ResponseModel<VendorDto>
+			{
+				Success = true,
+				Message = GetResource<NotifiAndAlertsResources>(nameof(NotifiAndAlertsResources.DataRetrieved)),
+				Data = vendor
+			});
+		}
 
 		/// <summary>
 		/// Searches vendors with pagination and filtering.
@@ -102,51 +84,28 @@ namespace Api.Controllers.User
 		//[Authorize(Roles = nameof(UserRole.Admin))]
 		public async Task<IActionResult> Search([FromQuery] BaseSearchCriteriaModel criteriaModel)
 		{
-			try
+			// Validate and set default pagination values if not provided
+			criteriaModel.PageNumber = criteriaModel.PageNumber < 1 ? 1 : criteriaModel.PageNumber;
+			criteriaModel.PageSize = criteriaModel.PageSize < 1 || criteriaModel.PageSize > 100 ? 10 : criteriaModel.PageSize;
+
+			var result = await _vendorService.SearchAsync(criteriaModel);
+
+			if (result == null || !result.Items.Any())
 			{
-				// Validate and set default pagination values if not provided
-				criteriaModel.PageNumber = criteriaModel.PageNumber < 1 ? 1 : criteriaModel.PageNumber;
-				criteriaModel.PageSize = criteriaModel.PageSize < 1 || criteriaModel.PageSize > 100 ? 10 : criteriaModel.PageSize;
-
-				var result = await _vendorService.SearchAsync(criteriaModel);
-
-				if (result == null || !result.Items.Any())
-				{
-					return Ok(new ResponseModel<PaginatedDataModel<VendorDto>>
-					{
-						Success = true,
-						Message = GetResource<NotifiAndAlertsResources>(nameof(NotifiAndAlertsResources.NoDataFound)),
-						Data = result
-					});
-				}
-
 				return Ok(new ResponseModel<PaginatedDataModel<VendorDto>>
 				{
 					Success = true,
-					Message = GetResource<NotifiAndAlertsResources>(nameof(NotifiAndAlertsResources.DataRetrieved)),
+					Message = GetResource<NotifiAndAlertsResources>(nameof(NotifiAndAlertsResources.NoDataFound)),
 					Data = result
 				});
 			}
-			catch (ArgumentNullException)
+
+			return Ok(new ResponseModel<PaginatedDataModel<VendorDto>>
 			{
-				return BadRequest(new ResponseModel<string>
-				{
-					Success = false,
-					Message = GetResource<NotifiAndAlertsResources>(nameof(NotifiAndAlertsResources.InvalidInputAlert))
-				});
-			}
-			catch (ArgumentOutOfRangeException ex)
-			{
-				return BadRequest(new ResponseModel<string>
-				{
-					Success = false,
-					Message = ex.Message
-				});
-			}
-			catch (Exception ex)
-			{
-				return HandleException(ex);
-			}
+				Success = true,
+				Message = GetResource<NotifiAndAlertsResources>(nameof(NotifiAndAlertsResources.DataRetrieved)),
+				Data = result
+			});
 		}
 
 
@@ -158,33 +117,26 @@ namespace Api.Controllers.User
 		//[Authorize(Roles = nameof(UserRole.Admin))]
 		public async Task<IActionResult> Save([FromBody] VendorDto dto)
 		{
-			try
-			{
-				if (!ModelState.IsValid)
-					return BadRequest(new ResponseModel<string>
-					{
-						Success = false,
-						Message = "Invalid vendor data."
-					});
+			if (!ModelState.IsValid)
+				return BadRequest(new ResponseModel<string>
+				{
+					Success = false,
+					Message = "Invalid vendor data."
+				});
 
-				var result = await _vendorService.SaveAsync(dto, GuidUserId);
-				if (!result.Success)
-					return Ok(new ResponseModel<string>
-					{
-						Success = false,
-						Message = GetResource<NotifiAndAlertsResources>(nameof(NotifiAndAlertsResources.SaveFailed))
-					});
-
+			var result = await _vendorService.SaveAsync(dto, GuidUserId);
+			if (!result.Success)
 				return Ok(new ResponseModel<string>
 				{
-					Success = true,
-					Message = GetResource<NotifiAndAlertsResources>(nameof(NotifiAndAlertsResources.SavedSuccessfully))
+					Success = false,
+					Message = GetResource<NotifiAndAlertsResources>(nameof(NotifiAndAlertsResources.SaveFailed))
 				});
-			}
-			catch (Exception ex)
+
+			return Ok(new ResponseModel<string>
 			{
-				return HandleException(ex);
-			}
+				Success = true,
+				Message = GetResource<NotifiAndAlertsResources>(nameof(NotifiAndAlertsResources.SavedSuccessfully))
+			});
 		}
 
 		/// <summary>
@@ -195,36 +147,26 @@ namespace Api.Controllers.User
 		//[Authorize(Roles = nameof(UserRole.Admin))]
 		public async Task<IActionResult> Delete([FromBody] Guid id)
 		{
-			try
-			{
-				if (id == Guid.Empty)
-					return BadRequest(new ResponseModel<string>
-					{
-						Success = false,
-						Message = "Invalid vendor ID."
-					});
-
-				var success = await _vendorService.DeleteAsync(id, GuidUserId);
-				if (!success)
-					return BadRequest(new ResponseModel<string>
-					{
-						Success = false,
-						Message = GetResource<NotifiAndAlertsResources>(nameof(NotifiAndAlertsResources.DeleteFailed))
-					});
-
-				return Ok(new ResponseModel<string>
+			if (id == Guid.Empty)
+				return BadRequest(new ResponseModel<string>
 				{
-					Success = true,
-					Message = GetResource<NotifiAndAlertsResources>(nameof(NotifiAndAlertsResources.DeletedSuccessfully))
+					Success = false,
+					Message = "Invalid vendor ID."
 				});
-			}
-			catch (Exception ex)
+
+			var success = await _vendorService.DeleteAsync(id, GuidUserId);
+			if (!success)
+				return BadRequest(new ResponseModel<string>
+				{
+					Success = false,
+					Message = GetResource<NotifiAndAlertsResources>(nameof(NotifiAndAlertsResources.DeleteFailed))
+				});
+
+			return Ok(new ResponseModel<string>
 			{
-				return HandleException(ex);
-			}
+				Success = true,
+				Message = GetResource<NotifiAndAlertsResources>(nameof(NotifiAndAlertsResources.DeletedSuccessfully))
+			});
 		}
-
-
-
 	}
 }

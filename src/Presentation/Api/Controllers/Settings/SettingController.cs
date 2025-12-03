@@ -29,60 +29,39 @@ namespace Api.Controllers.Settings
         [AllowAnonymous]
         public async Task<IActionResult> Get()
         {
-            try
+            var clientIp = HttpContext.GetClientIpAddress();
+            var shouldApplyConversion = ShouldApplyCurrencyConversion();
+            var setting = await _settingService.GetSettingsAsync(clientIp, shouldApplyConversion);
+            if (setting == null)
             {
-                var clientIp = HttpContext.GetClientIpAddress();
-                var shouldApplyConversion = ShouldApplyCurrencyConversion();
-                var setting = await _settingService.GetSettingsAsync(clientIp, shouldApplyConversion);
-                if (setting == null)
-                {
-                    return NotFound(CreateErrorResponse(NotifiAndAlertsResources.NoDataFound));
-                }
+                return NotFound(CreateErrorResponse(NotifiAndAlertsResources.NoDataFound));
+            }
 
-                return Ok(CreateSuccessResponse(setting, NotifiAndAlertsResources.DataRetrieved));
-            }
-            catch (Exception ex)
-            {
-                return HandleException(ex);
-            }
+            return Ok(CreateSuccessResponse(setting, NotifiAndAlertsResources.DataRetrieved));
         }
 
         [HttpGet("mainBanner")]
         [AllowAnonymous]
         public async Task<IActionResult> GetMainBanner()
         {
-            try
+            var setting = await _settingService.GetMainBannerPathAsync();
+            if (setting == null)
             {
-                var setting = await _settingService.GetMainBannerPathAsync();
-                if (setting == null)
-                {
-                    return NotFound(CreateErrorResponse(NotifiAndAlertsResources.NoDataFound));
-                }
+                return NotFound(CreateErrorResponse(NotifiAndAlertsResources.NoDataFound));
+            }
 
-                return Ok(CreateSuccessResponse(setting, NotifiAndAlertsResources.DataRetrieved));
-            }
-            catch (Exception ex)
-            {
-                return HandleException(ex);
-            }
+            return Ok(CreateSuccessResponse(setting, NotifiAndAlertsResources.DataRetrieved));
         }
 
         [HttpGet("shippingAmount")]
         [AllowAnonymous]
         public async Task<IActionResult> GetShippingAmount()
         {
-            try
-            {
-                var clientIp = HttpContext.GetClientIpAddress();
-                var shouldApplyConversion = ShouldApplyCurrencyConversion();
-                var setting = await _settingService.GetShippingAmountAsync(clientIp, shouldApplyConversion);
+            var clientIp = HttpContext.GetClientIpAddress();
+            var shouldApplyConversion = ShouldApplyCurrencyConversion();
+            var setting = await _settingService.GetShippingAmountAsync(clientIp, shouldApplyConversion);
 
-                return Ok(CreateSuccessResponse(setting, NotifiAndAlertsResources.DataRetrieved));
-            }
-            catch (Exception ex)
-            {
-                return HandleException(ex);
-            }
+            return Ok(CreateSuccessResponse(setting, NotifiAndAlertsResources.DataRetrieved));
         }
 
         /// <summary>
@@ -92,25 +71,18 @@ namespace Api.Controllers.Settings
         [Authorize(Roles = nameof(UserRole.Admin))]
         public async Task<IActionResult> Update([FromBody] SettingDto dto)
         {
-            try
+            if (!ModelState.IsValid)
             {
-                if (!ModelState.IsValid)
-                {
-                    return BadRequest(CreateErrorResponse(NotifiAndAlertsResources.InvalidInputAlert));
-                }
-
-                var success = await _settingService.UpdateSettingsAsync(dto, GuidUserId);
-                if (!success)
-                {
-                    return BadRequest(CreateErrorResponse(NotifiAndAlertsResources.SaveFailed));
-                }
-
-                return Ok(CreateSuccessResponse<string>(null, NotifiAndAlertsResources.SavedSuccessfully));
+                return BadRequest(CreateErrorResponse(NotifiAndAlertsResources.InvalidInputAlert));
             }
-            catch (Exception ex)
+
+            var success = await _settingService.UpdateSettingsAsync(dto, GuidUserId);
+            if (!success)
             {
-                return HandleException(ex);
+                return BadRequest(CreateErrorResponse(NotifiAndAlertsResources.SaveFailed));
             }
+
+            return Ok(CreateSuccessResponse<string>(null, NotifiAndAlertsResources.SavedSuccessfully));
         }
 
         #region Private Helper Methods

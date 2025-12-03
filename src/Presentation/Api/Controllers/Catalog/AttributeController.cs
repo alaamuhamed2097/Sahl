@@ -31,26 +31,19 @@ namespace Api.Controllers.Catalog
         [Authorize]
         public async Task<IActionResult> Get()
         {
-            try
-            {
-                var attributes = await _attributeService.GetAllAsync();
-                if (attributes == null || !attributes.Any())
-                    return Ok(new ResponseModel<IEnumerable<AttributeDto>>
-                    {
-                        Message = NotifiAndAlertsResources.NoDataFound,
-                        Data = []
-                    });
-
+            var attributes = await _attributeService.GetAllAsync();
+            if (attributes == null || !attributes.Any())
                 return Ok(new ResponseModel<IEnumerable<AttributeDto>>
                 {
-                    Message = string.Format(ValidationResources.RetrievedSuccessfully, ECommerceResources.Attributes),
-                    Data = attributes
+                    Message = NotifiAndAlertsResources.NoDataFound,
+                    Data = []
                 });
-            }
-            catch (Exception ex)
+
+            return Ok(new ResponseModel<IEnumerable<AttributeDto>>
             {
-                return HandleException(ex);
-            }
+                Message = string.Format(ValidationResources.RetrievedSuccessfully, ECommerceResources.Attributes),
+                Data = attributes
+            });
         }
 
         /// <summary>
@@ -60,33 +53,26 @@ namespace Api.Controllers.Catalog
         [Authorize]
         public async Task<IActionResult> Get(Guid id)
         {
-            try
-            {
-                if (id == Guid.Empty)
-                    return BadRequest(new ResponseModel<string>
-                    {
-                        Success = false,
-                        Message = NotifiAndAlertsResources.InvalidInputAlert
-                    });
-
-                var attribute = await _attributeService.FindByIdAsync(id);
-                if (attribute == null)
-                    return Ok(new ResponseModel<string>
-                    {
-                        Success = false,
-                        Message = NotifiAndAlertsResources.NoDataFound
-                    });
-
-                return Ok(new ResponseModel<AttributeDto>
+            if (id == Guid.Empty)
+                return BadRequest(new ResponseModel<string>
                 {
-                    Message = string.Format(ValidationResources.RetrievedSuccessfully, ECommerceResources.Attribute),
-                    Data = attribute
+                    Success = false,
+                    Message = NotifiAndAlertsResources.InvalidInputAlert
                 });
-            }
-            catch (Exception ex)
+
+            var attribute = await _attributeService.FindByIdAsync(id);
+            if (attribute == null)
+                return Ok(new ResponseModel<string>
+                {
+                    Success = false,
+                    Message = NotifiAndAlertsResources.NoDataFound
+                });
+
+            return Ok(new ResponseModel<AttributeDto>
             {
-                return HandleException(ex);
-            }
+                Message = string.Format(ValidationResources.RetrievedSuccessfully, ECommerceResources.Attribute),
+                Data = attribute
+            });
         }
 
         /// <summary>
@@ -96,34 +82,27 @@ namespace Api.Controllers.Catalog
         [Authorize]
         public async Task<IActionResult> GetByCategory(Guid categoryId)
         {
-            try
-            {
-                if (categoryId == Guid.Empty)
-                    return BadRequest(new ResponseModel<string>
-                    {
-                        Success = false,
-                        Message = NotifiAndAlertsResources.InvalidInputAlert
-                    });
+            if (categoryId == Guid.Empty)
+                return BadRequest(new ResponseModel<string>
+                {
+                    Success = false,
+                    Message = NotifiAndAlertsResources.InvalidInputAlert
+                });
 
-                var attributes = await _attributeService.GetByCategoryIdAsync(categoryId);
+            var attributes = await _attributeService.GetByCategoryIdAsync(categoryId);
 
-                if (attributes == null || !attributes.Any())
-                    return Ok(new ResponseModel<IEnumerable<CategoryAttributeDto>>
-                    {
-                        Message = NotifiAndAlertsResources.NoDataFound,
-                        Data = new List<CategoryAttributeDto>()
-                    });
-
+            if (attributes == null || !attributes.Any())
                 return Ok(new ResponseModel<IEnumerable<CategoryAttributeDto>>
                 {
-                    Message = string.Format(ValidationResources.RetrievedSuccessfully, ECommerceResources.Attributes),
-                    Data = attributes
+                    Message = NotifiAndAlertsResources.NoDataFound,
+                    Data = new List<CategoryAttributeDto>()
                 });
-            }
-            catch (Exception ex)
+
+            return Ok(new ResponseModel<IEnumerable<CategoryAttributeDto>>
             {
-                return HandleException(ex);
-            }
+                Message = string.Format(ValidationResources.RetrievedSuccessfully, ECommerceResources.Attributes),
+                Data = attributes
+            });
         }
 
         /// <summary>
@@ -134,33 +113,25 @@ namespace Api.Controllers.Catalog
         [Authorize]
         public async Task<IActionResult> Search([FromQuery] BaseSearchCriteriaModel criteria)
         {
-            try
+            criteria.PageNumber = criteria.PageNumber < 1 ? 1 : criteria.PageNumber;
+            criteria.PageSize = criteria.PageSize < 1 || criteria.PageSize > 100 ? 10 : criteria.PageSize;
+
+            var result = await _attributeService.GetPage(criteria);
+
+            if (result == null || !result.Items.Any())
             {
-                // Validate and set default pagination values if not provided
-                criteria.PageNumber = criteria.PageNumber < 1 ? 1 : criteria.PageNumber;
-                criteria.PageSize = criteria.PageSize < 1 || criteria.PageSize > 100 ? 10 : criteria.PageSize;
-
-                var result = await _attributeService.GetPage(criteria);
-
-                if (result == null || !result.Items.Any())
-                {
-                    return Ok(new ResponseModel<PaginatedDataModel<AttributeDto>>
-                    {
-                        Message = NotifiAndAlertsResources.NoDataFound,
-                        Data = result
-                    });
-                }
-
                 return Ok(new ResponseModel<PaginatedDataModel<AttributeDto>>
                 {
-                    Message = NotifiAndAlertsResources.DataRetrieved,
+                    Message = NotifiAndAlertsResources.NoDataFound,
                     Data = result
                 });
             }
-            catch (Exception ex)
+
+            return Ok(new ResponseModel<PaginatedDataModel<AttributeDto>>
             {
-                return HandleException(ex);
-            }
+                Message = NotifiAndAlertsResources.DataRetrieved,
+                Data = result
+            });
         }
 
         /// <summary>
@@ -171,33 +142,26 @@ namespace Api.Controllers.Catalog
         [Authorize(Roles = nameof(UserType.Admin))]
         public async Task<IActionResult> Save([FromBody] AttributeDto attributeDto)
         {
-            try
-            {
-                if (!ModelState.IsValid)
-                    return BadRequest(new ResponseModel<bool>
-                    {
-                        Success = false,
-                        Message = NotifiAndAlertsResources.InvalidInputAlert
-                    });
+            if (!ModelState.IsValid)
+                return BadRequest(new ResponseModel<bool>
+                {
+                    Success = false,
+                    Message = NotifiAndAlertsResources.InvalidInputAlert
+                });
 
-                var saveResult = await _attributeService.SaveAsync(attributeDto, GuidUserId);
-                if (!saveResult.Success)
-                    return Ok(new ResponseModel<bool>
-                    {
-                        Success = false,
-                        Message = NotifiAndAlertsResources.SaveFailed
-                    });
-
+            var saveResult = await _attributeService.SaveAsync(attributeDto, GuidUserId);
+            if (!saveResult.Success)
                 return Ok(new ResponseModel<bool>
                 {
-                    Message = NotifiAndAlertsResources.SavedSuccessfully,
-                    Data = true
+                    Success = false,
+                    Message = NotifiAndAlertsResources.SaveFailed
                 });
-            }
-            catch (Exception ex)
+
+            return Ok(new ResponseModel<bool>
             {
-                return HandleException(ex);
-            }
+                Message = NotifiAndAlertsResources.SavedSuccessfully,
+                Data = true
+            });
         }
 
         /// <summary>
@@ -207,35 +171,27 @@ namespace Api.Controllers.Catalog
         [Authorize(Roles = nameof(UserType.Admin))]
         public async Task<IActionResult> Delete([FromBody] Guid id)
         {
-            try
-            {
-                if (id == Guid.Empty)
-                    return BadRequest(new ResponseModel<bool>
-                    {
-                        Success = false,
-                        Message = NotifiAndAlertsResources.InvalidInputAlert
-                    });
+            if (id == Guid.Empty)
+                return BadRequest(new ResponseModel<bool>
+                {
+                    Success = false,
+                    Message = NotifiAndAlertsResources.InvalidInputAlert
+                });
 
-                var result = await _attributeService.DeleteAsync(id, UserId);
-                if (!result.Success)
-                    return Ok(new ResponseModel<DeleteResult>
-                    {
-                        Success = false,
-                        Message = NotifiAndAlertsResources.DeleteFailed,
-                        Data = result
-                    });
-
+            var result = await _attributeService.DeleteAsync(id, UserId);
+            if (!result.Success)
                 return Ok(new ResponseModel<DeleteResult>
                 {
-                    Message = NotifiAndAlertsResources.DeletedSuccessfully,
+                    Success = false,
+                    Message = NotifiAndAlertsResources.DeleteFailed,
                     Data = result
                 });
-            }
-            catch (Exception ex)
-            {
-                return HandleException(ex);
-            }
-        }
 
+            return Ok(new ResponseModel<DeleteResult>
+            {
+                Message = NotifiAndAlertsResources.DeletedSuccessfully,
+                Data = result
+            });
+        }
     }
 }

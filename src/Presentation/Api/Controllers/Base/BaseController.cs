@@ -21,19 +21,6 @@ namespace Api.Controllers.Base
         protected Guid GuidUserId =>
        Guid.TryParse(UserId, out var guid) ? guid : Guid.NewGuid();
 
-        // Centralized error handling
-        internal IActionResult HandleException(Exception ex)
-        {
-            _logger.Error(ex, "An error occurred while processing your request.", ex.Message);
-            var response = new ResponseModel<object>
-            {
-                Success = false,
-                Message = NotifiAndAlertsResources.SomethingWentWrongAlert,
-                Errors = new List<string> { ex.Message }
-            };
-            return StatusCode(StatusCodes.Status500InternalServerError, response);
-        }
-
         protected string GetResource<T>(string resourceKey)
         {
             var userLanguage = Request.Headers["x-language"].ToString().ToLower();

@@ -30,27 +30,20 @@ namespace Api.Controllers.Location
         [AllowAnonymous]
         public async Task<IActionResult> Get()
         {
-            try
-            {
-                var states = await _stateService.GetAllAsync();
-                if (states == null || !states.Any())
-                    return NotFound(new ResponseModel<string>
-                    {
-                        Success = false,
-                        Message = "No states found."
-                    });
-
-                return Ok(new ResponseModel<IEnumerable<StateDto>>
+            var states = await _stateService.GetAllAsync();
+            if (states == null || !states.Any())
+                return NotFound(new ResponseModel<string>
                 {
-                    Success = true,
-                    Message = "states retrieved successfully.",
-                    Data = states
+                    Success = false,
+                    Message = "No states found."
                 });
-            }
-            catch (Exception ex)
+
+            return Ok(new ResponseModel<IEnumerable<StateDto>>
             {
-                return HandleException(ex);
-            }
+                Success = true,
+                Message = "states retrieved successfully.",
+                Data = states
+            });
         }
 
         /// <summary>
@@ -60,34 +53,27 @@ namespace Api.Controllers.Location
         [AllowAnonymous]
         public async Task<IActionResult> Get(Guid id)
         {
-            try
-            {
-                if (id == Guid.Empty)
-                    return BadRequest(new ResponseModel<string>
-                    {
-                        Success = false,
-                        Message = "Invalid state ID."
-                    });
-
-                var state = await _stateService.FindByIdAsync(id);
-                if (state == null)
-                    return NotFound(new ResponseModel<string>
-                    {
-                        Success = false,
-                        Message = "state not found."
-                    });
-
-                return Ok(new ResponseModel<StateDto>
+            if (id == Guid.Empty)
+                return BadRequest(new ResponseModel<string>
                 {
-                    Success = true,
-                    Message = "state retrieved successfully.",
-                    Data = state
+                    Success = false,
+                    Message = "Invalid state ID."
                 });
-            }
-            catch (Exception ex)
+
+            var state = await _stateService.FindByIdAsync(id);
+            if (state == null)
+                return NotFound(new ResponseModel<string>
+                {
+                    Success = false,
+                    Message = "state not found."
+                });
+
+            return Ok(new ResponseModel<StateDto>
             {
-                return HandleException(ex);
-            }
+                Success = true,
+                Message = "state retrieved successfully.",
+                Data = state
+            });
         }
 
         /// <summary>
@@ -98,35 +84,27 @@ namespace Api.Controllers.Location
         [HttpGet("search")]
         public async Task<IActionResult> Search([FromQuery] BaseSearchCriteriaModel criteria)
         {
-            try
+            criteria.PageNumber = criteria.PageNumber < 1 ? 1 : criteria.PageNumber;
+            criteria.PageSize = criteria.PageSize < 1 || criteria.PageSize > 100 ? 10 : criteria.PageSize;
+
+            var result = await _stateService.GetPage(criteria);
+
+            if (result == null || !result.Items.Any())
             {
-                // Validate and set default pagination values if not provided
-                criteria.PageNumber = criteria.PageNumber < 1 ? 1 : criteria.PageNumber;
-                criteria.PageSize = criteria.PageSize < 1 || criteria.PageSize > 100 ? 10 : criteria.PageSize;
-
-                var result = await _stateService.GetPage(criteria);
-
-                if (result == null || !result.Items.Any())
-                {
-                    return Ok(new ResponseModel<PaginatedDataModel<StateDto>>
-                    {
-                        Success = false,
-                        Message = NotifiAndAlertsResources.NoDataFound,
-                        Data = result
-                    });
-                }
-
                 return Ok(new ResponseModel<PaginatedDataModel<StateDto>>
                 {
-                    Success = true,
-                    Message = NotifiAndAlertsResources.DataRetrieved,
+                    Success = false,
+                    Message = NotifiAndAlertsResources.NoDataFound,
                     Data = result
                 });
             }
-            catch (Exception ex)
+
+            return Ok(new ResponseModel<PaginatedDataModel<StateDto>>
             {
-                return HandleException(ex);
-            }
+                Success = true,
+                Message = NotifiAndAlertsResources.DataRetrieved,
+                Data = result
+            });
         }
 
         /// <summary>
@@ -136,33 +114,26 @@ namespace Api.Controllers.Location
         [HttpPost("save")]
         public async Task<IActionResult> Save([FromBody] StateDto StateDto)
         {
-            try
-            {
-                if (!ModelState.IsValid)
-                    return BadRequest(new ResponseModel<string>
-                    {
-                        Success = false,
-                        Message = "Invalid state data."
-                    });
-
-                var result = await _stateService.SaveAsync(StateDto, GuidUserId);
-                if (!result.Success)
-                    return BadRequest(new ResponseModel<string>
-                    {
-                        Success = false,
-                        Message = NotifiAndAlertsResources.SaveFailed
-                    });
-
-                return Ok(new ResponseModel<string>
+            if (!ModelState.IsValid)
+                return BadRequest(new ResponseModel<string>
                 {
-                    Success = true,
-                    Message = NotifiAndAlertsResources.SavedSuccessfully
+                    Success = false,
+                    Message = "Invalid state data."
                 });
-            }
-            catch (Exception ex)
+
+            var result = await _stateService.SaveAsync(StateDto, GuidUserId);
+            if (!result.Success)
+                return BadRequest(new ResponseModel<string>
+                {
+                    Success = false,
+                    Message = NotifiAndAlertsResources.SaveFailed
+                });
+
+            return Ok(new ResponseModel<string>
             {
-                return HandleException(ex);
-            }
+                Success = true,
+                Message = NotifiAndAlertsResources.SavedSuccessfully
+            });
         }
 
         /// <summary>
@@ -172,33 +143,26 @@ namespace Api.Controllers.Location
         [HttpPost("delete")]
         public async Task<IActionResult> Delete([FromBody] Guid id)
         {
-            try
-            {
-                if (id == Guid.Empty)
-                    return BadRequest(new ResponseModel<string>
-                    {
-                        Success = false,
-                        Message = "Invalid state ID."
-                    });
-
-                var success = await _stateService.DeleteAsync(id, GuidUserId);
-                if (!success)
-                    return BadRequest(new ResponseModel<string>
-                    {
-                        Success = false,
-                        Message = NotifiAndAlertsResources.DeleteFailed
-                    });
-
-                return Ok(new ResponseModel<string>
+            if (id == Guid.Empty)
+                return BadRequest(new ResponseModel<string>
                 {
-                    Success = true,
-                    Message = NotifiAndAlertsResources.DeletedSuccessfully
+                    Success = false,
+                    Message = "Invalid state ID."
                 });
-            }
-            catch (Exception ex)
+
+            var success = await _stateService.DeleteAsync(id, GuidUserId);
+            if (!success)
+                return BadRequest(new ResponseModel<string>
+                {
+                    Success = false,
+                    Message = NotifiAndAlertsResources.DeleteFailed
+                });
+
+            return Ok(new ResponseModel<string>
             {
-                return HandleException(ex);
-            }
+                Success = true,
+                Message = NotifiAndAlertsResources.DeletedSuccessfully
+            });
         }
     }
 }

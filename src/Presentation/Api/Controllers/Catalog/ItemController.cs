@@ -33,22 +33,15 @@ namespace Api.Controllers.Catalog
         [AllowAnonymous]
         public async Task<IActionResult> Get()
         {
-            try
-            {
-                var clientIp = HttpContext.GetClientIpAddress();
-                var shouldApplyConversion = ShouldApplyCurrencyConversion();
-                //var items = await _itemService.GetAllAsync(clientIp, shouldApplyConversion);
-                var items = await _itemService.GetAllAsync();
+            var clientIp = HttpContext.GetClientIpAddress();
+            var shouldApplyConversion = ShouldApplyCurrencyConversion();
+            //var items = await _itemService.GetAllAsync(clientIp, shouldApplyConversion);
+            var items = await _itemService.GetAllAsync();
 
-                if (items?.Any() != true)
-                    return NotFound(CreateErrorResponse(NotifiAndAlertsResources.NoDataFound));
+            if (items?.Any() != true)
+                return NotFound(CreateErrorResponse(NotifiAndAlertsResources.NoDataFound));
 
-                return Ok(CreateSuccessResponse(items, NotifiAndAlertsResources.DataRetrieved));
-            }
-            catch (Exception ex)
-            {
-                return HandleException(ex);
-            }
+            return Ok(CreateSuccessResponse(items, NotifiAndAlertsResources.DataRetrieved));
         }
 
         /// <summary>
@@ -59,25 +52,18 @@ namespace Api.Controllers.Catalog
         [AllowAnonymous]
         public async Task<IActionResult> Get(Guid id)
         {
-            try
-            {
-                if (id == Guid.Empty)
-                    return BadRequest(CreateErrorResponse(NotifiAndAlertsResources.InvalidInputAlert));
+            if (id == Guid.Empty)
+                return BadRequest(CreateErrorResponse(NotifiAndAlertsResources.InvalidInputAlert));
 
-                var clientIp = HttpContext.GetClientIpAddress();
-                var shouldApplyConversion = ShouldApplyCurrencyConversion();
-                //var item = await _itemService.GetByIdWithCurrencyConversionAsync(id, clientIp, shouldApplyConversion);
-                var item = await _itemService.FindByIdAsync(id);
+            var clientIp = HttpContext.GetClientIpAddress();
+            var shouldApplyConversion = ShouldApplyCurrencyConversion();
+            //var item = await _itemService.GetByIdWithCurrencyConversionAsync(id, clientIp, shouldApplyConversion);
+            var item = await _itemService.FindByIdAsync(id);
 
-                if (item == null)
-                    return NotFound(CreateErrorResponse(NotifiAndAlertsResources.NoDataFound));
+            if (item == null)
+                return NotFound(CreateErrorResponse(NotifiAndAlertsResources.NoDataFound));
 
-                return Ok(CreateSuccessResponse(item, NotifiAndAlertsResources.DataRetrieved));
-            }
-            catch (Exception ex)
-            {
-                return HandleException(ex);
-            }
+            return Ok(CreateSuccessResponse(item, NotifiAndAlertsResources.DataRetrieved));
         }
 
         /// <summary>
@@ -88,104 +74,18 @@ namespace Api.Controllers.Catalog
         [AllowAnonymous]
         public async Task<IActionResult> Search([FromQuery] ItemSearchCriteriaModel criteria)
         {
-            try
-            {
-                ValidateAndNormalizePagination(criteria);
+            ValidateAndNormalizePagination(criteria);
 
-                var clientIp = HttpContext.GetClientIpAddress();
-                var shouldApplyConversion = ShouldApplyCurrencyConversion();
-                //var result = await _itemService.GetPageWithCurrencyConversionAsync(criteria, clientIp, shouldApplyConversion);
-                var result = await _itemService.GetPage(criteria);
+            var clientIp = HttpContext.GetClientIpAddress();
+            var shouldApplyConversion = ShouldApplyCurrencyConversion();
+            //var result = await _itemService.GetPageWithCurrencyConversionAsync(criteria, clientIp, shouldApplyConversion);
+            var result = await _itemService.GetPage(criteria);
 
-                if (result?.Items?.Any() != true)
-                    return Ok(CreateSuccessResponse(result, NotifiAndAlertsResources.NoDataFound));
+            if (result?.Items?.Any() != true)
+                return Ok(CreateSuccessResponse(result, NotifiAndAlertsResources.NoDataFound));
 
-                return Ok(CreateSuccessResponse(result, NotifiAndAlertsResources.DataRetrieved));
-            }
-            catch (Exception ex)
-            {
-                return HandleException(ex);
-            }
+            return Ok(CreateSuccessResponse(result, NotifiAndAlertsResources.DataRetrieved));
         }
-
-        ///// <summary>
-        ///// Retrieves best seller items with currency conversion.
-        ///// </summary>
-        //[HttpGet("best-sellers")]
-        //[AllowAnonymous]
-        //public async Task<IActionResult> GetBestSellers([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
-        //{
-        //    return await GetItemsByCategory(new ItemSearchCriteriaModel
-        //    {
-        //        IsBestSeller = true,
-        //        PageNumber = pageNumber,
-        //        PageSize = pageSize
-        //    });
-        //}
-
-        ///// <summary>
-        ///// Retrieves recommended items with currency conversion.
-        ///// </summary>
-        //[HttpGet("recommended")]
-        //[AllowAnonymous]
-        //public async Task<IActionResult> GetRecommended([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
-        //{
-        //    return await GetItemsByCategory(new ItemSearchCriteriaModel
-        //    {
-        //        IsRecommended = true,
-        //        PageNumber = pageNumber,
-        //        PageSize = pageSize
-        //    });
-        //}
-
-        ///// <summary>
-        ///// Adds a new item.
-        ///// </summary>
-        //[HttpPost("save")]
-        //[Authorize(Roles = nameof(UserRole.Admin))]
-        //public async Task<IActionResult> Save([FromBody] ItemDto itemDto)
-        //{
-        //    try
-        //    {
-        //        if (!ModelState.IsValid)
-        //            return BadRequest(CreateErrorResponse(NotifiAndAlertsResources.InvalidInputAlert));
-
-        //        var success = await _itemService.Save(itemDto, GuidUserId);
-        //        if (!success)
-        //            return BadRequest(CreateErrorResponse(NotifiAndAlertsResources.SaveFailed));
-
-        //        return Ok(CreateSuccessResponse<string>(null, NotifiAndAlertsResources.SavedSuccessfully));
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        return HandleException(ex);
-        //    }
-        //}
-
-        ///// <summary>
-        ///// Updates an existing item.
-        ///// </summary>
-        //[HttpPost("update/{id:guid}")]
-        //[Authorize(Roles = nameof(UserRole.Admin))]
-        //public async Task<IActionResult> Update(Guid id, [FromBody] ItemDto itemDto)
-        //{
-        //    try
-        //    {
-        //        if (id == Guid.Empty || !ModelState.IsValid)
-        //            return BadRequest(CreateErrorResponse(NotifiAndAlertsResources.InvalidInputAlert));
-
-        //        itemDto.Id = id;
-        //        var success = await _itemService.Save(itemDto, GuidUserId);
-        //        if (!success)
-        //            return BadRequest(CreateErrorResponse(NotifiAndAlertsResources.SaveFailed));
-
-        //        return Ok(CreateSuccessResponse<string>(null, NotifiAndAlertsResources.SavedSuccessfully));
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        return HandleException(ex);
-        //    }
-        //}
 
         /// <summary>
         /// Deletes an item by ID.
@@ -194,21 +94,14 @@ namespace Api.Controllers.Catalog
         [Authorize(Roles = nameof(UserRole.Admin))]
         public async Task<IActionResult> Delete([FromBody] Guid id)
         {
-            try
-            {
-                if (id == Guid.Empty)
-                    return BadRequest(CreateErrorResponse(NotifiAndAlertsResources.InvalidInputAlert));
+            if (id == Guid.Empty)
+                return BadRequest(CreateErrorResponse(NotifiAndAlertsResources.InvalidInputAlert));
 
-                var success = await _itemService.DeleteAsync(id, GuidUserId);
-                if (!success)
-                    return BadRequest(CreateErrorResponse(NotifiAndAlertsResources.DeleteFailed));
+            var success = await _itemService.DeleteAsync(id, GuidUserId);
+            if (!success)
+                return BadRequest(CreateErrorResponse(NotifiAndAlertsResources.DeleteFailed));
 
-                return Ok(CreateSuccessResponse(true, NotifiAndAlertsResources.DeletedSuccessfully));
-            }
-            catch (Exception ex)
-            {
-                return HandleException(ex);
-            }
+            return Ok(CreateSuccessResponse(true, NotifiAndAlertsResources.DeletedSuccessfully));
         }
 
         #region Private Helper Methods
@@ -225,34 +118,6 @@ namespace Api.Controllers.Catalog
 
             return true;
         }
-
-        ///// <summary>
-        ///// Common method for retrieving categorized items
-        ///// </summary>
-        //private async Task<IActionResult> GetItemsByCategory(ItemSearchCriteriaModel criteria)
-        //{
-        //    try
-        //    {
-        //        ValidateAndNormalizePagination(criteria);
-
-        //        var clientIp = HttpContext.GetClientIpAddress();
-        //        var shouldApplyConversion = ShouldApplyCurrencyConversion();
-        //        var result = await _itemService.GetPageWithCurrencyConversionAsync(criteria, clientIp, shouldApplyConversion);
-
-        //        if (result?.Items?.Any() != true)
-        //        {
-        //            return Ok(CreateSuccessResponse(
-        //                new PaginatedDataModel<VwItemDto>(new List<VwItemDto>(), 0),
-        //                NotifiAndAlertsResources.NoDataFound));
-        //        }
-
-        //        return Ok(CreateSuccessResponse(result, NotifiAndAlertsResources.DataRetrieved));
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        return HandleException(ex);
-        //    }
-        //}
 
         /// <summary>
         /// Validates and normalizes pagination parameters
