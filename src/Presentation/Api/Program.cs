@@ -50,6 +50,11 @@ builder.Services.AddLocalizationConfiguration();
 builder.Services.AddMvcConfiguration();
 builder.Services.AddCompressionConfiguration();
 
+// API Versioning is configured in AddMvcConfiguration()
+// Controllers are organized in v1 folder with [ApiVersion("1.0")] attribute
+// Routes follow pattern: api/v{version:apiVersion}/[controller]
+// Swagger is configured to display all API versions
+
 // Configure CORS
 builder.Services.AddCorsConfiguration(builder.Environment);
 

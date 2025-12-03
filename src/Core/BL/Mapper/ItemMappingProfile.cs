@@ -16,8 +16,6 @@ namespace BL.Mapper
             // Core item mappings
             CreateMap<TbItem, ItemDto>()
                 .ForMember(dest => dest.Images, opt => opt.MapFrom(src => src.ItemImages))
-                .ForMember(dest => dest.CategoryTitleAr, opt => opt.MapFrom(src => src.Category.TitleAr))
-                .ForMember(dest => dest.CategoryTitleEn, opt => opt.MapFrom(src => src.Category.TitleEn))
                 .ReverseMap();
 
             CreateMap<TbItem, Item>()
@@ -49,7 +47,7 @@ namespace BL.Mapper
 
             // Combination attribute mappings
             CreateMap<TbCombinationAttribute, CombinationAttributeDto>()
-                .ReverseMap(); 
+                .ReverseMap();
 
             // Combination attribute value mappings
             CreateMap<TbCombinationAttributesValue, CombinationAttributeValueDto>()
