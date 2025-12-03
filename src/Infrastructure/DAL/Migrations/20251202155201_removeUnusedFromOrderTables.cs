@@ -112,41 +112,6 @@ namespace DAL.Migrations
                 oldClrType: typeof(string),
                 oldType: "nvarchar(max)");
 
-            migrationBuilder.AddColumn<decimal>(
-                name: "DiscountAmount",
-                table: "TbOrderDetails",
-                type: "decimal(18,2)",
-                nullable: false,
-                defaultValue: 0m);
-
-            migrationBuilder.AddColumn<Guid>(
-                name: "OfferCombinationPricingId",
-                table: "TbOrderDetails",
-                type: "uniqueidentifier",
-                nullable: false,
-                defaultValue: new Guid("00000000-0000-0000-0000-000000000000"));
-
-            migrationBuilder.AddColumn<decimal>(
-                name: "TaxAmount",
-                table: "TbOrderDetails",
-                type: "decimal(18,2)",
-                nullable: false,
-                defaultValue: 0m);
-
-            migrationBuilder.AddColumn<Guid>(
-                name: "VendorId",
-                table: "TbOrderDetails",
-                type: "uniqueidentifier",
-                nullable: false,
-                defaultValue: new Guid("00000000-0000-0000-0000-000000000000"));
-
-            migrationBuilder.AddColumn<Guid>(
-                name: "WarehouseId",
-                table: "TbOrderDetails",
-                type: "uniqueidentifier",
-                nullable: false,
-                defaultValue: new Guid("00000000-0000-0000-0000-000000000000"));
-
             migrationBuilder.CreateTable(
                 name: "TbCustomerAddresses",
                 columns: table => new
@@ -729,26 +694,6 @@ namespace DAL.Migrations
             migrationBuilder.DropColumn(
                 name: "VendorId",
                 table: "TbWarehouses");
-
-            migrationBuilder.DropColumn(
-                name: "DiscountAmount",
-                table: "TbOrderDetails");
-
-            migrationBuilder.DropColumn(
-                name: "OfferCombinationPricingId",
-                table: "TbOrderDetails");
-
-            migrationBuilder.DropColumn(
-                name: "TaxAmount",
-                table: "TbOrderDetails");
-
-            migrationBuilder.DropColumn(
-                name: "VendorId",
-                table: "TbOrderDetails");
-
-            migrationBuilder.DropColumn(
-                name: "WarehouseId",
-                table: "TbOrderDetails");
 
             migrationBuilder.RenameColumn(
                 name: "TbShippingCompanyId",

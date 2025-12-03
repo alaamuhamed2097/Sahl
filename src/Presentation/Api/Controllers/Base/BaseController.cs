@@ -4,6 +4,7 @@ using Resources.Enumerations;
 using Shared.GeneralModels;
 using System.Globalization;
 using System.Security.Claims;
+using Asp.Versioning;
 
 namespace Api.Controllers.Base
 {
@@ -57,6 +58,15 @@ namespace Api.Controllers.Base
                 "UserResources" => UserResources.ResourceManager.GetString(resourceKey, culture),
                 _ => resourceKey
             };
+        }
+
+        /// <summary>
+        /// Gets the API version from the route.
+        /// </summary>
+        protected string GetApiVersion()
+        {
+            var version = HttpContext.GetRequestedApiVersion();
+            return version?.ToString() ?? "1.0";
         }
     }
 }

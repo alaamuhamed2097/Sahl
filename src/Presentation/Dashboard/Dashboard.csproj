@@ -70,9 +70,13 @@
 
 	<ItemGroup>
 		<Compile Remove="Handlers\**" />
+		<Compile Remove="Pages\Catalog\Orders\**" />
 		<Content Remove="Handlers\**" />
+		<Content Remove="Pages\Catalog\Orders\**" />
 		<EmbeddedResource Remove="Handlers\**" />
+		<EmbeddedResource Remove="Pages\Catalog\Orders\**" />
 		<None Remove="Handlers\**" />
+		<None Remove="Pages\Catalog\Orders\**" />
 	</ItemGroup>
 
 	<!-- ========== 🌐 Supported Cultures (Arabic + English) ========== -->
@@ -173,10 +177,6 @@
 	</ItemGroup>
 	<ItemGroup>
 		<AdditionalFiles Remove="C:\Users\alaam\AppData\Roaming\SonarLint for Visual Studio\.global\csharp\SonarLint.xml" />
-	</ItemGroup>
-	<ItemGroup>
-		<Folder Include="Pages\Catalog\Orders\" />
-		<Folder Include="Pages\Marketing\" />
 	</ItemGroup>
 
 </Project>

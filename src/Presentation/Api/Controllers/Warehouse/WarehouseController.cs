@@ -8,11 +8,13 @@ using Resources;
 using Shared.DTOs.Warehouse;
 using Shared.GeneralModels;
 using Shared.GeneralModels.SearchCriteriaModels;
+using Asp.Versioning;
 
 namespace Api.Controllers.Warehouse
 {
-    [Route("api/[controller]")]
+    [Route("api/v{version:apiVersion}/[controller]")]
     [ApiController]
+    [ApiVersion("1.0")]
     public class WarehouseController : BaseController
     {
         private readonly IWarehouseService _warehouseService;
@@ -26,6 +28,11 @@ namespace Api.Controllers.Warehouse
         /// <summary>
         /// Retrieves all warehouses.
         /// </summary>
+        /// <remarks>
+        /// Requires Admin role.
+        /// 
+        /// API Version: 1.0+
+        /// </remarks>
         [HttpGet]
         [Authorize(Roles = nameof(UserRole.Admin))]
         public async Task<IActionResult> Get()
@@ -50,6 +57,11 @@ namespace Api.Controllers.Warehouse
         /// <summary>
         /// Retrieves active warehouses only.
         /// </summary>
+        /// <remarks>
+        /// Requires Admin role.
+        /// 
+        /// API Version: 1.0+
+        /// </remarks>
         [HttpGet("active")]
         [Authorize(Roles = nameof(UserRole.Admin))]
         public async Task<IActionResult> GetActive()
@@ -75,6 +87,11 @@ namespace Api.Controllers.Warehouse
         /// Retrieves a warehouse by ID.
         /// </summary>
         /// <param name="id">The ID of the warehouse.</param>
+        /// <remarks>
+        /// Requires Admin role.
+        /// 
+        /// API Version: 1.0+
+        /// </remarks>
         [HttpGet("{id}")]
         [Authorize(Roles = nameof(UserRole.Admin))]
         public async Task<IActionResult> Get(Guid id)
@@ -113,6 +130,11 @@ namespace Api.Controllers.Warehouse
         /// Searches warehouses with pagination and filtering.
         /// </summary>
         /// <param name="criteriaModel">Search criteria including pagination and filters.</param>
+        /// <remarks>
+        /// Requires Admin role.
+        /// 
+        /// API Version: 1.0+
+        /// </remarks>
         [HttpGet("search")]
         [Authorize(Roles = nameof(UserRole.Admin))]
         public async Task<IActionResult> Search([FromQuery] BaseSearchCriteriaModel criteriaModel)
@@ -141,6 +163,11 @@ namespace Api.Controllers.Warehouse
         /// Adds a new warehouse or updates an existing one.
         /// </summary>
         /// <param name="dto">The warehouse data.</param>
+        /// <remarks>
+        /// Requires Admin role.
+        /// 
+        /// API Version: 1.0+
+        /// </remarks>
         [HttpPost("save")]
         [Authorize(Roles = nameof(UserRole.Admin))]
         public async Task<IActionResult> Save([FromBody] WarehouseDto dto)
@@ -178,6 +205,11 @@ namespace Api.Controllers.Warehouse
         /// Deletes a warehouse by ID (soft delete).
         /// </summary>
         /// <param name="id">The ID of the warehouse to delete.</param>
+        /// <remarks>
+        /// Requires Admin role.
+        /// 
+        /// API Version: 1.0+
+        /// </remarks>
         [HttpPost("delete")]
         [Authorize(Roles = nameof(UserRole.Admin))]
         public async Task<IActionResult> Delete([FromBody] Guid id)
@@ -215,6 +247,11 @@ namespace Api.Controllers.Warehouse
         /// Toggles the active status of a warehouse.
         /// </summary>
         /// <param name="id">The ID of the warehouse.</param>
+        /// <remarks>
+        /// Requires Admin role.
+        /// 
+        /// API Version: 1.0+
+        /// </remarks>
         [HttpPost("toggle-status")]
         [Authorize(Roles = nameof(UserRole.Admin))]
         public async Task<IActionResult> ToggleStatus([FromBody] Guid id)
