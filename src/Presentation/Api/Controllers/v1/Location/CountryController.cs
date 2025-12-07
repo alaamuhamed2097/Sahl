@@ -19,8 +19,7 @@ namespace Api.Controllers.v1.Location
     {
         private readonly ICountryService _countryService;
 
-        public CountryController(ICountryService countryService, Serilog.ILogger logger)
-            : base(logger)
+        public CountryController(ICountryService countryService)
         {
             _countryService = countryService;
         }

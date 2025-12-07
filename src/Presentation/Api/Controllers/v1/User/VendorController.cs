@@ -17,8 +17,7 @@ namespace Api.Controllers.v1.User
     {
         private readonly IVendorService _vendorService;
 
-        public VendorController(IVendorService vendorService,
-            Serilog.ILogger logger) : base(logger)
+        public VendorController(IVendorService vendorService)
         {
             _vendorService = vendorService;
         }

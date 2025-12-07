@@ -21,8 +21,7 @@ namespace Api.Controllers.v1.User
         private readonly UserManager<ApplicationUser> _userManager;
 
         public UserAuthenticationController(IUserAuthenticationService userAuthenticationService,
-            UserManager<ApplicationUser> userManager,
-            Serilog.ILogger logger) : base(logger)
+            UserManager<ApplicationUser> userManager)
         {
             _userAuthenticationService = userAuthenticationService;
             _userManager = userManager;

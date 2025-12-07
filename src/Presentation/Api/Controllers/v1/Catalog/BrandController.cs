@@ -19,8 +19,7 @@ namespace Api.Controllers.v1.Catalog
     {
         private readonly IBrandService _brandService;
 
-        public BrandController(IBrandService brandService, Serilog.ILogger logger)
-            : base(logger)
+        public BrandController(IBrandService brandService)
         {
             _brandService = brandService;
         }

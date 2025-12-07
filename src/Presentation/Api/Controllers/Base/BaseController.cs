@@ -8,17 +8,6 @@ namespace Api.Controllers.Base
 {
     public class BaseController : ControllerBase
     {
-        public BaseController()
-        {
-
-        }
-
-        protected readonly Serilog.ILogger _logger;
-        public BaseController(Serilog.ILogger logger)
-        {
-            _logger = logger;
-        }
-
         protected string? RoleName => User.FindFirst(ClaimTypes.Role)?.Value;
         protected string? UserId => User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         protected Guid GuidUserId =>

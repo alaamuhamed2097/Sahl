@@ -20,8 +20,7 @@ namespace Api.Controllers.v1.Shipping
     {
         private readonly IShippingCompanyService _shippingCompanyService;
 
-        public ShippingCompanyController(IShippingCompanyService shippingCompanyService, Serilog.ILogger logger)
-            : base(logger)
+        public ShippingCompanyController(IShippingCompanyService shippingCompanyService)
         {
             _shippingCompanyService = shippingCompanyService;
         }

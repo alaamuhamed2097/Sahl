@@ -19,8 +19,7 @@ namespace Api.Controllers.v1.Content
     {
         private readonly IContentAreaService _contentAreaService;
 
-        public ContentAreaController(IContentAreaService contentAreaService, Serilog.ILogger logger)
-            : base(logger)
+        public ContentAreaController(IContentAreaService contentAreaService)
         {
             _contentAreaService = contentAreaService;
         }
@@ -159,7 +158,7 @@ namespace Api.Controllers.v1.Content
             return Ok(new ResponseModel<string>
             {
                 Success = success,
-                Message = success 
+                Message = success
                     ? GetResource<NotifiAndAlertsResources>(nameof(NotifiAndAlertsResources.SavedSuccessfully))
                     : GetResource<NotifiAndAlertsResources>(nameof(NotifiAndAlertsResources.SaveFailed))
             });
@@ -180,7 +179,7 @@ namespace Api.Controllers.v1.Content
             return Ok(new ResponseModel<string>
             {
                 Success = success,
-                Message = success 
+                Message = success
                     ? GetResource<NotifiAndAlertsResources>(nameof(NotifiAndAlertsResources.DeletedSuccessfully))
                     : GetResource<NotifiAndAlertsResources>(nameof(NotifiAndAlertsResources.DeleteFailed))
             });

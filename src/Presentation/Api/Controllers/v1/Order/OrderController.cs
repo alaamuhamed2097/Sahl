@@ -18,7 +18,6 @@ namespace Api.Controllers.v1.Order
         private readonly ILogger<OrderController> _logger;
 
         public OrderController(IOrderService orderService, ILogger<OrderController> logger, Serilog.ILogger serilogLogger)
-            : base(serilogLogger)
         {
             _orderService = orderService;
             _logger = logger;

@@ -1,7 +1,6 @@
 using Api.Controllers.Base;
 using Asp.Versioning;
 using BL.Contracts.Service.Currency;
-using Common.Enumerations.User;
 using DAL.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -19,8 +18,7 @@ namespace Api.Controllers.v1.Settings
     {
         private readonly ICurrencyService _currencyService;
 
-        public CurrencyController(ICurrencyService currencyService, Serilog.ILogger logger) :
-            base(logger)
+        public CurrencyController(ICurrencyService currencyService)
         {
             _currencyService = currencyService;
         }

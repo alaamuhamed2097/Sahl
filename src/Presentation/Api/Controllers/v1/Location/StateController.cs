@@ -19,8 +19,7 @@ namespace Api.Controllers.v1.Location
     {
         private readonly IStateService _stateService;
 
-        public StateController(IStateService stateService, Serilog.ILogger logger)
-            : base(logger)
+        public StateController(IStateService stateService)
         {
             _stateService = stateService;
         }

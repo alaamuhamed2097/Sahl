@@ -16,7 +16,7 @@ namespace Api.Controllers.v1.Pricing
     {
         private readonly IPricingService _pricingService;
 
-        public PricingSystemController(IPricingService pricingService, Serilog.ILogger logger) : base(logger)
+        public PricingSystemController(IPricingService pricingService)
         {
             _pricingService = pricingService;
         }

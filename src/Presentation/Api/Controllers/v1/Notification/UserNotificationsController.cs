@@ -20,8 +20,7 @@ namespace Api.Controllers.v1.Notification
     {
         private readonly IUserNotificationService _userNotificationService;
 
-        public UserNotificationsController(Serilog.ILogger logger, IUserNotificationService userNotificationService)
-            : base(logger)
+        public UserNotificationsController(IUserNotificationService userNotificationService)
         {
             _userNotificationService = userNotificationService;
         }

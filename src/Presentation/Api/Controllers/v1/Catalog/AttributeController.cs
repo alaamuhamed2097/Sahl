@@ -20,8 +20,7 @@ namespace Api.Controllers.v1.Catalog
     {
         private readonly IAttributeService _attributeService;
 
-        public AttributeController(IAttributeService attributeService, Serilog.ILogger logger)
-            : base(logger)
+        public AttributeController(IAttributeService attributeService)
         {
             _attributeService = attributeService;
         }

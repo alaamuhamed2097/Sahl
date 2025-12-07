@@ -19,8 +19,7 @@ namespace Api.Controllers.v1.Catalog
     {
         private readonly IUnitService _unitService;
 
-        public UnitController(IUnitService unitService, Serilog.ILogger logger)
-            : base(logger)
+        public UnitController(IUnitService unitService)
         {
             _unitService = unitService;
         }

@@ -16,8 +16,7 @@ namespace Api.Controllers.v1.User
     {
         private readonly IUserActivationService _userActivationService;
 
-        public UserActivationController(IUserActivationService userActivationService,
-            Serilog.ILogger logger) : base(logger)
+        public UserActivationController(IUserActivationService userActivationService)
         {
             _userActivationService = userActivationService;
         }

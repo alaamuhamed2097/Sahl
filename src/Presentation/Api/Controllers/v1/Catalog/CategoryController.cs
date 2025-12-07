@@ -19,8 +19,7 @@ namespace Api.Controllers.v1.Catalog
     {
         private readonly ICategoryService _categoryService;
 
-        public CategoryController(ICategoryService categoryService, Serilog.ILogger logger) 
-            : base(logger)
+        public CategoryController(ICategoryService categoryService)
         {
             _categoryService = categoryService;
         }
