@@ -1,4 +1,4 @@
-using Domains.Entities.Order;
+﻿using Domains.Entities.Order;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -26,6 +26,25 @@ namespace DAL.Configurations
             builder.HasIndex(e => e.OrderStatus).HasDatabaseName("IX_Orders_Status");
             builder.HasIndex(e => e.CreatedDateUtc).HasDatabaseName("IX_Orders_Date");
             builder.HasIndex(e => e.Number).HasDatabaseName("IX_Orders_Number");
+
+            // Foreign Keys - تعديل العلاقات لتجنب CASCADE DELETE المتعدد
+            builder.HasOne(o => o.User)
+                .WithMany()
+                .HasForeignKey(o => o.UserId)
+                .OnDelete(DeleteBehavior.Cascade)
+                .HasConstraintName("FK_TbOrders_AspNetUsers_UserId");
+
+            builder.HasOne(o => o.CustomerAddress)
+                .WithMany()
+                .HasForeignKey(o => o.DeliveryAddressId)
+                .OnDelete(DeleteBehavior.NoAction) // تغيير هنا
+                .HasConstraintName("FK_TbOrders_TbCustomerAddresses_DeliveryAddressId");
+
+            builder.HasOne(o => o.Coupon)
+                .WithMany()
+                .HasForeignKey(o => o.CouponId)
+                .OnDelete(DeleteBehavior.NoAction) // تغيير هنا
+                .HasConstraintName("FK_TbOrders_TbCouponCodes_CouponId");
         }
     }
 }

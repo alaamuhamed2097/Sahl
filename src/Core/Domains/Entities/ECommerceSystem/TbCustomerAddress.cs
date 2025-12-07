@@ -1,4 +1,3 @@
-using Domains.Entities.ECommerceSystem.Customer;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -6,8 +5,8 @@ namespace Domains.Entities.ECommerceSystem
 {
     public class TbCustomerAddress : BaseEntity
     {
-        [ForeignKey("Customer")]
-        public Guid CustomerId { get; set; }
+        [ForeignKey("User")]
+        public string UserId { get; set; }
 
         [Required]
         [MaxLength(100)]
@@ -25,6 +24,6 @@ namespace Domains.Entities.ECommerceSystem
 
         public bool IsDefault { get; set; }
 
-        public virtual TbCustomer Customer { get; set; } = null!;
+        public virtual ApplicationUser User { get; set; } = null!;
     }
 }

@@ -37,7 +37,7 @@ namespace Api.Controllers.v1.Order
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
-        public async Task<ActionResult<OrderDto>> CreateOrder([FromBody] CreateOrderRequest request)
+        public async Task<ActionResult<OrderDto>> CreateOrder([FromBody] CreateOrderFromCartRequest request)
         {
             try
             {
@@ -47,8 +47,8 @@ namespace Api.Controllers.v1.Order
 
                 _logger.LogInformation($"Customer {customerId} creating order with delivery address {request.DeliveryAddressId}");
 
-                var order = await _orderService.CreateOrderAsync(customerId, request);
-                return CreatedAtAction(nameof(GetOrderById), new { orderId = order.Id }, order);
+                var order = await _orderService.CreateOrderFromCartAsync(customerId, request);
+                return CreatedAtAction(nameof(GetOrderById), new { orderId = order.OrderId }, order);
             }
             catch (Exception ex)
             {

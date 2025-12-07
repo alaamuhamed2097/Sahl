@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using Shared.GeneralModels;
 using System.Text;
 using System.Text.Json;
 
@@ -48,7 +49,13 @@ namespace Api.Extensions
                         context.Response.StatusCode = 401;
                         context.Response.ContentType = "application/json";
 
-                        var result = JsonSerializer.Serialize(new { error = "Token is invalid or expired" });
+                        var result = JsonSerializer.Serialize(
+                            new ResponseModel<string>
+                            {
+                                Success = false,
+                                StatusCode = 401,
+                                Message = "Token is invalid or expired"
+                            });
                         return context.Response.WriteAsync(result);
                     }
                 };

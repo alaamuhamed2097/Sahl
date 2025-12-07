@@ -2,7 +2,6 @@
 using Microsoft.Extensions.Options;
 using Microsoft.OpenApi;
 using Swashbuckle.AspNetCore.SwaggerGen;
-using System;
 using System.Reflection;
 
 namespace Api.Extensions
@@ -14,6 +13,23 @@ namespace Api.Extensions
             services.AddEndpointsApiExplorer();
             services.AddSwaggerGen(options =>
             {
+                // Define Bearer security scheme
+                options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+                {
+                    Description = "JWT Authorization header using the Bearer scheme. Example: \"Authorization: Bearer {token}\"",
+                    Name = "Authorization",
+                    In = ParameterLocation.Header,
+                    Type = SecuritySchemeType.Http,
+                    Scheme = "Bearer",
+                    BearerFormat = "JWT"
+                });
+
+                // Apply Bearer security globally using OpenApiSecuritySchemeReference
+                options.AddSecurityRequirement(document => new OpenApiSecurityRequirement
+                {
+                    [new OpenApiSecuritySchemeReference("Bearer", document)] = []
+                });
+
                 // Add XML comments for better documentation
                 var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
                 var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
@@ -38,7 +54,6 @@ namespace Api.Extensions
 
         public static IApplicationBuilder UseSwaggerConfiguration(this IApplicationBuilder app, IApiVersionDescriptionProvider provider)
         {
-            
             app.UseSwagger(options =>
             {
                 options.RouteTemplate = "openapi/{documentName}.json";
@@ -62,13 +77,6 @@ namespace Api.Extensions
                 options.EnableFilter();
                 options.ShowExtensions();
                 options.EnableValidator();
-                // Show the JSON link
-                // ⬅ Show the JSON link in Swagger UI
-                options.ConfigObject.AdditionalItems["urls"] = provider.ApiVersionDescriptions
-                       .Select(desc => new {
-                    url = $"/openapi/{desc.GroupName}.json",
-                    name = $"OpenAPI JSON — {desc.GroupName.ToUpperInvariant()}"
-                       }).ToList();
             });
 
             return app;
@@ -93,14 +101,15 @@ namespace Api.Extensions
         {
             foreach (var description in _provider.ApiVersionDescriptions)
             {
-                options.SwaggerDoc(description.GroupName, new OpenApiInfo
+                var info = new OpenApiInfo
                 {
-                    Title = $"Sahl API {description.ApiVersion}",
-                    Version = description.GroupName,
-                    Description = "API Documentation for Sahl"
-                });
+                    Title = $"Basit E-Commerce Marketplace API {description.ApiVersion}",
+                    Version = description.ApiVersion.ToString(),
+                    Description = "API Documentation for Basit E-Commerce Marketplace"
+                };
+
+                options.SwaggerDoc(description.GroupName, info);
             }
         }
     }
-
 }

@@ -1,5 +1,6 @@
 ﻿using BL.Contracts.GeneralService;
 using BL.Contracts.GeneralService.CMS;
+using BL.Utils;
 using Common.Enumerations.User;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -46,8 +47,29 @@ namespace BL.GeneralService.CMS
         {
             try
             {
-                var user = await _userManager.FindByEmailAsync(identifier)
-                        ?? await _userManager.FindByNameAsync(identifier);
+                ApplicationUser? user = null;
+
+                // Try to find by email
+                user = await _userManager.FindByEmailAsync(identifier);
+
+                // If not found by email, try by username
+                if (user == null)
+                {
+                    user = await _userManager.FindByNameAsync(identifier);
+                }
+
+                // If still not found, try by phone number (new feature)
+                if (user == null && !string.IsNullOrWhiteSpace(identifier))
+                {
+                    var normalizedPhone = PhoneNormalizationHelper.NormalizePhone(identifier);
+                    if (!string.IsNullOrWhiteSpace(normalizedPhone))
+                    {
+                        user = await _userManager.Users
+                            .FirstOrDefaultAsync(u => u.NormalizedPhone != null && 
+                                                     u.NormalizedPhone.Contains(normalizedPhone));
+                    }
+                }
+
                 if (user == null)
                 {
                     return new Shared.GeneralModels.ResultModels.SignInResult
@@ -81,7 +103,7 @@ namespace BL.GeneralService.CMS
                     return new Shared.GeneralModels.ResultModels.SignInResult
                     {
                         Success = false,
-                        Message = "Your account has been suspended by the administration due to a violation of the platform’s policies. For more details, please contact technical support."
+                        Message = "Your account has been suspended by the administration due to a violation of the platform's policies. For more details, please contact technical support."
                     };
                 }
 

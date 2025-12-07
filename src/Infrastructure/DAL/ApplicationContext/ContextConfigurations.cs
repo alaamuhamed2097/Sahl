@@ -94,6 +94,13 @@ namespace DAL.ApplicationContext
                     Console.WriteLine("[SeedRolesAsync] Created Vendor role");
                 }
 
+                if (!await roleManager.RoleExistsAsync("Customer"))
+                {
+                    var customerRole = new IdentityRole("Customer") { Id = Guid.NewGuid().ToString() };
+                    await roleManager.CreateAsync(customerRole);
+                    Console.WriteLine("[SeedRolesAsync] Created Customer role");
+                }
+
                 Console.WriteLine("[SeedRolesAsync] Completed");
             }
             catch (Exception ex)

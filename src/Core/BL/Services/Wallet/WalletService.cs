@@ -20,7 +20,7 @@ namespace BL.Services.Wallet
         public async Task<CustomerWalletDto> GetCustomerWalletAsync(Guid customerId)
         {
             var wallet = await _context.TbCustomerWallets
-                .FirstOrDefaultAsync(w => w.CustomerId == customerId);
+                .FirstOrDefaultAsync(w => w.UserId == customerId.ToString());
 
             if (wallet == null) return null;
 
@@ -47,14 +47,14 @@ namespace BL.Services.Wallet
         public async Task<CustomerWalletDto> CreateCustomerWalletAsync(Guid customerId)
         {
             var existingWallet = await _context.TbCustomerWallets
-                .FirstOrDefaultAsync(w => w.CustomerId == customerId);
+                .FirstOrDefaultAsync(w => w.UserId == customerId.ToString());
 
             if (existingWallet != null)
                 throw new Exception("Customer already has a wallet");
 
             var wallet = new TbCustomerWallet
             {
-                CustomerId = customerId,
+                UserId = customerId.ToString(),
                 AvailableBalance = 0,
                 PendingBalance = 0,
                 TotalEarned = 0,
@@ -340,7 +340,7 @@ namespace BL.Services.Wallet
         public async Task<WalletTransactionDto> ProcessDepositAsync(DepositRequestDto dto)
         {
             var wallet = await _context.TbCustomerWallets
-                .FirstOrDefaultAsync(w => w.CustomerId == dto.CustomerId);
+                .FirstOrDefaultAsync(w => w.UserId == dto.UserId);
 
             if (wallet == null)
                 throw new Exception("Customer wallet not found");
@@ -437,7 +437,7 @@ namespace BL.Services.Wallet
         public async Task<decimal> GetCustomerBalanceAsync(Guid customerId)
         {
             var wallet = await _context.TbCustomerWallets
-                .FirstOrDefaultAsync(w => w.CustomerId == customerId);
+                .FirstOrDefaultAsync(w => w.UserId == customerId.ToString());
 
             return wallet?.AvailableBalance ?? 0;
         }
@@ -639,7 +639,7 @@ namespace BL.Services.Wallet
             return new CustomerWalletDto
             {
                 Id = wallet.Id,
-                CustomerId = wallet.CustomerId,
+                UserId = wallet.UserId,
                 CustomerName = "N/A", // Would need to join
                 Balance = wallet.AvailableBalance,
                 TotalDeposits = wallet.TotalEarned,

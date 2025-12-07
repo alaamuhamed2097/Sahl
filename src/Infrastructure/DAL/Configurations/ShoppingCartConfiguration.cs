@@ -19,7 +19,7 @@ namespace DAL.Configurations
                 .HasDefaultValue(true);
 
             // Indexes
-            builder.HasIndex(e => e.CustomerId);
+            builder.HasIndex(e => e.UserId);
         }
     }
 }

@@ -1,4 +1,8 @@
 ﻿using Common.Enumerations.User;
+using Domains.Entities.ECommerceSystem;
+using Domains.Entities.ECommerceSystem.Cart;
+using Domains.Entities.Loyalty;
+using Domains.Entities.Wallet;
 using Microsoft.AspNetCore.Identity;
 
 namespace Domains.Identity
@@ -11,6 +15,12 @@ namespace Domains.Identity
         public string ProfileImagePath { get; set; } = null!;
         public string PhoneCode { get; set; } = null!;
 
+        /// <summary>
+        /// Normalized phone in format: {PhoneCode}{PhoneNumber}
+        /// Used for unique constraint and phone-based lookups
+        /// </summary>
+        public string? NormalizedPhone { get; set; }
+
         public Guid CreatedBy { get; set; }
         public DateTime CreatedDateUtc { get; set; }
         public Guid? UpdatedBy { get; set; }
@@ -18,6 +28,9 @@ namespace Domains.Identity
         public DateTime? LastLoginDate { get; set; }
         public UserStateType UserState { get; set; }
 
-        //public virtual HashSet<TbOrder> Orders { get; set; } = new HashSet<TbOrder>();
+        public virtual ICollection<TbCustomerAddress> CustomerAddresses { get; set; }
+        public virtual ICollection<TbShoppingCart> ShoppingCarts { get; set; }
+        public virtual ICollection<TbCustomerLoyalty> CustomerLoyalties { get; set; }
+        public virtual ICollection<TbCustomerWallet> CustomerWallets { get; set; }
     }
 }

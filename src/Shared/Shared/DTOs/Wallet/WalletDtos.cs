@@ -7,7 +7,7 @@ namespace Shared.DTOs.Wallet
     public class CustomerWalletDto
     {
         public Guid Id { get; set; }
-        public Guid CustomerId { get; set; }
+        public string UserId { get; set; }
         public string CustomerName { get; set; }
         public decimal Balance { get; set; }
         public decimal TotalDeposits { get; set; }
@@ -99,7 +99,7 @@ namespace Shared.DTOs.Wallet
     // Deposit/Withdrawal Request DTOs
     public class DepositRequestDto
     {
-        public Guid CustomerId { get; set; }
+        public string UserId { get; set; }
         public decimal Amount { get; set; }
         public string PaymentMethod { get; set; }
         public string Description { get; set; }

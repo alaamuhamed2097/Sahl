@@ -13,7 +13,6 @@ using Domains.Entities.CouponCode;
 using Domains.Entities.Currency;
 using Domains.Entities.ECommerceSystem;
 using Domains.Entities.ECommerceSystem.Cart;
-using Domains.Entities.ECommerceSystem.Customer;
 using Domains.Entities.ECommerceSystem.Review;
 using Domains.Entities.ECommerceSystem.Support;
 using Domains.Entities.ECommerceSystem.Vendor;
@@ -110,9 +109,6 @@ namespace DAL.ApplicationContext
 
         // Vendor
         public DbSet<TbVendor> TbVendors { get; set; }
-
-        // Customer
-        public DbSet<TbCustomer> TbCustomers { get; set; }
 
         // Video Provider Management
         public DbSet<TbVideoProvider> TbVideoProviders { get; set; }

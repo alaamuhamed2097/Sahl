@@ -1,15 +1,18 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Resources;
 using Resources.Enumerations;
-using Shared.GeneralModels;
 using System.Globalization;
 using System.Security.Claims;
-using Asp.Versioning;
 
 namespace Api.Controllers.Base
 {
     public class BaseController : ControllerBase
     {
+        public BaseController()
+        {
+
+        }
+
         protected readonly Serilog.ILogger _logger;
         public BaseController(Serilog.ILogger logger)
         {

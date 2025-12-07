@@ -1,0 +1,176 @@
+@page "/register"
+@page "/authentication/register"
+<PageTitle>Create Account</PageTitle>
+@if (ResourceManager.CurrentLanguage == Language.Arabic)
+{
+    <style>
+        .checkbox input[type=checkbox] + .cr:before {
+            margin-right: 0 !important;
+            margin-left: 10px !important;
+        }
+    </style>
+}
+<div class="auth-wrapper" dir="@(ResourceManager.CurrentLanguage == Language.Arabic ? "rtl" : "ltr")">
+    <div class="auth-content container">
+        <div class="card">
+            <div class="row align-items-center">
+                <div class="col-md-6 d-none d-md-block">
+                    <img src="assets/images/auth/Register.svg" alt="Register" class="img-fluid" />
+                </div>
+                <div class="col-md-6">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-center">
+                            <img src="assets/images/logo.svg" alt="logo" class="img-fluid mb-4" />
+                        </div>
+                        <h4 class="mb-3 f-w-400 text-center">
+                            Create Customer Account <span class="text-c-blue">| Customer</span>
+                        </h4>
+
+                        <EditForm Model="_model" OnValidSubmit="HandleValidSubmit">
+                            <DataAnnotationsValidator />
+
+                            <!-- Row 1: First Name and Last Name -->
+                            <div class="row">
+                                <div class="col-6">
+                                    <div class="form-group mb-2">
+                                        <label class="form-label">
+                                            First Name <span class="text-danger">*</span>
+                                        </label>
+                                        <InputText type="text" class="form-control" placeholder="First Name" @bind-Value="_model.FirstName" />
+                                        <ValidationMessage For="@(() => _model.FirstName)" />
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="form-group mb-2">
+                                        <label class="form-label">
+                                            Last Name <span class="text-danger">*</span>
+                                        </label>
+                                        <InputText type="text" class="form-control" placeholder="Last Name" @bind-Value="_model.LastName" />
+                                        <ValidationMessage For="@(() => _model.LastName)" />
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Row 2: Phone Code and Phone Number (REQUIRED) -->
+                            <div class="row">
+                                <div class="col-4">
+                                    <div class="form-group mb-2">
+                                        <label class="form-label">
+                                            Phone Code <span class="text-danger">*</span>
+                                        </label>
+                                        <InputText type="text" class="form-control" placeholder="+20" @bind-Value="_model.PhoneCode" />
+                                        <small class="form-text text-muted">e.g., +20, +966, +1</small>
+                                        <ValidationMessage For="@(() => _model.PhoneCode)" />
+                                    </div>
+                                </div>
+                                <div class="col-8">
+                                    <div class="form-group mb-2">
+                                        <label class="form-label">
+                                            Phone Number <span class="text-danger">*</span>
+                                        </label>
+                                        <InputText type="tel" class="form-control" placeholder="1001234567" @bind-Value="_model.PhoneNumber" />
+                                        <small class="form-text text-muted">6-15 digits, spaces and dashes allowed</small>
+                                        <ValidationMessage For="@(() => _model.PhoneNumber)" />
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Row 3: Email (OPTIONAL) -->
+                            <div class="form-group mb-2">
+                                <label class="form-label">
+                                    Email <span class="text-muted">(Optional)</span>
+                                </label>
+                                <InputText type="email" class="form-control" placeholder="your@email.com (optional)" @bind-Value="_model.Email" />
+                                <ValidationMessage For="@(() => _model.Email)" />
+                            </div>
+
+                            <!-- Row 4: Username (OPTIONAL) -->
+                            <div class="form-group mb-2">
+                                <label class="form-label">
+                                    Username <span class="text-muted">(Optional - auto-generated if empty)</span>
+                                </label>
+                                <InputText type="text" class="form-control" placeholder="username (optional)" @bind-Value="_model.UserName" />
+                                <ValidationMessage For="@(() => _model.UserName)" />
+                            </div>
+
+                            <!-- Row 5: Password -->
+                            <div class="form-group mb-2">
+                                <label class="form-label">
+                                    Password <span class="text-danger">*</span>
+                                </label>
+                                <InputText type="password" class="form-control" placeholder="Enter password" @bind-Value="_model.Password" />
+                                <small class="form-text text-muted">Minimum 8 characters</small>
+                                <ValidationMessage For="@(() => _model.Password)" />
+                            </div>
+
+                            <!-- Row 6: Confirm Password -->
+                            <div class="form-group mb-2">
+                                <label class="form-label">
+                                    Confirm Password <span class="text-danger">*</span>
+                                </label>
+                                <InputText type="password" class="form-control" placeholder="Confirm password" @bind-Value="_model.ConfirmPassword" />
+                                <ValidationMessage For="@(() => _model.ConfirmPassword)" />
+                            </div>
+
+                            <!-- Row 7: Terms and Conditions -->
+                            <div class="form-group mb-3">
+                                <div class="checkbox">
+                                    <InputCheckbox @bind-Value="_model.AgreeToTerms" />
+                                    <label class="form-check-label">
+                                        I agree to the
+                                        <a href="/terms" target="_blank" class="text-c-blue">Terms & Conditions</a>
+                                    </label>
+                                </div>
+                                <ValidationMessage For="@(() => _model.AgreeToTerms)" />
+                            </div>
+
+                            <button type="submit" class="btn btn-primary d-block mb-2 btf w-100 text-center" disabled="@_isSubmitting">
+                                @if (_isSubmitting)
+                                {
+                                    <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                                }
+                                else
+                                {
+                                    <span>Create Account</span>
+                                }
+                            </button>
+
+                            @if (!string.IsNullOrEmpty(_errorMessage))
+                            {
+                                <div class="alert alert-danger mt-2">@_errorMessage</div>
+                            }
+
+                            @if (!string.IsNullOrEmpty(_successMessage))
+                            {
+                                <div class="alert alert-success mt-2">@_successMessage</div>
+                            }
+                        </EditForm>
+
+                        <!-- Divider -->
+                        <div class="d-flex align-items-center my-3">
+                            <hr class="flex-grow-1" />
+                            <span class="mx-2 text-muted">Or</span>
+                            <hr class="flex-grow-1" />
+                        </div>
+
+                        <!-- Social Login -->
+                        <div class="social-login">
+                            <button type="button" class="btn btn-outline-danger w-100 mb-2" @onclick="LoginWithGoogle">
+                                <i class="fab fa-google"></i> Continue with Google
+                            </button>
+                            <button type="button" class="btn btn-outline-primary w-100" @onclick="LoginWithFacebook">
+                                <i class="fab fa-facebook"></i> Continue with Facebook
+                            </button>
+                        </div>
+
+                        <!-- Already have account -->
+                        <p class="text-center mt-4">
+                            Already have an account?
+                            <NavLink href="/login" class="text-c-blue">Login Here</NavLink>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
