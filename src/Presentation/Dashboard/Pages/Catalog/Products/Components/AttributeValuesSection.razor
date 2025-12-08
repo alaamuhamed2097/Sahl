@@ -1,0 +1,327 @@
+﻿@using Common.Enumerations
+@using Common.Enumerations.FieldType
+@using Common.Enumerations.Pricing
+@using Common.Enumerations.User
+@using Resources
+@using Shared.DTOs.ECommerce
+@using Shared.DTOs.ECommerce.Category
+@using Shared.DTOs.ECommerce.Item
+@attribute [Authorize(Roles = nameof(UserRole.Admin))]
+
+<div class="card mb-4">
+    <div class="card-header">
+        <h5 class="mb-0 text-primary">Attribute Values</h5>
+        <small class="text-muted">Configure attributes for this product</small>
+    </div>
+    <div class="card-body">
+        @if (CategoryAttributes != null && CategoryAttributes.Any())
+        {
+            @* Non-pricing attributes *@
+            @foreach (var attribute in CategoryAttributes.Where(a => !a.AffectsPricing))
+            {
+                <div class="row align-items-start mb-4 pb-3 border-bottom">
+                    <div class="col-md-10">
+                        <label class="form-label fw-bold">
+                            @(attribute.Title)
+                            @if (attribute.IsRequired)
+                            {
+                                <span class="text-danger">*</span>
+                            }
+                        </label>
+
+                        <div class="border rounded p-3" style="background-color: #f8f9fa;">
+                            @if (attribute.AttributeOptions != null && attribute.AttributeOptions.Any())
+                            {
+                                <div class="mb-2">
+                                    <select class="form-select"
+                                            @bind="_nonPricingAttributeValues[attribute.AttributeId]">
+                                        <option value="">@FormResources.Select</option>
+                                        @foreach (var option in attribute.AttributeOptions.OrderBy(o => o.DisplayOrder))
+                                        {
+                                            <option value="@option.Id.ToString()">@option.Title</option>
+                                        }
+                                    </select>
+                                </div>
+                            }
+                            else
+                            {
+                                @if (attribute.FieldType == FieldType.IntegerNumber)
+                                {
+                                    <input type="number"
+                                           class="form-control"
+                                           placeholder="Enter value"
+                                           @bind="_nonPricingIntValues[attribute.AttributeId]"
+                                           @bind:event="oninput" />
+                                }
+                                else if (attribute.FieldType == FieldType.DecimalNumber)
+                                {
+                                    <input type="number"
+                                           step="0.01"
+                                           class="form-control"
+                                           placeholder="Enter value"
+                                           @bind="_nonPricingDecimalValues[attribute.AttributeId]"
+                                           @bind:event="oninput" />
+                                }
+                                else if (attribute.FieldType == FieldType.Date)
+                                {
+                                    <input type="date"
+                                           class="form-control"
+                                           @bind="_nonPricingDateValues[attribute.AttributeId]"
+                                           @bind:format="yyyy-MM-dd" />
+                                }
+                                else if (attribute.FieldType == FieldType.CheckBox)
+                                {
+                                    <div class="form-check">
+                                        <input type="checkbox"
+                                               class="form-check-input"
+                                               id="checkbox_@(attribute.AttributeId)"
+                                               @bind="_nonPricingBoolValues[(attribute.AttributeId)]" />
+                                        <label class="form-check-label" for="checkbox_@(attribute.AttributeId)">
+                                            Check this option
+                                        </label>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <input type="text"
+                                           class="form-control"
+                                           placeholder="Enter value"
+                                           maxlength="@(attribute.MaxLength ?? 255)"
+                                           @bind="_nonPricingAttributeValues[attribute.AttributeId]"
+                                           @bind:event="oninput" />
+                                }
+                            }
+                        </div>
+
+                        @if (attribute.IsRequired && !HasNonPricingValue(attribute.AttributeId))
+                        {
+                            <div class="text-danger small mt-1">@ValidationResources.FieldRequired</div>
+                        }
+                    </div>
+                </div>
+            }
+
+            @* Pricing attributes *@
+            @if (CategoryAttributes.Any(a => a.AffectsPricing))
+            {
+                <h5 class="mt-4 mb-3 text-primary">Pricing Attributes</h5>
+                <p class="text-muted">Add values for attributes that affect pricing. These will be used to create combinations.</p>
+
+                @foreach (var attribute in CategoryAttributes.Where(a => a.AffectsPricing))
+                {
+                    <div class="row align-items-start mb-4 pb-3 border-bottom">
+                        <div class="col-md-12">
+                            <label class="form-label fw-bold">
+                                @(attribute.Title)
+                                @if (attribute.IsRequired)
+                                {
+                                    <span class="text-danger">*</span>
+                                }
+                                <span class="badge bg-info text-white ms-2">Affects Price</span>
+                            </label>
+
+                            <div class="border rounded p-3" style="background-color: #f8f9fa;">
+                                @if (attribute.AttributeOptions != null && attribute.AttributeOptions.Any())
+                                {
+                                    @* Predefined options with checkboxes *@
+                                    <div class="alert alert-info mb-3">
+                                        <i class="fas fa-info-circle me-2"></i>
+                                        Select the options you want to offer for this attribute. Each selected option will be available when creating combinations.
+                                    </div>
+                                    <div class="row">
+                                        @{
+                                            var values = GetPricingValues(attribute.AttributeId);
+                                            var orderedOptions = attribute.AttributeOptions.OrderBy(o => o.DisplayOrder).ToList();
+                                        }
+                                        @foreach (var option in orderedOptions)
+                                        {
+                                            var isSelected = IsPricingOptionSelected(attribute.AttributeId, option.Id);
+                                            var optionValue = option.Id.ToString();
+                                            var optionIndex = values.IndexOf(optionValue);
+
+                                            <div class="col-lg-6 mb-3">
+                                                <div class="card @(isSelected ? "border-primary" : "")">
+                                                    <div class="card-body p-3">
+                                                        <div class="form-check mb-2">
+                                                            <input type="checkbox" class="form-check-input"
+                                                                   id="pricing_option_@(attribute.AttributeId)_@option.Id"
+                                                                   checked="@isSelected"
+                                                                   @onchange="async () => await TogglePricingOption(attribute.AttributeId, option.Id)" />
+                                                            <label class="form-check-label fw-bold" for="pricing_option_@(attribute.AttributeId)_@option.Id">
+                                                                @option.Title
+                                                            </label>
+                                                        </div>
+
+                                                        @if (isSelected && optionIndex >= 0)
+                                                        {
+                                                            var modifierInfo = GetModifierInfoByIndex(attribute.AttributeId, optionIndex);
+                                                            <div class="row g-2">
+                                                                <div class="col-md-6">
+                                                                    <label class="form-label small">Modifier Type</label>
+                                                                    <select class="form-select form-select-sm"
+                                                                            @bind="modifierInfo.Type">
+                                                                        <option value="@PriceModifierType.Fixed">Fixed Amount</option>
+                                                                        <option value="@PriceModifierType.Percentage">Percentage (%)</option>
+                                                                    </select>
+                                                                </div>
+
+                                                                <div class="col-md-6">
+                                                                    <label class="form-label small">Value</label>
+                                                                    <div class="input-group input-group-sm">
+                                                                        <input type="number"
+                                                                               step="0.01"
+                                                                               class="form-control"
+                                                                               @bind="modifierInfo.Value"
+                                                                               @bind:event="oninput" />
+                                                                        <span class="input-group-text">
+                                                                            @(modifierInfo.Type == PriceModifierType.Percentage ? "%" : "EGP")
+                                                                        </span>
+                                                                    </div>
+                                                                </div>
+
+                                                                <div class="col-12">
+                                                                    <label class="form-label small">Category</label>
+                                                                    <select class="form-select form-select-sm"
+                                                                            @bind="modifierInfo.Category">
+                                                                        <option value="@PriceModifierCategory.BasePrice">Base Price</option>
+                                                                        <option value="@PriceModifierCategory.SeasonalOffer">Seasonal Offer</option>
+                                                                        <option value="@PriceModifierCategory.SpecialPackaging">Special Packaging</option>
+                                                                        <option value="@PriceModifierCategory.AdditionalService">Additional Service</option>
+                                                                        <option value="@PriceModifierCategory.BulkDiscount">Bulk Discount</option>
+                                                                        <option value="@PriceModifierCategory.ShippingFee">Shipping Fee</option>
+                                                                        <option value="@PriceModifierCategory.TaxAndFees">Tax & Fees</option>
+                                                                        <option value="@PriceModifierCategory.CustomizationFee">Customization Fee</option>
+                                                                        <option value="@PriceModifierCategory.Other">Other</option>
+                                                                    </select>
+                                                                </div>
+                                                            </div>
+                                                        }
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        }
+                                    </div>
+                                }
+                                else
+                                {
+                                    @* Custom values with dynamic input *@
+                                    <div class="d-flex justify-content-between align-items-center mb-3">
+                                        <small class="text-muted">
+                                            <i class="fas fa-info-circle me-2"></i>
+                                            Add multiple values for this attribute
+                                        </small>
+                                        <button type="button" class="btn btn-sm btn-success"
+                                                @onclick="async () => await AddPricingValue(attribute.AttributeId)">
+                                            <i class="fas fa-plus me-1"></i> Add Value
+                                        </button>
+                                    </div>
+
+                                    var values = GetPricingValues(attribute.AttributeId);
+                                    @for (int i = 0; i < values.Count; i++)
+                                    {
+                                        var index = i;
+                                        @* CRITICAL: Capture the value at this specific index *@
+                                        var capturedValue = values[index];
+                                        var capturedAttributeId = attribute.AttributeId;
+
+                                        <div class="card mb-2">
+                                            <div class="card-body p-3">
+                                                <div class="row g-2">
+                                                    <div class="col-md-3">
+                                                        <label class="form-label small">Value</label>
+                                                        @if (attribute.FieldType == FieldType.IntegerNumber)
+                                                        {
+                                                            <input type="number"
+                                                                   class="form-control form-control-sm"
+                                                                   placeholder="Enter value"
+                                                                   @bind="_pricingIntValues[capturedAttributeId][index]"
+                                                                   @bind:event="oninput" />
+                                                        }
+                                                        else if (attribute.FieldType == FieldType.DecimalNumber)
+                                                        {
+                                                            <input type="number"
+                                                                   step="0.01"
+                                                                   class="form-control form-control-sm"
+                                                                   placeholder="Enter value"
+                                                                   @bind="_pricingDecimalValues[capturedAttributeId][index]"
+                                                                   @bind:event="oninput" />
+                                                        }
+                                                        else
+                                                        {
+                                                            <input type="text"
+                                                                   class="form-control form-control-sm"
+                                                                   placeholder="Enter value"
+                                                                   maxlength="@(attribute.MaxLength ?? 255)"
+                                                                   @bind="values[index]"
+                                                                   @bind:event="oninput" />
+                                                        }
+                                                    </div>
+
+                                                    <div class="col-md-3">
+                                                        <label class="form-label small">Modifier Type</label>
+                                                        <select class="form-select form-select-sm"
+                                                                @bind="GetModifierInfoByIndex(capturedAttributeId, index).Type">
+                                                            <option value="@PriceModifierType.Fixed">Fixed</option>
+                                                            <option value="@PriceModifierType.Percentage">Percentage</option>
+                                                        </select>
+                                                    </div>
+
+                                                    <div class="col-md-2">
+                                                        <label class="form-label small">Amount</label>
+                                                        <div class="input-group input-group-sm">
+                                                            <input type="number"
+                                                                   step="0.01"
+                                                                   class="form-control"
+                                                                   @bind="GetModifierInfoByIndex(capturedAttributeId, index).Value"
+                                                                   @bind:event="oninput" />
+                                                            <span class="input-group-text">
+                                                                @(GetModifierInfoByIndex(capturedAttributeId, index).Type == PriceModifierType.Percentage ? "%" : "EGP")
+                                                            </span>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="col-md-3">
+                                                        <label class="form-label small">Category</label>
+                                                        <select class="form-select form-select-sm"
+                                                                @bind="GetModifierInfoByIndex(capturedAttributeId, index).Category">
+                                                            <option value="@PriceModifierCategory.BasePrice">Base Price</option>
+                                                            <option value="@PriceModifierCategory.SeasonalOffer">Seasonal Offer</option>
+                                                            <option value="@PriceModifierCategory.AdditionalService">Additional Service</option>
+                                                            <option value="@PriceModifierCategory.Other">Other</option>
+                                                        </select>
+                                                    </div>
+
+                                                    <div class="col-md-1 d-flex align-items-end">
+                                                        @if (values.Count > 1)
+                                                        {
+                                                            <button type="button" class="btn btn-sm btn-outline-danger w-100"
+                                                                    @onclick="async () => await RemovePricingValue(capturedAttributeId, index)">
+                                                                <i class="fas fa-times"></i>
+                                                            </button>
+                                                        }
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    }
+                                }
+                            </div>
+
+                            @if (attribute.IsRequired && !HasPricingValue(attribute.AttributeId))
+                            {
+                                <div class="text-danger small mt-1">@ValidationResources.FieldRequired</div>
+                            }
+                        </div>
+                    </div>
+                }
+            }
+        }
+        else
+        {
+            <div class="alert alert-warning">
+                <i class="fas fa-exclamation-triangle me-2"></i>
+                No attributes available for this category
+            </div>
+        }
+    </div>
+</div>

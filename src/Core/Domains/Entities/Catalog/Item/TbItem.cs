@@ -66,5 +66,6 @@ namespace Domains.Entities.Catalog.Item
 
         public virtual ICollection<TbItemImage> ItemImages { get; set; }
         public virtual ICollection<TbItemCombination> ItemCombinations { get; set; }
+        public virtual ICollection<TbItemAttribute> ItemAttributes { get; set; }
     }
 }

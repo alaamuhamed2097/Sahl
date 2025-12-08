@@ -7,7 +7,7 @@
 //    public partial class AttributeCombinations
 //    {
 //        [Parameter]
-//        public List<ItemAttributeCombinationPricingDto> Combinations { get; set; } = new();
+//        public List<ItemCombinationDto> Combinations { get; set; } = new();
 
 //        [Parameter]
 //        public List<CategoryAttributeDto> CategoryAttributes { get; set; } = new();
@@ -16,26 +16,24 @@
 //        public List<ItemAttributeDto> ItemAttributes { get; set; } = new();
 
 //        [Parameter]
-//        public EventCallback<ItemAttributeCombinationPricingDto> OnRemoveCombination { get; set; }
+//        public EventCallback<ItemCombinationDto> OnRemoveCombination { get; set; }
 
-//        private string GetCombinationAttributesDisplay(string attributeIds)
+//        private string GetCombinationAttributesDisplay(ItemCombinationDto combination)
 //        {
-//            if (string.IsNullOrEmpty(attributeIds))
+//            if (combination.CombinationAttributes == null || !combination.CombinationAttributes.Any())
 //                return string.Empty;
 
-//            var ids = attributeIds.Split(',');
 //            var attributes = new List<string>();
 
-//            foreach (var id in ids)
+//            foreach (var combinationAttr in combination.CombinationAttributes)
 //            {
-//                if (Guid.TryParse(id, out var attributeId))
+//                foreach (var attrValue in combinationAttr.combinationAttributeValueDtos)
 //                {
-//                    var attribute = CategoryAttributes.FirstOrDefault(a => a.Id == attributeId);
-//                    var value = ItemAttributes.FirstOrDefault(a => a.AttributeId == attributeId)?.Value;
+//                    var attribute = CategoryAttributes.FirstOrDefault(a => a.Id == attrValue.AttributeId);
 
-//                    if (attribute != null && !string.IsNullOrEmpty(value))
+//                    if (attribute != null && !string.IsNullOrEmpty(attrValue.Value))
 //                    {
-//                        attributes.Add($"{attribute.Title}: {value}");
+//                        attributes.Add($"{attribute.Title}: {attrValue.Value}");
 //                    }
 //                }
 //            }
@@ -43,7 +41,7 @@
 //            return string.Join(" | ", attributes);
 //        }
 
-//        private async Task RemoveCombination(ItemAttributeCombinationPricingDto combination)
+//        private async Task RemoveCombination(ItemCombinationDto combination)
 //        {
 //            await OnRemoveCombination.InvokeAsync(combination);
 //        }

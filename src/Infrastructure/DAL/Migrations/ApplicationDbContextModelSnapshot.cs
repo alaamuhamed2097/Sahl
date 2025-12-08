@@ -1370,6 +1370,9 @@ namespace DAL.Migrations
                         .HasColumnType("int")
                         .HasDefaultValue(0);
 
+                    b.Property<Guid?>("TbPricingSystemSettingId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<string>("TitleAr")
                         .IsRequired()
                         .HasMaxLength(100)
@@ -1396,6 +1399,8 @@ namespace DAL.Migrations
                     b.HasIndex("CurrentState");
 
                     b.HasIndex("PricingSystemId");
+
+                    b.HasIndex("TbPricingSystemSettingId");
 
                     b.ToTable("TbCategories", (string)null);
                 });
@@ -7721,8 +7726,12 @@ namespace DAL.Migrations
                     b.HasOne("Domains.Entities.Pricing.TbPricingSystemSetting", "PricingSystemSetting")
                         .WithMany()
                         .HasForeignKey("PricingSystemId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
+
+                    b.HasOne("Domains.Entities.Pricing.TbPricingSystemSetting", null)
+                        .WithMany("Categories")
+                        .HasForeignKey("TbPricingSystemSettingId");
 
                     b.Navigation("PricingSystemSetting");
                 });
@@ -8903,6 +8912,11 @@ namespace DAL.Migrations
             modelBuilder.Entity("Domains.Entities.Order.TbOrder", b =>
                 {
                     b.Navigation("OrderDetails");
+                });
+
+            modelBuilder.Entity("Domains.Entities.Pricing.TbPricingSystemSetting", b =>
+                {
+                    b.Navigation("Categories");
                 });
 
             modelBuilder.Entity("Domains.Entities.SellerRequest.TbSellerRequest", b =>

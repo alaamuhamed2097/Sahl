@@ -6,6 +6,7 @@
 @using Shared.DTOs.ECommerce.Item
 @using Shared.DTOs.User
 @attribute [Authorize(Roles = nameof(UserRole.Admin))]
+
 <div class="card">
     <div class="card-header d-flex justify-content-between align-items-center">
         <h5 class="mb-0 text-primary">@ECommerceResources.AttributeCombinations <span class="text-danger">*</span></h5>
@@ -18,9 +19,10 @@
                     <thead>
                         <tr>
                             <th>@ECommerceResources.Attributes</th>
-                            <th>@FormResources.Price <span class="text-danger">*</span></th>
-                            <th>Sales Price <span class="text-danger">*</span></th>
-                            <th>@ECommerceResources.Quantity <span class="text-danger">*</span></th>
+                            <th>Barcode</th>
+                            <th>SKU</th>
+                            <th>BasePrice <span class="text-danger">*</span></th>
+                            <th>Is Default</th>
                             <th>@FormResources.Actions</th>
                         </tr>
                     </thead>
@@ -29,24 +31,25 @@
                         {
                             <tr>
                                 <td>
-                                    @GetCombinationAttributesDisplay(combination.AttributeIds)
+                                    @GetCombinationAttributesDisplay(combination)
+                                </td>
+                                <td>
+                                    <InputText class="form-control"
+                                               @bind-Value="combination.Barcode" />
+                                </td>
+                                <td>
+                                    <InputText class="form-control"
+                                               @bind-Value="combination.SKU" />
                                 </td>
                                 <td>
                                     <InputNumber class="form-control"
-                                                 @bind-Value="combination.Price" 
+                                                 @bind-Value="combination.BasePrice"
                                                  min="0.01"
                                                  step="0.01" />
                                 </td>
                                 <td>
-                                    <InputNumber class="form-control"
-                                                 @bind-Value="combination.SalesPrice" 
-                                                 min="0.01"
-                                                 step="0.01" />
-                                </td>
-                                <td>
-                                    <InputNumber class="form-control"
-                                                 @bind-Value="combination.Quantity" 
-                                                 min="0" />
+                                    <InputCheckbox class="form-check-input"
+                                                   @bind-Value="combination.IsDefault" />
                                 </td>
                                 <td>
                                     <button type="button" class="btn btn-sm btn-danger"

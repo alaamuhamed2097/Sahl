@@ -151,7 +151,7 @@ namespace BL.Service.ECommerce.Item
 
             // pre-Load related entities
             var category = await _categoryRepository.FindByIdAsync(dto.CategoryId);
-
+            var categoryAttributes = await _unitOfWork.TableRepository<TbCategoryAttribute>().GetAsync(ca => ca.CategoryId == dto.CategoryId,includeProperties: "Attribute");
             try
             {
                 await _unitOfWork.BeginTransactionAsync();
@@ -236,7 +236,9 @@ namespace BL.Service.ECommerce.Item
                 var entity = _mapper.MapModel<ItemDto, TbItem>(dto);
                 entity.Brand = null;
                 entity.Category = null;
-
+                entity.ItemAttributes = null;
+                entity.ItemCombinations = null;
+                entity.ItemImages = null;
                 var itemSaved = await _unitOfWork.TableRepository<TbItem>().SaveAsync(entity, userId);
 
                 var itemId = itemSaved.Id;
@@ -259,11 +261,17 @@ namespace BL.Service.ECommerce.Item
                     var attributeEntities = new List<TbItemAttribute>();
                     foreach (var attr in dto.ItemAttributes)
                     {
+                        var attribute = categoryAttributes.FirstOrDefault(ca => ca.AttributeId == attr.AttributeId)?.Attribute;
                         // Only save attributes with values
-                        if (!string.IsNullOrWhiteSpace(attr.Value))
+                        if (!string.IsNullOrWhiteSpace(attr.Value) && attribute != null)
                         {
                             var attributeEntity = _mapper.MapModel<ItemAttributeDto, TbItemAttribute>(attr);
                             attributeEntity.ItemId = itemId;
+                            attributeEntity.FieldType = attribute.FieldType;
+                            attributeEntity.IsRangeFieldType = attribute.IsRangeFieldType;
+                            attributeEntity.MaxLength = attribute.MaxLength ?? 100;
+                            attributeEntity.TitleAr = attribute.TitleAr;
+                            attributeEntity.TitleEn = attribute.TitleEn;
                             attributeEntities.Add(attributeEntity);
                         }
                     }
@@ -309,9 +317,6 @@ namespace BL.Service.ECommerce.Item
                 var combinationsSaved = true;
                 if (dto.ItemCombinations?.Any() == true)
                 {
-                    // Load category attributes to determine which affect pricing
-                    var categoryAttributes = (await _unitOfWork.TableRepository<TbCategoryAttribute>().GetAsync(ca => ca.CategoryId == dto.CategoryId)).ToList();
-
                     var comboEntitiesToCreate = new List<TbItemCombination>();
                     var comboEntitiesToUpdate = new List<TbItemCombination>();
                     // Maintain entity objects in DTO order so we can link nested attributes later
@@ -507,6 +512,7 @@ namespace BL.Service.ECommerce.Item
                             {
                                 var comboDto = dto.ItemCombinations[comboIndex];
                                 var attrDtos = comboDto.CombinationAttributes;
+
                                 var valuesPerAttr = createdValuesPerAttrPerCombo.ElementAtOrDefault(comboIndex) ?? new List<List<TbCombinationAttributesValue>>();
 
                                 if (attrDtos?.Any() == true)
@@ -530,7 +536,7 @@ namespace BL.Service.ECommerce.Item
                                                         var modEntity = new TbAttributeValuePriceModifier
                                                         {
                                                             CombinationAttributeValueId = createdValEntity.Id,
-                                                            AttributeId = modDto.AttributeId,
+                                                            AttributeId = valDto.AttributeId,
                                                             ModifierType = modDto.ModifierType,
                                                             PriceModifierCategory = modDto.PriceModifierCategory,
                                                             ModifierValue = modDto.ModifierValue,
