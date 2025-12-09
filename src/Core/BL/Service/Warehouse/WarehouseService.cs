@@ -33,7 +33,7 @@ namespace BL.Service.Warehouse
         public async Task<IEnumerable<WarehouseDto>> GetAllAsync()
         {
             var warehouses = await _warehouseRepository
-                .GetAsync(x => x.CurrentState == 1);
+                .GetAsync(x => !x.IsDeleted);
 
             return _mapper.MapList<TbWarehouse, WarehouseDto>(warehouses).ToList();
         }
@@ -41,7 +41,7 @@ namespace BL.Service.Warehouse
         public async Task<IEnumerable<WarehouseDto>> GetActiveWarehousesAsync()
         {
             var warehouses = await _warehouseRepository
-                .GetAsync(x => x.CurrentState == 1 && x.IsActive);
+                .GetAsync(x => !x.IsDeleted && x.IsActive);
 
             return _mapper.MapList<TbWarehouse, WarehouseDto>(warehouses).ToList();
         }
@@ -68,7 +68,7 @@ namespace BL.Service.Warehouse
             if (criteriaModel.PageSize < 1 || criteriaModel.PageSize > 100)
                 throw new ArgumentOutOfRangeException(nameof(criteriaModel.PageSize), ValidationResources.PageSizeRange);
 
-            Expression<Func<TbWarehouse, bool>> filter = x => x.CurrentState == 1;
+            Expression<Func<TbWarehouse, bool>> filter = x => !x.IsDeleted;
 
             var searchTerm = criteriaModel.SearchTerm?.Trim().ToLower();
             if (!string.IsNullOrWhiteSpace(searchTerm))
@@ -100,7 +100,7 @@ namespace BL.Service.Warehouse
 
         public async Task<bool> DeleteAsync(Guid id, Guid userId)
         {
-            return await _warehouseRepository.UpdateCurrentStateAsync(id, userId, 0);
+            return await _warehouseRepository.UpdateCurrentStateAsync(id, userId, true);
         }
 
         public async Task<bool> ToggleActiveStatusAsync(Guid id, Guid userId)

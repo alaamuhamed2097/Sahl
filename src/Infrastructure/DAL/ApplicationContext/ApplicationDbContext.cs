@@ -367,13 +367,13 @@ namespace DAL.ApplicationContext
                 }
 
                 // Configure CurrentState with default value and index if property exists
-                if (entityType.FindProperty(nameof(BaseEntity.CurrentState)) != null)
+                if (entityType.FindProperty(nameof(BaseEntity.IsDeleted)) != null)
                 {
-                    entity.Property(nameof(BaseEntity.CurrentState))
-                          .HasDefaultValue(1);
+                    entity.Property(nameof(BaseEntity.IsDeleted))
+                          .HasDefaultValue(0);
 
                     // Add index for CurrentState for better query performance
-                    entity.HasIndex(nameof(BaseEntity.CurrentState))
+                    entity.HasIndex(nameof(BaseEntity.IsDeleted))
                           .IsUnique(false);
                 }
             }

@@ -17,7 +17,7 @@ namespace DAL.Configurations
                 .IsRequired()
                 .HasConversion<int>();
 
-            entity.Property(e => e.CurrentState)
+            entity.Property(e => e.IsDeleted)
                 .HasDefaultValue(1);
 
             entity.Property(e => e.CreatedDateUtc)
@@ -28,7 +28,7 @@ namespace DAL.Configurations
                 .HasColumnType("datetime2(2)");
 
             // Indexes
-            entity.HasIndex(e => e.CurrentState);
+            entity.HasIndex(e => e.IsDeleted);
             entity.HasIndex(e => e.ReviewID);
             entity.HasIndex(e => e.CustomerID);
             entity.HasIndex(e => e.VoteType);

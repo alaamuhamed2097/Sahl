@@ -34,7 +34,7 @@ namespace BL.Service.Notification
         public async Task<IEnumerable<NotificationsDto>> GetAllAsync()
         {
             var notifications = await _notificationsRepository
-                .GetAsync(x => x.CurrentState == 1, orderBy: q => q.OrderByDescending(x => x.SentDate));
+                .GetAsync(x => !x.IsDeleted, orderBy: q => q.OrderByDescending(x => x.SentDate));
 
             return _mapper.MapList<TbNotification, NotificationsDto>(notifications).ToList();
         }
@@ -42,7 +42,7 @@ namespace BL.Service.Notification
         public async Task<IEnumerable<NotificationsDto>> GetByRecipientAsync(int recipientId, RecipientType recipientType)
         {
             var notifications = await _notificationsRepository
-                .GetAsync(x => x.RecipientID == recipientId && x.RecipientType == recipientType && x.CurrentState == 1,
+                .GetAsync(x => x.RecipientID == recipientId && x.RecipientType == recipientType && !x.IsDeleted,
                     orderBy: q => q.OrderByDescending(x => x.SentDate));
 
             return _mapper.MapList<TbNotification, NotificationsDto>(notifications).ToList();
@@ -51,10 +51,10 @@ namespace BL.Service.Notification
         public async Task<IEnumerable<NotificationsDto>> GetUnreadByRecipientAsync(int recipientId, RecipientType recipientType)
         {
             var notifications = await _notificationsRepository
-                .GetAsync(x => x.RecipientID == recipientId 
-                    && x.RecipientType == recipientType 
-                    && !x.IsRead 
-                    && x.CurrentState == 1,
+                .GetAsync(x => x.RecipientID == recipientId
+                    && x.RecipientType == recipientType
+                    && !x.IsRead
+                    && !x.IsDeleted,
                     orderBy: q => q.OrderByDescending(x => x.SentDate));
 
             return _mapper.MapList<TbNotification, NotificationsDto>(notifications).ToList();
@@ -82,7 +82,7 @@ namespace BL.Service.Notification
             if (criteriaModel.PageSize < 1 || criteriaModel.PageSize > 100)
                 throw new ArgumentOutOfRangeException(nameof(criteriaModel.PageSize), ValidationResources.PageSizeRange);
 
-            Expression<Func<TbNotification, bool>> filter = x => x.CurrentState == 1;
+            Expression<Func<TbNotification, bool>> filter = x => !x.IsDeleted;
 
             var searchTerm = criteriaModel.SearchTerm?.Trim().ToLower();
             if (!string.IsNullOrWhiteSpace(searchTerm))
@@ -144,16 +144,16 @@ namespace BL.Service.Notification
 
         public async Task<bool> DeleteAsync(Guid id, Guid userId)
         {
-            return await _notificationsRepository.UpdateCurrentStateAsync(id, userId, 0);
+            return await _notificationsRepository.UpdateCurrentStateAsync(id, userId, true);
         }
 
         public async Task<int> GetUnreadCountAsync(int recipientId, RecipientType recipientType)
         {
             var notifications = await _notificationsRepository
-                .GetAsync(x => x.RecipientID == recipientId 
-                    && x.RecipientType == recipientType 
-                    && !x.IsRead 
-                    && x.CurrentState == 1);
+                .GetAsync(x => x.RecipientID == recipientId
+                    && x.RecipientType == recipientType
+                    && !x.IsRead
+                    && !x.IsDeleted);
 
             return notifications.Count();
         }

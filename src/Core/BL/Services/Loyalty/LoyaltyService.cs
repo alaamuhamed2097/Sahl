@@ -52,7 +52,7 @@ namespace BL.Services.Loyalty
         {
             var tiers = await _context.TbLoyaltyTiers
                 .Include(t => t.CustomerLoyalties)
-                .Where(t => t.CurrentState == 1)
+                .Where(t => !t.IsDeleted)
                 .OrderBy(t => t.DisplayOrder)
                 .ToListAsync();
 
@@ -76,7 +76,7 @@ namespace BL.Services.Loyalty
                 BadgeColor = dto.BadgeColor,
                 BadgeIconPath = dto.BadgeIconPath,
                 DisplayOrder = dto.DisplayOrder,
-                CurrentState = dto.IsActive ? 1 : 0
+                IsDeleted = !dto.IsActive
             };
 
             _context.TbLoyaltyTiers.Add(tier);
@@ -103,7 +103,7 @@ namespace BL.Services.Loyalty
             tier.BadgeColor = dto.BadgeColor;
             tier.BadgeIconPath = dto.BadgeIconPath;
             tier.DisplayOrder = dto.DisplayOrder;
-            tier.CurrentState = dto.IsActive ? 1 : 0;
+            tier.IsDeleted = !dto.IsActive;
             tier.UpdatedDateUtc = DateTime.UtcNow;
 
             await _context.SaveChangesAsync();
@@ -129,7 +129,7 @@ namespace BL.Services.Loyalty
             var tier = await _context.TbLoyaltyTiers.FindAsync(id);
             if (tier == null) return false;
 
-            tier.CurrentState = 1;
+            tier.IsDeleted = false;
             tier.UpdatedDateUtc = DateTime.UtcNow;
             await _context.SaveChangesAsync();
             return true;
@@ -140,7 +140,7 @@ namespace BL.Services.Loyalty
             var tier = await _context.TbLoyaltyTiers.FindAsync(id);
             if (tier == null) return false;
 
-            tier.CurrentState = 0;
+            tier.IsDeleted = true;
             tier.UpdatedDateUtc = DateTime.UtcNow;
             await _context.SaveChangesAsync();
             return true;
@@ -188,7 +188,7 @@ namespace BL.Services.Loyalty
         public async Task<CustomerLoyaltyDto> CreateCustomerLoyaltyAsync(Guid customerId)
         {
             var lowestTier = await _context.TbLoyaltyTiers
-                .Where(t => t.CurrentState == 1)
+                .Where(t => !t.IsDeleted)
                 .OrderBy(t => t.MinimumOrdersPerYear)
                 .FirstOrDefaultAsync();
 
@@ -238,7 +238,7 @@ namespace BL.Services.Loyalty
             if (loyalty == null) return false;
 
             var appropriateTier = await _context.TbLoyaltyTiers
-                .Where(t => t.CurrentState == 1 && t.MinimumOrdersPerYear <= loyalty.TotalOrdersThisYear)
+                .Where(t => !t.IsDeleted && t.MinimumOrdersPerYear <= loyalty.TotalOrdersThisYear)
                 .Where(t => t.MaximumOrdersPerYear >= loyalty.TotalOrdersThisYear)
                 .OrderByDescending(t => t.MinimumOrdersPerYear)
                 .FirstOrDefaultAsync();
@@ -421,7 +421,7 @@ namespace BL.Services.Loyalty
             if (loyalty == null) return null;
 
             var nextTier = await _context.TbLoyaltyTiers
-                .Where(t => t.CurrentState == 1 && t.MinimumOrdersPerYear > loyalty.LoyaltyTier.MinimumOrdersPerYear)
+                .Where(t => !t.IsDeleted && t.MinimumOrdersPerYear > loyalty.LoyaltyTier.MinimumOrdersPerYear)
                 .OrderBy(t => t.MinimumOrdersPerYear)
                 .FirstOrDefaultAsync();
 
@@ -498,7 +498,7 @@ namespace BL.Services.Loyalty
                 BadgeColor = tier.BadgeColor,
                 BadgeIconPath = tier.BadgeIconPath,
                 DisplayOrder = tier.DisplayOrder,
-                IsActive = tier.CurrentState == 1,
+                IsActive = !tier.IsDeleted,
                 CurrentCustomersCount = tier.CustomerLoyalties?.Count ?? 0,
                 CreatedDateUtc = tier.CreatedDateUtc,
                 ModifiedDateUtc = tier.UpdatedDateUtc
@@ -508,7 +508,7 @@ namespace BL.Services.Loyalty
         private CustomerLoyaltyDto MapToCustomerLoyaltyDto(TbCustomerLoyalty loyalty)
         {
             var nextTier = _context.TbLoyaltyTiers
-                .Where(t => t.CurrentState == 1 && t.MinimumOrdersPerYear > loyalty.LoyaltyTier.MinimumOrdersPerYear)
+                .Where(t => !t.IsDeleted && t.MinimumOrdersPerYear > loyalty.LoyaltyTier.MinimumOrdersPerYear)
                 .OrderBy(t => t.MinimumOrdersPerYear)
                 .FirstOrDefault();
 

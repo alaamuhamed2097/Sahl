@@ -46,7 +46,7 @@ namespace DAL.Configurations
             entity.HasIndex(e => e.CategoryId).IsUnique(false);
             entity.HasIndex(e => e.UnitId).IsUnique(false);
             entity.HasIndex(e => e.BrandId).IsUnique(false);
-            entity.HasIndex(e => e.CurrentState).IsUnique(false);
+            entity.HasIndex(e => e.IsDeleted).IsUnique(false);
 
             // Relationships
             entity.HasOne(i => i.Category)

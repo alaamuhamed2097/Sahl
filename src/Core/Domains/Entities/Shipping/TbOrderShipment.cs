@@ -23,7 +23,7 @@ namespace Domains.Entities.Shipping
         public FulfillmentType FulfillmentType { get; set; }
 
         [ForeignKey("ShippingCompany")]
-        public Guid ShippingCompanyId { get; set; }
+        public Guid? ShippingCompanyId { get; set; }
 
         // Use enum for shipment status
         public ShipmentStatus ShipmentStatus { get; set; }
@@ -39,7 +39,7 @@ namespace Domains.Entities.Shipping
         public virtual TbOrder Order { get; set; } = null!;
         public virtual TbVendor Vendor { get; set; } = null!;
         public virtual TbWarehouse? Warehouse { get; set; }
-        public virtual TbShippingCompany ShippingCompany { get; set; } = null!;
+        public virtual TbShippingCompany? ShippingCompany { get; set; }
 
         // Add relation to shipment items
         public virtual ICollection<TbOrderShipmentItem> Items { get; set; } = new HashSet<TbOrderShipmentItem>();

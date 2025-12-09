@@ -1,15 +1,15 @@
-//using Api.Controllers.Base;
-//using Asp.Versioning;
-//using BL.Contracts.GeneralService.Notification;
-//using Common.Enumerations.User;
-//using DAL.Models;
-//using Microsoft.AspNetCore.Authorization;
-//using Microsoft.AspNetCore.Mvc;
-//using Resources;
-//using Shared.GeneralModels;
-//using Shared.GeneralModels.Parameters.Notification;
-//using Shared.GeneralModels.SearchCriteriaModels;
-//using Shared.ResultModels;
+using Api.Controllers.Base;
+using Asp.Versioning;
+using BL.Contracts.GeneralService.Notification;
+using Common.Enumerations.User;
+using DAL.Models;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Resources;
+using Shared.GeneralModels;
+using Shared.GeneralModels.Parameters.Notification;
+using Shared.GeneralModels.SearchCriteriaModels;
+using Shared.ResultModels;
 
 //namespace Api.Controllers.v1.Notification
 //{

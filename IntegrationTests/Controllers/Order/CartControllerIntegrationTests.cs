@@ -34,7 +34,7 @@ namespace IntegrationTests.Controllers.Order
             var request = new AddToCartRequest
             {
                 ItemId = Guid.NewGuid(),
-                OfferId = Guid.NewGuid(),
+                OfferCombinationPricingId = Guid.NewGuid(),
                 Quantity = 2
             };
 
@@ -77,7 +77,7 @@ namespace IntegrationTests.Controllers.Order
             var request = new AddToCartRequest
             {
                 ItemId = Guid.NewGuid(),
-                OfferId = Guid.NewGuid(),
+                OfferCombinationPricingId = Guid.NewGuid(),
                 Quantity = 1
             };
 
@@ -101,7 +101,7 @@ namespace IntegrationTests.Controllers.Order
             var request = new AddToCartRequest
             {
                 ItemId = Guid.NewGuid(),
-                OfferId = Guid.NewGuid(),
+                OfferCombinationPricingId = Guid.NewGuid(),
                 Quantity = 1
             };
 

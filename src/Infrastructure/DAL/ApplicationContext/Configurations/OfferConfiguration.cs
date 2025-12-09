@@ -1,7 +1,7 @@
 ﻿using Domains.Entities.Catalog.Item;
+using Domains.Entities.ECommerceSystem.Vendor;
 using Domains.Entities.Offer;
 using Domains.Entities.Offer.Warranty;
-using Domains.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -21,10 +21,10 @@ namespace DAL.ApplicationContext.Configurations
                    .HasForeignKey(o => o.ItemId)
                    .OnDelete(DeleteBehavior.Restrict); // ✅ CHANGED from ClientSetNull
 
-            // Offer -> User (many-to-one)
-            builder.HasOne<ApplicationUser>(o => o.User)
+            // Offer -> Vendor (many-to-one)
+            builder.HasOne<TbVendor>(o => o.Vendor)
                    .WithMany()
-                   .HasForeignKey(o => o.UserId)
+                   .HasForeignKey(o => o.VendorId)
                    .OnDelete(DeleteBehavior.Restrict); // ✅ CHANGED from Cascade
 
             // Offer -> Warranty (many offers can reference a warranty)
@@ -54,14 +54,14 @@ namespace DAL.ApplicationContext.Configurations
             builder.HasIndex(o => o.ItemId)
                    .HasDatabaseName("IX_TbOffers_ItemId");
 
-            builder.HasIndex(o => o.UserId)
-                   .HasDatabaseName("IX_TbOffers_UserId");
+            builder.HasIndex(o => o.VendorId)
+                   .HasDatabaseName("IX_TbOffers_VendorId");
 
             builder.HasIndex(o => o.WarrantyId)
                    .HasDatabaseName("IX_TbOffers_WarrantyId");
 
             // Query filter for active offers
-            builder.HasQueryFilter(o =>o.CurrentState == 1);
+            builder.HasQueryFilter(o => !o.IsDeleted);
         }
     }
 }

@@ -78,13 +78,13 @@ namespace BL.Service.Vendor
                 throw new ArgumentOutOfRangeException(nameof(criteriaModel.PageSize), ValidationResources.PageSizeRange);
 
             // Base filter for active entities
-            Expression<Func<TbVendor, bool>> filter = x => x.CurrentState == 1;
+            Expression<Func<TbVendor, bool>> filter = x => !x.IsDeleted;
 
             // Apply search term if provided
             if (!string.IsNullOrWhiteSpace(criteriaModel.SearchTerm))
             {
                 string searchTerm = criteriaModel.SearchTerm.Trim().ToLower();
-                filter = x => x.CurrentState == 1 &&
+                filter = x => !x.IsDeleted &&
                              (x.CompanyName != null && x.CompanyName.ToLower().Contains(searchTerm) ||
                              x.ContactName != null && x.ContactName.ToLower().Contains(searchTerm));
             }
@@ -131,7 +131,7 @@ namespace BL.Service.Vendor
                 throw new ArgumentOutOfRangeException(nameof(criteriaModel.PageSize), ValidationResources.PageSizeRange);
 
             // Base filter
-            Expression<Func<TbVendor, bool>> filter = x => x.CurrentState == 1;
+            Expression<Func<TbVendor, bool>> filter = x => !x.IsDeleted;
 
             // Combine expressions manually
             var searchTerm = criteriaModel.SearchTerm?.Trim().ToLower();
@@ -167,13 +167,13 @@ namespace BL.Service.Vendor
                 throw new ArgumentOutOfRangeException(nameof(criteriaModel.PageSize), ValidationResources.PageSizeRange);
 
             // Base filter for active entities
-            Expression<Func<TbVendor, bool>> filter = x => x.CurrentState == 1;
+            Expression<Func<TbVendor, bool>> filter = x => !x.IsDeleted;
 
             // Apply search term if provided
             if (!string.IsNullOrWhiteSpace(criteriaModel.SearchTerm))
             {
                 string searchTerm = criteriaModel.SearchTerm.Trim().ToLower();
-                filter = x => x.CurrentState == 1 &&
+                filter = x => !x.IsDeleted &&
                          (x.CompanyName != null && x.CompanyName.ToLower().Contains(searchTerm) ||
                          x.ContactName != null && x.ContactName.ToLower().Contains(searchTerm));
             }

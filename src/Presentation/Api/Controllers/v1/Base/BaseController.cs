@@ -4,14 +4,14 @@ using Resources.Enumerations;
 using System.Globalization;
 using System.Security.Claims;
 
-namespace Api.Controllers.Base
+namespace Api.Controllers.v1.Base
 {
     public class BaseController : ControllerBase
     {
         protected string? RoleName => User.FindFirst(ClaimTypes.Role)?.Value;
         protected string? UserId => User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         protected Guid GuidUserId =>
-       Guid.TryParse(UserId, out var guid) ? guid : Guid.NewGuid();
+       Guid.TryParse(UserId, out var guid) ? guid : Guid.Empty;
 
         protected string GetResource<T>(string resourceKey)
         {

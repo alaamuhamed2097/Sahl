@@ -1,10 +1,11 @@
-using Api.Controllers.Base;
+using Api.Controllers.v1.Base;
 using Asp.Versioning;
 using BL.Services.Order;
+using Common.Enumerations.User;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Shared.DTOs.ECommerce.Order;
-using System.Security.Claims;
+using Shared.GeneralModels;
 
 namespace Api.Controllers.v1.Order
 {
@@ -15,207 +16,202 @@ namespace Api.Controllers.v1.Order
     public class OrderController : BaseController
     {
         private readonly IOrderService _orderService;
-        private readonly ILogger<OrderController> _logger;
 
-        public OrderController(IOrderService orderService, ILogger<OrderController> logger, Serilog.ILogger serilogLogger)
+        public OrderController(IOrderService orderService)
         {
             _orderService = orderService;
-            _logger = logger;
         }
 
         /// <summary>
         /// Stage 3: Create Order from Cart
         /// </summary>
         /// <remarks>
-        /// API Version: 1.0+
+        /// API Version: 1.0+<br/>
         /// Requires Customer role.
         /// </remarks>
         [HttpPost("create")]
-        [Authorize(Roles = "Customer")]
+        [Authorize(Roles = nameof(UserRole.Customer))]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
-        public async Task<ActionResult<OrderDto>> CreateOrder([FromBody] CreateOrderFromCartRequest request)
+        public async Task<IActionResult> CreateOrder([FromBody] CreateOrderFromCartRequest request)
         {
-            try
-            {
-                var customerId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-                if (string.IsNullOrEmpty(customerId))
-                    return Unauthorized();
+            var order = await _orderService.CreateOrderFromCartAsync(UserId, request);
 
-                _logger.LogInformation($"Customer {customerId} creating order with delivery address {request.DeliveryAddressId}");
-
-                var order = await _orderService.CreateOrderFromCartAsync(customerId, request);
-                return CreatedAtAction(nameof(GetOrderById), new { orderId = order.OrderId }, order);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error creating order");
-                return BadRequest(new { message = ex.Message });
-            }
+            return CreatedAtAction(
+                nameof(GetOrderById),
+                new { orderId = order.OrderId },
+                new ResponseModel<OrderCreatedResponseDto>
+                {
+                    Success = true,
+                    Message = "Order created successfully.",
+                    Data = order
+                });
         }
 
         /// <summary>
         /// Get Order by ID
         /// </summary>
         /// <remarks>
-        /// API Version: 1.0+
+        /// API Version: 1.0+<br/>
         /// Requires Customer, Admin, or Vendor role.
         /// </remarks>
         [HttpGet("{orderId}")]
-        [Authorize(Roles = "Customer,Admin,Vendor")]
+        [Authorize(Roles = nameof(UserRole.Customer) + "," + nameof(UserRole.Admin) + "," + nameof(UserRole.Vendor))]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
-        public async Task<ActionResult<OrderDto>> GetOrderById(Guid orderId)
+        public async Task<IActionResult> GetOrderById(Guid orderId)
         {
-            try
+            var order = await _orderService.GetOrderByIdAsync(orderId);
+            if (order == null)
             {
-                var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-                var userRole = User.FindFirst(ClaimTypes.Role)?.Value;
-
-                _logger.LogInformation($"User {userId} retrieving order {orderId}");
-
-                var order = await _orderService.GetOrderByIdAsync(orderId);
-
-                if (userRole == "Customer" && order.UserId != userId)
-                    return Forbid();
-
-                return Ok(order);
+                return NotFound(new ResponseModel<string>
+                {
+                    Success = false,
+                    Message = "Order not found."
+                });
             }
-            catch (Exception ex)
+
+            // Only customers are restricted to their own orders
+            if (RoleName == nameof(UserRole.Customer) && order.UserId != UserId)
             {
-                _logger.LogError(ex, "Error retrieving order");
-                return BadRequest(new { message = ex.Message });
+                return StatusCode(StatusCodes.Status403Forbidden, new ResponseModel<string>
+                {
+                    Success = false,
+                    Message = "You do not have permission to access this order."
+                });
             }
+
+            return Ok(new ResponseModel<OrderDto>
+            {
+                Success = true,
+                Message = "Data retrieved successfully.",
+                Data = order
+            });
         }
 
         /// <summary>
         /// Get Order by Order Number
         /// </summary>
         /// <remarks>
-        /// API Version: 1.0+
+        /// API Version: 1.0+<br/>
         /// Requires Customer, Admin, or Vendor role.
         /// </remarks>
         [HttpGet("number/{orderNumber}")]
-        [Authorize(Roles = "Customer,Admin,Vendor")]
+        [Authorize(Roles = nameof(UserRole.Customer) + "," + nameof(UserRole.Admin) + "," + nameof(UserRole.Vendor))]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<OrderDto>> GetOrderByNumber(string orderNumber)
+        public async Task<IActionResult> GetOrderByNumber(string orderNumber)
         {
-            try
+            var order = await _orderService.GetOrderByNumberAsync(orderNumber);
+            if (order == null)
             {
-                _logger.LogInformation($"Retrieving order by number {orderNumber}");
+                return NotFound(new ResponseModel<string>
+                {
+                    Success = false,
+                    Message = "Order not found."
+                });
+            }
 
-                var order = await _orderService.GetOrderByNumberAsync(orderNumber);
-                return Ok(order);
-            }
-            catch (Exception ex)
+            return Ok(new ResponseModel<OrderDto>
             {
-                _logger.LogError(ex, "Error retrieving order by number");
-                return BadRequest(new { message = ex.Message });
-            }
+                Success = true,
+                Message = "Data retrieved successfully.",
+                Data = order
+            });
         }
 
         /// <summary>
         /// Get Customer Orders with Shipments
         /// </summary>
         /// <remarks>
-        /// API Version: 1.0+
+        /// API Version: 1.0+<br/>
         /// Requires Customer role.
         /// </remarks>
         [HttpGet("my-orders")]
-        [Authorize(Roles = "Customer")]
+        [Authorize(Roles = nameof(UserRole.Customer))]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        public async Task<ActionResult<List<OrderListItemDto>>> GetCustomerOrders([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
+        public async Task<IActionResult> GetCustomerOrders([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
         {
-            try
-            {
-                var customerId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-                if (string.IsNullOrEmpty(customerId))
-                    return Unauthorized();
+            var orders = await _orderService.GetCustomerOrdersAsync(UserId, pageNumber, pageSize);
 
-                _logger.LogInformation($"Customer {customerId} retrieving their orders (page {pageNumber}, size {pageSize})");
-
-                var orders = await _orderService.GetCustomerOrdersAsync(customerId, pageNumber, pageSize);
-                return Ok(orders);
-            }
-            catch (Exception ex)
+            return Ok(new ResponseModel<List<OrderListItemDto>>
             {
-                _logger.LogError(ex, "Error retrieving customer orders");
-                return BadRequest(new { message = ex.Message });
-            }
+                Success = true,
+                Message = "Data retrieved successfully.",
+                Data = orders
+            });
         }
 
         /// <summary>
         /// Get Order with Shipments and Details
         /// </summary>
         /// <remarks>
-        /// API Version: 1.0+
+        /// API Version: 1.0+<br/>
         /// Requires Customer, Admin, or Vendor role.
         /// </remarks>
         [HttpGet("{orderId}/with-shipments")]
-        [Authorize(Roles = "Customer,Admin,Vendor")]
+        [Authorize(Roles = nameof(UserRole.Customer) + "," + nameof(UserRole.Admin) + "," + nameof(UserRole.Vendor))]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<OrderDto>> GetOrderWithShipments(Guid orderId)
+        public async Task<IActionResult> GetOrderWithShipments(Guid orderId)
         {
-            try
+            var order = await _orderService.GetOrderWithShipmentsAsync(orderId);
+            if (order == null)
             {
-                _logger.LogInformation($"Retrieving order {orderId} with shipments");
+                return NotFound(new ResponseModel<string>
+                {
+                    Success = false,
+                    Message = "Order not found."
+                });
+            }
 
-                var order = await _orderService.GetOrderWithShipmentsAsync(orderId);
-                return Ok(order);
-            }
-            catch (Exception ex)
+            return Ok(new ResponseModel<OrderDto>
             {
-                _logger.LogError(ex, "Error retrieving order with shipments");
-                return BadRequest(new { message = ex.Message });
-            }
+                Success = true,
+                Message = "Data retrieved successfully.",
+                Data = order
+            });
         }
 
         /// <summary>
         /// Cancel Order Before Shipping
         /// </summary>
         /// <remarks>
-        /// API Version: 1.0+
+        /// API Version: 1.0+<br/>
         /// Requires Customer role.
         /// </remarks>
         [HttpPost("{orderId}/cancel")]
-        [Authorize(Roles = "Customer")]
+        [Authorize(Roles = nameof(UserRole.Customer))]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
-        public async Task<ActionResult<object>> CancelOrder(Guid orderId, [FromBody] CancelOrderRequest request)
+        public async Task<IActionResult> CancelOrder(Guid orderId, [FromBody] CancelOrderRequest request)
         {
-            try
+            var result = await _orderService.CancelOrderAsync(orderId, request.Reason);
+
+            if (!result)
             {
-                var customerId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-                if (string.IsNullOrEmpty(customerId))
-                    return Unauthorized();
-
-                _logger.LogInformation($"Customer {customerId} cancelling order {orderId} with reason: {request.Reason}");
-
-                var result = await _orderService.CancelOrderAsync(orderId, request.Reason);
-
-                if (!result)
-                    return BadRequest(new { message = "Order cannot be cancelled at this stage" });
-
-                return Ok(new { message = "Order cancelled successfully", orderId = orderId });
+                return BadRequest(new ResponseModel<string>
+                {
+                    Success = false,
+                    Message = "Order cannot be cancelled at this stage."
+                });
             }
-            catch (Exception ex)
+
+            return Ok(new ResponseModel<object>
             {
-                _logger.LogError(ex, "Error cancelling order");
-                return BadRequest(new { message = ex.Message });
-            }
+                Success = true,
+                Message = "Order cancelled successfully.",
+                Data = new { OrderId = orderId }
+            });
         }
     }
 
     public class CancelOrderRequest
     {
-        public string Reason { get; set; } = null!;
+        public string Reason { get; set; } = string.Empty;
     }
 }

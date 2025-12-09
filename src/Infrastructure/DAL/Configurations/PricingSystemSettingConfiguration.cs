@@ -43,7 +43,7 @@ namespace DAL.Configurations
                     SystemType = Common.Enumerations.Pricing.PricingSystemType.Standard,
                     IsEnabled = true,
                     DisplayOrder = 1,
-                    CurrentState = 1,
+                    IsDeleted = false,
                     CreatedBy = Guid.Parse("00000000-0000-0000-0000-000000000001"),
                     CreatedDateUtc = new System.DateTime(2025, 11, 30, 0, 0, 0, System.DateTimeKind.Utc)
                 },
@@ -55,7 +55,7 @@ namespace DAL.Configurations
                     SystemType = Common.Enumerations.Pricing.PricingSystemType.Combination,
                     IsEnabled = true,
                     DisplayOrder = 2,
-                    CurrentState = 1,
+                    IsDeleted = false,
                     CreatedBy = Guid.Parse("00000000-0000-0000-0000-000000000001"),
                     CreatedDateUtc = new System.DateTime(2025, 11, 30, 0, 0, 0, System.DateTimeKind.Utc)
                 },
@@ -67,7 +67,7 @@ namespace DAL.Configurations
                     SystemType = Common.Enumerations.Pricing.PricingSystemType.Quantity,
                     IsEnabled = true,
                     DisplayOrder = 3,
-                    CurrentState = 1,
+                    IsDeleted = false,
                     CreatedBy = Guid.Parse("00000000-0000-0000-0000-000000000001"),
                     CreatedDateUtc = new System.DateTime(2025, 11, 30, 0, 0, 0, System.DateTimeKind.Utc)
                 },
@@ -79,7 +79,7 @@ namespace DAL.Configurations
                     SystemType = Common.Enumerations.Pricing.PricingSystemType.CombinationWithQuantity,
                     IsEnabled = true,
                     DisplayOrder = 4,
-                    CurrentState = 1,
+                    IsDeleted = false,
                     CreatedBy = Guid.Parse("00000000-0000-0000-0000-000000000001"),
                     CreatedDateUtc = new System.DateTime(2025, 11, 30, 0, 0, 0, System.DateTimeKind.Utc)
                 },
@@ -91,7 +91,7 @@ namespace DAL.Configurations
                     SystemType = Common.Enumerations.Pricing.PricingSystemType.CustomerSegmentPricing,
                     IsEnabled = true,
                     DisplayOrder = 5,
-                    CurrentState = 1,
+                    IsDeleted = false,
                     CreatedBy = Guid.Parse("00000000-0000-0000-0000-000000000001"),
                     CreatedDateUtc = new System.DateTime(2025, 11, 30, 0, 0, 0, System.DateTimeKind.Utc)
                 }

@@ -46,7 +46,7 @@ namespace DAL.Configurations
             builder.Property(x => x.UpdatedDateUtc)
                 .HasColumnType("datetime2(2)");
 
-            builder.Property(x => x.CurrentState)
+            builder.Property(x => x.IsDeleted)
                 .HasDefaultValue(1);
 
             // Relationships: configure FK to ApplicationUser (string id)
@@ -57,7 +57,7 @@ namespace DAL.Configurations
                 .IsRequired();
 
             // Indexes
-            builder.HasIndex(x => x.CurrentState);
+            builder.HasIndex(x => x.IsDeleted);
             builder.HasIndex(x => x.UserId);
             builder.HasIndex(x => new { x.UserId, x.UserType });
             builder.HasIndex(x => x.NotificationType);

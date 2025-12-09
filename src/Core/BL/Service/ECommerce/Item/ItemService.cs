@@ -89,13 +89,8 @@ namespace BL.Service.ECommerce.Item
                 filter = filter.And(x => criteriaModel.CategoryIds.Contains(x.CategoryId));
             }
 
-            if (criteriaModel.UnitIds?.Any() == true)
-            {
-                filter = filter.And(x => criteriaModel.UnitIds.Contains(x.UnitId));
-            }
-
-            // New Item Flags Filters 
-            if (criteriaModel.IsNewArrival.HasValue && criteriaModel.IsNewArrival.Value)
+            // New Item Flags Filters
+            if (criteriaModel.IsNewArrival.HasValue)
             {
                 filter = filter.And(x => x.CreatedDateUtc.Date >= DateTime.UtcNow.AddDays(-3).Date);
             }
@@ -143,7 +138,6 @@ namespace BL.Service.ECommerce.Item
             // Only validate image count for new items
             if (dto.Id == Guid.Empty && (!dto.Images.Any() || dto.Images.Count > MaxImageCount))
                 throw new ArgumentException($"{ValidationResources.MaximumOf} {MaxImageCount} {ValidationResources.ImagesAllowed}", nameof(dto.Images));
-
             if (dto.CategoryId == Guid.Empty)
                 throw new ValidationException("Category is required !! ");
 
@@ -248,6 +242,20 @@ namespace BL.Service.ECommerce.Item
             }
         }
 
+                        if (existingCombinations.Any())
+                        {
+                            foreach (var combo in existingCombinations)
+                            {
+                                var combinationAttributesIds = combo.CombinationAttributes.Select(c => c.Id).ToList() ?? new List<Guid>();
+                                var CombinationAttributeValuesIds = (await _unitOfWork.TableRepository<TbCombinationAttributesValue>().GetAsync(c => combinationAttributesIds.Contains(c.CombinationAttributeId))).Select(v => v.Id);
+                                var AttributeValuesPriceModifierIds = (await _unitOfWork.TableRepository<TbAttributeValuePriceModifier>().GetAsync(c => CombinationAttributeValuesIds.Contains(c.CombinationAttributeValueId))).Select(v => v.Id);
+                                await _unitOfWork.TableRepository<TbAttributeValuePriceModifier>().BulkHardDeleteByIdsAsync(AttributeValuesPriceModifierIds);
+                                await _unitOfWork.TableRepository<TbCombinationAttributesValue>().BulkHardDeleteByIdsAsync(CombinationAttributeValuesIds);
+                                await _unitOfWork.TableRepository<TbCombinationAttribute>().BulkHardDeleteByIdsAsync(combinationAttributesIds);
+                            }
+                        }
+                    }
+                }
         // Helper functions
         private async Task<string> SaveImageSync(string image)
         {

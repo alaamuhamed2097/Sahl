@@ -1,4 +1,4 @@
-using Api.Controllers.Base;
+using Api.Controllers.v1.Base;
 using Asp.Versioning;
 using BL.Contracts.Service.Location;
 using Common.Enumerations.User;

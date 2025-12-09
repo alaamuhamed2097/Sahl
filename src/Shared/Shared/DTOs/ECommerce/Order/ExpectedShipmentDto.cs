@@ -1,3 +1,5 @@
+using Common.Enumerations.Fulfillment;
+
 namespace Shared.DTOs.ECommerce.Order
 {
     /// <summary>
@@ -9,6 +11,7 @@ namespace Shared.DTOs.ECommerce.Order
         public string VendorName { get; set; } = null!;
         public Guid WarehouseId { get; set; }
         public string WarehouseName { get; set; } = null!;
+        public FulfillmentType FulfillmentType { get; set; }
         public int ItemCount { get; set; }
         public List<string> ItemNames { get; set; } = new();
         public decimal SubTotal { get; set; }

@@ -3,8 +3,7 @@ namespace Shared.DTOs.ECommerce.Cart
     public class AddToCartRequest
     {
         public Guid ItemId { get; set; }
-        public Guid ItemCombinationId { get; set; }
-        public Guid OfferId { get; set; }
+        public Guid OfferCombinationPricingId { get; set; }
         public int Quantity { get; set; }
     }
 
@@ -13,9 +12,7 @@ namespace Shared.DTOs.ECommerce.Cart
         public Guid Id { get; set; }
         public Guid ItemId { get; set; }
         public string ItemName { get; set; } = null!;
-        public Guid? ItemCombinationId { get; set; }
-        public string? CombinationName { get; set; }
-        public Guid OfferId { get; set; }
+        public Guid OfferCombinationPricingId { get; set; }
         public string SellerName { get; set; } = null!;
         public int Quantity { get; set; }
         public decimal UnitPrice { get; set; }
