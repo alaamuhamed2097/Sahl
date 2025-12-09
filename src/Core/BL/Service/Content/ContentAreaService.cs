@@ -33,7 +33,7 @@ namespace BL.Service.Content
         public async Task<IEnumerable<ContentAreaDto>> GetAllAsync()
         {
             var areas = await _contentAreaRepository
-                .GetAsync(x => x.CurrentState == 1, orderBy: q => q.OrderBy(x => x.DisplayOrder));
+                .GetAsync(x => !x.IsDeleted, orderBy: q => q.OrderBy(x => x.DisplayOrder));
 
             return _mapper.MapList<TbContentArea, ContentAreaDto>(areas).ToList();
         }
@@ -41,7 +41,7 @@ namespace BL.Service.Content
         public async Task<IEnumerable<ContentAreaDto>> GetActiveAreasAsync()
         {
             var areas = await _contentAreaRepository
-                .GetAsync(x => x.CurrentState == 1 && x.IsActive, orderBy: q => q.OrderBy(x => x.DisplayOrder));
+                .GetAsync(x => !x.IsDeleted && x.IsActive, orderBy: q => q.OrderBy(x => x.DisplayOrder));
 
             return _mapper.MapList<TbContentArea, ContentAreaDto>(areas).ToList();
         }
@@ -63,7 +63,7 @@ namespace BL.Service.Content
                 throw new ArgumentNullException(nameof(areaCode));
 
             var area = await _contentAreaRepository
-                .FindAsync(x => x.AreaCode == areaCode && x.CurrentState == 1);
+                .FindAsync(x => x.AreaCode == areaCode && !x.IsDeleted);
 
             if (area == null) return null;
 
@@ -81,7 +81,7 @@ namespace BL.Service.Content
             if (criteriaModel.PageSize < 1 || criteriaModel.PageSize > 100)
                 throw new ArgumentOutOfRangeException(nameof(criteriaModel.PageSize), ValidationResources.PageSizeRange);
 
-            Expression<Func<TbContentArea, bool>> filter = x => x.CurrentState == 1;
+            Expression<Func<TbContentArea, bool>> filter = x => !x.IsDeleted;
 
             var searchTerm = criteriaModel.SearchTerm?.Trim().ToLower();
             if (!string.IsNullOrWhiteSpace(searchTerm))
@@ -108,7 +108,7 @@ namespace BL.Service.Content
         {
             // Check for duplicate AreaCode
             var existingArea = await _contentAreaRepository
-                .FindAsync(x => x.AreaCode == dto.AreaCode && x.Id != dto.Id && x.CurrentState == 1);
+                .FindAsync(x => x.AreaCode == dto.AreaCode && x.Id != dto.Id && !x.IsDeleted);
 
             if (existingArea != null)
                 throw new InvalidOperationException($"Area code '{dto.AreaCode}' already exists");
@@ -120,7 +120,7 @@ namespace BL.Service.Content
 
         public async Task<bool> DeleteAsync(Guid id, Guid userId)
         {
-            return await _contentAreaRepository.UpdateCurrentStateAsync(id, userId, 0);
+            return await _contentAreaRepository.UpdateCurrentStateAsync(id, userId, true);
         }
 
         public async Task<bool> ToggleActiveStatusAsync(Guid id, Guid userId)

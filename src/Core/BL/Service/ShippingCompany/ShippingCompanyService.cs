@@ -54,13 +54,13 @@ namespace BL.Service.ShippingCompany
                 throw new ArgumentOutOfRangeException(nameof(criteriaModel.PageSize), ValidationResources.PageSizeRange);
 
             // Base filter for active entities
-            Expression<Func<TbShippingCompany, bool>> filter = x => x.CurrentState == 1;
+            Expression<Func<TbShippingCompany, bool>> filter = x => !x.IsDeleted;
 
             // Apply search term if provided
             if (!string.IsNullOrWhiteSpace(criteriaModel.SearchTerm))
             {
                 string searchTerm = criteriaModel.SearchTerm.Trim().ToLower();
-                filter = x => x.CurrentState == 1 &&
+                filter = x => !x.IsDeleted &&
                              (x.Name != null && x.Name.ToLower().Contains(searchTerm) ||
                              x.PhoneCode + x.PhoneNumber != null && (x.PhoneCode + x.PhoneNumber).ToLower().Contains(searchTerm));
             }
@@ -108,13 +108,13 @@ namespace BL.Service.ShippingCompany
                 throw new ArgumentOutOfRangeException(nameof(criteriaModel.PageSize), ValidationResources.PageSizeRange);
 
             // Base filter for active entities
-            Expression<Func<TbShippingCompany, bool>> filter = x => x.CurrentState == 1;
+            Expression<Func<TbShippingCompany, bool>> filter = x => !x.IsDeleted;
 
             // Apply search term if provided
             if (!string.IsNullOrWhiteSpace(criteriaModel.SearchTerm))
             {
                 string searchTerm = criteriaModel.SearchTerm.Trim().ToLower();
-                filter = x => x.CurrentState == 1 &&
+                filter = x => !x.IsDeleted &&
                              (x.Name != null && x.Name.ToLower().Contains(searchTerm) ||
                              x.PhoneCode + x.PhoneNumber != null && (x.PhoneCode + x.PhoneNumber).ToLower().Contains(searchTerm));
             }

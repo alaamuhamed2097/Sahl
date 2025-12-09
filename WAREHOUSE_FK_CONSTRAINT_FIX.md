@@ -70,7 +70,7 @@ else
 {
     // Use vendor's default warehouse
     var vendorDefaultWarehouse = warehouses.FirstOrDefault(
-        w => w.VendorId == group.Key.VendorId && w.CurrentState == 1);
+        w => w.VendorId == group.Key.VendorId && !w.IsDeleted);
     
     if (vendorDefaultWarehouse != null)
     {

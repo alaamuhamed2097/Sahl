@@ -38,7 +38,7 @@ For a 10-item cart = 10 database queries
 ```csharp
 var pricingIds = cartItems.Select(i => i.OfferCombinationPricingId).ToList();
 var pricings = await pricingRepo.GetAsync(
-    p => pricingIds.Contains(p.Id) && p.CurrentState == 1);
+    p => pricingIds.Contains(p.Id) && !p.IsDeleted);
 var pricingDict = pricings.ToDictionary(p => p.Id);
 
 // Use dictionary for O(1) lookups

@@ -74,7 +74,7 @@ namespace BL.Service.Order
 
                     // Step 4: Create payment record
                     var defaultCurrency = await _unitOfWork.TableRepository<TbCurrency>()
-                        .FindAsync(c => c.IsBaseCurrency && c.CurrentState == 1);
+                        .FindAsync(c => c.IsBaseCurrency && !c.IsDeleted);
 
                     if (defaultCurrency == null)
                     {
@@ -148,7 +148,7 @@ namespace BL.Service.Order
                     throw new ArgumentException("Order number cannot be empty", nameof(orderNumber));
 
                 var repo = _unitOfWork.TableRepository<TbOrder>();
-                var order = await repo.FindAsync(o => o.Number == orderNumber && o.CurrentState == 1);
+                var order = await repo.FindAsync(o => o.Number == orderNumber && !o.IsDeleted);
                 return order == null ? null : _mapper.MapModel<TbOrder, OrderDto>(order);
             }
             catch (Exception ex)
@@ -171,7 +171,7 @@ namespace BL.Service.Order
                 var paged = await repo.GetPageAsync(
                     pageNumber,
                     pageSize,
-                    filter: o => o.UserId == customerId && o.CurrentState == 1,
+                    filter: o => o.UserId == customerId && !o.IsDeleted,
                     orderBy: q => q.OrderByDescending(o => o.CreatedDateUtc)
                 );
 
@@ -207,7 +207,7 @@ namespace BL.Service.Order
                     throw new ArgumentException("Cancellation reason cannot be empty", nameof(reason));
 
                 var order = await _unitOfWork.TableRepository<TbOrder>().FindByIdAsync(orderId);
-                if (order == null || order.CurrentState != 1)
+                if (order == null || order.IsDeleted)
                     return false;
 
                 if (order.OrderStatus == OrderProgressStatus.Shipped ||
@@ -305,7 +305,7 @@ namespace BL.Service.Order
             // Batch load all pricings upfront to avoid N+1 queries
             var pricingIds = cartItems.Select(i => i.OfferCombinationPricingId).ToList();
             var pricings = await pricingRepo.GetAsync(
-                p => pricingIds.Contains(p.Id) && p.CurrentState == 1);
+                p => pricingIds.Contains(p.Id) && !p.IsDeleted);
 
             var pricingDict = pricings.ToDictionary(p => p.Id);
             var customerIdGuid = Guid.Parse(customerId);
@@ -354,7 +354,7 @@ namespace BL.Service.Order
                 UserId = customerId,
                 ShippingAmount = cartSummary.ShippingEstimate,
                 TaxAmount = cartSummary.TaxEstimate,
-                CurrentState = 1,
+                IsDeleted = false,
                 CreatedDateUtc = DateTime.UtcNow,
                 CreatedBy = Guid.Parse(customerId)
             };
@@ -377,14 +377,14 @@ namespace BL.Service.Order
             // Batch load all pricings to get vendor IDs
             var pricingIds = cartItems.Select(i => i.OfferCombinationPricingId).ToList();
             var pricings = await pricingRepo.GetAsync(
-                p => pricingIds.Contains(p.Id) && p.CurrentState == 1);
+                p => pricingIds.Contains(p.Id) && !p.IsDeleted);
 
             var pricingDict = pricings.ToDictionary(p => p.Id);
 
             // Batch load all offers to avoid N+1 queries
             var offerIds = pricingToOfferMap.Values.Distinct().ToList();
             var offers = await offerRepo.GetAsync(
-                o => offerIds.Contains(o.Id) && o.CurrentState == 1);
+                o => offerIds.Contains(o.Id) && !o.IsDeleted);
 
             var offerDict = offers.ToDictionary(o => o.Id);
 
@@ -420,7 +420,7 @@ namespace BL.Service.Order
                     SubTotal = item.Quantity * item.UnitPrice,
                     DiscountAmount = 0,
                     TaxAmount = 0,
-                    CurrentState = 1,
+                    IsDeleted = false,
                     CreatedDateUtc = DateTime.UtcNow,
                     CreatedBy = userId
                 });
@@ -439,7 +439,7 @@ namespace BL.Service.Order
                 CurrencyId = currencyId,
                 PaymentStatus = PaymentStatus.Pending,
                 Amount = amount,
-                CurrentState = 1,
+                IsDeleted = false,
                 CreatedDateUtc = DateTime.UtcNow,
                 CreatedBy = Guid.Empty
             };
@@ -470,13 +470,13 @@ namespace BL.Service.Order
             // Batch load all offers
             var offerIds = pricingToOfferMap.Values.Distinct().ToList();
             var offers = await offerRepo.GetAsync(
-                o => offerIds.Contains(o.Id) && o.CurrentState == 1);
+                o => offerIds.Contains(o.Id) && !o.IsDeleted);
             var offerDict = offers.ToDictionary(o => o.Id);
 
             // Batch load warehouses
             var vendorIds = orderDetails.Select(od => od.VendorId).Distinct().ToList();
             var warehouses = await warehouseRepo.GetAsync(
-                w => w.CurrentState == 1 &&
+                w => !w.IsDeleted &&
                      (w.IsDefaultPlatformWarehouse ||
                       (w.VendorId.HasValue && vendorIds.Contains(w.VendorId.Value))));
 
@@ -489,7 +489,7 @@ namespace BL.Service.Order
 
             // Batch load shipping details
             var shippingDetails = await shippingDetailRepo.GetAsync(
-                sd => offerIds.Contains(sd.OfferId) && sd.CurrentState == 1);
+                sd => offerIds.Contains(sd.OfferId) && !sd.IsDeleted);
             var shippingDetailDict = shippingDetails
                 .GroupBy(sd => sd.OfferId)
                 .ToDictionary(g => g.Key, g => g.FirstOrDefault());
@@ -528,7 +528,7 @@ namespace BL.Service.Order
                     // ✅ FBS = Fulfilled By Seller → Use Vendor Warehouse
                     var vendorWarehouse = warehouses.FirstOrDefault(
                         w => w.VendorId == group.Key.VendorId &&
-                             w.CurrentState == 1);
+                             !w.IsDeleted);
 
                     if (vendorWarehouse == null)
                     {
@@ -594,7 +594,7 @@ namespace BL.Service.Order
                     SubTotal = shipmentSubTotal,
                     TotalAmount = shipmentSubTotal,
                     Notes = null,
-                    CurrentState = 1,
+                    IsDeleted = false,
                     CreatedDateUtc = DateTime.UtcNow,
                     CreatedBy = userId
                 };

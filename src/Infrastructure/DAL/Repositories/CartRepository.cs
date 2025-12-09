@@ -64,7 +64,7 @@ namespace DAL.Repositories
                         ci.ShoppingCartId == cart.Id &&
                         ci.ItemId == itemId &&
                         ci.OfferCombinationPricingId == offerId &&
-                        ci.CurrentState == (int)Common.Enumerations.EntityState.Active,
+                        !ci.IsDeleted,
                         cancellationToken);
 
                 if (existingItem != null)
@@ -93,7 +93,7 @@ namespace DAL.Repositories
                         UnitPrice = unitPrice,
                         CreatedDateUtc = DateTime.UtcNow,
                         CreatedBy = customerIdGuid,
-                        CurrentState = (int)Common.Enumerations.EntityState.Active
+                        IsDeleted = false
                     };
 
                     await _cartItems.AddAsync(newCartItem, cancellationToken);
@@ -166,9 +166,9 @@ namespace DAL.Repositories
                     .Include(ci => ci.ShoppingCart)
                     .FirstOrDefaultAsync(ci =>
                         ci.Id == cartItemId &&
-                        ci.CurrentState == (int)Common.Enumerations.EntityState.Active &&
+                        !ci.IsDeleted &&
                         ci.ShoppingCart.UserId == customerId &&
-                        ci.ShoppingCart.CurrentState == (int)Common.Enumerations.EntityState.Active,
+                        !ci.ShoppingCart.IsDeleted,
                         cancellationToken);
 
                 if (cartItem == null)
@@ -251,9 +251,9 @@ namespace DAL.Repositories
                     .Include(ci => ci.ShoppingCart)
                     .FirstOrDefaultAsync(ci =>
                         ci.Id == cartItemId &&
-                        ci.CurrentState == (int)Common.Enumerations.EntityState.Active &&
+                        !ci.IsDeleted &&
                         ci.ShoppingCart.UserId == customerId &&
-                        ci.ShoppingCart.CurrentState == (int)Common.Enumerations.EntityState.Active,
+                        !ci.ShoppingCart.IsDeleted,
                         cancellationToken);
 
                 if (cartItem == null)
@@ -266,7 +266,7 @@ namespace DAL.Repositories
                 var cartId = cartItem.ShoppingCartId;
 
                 // Step 2: Soft delete the cart item
-                cartItem.CurrentState = (int)Common.Enumerations.EntityState.Deleted;
+                cartItem.IsDeleted = true;
                 cartItem.UpdatedDateUtc = DateTime.UtcNow;
                 cartItem.UpdatedBy = customerIdGuid;
 
@@ -347,7 +347,7 @@ namespace DAL.Repositories
                 var cartItems = await _cartItems
                     .Where(ci =>
                         ci.ShoppingCartId == cart.Id &&
-                        ci.CurrentState == (int)Common.Enumerations.EntityState.Active)
+                        !ci.IsDeleted)
                     .ToListAsync(cancellationToken);
 
                 if (!cartItems.Any())
@@ -364,7 +364,7 @@ namespace DAL.Repositories
                 var utcNow = DateTime.UtcNow;
                 foreach (var item in cartItems)
                 {
-                    item.CurrentState = (int)Common.Enumerations.EntityState.Deleted;
+                    item.IsDeleted = true;
                     item.UpdatedDateUtc = utcNow;
                     item.UpdatedBy = customerIdGuid;
                     transactionResult.AffectedItemIds.Add(item.Id);
@@ -424,15 +424,15 @@ namespace DAL.Repositories
             {
                 var cart = await _dbContext.Set<TbShoppingCart>()
                     .AsNoTracking()
-                    .Include(c => c.Items.Where(i => i.CurrentState == (int)Common.Enumerations.EntityState.Active))
+                    .Include(c => c.Items.Where(i => !i.IsDeleted))
                     .ThenInclude(i => i.Item)
-                    .Include(c => c.Items.Where(i => i.CurrentState == (int)Common.Enumerations.EntityState.Active))
+                    .Include(c => c.Items.Where(i => !i.IsDeleted))
                     .ThenInclude(i => i.OfferCombinationPricing)
                     .ThenInclude(ocp => ocp.Offer)
                     .ThenInclude(o => o.Vendor)
                     .FirstOrDefaultAsync(c =>
                         c.UserId == customerId &&
-                        c.CurrentState == (int)Common.Enumerations.EntityState.Active,
+                        !c.IsDeleted,
                         cancellationToken);
 
                 return cart ?? new TbShoppingCart { Id = Guid.Empty };
@@ -484,7 +484,7 @@ namespace DAL.Repositories
 
                 // Step 3: Merge items
                 var mergedItemIds = new List<Guid>();
-                foreach (var sourceItem in sourceCart.Items.Where(i => i.CurrentState == (int)Common.Enumerations.EntityState.Active))
+                foreach (var sourceItem in sourceCart.Items.Where(i => !i.IsDeleted))
                 {
                     // Check if item exists in target cart
                     var existingTargetItem = await _cartItems
@@ -492,7 +492,7 @@ namespace DAL.Repositories
                             ci.ShoppingCartId == targetCart.Id &&
                             ci.ItemId == sourceItem.ItemId &&
                             ci.OfferCombinationPricingId == sourceItem.OfferCombinationPricingId &&
-                            ci.CurrentState == (int)Common.Enumerations.EntityState.Active,
+                            !ci.IsDeleted,
                             cancellationToken);
 
                     if (existingTargetItem != null)
@@ -516,14 +516,14 @@ namespace DAL.Repositories
                             UnitPrice = sourceItem.UnitPrice,
                             CreatedDateUtc = DateTime.UtcNow,
                             CreatedBy = targetCustomerIdGuid,
-                            CurrentState = (int)Common.Enumerations.EntityState.Active
+                            IsDeleted = false
                         };
                         await _cartItems.AddAsync(newCartItem, cancellationToken);
                         mergedItemIds.Add(newCartItem.Id);
                     }
 
                     // Soft delete source item
-                    sourceItem.CurrentState = (int)Common.Enumerations.EntityState.Deleted;
+                    sourceItem.IsDeleted = true;
                     sourceItem.UpdatedDateUtc = DateTime.UtcNow;
                     sourceItem.UpdatedBy = targetCustomerIdGuid;
                     _cartItems.Update(sourceItem);
@@ -588,7 +588,7 @@ namespace DAL.Repositories
                 var cart = await _dbContext.Set<TbShoppingCart>()
                     .FirstOrDefaultAsync(c =>
                         c.UserId == customerId &&
-                        c.CurrentState == (int)Common.Enumerations.EntityState.Active,
+                        !c.IsDeleted,
                         cancellationToken);
 
                 if (cart != null)
@@ -601,7 +601,7 @@ namespace DAL.Repositories
                     IsActive = true,
                     CreatedDateUtc = DateTime.UtcNow,
                     CreatedBy = customerIdGuid,
-                    CurrentState = (int)Common.Enumerations.EntityState.Active
+                    IsDeleted = false
                 };
 
                 await _dbContext.Set<TbShoppingCart>().AddAsync(cart, cancellationToken);
@@ -634,9 +634,9 @@ namespace DAL.Repositories
             {
                 var cart = await _dbContext.Set<TbShoppingCart>()
                     .AsNoTracking()
-                    .Include(c => c.Items.Where(i => i.CurrentState == (int)Common.Enumerations.EntityState.Active))
+                    .Include(c => c.Items.Where(i => !i.IsDeleted))
                     .ThenInclude(i => i.Item)
-                    .Include(c => c.Items.Where(i => i.CurrentState == (int)Common.Enumerations.EntityState.Active))
+                    .Include(c => c.Items.Where(i => !i.IsDeleted))
                     .ThenInclude(i => i.OfferCombinationPricing)
                     .ThenInclude(ocp => ocp.Offer)
                     .ThenInclude(o => o.Vendor)
@@ -660,7 +660,7 @@ namespace DAL.Repositories
                 return 0m;
 
             decimal total = 0;
-            foreach (var item in cart.Items.Where(i => i.CurrentState == (int)Common.Enumerations.EntityState.Active))
+            foreach (var item in cart.Items.Where(i => !i.IsDeleted))
             {
                 var price = item.OfferCombinationPricing?.Offer?.OfferCombinationPricings?.FirstOrDefault()?.Price ?? item.UnitPrice;
                 total += price * item.Quantity;
@@ -680,14 +680,14 @@ namespace DAL.Repositories
             {
                 IQueryable<TbShoppingCart> query = _dbContext.Set<TbShoppingCart>()
                     .AsNoTracking()
-                    .Include(c => c.Items.Where(i => i.CurrentState == (int)Common.Enumerations.EntityState.Active));
+                    .Include(c => c.Items.Where(i => !i.IsDeleted));
 
                 if (predicate != null)
                 {
                     query = query.Where(predicate);
                 }
 
-                query = query.Where(e => e.CurrentState == (int)Common.Enumerations.EntityState.Active);
+                query = query.Where(e => !e.IsDeleted);
 
                 return await query.ToListAsync(cancellationToken);
             }

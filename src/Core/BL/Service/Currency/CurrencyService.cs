@@ -49,7 +49,7 @@ namespace BL.Service.Currency
         {
             try
             {
-                var entity = await _currencyRepository.FindAsync(x => x.Id == id && x.CurrentState == 1);
+                var entity = await _currencyRepository.FindAsync(x => x.Id == id && !x.IsDeleted);
                 if (entity == null)
                 {
                     return new ResponseModel<CurrencyDto>
@@ -129,7 +129,7 @@ namespace BL.Service.Currency
                 if (userId == Guid.Empty) throw new ArgumentException("UserId cannot be empty", nameof(userId));
 
                 // First get the currency to check if it's a base currency
-                var currency = await _currencyRepository.FindAsync(x => x.Id == currencyId && x.CurrentState == 1);
+                var currency = await _currencyRepository.FindAsync(x => x.Id == currencyId && !x.IsDeleted);
                 if (currency == null)
                 {
                     return new ResponseModel<bool>
@@ -148,7 +148,7 @@ namespace BL.Service.Currency
                     };
                 }
 
-                var success = await _currencyRepository.UpdateCurrentStateAsync(currencyId, userId, 0);
+                var success = await _currencyRepository.UpdateCurrentStateAsync(currencyId, userId, true);
                 if (!success)
                 {
                     throw new Exception(NotifiAndAlertsResources.DeleteFailed);
@@ -173,12 +173,12 @@ namespace BL.Service.Currency
 
         public async Task<CurrencyDto> GetBaseCurrencyAsync()
         {
-            var baseCurrency = await _currencyRepository.FindAsync(x => x.IsBaseCurrency && x.CurrentState == 1);
+            var baseCurrency = await _currencyRepository.FindAsync(x => x.IsBaseCurrency && !x.IsDeleted);
 
             if (baseCurrency == null)
             {
                 // Return USD as default if no base currency is set
-                baseCurrency = await _currencyRepository.FindAsync(x => x.Code == "USD" && x.CurrentState == 1);
+                baseCurrency = await _currencyRepository.FindAsync(x => x.Code == "USD" && !x.IsDeleted);
             }
 
             return _mapper.MapModel<TbCurrency, CurrencyDto>(baseCurrency);
@@ -186,7 +186,7 @@ namespace BL.Service.Currency
 
         public async Task<IEnumerable<CurrencyDto>> GetActiveCurrenciesAsync()
         {
-            var currencies = await _currencyRepository.GetAsync(x => x.IsActive && x.CurrentState == 1);
+            var currencies = await _currencyRepository.GetAsync(x => x.IsActive && !x.IsDeleted);
             return _mapper.MapList<TbCurrency, CurrencyDto>(currencies);
         }
 
@@ -198,7 +198,7 @@ namespace BL.Service.Currency
 
                 // This would typically integrate with an external API like ExchangeRate-API
                 // For now, we'll update the LastUpdated timestamp
-                var currencies = await _currencyRepository.GetAsync(x => x.CurrentState == 1);
+                var currencies = await _currencyRepository.GetAsync(x => !x.IsDeleted);
 
                 foreach (var currency in currencies)
                 {
@@ -231,7 +231,7 @@ namespace BL.Service.Currency
                     throw new ArgumentException("UserId cannot be empty", nameof(userId));
 
                 // Check if the target currency exists and is active
-                var targetCurrency = await _currencyRepository.FindAsync(x => x.Id == currencyId && x.CurrentState == 1);
+                var targetCurrency = await _currencyRepository.FindAsync(x => x.Id == currencyId && !x.IsDeleted);
                 if (targetCurrency == null)
                 {
                     return false; // Currency not found or inactive
@@ -244,7 +244,7 @@ namespace BL.Service.Currency
                 }
 
                 // Step 1: Remove base currency flag from all currencies
-                var allCurrencies = await _currencyRepository.GetAsync(x => x.CurrentState == 1);
+                var allCurrencies = await _currencyRepository.GetAsync(x => !x.IsDeleted);
 
                 foreach (var currency in allCurrencies.Where(c => c.IsBaseCurrency))
                 {
@@ -283,7 +283,7 @@ namespace BL.Service.Currency
         private async Task EnsureSingleBaseCurrencyAsync(Guid newBaseCurrencyId, Guid userId)
         {
             // Remove base currency flag from all other currencies
-            var allCurrencies = await _currencyRepository.GetAsync(x => x.CurrentState == 1);
+            var allCurrencies = await _currencyRepository.GetAsync(x => !x.IsDeleted);
             foreach (var currency in allCurrencies)
             {
                 if (currency.IsBaseCurrency && currency.Id != newBaseCurrencyId)
@@ -294,7 +294,7 @@ namespace BL.Service.Currency
             }
 
             // Set the new base currency properties
-            var newBaseCurrency = await _currencyRepository.FindAsync(x => x.Id == newBaseCurrencyId && x.CurrentState == 1);
+            var newBaseCurrency = await _currencyRepository.FindAsync(x => x.Id == newBaseCurrencyId && !x.IsDeleted);
             if (newBaseCurrency != null)
             {
                 newBaseCurrency.IsBaseCurrency = true;

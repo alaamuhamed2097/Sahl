@@ -46,10 +46,10 @@ namespace DAL.Configurations
             builder.Property(x => x.UpdatedDateUtc)
                 .HasColumnType("datetime2(2)");
 
-            builder.Property(x => x.CurrentState)
+            builder.Property(x => x.IsDeleted)
                 .HasDefaultValue(1);
 
-            builder.HasIndex(x => x.CurrentState);
+            builder.HasIndex(x => x.IsDeleted);
             builder.HasIndex(x => x.AreaCode).IsUnique();
             builder.HasIndex(x => x.IsActive);
             builder.HasIndex(x => x.DisplayOrder);

@@ -53,7 +53,7 @@ namespace DAL.Configurations
             builder.Property(x => x.UpdatedDateUtc)
                 .HasColumnType("datetime2(2)");
 
-            builder.Property(x => x.CurrentState)
+            builder.Property(x => x.IsDeleted)
                 .HasDefaultValue(1);
 
             builder.HasOne(x => x.ContentArea)
@@ -61,7 +61,7 @@ namespace DAL.Configurations
                 .HasForeignKey(x => x.ContentAreaId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            builder.HasIndex(x => x.CurrentState);
+            builder.HasIndex(x => x.IsDeleted);
             builder.HasIndex(x => x.ContentAreaId);
             builder.HasIndex(x => x.IsActive);
             builder.HasIndex(x => x.DisplayOrder);

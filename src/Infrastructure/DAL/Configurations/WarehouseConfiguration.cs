@@ -45,7 +45,7 @@ namespace DAL.Configurations
             builder.Property(x => x.UpdatedDateUtc)
                 .HasColumnType("datetime2(2)");
 
-            builder.Property(x => x.CurrentState)
+            builder.Property(x => x.IsDeleted)
                 .HasDefaultValue(1);
 
             // Relationships
@@ -55,7 +55,7 @@ namespace DAL.Configurations
                 .OnDelete(DeleteBehavior.SetNull);
 
             // Indexes
-            builder.HasIndex(x => x.CurrentState);
+            builder.HasIndex(x => x.IsDeleted);
             builder.HasIndex(x => x.IsActive);
             builder.HasIndex(x => x.IsDefaultPlatformWarehouse);
             builder.HasIndex(x => x.VendorId);

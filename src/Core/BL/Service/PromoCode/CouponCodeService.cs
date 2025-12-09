@@ -8,8 +8,6 @@ using Domains.Entities.CouponCode;
 using Resources;
 using Serilog;
 using Shared.DTOs.ECommerce.CouponCode;
-using Shared.DTOs.ECommerce.Order;
-using Shared.GeneralModels.Parameters;
 using Shared.GeneralModels.ResultModels;
 using Shared.GeneralModels.SearchCriteriaModels;
 using System.Linq.Expressions;
@@ -46,13 +44,13 @@ namespace BL.Service.PromoCode
                 throw new ArgumentOutOfRangeException(nameof(criteriaModel.PageSize), ValidationResources.PageSizeRange);
 
             // Base filter for active entities
-            Expression<Func<TbCouponCode, bool>> filter = x => x.CurrentState == 1;
+            Expression<Func<TbCouponCode, bool>> filter = x => !x.IsDeleted;
 
             // Apply search term if provided
             if (!string.IsNullOrWhiteSpace(criteriaModel.SearchTerm))
             {
                 string searchTerm = criteriaModel.SearchTerm.Trim().ToLower();
-                filter = x => x.CurrentState == 1 &&
+                filter = x => !x.IsDeleted &&
                               (x.TitleAR != null && x.TitleAR.ToLower().Contains(searchTerm) ||
                                x.TitleEN != null && x.TitleEN.ToLower().Contains(searchTerm) ||
                                x.Code != null && x.Code.ToLower().Contains(searchTerm));
@@ -93,7 +91,7 @@ namespace BL.Service.PromoCode
 
             var promo = (await _unitOfWork.TableRepository<TbCouponCode>()
                 .GetAsync(
-                    predicate: p => p.CurrentState == 1 && p.Id == id,
+                    predicate: p => !p.IsDeleted && p.Id == id,
                     includeProperties: "Orders"))
                 .FirstOrDefault();
 
@@ -158,7 +156,7 @@ namespace BL.Service.PromoCode
 
             if (entity.Id != Guid.Empty)
             {
-                var exists = (await _unitOfWork.TableRepository<TbCouponCode>().GetAsync(p => p.Id == entity.Id && p.CurrentState == 0)).Any();
+                var exists = (await _unitOfWork.TableRepository<TbCouponCode>().GetAsync(p => p.Id == entity.Id && !p.IsDeleted)).Any();
                 if (exists)
                     throw new ArgumentException("Invalid promo code ID");
             }
@@ -208,7 +206,7 @@ namespace BL.Service.PromoCode
 
         //        // Get the full promo code entity
         //        var couponCode = (await _unitOfWork.TableRepository<TbCouponCode>()
-        //            .GetAsync(p => p.Id == validationResult.Data.CouponCodeId && p.CurrentState == 1))
+        //            .GetAsync(p => p.Id == validationResult.Data.CouponCodeId && !p.IsDeleted))
         //            .FirstOrDefault();
 
         //        if (couponCode == null)
@@ -258,7 +256,7 @@ namespace BL.Service.PromoCode
             {
                 // Get active promo code
                 var couponCode = (await _unitOfWork.TableRepository<TbCouponCode>()
-                    .GetAsync(predicate: p => p.Code == code && p.CurrentState == 1,
+                    .GetAsync(predicate: p => p.Code == code && !p.IsDeleted,
                          includeProperties: "Orders")).FirstOrDefault();
 
                 if (couponCode == null)

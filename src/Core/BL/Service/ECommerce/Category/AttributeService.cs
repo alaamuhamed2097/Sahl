@@ -42,7 +42,7 @@ namespace BL.Service.ECommerce.Category
                 throw new ArgumentOutOfRangeException(nameof(criteriaModel.PageSize), ValidationResources.PageSizeRange);
 
             // Base filter for active entities
-            Expression<Func<TbAttribute, bool>> filter = x => x.CurrentState == 1;
+            Expression<Func<TbAttribute, bool>> filter = x => !x.IsDeleted;
 
             // Apply search term if provided
             if (!string.IsNullOrWhiteSpace(criteriaModel.SearchTerm))
@@ -179,14 +179,14 @@ namespace BL.Service.ECommerce.Category
                 await _attributeUnitOfWork.BeginTransactionAsync();
 
                 // Prevent deletion if attribute is in use by items
-                var categoryAttributeEntities = await _attributeUnitOfWork.TableRepository<TbCategoryAttribute>().GetAsync(i => i.AttributeId == id && i.CurrentState == 1);
+                var categoryAttributeEntities = await _attributeUnitOfWork.TableRepository<TbCategoryAttribute>().GetAsync(i => i.AttributeId == id && !i.IsDeleted);
                 var categoriesIds = categoryAttributeEntities.Select(ci => ci.CategoryId).ToList();
-                var categoryEntities = await _attributeUnitOfWork.TableRepository<TbCategory>().GetAsync(i => categoriesIds.Contains(i.Id) && i.CurrentState == 1);
+                var categoryEntities = await _attributeUnitOfWork.TableRepository<TbCategory>().GetAsync(i => categoriesIds.Contains(i.Id) && !i.IsDeleted);
                 var categories = _mapper.MapList<TbCategory, CategoryDto>(categoryEntities);
 
-                var itemAttributeEntities = await _attributeUnitOfWork.TableRepository<TbItemAttribute>().GetAsync(i => i.AttributeId == id && i.CurrentState == 1);
+                var itemAttributeEntities = await _attributeUnitOfWork.TableRepository<TbItemAttribute>().GetAsync(i => i.AttributeId == id && !i.IsDeleted);
                 var itemsIds = itemAttributeEntities.Select(ci => ci.ItemId).ToList();
-                var itemEntities = await _attributeUnitOfWork.TableRepository<TbItem>().GetAsync(i => itemsIds.Contains(i.Id) && i.CurrentState == 1);
+                var itemEntities = await _attributeUnitOfWork.TableRepository<TbItem>().GetAsync(i => itemsIds.Contains(i.Id) && !i.IsDeleted);
                 var items = _mapper.MapList<TbItem, ItemDto>(itemEntities);
 
                 if (categories != null && categories.Any())
@@ -243,7 +243,7 @@ namespace BL.Service.ECommerce.Category
                     return new DeleteResult() { Success = false, Errors = errors };
 
                 // Get attribute options before deletion to manage display order
-                var attributeOptions = await _attributeUnitOfWork.TableRepository<TbAttributeOption>().GetAsync(x => x.AttributeId == id && x.CurrentState == 1);
+                var attributeOptions = await _attributeUnitOfWork.TableRepository<TbAttributeOption>().GetAsync(x => x.AttributeId == id && !x.IsDeleted);
 
                 // Update attribute state
                 await _attributeUnitOfWork.TableRepository<TbAttribute>().UpdateCurrentStateAsync(id, new Guid(userId));
@@ -354,7 +354,7 @@ namespace BL.Service.ECommerce.Category
 
                 // Get category attributes for the specified category
                 var categoryAttributes = await _attributeUnitOfWork.TableRepository<TbCategoryAttribute>()
-                    .GetAsync(ca => ca.CategoryId == categoryId && ca.CurrentState == 1);
+                    .GetAsync(ca => ca.CategoryId == categoryId && !ca.IsDeleted);
 
                 if (!categoryAttributes.Any())
                     return new List<CategoryAttributeDto>();

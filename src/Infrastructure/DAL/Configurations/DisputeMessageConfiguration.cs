@@ -34,7 +34,7 @@ namespace DAL.Configurations
             entity.Property(e => e.SentDate)
                 .HasColumnType("datetime2(2)");
 
-            entity.Property(e => e.CurrentState)
+            entity.Property(e => e.IsDeleted)
                 .HasDefaultValue(1);
 
             entity.Property(e => e.CreatedDateUtc)
@@ -45,7 +45,7 @@ namespace DAL.Configurations
                 .HasColumnType("datetime2(2)");
 
             // Indexes
-            entity.HasIndex(e => e.CurrentState);
+            entity.HasIndex(e => e.IsDeleted);
             entity.HasIndex(e => e.DisputeID);
             entity.HasIndex(e => e.SenderID);
             entity.HasIndex(e => e.SentDate);

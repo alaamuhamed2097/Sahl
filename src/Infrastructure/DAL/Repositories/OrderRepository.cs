@@ -27,7 +27,7 @@ namespace DAL.Repositories
                     .AsNoTracking()
                     .FirstOrDefaultAsync(
                         o => o.Number == orderNumber &&
-                             o.CurrentState == (int)Common.Enumerations.EntityState.Active,
+                             o.IsDeleted == false,
                         cancellationToken);
             }
             catch (Exception ex)
@@ -58,7 +58,7 @@ namespace DAL.Repositories
                 var orders = await _dbContext.Set<TbOrder>()
                     .AsNoTracking()
                     .Where(o => o.UserId == customerId &&
-                                o.CurrentState == (int)Common.Enumerations.EntityState.Active)
+                                o.IsDeleted == false)
                     .OrderByDescending(o => o.CreatedDateUtc)
                     .Skip((pageNumber - 1) * pageSize)
                     .Take(pageSize)
@@ -74,4 +74,4 @@ namespace DAL.Repositories
             }
         }
     }
-    }
+}

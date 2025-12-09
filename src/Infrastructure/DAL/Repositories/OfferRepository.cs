@@ -66,7 +66,7 @@ namespace DAL.Repositories
                         .AsNoTracking()
                         .Include(o => o.Vendor)
                         .Include(o => o.OfferCombinationPricings)
-                        .Where(o => o.ItemId == itemId && o.CurrentState == (int)Common.Enumerations.EntityState.Active)
+                        .Where(o => o.ItemId == itemId && !o.IsDeleted)
                         .ToListAsync(cancellationToken);
 
                     return offers;
@@ -91,7 +91,7 @@ namespace DAL.Repositories
                         .AsNoTracking()
                         .Include(o => o.Item)
                         .Include(o => o.OfferCombinationPricings)
-                        .Where(o => o.VendorId == vendorId && o.CurrentState == (int)Common.Enumerations.EntityState.Active)
+                        .Where(o => o.VendorId == vendorId && !o.IsDeleted)
                         .ToListAsync(cancellationToken);
 
                     return offers;
@@ -118,9 +118,9 @@ namespace DAL.Repositories
                         .Include(o => o.Vendor)
                         .Include(o => o.OfferCombinationPricings)
                         .Where(o =>
-                            o.CurrentState == (int)Common.Enumerations.EntityState.Active &&
+                            !o.IsDeleted &&
                             o.OfferCombinationPricings.Any(p =>
-                                p.CurrentState == (int)Common.Enumerations.EntityState.Active &&
+                                !p.IsDeleted &&
                                 p.AvailableQuantity > 0))
                         .ToListAsync(cancellationToken);
 
@@ -171,7 +171,7 @@ namespace DAL.Repositories
                         .Include(p => p.ItemCombination)
                         .Where(p =>
                             p.OfferId == offerId &&
-                            p.CurrentState == (int)Common.Enumerations.EntityState.Active)
+                            !p.IsDeleted)
                         .ToListAsync(cancellationToken);
 
                     return pricings;
@@ -206,7 +206,7 @@ namespace DAL.Repositories
                     var pricing = await _offerPricing
                         .FirstOrDefaultAsync(p =>
                             p.Id == pricingId &&
-                            p.CurrentState == (int)Common.Enumerations.EntityState.Active,
+                            !p.IsDeleted,
                             cancellationToken);
 
                     if (pricing == null)
@@ -273,7 +273,7 @@ namespace DAL.Repositories
                         .FirstOrDefaultAsync(p =>
                             p.OfferId == offerId &&
                             p.ItemCombinationId == itemCombinationId &&
-                            p.CurrentState == (int)Common.Enumerations.EntityState.Active,
+                            !p.IsDeleted,
                             cancellationToken);
 
                     if (pricing == null)
@@ -318,7 +318,7 @@ namespace DAL.Repositories
                         .FirstOrDefaultAsync(p =>
                             p.OfferId == offerId &&
                             p.ItemCombinationId == itemCombinationId &&
-                            p.CurrentState == (int)Common.Enumerations.EntityState.Active,
+                            !p.IsDeleted,
                             cancellationToken);
 
                     if (pricing == null)
@@ -405,7 +405,7 @@ namespace DAL.Repositories
                         .FirstOrDefaultAsync(p =>
                             p.OfferId == offerId &&
                             p.ItemCombinationId == itemCombinationId &&
-                            p.CurrentState == (int)Common.Enumerations.EntityState.Active,
+                            !p.IsDeleted,
                             cancellationToken);
 
                     if (pricing == null)
@@ -487,7 +487,7 @@ namespace DAL.Repositories
                         query = query.Where(predicate);
                     }
 
-                    query = query.Where(e => e.CurrentState == (int)Common.Enumerations.EntityState.Active);
+                    query = query.Where(e => !e.IsDeleted);
 
                     return await query.ToListAsync(cancellationToken);
                 }

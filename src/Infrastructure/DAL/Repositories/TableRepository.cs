@@ -36,7 +36,7 @@ namespace DAL.Repositories
             {
                 return await _dbContext.Set<T>()
                     .AsNoTracking()
-                    .Where(e => e.CurrentState == (int)Common.Enumerations.EntityState.Active)
+                    .Where(e => !e.IsDeleted)
                     .ToListAsync(cancellationToken);
             }
             catch (Exception ex)
@@ -59,7 +59,7 @@ namespace DAL.Repositories
                     query = query.Where(predicate);
                 }
 
-                query = query.Where(e => e.CurrentState == (int)Common.Enumerations.EntityState.Active);
+                query = query.Where(e => !e.IsDeleted);
 
                 return await query.ToListAsync(cancellationToken);
             }
@@ -122,7 +122,7 @@ namespace DAL.Repositories
             {
                 var data = await _dbContext.Set<T>()
                     .AsNoTracking()
-                    .FirstOrDefaultAsync(e => e.Id == id && e.CurrentState == (int)Common.Enumerations.EntityState.Active, cancellationToken);
+                    .FirstOrDefaultAsync(e => e.Id == id && !e.IsDeleted, cancellationToken);
 
                 if (data == null)
                     throw new NotFoundException($"Entity of type {typeof(T).Name} with ID {id} not found.", _logger);
@@ -174,7 +174,7 @@ namespace DAL.Repositories
             {
                 return await _dbContext.Set<T>()
                     .AsNoTracking()
-                    .Where(e => e.CurrentState == (int)Common.Enumerations.EntityState.Deleted)
+                    .Where(e => e.IsDeleted)
                     .ToListAsync(cancellationToken);
             }
             catch (Exception ex)
@@ -229,7 +229,7 @@ namespace DAL.Repositories
                 model.Id = id;
                 model.CreatedDateUtc = DateTime.UtcNow;
                 model.CreatedBy = creatorId;
-                model.CurrentState = (int)Common.Enumerations.EntityState.Active;
+                model.IsDeleted = false;
 
                 await _dbContext.Set<T>().AddAsync(model, cancellationToken);
                 var result = await _dbContext.SaveChangesAsync(cancellationToken) > 0;
@@ -265,7 +265,7 @@ namespace DAL.Repositories
                 model.UpdatedDateUtc = DateTime.UtcNow;
                 model.UpdatedBy = updaterId;
                 model.CreatedBy = existingEntity.CreatedBy;
-                model.CurrentState = existingEntity.CurrentState;
+                model.IsDeleted = existingEntity.IsDeleted;
                 model.CreatedDateUtc = existingEntity.CreatedDateUtc;
 
                 _dbContext.Entry(model).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
@@ -293,7 +293,7 @@ namespace DAL.Repositories
         public async Task<bool> UpdateCurrentStateAsync(
             Guid entityId,
             Guid updaterId,
-            Common.Enumerations.EntityState newState = Common.Enumerations.EntityState.Deleted,
+            bool newState = true,
             CancellationToken cancellationToken = default)
         {
             try
@@ -303,7 +303,7 @@ namespace DAL.Repositories
                 if (entity == null)
                     throw new NotFoundException($"Entity of type {typeof(T).Name} with ID {entityId} not found.", _logger);
 
-                entity.CurrentState = (int)newState;
+                entity.IsDeleted = newState;
                 entity.UpdatedDateUtc = DateTime.UtcNow;
                 entity.UpdatedBy = updaterId;
 
@@ -326,12 +326,12 @@ namespace DAL.Repositories
 
         public async Task<bool> SoftDeleteAsync(Guid entityId, Guid updaterId, CancellationToken cancellationToken = default)
         {
-            return await UpdateCurrentStateAsync(entityId, updaterId, Common.Enumerations.EntityState.Deleted, cancellationToken);
+            return await UpdateCurrentStateAsync(entityId, updaterId, true, cancellationToken);
         }
 
         public async Task<bool> RestoreAsync(Guid entityId, Guid updaterId, CancellationToken cancellationToken = default)
         {
-            return await UpdateCurrentStateAsync(entityId, updaterId, Common.Enumerations.EntityState.Active, cancellationToken);
+            return await UpdateCurrentStateAsync(entityId, updaterId, false, cancellationToken);
         }
 
         public async Task<bool> HardDeleteAsync(Guid id, CancellationToken cancellationToken = default)
@@ -400,7 +400,7 @@ namespace DAL.Repositories
                     entity.Id = Guid.NewGuid();
                     entity.CreatedDateUtc = utcNow;
                     entity.CreatedBy = userId;
-                    entity.CurrentState = (int)Common.Enumerations.EntityState.Active;
+                    entity.IsDeleted = false;
                 }
 
                 _dbContext.Set<T>().AddRange(entities);
@@ -447,8 +447,8 @@ namespace DAL.Repositories
         {
             return await BulkUpdateSingleFieldAsync(
                 entityIds,
-                nameof(BaseEntity.CurrentState),
-                (int)Common.Enumerations.EntityState.Deleted,
+                nameof(BaseEntity.IsDeleted),
+                true,
                 updaterId,
                 cancellationToken);
         }
@@ -460,8 +460,8 @@ namespace DAL.Repositories
         {
             return await BulkUpdateSingleFieldAsync(
                 entityIds,
-                nameof(BaseEntity.CurrentState),
-                (int)Common.Enumerations.EntityState.Active,
+                nameof(BaseEntity.IsDeleted),
+                false,
                 updaterId,
                 cancellationToken);
         }
