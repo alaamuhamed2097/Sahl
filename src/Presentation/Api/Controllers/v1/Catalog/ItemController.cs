@@ -1,9 +1,8 @@
 using Api.Controllers.Base;
-using Asp.Versioning;
 using Api.Extensions;
+using Asp.Versioning;
 using BL.Contracts.Service.ECommerce.Item;
 using Common.Enumerations.User;
-using DAL.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Resources;
@@ -21,9 +20,7 @@ namespace Api.Controllers.v1.Catalog
         private readonly IItemService _itemService;
 
         public ItemController(
-            IItemService itemService,
-            Serilog.ILogger logger)
-            : base(logger)
+            IItemService itemService)
         {
             _itemService = itemService;
         }

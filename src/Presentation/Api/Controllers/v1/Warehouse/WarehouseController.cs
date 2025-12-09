@@ -19,8 +19,7 @@ namespace Api.Controllers.v1.Warehouse
     {
         private readonly IWarehouseService _warehouseService;
 
-        public WarehouseController(IWarehouseService warehouseService, Serilog.ILogger logger)
-            : base(logger)
+        public WarehouseController(IWarehouseService warehouseService)
         {
             _warehouseService = warehouseService;
         }

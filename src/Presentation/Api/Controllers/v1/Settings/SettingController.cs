@@ -1,6 +1,6 @@
 using Api.Controllers.Base;
-using Asp.Versioning;
 using Api.Extensions;
+using Asp.Versioning;
 using BL.Contracts.Service.Setting;
 using Common.Enumerations.User;
 using Microsoft.AspNetCore.Authorization;
@@ -18,8 +18,7 @@ namespace Api.Controllers.v1.Settings
     {
         private readonly ISettingService _settingService;
 
-        public SettingController(ISettingService settingService, Serilog.ILogger logger)
-            : base(logger)
+        public SettingController(ISettingService settingService)
         {
             _settingService = settingService;
         }

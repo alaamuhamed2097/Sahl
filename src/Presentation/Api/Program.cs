@@ -6,9 +6,6 @@ using DAL.ApplicationContext;
 using Domains.Identity;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
-using Microsoft.OpenApi;
-using Swashbuckle.AspNetCore.SwaggerGen;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -165,8 +162,8 @@ using (var scope = app.Services.CreateScope())
     await dbContext.Database.MigrateAsync();
 
     // Seed data
-    // await ContextConfigurations.SeedDataAsync(dbContext, userManager, roleManager);
+    await ContextConfigurations.SeedDataAsync(dbContext, userManager, roleManager);
 }
 
 // run
-app.Run();
+await app.RunAsync();

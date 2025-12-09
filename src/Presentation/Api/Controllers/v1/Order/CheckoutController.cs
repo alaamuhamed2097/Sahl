@@ -1,8 +1,9 @@
+using Api.Controllers.Base;
 using Asp.Versioning;
+using BL.Services.Order;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Shared.DTOs.ECommerce.Checkout;
-using BL.Services.Order;
 using System.Security.Claims;
 
 namespace Api.Controllers.v1.Order
@@ -11,7 +12,7 @@ namespace Api.Controllers.v1.Order
     [ApiVersion("1.0")]
     [Route("api/v{version:apiVersion}/[controller]")]
     [Authorize]
-    public class CheckoutController : ControllerBase
+    public class CheckoutController : BaseController
     {
         private readonly ICheckoutService _checkoutService;
         private readonly ILogger<CheckoutController> _logger;
@@ -41,8 +42,6 @@ namespace Api.Controllers.v1.Order
                 if (string.IsNullOrEmpty(customerId))
                     return Unauthorized();
 
-                _logger.LogInformation($"Customer {customerId} preparing checkout with delivery address {request.DeliveryAddressId}");
-
                 var checkoutSummary = await _checkoutService.PrepareCheckoutAsync(customerId, request);
                 return Ok(checkoutSummary);
             }
@@ -71,8 +70,6 @@ namespace Api.Controllers.v1.Order
                 if (string.IsNullOrEmpty(customerId))
                     return Unauthorized();
 
-                _logger.LogInformation($"Customer {customerId} previewing shipments");
-
                 var previewSummary = await _checkoutService.PreviewShipmentsAsync(customerId);
                 return Ok(previewSummary);
             }
@@ -100,8 +97,6 @@ namespace Api.Controllers.v1.Order
                 var customerId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
                 if (string.IsNullOrEmpty(customerId))
                     return Unauthorized();
-
-                _logger.LogInformation($"Customer {customerId} validating checkout");
 
                 await _checkoutService.ValidateCheckoutAsync(customerId, request.DeliveryAddressId);
                 return Ok(new { message = "Checkout is valid and ready to proceed" });

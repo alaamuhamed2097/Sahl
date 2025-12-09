@@ -1,5 +1,3 @@
-using Domains.Entities.Base;
-using Domains.Entities.ECommerceSystem.Customer;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -8,8 +6,8 @@ namespace Domains.Entities.Loyalty
     public class TbCustomerLoyalty : BaseEntity
     {
         [Required]
-        [ForeignKey("Customer")]
-        public Guid CustomerId { get; set; }
+        [ForeignKey("User")]
+        public string UserId { get; set; }
 
         [Required]
         [ForeignKey("LoyaltyTier")]
@@ -37,7 +35,7 @@ namespace Domains.Entities.Loyalty
 
         public DateTime? NextTierEligibilityDate { get; set; }
 
-        public virtual TbCustomer Customer { get; set; } = null!;
+        public virtual ApplicationUser User { get; set; } = null!;
         public virtual TbLoyaltyTier LoyaltyTier { get; set; } = null!;
         public ICollection<TbLoyaltyPointsTransaction> PointsTransactions { get; set; } = new HashSet<TbLoyaltyPointsTransaction>();
     }

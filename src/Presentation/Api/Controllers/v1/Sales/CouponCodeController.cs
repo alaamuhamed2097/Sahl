@@ -20,8 +20,7 @@ namespace Api.Controllers.v1.Sales
     {
         private readonly ICouponCodeService _couponCodeService;
 
-        public CouponCodeController(ICouponCodeService couponCodeService, Serilog.ILogger logger)
-            : base(logger)
+        public CouponCodeController(ICouponCodeService couponCodeService)
         {
             _couponCodeService = couponCodeService;
         }

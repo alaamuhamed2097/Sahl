@@ -2333,9 +2333,6 @@ namespace DAL.Migrations
                         .HasColumnType("int")
                         .HasDefaultValue(1);
 
-                    b.Property<Guid>("CustomerId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<DateTime?>("ExpiresAt")
                         .HasColumnType("datetime2");
 
@@ -2350,11 +2347,15 @@ namespace DAL.Migrations
                     b.Property<DateTime?>("UpdatedDateUtc")
                         .HasColumnType("datetime2(2)");
 
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
                     b.HasKey("Id");
 
                     b.HasIndex("CurrentState");
 
-                    b.HasIndex("CustomerId");
+                    b.HasIndex("UserId");
 
                     b.ToTable("TbShoppingCarts", (string)null);
                 });
@@ -2411,57 +2412,6 @@ namespace DAL.Migrations
                     b.HasIndex("ShoppingCartId");
 
                     b.ToTable("TbShoppingCartItems", (string)null);
-                });
-
-            modelBuilder.Entity("Domains.Entities.ECommerceSystem.Customer.TbCustomer", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier")
-                        .HasDefaultValueSql("NEWID()");
-
-                    b.Property<Guid>("CreatedBy")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("CreatedDateUtc")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2(2)")
-                        .HasDefaultValueSql("GETUTCDATE()");
-
-                    b.Property<int>("CurrentState")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValue(1);
-
-                    b.Property<string>("Email")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("FirstName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("LastName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Notes")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<Guid?>("UpdatedBy")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime?>("UpdatedDateUtc")
-                        .HasColumnType("datetime2(2)");
-
-                    b.Property<string>("UserId")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CurrentState");
-
-                    b.ToTable("TbCustomers");
                 });
 
             modelBuilder.Entity("Domains.Entities.ECommerceSystem.Review.TbDeliveryReview", b =>
@@ -3206,9 +3156,6 @@ namespace DAL.Migrations
                         .HasColumnType("int")
                         .HasDefaultValue(1);
 
-                    b.Property<Guid>("CustomerId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<bool>("IsDefault")
                         .HasColumnType("bit");
 
@@ -3233,11 +3180,15 @@ namespace DAL.Migrations
                     b.Property<DateTime?>("UpdatedDateUtc")
                         .HasColumnType("datetime2(2)");
 
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
                     b.HasKey("Id");
 
                     b.HasIndex("CurrentState");
 
-                    b.HasIndex("CustomerId");
+                    b.HasIndex("UserId");
 
                     b.ToTable("TbCustomerAddresses");
                 });
@@ -3464,6 +3415,9 @@ namespace DAL.Migrations
                         .HasColumnType("uniqueidentifier")
                         .HasDefaultValueSql("NEWID()");
 
+                    b.Property<string>("ApplicationUserId")
+                        .HasColumnType("nvarchar(450)");
+
                     b.Property<decimal>("AvailablePoints")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("decimal(18,2)")
@@ -3481,9 +3435,6 @@ namespace DAL.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasDefaultValue(1);
-
-                    b.Property<Guid>("CustomerId")
-                        .HasColumnType("uniqueidentifier");
 
                     b.Property<decimal>("ExpiredPoints")
                         .ValueGeneratedOnAdd()
@@ -3525,16 +3476,22 @@ namespace DAL.Migrations
                         .HasColumnType("decimal(18,2)")
                         .HasDefaultValue(0m);
 
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("ApplicationUserId");
 
                     b.HasIndex("AvailablePoints");
 
                     b.HasIndex("CurrentState");
 
-                    b.HasIndex("CustomerId")
-                        .IsUnique();
-
                     b.HasIndex("LoyaltyTierId");
+
+                    b.HasIndex("UserId")
+                        .IsUnique();
 
                     b.ToTable("TbCustomerLoyalties", (string)null);
                 });
@@ -4682,6 +4639,9 @@ namespace DAL.Migrations
                     b.Property<decimal>("TaxAmount")
                         .HasColumnType("decimal(18,2)");
 
+                    b.Property<Guid?>("TbCouponCodeId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<Guid?>("TbShippingCompanyId")
                         .HasColumnType("uniqueidentifier");
 
@@ -4711,6 +4671,8 @@ namespace DAL.Migrations
 
                     b.HasIndex("OrderStatus")
                         .HasDatabaseName("IX_Orders_Status");
+
+                    b.HasIndex("TbCouponCodeId");
 
                     b.HasIndex("TbShippingCompanyId");
 
@@ -6520,6 +6482,9 @@ namespace DAL.Migrations
                         .HasColumnType("uniqueidentifier")
                         .HasDefaultValueSql("NEWID()");
 
+                    b.Property<string>("ApplicationUserId")
+                        .HasColumnType("nvarchar(450)");
+
                     b.Property<decimal>("AvailableBalance")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("decimal(18,2)")
@@ -6540,9 +6505,6 @@ namespace DAL.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasDefaultValue(1);
-
-                    b.Property<Guid>("CustomerId")
-                        .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime?>("LastTransactionDate")
                         .HasColumnType("datetime2(2)");
@@ -6568,7 +6530,13 @@ namespace DAL.Migrations
                     b.Property<DateTime?>("UpdatedDateUtc")
                         .HasColumnType("datetime2(2)");
 
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("ApplicationUserId");
 
                     b.HasIndex("AvailableBalance");
 
@@ -6576,7 +6544,7 @@ namespace DAL.Migrations
 
                     b.HasIndex("CurrentState");
 
-                    b.HasIndex("CustomerId")
+                    b.HasIndex("UserId")
                         .IsUnique();
 
                     b.ToTable("TbCustomerWallets", (string)null);
@@ -6959,7 +6927,7 @@ namespace DAL.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime>("CreatedDateUtc")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("datetime2(7)");
 
                     b.Property<string>("Email")
                         .HasMaxLength(256)
@@ -6970,14 +6938,16 @@ namespace DAL.Migrations
 
                     b.Property<string>("FirstName")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<DateTime?>("LastLoginDate")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("datetime2(7)");
 
                     b.Property<string>("LastName")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<bool>("LockoutEnabled")
                         .HasColumnType("bit");
@@ -6989,6 +6959,10 @@ namespace DAL.Migrations
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
 
+                    b.Property<string>("NormalizedPhone")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
                     b.Property<string>("NormalizedUserName")
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
@@ -6998,17 +6972,21 @@ namespace DAL.Migrations
 
                     b.Property<string>("PhoneCode")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(5)
+                        .HasColumnType("nvarchar(5)");
 
                     b.Property<string>("PhoneNumber")
-                        .HasColumnType("nvarchar(max)");
+                        .IsRequired()
+                        .HasMaxLength(15)
+                        .HasColumnType("nvarchar(15)");
 
                     b.Property<bool>("PhoneNumberConfirmed")
                         .HasColumnType("bit");
 
                     b.Property<string>("ProfileImagePath")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
 
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("nvarchar(max)");
@@ -7020,7 +6998,7 @@ namespace DAL.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime?>("UpdatedDateUtc")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("datetime2(7)");
 
                     b.Property<string>("UserName")
                         .HasMaxLength(256)
@@ -7031,13 +7009,34 @@ namespace DAL.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("CreatedDateUtc")
+                        .HasDatabaseName("IX_Users_CreatedDateUtc");
+
+                    b.HasIndex("Email")
+                        .IsUnique()
+                        .HasDatabaseName("IX_Users_Email")
+                        .HasFilter("[Email] IS NOT NULL");
+
                     b.HasIndex("NormalizedEmail")
                         .HasDatabaseName("EmailIndex");
+
+                    b.HasIndex("NormalizedPhone")
+                        .IsUnique()
+                        .HasDatabaseName("IX_Users_NormalizedPhone")
+                        .HasFilter("[NormalizedPhone] IS NOT NULL");
 
                     b.HasIndex("NormalizedUserName")
                         .IsUnique()
                         .HasDatabaseName("UserNameIndex")
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
+
+                    b.HasIndex("UserName")
+                        .IsUnique()
+                        .HasDatabaseName("IX_Users_UserName")
+                        .HasFilter("[UserName] IS NOT NULL");
+
+                    b.HasIndex("UserState")
+                        .HasDatabaseName("IX_Users_UserState");
 
                     b.ToTable("AspNetUsers", (string)null);
                 });
@@ -7913,13 +7912,13 @@ namespace DAL.Migrations
 
             modelBuilder.Entity("Domains.Entities.ECommerceSystem.Cart.TbShoppingCart", b =>
                 {
-                    b.HasOne("Domains.Entities.ECommerceSystem.Customer.TbCustomer", "Customer")
-                        .WithMany()
-                        .HasForeignKey("CustomerId")
+                    b.HasOne("Domains.Identity.ApplicationUser", "User")
+                        .WithMany("ShoppingCarts")
+                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Customer");
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Domains.Entities.ECommerceSystem.Cart.TbShoppingCartItem", b =>
@@ -7995,13 +7994,13 @@ namespace DAL.Migrations
 
             modelBuilder.Entity("Domains.Entities.ECommerceSystem.TbCustomerAddress", b =>
                 {
-                    b.HasOne("Domains.Entities.ECommerceSystem.Customer.TbCustomer", "Customer")
-                        .WithMany()
-                        .HasForeignKey("CustomerId")
+                    b.HasOne("Domains.Identity.ApplicationUser", "User")
+                        .WithMany("CustomerAddresses")
+                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Customer");
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Domains.Entities.Location.TbCity", b =>
@@ -8029,11 +8028,9 @@ namespace DAL.Migrations
 
             modelBuilder.Entity("Domains.Entities.Loyalty.TbCustomerLoyalty", b =>
                 {
-                    b.HasOne("Domains.Entities.ECommerceSystem.Customer.TbCustomer", "Customer")
-                        .WithMany()
-                        .HasForeignKey("CustomerId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.HasOne("Domains.Identity.ApplicationUser", null)
+                        .WithMany("CustomerLoyalties")
+                        .HasForeignKey("ApplicationUserId");
 
                     b.HasOne("Domains.Entities.Loyalty.TbLoyaltyTier", "LoyaltyTier")
                         .WithMany("CustomerLoyalties")
@@ -8041,9 +8038,15 @@ namespace DAL.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.Navigation("Customer");
+                    b.HasOne("Domains.Identity.ApplicationUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("LoyaltyTier");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Domains.Entities.Loyalty.TbLoyaltyPointsTransaction", b =>
@@ -8249,14 +8252,21 @@ namespace DAL.Migrations
             modelBuilder.Entity("Domains.Entities.Order.TbOrder", b =>
                 {
                     b.HasOne("Domains.Entities.CouponCode.TbCouponCode", "Coupon")
-                        .WithMany("Orders")
-                        .HasForeignKey("CouponId");
+                        .WithMany()
+                        .HasForeignKey("CouponId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .HasConstraintName("FK_TbOrders_TbCouponCodes_CouponId");
 
                     b.HasOne("Domains.Entities.ECommerceSystem.TbCustomerAddress", "CustomerAddress")
                         .WithMany()
                         .HasForeignKey("DeliveryAddressId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired()
+                        .HasConstraintName("FK_TbOrders_TbCustomerAddresses_DeliveryAddressId");
+
+                    b.HasOne("Domains.Entities.CouponCode.TbCouponCode", null)
+                        .WithMany("Orders")
+                        .HasForeignKey("TbCouponCodeId");
 
                     b.HasOne("Domains.Entities.Shipping.TbShippingCompany", null)
                         .WithMany("Orders")
@@ -8266,7 +8276,8 @@ namespace DAL.Migrations
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("FK_TbOrders_AspNetUsers_UserId");
 
                     b.Navigation("Coupon");
 
@@ -8607,21 +8618,25 @@ namespace DAL.Migrations
 
             modelBuilder.Entity("Domains.Entities.Wallet.TbCustomerWallet", b =>
                 {
+                    b.HasOne("Domains.Identity.ApplicationUser", null)
+                        .WithMany("CustomerWallets")
+                        .HasForeignKey("ApplicationUserId");
+
                     b.HasOne("Domains.Entities.Currency.TbCurrency", "Currency")
                         .WithMany()
                         .HasForeignKey("CurrencyId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("Domains.Entities.ECommerceSystem.Customer.TbCustomer", "Customer")
+                    b.HasOne("Domains.Identity.ApplicationUser", "User")
                         .WithMany()
-                        .HasForeignKey("CustomerId")
+                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Currency");
 
-                    b.Navigation("Customer");
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Domains.Entities.Wallet.TbPlatformTreasury", b =>
@@ -8956,6 +8971,17 @@ namespace DAL.Migrations
             modelBuilder.Entity("Domains.Entities.Wallet.TbVendorWallet", b =>
                 {
                     b.Navigation("Transactions");
+                });
+
+            modelBuilder.Entity("Domains.Identity.ApplicationUser", b =>
+                {
+                    b.Navigation("CustomerAddresses");
+
+                    b.Navigation("CustomerLoyalties");
+
+                    b.Navigation("CustomerWallets");
+
+                    b.Navigation("ShoppingCarts");
                 });
 #pragma warning restore 612, 618
         }

@@ -1,25 +1,26 @@
+using Api.Controllers.Base;
 using Asp.Versioning;
+using BL.Services.Order;
+using Common.Enumerations.User;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Resources;
 using Shared.DTOs.ECommerce.Cart;
-using BL.Services.Order;
-using System.Security.Claims;
+using Shared.GeneralModels;
 
 namespace Api.Controllers.v1.Order
 {
     [ApiController]
     [ApiVersion("1.0")]
     [Route("api/v{version:apiVersion}/[controller]")]
-    [Authorize]
-    public class CartController : ControllerBase
+    [Authorize(Roles = nameof(UserRole.Customer))]
+    public class CartController : BaseController
     {
         private readonly ICartService _cartService;
-        private readonly ILogger<CartController> _logger;
 
         public CartController(ICartService cartService, ILogger<CartController> logger)
         {
             _cartService = cartService;
-            _logger = logger;
         }
 
         /// <summary>
@@ -33,24 +34,25 @@ namespace Api.Controllers.v1.Order
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        public async Task<ActionResult<CartSummaryDto>> AddToCart([FromBody] AddToCartRequest request)
+        public async Task<IActionResult> AddToCart([FromBody] AddToCartRequest request)
         {
-            try
+            if (string.IsNullOrEmpty(UserId))
             {
-                var customerId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-                if (string.IsNullOrEmpty(customerId))
-                    return Unauthorized();
-
-                _logger.LogInformation($"Customer {customerId} adding item {request.ItemId} to cart");
-
-                var cartSummary = await _cartService.AddToCartAsync(customerId, request);
-                return Ok(cartSummary);
+                return Unauthorized(new ResponseModel<string>
+                {
+                    Success = false,
+                    Message = NotifiAndAlertsResources.UnauthorizedAccess
+                });
             }
-            catch (Exception ex)
+
+            var cartSummary = await _cartService.AddToCartAsync(UserId, request);
+
+            return Ok(new ResponseModel<CartSummaryDto>
             {
-                _logger.LogError(ex, "Error adding item to cart");
-                return BadRequest(new { message = ex.Message });
-            }
+                Success = true,
+                Message = NotifiAndAlertsResources.DataRetrieved,
+                Data = cartSummary
+            });
         }
 
         /// <summary>
@@ -62,22 +64,23 @@ namespace Api.Controllers.v1.Order
         /// </remarks>
         [HttpGet("summary")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ActionResult<CartSummaryDto>> GetCartSummary()
+        public async Task<IActionResult> GetCartSummary()
         {
-            try
-            {
-                var customerId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-                if (string.IsNullOrEmpty(customerId))
-                    return Unauthorized();
+            var cartSummary = await _cartService.GetCartSummaryAsync(UserId);
 
-                var cartSummary = await _cartService.GetCartSummaryAsync(customerId);
-                return Ok(cartSummary);
-            }
-            catch (Exception ex)
+            if (cartSummary == null)
+                return NotFound(new ResponseModel<string>
+                {
+                    Success = false,
+                    Message = NotifiAndAlertsResources.NoDataFound
+                });
+
+            return Ok(new ResponseModel<CartSummaryDto>
             {
-                _logger.LogError(ex, "Error getting cart summary");
-                return BadRequest(new { message = ex.Message });
-            }
+                Success = true,
+                Message = NotifiAndAlertsResources.DataRetrieved,
+                Data = cartSummary
+            });
         }
 
         /// <summary>
@@ -90,24 +93,16 @@ namespace Api.Controllers.v1.Order
         [HttpDelete("remove-item/{cartItemId}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<CartSummaryDto>> RemoveFromCart(Guid cartItemId)
+        public async Task<IActionResult> RemoveFromCart(Guid cartItemId)
         {
-            try
-            {
-                var customerId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-                if (string.IsNullOrEmpty(customerId))
-                    return Unauthorized();
+            var cartSummary = await _cartService.RemoveFromCartAsync(UserId, cartItemId);
 
-                _logger.LogInformation($"Customer {customerId} removing item {cartItemId} from cart");
-
-                var cartSummary = await _cartService.RemoveFromCartAsync(customerId, cartItemId);
-                return Ok(cartSummary);
-            }
-            catch (Exception ex)
+            return Ok(new ResponseModel<CartSummaryDto>
             {
-                _logger.LogError(ex, "Error removing item from cart");
-                return BadRequest(new { message = ex.Message });
-            }
+                Success = true,
+                Message = NotifiAndAlertsResources.DataRetrieved,
+                Data = cartSummary
+            });
         }
 
         /// <summary>
@@ -120,24 +115,16 @@ namespace Api.Controllers.v1.Order
         [HttpPut("update-item")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult<CartSummaryDto>> UpdateCartItem([FromBody] UpdateCartItemRequest request)
+        public async Task<IActionResult> UpdateCartItem([FromBody] UpdateCartItemRequest request)
         {
-            try
-            {
-                var customerId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-                if (string.IsNullOrEmpty(customerId))
-                    return Unauthorized();
+            var cartSummary = await _cartService.UpdateCartItemAsync(UserId, request);
 
-                _logger.LogInformation($"Customer {customerId} updating item {request.CartItemId} quantity to {request.Quantity}");
-
-                var cartSummary = await _cartService.UpdateCartItemAsync(customerId, request);
-                return Ok(cartSummary);
-            }
-            catch (Exception ex)
+            return Ok(new ResponseModel<CartSummaryDto>
             {
-                _logger.LogError(ex, "Error updating cart item");
-                return BadRequest(new { message = ex.Message });
-            }
+                Success = true,
+                Message = NotifiAndAlertsResources.DataRetrieved,
+                Data = cartSummary
+            });
         }
 
         /// <summary>
@@ -149,24 +136,16 @@ namespace Api.Controllers.v1.Order
         /// </remarks>
         [HttpDelete("clear")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ActionResult<CartSummaryDto>> ClearCart()
+        public async Task<IActionResult> ClearCart()
         {
-            try
-            {
-                var customerId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-                if (string.IsNullOrEmpty(customerId))
-                    return Unauthorized();
+            var cartSummary = await _cartService.ClearCartAsync(UserId);
 
-                _logger.LogInformation($"Customer {customerId} clearing cart");
-
-                var cartSummary = await _cartService.ClearCartAsync(customerId);
-                return Ok(cartSummary);
-            }
-            catch (Exception ex)
+            return Ok(new ResponseModel<CartSummaryDto>
             {
-                _logger.LogError(ex, "Error clearing cart");
-                return BadRequest(new { message = ex.Message });
-            }
+                Success = true,
+                Message = NotifiAndAlertsResources.DataRetrieved,
+                Data = cartSummary
+            });
         }
 
         /// <summary>
@@ -180,20 +159,14 @@ namespace Api.Controllers.v1.Order
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult<int>> GetCartItemCount()
         {
-            try
-            {
-                var customerId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-                if (string.IsNullOrEmpty(customerId))
-                    return Unauthorized();
+            var count = await _cartService.GetCartItemCountAsync(UserId);
 
-                var count = await _cartService.GetCartItemCountAsync(customerId);
-                return Ok(count);
-            }
-            catch (Exception ex)
+            return Ok(new ResponseModel<int>
             {
-                _logger.LogError(ex, "Error getting cart item count");
-                return BadRequest(new { message = ex.Message });
-            }
+                Success = true,
+                Message = NotifiAndAlertsResources.DataRetrieved,
+                Data = count
+            });
         }
     }
 }

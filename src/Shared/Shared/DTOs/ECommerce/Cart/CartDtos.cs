@@ -3,7 +3,7 @@ namespace Shared.DTOs.ECommerce.Cart
     public class AddToCartRequest
     {
         public Guid ItemId { get; set; }
-        public Guid? ItemCombinationId { get; set; }
+        public Guid ItemCombinationId { get; set; }
         public Guid OfferId { get; set; }
         public int Quantity { get; set; }
     }

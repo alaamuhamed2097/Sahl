@@ -17,6 +17,7 @@ namespace Api.Extensions
             services.AddScoped<IRoleManagementService, RoleManagementService>();
             services.AddScoped<IFileUploadService, FileUploadService>();
             services.AddScoped<IImageProcessingService, ImageProcessingService>();
+            services.AddScoped<IOAuthService, OAuthService>();
 
             return services;
         }

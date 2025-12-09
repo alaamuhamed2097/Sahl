@@ -19,8 +19,7 @@ namespace Api.Controllers.v1.Location
     {
         private readonly ICityService _cityService;
 
-        public CityController(ICityService cityService, Serilog.ILogger logger)
-            : base(logger)
+        public CityController(ICityService cityService)
         {
             _cityService = cityService;
         }

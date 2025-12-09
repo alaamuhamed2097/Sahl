@@ -21,7 +21,7 @@ namespace Api.Controllers.v1.User
         private readonly IUserProfileService _adminService;
         private readonly IUserRegistrationService _registeredServices;
 
-        public AdminController(IUserProfileService adminService, IUserRegistrationService registeredServices, Serilog.ILogger logger) : base(logger)
+        public AdminController(IUserProfileService adminService, IUserRegistrationService registeredServices)
         {
             _adminService = adminService;
             _registeredServices = registeredServices;

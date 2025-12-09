@@ -19,7 +19,6 @@ namespace BL.Mapper
             ConfigureOrderMappings();
             ConfigureSettingMappings();
             ConfigureVendorMappings();
-            ConfigureCustomerMappings();
             ConfigureSupportMappings();
             ConfigureReviewMappings();
             ConfigureWarehouseAndInventoryMappings();

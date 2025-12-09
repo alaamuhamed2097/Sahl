@@ -20,11 +20,10 @@
 //    {
 //        private readonly IUserNotificationService _userNotificationService;
 
-//        public UserNotificationsController(Serilog.ILogger logger, IUserNotificationService userNotificationService)
-//            : base(logger)
-//        {
-//            _userNotificationService = userNotificationService;
-//        }
+        public UserNotificationsController(IUserNotificationService userNotificationService)
+        {
+            _userNotificationService = userNotificationService;
+        }
 
 //        /// <summary>
 //        /// Retrieves all userNotifications.
