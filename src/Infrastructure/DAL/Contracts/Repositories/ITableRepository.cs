@@ -1,5 +1,4 @@
-﻿using Common.Enumerations;
-using DAL.ResultModels;
+﻿using DAL.ResultModels;
 using Domains.Entities.Base;
 using System.Linq.Expressions;
 
@@ -67,7 +66,7 @@ namespace DAL.Contracts.Repositories
         Task<bool> UpdateCurrentStateAsync(
             Guid entityId,
             Guid updaterId,
-            EntityState newState = EntityState.Deleted,
+            bool newState = true,
             CancellationToken cancellationToken = default);
 
         /// <summary>

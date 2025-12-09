@@ -60,7 +60,7 @@ if (offer != null)
     
     // Get shipping details for the offer
     var shipping = await shippingDetailRepo.FindAsync(
-        sd => sd.OfferId == offer.Id && sd.CurrentState == 1);
+        sd => sd.OfferId == offer.Id && sd.!IsDeleted);
     
     if (shipping != null)
     {

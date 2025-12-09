@@ -50,7 +50,7 @@ private async Task<Dictionary<Guid, Guid>> ReserveStockForCartItems(
     // ? Batch Query: Load ALL pricings at once
     var pricingIds = cartItems.Select(i => i.OfferCombinationPricingId).ToList();
     var pricings = await pricingRepo.GetAsync(
-        p => pricingIds.Contains(p.Id) && p.CurrentState == 1);
+        p => pricingIds.Contains(p.Id) && !p.IsDeleted);
 
     // ? Build in-memory dictionary for O(1) lookups
     var pricingDict = pricings.ToDictionary(p => p.Id);
@@ -117,7 +117,7 @@ public async Task<OrderCreatedResponseDto> CreateOrderFromCartAsync(
             .AddRangeAsync(orderDetails, Guid.Parse(customerId)); // Parsed again!
 
         var defaultCurrency = await _unitOfWork.TableRepository<TbCurrency>()
-            .FindAsync(c => c.IsBaseCurrency && c.CurrentState == 1);
+            .FindAsync(c => c.IsBaseCurrency && !c.IsDeleted);
 
         if (defaultCurrency == null)
             throw new NotFoundException("Default currency not found.", _logger);
@@ -194,7 +194,7 @@ public async Task<OrderCreatedResponseDto> CreateOrderFromCartAsync(
                 .AddRangeAsync(orderDetails, customerIdGuid); // ? Use cached Guid
 
             var defaultCurrency = await _unitOfWork.TableRepository<TbCurrency>()
-                .FindAsync(c => c.IsBaseCurrency && c.CurrentState == 1);
+                .FindAsync(c => c.IsBaseCurrency && !c.IsDeleted);
 
             if (defaultCurrency == null)
             {
@@ -314,13 +314,13 @@ private async Task<List<TbOrderDetail>> CreateOrderDetails(
     // ? Batch load all pricings
     var pricingIds = cartItems.Select(i => i.OfferCombinationPricingId).ToList();
     var pricings = await pricingRepo.GetAsync(
-        p => pricingIds.Contains(p.Id) && p.CurrentState == 1);
+        p => pricingIds.Contains(p.Id) && !p.IsDeleted);
     var pricingDict = pricings.ToDictionary(p => p.Id);
 
     // ? Batch load all unique offers (not one per item)
     var offerIds = pricingToOfferMap.Values.Distinct().ToList();
     var offers = await offerRepo.GetAsync(
-        o => offerIds.Contains(o.Id) && o.CurrentState == 1);
+        o => offerIds.Contains(o.Id) && !o.IsDeleted);
     var offerDict = offers.ToDictionary(o => o.Id);
 
     foreach (var item in cartItems)
@@ -394,7 +394,7 @@ private async Task<List<TbOrderShipment>> CreateOrderShipmentsFromDetails(
 
             // ? Queries for SAME offer multiple times
             var shippingDetail = await shippingDetailRepo.FindAsync(
-                sd => sd.OfferId == offer.Id && sd.CurrentState == 1);
+                sd => sd.OfferId == offer.Id && sd.!IsDeleted);
 
             if (shippingDetail != null)
                 totalEstimatedDays += shippingDetail.MaximumEstimatedDays;
@@ -441,12 +441,12 @@ private async Task<List<TbOrderShipment>> CreateOrderShipmentsFromDetails(
     // ? Batch load all offers used in this order
     var offerIds = pricingToOfferMap.Values.Distinct().ToList();
     var offers = await offerRepo.GetAsync(
-        o => offerIds.Contains(o.Id) && o.CurrentState == 1);
+        o => offerIds.Contains(o.Id) && !o.IsDeleted);
     var offerDict = offers.ToDictionary(o => o.Id);
 
     // ? Batch load all shipping details
     var shippingDetails = await shippingDetailRepo.GetAsync(
-        sd => offerIds.Contains(sd.OfferId) && sd.CurrentState == 1);
+        sd => offerIds.Contains(sd.OfferId) && sd.!IsDeleted);
     var shippingDetailDict = shippingDetails
         .GroupBy(sd => sd.OfferId)
         .ToDictionary(g => g.Key, g => g.FirstOrDefault());

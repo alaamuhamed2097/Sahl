@@ -71,10 +71,10 @@ namespace BL.Service.Currency
         public async Task<decimal> GetExchangeRateAsync(string fromCurrency, string toCurrency)
         {
             var fromCurrencyEntity = await _unitOfWork.TableRepository<TbCurrency>()
-                .FindAsync(x => x.Code == fromCurrency && x.CurrentState == 1);
+                .FindAsync(x => x.Code == fromCurrency && !x.IsDeleted);
 
             var toCurrencyEntity = await _unitOfWork.TableRepository<TbCurrency>()
-                .FindAsync(x => x.Code == toCurrency && x.CurrentState == 1);
+                .FindAsync(x => x.Code == toCurrency && !x.IsDeleted);
 
             if (fromCurrencyEntity == null || toCurrencyEntity == null)
                 return 1m;
@@ -96,7 +96,7 @@ namespace BL.Service.Currency
         public async Task<string> FormatCurrencyAsync(decimal amount, string currencyCode)
         {
             var currency = await _unitOfWork.TableRepository<TbCurrency>()
-                .FindAsync(x => x.Code == currencyCode && x.CurrentState == 1);
+                .FindAsync(x => x.Code == currencyCode && !x.IsDeleted);
 
             if (currency == null)
                 return amount.ToString("N2");
@@ -117,7 +117,7 @@ namespace BL.Service.Currency
             if (_countryToCurrency.TryGetValue(countryCode.ToUpper(), out var currencyCode))
             {
                 var currency = await _unitOfWork.TableRepository<TbCurrency>()
-                    .FindAsync(x => x.Code == currencyCode && x.CurrentState == 1);
+                    .FindAsync(x => x.Code == currencyCode && !x.IsDeleted);
 
                 return currency != null ? _mapper.MapModel<TbCurrency, CurrencyDto>(currency) : null;
             }

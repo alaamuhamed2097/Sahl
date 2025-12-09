@@ -34,7 +34,7 @@ namespace BL.Service.Notification
         public async Task<IEnumerable<NotificationChannelDto>> GetAllAsync()
         {
             var channels = await _channelRepository
-                .GetAsync(x => x.CurrentState == 1);
+                .GetAsync(x => !x.IsDeleted);
 
             return _mapper.MapList<TbNotificationChannel, NotificationChannelDto>(channels).ToList();
         }
@@ -42,7 +42,7 @@ namespace BL.Service.Notification
         public async Task<IEnumerable<NotificationChannelDto>> GetActiveChannelsAsync()
         {
             var channels = await _channelRepository
-                .GetAsync(x => x.CurrentState == 1 && x.IsActive);
+                .GetAsync(x => !x.IsDeleted && x.IsActive);
 
             return _mapper.MapList<TbNotificationChannel, NotificationChannelDto>(channels).ToList();
         }
@@ -61,7 +61,7 @@ namespace BL.Service.Notification
         public async Task<NotificationChannelDto?> GetByChannelTypeAsync(NotificationChannel channelType)
         {
             var channel = (await _channelRepository
-                .GetAsync(x => x.Channel == channelType && x.CurrentState == 1))
+                .GetAsync(x => x.Channel == channelType && !x.IsDeleted))
                 .FirstOrDefault();
 
             if (channel == null) return null;
@@ -80,7 +80,7 @@ namespace BL.Service.Notification
             if (criteriaModel.PageSize < 1 || criteriaModel.PageSize > 100)
                 throw new ArgumentOutOfRangeException(nameof(criteriaModel.PageSize), ValidationResources.PageSizeRange);
 
-            Expression<Func<TbNotificationChannel, bool>> filter = x => x.CurrentState == 1;
+            Expression<Func<TbNotificationChannel, bool>> filter = x => !x.IsDeleted;
 
             var searchTerm = criteriaModel.SearchTerm?.Trim().ToLower();
             if (!string.IsNullOrWhiteSpace(searchTerm))
@@ -110,7 +110,7 @@ namespace BL.Service.Notification
 
         public async Task<bool> DeleteAsync(Guid id, Guid userId)
         {
-            return await _channelRepository.UpdateCurrentStateAsync(id, userId, 0);
+            return await _channelRepository.UpdateCurrentStateAsync(id, userId, true);
         }
 
         public async Task<bool> ToggleActiveStatusAsync(Guid id, Guid userId)

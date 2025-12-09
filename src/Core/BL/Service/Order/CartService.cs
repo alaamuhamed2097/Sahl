@@ -327,7 +327,7 @@ namespace BL.Service.Order
 
             if (cart.Items != null)
             {
-                foreach (var ci in cart.Items.Where(i => i.CurrentState == 1))
+                foreach (var ci in cart.Items.Where(i => !i.IsDeleted))
                 {
                     // ✅ ci.OfferId contains OfferCombinationPricingId
                     var pricing = await pricingRepo.FindByIdAsync(ci.OfferCombinationPricingId);

@@ -3,12 +3,12 @@ using BL.Contracts.Service.ECommerce.Unit;
 using BL.Service.Base;
 using DAL.Contracts.UnitOfWork;
 using DAL.Models;
+using DAL.ResultModels;
 using Domains.Entities.Catalog.Unit;
 using Domains.Views.Unit;
 using Resources;
 using Shared.DTOs.ECommerce.Unit;
 using Shared.GeneralModels.SearchCriteriaModels;
-using DAL.ResultModels;
 using System.Linq.Expressions;
 
 namespace BL.Service.ECommerce.Unit
@@ -107,7 +107,7 @@ namespace BL.Service.ECommerce.Unit
                     var conversionUnits = await _unitRepository.TableRepository<TbUnitConversion>().GetAsync(c => c.ToUnitId == dto.Id || c.FromUnitId == dto.Id);
                     foreach (var conversionUnit in conversionUnits)
                     {
-                        await _unitRepository.TableRepository<TbUnitConversion>().UpdateCurrentStateAsync(conversionUnit.Id, userId, 0);
+                        await _unitRepository.TableRepository<TbUnitConversion>().UpdateCurrentStateAsync(conversionUnit.Id, userId, true);
                     }
                 }
 
@@ -159,7 +159,7 @@ namespace BL.Service.ECommerce.Unit
                 {
                     foreach (var conversionUnit in conversionUnits)
                     {
-                        await _unitRepository.TableRepository<TbUnitConversion>().UpdateCurrentStateAsync(conversionUnit.Id, userId, 0);
+                        await _unitRepository.TableRepository<TbUnitConversion>().UpdateCurrentStateAsync(conversionUnit.Id, userId, true);
                     }
                 }
 

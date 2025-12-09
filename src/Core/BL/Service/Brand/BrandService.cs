@@ -46,7 +46,7 @@ namespace BL.Service.Brand
         public async Task<IEnumerable<BrandDto>> GetAllAsync()
         {
             var brands = await _brandRepository
-                .GetAsync(x => x.CurrentState == 1, orderBy: q => q.OrderBy(x => x.DisplayOrder));
+                .GetAsync(x => !x.IsDeleted, orderBy: q => q.OrderBy(x => x.DisplayOrder));
 
             var brandDtos = _mapper.MapList<TbBrand, BrandDto>(brands).ToList();
 
@@ -80,7 +80,7 @@ namespace BL.Service.Brand
                 throw new ArgumentOutOfRangeException(nameof(criteriaModel.PageSize), ValidationResources.PageSizeRange);
 
             // Base filter
-            Expression<Func<TbBrand, bool>> filter = x => x.CurrentState == 1;
+            Expression<Func<TbBrand, bool>> filter = x => !x.IsDeleted;
 
             // Search term filter
             var searchTerm = criteriaModel.SearchTerm?.Trim().ToLower();
@@ -138,7 +138,7 @@ namespace BL.Service.Brand
         public async Task<bool> DeleteAsync(Guid id, Guid userId)
         {
             var success = await _brandRepository
-                .UpdateCurrentStateAsync(id, userId, 0);
+                .UpdateCurrentStateAsync(id, userId, true);
 
             return success;
         }

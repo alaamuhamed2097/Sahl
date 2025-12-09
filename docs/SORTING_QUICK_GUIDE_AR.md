@@ -82,7 +82,7 @@ public PaginatedDataModel<CityDto> GetPage(BaseSearchCriteriaModel criteriaModel
 {
     // ... validation code ...
     
-    Expression<Func<TbCity, bool>> filter = x => x.CurrentState == 1;
+    Expression<Func<TbCity, bool>> filter = x => !x.IsDeleted;
     
     if (!string.IsNullOrWhiteSpace(criteriaModel.SearchTerm))
     {

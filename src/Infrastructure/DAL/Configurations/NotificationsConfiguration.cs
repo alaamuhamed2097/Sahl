@@ -62,11 +62,11 @@ namespace DAL.Configurations
             builder.Property(x => x.UpdatedDateUtc)
                 .HasColumnType("datetime2(2)");
 
-            builder.Property(x => x.CurrentState)
+            builder.Property(x => x.IsDeleted)
                 .HasDefaultValue(1);
 
             // Indexes
-            builder.HasIndex(x => x.CurrentState);
+            builder.HasIndex(x => x.IsDeleted);
             builder.HasIndex(x => new { x.RecipientType, x.RecipientID });
             builder.HasIndex(x => x.IsRead);
             builder.HasIndex(x => x.SentDate);

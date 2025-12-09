@@ -110,7 +110,7 @@ Extract all pricing IDs from cart items.
 #### 2. Batch Load All Pricings
 ```csharp
 var pricings = await pricingRepo.GetAsync(
-    p => pricingIds.Contains(p.Id) && p.CurrentState == 1);
+    p => pricingIds.Contains(p.Id) && !p.IsDeleted);
 ```
 
 **This is ONE database query** containing all pricing records, not N queries.
@@ -194,7 +194,7 @@ private async Task<List<TbOrderDetail>> CreateOrderDetails(
 ```csharp
 var pricingIds = cartItems.Select(i => i.OfferCombinationPricingId).ToList();
 var pricings = await pricingRepo.GetAsync(
-    p => pricingIds.Contains(p.Id) && p.CurrentState == 1);
+    p => pricingIds.Contains(p.Id) && !p.IsDeleted);
 var pricingDict = pricings.ToDictionary(p => p.Id);
 ```
 
@@ -204,7 +204,7 @@ One query for all pricings.
 ```csharp
 var offerIds = pricingToOfferMap.Values.Distinct().ToList();
 var offers = await offerRepo.GetAsync(
-    o => offerIds.Contains(o.Id) && o.CurrentState == 1);
+    o => offerIds.Contains(o.Id) && !o.IsDeleted);
 var offerDict = offers.ToDictionary(o => o.Id);
 ```
 
@@ -277,7 +277,7 @@ Each group becomes one shipment.
 ```csharp
 var offerIds = pricingToOfferMap.Values.Distinct().ToList();
 var offers = await offerRepo.GetAsync(
-    o => offerIds.Contains(o.Id) && o.CurrentState == 1);
+    o => offerIds.Contains(o.Id) && !o.IsDeleted);
 var offerDict = offers.ToDictionary(o => o.Id);
 ```
 
@@ -286,7 +286,7 @@ Get all offers used in this order (could be 1 to many).
 #### 3. Batch Load Shipping Details
 ```csharp
 var shippingDetails = await shippingDetailRepo.GetAsync(
-    sd => offerIds.Contains(sd.OfferId) && sd.CurrentState == 1);
+    sd => offerIds.Contains(sd.OfferId) && sd.!IsDeleted);
 
 var shippingDetailDict = shippingDetails
     .GroupBy(sd => sd.OfferId)

@@ -133,13 +133,13 @@ public PaginatedDataModel<CityDto> GetPage(BaseSearchCriteriaModel criteriaModel
         throw new ArgumentOutOfRangeException(nameof(criteriaModel.PageSize), ValidationResources.PageSizeRange);
 
     // Base filter for active entities
-    Expression<Func<TbCity, bool>> filter = x => x.CurrentState == 1;
+    Expression<Func<TbCity, bool>> filter = x => !x.IsDeleted;
 
     // Apply search term if provided
     if (!string.IsNullOrWhiteSpace(criteriaModel.SearchTerm))
     {
         string searchTerm = criteriaModel.SearchTerm.Trim().ToLower();
-        filter = x => x.CurrentState == 1 &&
+        filter = x => !x.IsDeleted &&
                      (x.TitleAr != null && x.TitleAr.ToLower().Contains(searchTerm) ||
                      x.TitleEn != null && x.TitleEn.ToLower().Contains(searchTerm));
     }

@@ -61,7 +61,7 @@ namespace DAL.ApplicationContext.Configurations
                    .HasDatabaseName("IX_TbOffers_WarrantyId");
 
             // Query filter for active offers
-            builder.HasQueryFilter(o =>o.CurrentState == 1);
+            builder.HasQueryFilter(o => !o.IsDeleted);
         }
     }
 }
