@@ -59,18 +59,18 @@ namespace Dashboard.Pages.Catalog.Products
         {
             Images = new List<ItemImageDto>(),
             ItemAttributes = new List<ItemAttributeDto>(),
-            ItemCombinations = new List<ItemCombinationDto>
-            {
-                // Initialize with a default combination
-                new ItemCombinationDto
-                {
-                    Barcode = "1111111",
-                    SKU = "DEFAULT",
-                    BasePrice = 0,
-                    CombinationAttributes = new List<CombinationAttributeDto>(),
-                    IsDefault = true
-                }
-            }
+            //ItemCombinations = new List<ItemCombinationDto>
+            //{
+            //    // Initialize with a default combination
+            //    new ItemCombinationDto
+            //    {
+            //        Barcode = "1111111",
+            //        SKU = "DEFAULT",
+            //        BasePrice = 0,
+            //        CombinationAttributes = new List<CombinationAttributeDto>(),
+            //        IsDefault = true
+            //    }
+            //}
         };
 
         // Validation states
@@ -107,10 +107,9 @@ namespace Dashboard.Pages.Catalog.Products
 
         protected override void OnParametersSet()
         {
-            // ? FIX: تحقق من التهيئة ومن تغيير الـ Id لمنع infinite loop
             if (!_initialized)
             {
-                return; // سينفذ OnInitializedAsync
+                return; 
             }
 
             if (Id != Guid.Empty && Id != _lastLoadedId)
@@ -186,14 +185,10 @@ namespace Dashboard.Pages.Catalog.Products
         {
             try
             {
-                Console.WriteLine($"🔍 LoadCategoryAttributes - START");
                 isLoadingAttributes = true;
                 StateHasChanged();
 
-                Console.WriteLine($"📡 Calling API: AttributeService.GetByCategoryIdAsync({Model.CategoryId})");
                 var result = await AttributeService.GetByCategoryIdAsync(Model.CategoryId);
-
-                Console.WriteLine($"📥 API Response - Success: {result?.Success}, Data count: {result?.Data?.Count()}");
 
                 if (result?.Success == true && result.Data != null)
                 {
@@ -216,7 +211,6 @@ namespace Dashboard.Pages.Catalog.Products
                     // Initialize attributes if this is a new product
                     if (Id == Guid.Empty)
                     {
-                        Console.WriteLine($"🆕 New product - initializing attributes");
                         Model.ItemAttributes = categoryAttributes
                             .Select(a => new ItemAttributeDto
                             {
@@ -225,19 +219,15 @@ namespace Dashboard.Pages.Catalog.Products
                                 Value = string.Empty
                             })
                             .ToList();
-
-                        Console.WriteLine($"✅ Initialized {Model.ItemAttributes.Count} item attributes");
                     }
                     else
                     {
-                        Console.WriteLine($"📝 Existing product - merging attributes");
                         // For existing products, ensure all category attributes have entries
                         foreach (var categoryAttr in categoryAttributes)
                         {
                             // FIX: Use AttributeId, not Id
                             if (!Model.ItemAttributes.Any(ia => ia.AttributeId == categoryAttr.AttributeId))
                             {
-                                Console.WriteLine($"  ➕ Adding missing attribute: {categoryAttr.Title}");
                                 Model.ItemAttributes.Add(new ItemAttributeDto
                                 {
                                     AttributeId = categoryAttr.AttributeId,
@@ -245,10 +235,7 @@ namespace Dashboard.Pages.Catalog.Products
                                 });
                             }
                         }
-                        Console.WriteLine($"✅ Total item attributes: {Model.ItemAttributes.Count}");
                     }
-
-                    Console.WriteLine($"🔄 About to call StateHasChanged - categoryAttributes.Count: {categoryAttributes.Count}");
                 }
                 else
                 {
@@ -261,12 +248,10 @@ namespace Dashboard.Pages.Catalog.Products
 
                 // Force UI update
                 isLoadingAttributes = false;
-                Console.WriteLine($"🔄 Calling StateHasChanged - isLoadingAttributes: {isLoadingAttributes}");
                 StateHasChanged();
 
                 // Give Blazor time to render
                 await Task.Delay(100);
-                Console.WriteLine($"✅ LoadCategoryAttributes - COMPLETE - Attributes visible: {categoryAttributes.Count}");
             }
             catch (Exception ex)
             {
@@ -308,6 +293,18 @@ namespace Dashboard.Pages.Catalog.Products
                     if (Model.CategoryId != Guid.Empty)
                     {
                         await LoadCategoryAttributes();
+                        // IMPORTANT: Load existing attribute values into the component
+                        // Give the component time to initialize after attributes are loaded
+                        await Task.Delay(100);
+
+                        if (attributeValuesSectionRef != null && Model.ItemAttributes != null)
+                        {
+                            attributeValuesSectionRef.LoadExistingValues(Model.ItemAttributes);
+                        }
+                        else
+                        {
+                            Console.WriteLine($"⚠️ Cannot load values - Ref: {attributeValuesSectionRef != null}, Attributes: {Model.ItemAttributes != null}");
+                        }
                     }
 
                     StateHasChanged();
@@ -354,15 +351,11 @@ namespace Dashboard.Pages.Catalog.Products
         {
             try
             {
-                Console.WriteLine($"🔍 HandleCategoryChange called - CategoryId: {Model.CategoryId}");
-
                 // Reset attribute values when category changes
                 attributeValues = new Dictionary<Guid, List<string>>();
 
                 // Load category attributes
                 await LoadCategoryAttributes();
-
-                Console.WriteLine($"✅ HandleCategoryChange completed");
             }
             catch (Exception ex)
             {
@@ -491,12 +484,10 @@ namespace Dashboard.Pages.Catalog.Products
             if (attributeValuesSectionRef != null)
             {
                 // Get the attribute values from the component
-                var (nonPricingValues, pricingValues, priceModifiers) = attributeValuesSectionRef.GetAllAttributeData();
+                var nonPricingValues = attributeValuesSectionRef.GetAllAttributeData();
 
                 // Update the dictionaries
                 nonPricingAttributeValues = nonPricingValues;
-                pricingAttributeValues = pricingValues;
-                attributeValuePriceModifiers = priceModifiers;
 
                 // Update the model's ItemAttributes for non-pricing attributes
                 UpdateModelAttributes();
@@ -507,7 +498,6 @@ namespace Dashboard.Pages.Catalog.Products
 
         private void UpdateModelAttributes()
         {
-            Console.WriteLine("🔍 UpdateModelAttributes - START");
 
             // Clear existing attributes
             Model.ItemAttributes = new List<ItemAttributeDto>();
@@ -515,16 +505,14 @@ namespace Dashboard.Pages.Catalog.Products
             // Add non-pricing attributes from the form
             foreach (var kvp in nonPricingAttributeValues)
             {
-                Console.WriteLine($"  Processing attribute {kvp.Key}: '{kvp.Value}'");
 
                 if (!string.IsNullOrWhiteSpace(kvp.Value))
                 {
-                    // FIX: Match using AttributeId instead of Id
+                    // Match using AttributeId instead of Id
                     var categoryAttr = categoryAttributes.FirstOrDefault(ca => ca.AttributeId == kvp.Key);
 
                     if (categoryAttr != null)
                     {
-                        Console.WriteLine($"    ✅ Found category attribute: {categoryAttr.Title}");
                         Model.ItemAttributes.Add(new ItemAttributeDto
                         {
                             AttributeId = categoryAttr.AttributeId,
@@ -533,63 +521,19 @@ namespace Dashboard.Pages.Catalog.Products
                     }
                     else
                     {
-                        Console.WriteLine($"    ⚠️ Could not find category attribute for AttributeId: {kvp.Key}");
+                        Console.WriteLine($"⚠️ Could not find category attribute for AttributeId: {kvp.Key}");
                     }
                 }
                 else
                 {
-                    Console.WriteLine($"    ⏭️ Skipped (empty value)");
+                    Console.WriteLine($"⏭️ Skipped (empty value)");
                 }
             }
 
-            Console.WriteLine($"✅ UpdateModelAttributes - END - Added {Model.ItemAttributes.Count} attributes to Model");
             foreach (var attr in Model.ItemAttributes)
             {
                 var catAttr = categoryAttributes.FirstOrDefault(ca => ca.AttributeId == attr.AttributeId);
                 Console.WriteLine($"    - {catAttr?.Title ?? "Unknown"}: {attr.Value}");
-            }
-        }
-
-        private void UpdateCombinationsBasedOnAttributeValues()
-        {
-            // If we have attribute values but no combinations, create default combinations
-            if (attributeValues.Any() && !Model.ItemCombinations.Any())
-            {
-                Model.ItemCombinations = new List<ItemCombinationDto>();
-
-                // Create a default combination
-                var defaultCombination = new ItemCombinationDto
-                {
-                    Id = Guid.NewGuid(),
-                    Barcode = "DEFAULT",
-                    SKU = "DEFAULT",
-                    BasePrice = 0,
-                    IsDefault = true,
-                    CombinationAttributes = new List<CombinationAttributeDto>()
-                };
-
-                // Add attributes to the default combination
-                foreach (var attr in attributeValues)
-                {
-                    if (attr.Value.Any())
-                    {
-                        var combinationAttr = new CombinationAttributeDto
-                        {
-                            combinationAttributeValueDtos = new List<CombinationAttributeValueDto>
-                    {
-                        new CombinationAttributeValueDto
-                        {
-                            AttributeId = attr.Key,
-                            Value = attr.Value.First() // Use the first value
-                        }
-                    }
-                        };
-                        defaultCombination.CombinationAttributes.Add(combinationAttr);
-                    }
-                }
-
-                Model.ItemCombinations.Add(defaultCombination);
-                Console.WriteLine($"✅ Created default combination with attributes");
             }
         }
 
@@ -636,41 +580,6 @@ namespace Dashboard.Pages.Catalog.Products
             }
         }
 
-        private void RemoveAttribute(Guid attributeId)
-        {
-            var attribute = Model.ItemAttributes.FirstOrDefault(a => a.AttributeId == attributeId);
-            if (attribute != null)
-            {
-                Model.ItemAttributes.Remove(attribute);
-
-                // Remove any combinations that include this attribute
-                Model.ItemCombinations = Model.ItemCombinations
-                    .Where(c => !CombinationContainsAttribute(c, attributeId))
-                    .ToList();
-
-                // If we removed all combinations or the default combination, ensure we have at least one default
-                if (!Model.ItemCombinations.Any())
-                {
-                    // Add back a default combination
-                    Model.ItemCombinations.Add(new ItemCombinationDto
-                    {
-                        Barcode = "DEFAULT",
-                        SKU = "DEFAULT",
-                        BasePrice = 0,
-                        CombinationAttributes = new List<CombinationAttributeDto>(),
-                        IsDefault = true
-                    });
-                }
-                else if (!Model.ItemCombinations.Any(c => c.IsDefault))
-                {
-                    // If no default exists, set the first one as default
-                    Model.ItemCombinations.First().IsDefault = true;
-                }
-
-                StateHasChanged();
-            }
-        }
-
         /// <summary>
         /// Checks if a combination contains a specific attribute
         /// </summary>
@@ -684,96 +593,13 @@ namespace Dashboard.Pages.Catalog.Products
                     .Any(cav => cav.AttributeId == attributeId));
         }
         
-        //protected async Task Save()
-        //{
-        //    try
-        //    {
-        //        // Validate required fields
-        //        ValidateForm();
-
-        //        // Validate attributes
-        //        if (!ValidateAttributes())
-        //        {
-        //            showValidationErrors = true;
-        //            await ShowErrorMessage(
-        //                ValidationResources.ValidationError,
-        //                "Please fill in all required attributes before saving.");
-        //            return;
-        //        }
-
-        //        // Validate attribute combinations
-        //        if (!(await ValidateAttributeCombinations()))
-        //        {
-        //            showValidationErrors = true;
-        //            return;
-        //        }
-
-        //        if (!IsFormValid())
-        //        {
-        //            showValidationErrors = true;
-        //            // Highlight which fields are invalid
-        //            if (!fieldValidation["ThumbnailImage"])
-        //            {
-        //                await ShowErrorMessage(
-        //                ValidationResources.ValidationError,
-        //                    ValidationResources.ImageRequired);
-        //            }
-        //            else
-        //            {
-        //                await ShowErrorMessage(
-        //                  ValidationResources.ValidationError,
-        //                     ValidationResources.PleaseFixValidationErrors);
-        //            }
-        //            return;
-        //        }
-
-        //        isSaving = true;
-        //        StateHasChanged();
-
-        //        var result = await ItemService.SaveAsync(Model);
-
-        //        if (result?.Success == true)
-        //        {
-        //            await ShowSuccessMessage(
-        //              ValidationResources.Done,
-        //           NotifiAndAlertsResources.SavedSuccessfully);
-
-        //            Navigation.NavigateTo("/Products");
-        //        }
-        //        else
-        //        {
-        //            await ShowErrorMessage(
-        //        ValidationResources.Failed,
-        //result?.Message ?? NotifiAndAlertsResources.SaveFailed);
-        //        }
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        await ShowErrorMessage(NotifiAndAlertsResources.FailedAlert, ex.Message);
-        //    }
-        //    finally
-        //    {
-        //        isSaving = false;
-        //        StateHasChanged();
-        //    }
-        //}
         protected async Task Save()
         {
             try
             {
-                Console.WriteLine("🔍 === SAVE METHOD STARTED ===");
-
-                // Step 1: Validate form fields
-                Console.WriteLine("📋 Step 1: ValidateForm()");
                 ValidateForm();
-                Console.WriteLine($"  fieldValidation results:");
-                foreach (var kvp in fieldValidation)
-                {
-                    Console.WriteLine($"    {kvp.Key}: {kvp.Value}");
-                }
 
                 // Step 2: Validate attributes
-                Console.WriteLine("📋 Step 2: ValidateAttributes()");
                 if (!ValidateAttributes())
                 {
                     Console.WriteLine("  ❌ ValidateAttributes() FAILED");
@@ -783,20 +609,16 @@ namespace Dashboard.Pages.Catalog.Products
                         "Please fill in all required attributes before saving.");
                     return;
                 }
-                Console.WriteLine("  ✅ ValidateAttributes() PASSED");
 
                 // Step 3: Validate attribute combinations
-                Console.WriteLine("📋 Step 3: ValidateAttributeCombinations()");
-                if (!(await ValidateAttributeCombinations()))
-                {
-                    Console.WriteLine("  ❌ ValidateAttributeCombinations() FAILED");
-                    showValidationErrors = true;
-                    return;
-                }
-                Console.WriteLine("  ✅ ValidateAttributeCombinations() PASSED");
+                //if (!(await ValidateAttributeCombinations()))
+                //{
+                //    Console.WriteLine("  ❌ ValidateAttributeCombinations() FAILED");
+                //    showValidationErrors = true;
+                //    return;
+                //}
 
                 // Step 4: Check if form is valid
-                Console.WriteLine("📋 Step 4: IsFormValid()");
                 if (!IsFormValid())
                 {
                     Console.WriteLine("  ❌ IsFormValid() FAILED");
@@ -812,9 +634,6 @@ namespace Dashboard.Pages.Catalog.Products
                     }
                     else
                     {
-                        Console.WriteLine("    Reason: Unknown validation failure");
-                        Console.WriteLine($"    ThumbnailImage: {!string.IsNullOrEmpty(Model.ThumbnailImage)}");
-                        Console.WriteLine($"    Images count: {Model.Images?.Count ?? 0}");
 
                         await ShowErrorMessage(
                             ValidationResources.ValidationError,
@@ -822,14 +641,17 @@ namespace Dashboard.Pages.Catalog.Products
                     }
                     return;
                 }
-                Console.WriteLine("  ✅ IsFormValid() PASSED");
-
-                Console.WriteLine("🚀 All validations passed, proceeding to save...");
-                Console.WriteLine($"  Model.ItemCombinations count: {Model.ItemCombinations?.Count ?? 0}");
-                Console.WriteLine($"  Model.ItemAttributes count: {Model.ItemAttributes?.Count ?? 0}");
 
                 isSaving = true;
                 StateHasChanged();
+                
+                //if (Model.Id == Guid.Empty)
+                //{
+                //    foreach (var comb in Model.ItemCombinations ?? new())
+                //    {
+                //        comb.Id = Guid.Empty;
+                //    }
+                //}
 
                 var result = await ItemService.SaveAsync(Model);
 
@@ -860,7 +682,6 @@ namespace Dashboard.Pages.Catalog.Products
             {
                 isSaving = false;
                 StateHasChanged();
-                Console.WriteLine("🔍 === SAVE METHOD ENDED ===");
             }
         }
 
@@ -872,14 +693,13 @@ namespace Dashboard.Pages.Catalog.Products
             if (Model.CategoryId == Guid.Empty || !categoryAttributes.Any())
                 return true; // No attributes to validate
 
-            // FIXED: Only validate NON-PRICING required attributes
             // Pricing attributes are validated separately in combinations
             foreach (var categoryAttr in categoryAttributes.Where(ca => ca.IsRequired && !ca.AffectsPricing))
             {
                 var itemAttr = Model.ItemAttributes?.FirstOrDefault(ia => ia.AttributeId == categoryAttr.AttributeId);
+                Console.WriteLine($"Validate Attribute {categoryAttr.TitleAr} with value : {itemAttr?.Value}");
                 if (itemAttr == null || string.IsNullOrWhiteSpace(itemAttr.Value))
                 {
-                    Console.WriteLine($"❌ Required non-pricing attribute '{categoryAttr.Title}' is missing or empty");
                     return false;
                 }
             }
@@ -920,65 +740,14 @@ namespace Dashboard.Pages.Catalog.Products
                     return !string.IsNullOrEmpty(Model.ThumbnailImage) ||
                            (Model.Images != null && Model.Images.Count > 0);
 
-                case 4: // Attributes - FIXED VALIDATION
+                case 5: // Attributes - FIXED VALIDATION
                         // Sync the attribute values first
                     if (attributeValuesSectionRef != null)
                     {
                         await OnAttributeValuesChanged();
 
-                        var (nonPricing, pricing, modifiers) = attributeValuesSectionRef.GetAllAttributeData();
+                        var nonPricing = attributeValuesSectionRef.GetAllAttributeData();
 
-                        Console.WriteLine($"🔍 Step 4 Validation:");
-                        Console.WriteLine($"  Total pricing attributes: {categoryAttributes.Count(a => a.AffectsPricing)}");
-                        Console.WriteLine($"  Pricing dictionary keys: {pricing.Count}");
-
-                        // If there are pricing attributes, ensure they have values
-                        if (categoryAttributes.Any(a => a.AffectsPricing))
-                        {
-                            // Check if all REQUIRED pricing attributes have at least one non-empty value
-                            var requiredPricingAttrs = categoryAttributes.Where(a => a.AffectsPricing && a.IsRequired).ToList();
-
-                            foreach (var attr in requiredPricingAttrs)
-                            {
-                                Console.WriteLine($"  Checking required attribute: {attr.Title} (AttributeId: {attr.AttributeId})");
-
-                                // FIX: Use AttributeId to look up values
-                                if (!pricing.ContainsKey(attr.AttributeId))
-                                {
-                                    Console.WriteLine($"    ❌ Not found in pricing dictionary");
-                                    await ShowErrorMessage(
-                                        ValidationResources.ValidationError,
-                                        $"Please add at least one value for the required attribute: {attr.Title}");
-                                    return false;
-                                }
-
-                                var values = pricing[attr.AttributeId].Where(v => !string.IsNullOrWhiteSpace(v)).ToList();
-                                Console.WriteLine($"    Values count: {values.Count}");
-
-                                if (!values.Any())
-                                {
-                                    Console.WriteLine($"    ❌ No non-empty values");
-                                    await ShowErrorMessage(
-                                        ValidationResources.ValidationError,
-                                        $"Please add at least one value for the required attribute: {attr.Title}");
-                                    return false;
-                                }
-
-                                Console.WriteLine($"    ✅ Has {values.Count} value(s)");
-                            }
-
-                            // Check if at least one pricing attribute has values
-                            var hasAnyValues = pricing.Any(kvp => kvp.Value.Any(v => !string.IsNullOrWhiteSpace(v)));
-                            Console.WriteLine($"  Has any pricing values: {hasAnyValues}");
-
-                            if (!hasAnyValues)
-                            {
-                                await ShowErrorMessage(
-                                    ValidationResources.ValidationError,
-                                    "Please add values for at least one pricing attribute before creating combinations.");
-                                return false;
-                            }
-                        }
                     }
                     return true;
 
@@ -989,26 +758,21 @@ namespace Dashboard.Pages.Catalog.Products
 
         protected async Task MoveToNextStep()
         {
-            Console.WriteLine($"🔍 MoveToNextStep called - currentStep: {currentStep}, TotalSteps: {TotalSteps}");
 
             if (await ValidateCurrentStep())
             {
-                Console.WriteLine($"✅ Current step validation passed");
 
                 // If moving from step 4 (attributes), sync the data
                 if (currentStep == 4 && attributeValuesSectionRef != null)
                 {
-                    Console.WriteLine($"🔄 Syncing attribute values");
                     await OnAttributeValuesChanged();
                 }
 
                 if (isWizardInitialized)
                 {
-                    Console.WriteLine($"✅ Wizard is initialized");
 
                     if (currentStep < TotalSteps - 1)
                     {
-                        Console.WriteLine($"➡️ Moving to next step: {currentStep} -> {currentStep + 1}");
                         currentStep++;
                         await JSRuntime.InvokeVoidAsync("moveToNextStep");
                         StateHasChanged();
@@ -1035,92 +799,7 @@ namespace Dashboard.Pages.Catalog.Products
                     errorMessage);
             }
         }
-        // protected async Task MoveToNextStep()
-        // {
-        //     if (await ValidateCurrentStep())
-        //     {
-        //         // If moving from step 5 (attributes), sync the data
-        //         if (currentStep == 4 && attributeValuesSectionRef != null)
-        //         {
-        //             await OnAttributeValuesChanged();
-        //         }
-        //         if (isWizardInitialized && currentStep < TotalSteps - 1)
-        //         {
-        //             currentStep++;
-        //             await JSRuntime.InvokeVoidAsync("moveToNextStep");
-        //             StateHasChanged();
-        //         }
-        //     }
-        //     else
-        //     {
-        //         // Show specific validation message based on current step
-        //         string errorMessage = GetStepValidationMessage(currentStep);
-        //         await ShowErrorMessage(
-        //ValidationResources.ValidationError,
-        // errorMessage);
-        //     }
-        // }
 
-        // Add these methods to Details.razor.cs
-
-        protected async Task AddCombination(ItemCombinationDto combination)
-        {
-            // Generate a new ID for the combination
-            combination.Id = Guid.NewGuid();
-            Model.ItemCombinations.Add(combination);
-
-            // If this is set as default, unset others
-            if (combination.IsDefault)
-            {
-                foreach (var combo in Model.ItemCombinations)
-                {
-                    if (combo.Id != combination.Id)
-                        combo.IsDefault = false;
-                }
-            }
-
-            StateHasChanged();
-        }
-
-        protected async Task UpdateCombination(ItemCombinationDto combination)
-        {
-            // Find and update the existing combination
-            var existing = Model.ItemCombinations.FirstOrDefault(c => c.Id == combination.Id);
-            if (existing != null)
-            {
-                // Update properties
-                existing.Barcode = combination.Barcode;
-                existing.SKU = combination.SKU;
-                existing.BasePrice = combination.BasePrice;
-                existing.IsDefault = combination.IsDefault;
-                existing.CombinationAttributes = combination.CombinationAttributes;
-
-                // If this is set as default, unset others
-                if (combination.IsDefault)
-                {
-                    foreach (var combo in Model.ItemCombinations)
-                    {
-                        if (combo.Id != combination.Id)
-                            combo.IsDefault = false;
-                    }
-                }
-            }
-
-            StateHasChanged();
-        }
-
-        protected async Task RemoveCombination(ItemCombinationDto combination)
-        {
-            Model.ItemCombinations.Remove(combination);
-
-            // If we removed the default and there are others, set a new default
-            if (combination.IsDefault && Model.ItemCombinations.Any())
-            {
-                Model.ItemCombinations.First().IsDefault = true;
-            }
-
-            StateHasChanged();
-        }
 
         private string GetStepValidationMessage(int step)
         {
@@ -1144,6 +823,64 @@ namespace Dashboard.Pages.Catalog.Products
                 StateHasChanged();
             }
         }
+        //protected async Task AddCombination(ItemCombinationDto combination)
+        //{
+        //    // Generate a new ID for the combination
+        //    combination.Id = Guid.NewGuid();
+        //    Model.ItemCombinations.Add(combination);
+
+        //    // If this is set as default, unset others
+        //    if (combination.IsDefault)
+        //    {
+        //        foreach (var combo in Model.ItemCombinations)
+        //        {
+        //            if (combo.Id != combination.Id)
+        //                combo.IsDefault = false;
+        //        }
+        //    }
+
+        //    StateHasChanged();
+        //}
+
+        //protected async Task UpdateCombination(ItemCombinationDto combination)
+        //{
+        //    // Find and update the existing combination
+        //    var existing = Model.ItemCombinations.FirstOrDefault(c => c.Id == combination.Id);
+        //    if (existing != null)
+        //    {
+        //        // Update properties
+        //        existing.Barcode = combination.Barcode;
+        //        existing.SKU = combination.SKU;
+        //        existing.BasePrice = combination.BasePrice;
+        //        existing.IsDefault = combination.IsDefault;
+        //        existing.CombinationAttributes = combination.CombinationAttributes;
+
+        //        // If this is set as default, unset others
+        //        if (combination.IsDefault)
+        //        {
+        //            foreach (var combo in Model.ItemCombinations)
+        //            {
+        //                if (combo.Id != combination.Id)
+        //                    combo.IsDefault = false;
+        //            }
+        //        }
+        //    }
+
+        //    StateHasChanged();
+        //}
+
+        //protected async Task RemoveCombination(ItemCombinationDto combination)
+        //{
+        //    Model.ItemCombinations.Remove(combination);
+
+        //    // If we removed the default and there are others, set a new default
+        //    if (combination.IsDefault && Model.ItemCombinations.Any())
+        //    {
+        //        Model.ItemCombinations.First().IsDefault = true;
+        //    }
+
+        //    StateHasChanged();
+        //}
 
         // ========== Helper Methods ==========
         private async Task<string> ConvertFileToBase64(IBrowserFile file)
@@ -1176,7 +913,6 @@ namespace Dashboard.Pages.Catalog.Products
 
         private void ValidateForm()
         {
-            // REMOVED: Quantity validation - now handled by combinations
             // Thumbnail/Image validation - either thumbnail or at least one image is required
             fieldValidation["ThumbnailImage"] = !string.IsNullOrEmpty(Model.ThumbnailImage) ||
                  (Model.Images != null && Model.Images.Count > 0);
@@ -1194,114 +930,114 @@ namespace Dashboard.Pages.Catalog.Products
             return basicValidations && imagesValid;
         }
 
-        private string GetCombinationAttributesDisplay(ItemCombinationDto combination)
-        {
-            if (combination?.CombinationAttributes == null || !combination.CombinationAttributes.Any())
-                return "Default Combination";
+        //private string GetCombinationAttributesDisplay(ItemCombinationDto combination)
+        //{
+        //    if (combination?.CombinationAttributes == null || !combination.CombinationAttributes.Any())
+        //        return "Default Combination";
 
-            var attributes = new List<string>();
+        //    var attributes = new List<string>();
 
-            foreach (var combinationAttr in combination.CombinationAttributes)
-            {
-                foreach (var attrValue in combinationAttr.combinationAttributeValueDtos)
-                {
-                    var categoryAttr = categoryAttributes
-                        .FirstOrDefault(ca => ca.AttributeId == attrValue.AttributeId);
+        //    foreach (var combinationAttr in combination.CombinationAttributes)
+        //    {
+        //        foreach (var attrValue in combinationAttr.combinationAttributeValueDtos)
+        //        {
+        //            var categoryAttr = categoryAttributes
+        //                .FirstOrDefault(ca => ca.AttributeId == attrValue.AttributeId);
 
-                    if (categoryAttr != null && !string.IsNullOrEmpty(attrValue.Value))
-                    {
-                        attributes.Add($"{categoryAttr.Title}: {attrValue.Value}");
-                    }
-                }
-            }
+        //            if (categoryAttr != null && !string.IsNullOrEmpty(attrValue.Value))
+        //            {
+        //                attributes.Add($"{categoryAttr.Title}: {attrValue.Value}");
+        //            }
+        //        }
+        //    }
 
-            return attributes.Any() ? string.Join(" | ", attributes) : "Default Combination";
-        }
+        //    return attributes.Any() ? string.Join(" | ", attributes) : "Default Combination";
+        //}
 
 
         /// <summary>
         /// Sets a combination as the default one
         /// </summary>
-        private void SetDefaultCombination(ItemCombinationDto combination)
-        {
-            // Unmark all others
-            foreach (var combo in Model.ItemCombinations)
-            {
-                combo.IsDefault = false;
-            }
+        //private void SetDefaultCombination(ItemCombinationDto combination)
+        //{
+        //    // Unmark all others
+        //    foreach (var combo in Model.ItemCombinations)
+        //    {
+        //        combo.IsDefault = false;
+        //    }
 
-            // Mark this one as default
-            combination.IsDefault = true;
+        //    // Mark this one as default
+        //    combination.IsDefault = true;
 
-            Console.WriteLine($"✅ Set combination as default: {GetCombinationAttributesDisplay(combination)}");
-            StateHasChanged();
-        }
+        //    Console.WriteLine($"✅ Set combination as default: {GetCombinationAttributesDisplay(combination)}");
+        //    StateHasChanged();
+        //}
 
         /// <summary>
         /// Validates attribute combinations have valid pricing
         /// </summary>
-        private async Task<bool> ValidateAttributeCombinations()
-        {
-            Console.WriteLine($"🔍 ValidateAttributeCombinations - START");
-            Console.WriteLine($"📊 Total combinations: {Model.ItemCombinations.Count}");
+        //private async Task<bool> ValidateAttributeCombinations()
+        //{
+        //    Console.WriteLine($"🔍 ValidateAttributeCombinations - START");
+        //    Console.WriteLine($"📊 Total combinations: {Model.ItemCombinations.Count}");
 
-            if (!Model.ItemCombinations.Any())
-            {
-                Console.WriteLine($"❌ No combinations found - at least one required");
-                await ShowErrorMessage(
-                    ValidationResources.ValidationError,
-                    "At least one attribute combination is required.");
-                return false;
-            }
+        //    if (!Model.ItemCombinations.Any())
+        //    {
+        //        Console.WriteLine($"❌ No combinations found - at least one required");
+        //        await ShowErrorMessage(
+        //            ValidationResources.ValidationError,
+        //            "At least one attribute combination is required.");
+        //        return false;
+        //    }
 
-            var hasErrors = false;
-            var errorMessages = new List<string>();
+        //    var hasErrors = false;
+        //    var errorMessages = new List<string>();
 
-            // Check if at least one combination is marked as default
-            if (!Model.ItemCombinations.Any(c => c.IsDefault))
-            {
-                hasErrors = true;
-                errorMessages.Add("At least one combination must be marked as default");
-                Console.WriteLine($"❌ No default combination found");
-            }
+        //    // Check if at least one combination is marked as default
+        //    if (!Model.ItemCombinations.Any(c => c.IsDefault))
+        //    {
+        //        hasErrors = true;
+        //        errorMessages.Add("At least one combination must be marked as default");
+        //        Console.WriteLine($"❌ No default combination found");
+        //    }
 
-            for (int i = 0; i < Model.ItemCombinations.Count; i++)
-            {
-                var combination = Model.ItemCombinations[i];
-                var displayName = GetCombinationAttributesDisplay(combination);
+        //    for (int i = 0; i < Model.ItemCombinations.Count; i++)
+        //    {
+        //        var combination = Model.ItemCombinations[i];
+        //        var displayName = GetCombinationAttributesDisplay(combination);
 
-                Console.WriteLine($"🔍 Validating combination {i + 1}: {displayName}");
+        //        Console.WriteLine($"🔍 Validating combination {i + 1}: {displayName}");
 
-                // Validate BasePrice
-                if (combination.BasePrice <= 0)
-                {
-                    hasErrors = true;
-                    var errorMsg = $"Combination '{displayName}' must have a base price greater than 0";
-                    errorMessages.Add(errorMsg);
-                    Console.WriteLine($"  ❌ {errorMsg}");
-                }
-                else
-                {
-                    Console.WriteLine($"  ✅ Base Price: {combination.BasePrice}");
-                }
-            }
+        //        // Validate BasePrice
+        //        if (combination.BasePrice <= 0)
+        //        {
+        //            hasErrors = true;
+        //            var errorMsg = $"Combination '{displayName}' must have a base price greater than 0";
+        //            errorMessages.Add(errorMsg);
+        //            Console.WriteLine($"  ❌ {errorMsg}");
+        //        }
+        //        else
+        //        {
+        //            Console.WriteLine($"  ✅ Base Price: {combination.BasePrice}");
+        //        }
+        //    }
 
-            if (hasErrors)
-            {
-                Console.WriteLine($"❌ Validation FAILED - {errorMessages.Count} error(s)");
+        //    if (hasErrors)
+        //    {
+        //        Console.WriteLine($"❌ Validation FAILED - {errorMessages.Count} error(s)");
 
-                // Show all errors in a single message
-                var errorMessage = string.Join("\n", errorMessages);
-                ShowErrorMessage(
-                    ValidationResources.ValidationError,
-                    $"Please fix the following errors in attribute combinations:\n\n{errorMessage}").Wait();
+        //        // Show all errors in a single message
+        //        var errorMessage = string.Join("\n", errorMessages);
+        //        ShowErrorMessage(
+        //            ValidationResources.ValidationError,
+        //            $"Please fix the following errors in attribute combinations:\n\n{errorMessage}").Wait();
 
-                return false;
-            }
+        //        return false;
+        //    }
 
-            Console.WriteLine($"✅ ValidateAttributeCombinations - PASSED");
-            return true;
-        }
+        //    Console.WriteLine($"✅ ValidateAttributeCombinations - PASSED");
+        //    return true;
+        //}
         private string GetImageSourceForDisplay(string imagePath)
         {
             if (string.IsNullOrEmpty(imagePath))
@@ -1318,9 +1054,5 @@ namespace Dashboard.Pages.Catalog.Products
             // If it's a path to an image on the server
             return baseUrl + imagePath;
         }
-        // Add this method to your Details.razor.cs class
-        // Add this method to your Details.razor.cs class
-
-
     }
 }

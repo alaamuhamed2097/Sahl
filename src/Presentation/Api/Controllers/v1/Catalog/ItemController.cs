@@ -59,8 +59,8 @@ namespace Api.Controllers.v1.Catalog
             if (id == Guid.Empty)
                 return BadRequest(CreateErrorResponse(NotifiAndAlertsResources.InvalidInputAlert));
 
-            var clientIp = HttpContext.GetClientIpAddress();
-            var shouldApplyConversion = ShouldApplyCurrencyConversion();
+            //var clientIp = HttpContext.GetClientIpAddress();
+            //var shouldApplyConversion = ShouldApplyCurrencyConversion();
             var item = await _itemService.FindByIdAsync(id);
 
             if (item == null)

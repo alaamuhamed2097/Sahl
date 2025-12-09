@@ -51,7 +51,7 @@ public partial class Details : IDisposable
     [Inject] private IJSRuntime JSRuntime { get; set; } = default!;
     [Inject] protected NavigationManager Navigation { get; set; } = null!;
     [Inject] IOptions<ApiSettings> ApiOptions { get; set; } = null!;
-    [Inject] protected Dashboard.Contracts.General.IApiService ApiService { get; set; } = null!;
+    [Inject] protected IApiService ApiService { get; set; } = null!;
 
     protected override async Task OnInitializedAsync()
     {
@@ -110,6 +110,7 @@ public partial class Details : IDisposable
             if (PricingSystems.Count == 1)
             {
                 Model.PricingSystemType = PricingSystems.First().SystemType;
+                Model.PricingSystemId = PricingSystems.First().Id;
             }
         }
 
@@ -318,11 +319,13 @@ public partial class Details : IDisposable
             if (PricingSystems == null || PricingSystems.Count == 0)
             {
                 Model.PricingSystemType = Common.Enumerations.Pricing.PricingSystemType.Standard;
+                Model.PricingSystemId = Guid.Parse("11111111-1111-1111-1111-111111111111");
             }
             else if (PricingSystems.Count == 1)
             {
                 // If only one available, force selection to that system
                 Model.PricingSystemType = PricingSystems.First().SystemType;
+                Model.PricingSystemId = PricingSystems.First().Id;
             }
 
             if (Model.CategoryAttributes != null && Model.CategoryAttributes.Any())
@@ -433,6 +436,7 @@ public partial class Details : IDisposable
             if (PricingSystems.Count == 1)
             {
                 Model.PricingSystemType = PricingSystems.First().SystemType;
+                Model.PricingSystemId = PricingSystems.First().Id;
             }
 
             // Recreate EditContext for new model instance
@@ -485,7 +489,7 @@ public partial class Details : IDisposable
     {
         try
         {
-            var res = await ApiService.GetAsync<IEnumerable<PricingSystemSettingDto>>("api/PricingSystem");
+            var res = await ApiService.GetAsync<IEnumerable<PricingSystemSettingDto>>("api/v1/PricingSystem");
             if (res != null && res.Success && res.Data != null)
                 PricingSystems = res.Data.OrderBy(s => s.DisplayOrder).ToList();
 

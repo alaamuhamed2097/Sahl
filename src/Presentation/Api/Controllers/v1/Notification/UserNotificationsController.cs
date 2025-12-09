@@ -20,10 +20,10 @@
 //    {
 //        private readonly IUserNotificationService _userNotificationService;
 
-        public UserNotificationsController(IUserNotificationService userNotificationService)
-        {
-            _userNotificationService = userNotificationService;
-        }
+        //public UserNotificationsController(IUserNotificationService userNotificationService)
+        //{
+        //    _userNotificationService = userNotificationService;
+        //}
 
 //        /// <summary>
 //        /// Retrieves all userNotifications.

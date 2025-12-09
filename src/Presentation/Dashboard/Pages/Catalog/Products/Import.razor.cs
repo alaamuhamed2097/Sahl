@@ -140,9 +140,6 @@ namespace Dashboard.Pages.Catalog.Products
                     $"{FormResources.Price}*",
                     $"{ECommerceResources.Quantity}*",
                     $"{ECommerceResources.StockStatus}*",
-                    "Is New Arrival",
-                    "Is Best Seller",
-                    "Is Recommended",
                     "Thumbnail Image",
                     $"{FormResources.Image} 1",
                     $"{FormResources.Image} 2",
@@ -596,8 +593,7 @@ namespace Dashboard.Pages.Catalog.Products
                 UnitId = imported.UnitId,
                 ThumbnailImage = imported.ThumbnailImagePath ?? string.Empty,
                 Images = new List<ItemImageDto>(),
-                ItemAttributes = new List<ItemAttributeDto>(),
-                ItemCombinations = new List<ItemCombinationDto>()
+                ItemAttributes = new List<ItemAttributeDto>()
             };
 
             // Add item attributes
@@ -608,23 +604,6 @@ namespace Dashboard.Pages.Catalog.Products
                     AttributeId = attr.Key,
                     Value = attr.Value
                 });
-            }
-
-            // Generate pricing combinations if pricing attributes exist
-            if (imported.PricingAttributeValues.Any())
-            {
-                var combinations = GeneratePricingCombinations(imported.PricingAttributeValues);
-                foreach (var combo in combinations)
-                {
-                    item.ItemCombinations.Add(new ItemCombinationDto
-                    {
-                        Barcode = "1111111",
-                        SKU = "DEFAULT",
-                        BasePrice = 0,
-                        CombinationAttributes = new List<CombinationAttributeDto>(),
-                        IsDefault = true
-                    });
-                }
             }
 
             return item;

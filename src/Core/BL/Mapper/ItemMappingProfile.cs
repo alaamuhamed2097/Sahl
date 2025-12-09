@@ -1,6 +1,7 @@
 ﻿using Domains.Entities.Catalog.Item;
 using Domains.Entities.Catalog.Item.ItemAttributes;
 using Domains.Views.Item;
+using Shared.DTOs.ECommerce.Category;
 using Shared.DTOs.ECommerce.Item;
 using Shared.GeneralModels.Models;
 using System.Text.Json;
@@ -24,15 +25,20 @@ namespace BL.Mapper
             CreateMap<TbItemImage, ItemImageViewDto>()
                 .ReverseMap();
 
-            CreateMap<VwItem, VwItemDto>()
-                .ForMember(dest => dest.ItemImages, opt => opt.MapFrom(src =>
-                    string.IsNullOrWhiteSpace(src.ItemImagesJson)
-                        ? new List<ItemImageViewDto>()
-                        : DeserializeItemImages(src.ItemImagesJson)))
-                .ForMember(dest => dest.Combinations, opt => opt.MapFrom(src =>
-                    string.IsNullOrWhiteSpace(src.CombinationsJson)
-                        ? new List<ItemCombinationDto>()
-                        : DeserializeItemCombinations(src.CombinationsJson)))
+            CreateMap<VwItem, ItemDto>()
+                .ForMember(dest => dest.Images, opt => opt.MapFrom(src =>
+                    string.IsNullOrWhiteSpace(src.Images)
+                        ? new List<ItemImageDto>()
+                        : DeserializeItemImages(src.Images)))
+                .ForMember(dest => dest.ItemAttributes, opt => opt.MapFrom(src =>
+                    !string.IsNullOrEmpty(src.ItemAttributes)
+                        ? JsonSerializer.Deserialize<List<ItemAttributeDto>>(src.ItemAttributes,
+                            new JsonSerializerOptions
+                            {
+                                PropertyNameCaseInsensitive = true,
+                                DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
+                            }) ?? new List<ItemAttributeDto>()
+                        : new List<ItemAttributeDto>()))
                 .ReverseMap();
 
             // Item combination mapping
@@ -58,7 +64,7 @@ namespace BL.Mapper
                 .ReverseMap();
         }
 
-        private static List<ItemImageViewDto> DeserializeItemImages(string json)
+        private static List<ItemImageDto> DeserializeItemImages(string json)
         {
             try
             {
@@ -69,13 +75,13 @@ namespace BL.Mapper
                     DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
                 };
 
-                return JsonSerializer.Deserialize<List<ItemImageViewDto>>(json, options) ?? new List<ItemImageViewDto>();
+                return JsonSerializer.Deserialize<List<ItemImageDto>>(json, options) ?? new List<ItemImageDto>();
             }
             catch (JsonException)
             {
                 // You might want to log this exception
                 // For now, return empty list
-                return new List<ItemImageViewDto>();
+                return new List<ItemImageDto>();
             }
         }
 

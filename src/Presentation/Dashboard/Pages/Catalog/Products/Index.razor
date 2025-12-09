@@ -112,19 +112,12 @@
 											@(ResourceManager.CurrentLanguage == Language.Arabic ? item.TitleAr : item.TitleEn)
 										</td>
 										<td class="text-center align-middle">
-											@{
-												// Get price from default combination or first combination or base price
-												var price = item.ItemCombinations?.FirstOrDefault(c => c.IsDefault)?.BasePrice
-												?? item.ItemCombinations?.FirstOrDefault()?.BasePrice
-												?? item.BasePrice
-												?? 0;
-											}
-											<span class="fw-bold text-success">
-												@price.ToString("F2") $
+											<span class="fw-bold text-success" dir="ltr">
+												@(item.BasePrice != null ? $"{item.BasePrice?.ToString("F2")} EGP" : "N/A")
 											</span>
 										</td>
 										<td class="d-flex gap-1 justify-content-center align-items-center">
-											<div class="d-flex justify-content-center gap-2">
+											<div class="d-flex justify-content-center gap-2 my-2 pt-2">
 												<button class="btn btn-primary" @onclick="() => Edit(item)">
 													<i class="fas fa-pencil-alt mx-1 ms-2"></i>
 													@ActionsResources.Edit

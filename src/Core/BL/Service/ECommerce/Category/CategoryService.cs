@@ -2,11 +2,13 @@ using BL.Contracts.GeneralService.CMS;
 using BL.Contracts.IMapper;
 using BL.Contracts.Service.ECommerce.Category;
 using BL.Service.Base;
+using Common.Enumerations.Pricing;
 using DAL.Contracts.UnitOfWork;
 using DAL.Models;
 using Domains.Entities.Catalog.Category;
 using Domains.Entities.Catalog.Item;
 using Domains.Views.Category;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Resources;
 using Shared.DTOs.ECommerce.Category;
 using Shared.DTOs.ECommerce.Item;
@@ -14,6 +16,7 @@ using Shared.GeneralModels.SearchCriteriaModels;
 using Shared.Helpers;
 using System.ComponentModel.DataAnnotations;
 using System.Linq.Expressions;
+using System.Reflection.Metadata;
 
 namespace BL.Service.ECommerce.Category
 {
@@ -355,6 +358,12 @@ namespace BL.Service.ECommerce.Category
                     entity.IsFinal = true;
                 }
 
+                // Handle pricing system defaulting
+                if (entity.PricingSystemId == Guid.Empty)
+                {
+                    entity.PricingSystemType = PricingSystemType.Combination;
+                    entity.PricingSystemId = Guid.Parse("22222222-2222-2222-2222-222222222222");
+                }
                 // Save entity
                 var result1 = await _categoryUnitOfWork.TableRepository<TbCategory>().SaveAsync(entity, userId);
                 var categoryId = result1.Id;
@@ -403,7 +412,7 @@ namespace BL.Service.ECommerce.Category
             catch (Exception ex)
             {
                 _categoryUnitOfWork.Rollback();
-                throw new Exception(string.Format(ValidationResources.SaveEntityError, ECommerceResources.Category), ex);
+                throw new Exception("Faild to save category", ex);
             }
         }
         public async Task<bool> UpdateSerialsAsync(Dictionary<Guid, string> serialAssignments, Guid userId)

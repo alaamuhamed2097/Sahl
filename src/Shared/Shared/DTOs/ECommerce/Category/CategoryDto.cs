@@ -31,6 +31,7 @@ namespace Shared.DTOs.ECommerce.Category
 
         public bool IsMainCategory { get; set; }
         public bool PriceRequired { get; set; }
+        public Guid PricingSystemId { get; set; }
 
         [Required(ErrorMessageResourceName = "FieldRequired", ErrorMessageResourceType = typeof(ValidationResources))]
         public int DisplayOrder { get; set; }

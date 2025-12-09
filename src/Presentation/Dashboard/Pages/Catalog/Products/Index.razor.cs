@@ -20,11 +20,7 @@ namespace Dashboard.Pages.Catalog.Products
         {
             [FormResources.Image] = x => $"{baseUrl}/{x.ThumbnailImage}",
             [FormResources.Title] = x => ResourceManager.CurrentLanguage == Language.Arabic ? x.TitleAr : x.TitleEn,
-            // Get Price from default combination or first combination or base price
-            [FormResources.Price] = x => x.ItemCombinations?.FirstOrDefault(c => c.IsDefault)?.BasePrice
-                                          ?? x.ItemCombinations?.FirstOrDefault()?.BasePrice
-                                          ?? x.BasePrice
-                                          ?? 0,
+            [FormResources.Price] = x => x.BasePrice != null ? $"{x.BasePrice?.ToString("F2")} EGP" : "N/A",
         };
 
         [Inject] protected IItemService ItemService { get; set; } = null!;

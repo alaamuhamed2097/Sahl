@@ -18,7 +18,6 @@
             <DataAnnotationsValidator />
 
             <div class="card-body p-4">
-                <!-- [ Smart-Wizard ] start -->
                 <div id="smartwizard" dir="ltr">
                     <ul class="nav d-flex justify-content-center align-items-center">
                         <li class="nav-item flex-grow-1 text-center">
@@ -48,13 +47,13 @@
                         <li class="nav-item flex-grow-1 text-center">
                             <a class="nav-link" href="#step-5">
                                 <div class="num">5</div>
-                                @ECommerceResources.Attributes
+                                Default Pricing
                             </a>
                         </li>
                         <li class="nav-item flex-grow-1 text-center">
                             <a class="nav-link" href="#step-6">
                                 <div class="num">6</div>
-                                @ECommerceResources.AttributeCombinations
+                                @ECommerceResources.Attributes
                             </a>
                         </li>
                     </ul>
@@ -67,9 +66,9 @@
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label>@ECommerceResources.ProductNameAr <span class="text-danger">*</span></label>
-                                        <InputText type="text" 
-                                                   placeholder="@($"{FormResources.Write} {ECommerceResources.ProductNameAr}")" 
-                                                   class="form-control" 
+                                        <InputText type="text"
+                                                   placeholder="@($"{FormResources.Write} {ECommerceResources.ProductNameAr}")"
+                                                   class="form-control"
                                                    @bind-Value="Model.TitleAr" />
                                         <ValidationMessage For="@(() => Model.TitleAr)" />
                                     </div>
@@ -77,9 +76,9 @@
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label>@ECommerceResources.ProductNameEn <span class="text-danger">*</span></label>
-                                        <InputText type="text" 
-                                                   placeholder="@($"{FormResources.Write} {ECommerceResources.ProductNameEn}")" 
-                                                   class="form-control" 
+                                        <InputText type="text"
+                                                   placeholder="@($"{FormResources.Write} {ECommerceResources.ProductNameEn}")"
+                                                   class="form-control"
                                                    @bind-Value="Model.TitleEn" />
                                         <ValidationMessage For="@(() => Model.TitleEn)" />
                                     </div>
@@ -88,9 +87,9 @@
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label>@FormResources.ArabicShortDescription <span class="text-danger">*</span></label>
-                                        <InputTextArea class="form-control" 
-                                                       placeholder="@($"{FormResources.Write} {FormResources.ArabicShortDescription}")" 
-                                                       @bind-Value="Model.ShortDescriptionAr" 
+                                        <InputTextArea class="form-control"
+                                                       placeholder="@($"{FormResources.Write} {FormResources.ArabicShortDescription}")"
+                                                       @bind-Value="Model.ShortDescriptionAr"
                                                        rows="3" />
                                         <ValidationMessage For="@(() => Model.ShortDescriptionAr)" />
                                     </div>
@@ -98,9 +97,9 @@
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label>@FormResources.EnglishShortDescription <span class="text-danger">*</span></label>
-                                        <InputTextArea class="form-control" 
-                                                       placeholder="@($"{FormResources.Write} {FormResources.EnglishShortDescription}")" 
-                                                       @bind-Value="Model.ShortDescriptionEn" 
+                                        <InputTextArea class="form-control"
+                                                       placeholder="@($"{FormResources.Write} {FormResources.EnglishShortDescription}")"
+                                                       @bind-Value="Model.ShortDescriptionEn"
                                                        rows="3" />
                                         <ValidationMessage For="@(() => Model.ShortDescriptionEn)" />
                                     </div>
@@ -109,9 +108,9 @@
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label>@FormResources.ArabicDescription <span class="text-danger">*</span></label>
-                                        <InputTextArea class="form-control" 
-                                                       placeholder="@($"{FormResources.Write} {FormResources.ArabicDescription}")" 
-                                                       @bind-Value="Model.DescriptionAr" 
+                                        <InputTextArea class="form-control"
+                                                       placeholder="@($"{FormResources.Write} {FormResources.ArabicDescription}")"
+                                                       @bind-Value="Model.DescriptionAr"
                                                        rows="5" />
                                         <ValidationMessage For="@(() => Model.DescriptionAr)" />
                                     </div>
@@ -119,16 +118,15 @@
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label>@FormResources.EnglishDescription <span class="text-danger">*</span></label>
-                                        <InputTextArea class="form-control" 
-                                                       placeholder="@($"{FormResources.Write} {FormResources.EnglishDescription}")" 
-                                                       @bind-Value="Model.DescriptionEn" 
+                                        <InputTextArea class="form-control"
+                                                       placeholder="@($"{FormResources.Write} {FormResources.EnglishDescription}")"
+                                                       @bind-Value="Model.DescriptionEn"
                                                        rows="5" />
                                         <ValidationMessage For="@(() => Model.DescriptionEn)" />
                                     </div>
                                 </div>
                             </div>
 
-                            <!-- Step 1 Navigation -->
                             <div class="d-flex justify-content-between mt-4">
                                 <button type="button" class="btn btn-secondary" disabled>
                                     <i class="fas fa-arrow-left me-2"></i>@ActionsResources.Previous
@@ -146,9 +144,9 @@
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label>@FormResources.SEOTitle <span class="text-danger">*</span></label>
-                                        <InputText type="text" 
-                                                   placeholder="@($"{FormResources.Write} {FormResources.SEOTitle}")" 
-                                                   class="form-control" 
+                                        <InputText type="text"
+                                                   placeholder="@($"{FormResources.Write} {FormResources.SEOTitle}")"
+                                                   class="form-control"
                                                    @bind-Value="Model.SEOTitle" />
                                         <ValidationMessage For="@(() => Model.SEOTitle)" />
                                         <small class="text-muted">@FormResources.SEOTitleHint</small>
@@ -158,9 +156,9 @@
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label>@FormResources.SEODescription <span class="text-danger">*</span></label>
-                                        <InputTextArea class="form-control" 
-                                                       placeholder="@($"{FormResources.Write} {FormResources.SEODescription}")" 
-                                                       @bind-Value="Model.SEODescription" 
+                                        <InputTextArea class="form-control"
+                                                       placeholder="@($"{FormResources.Write} {FormResources.SEODescription}")"
+                                                       @bind-Value="Model.SEODescription"
                                                        rows="3" />
                                         <ValidationMessage For="@(() => Model.SEODescription)" />
                                         <small class="text-muted">@FormResources.SEODescriptionHint</small>
@@ -170,9 +168,9 @@
                                 <div class="col-12">
                                     <div class="form-group">
                                         <label>@FormResources.SEOMetaTags <span class="text-danger">*</span></label>
-                                        <InputTextArea class="form-control" 
-                                                       placeholder="@($"{FormResources.Write} {FormResources.SEOMetaTags} (e.g. products, online store, items)")" 
-                                                       @bind-Value="Model.SEOMetaTags" 
+                                        <InputTextArea class="form-control"
+                                                       placeholder="@($"{FormResources.Write} {FormResources.SEOMetaTags} (e.g. products, online store, items)")"
+                                                       @bind-Value="Model.SEOMetaTags"
                                                        rows="2" />
                                         <ValidationMessage For="@(() => Model.SEOMetaTags)" />
                                         <small class="text-muted">@FormResources.SEOMetaTagsHint</small>
@@ -180,18 +178,17 @@
                                 </div>
                             </div>
 
-                            <!-- Step 2 Navigation -->
                             <div class="d-flex justify-content-between mt-4">
                                 <button type="button" class="btn btn-secondary" @onclick="MoveToPreviousStep">
-                                    <i class="fas fa-arrow-left me-2 ms-2"></i>@ActionsResources.Previous
+                                    <i class="fas fa-arrow-left me-2"></i>@ActionsResources.Previous
                                 </button>
                                 <button type="button" class="btn btn-primary" @onclick="() => MoveToNextStep()">
-                                    @ActionsResources.Next<i class="fas fa-arrow-right ms-2 ms-2"></i>
+                                    @ActionsResources.Next<i class="fas fa-arrow-right ms-2"></i>
                                 </button>
                             </div>
                         </div>
 
-                        <!-- Step 3: Classification & Inventory -->
+                        <!-- Step 3: Classification -->
                         <div id="step-3" class="tab-pane" role="tabpanel">
                             <h5 class="text-primary mb-4">@ECommerceResources.Classification</h5>
                             <div class="row g-3">
@@ -208,12 +205,6 @@
                                             }
                                         </InputSelect>
                                         <ValidationMessage For="@(() => Model.CategoryId)" />
-                                        @if (!fieldValidation["CategoryId"] && showValidationErrors)
-                                        {
-                                            <div class="invalid-feedback d-block">
-                                                @ValidationResources.FieldRequired
-                                            </div>
-                                        }
                                     </div>
                                 </div>
 
@@ -246,13 +237,12 @@
                                 </div>
                             </div>
 
-                            <!-- Step 3 Navigation -->
                             <div class="d-flex justify-content-between mt-4">
                                 <button type="button" class="btn btn-secondary" @onclick="MoveToPreviousStep">
-                                    <i class="fas fa-arrow-left me-2 ms-2"></i>@ActionsResources.Previous
+                                    <i class="fas fa-arrow-left me-2"></i>@ActionsResources.Previous
                                 </button>
                                 <button type="button" class="btn btn-primary" @onclick="() => MoveToNextStep()">
-                                    @ActionsResources.Next<i class="fas fa-arrow-right ms-2 ms-2"></i>
+                                    @ActionsResources.Next<i class="fas fa-arrow-right ms-2"></i>
                                 </button>
                             </div>
                         </div>
@@ -269,14 +259,14 @@
                                         @if (!string.IsNullOrEmpty(Model.ThumbnailImage))
                                         {
                                             <div class="mt-2 position-relative">
-                                                <img src="@GetImageSourceForDisplay(Model.ThumbnailImage)" 
-                                                     alt="Thumbnail" 
-                                                     class="img-thumbnail" 
+                                                <img src="@GetImageSourceForDisplay(Model.ThumbnailImage)"
+                                                     alt="Thumbnail"
+                                                     class="img-thumbnail"
                                                      style="height: 150px;" />
-                                                <button type="button" 
-                                                        class="btn btn-sm btn-danger position-absolute top-0 end-0 m-1" 
+                                                <button type="button"
+                                                        class="btn btn-sm btn-danger position-absolute top-0 end-0 m-1"
                                                         @onclick="RemoveThumbnail">
-                                                    <i class="fas fa-times me-2 ms-2"></i>
+                                                    <i class="fas fa-times"></i>
                                                 </button>
                                             </div>
                                         }
@@ -299,9 +289,9 @@
                                 <div class="col-md-12">
                                     <div class="form-group">
                                         <label>@FormResources.VideoLink</label>
-                                        <InputText type="url" 
-                                                   class="form-control" 
-                                                   placeholder="@($"{FormResources.Write} {FormResources.VideoLink}")" 
+                                        <InputText type="url"
+                                                   class="form-control"
+                                                   placeholder="@($"{FormResources.Write} {FormResources.VideoLink}")"
                                                    @bind-Value="Model.VideoUrl" />
                                         <ValidationMessage For="@(() => Model.VideoUrl)" />
                                     </div>
@@ -317,15 +307,14 @@
                                             </div>
                                         </div>
                                         <div class="card-body">
-                                            <!-- Image Upload Section -->
                                             <div class="mb-4">
-                                                <InputFile class="form-control" 
-                                                           OnChange="HandleImageUpload" 
-                                                           multiple 
+                                                <InputFile class="form-control"
+                                                           OnChange="HandleImageUpload"
+                                                           multiple
                                                            accept="image/*"
                                                            disabled="@(Model.Images.Count >= MaxImageCount)" />
                                                 <small class="text-muted">
-                                                    @ValidationResources.MaxFileSize: @(MaxFileSize / 1024 / 1024)MB, 
+                                                    @ValidationResources.MaxFileSize: @(MaxFileSize / 1024 / 1024)MB,
                                                     @ValidationResources.MaxFiles: @MaxImageCount
                                                 </small>
                                                 <ValidationMessage For="@(() => Model.Images)" />
@@ -333,11 +322,11 @@
                                                 @if (isProcessing)
                                                 {
                                                     <div class="progress mt-2">
-                                                        <div class="progress-bar" 
-                                                             role="progressbar" 
+                                                        <div class="progress-bar"
+                                                             role="progressbar"
                                                              style="width: @processingProgress%;"
-                                                             aria-valuenow="@processingProgress" 
-                                                             aria-valuemin="0" 
+                                                             aria-valuenow="@processingProgress"
+                                                             aria-valuemin="0"
                                                              aria-valuemax="100">
                                                             @processingProgress%
                                                         </div>
@@ -345,7 +334,6 @@
                                                 }
                                             </div>
 
-                                            <!-- Image Gallery -->
                                             @if (Model.Images.Any())
                                             {
                                                 <div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 g-4">
@@ -353,14 +341,14 @@
                                                     {
                                                         <div class="col">
                                                             <div class="card h-100 position-relative">
-                                                                <img src="@GetImageSourceForDisplay(image.Path)" 
-                                                                     class="card-img-top" 
-                                                                     alt="Product image" 
+                                                                <img src="@GetImageSourceForDisplay(image.Path)"
+                                                                     class="card-img-top"
+                                                                     alt="Product image"
                                                                      style="max-height: 200px; object-fit: cover;" />
-                                                                <button type="button" 
+                                                                <button type="button"
                                                                         @onclick="() => DeleteImage(image)"
                                                                         class="btn btn-sm btn-danger position-absolute top-0 end-0 m-1">
-                                                                    <i class="fas fa-trash me-2 ms-2"></i>
+                                                                    <i class="fas fa-trash"></i>
                                                                 </button>
                                                             </div>
                                                         </div>
@@ -379,7 +367,6 @@
                                 </div>
                             </div>
 
-                            <!-- Step 4 Navigation -->
                             <div class="d-flex justify-content-between mt-4">
                                 <button type="button" class="btn btn-secondary" @onclick="MoveToPreviousStep">
                                     <i class="fas fa-arrow-left me-2"></i>@ActionsResources.Previous
@@ -390,9 +377,92 @@
                             </div>
                         </div>
 
-                        <!-- Step 5: Attribute Values -->
+                        <!-- Step 5: Default Pricing (NEW STEP) -->
                         <div id="step-5" class="tab-pane" role="tabpanel">
-                            <h5 class="text-primary mb-4">AttributeValues</h5>
+                            <h5 class="text-primary mb-4">Default Pricing Information</h5>
+                            <p class="text-muted">Set the default pricing and identification for this product.</p>
+
+                            <div class="row g-3">
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label>Barcode</label>
+                                        <InputText type="text"
+                                                   placeholder="Enter barcode"
+                                                   class="form-control"
+                                                   @bind-Value="Model.Barcode" />
+                                        <small class="text-muted">Product barcode for scanning</small>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label>SKU</label>
+                                        <InputText type="text"
+                                                   placeholder="Enter SKU"
+                                                   class="form-control"
+                                                   @bind-Value="Model.SKU" />
+                                        <small class="text-muted">Stock Keeping Unit</small>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label>Base Price</label>
+                                        <InputNumber type="number"
+                                                     placeholder="0.00"
+                                                     class="form-control"
+                                                     @bind-Value="Model.BasePrice"
+                                                     min="0.01"
+                                                     step="0.01" />
+                                        <small class="text-muted">Starting price in EGP</small>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label>Minimum price</label>
+                                        <InputNumber type="number"
+                                                     placeholder="0.00"
+                                                     class="form-control"
+                                                     @bind-Value="Model.MinimumPrice"
+                                                     min="0.01"
+                                                     step="0.01" />
+                                        <small class="text-muted">Minimum price in EGP</small>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label>Maximum price</label>
+                                        <InputNumber type="number"
+                                                     placeholder="0.00"
+                                                     class="form-control"
+                                                     @bind-Value="Model.MaximumPrice"
+                                                     min="0.01"
+                                                     step="0.01" />
+                                        <small class="text-muted">Maximum price in EGP</small>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="alert alert-info mt-4">
+                                <i class="fas fa-info-circle me-2"></i>
+                                <strong>Note:</strong> These values will be used as the default pricing for your product.
+                            </div>
+
+                            <div class="d-flex justify-content-between mt-4">
+                                <button type="button" class="btn btn-secondary" @onclick="MoveToPreviousStep">
+                                    <i class="fas fa-arrow-left me-2"></i>@ActionsResources.Previous
+                                </button>
+                                <button type="button" class="btn btn-primary" @onclick="() => MoveToNextStep()">
+                                    @ActionsResources.Next<i class="fas fa-arrow-right ms-2"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Step 6: Attribute Values -->
+                        <div id="step-6" class="tab-pane" role="tabpanel">
+                            <h5 class="text-primary mb-4">Attribute Values</h5>
 
                             @if (isLoadingAttributes)
                             {
@@ -417,93 +487,12 @@
                                 </div>
                             }
 
-                            <!-- Step 5 Navigation -->
-                            <div class="d-flex justify-content-between mt-4">
-                                <button type="button" class="btn btn-secondary" @onclick="MoveToPreviousStep">
-                                    <i class="fas fa-arrow-left me-2"></i>@ActionsResources.Previous
-                                </button>
-                                <button type="button" class="btn btn-primary" @onclick="() => MoveToNextStep()">
-                                    @ActionsResources.Next<i class="fas fa-arrow-right ms-2"></i>
-                                </button>
-                            </div>
-                        </div>
-
-                       <!-- Step 6: Attribute Combinations -->
-                        <div id="step-6" class="tab-pane" role="tabpanel">
-                            <h5 class="text-primary mb-4">@ECommerceResources.AttributeCombinations</h5>
-
-                            @if (isLoadingAttributes)
-                            {
-                                <div class="text-center py-5">
-                                    <div class="spinner-border text-primary" role="status">
-                                        <span class="visually-hidden">@GeneralResources.Loading</span>
-                                    </div>
-                                    <p class="mt-2 text-muted">@GeneralResources.Loading...</p>
-                                </div>
-                            }
-                            else if (Model.CategoryId != Guid.Empty && attributeValuesSectionRef != null)
-                            {
-                                    // CRITICAL: Get fresh data from AttributeValuesSection
-                                    var (nonPricing, pricing, modifiers) = attributeValuesSectionRef.GetAllAttributeData();
-            
-                                    // DEBUG: Log what we're passing
-                                    <text>
-                                        @{
-                                            Console.WriteLine($"🔍 Step 6 - Rendering CombinationBuilder");
-                                            Console.WriteLine($"  CategoryAttributes (pricing only): {categoryAttributes.Count(a => a.AffectsPricing)}");
-                                            Console.WriteLine($"  Pricing dictionary keys: {pricing.Count}");
-                    
-                                            foreach (var kvp in pricing)
-                                            {
-                                                var values = kvp.Value?.Where(v => !string.IsNullOrWhiteSpace(v)).ToList() ?? new List<string>();
-                                                Console.WriteLine($"  Attribute {kvp.Key}: {values.Count} non-empty values");
-                                                foreach (var val in values)
-                                                {
-                                                    Console.WriteLine($"    - '{val}'");
-                                                }
-                                            }
-                    
-                                            // Match AttributeIds with category attributes
-                                            foreach (var attr in categoryAttributes.Where(a => a.AffectsPricing))
-                                            {
-                                                Console.WriteLine($"  🏷️ {attr.Title}:");
-                                                Console.WriteLine($"    Id: {attr.Id}");
-                                                Console.WriteLine($"    AttributeId: {attr.AttributeId}");
-                                                Console.WriteLine($"    In pricing dict: {pricing.ContainsKey(attr.AttributeId)}");
-                                            }
-                                        }
-                                    </text>
-        
-                                <CombinationBuilder Combinations="@Model.ItemCombinations"
-                                                    CategoryAttributes="@categoryAttributes.Where(a => a.AffectsPricing).ToList()"
-                                                    PricingAttributeValues="@pricing"
-                                                    ValuePriceModifiers="@modifiers"
-                                                    OnAddCombination="AddCombination"
-                                                    OnUpdateCombination="UpdateCombination"
-                                                    OnRemoveCombination="RemoveCombination" />
-                            }
-                            else if (Model.CategoryId == Guid.Empty)
-                            {
-                                <div class="alert alert-info">
-                                    <i class="fas fa-info-circle me-2"></i>
-                                    @ValidationResources.CategorySelectionRequired
-                                </div>
-                            }
-                            else
-                            {
-                                <div class="alert alert-warning">
-                                    <i class="fas fa-exclamation-triangle me-2"></i>
-                                    Please configure attribute values in the previous step before creating combinations.
-                                </div>
-                            }
-
-                            <!-- Step 6 Navigation with Save -->
                             <div class="d-flex justify-content-between mt-4">
                                 <button type="button" class="btn btn-secondary" @onclick="MoveToPreviousStep">
                                     <i class="fas fa-arrow-left me-2"></i>@ActionsResources.Previous
                                 </button>
                                 <div>
-                                    <button type="button" class="btn btn-secondary me-2 ms-2" @onclick="CloseModal">
+                                    <button type="button" class="btn btn-secondary me-2" @onclick="CloseModal">
                                         @ActionsResources.Cancel
                                     </button>
                                     <button type="submit" class="btn btn-success px-4" disabled="@isSaving">
@@ -511,14 +500,13 @@
                                         {
                                             <span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
                                         }
-                                        <i class="fas fa-save me-2 ms-2"></i>@ActionsResources.Save
+                                        <i class="fas fa-save me-2"></i>@ActionsResources.Save
                                     </button>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-                <!-- [ Smart-Wizard ] end -->
             </div>
         </EditForm>
     </div>

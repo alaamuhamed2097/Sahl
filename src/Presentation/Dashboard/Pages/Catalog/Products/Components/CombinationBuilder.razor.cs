@@ -70,7 +70,6 @@ namespace Dashboard.Pages.Catalog.Products.Components
             if (selection != null)
             {
                 selection.SelectedValue = value;
-                Console.WriteLine($"✅ Set attribute {attributeId} to value: {value}");
             }
             else
             {
@@ -150,7 +149,6 @@ namespace Dashboard.Pages.Catalog.Products.Components
             {
                 selectedCount++;
 
-                // FIX: Match using AttributeId instead of Id
                 var attribute = CategoryAttributes.FirstOrDefault(a => a.AttributeId == selection.AttributeId);
 
                 if (attribute != null)
@@ -263,10 +261,6 @@ namespace Dashboard.Pages.Catalog.Products.Components
 
         protected bool IsDuplicateCombination(ItemCombinationDto combination)
         {
-            // Skip if we're editing the same combination
-            if (EditingCombination != null && EditingCombination.Id == combination.Id)
-                return false;
-
             // Get all attribute values as a sorted list
             var currentValues = combination.CombinationAttributes
                 .SelectMany(ca => ca.combinationAttributeValueDtos)
