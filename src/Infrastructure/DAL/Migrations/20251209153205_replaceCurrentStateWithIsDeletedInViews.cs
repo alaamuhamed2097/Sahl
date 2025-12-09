@@ -194,6 +194,7 @@ SELECT
     i.ShortDescriptionEn,
     i.DescriptionAr, 
     i.DescriptionEn,
+    i.VideoUrl AS VideoLink, -- Changed from VideoLink to VideoUrl
     i.CategoryId, 
     c.TitleAr AS CategoryTitleAr, 
     c.TitleEn AS CategoryTitleEn, 

@@ -63,7 +63,7 @@ namespace DAL.Migrations
                     b.Property<bool>("IsDeleted")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bit")
-                        .HasDefaultValue(true);
+                        .HasDefaultValue(false);
 
                     b.Property<bool>("IsDeleted")
                         .ValueGeneratedOnAdd()
@@ -877,11 +877,14 @@ namespace DAL.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bit")
                         .HasDefaultValue(false);
+<<<<<<< HEAD
 
                     b.Property<bool>("IsDeleted")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bit")
                         .HasDefaultValue(true);
+=======
+>>>>>>> feature: replace CurrentState With IsDeleted In Views
 
                     b.Property<string>("Notes")
                         .HasMaxLength(1000)
@@ -4017,11 +4020,14 @@ namespace DAL.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bit")
                         .HasDefaultValue(false);
+<<<<<<< HEAD
 
                     b.Property<bool>("IsDeleted")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bit")
                         .HasDefaultValue(false);
+=======
+>>>>>>> feature: replace CurrentState With IsDeleted In Views
 
                     b.Property<string>("TitleAr")
                         .IsRequired()
@@ -5005,11 +5011,14 @@ namespace DAL.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bit")
                         .HasDefaultValue(false);
+<<<<<<< HEAD
 
                     b.Property<bool>("IsDeleted")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bit")
                         .HasDefaultValue(false);
+=======
+>>>>>>> feature: replace CurrentState With IsDeleted In Views
 
                     b.Property<int>("MethodType")
                         .HasColumnType("int");
@@ -5150,11 +5159,14 @@ namespace DAL.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bit")
                         .HasDefaultValue(false);
+<<<<<<< HEAD
 
                     b.Property<bool>("IsDeleted")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bit")
                         .HasDefaultValue(true);
+=======
+>>>>>>> feature: replace CurrentState With IsDeleted In Views
 
                     b.Property<decimal>("NewPrice")
                         .HasColumnType("decimal(18,2)");
@@ -6467,11 +6479,14 @@ namespace DAL.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bit")
                         .HasDefaultValue(false);
+<<<<<<< HEAD
 
                     b.Property<bool>("IsDeleted")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bit")
                         .HasDefaultValue(true);
+=======
+>>>>>>> feature: replace CurrentState With IsDeleted In Views
 
                     b.Property<bool>("IsVisible")
                         .HasColumnType("bit");
