@@ -2383,7 +2383,7 @@ namespace DAL.Migrations
                     b.Property<Guid>("ItemId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("OfferId")
+                    b.Property<Guid>("OfferCombinationPricingId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<int>("Quantity")
@@ -2407,9 +2407,11 @@ namespace DAL.Migrations
 
                     b.HasIndex("ItemId");
 
-                    b.HasIndex("OfferId");
+                    b.HasIndex("OfferCombinationPricingId");
 
                     b.HasIndex("ShoppingCartId");
+
+                    b.HasIndex("ShoppingCartId", "ItemId", "OfferCombinationPricingId");
 
                     b.ToTable("TbShoppingCartItems", (string)null);
                 });
@@ -4223,6 +4225,9 @@ namespace DAL.Migrations
                         .HasColumnType("int")
                         .HasDefaultValue(1);
 
+                    b.Property<int>("FulfillmentType")
+                        .HasColumnType("int");
+
                     b.Property<int>("HandlingTimeInDays")
                         .HasColumnType("int");
 
@@ -4241,9 +4246,8 @@ namespace DAL.Migrations
                     b.Property<DateTime?>("UpdatedDateUtc")
                         .HasColumnType("datetime2(2)");
 
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<Guid>("VendorId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<int>("VisibilityScope")
                         .HasColumnType("int");
@@ -4260,8 +4264,8 @@ namespace DAL.Migrations
 
                     b.HasIndex("OfferConditionId");
 
-                    b.HasIndex("UserId")
-                        .HasDatabaseName("IX_TbOffers_UserId");
+                    b.HasIndex("VendorId")
+                        .HasDatabaseName("IX_TbOffers_VendorId");
 
                     b.HasIndex("WarrantyId")
                         .HasDatabaseName("IX_TbOffers_WarrantyId");
@@ -5998,7 +6002,7 @@ namespace DAL.Migrations
                     b.Property<int>("ShipmentStatus")
                         .HasColumnType("int");
 
-                    b.Property<Guid>("ShippingCompanyId")
+                    b.Property<Guid?>("ShippingCompanyId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<decimal>("ShippingCost")
@@ -7926,13 +7930,13 @@ namespace DAL.Migrations
                     b.HasOne("Domains.Entities.Catalog.Item.TbItem", "Item")
                         .WithMany()
                         .HasForeignKey("ItemId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("Domains.Entities.Offer.TbOffer", "Offer")
+                    b.HasOne("Domains.Entities.Offer.TbOfferCombinationPricing", "OfferCombinationPricing")
                         .WithMany()
-                        .HasForeignKey("OfferId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .HasForeignKey("OfferCombinationPricingId")
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("Domains.Entities.ECommerceSystem.Cart.TbShoppingCart", "ShoppingCart")
@@ -7943,7 +7947,7 @@ namespace DAL.Migrations
 
                     b.Navigation("Item");
 
-                    b.Navigation("Offer");
+                    b.Navigation("OfferCombinationPricing");
 
                     b.Navigation("ShoppingCart");
                 });
@@ -8154,9 +8158,9 @@ namespace DAL.Migrations
                         .WithMany("Offers")
                         .HasForeignKey("OfferConditionId");
 
-                    b.HasOne("Domains.Identity.ApplicationUser", "User")
+                    b.HasOne("Domains.Entities.ECommerceSystem.Vendor.TbVendor", "Vendor")
                         .WithMany()
-                        .HasForeignKey("UserId")
+                        .HasForeignKey("VendorId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
@@ -8169,7 +8173,7 @@ namespace DAL.Migrations
 
                     b.Navigation("OfferCondition");
 
-                    b.Navigation("User");
+                    b.Navigation("Vendor");
 
                     b.Navigation("Warranty");
                 });
@@ -8500,9 +8504,7 @@ namespace DAL.Migrations
 
                     b.HasOne("Domains.Entities.Shipping.TbShippingCompany", "ShippingCompany")
                         .WithMany()
-                        .HasForeignKey("ShippingCompanyId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("ShippingCompanyId");
 
                     b.HasOne("Domains.Entities.ECommerceSystem.Vendor.TbVendor", "Vendor")
                         .WithMany()

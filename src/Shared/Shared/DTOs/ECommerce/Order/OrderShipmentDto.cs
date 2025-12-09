@@ -1,3 +1,4 @@
+using Common.Enumerations.Fulfillment;
 using Common.Enumerations.Shipping;
 using Shared.DTOs.Base;
 
@@ -16,6 +17,7 @@ namespace Shared.DTOs.ECommerce.Order
         public string VendorName { get; set; } = null!;
         public Guid WarehouseId { get; set; }
         public string WarehouseName { get; set; } = null!;
+        public FulfillmentType FulfillmentType { get; set; }
         public ShipmentStatus ShipmentStatus { get; set; }
         public decimal SubTotal { get; set; }
         public decimal ShippingCost { get; set; }

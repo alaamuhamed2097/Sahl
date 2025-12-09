@@ -67,10 +67,12 @@ namespace Api.Extensions
 
             // Order Services
             services.AddScoped<ICartService, CartService>();
+            services.AddScoped<IOrderService, OrderService>();
 
             // Register required repositories for CartService
             services.AddScoped<ICartRepository, CartRepository>();
             services.AddScoped<IOfferRepository, OfferRepository>();
+            services.AddScoped<IOrderRepository, OrderRepository>();
             return services;
         }
     }

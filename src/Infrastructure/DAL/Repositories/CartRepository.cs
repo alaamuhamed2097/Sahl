@@ -46,8 +46,6 @@ namespace DAL.Repositories
 
             try
             {
-                _logger.Information($"Starting AddItemToCart transaction for customer: {customerId}, Item: {itemId}, Offer: {offerId}");
-
                 // Step 1: Get or create cart
                 var cart = await GetOrCreateCartAsync(customerId, customerIdGuid, cancellationToken);
 
@@ -65,7 +63,7 @@ namespace DAL.Repositories
                     .FirstOrDefaultAsync(ci =>
                         ci.ShoppingCartId == cart.Id &&
                         ci.ItemId == itemId &&
-                        ci.OfferId == offerId &&
+                        ci.OfferCombinationPricingId == offerId &&
                         ci.CurrentState == (int)Common.Enumerations.EntityState.Active,
                         cancellationToken);
 
@@ -90,7 +88,7 @@ namespace DAL.Repositories
                     {
                         ShoppingCartId = cart.Id,
                         ItemId = itemId,
-                        OfferId = offerId,
+                        OfferCombinationPricingId = offerId,
                         Quantity = quantity,
                         UnitPrice = unitPrice,
                         CreatedDateUtc = DateTime.UtcNow,
@@ -100,8 +98,6 @@ namespace DAL.Repositories
 
                     await _cartItems.AddAsync(newCartItem, cancellationToken);
                     transactionResult.AffectedItemIds.Add(newCartItem.Id);
-
-                    _logger.Information($"Added new cart item for item {itemId}, quantity: {quantity}");
                 }
 
                 // Step 3: Save changes
@@ -431,11 +427,9 @@ namespace DAL.Repositories
                     .Include(c => c.Items.Where(i => i.CurrentState == (int)Common.Enumerations.EntityState.Active))
                     .ThenInclude(i => i.Item)
                     .Include(c => c.Items.Where(i => i.CurrentState == (int)Common.Enumerations.EntityState.Active))
-                    .ThenInclude(i => i.Offer)
-                    .ThenInclude(o => o.User)
-                    .Include(c => c.Items.Where(i => i.CurrentState == (int)Common.Enumerations.EntityState.Active))
-                    .ThenInclude(i => i.Offer)
-                    .ThenInclude(o => o.OfferCombinationPricings)
+                    .ThenInclude(i => i.OfferCombinationPricing)
+                    .ThenInclude(ocp => ocp.Offer)
+                    .ThenInclude(o => o.Vendor)
                     .FirstOrDefaultAsync(c =>
                         c.UserId == customerId &&
                         c.CurrentState == (int)Common.Enumerations.EntityState.Active,
@@ -497,7 +491,7 @@ namespace DAL.Repositories
                         .FirstOrDefaultAsync(ci =>
                             ci.ShoppingCartId == targetCart.Id &&
                             ci.ItemId == sourceItem.ItemId &&
-                            ci.OfferId == sourceItem.OfferId &&
+                            ci.OfferCombinationPricingId == sourceItem.OfferCombinationPricingId &&
                             ci.CurrentState == (int)Common.Enumerations.EntityState.Active,
                             cancellationToken);
 
@@ -517,7 +511,7 @@ namespace DAL.Repositories
                         {
                             ShoppingCartId = targetCart.Id,
                             ItemId = sourceItem.ItemId,
-                            OfferId = sourceItem.OfferId,
+                            OfferCombinationPricingId = sourceItem.OfferCombinationPricingId,
                             Quantity = sourceItem.Quantity,
                             UnitPrice = sourceItem.UnitPrice,
                             CreatedDateUtc = DateTime.UtcNow,
@@ -643,11 +637,9 @@ namespace DAL.Repositories
                     .Include(c => c.Items.Where(i => i.CurrentState == (int)Common.Enumerations.EntityState.Active))
                     .ThenInclude(i => i.Item)
                     .Include(c => c.Items.Where(i => i.CurrentState == (int)Common.Enumerations.EntityState.Active))
-                    .ThenInclude(i => i.Offer)
-                    .ThenInclude(o => o.User)
-                    .Include(c => c.Items.Where(i => i.CurrentState == (int)Common.Enumerations.EntityState.Active))
-                    .ThenInclude(i => i.Offer)
-                    .ThenInclude(o => o.OfferCombinationPricings)
+                    .ThenInclude(i => i.OfferCombinationPricing)
+                    .ThenInclude(ocp => ocp.Offer)
+                    .ThenInclude(o => o.Vendor)
                     .FirstOrDefaultAsync(c => c.Id == cartId, cancellationToken);
 
                 return cart ?? new TbShoppingCart { Id = Guid.Empty };
@@ -670,7 +662,7 @@ namespace DAL.Repositories
             decimal total = 0;
             foreach (var item in cart.Items.Where(i => i.CurrentState == (int)Common.Enumerations.EntityState.Active))
             {
-                var price = item.Offer?.OfferCombinationPricings?.FirstOrDefault()?.Price ?? item.UnitPrice;
+                var price = item.OfferCombinationPricing?.Offer?.OfferCombinationPricings?.FirstOrDefault()?.Price ?? item.UnitPrice;
                 total += price * item.Quantity;
             }
 

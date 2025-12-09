@@ -7,7 +7,7 @@ namespace Shared.DTOs.ECommerce.Shipment
         public Guid OrderId { get; set; }
         public string VendorName { get; set; } = null!;
         public string WarehouseName { get; set; } = null!;
-        public string FulfillmentType { get; set; } = null!;
+        public int FulfillmentType { get; set; }
         public string ShipmentStatus { get; set; } = null!;
         public string? TrackingNumber { get; set; }
         public DateTime? EstimatedDeliveryDate { get; set; }

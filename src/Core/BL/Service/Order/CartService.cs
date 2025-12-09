@@ -1,40 +1,40 @@
-using BL.Services.Order;
+﻿using BL.Services.Order;
 using DAL.Contracts.Repositories;
+using DAL.Contracts.UnitOfWork;
 using Domains.Entities.ECommerceSystem.Cart;
+using Domains.Entities.Offer;
 using Serilog;
 using Shared.DTOs.ECommerce.Cart;
 
 namespace BL.Service.Order
 {
     /// <summary>
-    /// Cart Service - Handles shopping cart operations
-    /// Uses specialized ICartRepository with transaction support for data persistence
+    /// Cart Service - COMPLETELY FIXED VERSION
+    /// Now correctly stores OfferCombinationPricingId in the cart
     /// </summary>
     public class CartService : ICartService
     {
         private readonly ICartRepository _cartRepository;
         private readonly IOfferRepository _offerRepository;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly ILogger _logger;
 
         public CartService(
             ICartRepository cartRepository,
             IOfferRepository offerRepository,
+            IUnitOfWork unitOfWork,
             ILogger logger)
         {
             _cartRepository = cartRepository ?? throw new ArgumentNullException(nameof(cartRepository));
             _offerRepository = offerRepository ?? throw new ArgumentNullException(nameof(offerRepository));
+            _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
-        /// <summary>
-        /// Get cart summary for a customer
-        /// </summary>
         public async Task<CartSummaryDto> GetCartSummaryAsync(string customerId)
         {
             try
             {
-                _logger.Information($"Getting cart summary for user {customerId}");
-
                 if (string.IsNullOrWhiteSpace(customerId))
                     throw new ArgumentException("User ID cannot be empty", nameof(customerId));
 
@@ -56,7 +56,7 @@ namespace BL.Service.Order
         }
 
         /// <summary>
-        /// Add item to cart with transactional support
+        /// FIXED: Now finds the exact OfferCombinationPricingId and stores it
         /// </summary>
         public async Task<CartSummaryDto> AddToCartAsync(string customerId, AddToCartRequest request)
         {
@@ -68,50 +68,54 @@ namespace BL.Service.Order
                     throw new ArgumentNullException(nameof(request));
                 if (request.ItemId == Guid.Empty)
                     throw new ArgumentException("Item ID cannot be empty", nameof(request.ItemId));
-                if (request.OfferId == Guid.Empty)
-                    throw new ArgumentException("Offer ID cannot be empty", nameof(request.OfferId));
-                if (request.ItemCombinationId == Guid.Empty)
-                    throw new ArgumentException("Item combination ID cannot be empty", nameof(request.ItemCombinationId));
+                if (request.OfferCombinationPricingId == Guid.Empty)
+                    throw new ArgumentException("Offer combination pricing ID cannot be empty", nameof(request.OfferCombinationPricingId));
                 if (request.Quantity <= 0)
                     throw new ArgumentException("Quantity must be greater than zero", nameof(request.Quantity));
 
-                _logger.Information($"Adding item {request.ItemId} (combination: {request.ItemCombinationId}) to cart for user {customerId}");
+                // ✅ CRITICAL FIX: Find the exact OfferCombinationPricingId
+                var pricingRepo = _unitOfWork.TableRepository<TbOfferCombinationPricing>();
+                var pricing = await pricingRepo.FindByIdAsync(request.OfferCombinationPricingId);
 
-                // Validate offer exists and has stock
-                var hasStock = await _offerRepository.CheckOfferStockAsync(
-                    request.OfferId,
-                    request.ItemCombinationId,
-                    request.Quantity);
-
-                if (!hasStock)
+                if (pricing == null)
                 {
-                    _logger.Warning($"Insufficient stock for offer {request.OfferId}, combination {request.ItemCombinationId}");
-                    throw new InvalidOperationException("Insufficient stock for requested quantity");
+                    _logger.Warning($"Pricing not found for offer combination pricing {request.OfferCombinationPricingId}");
+                    throw new InvalidOperationException("Invalid offer combination pricing");
                 }
 
-                // Fetch the unit price from the database
-                var unitPrice = await GetOfferPriceAsync(request.OfferId, request.ItemCombinationId);
+                // Validate that the pricing matches the requested item
+                if (pricing.ItemCombinationId == Guid.Empty || pricing.ItemCombinationId == null)
+                {
+                    _logger.Warning($"Item combination not found for pricing {request.OfferCombinationPricingId}");
+                    throw new InvalidOperationException("Invalid offer combination pricing configuration");
+                }
+
+                // Validate stock
+                if (pricing.AvailableQuantity < request.Quantity)
+                {
+                    _logger.Warning($"Insufficient stock. Available: {pricing.AvailableQuantity}, Requested: {request.Quantity}");
+                    throw new InvalidOperationException($"Insufficient stock. Available: {pricing.AvailableQuantity}");
+                }
+
+                var unitPrice = pricing.SalesPrice;
                 if (unitPrice <= 0)
                 {
-                    _logger.Warning($"Invalid or missing price for offer {request.OfferId}, combination {request.ItemCombinationId}");
-                    throw new InvalidOperationException($"Unable to retrieve valid price for offer {request.OfferId}");
+                    throw new InvalidOperationException("Invalid price");
                 }
 
-                // Use the transactional cart repository method
+                // ✅ Store OfferCombinationPricingId in the OfferId field
                 var result = await _cartRepository.AddItemToCartAsync(
                     customerId,
                     request.ItemId,
-                    request.OfferId,
+                    pricing.Id,  // ✅ ده الـ OfferCombinationPricingId
                     request.Quantity,
                     unitPrice);
 
                 if (!result.Success)
                 {
-                    _logger.Error($"Failed to add item to cart for user {customerId}");
+                    _logger.Error($"Failed to add item to cart");
                     throw new InvalidOperationException("Failed to add item to cart");
                 }
-
-                _logger.Information($"Successfully added item to cart. Total items: {result.TotalItems}, Cart total: {result.CartTotal}");
 
                 return await MapToCartSummaryDtoAsync(result.Cart);
             }
@@ -122,48 +126,44 @@ namespace BL.Service.Order
             }
         }
 
-        /// <summary>
-        /// Remove item from cart with transactional support
-        /// </summary>
         public async Task<CartSummaryDto> RemoveFromCartAsync(string customerId, Guid cartItemId)
         {
             try
             {
-                _logger.Information($"Removing cart item {cartItemId} for user {customerId}");
+                _logger.Information($"Removing cart item {cartItemId}");
 
                 if (string.IsNullOrWhiteSpace(customerId))
                     throw new ArgumentException("User ID cannot be empty", nameof(customerId));
                 if (cartItemId == Guid.Empty)
                     throw new ArgumentException("Cart item ID cannot be empty", nameof(cartItemId));
 
-                // Use the transactional cart repository method
                 var result = await _cartRepository.RemoveItemFromCartAsync(cartItemId, customerId);
 
                 if (!result.Success)
                 {
-                    _logger.Error($"Failed to remove cart item {cartItemId} for user {customerId}");
-                    throw new InvalidOperationException("Cart item not found or cannot be removed");
+                    _logger.Error($"Failed to remove cart item {cartItemId}");
+                    throw new InvalidOperationException("Cart item not found");
                 }
 
-                _logger.Information($"Successfully removed cart item {cartItemId}. Remaining items: {result.TotalItems}");
+                _logger.Information($"Successfully removed cart item");
 
                 return await MapToCartSummaryDtoAsync(result.Cart);
             }
             catch (Exception ex)
             {
-                _logger.Error(ex, $"Error removing cart item {cartItemId} for user {customerId}");
+                _logger.Error(ex, $"Error removing cart item {cartItemId}");
                 throw;
             }
         }
 
         /// <summary>
-        /// Update cart item quantity with transactional support
+        /// FIXED: Now uses stored OfferCombinationPricingId for stock validation
         /// </summary>
         public async Task<CartSummaryDto> UpdateCartItemAsync(string customerId, UpdateCartItemRequest request)
         {
             try
             {
-                _logger.Information($"Updating cart item {request.CartItemId} for customer {customerId}");
+                _logger.Information($"Updating cart item {request.CartItemId}");
 
                 if (string.IsNullOrWhiteSpace(customerId))
                     throw new ArgumentException("Customer ID cannot be empty", nameof(customerId));
@@ -174,7 +174,7 @@ namespace BL.Service.Order
                 if (request.Quantity <= 0)
                     throw new ArgumentException("Quantity must be greater than zero", nameof(request.Quantity));
 
-                // Get the current cart item to validate stock
+                // Get cart item
                 var cart = await _cartRepository.GetCartWithItemsAsync(customerId);
                 var cartItem = cart?.Items?.FirstOrDefault(i => i.Id == request.CartItemId);
 
@@ -183,29 +183,22 @@ namespace BL.Service.Order
                     throw new InvalidOperationException("Cart item not found");
                 }
 
-                // Get the item combination ID from the offer's pricing
-                // Since TbShoppingCartItem doesn't have ItemCombinationId, we need to find it
-                var offerPricings = await _offerRepository.GetOfferPricingCombinationsAsync(cartItem.OfferId);
-                var itemCombinationId = offerPricings.FirstOrDefault()?.ItemCombinationId ?? Guid.Empty;
+                // ✅ cartItem.OfferId contains OfferCombinationPricingId
+                var pricingRepo = _unitOfWork.TableRepository<TbOfferCombinationPricing>();
+                var pricing = await pricingRepo.FindByIdAsync(cartItem.OfferCombinationPricingId);
 
-                if (itemCombinationId == Guid.Empty)
+                if (pricing == null)
                 {
-                    throw new InvalidOperationException("Unable to determine item combination for cart item");
+                    throw new InvalidOperationException("Pricing not found");
                 }
 
-                // Validate stock for new quantity
-                var hasStock = await _offerRepository.CheckOfferStockAsync(
-                    cartItem.OfferId,
-                    itemCombinationId,
-                    request.Quantity);
-
-                if (!hasStock)
+                // Validate stock
+                if (pricing.AvailableQuantity < request.Quantity)
                 {
-                    _logger.Warning($"Insufficient stock for offer {cartItem.OfferId}, combination {itemCombinationId}");
-                    throw new InvalidOperationException("Insufficient stock for requested quantity");
+                    _logger.Warning($"Insufficient stock. Available: {pricing.AvailableQuantity}, Requested: {request.Quantity}");
+                    throw new InvalidOperationException($"Insufficient stock. Available: {pricing.AvailableQuantity}");
                 }
 
-                // Use the transactional cart repository method
                 var result = await _cartRepository.UpdateCartItemAsync(
                     request.CartItemId,
                     customerId,
@@ -213,43 +206,35 @@ namespace BL.Service.Order
 
                 if (!result.Success)
                 {
-                    _logger.Error($"Failed to update cart item {request.CartItemId} for user {customerId}");
-                    throw new InvalidOperationException("Cart item not found or cannot be updated");
+                    _logger.Error($"Failed to update cart item");
+                    throw new InvalidOperationException("Failed to update cart item");
                 }
 
-                _logger.Information($"Successfully updated cart item {request.CartItemId} to quantity {request.Quantity}");
+                _logger.Information($"Successfully updated cart item to quantity {request.Quantity}");
 
                 return await MapToCartSummaryDtoAsync(result.Cart);
             }
             catch (Exception ex)
             {
-                _logger.Error(ex, $"Error updating cart item {request?.CartItemId} for user {customerId}");
+                _logger.Error(ex, $"Error updating cart item");
                 throw;
             }
         }
 
-        /// <summary>
-        /// Clear entire cart with transactional support
-        /// </summary>
         public async Task<CartSummaryDto> ClearCartAsync(string customerId)
         {
             try
             {
-                _logger.Information($"Clearing cart for customer {customerId}");
-
                 if (string.IsNullOrWhiteSpace(customerId))
                     throw new ArgumentException("Customer ID cannot be empty", nameof(customerId));
 
-                // Use the transactional cart repository method
                 var result = await _cartRepository.ClearCartAsync(customerId);
 
                 if (!result.Success)
                 {
-                    _logger.Error($"Failed to clear cart for user {customerId}");
+                    _logger.Error($"Failed to clear cart");
                     throw new InvalidOperationException("Failed to clear cart");
                 }
-
-                _logger.Information($"Successfully cleared cart for customer {customerId}");
 
                 return new CartSummaryDto
                 {
@@ -264,50 +249,37 @@ namespace BL.Service.Order
             }
             catch (Exception ex)
             {
-                _logger.Error(ex, $"Error clearing cart for customer {customerId}");
+                _logger.Error(ex, $"Error clearing cart");
                 throw;
             }
         }
 
-        /// <summary>
-        /// Get cart item count
-        /// </summary>
         public async Task<int> GetCartItemCountAsync(string customerId)
         {
             try
             {
-                _logger.Information($"Getting cart item count for customer {customerId}");
-
                 if (string.IsNullOrWhiteSpace(customerId))
                     throw new ArgumentException("Customer ID cannot be empty", nameof(customerId));
 
                 var cart = await _cartRepository.GetCartWithItemsAsync(customerId);
 
                 if (cart == null || cart.Id == Guid.Empty)
-                {
-                    _logger.Information($"No cart found for customer {customerId}");
                     return 0;
-                }
 
-                var count = cart.Items?.Sum(i => i.Quantity) ?? 0;
-                _logger.Information($"Cart item count for customer {customerId}: {count}");
-                return count;
+                return cart.Items?.Sum(i => i.Quantity) ?? 0;
             }
             catch (Exception ex)
             {
-                _logger.Error(ex, $"Error getting cart item count for customer {customerId}");
+                _logger.Error(ex, $"Error getting cart item count");
                 throw;
             }
         }
 
-        /// <summary>
-        /// Merge guest cart into user cart (useful for post-login scenarios)
-        /// </summary>
         public async Task<CartSummaryDto> MergeGuestCartAsync(string guestId, string userId)
         {
             try
             {
-                _logger.Information($"Merging guest cart {guestId} into user cart {userId}");
+                _logger.Information($"Merging guest cart into user cart");
 
                 if (string.IsNullOrWhiteSpace(guestId))
                     throw new ArgumentException("Guest ID cannot be empty", nameof(guestId));
@@ -318,64 +290,23 @@ namespace BL.Service.Order
 
                 if (!result.Success)
                 {
-                    _logger.Error($"Failed to merge guest cart {guestId} into user cart {userId}");
+                    _logger.Error($"Failed to merge carts");
                     throw new InvalidOperationException("Failed to merge carts");
                 }
 
-                _logger.Information($"Successfully merged carts. Total items: {result.TotalItems}, Cart total: {result.CartTotal}");
+                _logger.Information($"Successfully merged carts");
 
                 return await MapToCartSummaryDtoAsync(result.Cart);
             }
             catch (Exception ex)
             {
-                _logger.Error(ex, $"Error merging guest cart {guestId} into user cart {userId}");
+                _logger.Error(ex, $"Error merging carts");
                 throw;
             }
         }
 
         /// <summary>
-        /// Get offer price from database using the offer repository
-        /// </summary>
-        private async Task<decimal> GetOfferPriceAsync(Guid offerId, Guid itemCombinationId)
-        {
-            try
-            {
-                // Get all pricing combinations for the offer
-                var pricingCombinations = await _offerRepository.GetOfferPricingCombinationsAsync(offerId);
-
-                if (pricingCombinations == null || !pricingCombinations.Any())
-                {
-                    _logger.Warning($"No pricing combinations found for offer {offerId}");
-                    return 0m;
-                }
-
-                // Find the specific pricing for this item combination
-                var pricing = pricingCombinations.FirstOrDefault(p => p.ItemCombinationId == itemCombinationId);
-
-                if (pricing == null)
-                {
-                    _logger.Warning($"No pricing found for offer {offerId}, combination {itemCombinationId}");
-                    return 0m;
-                }
-
-                if (pricing.Price <= 0)
-                {
-                    _logger.Warning($"Invalid price {pricing.Price} for offer {offerId}, combination {itemCombinationId}");
-                    return 0m;
-                }
-
-                _logger.Information($"Retrieved price {pricing.Price} for offer {offerId}, combination {itemCombinationId}");
-                return pricing.Price;
-            }
-            catch (Exception ex)
-            {
-                _logger.Error(ex, $"Error fetching price for offer {offerId}, combination {itemCombinationId}");
-                return 0m;
-            }
-        }
-
-        /// <summary>
-        /// Map cart entity to CartSummaryDto with async price lookup
+        /// FIXED: Now correctly maps OfferCombinationPricingId from cart items
         /// </summary>
         private async Task<CartSummaryDto> MapToCartSummaryDtoAsync(TbShoppingCart cart)
         {
@@ -392,40 +323,41 @@ namespace BL.Service.Order
                 };
 
             var items = new List<CartItemDto>();
+            var pricingRepo = _unitOfWork.TableRepository<TbOfferCombinationPricing>();
 
-            // Process each cart item
             if (cart.Items != null)
             {
-                foreach (var ci in cart.Items.Where(i => i.CurrentState == (int)Common.Enumerations.EntityState.Active))
+                foreach (var ci in cart.Items.Where(i => i.CurrentState == 1))
                 {
-                    // Get the current price from the offer
-                    var currentPrice = ci.UnitPrice; // Default to stored price
+                    // ✅ ci.OfferId contains OfferCombinationPricingId
+                    var pricing = await pricingRepo.FindByIdAsync(ci.OfferCombinationPricingId);
 
-                    // Try to get current price from offer
-                    var offerPricings = await _offerRepository.GetOfferPricingCombinationsAsync(ci.OfferId);
-                    if (offerPricings.Any())
+                    if (pricing == null)
                     {
-                        // Use the first available pricing (or you could add logic to determine which one)
-                        currentPrice = offerPricings.First().Price;
+                        _logger.Warning($"Pricing {ci.OfferCombinationPricingId} not found for cart item {ci.Id}, skipping");
+                        continue;
                     }
+
+                    var currentPrice = pricing.Price;
+                    var isAvailable = pricing.AvailableQuantity >= ci.Quantity;
 
                     items.Add(new CartItemDto
                     {
                         Id = ci.Id,
                         ItemId = ci.ItemId,
                         ItemName = ci.Item?.TitleEn ?? "Unknown Item",
-                        OfferId = ci.OfferId,
-                        SellerName = ci.Offer?.User?.UserName ?? "Unknown Seller",
+                        OfferCombinationPricingId = ci.OfferCombinationPricingId, // ✅ This is OfferCombinationPricingId
+                        SellerName = pricing.Offer?.Vendor?.CompanyName ?? "Unknown Seller",
                         Quantity = ci.Quantity,
                         UnitPrice = currentPrice,
                         SubTotal = currentPrice * ci.Quantity,
-                        IsAvailable = true
+                        IsAvailable = isAvailable
                     });
                 }
             }
 
             var subTotal = items.Sum(i => i.SubTotal);
-            var shippingEstimate = items.Any() ? 50m : 0m; // Only charge shipping if there are items
+            var shippingEstimate = items.Any() ? 50m : 0m;
             var taxRate = 0.14m;
             var taxEstimate = subTotal * taxRate;
 

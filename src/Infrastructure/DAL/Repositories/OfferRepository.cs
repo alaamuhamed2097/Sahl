@@ -10,7 +10,7 @@ using System.Linq.Expressions;
 namespace DAL.Repositories
 {
 
-namespace DAL.Repositories
+    namespace DAL.Repositories
     {
         /// <summary>
         /// Implementation of offer repository with transaction support
@@ -36,12 +36,10 @@ namespace DAL.Repositories
             {
                 try
                 {
-                    _logger.Information($"Getting offer details for offer ID: {offerId}");
-
                     var offer = await _dbContext.Set<TbOffer>()
                         .AsNoTracking()
                         .Include(o => o.Item)
-                        .Include(o => o.User)
+                        .Include(o => o.Vendor)
                         .Include(o => o.OfferCombinationPricings)
                         .ThenInclude(p => p.ItemCombination)
                         .FirstOrDefaultAsync(o => o.Id == offerId, cancellationToken);
@@ -66,7 +64,7 @@ namespace DAL.Repositories
 
                     var offers = await _dbContext.Set<TbOffer>()
                         .AsNoTracking()
-                        .Include(o => o.User)
+                        .Include(o => o.Vendor)
                         .Include(o => o.OfferCombinationPricings)
                         .Where(o => o.ItemId == itemId && o.CurrentState == (int)Common.Enumerations.EntityState.Active)
                         .ToListAsync(cancellationToken);
@@ -81,9 +79,9 @@ namespace DAL.Repositories
             }
 
             /// <summary>
-            /// Get offers by vendor/user ID
+            /// Get offers by vendor ID
             /// </summary>
-            public async Task<IEnumerable<TbOffer>> GetOffersByVendorIdAsync(string vendorId, CancellationToken cancellationToken = default)
+            public async Task<IEnumerable<TbOffer>> GetOffersByVendorIdAsync(Guid vendorId, CancellationToken cancellationToken = default)
             {
                 try
                 {
@@ -93,7 +91,7 @@ namespace DAL.Repositories
                         .AsNoTracking()
                         .Include(o => o.Item)
                         .Include(o => o.OfferCombinationPricings)
-                        .Where(o => o.UserId == vendorId && o.CurrentState == (int)Common.Enumerations.EntityState.Active)
+                        .Where(o => o.VendorId == vendorId && o.CurrentState == (int)Common.Enumerations.EntityState.Active)
                         .ToListAsync(cancellationToken);
 
                     return offers;
@@ -117,7 +115,7 @@ namespace DAL.Repositories
                     var offers = await _dbContext.Set<TbOffer>()
                         .AsNoTracking()
                         .Include(o => o.Item)
-                        .Include(o => o.User)
+                        .Include(o => o.Vendor)
                         .Include(o => o.OfferCombinationPricings)
                         .Where(o =>
                             o.CurrentState == (int)Common.Enumerations.EntityState.Active &&
@@ -204,8 +202,6 @@ namespace DAL.Repositories
 
                 try
                 {
-                    _logger.Information($"Starting UpdateOfferPricing transaction for pricing ID: {pricingId}");
-
                     // Step 1: Get the pricing record
                     var pricing = await _offerPricing
                         .FirstOrDefaultAsync(p =>
@@ -249,8 +245,6 @@ namespace DAL.Repositories
                     transactionResult.NewPrice = newPrice;
                     transactionResult.NewQuantity = newQuantity;
 
-                    _logger.Information($"Successfully updated pricing {pricingId} to price {newPrice} and quantity {newQuantity}");
-
                     return transactionResult;
                 }
                 catch (DbUpdateException dbEx)
@@ -274,8 +268,6 @@ namespace DAL.Repositories
             {
                 try
                 {
-                    _logger.Information($"Checking stock for offer {offerId}, combination {itemCombinationId}, quantity {quantity}");
-
                     var pricing = await _offerPricing
                         .AsNoTracking()
                         .FirstOrDefaultAsync(p =>
@@ -292,8 +284,6 @@ namespace DAL.Repositories
 
                     var availableStock = pricing.AvailableQuantity - pricing.ReservedQuantity;
                     var hasStock = availableStock >= quantity;
-
-                    _logger.Information($"Stock check result: {hasStock} (available: {availableStock}, requested: {quantity})");
 
                     return hasStock;
                 }
@@ -323,8 +313,6 @@ namespace DAL.Repositories
 
                 try
                 {
-                    _logger.Information($"Starting ReserveStock transaction for offer {offerId}, combination {itemCombinationId}, quantity {quantity}");
-
                     // Step 1: Get the pricing record with lock
                     var pricing = await _offerPricing
                         .FirstOrDefaultAsync(p =>
@@ -377,8 +365,6 @@ namespace DAL.Repositories
                     transactionResult.NewQuantity = pricing.AvailableQuantity;
                     transactionResult.ReservedQuantity = pricing.ReservedQuantity;
 
-                    _logger.Information($"Successfully reserved {quantity} units for offer {offerId}, combination {itemCombinationId}");
-
                     return transactionResult;
                 }
                 catch (DbUpdateException dbEx)
@@ -414,8 +400,6 @@ namespace DAL.Repositories
 
                 try
                 {
-                    _logger.Information($"Starting ReleaseReservedStock transaction for offer {offerId}, combination {itemCombinationId}, quantity {quantity}");
-
                     // Step 1: Get the pricing record with lock
                     var pricing = await _offerPricing
                         .FirstOrDefaultAsync(p =>
@@ -467,8 +451,6 @@ namespace DAL.Repositories
                     transactionResult.NewQuantity = pricing.AvailableQuantity;
                     transactionResult.ReservedQuantity = pricing.ReservedQuantity;
 
-                    _logger.Information($"Successfully released {quantity} units for offer {offerId}, combination {itemCombinationId}");
-
                     return transactionResult;
                 }
                 catch (DbUpdateException dbEx)
@@ -497,7 +479,7 @@ namespace DAL.Repositories
                     IQueryable<TbOffer> query = _dbContext.Set<TbOffer>()
                         .AsNoTracking()
                         .Include(o => o.Item)
-                        .Include(o => o.User)
+                        .Include(o => o.Vendor)
                         .Include(o => o.OfferCombinationPricings);
 
                     if (predicate != null)

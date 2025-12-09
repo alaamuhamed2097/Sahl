@@ -19,9 +19,9 @@ public interface IOfferRepository : ITableRepository<TbOffer>
     Task<IEnumerable<TbOffer>> GetOffersByItemIdAsync(Guid itemId, CancellationToken cancellationToken = default);
 
     /// <summary>
-    /// Get offers by vendor/user ID
+    /// Get offers by vendor ID
     /// </summary>
-    Task<IEnumerable<TbOffer>> GetOffersByVendorIdAsync(string vendorId, CancellationToken cancellationToken = default);
+    Task<IEnumerable<TbOffer>> GetOffersByVendorIdAsync(Guid vendorId, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Get offers with available stock information

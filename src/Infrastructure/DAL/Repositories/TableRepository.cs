@@ -14,8 +14,8 @@ namespace DAL.Repositories
 
     public class TableRepository<T> : Repository<T>, ITableRepository<T> where T : BaseEntity
     {
-        private readonly ApplicationDbContext _dbContext;
-        private readonly ILogger _logger;
+        protected readonly ApplicationDbContext _dbContext;
+        protected readonly ILogger _logger;
 
         // Constants
         private const int BULK_OPERATION_CHUNK_SIZE = 1000;

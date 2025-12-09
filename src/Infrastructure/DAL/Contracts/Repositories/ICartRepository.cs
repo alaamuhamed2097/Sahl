@@ -59,4 +59,3 @@ public interface ICartRepository : ITableRepository<TbShoppingCart>
         string targetCustomerId,
         CancellationToken cancellationToken = default);
 }
-

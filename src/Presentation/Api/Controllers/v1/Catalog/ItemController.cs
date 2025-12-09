@@ -1,4 +1,4 @@
-using Api.Controllers.Base;
+using Api.Controllers.v1.Base;
 using Api.Extensions;
 using Asp.Versioning;
 using BL.Contracts.Service.ECommerce.Item;
