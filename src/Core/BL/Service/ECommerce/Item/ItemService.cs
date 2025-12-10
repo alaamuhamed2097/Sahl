@@ -70,7 +70,7 @@ namespace BL.Service.ECommerce.Item
                 throw new ArgumentOutOfRangeException(nameof(criteriaModel.PageSize), ValidationResources.PageSizeRange);
 
             // Base filter
-            Expression<Func<TbItem, bool>> filter = x => x.CurrentState == 1;
+            Expression<Func<TbItem, bool>> filter = x => !x.IsDeleted ;
 
             // Combine expressions manually
             var searchTerm = criteriaModel.SearchTerm?.Trim().ToLower();
@@ -184,28 +184,28 @@ namespace BL.Service.ECommerce.Item
                         await _unitOfWork.TableRepository<TbItemAttribute>().HardDeleteAsync(attr.Id);
 
                     // Delete old combinations (unchanged logic)
-                    if (category.PricingSystemType == PricingSystemType.CombinationWithQuantity ||
-                        category.PricingSystemType == PricingSystemType.Combination)
-                    {
-                        var oldCombinations = await _unitOfWork.TableRepository<TbItemCombination>()
-                                                               .GetAsync(c => c.ItemId == dto.Id, includeProperties: "CombinationAttributes");
+                    //if (category.PricingSystemType == PricingSystemType.CombinationWithQuantity ||
+                    //    category.PricingSystemType == PricingSystemType.Combination)
+                    //{
+                    //    var oldCombinations = await _unitOfWork.TableRepository<TbItemCombination>()
+                    //                                           .GetAsync(c => c.ItemId == dto.Id, includeProperties: "CombinationAttributes");
 
-                        foreach (var combo in oldCombinations)
-                        {
-                            var comboAttrIds = combo.CombinationAttributes.Select(c => c.Id).ToList();
-                            var comboValuesIds = (await _unitOfWork.TableRepository<TbCombinationAttributesValue>()
-                                                    .GetAsync(v => comboAttrIds.Contains(v.CombinationAttributeId)))
-                                                    .Select(v => v.Id);
+                    //    foreach (var combo in oldCombinations)
+                    //    {
+                    //        var comboAttrIds = combo.CombinationAttributes.Select(c => c.Id).ToList();
+                    //        var comboValuesIds = (await _unitOfWork.TableRepository<TbCombinationAttributesValue>()
+                    //                                .GetAsync(v => comboAttrIds.Contains(v.CombinationAttributeId)))
+                    //                                .Select(v => v.Id);
 
-                            var priceModifierIds = (await _unitOfWork.TableRepository<TbAttributeValuePriceModifier>()
-                                                    .GetAsync(v => comboValuesIds.Contains(v.CombinationAttributeValueId)))
-                                                    .Select(v => v.Id);
+                    //        var priceModifierIds = (await _unitOfWork.TableRepository<TbAttributeValuePriceModifier>()
+                    //                                .GetAsync(v => comboValuesIds.Contains(v.CombinationAttributeValueId)))
+                    //                                .Select(v => v.Id);
 
-                            await _unitOfWork.TableRepository<TbAttributeValuePriceModifier>().BulkHardDeleteByIdsAsync(priceModifierIds);
-                            await _unitOfWork.TableRepository<TbCombinationAttributesValue>().BulkHardDeleteByIdsAsync(comboValuesIds);
-                            await _unitOfWork.TableRepository<TbCombinationAttribute>().BulkHardDeleteByIdsAsync(comboAttrIds);
-                        }
-                    }
+                    //        await _unitOfWork.TableRepository<TbAttributeValuePriceModifier>().BulkHardDeleteByIdsAsync(priceModifierIds);
+                    //        await _unitOfWork.TableRepository<TbCombinationAttributesValue>().BulkHardDeleteByIdsAsync(comboValuesIds);
+                    //        await _unitOfWork.TableRepository<TbCombinationAttribute>().BulkHardDeleteByIdsAsync(comboAttrIds);
+                    //    }
+                    //}
                 }
 
                 var entity = _mapper.MapModel<ItemDto, TbItem>(dto);
@@ -242,20 +242,7 @@ namespace BL.Service.ECommerce.Item
             }
         }
 
-                        if (existingCombinations.Any())
-                        {
-                            foreach (var combo in existingCombinations)
-                            {
-                                var combinationAttributesIds = combo.CombinationAttributes.Select(c => c.Id).ToList() ?? new List<Guid>();
-                                var CombinationAttributeValuesIds = (await _unitOfWork.TableRepository<TbCombinationAttributesValue>().GetAsync(c => combinationAttributesIds.Contains(c.CombinationAttributeId))).Select(v => v.Id);
-                                var AttributeValuesPriceModifierIds = (await _unitOfWork.TableRepository<TbAttributeValuePriceModifier>().GetAsync(c => CombinationAttributeValuesIds.Contains(c.CombinationAttributeValueId))).Select(v => v.Id);
-                                await _unitOfWork.TableRepository<TbAttributeValuePriceModifier>().BulkHardDeleteByIdsAsync(AttributeValuesPriceModifierIds);
-                                await _unitOfWork.TableRepository<TbCombinationAttributesValue>().BulkHardDeleteByIdsAsync(CombinationAttributeValuesIds);
-                                await _unitOfWork.TableRepository<TbCombinationAttribute>().BulkHardDeleteByIdsAsync(combinationAttributesIds);
-                            }
-                        }
-                    }
-                }
+ 
         // Helper functions
         private async Task<string> SaveImageSync(string image)
         {
