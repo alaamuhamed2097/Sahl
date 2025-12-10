@@ -29,6 +29,5 @@ namespace Domains.Entities.Catalog.Item.ItemAttributes
 
 		public virtual ICollection<TbCombinationAttribute> CombinationAttributes { get; set; }
 		public virtual ICollection<TbOfferCombinationPricing> OfferCombinationPricings { get; set; }
-		public virtual ICollection<TbOfferPriceHistory> OfferPriceHistories { get; set; }
 	}
 }

@@ -15,12 +15,18 @@ namespace Domains.Entities.Offer
         // Required properties
         public Guid ItemId { get; set; }
         public Guid VendorId { get; set; }
+        
+        // Filtering and search optimization
         public StorgeLocation StorgeLocation { get; set; }
         public int HandlingTimeInDays { get; set; }
         public OfferVisibilityScope VisibilityScope { get; set; }
-        
-        // Fulfillment type (Marketplace/FBS or Seller/FBM)
         public FulfillmentType FulfillmentType { get; set; } = FulfillmentType.Seller;
+
+        // Vendore performance metrics
+        [Column(TypeName = "decimal(3,2)")]
+        public decimal? VendorRatingForThisItem { get; set; }
+        public int VendorSalesCountForThisItem { get; set; }
+        public bool IsBuyBoxWinner { get; set; } = false; 
 
         // Optional properties
         public Guid? WarrantyId { get; set; }

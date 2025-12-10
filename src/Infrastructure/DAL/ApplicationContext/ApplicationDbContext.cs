@@ -260,18 +260,10 @@ namespace DAL.ApplicationContext
             {
                 entity.HasKey(e => e.Id);
 
-                entity.HasOne(e => e.ItemCombination)
-                      .WithMany()
-                      .HasForeignKey(e => e.ItemCombinationId)
-                      .OnDelete(DeleteBehavior.Restrict);
-
                 entity.HasOne(e => e.OfferCombinationPricing)
                       .WithMany()
                       .HasForeignKey(e => e.OfferCombinationPricingId)
                       .OnDelete(DeleteBehavior.Restrict);
-
-                entity.HasIndex(e => e.ItemCombinationId);
-                entity.HasIndex(e => e.OfferCombinationPricingId);
             });
 
             // Offer status history relations

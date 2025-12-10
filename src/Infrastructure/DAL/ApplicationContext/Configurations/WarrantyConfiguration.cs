@@ -17,15 +17,6 @@ namespace DAL.ApplicationContext.Configurations
             builder.Property(w => w.WarrantyPeriodMonths).IsRequired();
             builder.Property(w => w.WarrantyPolicy).HasMaxLength(500);
             builder.Property(w => w.WarrantyServiceCenter).HasMaxLength(500);
-
-            // Warranty -> City (many warranties may be linked to a city)
-            builder.HasOne<TbCity>(w => w.City)
-                   .WithMany()
-                   .HasForeignKey(w => w.CityId)
-                   .OnDelete(DeleteBehavior.SetNull);
-
-            // Configure indexes
-            builder.HasIndex(w => w.CityId);
         }
     }
 }
