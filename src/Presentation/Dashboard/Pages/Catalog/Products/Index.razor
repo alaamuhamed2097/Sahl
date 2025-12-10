@@ -1,4 +1,4 @@
-﻿@* @page "/products"
+﻿@page "/products"
 
 @inherits BaseListPage<ItemDto>
 
@@ -80,8 +80,6 @@
 							<tr>
 								<th class="text-center align-middle">@FormResources.Image</th>
 								<th class="text-center  align-middle">@FormResources.Title</th>
-								<th class="text-center align-middle">@ECommerceResources.StockStatus</th>
-								<th class="text-center align-middle">@ECommerceResources.Quantity</th>
 								<th class="text-center align-middle">@FormResources.Price</th>
 								<th class="text-center align-middle" style="width: 200px;">@ECommerceResources.Actions</th>
 							</tr>
@@ -114,49 +112,12 @@
 											@(ResourceManager.CurrentLanguage == Language.Arabic ? item.TitleAr : item.TitleEn)
 										</td>
 										<td class="text-center align-middle">
-											@{
-												var stockStatusClass = item.StockStatus
-												? "bg-success"
-												: "bg-danger";
-												var stockStatusText = item.StockStatus
-												? ECommerceResources.InStock
-												: ECommerceResources.OutOfStock;
-											}
-											<span class="badge @stockStatusClass rounded-pill py-2 px-3">
-												@stockStatusText
+											<span class="fw-bold text-success" dir="ltr">
+												@(item.BasePrice != null ? $"{item.BasePrice?.ToString("F2")} EGP" : "N/A")
 											</span>
 										</td>
-										<td class="text-center align-middle">
-											<div class="d-flex align-items-center justify-content-center gap-2">
-												@{
-													// Get quantity from default combination or first combination
-													var quantity = item.ItemAttributeCombinationPricings?.FirstOrDefault(c => c.IsDefault)?.Quantity
-													?? item.ItemAttributeCombinationPricings?.FirstOrDefault()?.Quantity
-													?? 0;
-												}
-												<span class="fw-bold @(quantity <= 10 ? "text-danger" : "text-success")">
-													@quantity
-												</span>
-												@if (quantity <= 10 && quantity > 0)
-												{
-													<span class="badge bg-warning text-dark rounded-pill"
-														  title="@ECommerceResources.LowStockWarning">
-														<i class="fas fa-exclamation-triangle me-1"></i>
-													</span>
-												}
-												else if (quantity == 0)
-												{
-													<span class="badge bg-danger rounded-pill">
-														<i class="fas fa-times me-1"></i>
-													</span>
-												}
-											</div>
-										</td>
-										<td class="text-center align-middle">
-											@item.GetPrice().ToString("F2") $
-										</td>
 										<td class="d-flex gap-1 justify-content-center align-items-center">
-											<div class="d-flex justify-content-center gap-2">
+											<div class="d-flex justify-content-center gap-2 my-2 pt-2">
 												<button class="btn btn-primary" @onclick="() => Edit(item)">
 													<i class="fas fa-pencil-alt mx-1 ms-2"></i>
 													@ActionsResources.Edit
@@ -173,7 +134,7 @@
 							else
 							{
 								<tr>
-									<td colspan="7" class="p-0 no-data-container">
+									<td colspan="5" class="p-0 no-data-container">
 										<div class=" d-flex flex-column justify-content-center align-items-center text-center" style="height: 60vh;">
 											<!-- أيقونة كبيرة -->
 											<i class="fas fa-database text-muted" style="font-size: 60px;"></i>
@@ -275,4 +236,4 @@
 			</div>
 		</div>
 	</div>
-</div> *@
+</div>

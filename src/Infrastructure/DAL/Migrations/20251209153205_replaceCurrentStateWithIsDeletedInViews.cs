@@ -181,72 +181,71 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
                 
-Alter VIEW [dbo].[VwItems]
+CREATE OR ALTER VIEW [dbo].[VwItems]
 AS
 SELECT 
     i.Id, 
+	i.SEOTitle,
+	i.SEODescription,
+	i.SEOMetaTags,
     i.TitleAr, 
     i.TitleEn,
     i.ShortDescriptionAr, 
     i.ShortDescriptionEn,
     i.DescriptionAr, 
     i.DescriptionEn,
-    i.VideoUrl AS VideoLink, -- Changed from VideoLink to VideoUrl
     i.CategoryId, 
     c.TitleAr AS CategoryTitleAr, 
     c.TitleEn AS CategoryTitleEn, 
     i.UnitId, 
     u.TitleAr AS UnitTitleAr, 
     u.TitleEn AS UnitTitleEn, 
+	i.BrandId,
+	b.TitleAr AS BrandTitleAr,
+	b.TitleEn AS BrandTitleEn,
+    i.VideoProviderId,
+	vp.TitleAr AS VideoProviderTitleAr,
+	vp.TitleEn AS VideoProviderTitleEn,
+	i.VideoUrl,
     i.ThumbnailImage, 
-    -- StockStatus might need to come from OfferCombinationPricings or Items
-    -- Removed incorrect StockStatus reference
-    -- Get default quantity from combinations
-    ISNULL((
-        SELECT TOP 1 ocp.AvailableQuantity 
-        FROM dbo.TbOfferCombinationPricings ocp
-        INNER JOIN dbo.TbItemCombinations ic ON ocp.ItemCombinationId = ic.Id
-        WHERE ic.ItemId = i.Id 
-            AND ocp.IsDeleted = 0
-        ORDER BY 
-            CASE WHEN ic.IsDefault = 1 THEN 0 ELSE 1 END,
-            ocp.CreatedDateUtc
-    ), 0) AS DefaultQuantity,
-    -- Get default price from combinations
-    ISNULL((
-        SELECT TOP 1 ocp.Price 
-        FROM dbo.TbOfferCombinationPricings ocp
-        INNER JOIN dbo.TbItemCombinations ic ON ocp.ItemCombinationId = ic.Id
-        WHERE ic.ItemId = i.Id 
-            AND ocp.IsDeleted = 0
-        ORDER BY 
-            CASE WHEN ic.IsDefault = 1 THEN 0 ELSE 1 END,
-            ocp.CreatedDateUtc
-    ), 0) AS DefaultPrice,
+	i.Barcode,
+	i.SKU,
+	i.BasePrice,
+	i.MinimumPrice,
+	i.MaximumPrice,
     i.CreatedDateUtc,
-    -- You might need to add IsNewArrival, IsBestSeller, IsRecommended columns if they exist
+	i.VisibilityScope,
     -- Get all item images as JSON
     (
         SELECT 
-            im.Id,
-            im.Path,
-            im.[Order]
-        FROM 
-            dbo.TbItemImages im
-        WHERE 
-            im.ItemId = i.Id 
-            AND im.IsDeleted = 0
+		img.Id,
+		img.Path,
+		img.[Order],
+		img.ItemId
+        FROM dbo.TbItemImages img
+        WHERE img.ItemId = i.Id AND img.IsDeleted = 1 
         ORDER BY 
-            im.[Order]
+            img.[Order]
         FOR JSON PATH
-    ) AS ItemImagesJson
-    -- CombinationsJson would need to be more complex with your actual schema
+    ) AS Images,
+	(
+        SELECT 
+		iattr.Id,
+		iattr.ItemId,
+		iattr.AttributeId,
+		iattr.Value
+        FROM dbo.TbItemAttributes iattr
+        WHERE iattr.ItemId = i.Id AND iattr.IsDeleted = 1 
+        FOR JSON PATH
+    ) AS ItemAttributes
 FROM     
     dbo.TbItems AS i 
     INNER JOIN dbo.TbCategories AS c ON i.CategoryId = c.Id 
     INNER JOIN dbo.TbUnits AS u ON i.UnitId = u.Id
+	INNER JOIN dbo.TbBrands AS b ON i.BrandId = b.Id
+	LEFT JOIN dbo.TbVideoProviders AS vp ON i.VideoProviderId = vp.Id 
 WHERE  
-    (i.IsDeleted = 0)
+    (i.IsDeleted = 1)
 GO
 /****** Object:  View [dbo].[VwUnitWithConversionsUnits]    Script Date: 12/9/2025 5:28:12 PM ******/
 SET ANSI_NULLS ON

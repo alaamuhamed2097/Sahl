@@ -1,3 +1,4 @@
+using Common.Enumerations.Visibility;
 using Resources;
 using Resources.Enumerations;
 using Shared.Attributes;
@@ -51,21 +52,34 @@ namespace Shared.DTOs.ECommerce.Item
         public string CategoryTitleAr { get; set; } = string.Empty;
         public string CategoryTitleEn { get; set; } = string.Empty;
         public string CategoryTitle=> ResourceManager.CurrentLanguage == Language.Arabic ? CategoryTitleAr : CategoryTitleEn;
+        public string BrandTitleAr { get; set; } = string.Empty;
+        public string BrandTitleEn { get; set; } = string.Empty;
+        public string BrandTitle => ResourceManager.CurrentLanguage == Language.Arabic ? BrandTitleAr : BrandTitleEn;
+        public string UnitTitleAr { get; set; } = string.Empty;
+        public string UnitTitleEn { get; set; } = string.Empty;
+        public string UnitTitle => ResourceManager.CurrentLanguage == Language.Arabic ? UnitTitleAr : UnitTitleEn;
+        public string? VideoProviderTitleAr { get; set; }
+        public string? VideoProviderTitleEn { get; set; } 
+        public string? VideoProviderTitle => ResourceManager.CurrentLanguage == Language.Arabic ? VideoProviderTitleAr : VideoProviderTitleEn;
 
         public Guid? VideoProviderId { get; set; }
         public string? VideoUrl { get; set; }
 
         [Required(ErrorMessageResourceName = "FieldRequired", ErrorMessageResourceType = typeof(ValidationResources))]
         public string ThumbnailImage { get; set; } = null!;
+        public string? Barcode { get; set; }
+        public string? SKU { get; set; }
         public decimal? BasePrice { get; set; }
         public decimal? MinimumPrice { get; set; }
         public decimal? MaximumPrice { get; set; }
+        public ProductVisibilityStatus VisibilityScope { get; set; }
+        public DateTime CreatedDateUtc { get; set; }
 
         [Required(ErrorMessageResourceName = "FieldRequired", ErrorMessageResourceType = typeof(ValidationResources))]
         [MinLength(1, ErrorMessageResourceName = "ImagesRequired", ErrorMessageResourceType = typeof(ValidationResources))]
         public List<ItemImageDto> Images { get; set; } = new();
 
-       public List<ItemCombinationDto> ItemCombinations { get; set; } = new();
+       //public List<ItemCombinationDto> ItemCombinations { get; set; } = new();
        public List<ItemAttributeDto>? ItemAttributes { get; set; } = new();
     }
 }

@@ -1,4 +1,5 @@
-﻿using Domains.Entities.Catalog.Brand;
+﻿using Common.Enumerations.Visibility;
+using Domains.Entities.Catalog.Brand;
 using Domains.Entities.Catalog.Category;
 using Domains.Entities.Catalog.Item.ItemAttributes;
 using Domains.Entities.Catalog.Unit;
@@ -40,6 +41,10 @@ namespace Domains.Entities.Catalog.Item
 
         [StringLength(200)]
         public string ThumbnailImage { get; set; } = null!;
+        [StringLength(200)]
+        public string? Barcode { get; set; }
+        [StringLength(200)]
+        public string? SKU { get; set; }
 
         [Column(TypeName = "decimal(18,2)")]
         public decimal? BasePrice { get; set; }
@@ -52,7 +57,7 @@ namespace Domains.Entities.Catalog.Item
 
         public Guid BrandId { get; set; }
 
-        public int VisibilityScope { get; set; }
+        public ProductVisibilityStatus VisibilityScope { get; set; }
 
         // Navigation Properties
         [ForeignKey("CategoryId")]
@@ -66,5 +71,6 @@ namespace Domains.Entities.Catalog.Item
 
         public virtual ICollection<TbItemImage> ItemImages { get; set; }
         public virtual ICollection<TbItemCombination> ItemCombinations { get; set; }
+        public virtual ICollection<TbItemAttribute> ItemAttributes { get; set; }
     }
 }
