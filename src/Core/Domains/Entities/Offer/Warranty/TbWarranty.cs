@@ -1,4 +1,5 @@
-﻿using Domains.Entities.Location;
+﻿using Common.Enumerations.Offer.Warranty;
+using Domains.Entities.Location;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -9,7 +10,7 @@ namespace Domains.Entities.Offer.Warranty
 {
 	public class TbWarranty : BaseEntity
 	{
-		public int WarrantyType { get; set; }
+		public WarrantyType WarrantyType { get; set; }
 
 		public int WarrantyPeriodMonths { get; set; }
 
@@ -18,11 +19,6 @@ namespace Domains.Entities.Offer.Warranty
 
 		[StringLength(500)]
 		public string WarrantyServiceCenter { get; set; }
-
-		public Guid? CityId { get; set; }
-
-		[ForeignKey("CityId")]
-		public virtual TbCity City { get; set; }
 
 		public virtual ICollection<TbOffer> OffersList { get; set; } = new HashSet<TbOffer>();
 	}

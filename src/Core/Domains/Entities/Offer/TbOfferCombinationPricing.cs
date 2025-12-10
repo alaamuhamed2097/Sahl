@@ -46,8 +46,6 @@ namespace Domains.Entities.Offer
 		public int MaxOrderQuantity { get; set; } = 999;
 		public int LowStockThreshold { get; set; } = 5;
 
-		public bool IsDefault { get; set; } = true; // Indicates Buy Box winner
-
         // Timestamps
         public DateTime? LastPriceUpdate { get; set; }
 		public DateTime? LastStockUpdate { get; set; }

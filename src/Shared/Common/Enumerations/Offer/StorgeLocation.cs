@@ -5,6 +5,8 @@
         FBS = 1,
         FBV = 2,
         PendingStoreApproval = 3,
-        RejectedByStore = 4
+        AcceptedByStore = 4,
+        RejectedByStore = 5
     }
+
 }

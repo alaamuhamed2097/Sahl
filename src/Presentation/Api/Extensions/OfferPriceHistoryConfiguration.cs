@@ -27,19 +27,10 @@ namespace Api.Extensions
             .HasColumnType("datetime2(2)");
 
         // Relationships
-        builder.HasOne(e => e.ItemCombination)
-               .WithMany(ic => ic.OfferPriceHistories) // add collection on ItemCombination if needed, or change WithMany()
-               .HasForeignKey(e => e.ItemCombinationId)
-               .OnDelete(DeleteBehavior.Restrict);
-
         builder.HasOne(e => e.OfferCombinationPricing)
                .WithMany(op => op.OfferPriceHistories) // add collection on OfferCombinationPricing if needed
                .HasForeignKey(e => e.OfferCombinationPricingId)
                .OnDelete(DeleteBehavior.Restrict);
-
-        // Indexes
-        builder.HasIndex(e => e.ItemCombinationId);
-        builder.HasIndex(e => e.OfferCombinationPricingId);
     }
 }
 }
