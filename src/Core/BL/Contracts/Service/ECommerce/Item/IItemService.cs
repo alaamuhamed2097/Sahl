@@ -9,6 +9,7 @@ namespace BL.Contracts.Service.ECommerce.Item
     public interface IItemService : IBaseService<TbItem, ItemDto>
     {
         Task<PaginatedDataModel<VwItemDto>> GetPage(ItemSearchCriteriaModel criteriaModel);
+        Task<PaginatedDataModel<VwItemDto>> GetPageWithFiltersAsync(ItemFilterDto filterDto);
         new Task<VwItemDto> FindByIdAsync(Guid Id);
         new Task<bool> Save(ItemDto dto, Guid userId);
     }
