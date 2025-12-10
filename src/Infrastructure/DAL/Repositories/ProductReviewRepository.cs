@@ -26,7 +26,7 @@ namespace DAL.Repositories
 					.AsNoTracking()
 					.Where(r => r.ProductID == productId
 						&& r.Status == ReviewStatus.Approved
-						&& r.CurrentState == (int)Common.Enumerations.EntityState.Active)
+						&& !r.IsDeleted)
 					.OrderByDescending(r => r.CreatedDateUtc)
 					.ToListAsync(cancellationToken);
 			}
@@ -45,12 +45,13 @@ namespace DAL.Repositories
 			try
 			{
 				return await _dbContext.Set<TbProductReview>()
-					.AsNoTracking()
-					.Include(r => r.ReviewVotes.Where(v => v.CurrentState == (int)Common.Enumerations.EntityState.Active))
-					.Include(r => r.ReviewReports.Where(rr => rr.CurrentState == (int)Common.Enumerations.EntityState.Active))
-					.FirstOrDefaultAsync(r => r.Id == reviewId
-						&& r.CurrentState == (int)Common.Enumerations.EntityState.Active,
-						cancellationToken);
+	.AsNoTracking()
+	.Include(r => r.ReviewVotes.Where(v => !v.IsDeleted))
+	.Include(r => r.ReviewReports.Where(rr => !rr.IsDeleted))
+	.FirstOrDefaultAsync(
+		r => r.Id == reviewId && !r.IsDeleted,
+		cancellationToken
+	);
 			}
 			catch (Exception ex)
 			{
@@ -71,7 +72,7 @@ namespace DAL.Repositories
 					.AsNoTracking()
 					.FirstOrDefaultAsync(r => r.OrderItemID == orderItemId
 						&& r.CustomerID == customerId
-						&& r.CurrentState == (int)Common.Enumerations.EntityState.Active,
+						&& !r.IsDeleted,
 						cancellationToken);
 			}
 			catch (Exception ex)
@@ -92,7 +93,7 @@ namespace DAL.Repositories
 					.AsNoTracking()
 					.Where(r => r.ProductID == productId
 						&& r.Status == ReviewStatus.Approved
-						&& r.CurrentState == (int)Common.Enumerations.EntityState.Active)
+						&& !r.IsDeleted)
 					.Select(r => r.Rating)
 					.ToListAsync(cancellationToken);
 
@@ -119,7 +120,7 @@ namespace DAL.Repositories
 
 				var query = _dbContext.Set<TbProductReview>()
 					.AsNoTracking()
-					.Where(r => r.CurrentState == (int)Common.Enumerations.EntityState.Active);
+					.Where(r => !r.IsDeleted);
 
 				if (productId.HasValue)
 					query = query.Where(r => r.ProductID == productId.Value);
@@ -153,7 +154,7 @@ namespace DAL.Repositories
 				return await _dbContext.Set<TbProductReview>()
 					.AsNoTracking()
 					.Where(r => r.Status == ReviewStatus.Pending
-						&& r.CurrentState == (int)Common.Enumerations.EntityState.Active)
+						&& !r.IsDeleted)
 					.OrderBy(r => r.CreatedDateUtc)
 					.ToListAsync(cancellationToken);
 			}
@@ -175,7 +176,7 @@ namespace DAL.Repositories
 					.AsNoTracking()
 					.CountAsync(r => r.ProductID == productId
 						&& r.Status == ReviewStatus.Approved
-						&& r.CurrentState == (int)Common.Enumerations.EntityState.Active,
+						&& !r.IsDeleted,
 						cancellationToken);
 			}
 			catch (Exception ex)
