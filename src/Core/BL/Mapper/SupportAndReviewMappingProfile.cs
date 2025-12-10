@@ -17,7 +17,7 @@ namespace BL.Mapper
 
         private void ConfigureReviewMappings()
         {
-            CreateMap<TbProductReview, ProductReviewDto>().ReverseMap();
+            CreateMap<TbOfferReview, OfferReviewDto>().ReverseMap();
             CreateMap<TbSalesReview, SalesReviewDto>().ReverseMap();
             CreateMap<TbDeliveryReview, DeliveryReviewDto>().ReverseMap();
             CreateMap<TbReviewVote, ReviewVoteDto>().ReverseMap();

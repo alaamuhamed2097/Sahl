@@ -11,20 +11,20 @@ using System.Text;
 
 namespace DAL.Repositories
 {
-	public class ProductReviewRepository : TableRepository<TbProductReview>, IProductReviewRepository
+	public class OfferReviewRepository : TableRepository<TbOfferReview>, IOfferReviewRepository
 	{
-		public ProductReviewRepository(ApplicationDbContext dbContext, ILogger logger)
+		public OfferReviewRepository(ApplicationDbContext dbContext, ILogger logger)
 			: base(dbContext, logger) { }
 
-		public async Task<IEnumerable<TbProductReview>> GetReviewsByProductIdAsync(
-			Guid productId,
+		public async Task<IEnumerable<TbOfferReview>> GetReviewsByOfferIdAsync(
+			Guid OfferId,
 			CancellationToken cancellationToken = default)
 		{
 			try
 			{
-				return await _dbContext.Set<TbProductReview>()
+				return await _dbContext.Set<TbOfferReview>()
 					.AsNoTracking()
-					.Where(r => r.ProductID == productId
+					.Where(r => r.OfferID == OfferId
 						&& r.Status == ReviewStatus.Approved
 						&& !r.IsDeleted)
 					.OrderByDescending(r => r.CreatedDateUtc)
@@ -32,19 +32,19 @@ namespace DAL.Repositories
 			}
 			catch (Exception ex)
 			{
-				HandleException(nameof(GetReviewsByProductIdAsync),
-					$"Error occurred while retrieving reviews for product {productId}.", ex);
-				return new List<TbProductReview>();
+				HandleException(nameof(GetReviewsByOfferIdAsync),
+					$"Error occurred while retrieving reviews for Offer {OfferId}.", ex);
+				return new List<TbOfferReview>();
 			}
 		}
 
-		public async Task<TbProductReview?> GetReviewDetailsAsync(
+		public async Task<TbOfferReview?> GetReviewDetailsAsync(
 			Guid reviewId,
 			CancellationToken cancellationToken = default)
 		{
 			try
 			{
-				return await _dbContext.Set<TbProductReview>()
+				return await _dbContext.Set<TbOfferReview>()
 	.AsNoTracking()
 	.Include(r => r.ReviewVotes.Where(v => !v.IsDeleted))
 	.Include(r => r.ReviewReports.Where(rr => !rr.IsDeleted))
@@ -61,14 +61,14 @@ namespace DAL.Repositories
 			}
 		}
 
-		public async Task<TbProductReview?> GetCustomerReviewForOrderItemAsync(
+		public async Task<TbOfferReview?> GetCustomerReviewForOrderItemAsync(
 			Guid orderItemId,
 			Guid customerId,
 			CancellationToken cancellationToken = default)
 		{
 			try
 			{
-				return await _dbContext.Set<TbProductReview>()
+				return await _dbContext.Set<TbOfferReview>()
 					.AsNoTracking()
 					.FirstOrDefaultAsync(r => r.OrderItemID == orderItemId
 						&& r.CustomerID == customerId
@@ -84,14 +84,14 @@ namespace DAL.Repositories
 		}
 
 		public async Task<decimal> GetAverageRatingAsync(
-			Guid productId,
+			Guid OfferId,
 			CancellationToken cancellationToken = default)
 		{
 			try
 			{
-				var reviews = await _dbContext.Set<TbProductReview>()
+				var reviews = await _dbContext.Set<TbOfferReview>()
 					.AsNoTracking()
-					.Where(r => r.ProductID == productId
+					.Where(r => r.OfferID == OfferId
 						&& r.Status == ReviewStatus.Approved
 						&& !r.IsDeleted)
 					.Select(r => r.Rating)
@@ -102,13 +102,13 @@ namespace DAL.Repositories
 			catch (Exception ex)
 			{
 				HandleException(nameof(GetAverageRatingAsync),
-					$"Error occurred while calculating average rating for product {productId}.", ex);
+					$"Error occurred while calculating average rating for Offer {OfferId}.", ex);
 				return 0;
 			}
 		}
 
-		public async Task<PaginatedDataModel<TbProductReview>> GetPaginatedReviewsAsync(
-			Guid? productId = null,
+		public async Task<PaginatedDataModel<TbOfferReview>> GetPaginatedReviewsAsync(
+			Guid? OfferId = null,
 			ReviewStatus? status = null,
 			int pageNumber = 1,
 			int pageSize = 10,
@@ -118,12 +118,12 @@ namespace DAL.Repositories
 			{
 				ValidatePaginationParameters(pageNumber, pageSize);
 
-				var query = _dbContext.Set<TbProductReview>()
+				var query = _dbContext.Set<TbOfferReview>()
 					.AsNoTracking()
 					.Where(r => !r.IsDeleted);
 
-				if (productId.HasValue)
-					query = query.Where(r => r.ProductID == productId.Value);
+				if (OfferId.HasValue)
+					query = query.Where(r => r.OfferID == OfferId.Value);
 
 				if (status.HasValue)
 					query = query.Where(r => r.Status == status.Value);
@@ -136,22 +136,22 @@ namespace DAL.Repositories
 					.Take(pageSize)
 					.ToListAsync(cancellationToken);
 
-				return new PaginatedDataModel<TbProductReview>(reviews, totalCount);
+				return new PaginatedDataModel<TbOfferReview>(reviews, totalCount);
 			}
 			catch (Exception ex)
 			{
 				HandleException(nameof(GetPaginatedReviewsAsync),
 					$"Error occurred while retrieving paginated reviews.", ex);
-				return new PaginatedDataModel<TbProductReview>(new List<TbProductReview>(), 0);
+				return new PaginatedDataModel<TbOfferReview>(new List<TbOfferReview>(), 0);
 			}
 		}
 
-		public async Task<IEnumerable<TbProductReview>> GetPendingReviewsAsync(
+		public async Task<IEnumerable<TbOfferReview>> GetPendingReviewsAsync(
 			CancellationToken cancellationToken = default)
 		{
 			try
 			{
-				return await _dbContext.Set<TbProductReview>()
+				return await _dbContext.Set<TbOfferReview>()
 					.AsNoTracking()
 					.Where(r => r.Status == ReviewStatus.Pending
 						&& !r.IsDeleted)
@@ -162,27 +162,27 @@ namespace DAL.Repositories
 			{
 				HandleException(nameof(GetPendingReviewsAsync),
 					$"Error occurred while retrieving pending reviews.", ex);
-				return new List<TbProductReview>();
+				return new List<TbOfferReview>();
 			}
 		}
 
-		public async Task<int> GetReviewCountByProductIdAsync(
-			Guid productId,
+		public async Task<int> GetReviewCountByOfferIdAsync(
+			Guid OfferId,
 			CancellationToken cancellationToken = default)
 		{
 			try
 			{
-				return await _dbContext.Set<TbProductReview>()
+				return await _dbContext.Set<TbOfferReview>()
 					.AsNoTracking()
-					.CountAsync(r => r.ProductID == productId
+					.CountAsync(r => r.OfferID == OfferId
 						&& r.Status == ReviewStatus.Approved
 						&& !r.IsDeleted,
 						cancellationToken);
 			}
 			catch (Exception ex)
 			{
-				HandleException(nameof(GetReviewCountByProductIdAsync),
-					$"Error occurred while counting reviews for product {productId}.", ex);
+				HandleException(nameof(GetReviewCountByOfferIdAsync),
+					$"Error occurred while counting reviews for Offer {OfferId}.", ex);
 				return 0;
 			}
 		}

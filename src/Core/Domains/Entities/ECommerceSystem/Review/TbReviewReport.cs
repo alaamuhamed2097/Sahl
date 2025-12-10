@@ -14,6 +14,6 @@ namespace Domains.Entities.ECommerceSystem.Review
         public ReviewReportStatus Status { get; set; } = ReviewReportStatus.Pending; // Pending, Reviewed, Resolved
 
         // Navigation
-        public virtual TbProductReview Review { get; set; } = null!;
+        public virtual TbOfferReview Review { get; set; } = null!;
     }
 }

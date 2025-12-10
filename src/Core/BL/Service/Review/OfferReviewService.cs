@@ -14,15 +14,15 @@ namespace BL.Service.Review
 {
    
 
-    public class ProductReviewService : BaseService<TbProductReview, ProductReviewDto>, IProductReviewService
+    public class OfferReviewService : BaseService<TbOfferReview, OfferReviewDto>, IOfferReviewService
     {
-		private readonly IProductReviewRepository _reviewRepo;
+		private readonly IOfferReviewRepository _reviewRepo;
 		private readonly IBaseMapper _mapper;
 		private readonly ILogger _logger;
-		public ProductReviewService(
+		public OfferReviewService(
 			IBaseMapper mapper,
-			ITableRepository<TbProductReview> repository,
-			IProductReviewRepository reviewRepo,
+			ITableRepository<TbOfferReview> repository,
+			IOfferReviewRepository reviewRepo,
 			ILogger logger)
 			: base(repository, mapper)
 		{
@@ -31,8 +31,8 @@ namespace BL.Service.Review
 			_reviewRepo = reviewRepo;
 		}
 
-		//public ProductReviewService(
-		//	IProductReviewRepository reviewRepo,
+		//public OfferReviewService(
+		//	IOfferReviewRepository reviewRepo,
 		//	IMapper mapper,
 		//	ILogger logger)
 		//{
@@ -41,8 +41,8 @@ namespace BL.Service.Review
 		//	_logger = logger;
 		//}
 
-		public async Task<ProductReviewDto> SubmitReviewAsync(
-			ProductReviewDto reviewDto,
+		public async Task<OfferReviewDto> SubmitReviewAsync(
+			OfferReviewDto reviewDto,
 			CancellationToken cancellationToken = default)
 		{
 			try
@@ -66,13 +66,13 @@ namespace BL.Service.Review
 						cancellationToken);
 
 					if (existingReview != null)
-						throw new InvalidOperationException("You have already reviewed this product");
+						throw new InvalidOperationException("You have already reviewed this Offer");
 
 					reviewDto.IsVerifiedPurchase = true;
 				}
 
 				// Create review
-				var review = _mapper.MapModel<ProductReviewDto,TbProductReview >(reviewDto);
+				var review = _mapper.MapModel<OfferReviewDto,TbOfferReview >(reviewDto);
 				review.Status = ReviewStatus.Pending;
 
 				var result = await _reviewRepo.CreateAsync(review, reviewDto.CustomerID, cancellationToken);
@@ -81,7 +81,7 @@ namespace BL.Service.Review
 					throw new Exception("Failed to submit review");
 
 				review.Id = result.Id;
-				return _mapper.MapModel<TbProductReview, ProductReviewDto>(review);
+				return _mapper.MapModel<TbOfferReview, OfferReviewDto>(review);
 			}
 			catch (Exception ex)
 			{
@@ -90,9 +90,9 @@ namespace BL.Service.Review
 			}
 		}
 
-		public async Task<ProductReviewDto> EditReviewAsync(
+		public async Task<OfferReviewDto> EditReviewAsync(
 			Guid reviewId,
-			ProductReviewDto reviewDto,
+			OfferReviewDto reviewDto,
 			Guid currentUserId,
 			CancellationToken cancellationToken = default)
 		{
@@ -132,7 +132,7 @@ namespace BL.Service.Review
 				if (!result.Success)
 					throw new Exception("Failed to update review");
 
-				return _mapper.MapModel<TbProductReview,ProductReviewDto>(review);
+				return _mapper.MapModel<TbOfferReview,OfferReviewDto>(review);
 			}
 			catch (Exception ex)
 			{
@@ -166,24 +166,24 @@ namespace BL.Service.Review
 			}
 		}
 
-		public async Task<IEnumerable<ProductReviewDto>> GetReviewsByProductIdAsync(
-			Guid productId,
+		public async Task<IEnumerable<OfferReviewDto>> GetReviewsByOfferIdAsync(
+			Guid OfferId,
 			CancellationToken cancellationToken = default)
 		{
 			try
 			{
-				var reviews = await _reviewRepo.GetReviewsByProductIdAsync(productId, cancellationToken);
-				return _mapper.MapList<TbProductReview,ProductReviewDto> (reviews);
+				var reviews = await _reviewRepo.GetReviewsByOfferIdAsync(OfferId, cancellationToken);
+				return _mapper.MapList<TbOfferReview,OfferReviewDto> (reviews);
 			}
 			catch (Exception ex)
 			{
-				_logger.Error(ex, $"Error in {nameof(GetReviewsByProductIdAsync)}");
+				_logger.Error(ex, $"Error in {nameof(GetReviewsByOfferIdAsync)}");
 				throw;
 			}
 		}
 
-		public async Task<PaginatedDataModel<ProductReviewDto>> GetPaginatedReviewsAsync(
-			Guid? productId = null,
+		public async Task<PaginatedDataModel<OfferReviewDto>> GetPaginatedReviewsAsync(
+			Guid? OfferId = null,
 			ReviewStatus? status = null,
 			int pageNumber = 1,
 			int pageSize = 10,
@@ -192,10 +192,10 @@ namespace BL.Service.Review
 			try
 			{
 				var result = await _reviewRepo.GetPaginatedReviewsAsync(
-					productId, status, pageNumber, pageSize, cancellationToken);
+					OfferId, status, pageNumber, pageSize, cancellationToken);
 
-				var reviewDtos = _mapper.MapList<TbProductReview,ProductReviewDto>(result.Items);
-				return new PaginatedDataModel<ProductReviewDto>(reviewDtos, result.TotalRecords);
+				var reviewDtos = _mapper.MapList<TbOfferReview,OfferReviewDto>(result.Items);
+				return new PaginatedDataModel<OfferReviewDto>(reviewDtos, result.TotalRecords);
 			}
 			catch (Exception ex)
 			{
@@ -204,13 +204,13 @@ namespace BL.Service.Review
 			}
 		}
 
-		public async Task<IEnumerable<ProductReviewDto>> GetPendingReviewsAsync(
+		public async Task<IEnumerable<OfferReviewDto>> GetPendingReviewsAsync(
 			CancellationToken cancellationToken = default)
 		{
 			try
 			{
 				var reviews = await _reviewRepo.GetPendingReviewsAsync(cancellationToken);
-				return _mapper.MapList< TbProductReview,ProductReviewDto > (reviews);
+				return _mapper.MapList< TbOfferReview,OfferReviewDto > (reviews);
 			}
 			catch (Exception ex)
 			{
@@ -268,12 +268,12 @@ namespace BL.Service.Review
 		}
 
 		public async Task<decimal> GetAverageRatingAsync(
-			Guid productId,
+			Guid OfferId,
 			CancellationToken cancellationToken = default)
 		{
 			try
 			{
-				return await _reviewRepo.GetAverageRatingAsync(productId, cancellationToken);
+				return await _reviewRepo.GetAverageRatingAsync(OfferId, cancellationToken);
 			}
 			catch (Exception ex)
 			{
@@ -283,12 +283,12 @@ namespace BL.Service.Review
 		}
 
 		public async Task<int> GetReviewCountAsync(
-			Guid productId,
+			Guid OfferId,
 			CancellationToken cancellationToken = default)
 		{
 			try
 			{
-				return await _reviewRepo.GetReviewCountByProductIdAsync(productId, cancellationToken);
+				return await _reviewRepo.GetReviewCountByOfferIdAsync(OfferId, cancellationToken);
 			}
 			catch (Exception ex)
 			{
@@ -299,7 +299,7 @@ namespace BL.Service.Review
 
 		public override bool Equals(object? obj)
 		{
-			return obj is ProductReviewService service &&
+			return obj is OfferReviewService service &&
 				   EqualityComparer<IBaseMapper>.Default.Equals(_mapper, service._mapper);
 		}
 	}

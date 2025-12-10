@@ -11,9 +11,9 @@ namespace BL.Mapper
 {
     public partial class MappingProfile
     {
-        private void ConfigureProductReviewMappings()
+        private void ConfigureOfferReviewMappings()
         {
-            CreateMap<TbProductReview, ProductReviewDto>().ReverseMap();
+            CreateMap<TbOfferReview, OfferReviewDto>().ReverseMap();
         }
     }
 }

@@ -73,7 +73,14 @@ namespace Api.Extensions
             services.AddScoped<ICartRepository, CartRepository>();
             services.AddScoped<IOfferRepository, OfferRepository>();
             services.AddScoped<IOrderRepository, OrderRepository>();
-            return services;
+
+			// Review Services
+			services.AddScoped<IOfferReviewRepository, OfferReviewRepository>();
+			//services.AddScoped<IReviewVoteRepository, ReviewVoteRepository>();
+			//services.AddScoped<IReviewReportRepository, ReviewReportRepository>();
+
+
+			return services;
         }
     }
 }

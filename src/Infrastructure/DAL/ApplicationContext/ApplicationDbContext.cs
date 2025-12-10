@@ -120,7 +120,7 @@ namespace DAL.ApplicationContext
         public DbSet<TbSupportTicketMessage> TbSupportTicketMessages { get; set; }
 
         // Review Management
-        public DbSet<TbProductReview> TbProductReviews { get; set; }
+        public DbSet<TbOfferReview> TbProductReviews { get; set; }
         public DbSet<TbSalesReview> TbSalesReviews { get; set; }
         public DbSet<TbDeliveryReview> TbDeliveryReviews { get; set; }
         public DbSet<TbReviewVote> TbReviewVotes { get; set; }

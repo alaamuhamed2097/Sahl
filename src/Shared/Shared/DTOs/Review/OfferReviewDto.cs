@@ -3,10 +3,10 @@ using Common.Enumerations.Review;
 
 namespace Shared.DTOs.Review
 {
-    public class ProductReviewDto : BaseDto
+    public class OfferReviewDto : BaseDto
     {
         public int ReviewNumber { get; set; }
-        public Guid ProductID { get; set; }
+        public Guid OfferID { get; set; }
         public Guid CustomerID { get; set; }
         public Guid? OrderItemID { get; set; }
         public decimal Rating { get; set; }

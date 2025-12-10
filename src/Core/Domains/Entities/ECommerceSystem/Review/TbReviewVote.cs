@@ -9,6 +9,6 @@ namespace Domains.Entities.ECommerceSystem.Review
         public VoteType VoteType { get; set; }
 
         // Navigation Properties
-        public virtual TbProductReview Review { get; set; } = null!;
+        public virtual TbOfferReview Review { get; set; } = null!;
     }
 }
