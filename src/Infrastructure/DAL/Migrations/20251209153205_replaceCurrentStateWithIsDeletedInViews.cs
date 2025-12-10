@@ -215,7 +215,12 @@ SELECT
 	i.MaximumPrice,
     i.CreatedDateUtc,
 	i.VisibilityScope,
-    -- Get all item images as JSON
+    -- 
+
+
+
+
+et all item images as JSON
     (
         SELECT 
 		img.Id,

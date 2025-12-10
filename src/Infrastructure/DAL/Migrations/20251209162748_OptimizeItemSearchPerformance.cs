@@ -178,8 +178,8 @@ namespace DAL.Migrations
                             -- Only active items
                             i.IsActive = 1
                             
-                            -- Only public/visible offers
-                            AND o.VisibilityScope = 0
+                            -- Only public/visible offers (Active = 1)
+                            AND o.VisibilityScope = 1
                             
                             -- Text search filter
                             AND (
@@ -350,7 +350,7 @@ namespace DAL.Migrations
                 INNER JOIN TbOfferCombinationPricing p ON o.Id = p.OfferId
                 WHERE 
                     i.IsActive = 1 
-                    AND o.VisibilityScope = 0
+                    AND o.VisibilityScope = 1
                     AND p.AvailableQuantity > 0
                 GROUP BY i.Id
             ");
@@ -391,7 +391,16 @@ namespace DAL.Migrations
                 name: "IX_TbOffers_VisibilityScope",
                 table: "TbOffers");
 
-            migrationBuilder.DropIndex(
+            mi
+
+
+
+
+
+
+
+
+                rationBuilder.DropIndex(
                 name: "IX_TbOffers_StorgeLocation",
                 table: "TbOffers");
 

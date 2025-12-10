@@ -292,7 +292,7 @@ namespace DAL.Configurations.Offer
             // Status and visibility
             builder.Property(e => e.VisibilityScope)
                 .IsRequired()
-                .HasDefaultValue(0);
+                .HasDefaultValue(1);
 
             // ============================================================================
             // Foreign Key Relationships

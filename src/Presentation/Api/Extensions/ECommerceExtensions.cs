@@ -43,6 +43,7 @@ namespace Api.Extensions
 
             // Item  Services
             services.AddScoped<IItemService, ItemService>();
+            services.AddScoped<IItemSearchService, ItemSearchService>();
             services.AddScoped<IUnitService, UnitService>();
 
             // Brand Services

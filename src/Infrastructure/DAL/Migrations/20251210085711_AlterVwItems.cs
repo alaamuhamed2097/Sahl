@@ -44,7 +44,14 @@ SELECT
 	i.MaximumPrice,
     i.CreatedDateUtc,
 	i.VisibilityScope,
-    -- Get all item images as JSON
+    -- 
+
+
+
+
+
+
+et all item images as JSON
     (
         SELECT 
 		img.Id,
@@ -122,7 +129,7 @@ SELECT
 		img.[Order],
 		img.ItemId
         FROM dbo.TbItemImages img
-        WHERE img.ItemId = i.Id AND img.IsDeleted = 1 
+        WHERE img.ItemId = i.Id AND img.IsDeleted = 0 
         ORDER BY 
             img.[Order]
         FOR JSON PATH
@@ -134,7 +141,7 @@ SELECT
 		iattr.AttributeId,
 		iattr.Value
         FROM dbo.TbItemAttributes iattr
-        WHERE iattr.ItemId = i.Id AND iattr.IsDeleted = 1 
+        WHERE iattr.ItemId = i.Id AND iattr.IsDeleted = 0 
         FOR JSON PATH
     ) AS ItemAttributes
 FROM     
@@ -144,7 +151,7 @@ FROM
 	INNER JOIN dbo.TbBrands AS b ON i.BrandId = b.Id
 	LEFT JOIN dbo.TbVideoProviders AS vp ON i.VideoProviderId = vp.Id 
 WHERE  
-    (i.IsDeleted = 1)");
+    (i.IsDeleted = 0)");
         }
     }
 }

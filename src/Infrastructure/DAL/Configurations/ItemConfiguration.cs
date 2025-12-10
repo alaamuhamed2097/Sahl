@@ -40,10 +40,19 @@ namespace DAL.Configurations
                    .HasMaxLength(100);
 
             entity.Property(e => e.SEOMetaTags)
-        .IsRequired()
-     .HasMaxLength(200);
+                    .IsRequired()
+                 .HasMaxLength(200);
 
-            entity.HasIndex(e => e.CategoryId).IsUnique(false);
+            //entity.Property(e => e.VisibilityScope)
+            //.IsRequired()
+            //.HasDefaultValue((int)ProductVisibilityStatus.Visible) // or just 1, but cast is clearer
+            //.HasConversion<int>();
+
+            entity.HasIndex(e => e.Cate
+
+
+
+            oryId).IsUnique(false);
             entity.HasIndex(e => e.UnitId).IsUnique(false);
             entity.HasIndex(e => e.BrandId).IsUnique(false);
             entity.HasIndex(e => e.IsDeleted).IsUnique(false);
@@ -69,3 +78,4 @@ namespace DAL.Configurations
         }
     }
 }
+

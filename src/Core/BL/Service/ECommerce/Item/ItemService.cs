@@ -1,5 +1,4 @@
 ﻿using BL.Contracts.GeneralService.CMS;
-using BL.Contracts.GeneralService.Location;
 using BL.Contracts.IMapper;
 using BL.Contracts.Service.ECommerce.Item;
 using BL.Extensions;
@@ -33,7 +32,6 @@ namespace BL.Service.ECommerce.Item
         private readonly IImageProcessingService _imageProcessingService;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IBaseMapper _mapper;
-        private readonly ILocationBasedCurrencyService _locationBasedCurrencyService;
         private readonly ILogger _logger;
 
         public ItemService(IBaseMapper mapper,
@@ -42,7 +40,6 @@ namespace BL.Service.ECommerce.Item
             IRepository<VwItem> repository,
             IFileUploadService fileUploadService,
             IImageProcessingService imageProcessingService,
-            ILocationBasedCurrencyService locationBasedCurrencyService,
             ILogger logger,
             ITableRepository<TbCategory> categoryRepository)
             : base(tableRepository, mapper)
@@ -53,7 +50,6 @@ namespace BL.Service.ECommerce.Item
             _repository = repository;
             _fileUploadService = fileUploadService;
             _imageProcessingService = imageProcessingService;
-            _locationBasedCurrencyService = locationBasedCurrencyService;
             _logger = logger;
             _categoryRepository = categoryRepository;
         }
@@ -70,7 +66,7 @@ namespace BL.Service.ECommerce.Item
                 throw new ArgumentOutOfRangeException(nameof(criteriaModel.PageSize), ValidationResources.PageSizeRange);
 
             // Base filter
-            Expression<Func<TbItem, bool>> filter = x => !x.IsDeleted ;
+            Expression<Func<TbItem, bool>> filter = x => !x.IsDeleted;
 
             // Combine expressions manually
             var searchTerm = criteriaModel.SearchTerm?.Trim().ToLower();
@@ -108,180 +104,7 @@ namespace BL.Service.ECommerce.Item
             return new PaginatedDataModel<ItemDto>(itemsDto, items.TotalRecords);
         }
 
-        public async Task<PaginatedDataModel<VwItemDto>> GetPageWithFiltersAsync(ItemFilterDto filterDto)
-        {
-            if (filterDto == null)
-                throw new ArgumentNullException(nameof(filterDto));
-
-            if (filterDto.PageNumber < 1)
-                throw new ArgumentOutOfRangeException(nameof(filterDto.PageNumber), ValidationResources.PageNumberGreaterThanZero);
-
-            if (filterDto.PageSize < 1 || filterDto.PageSize > 100)
-                throw new ArgumentOutOfRangeException(nameof(filterDto.PageSize), ValidationResources.PageSizeRange);
-
-            // Base filter for VwItem - بدون ToLower() للأداء الأفضل
-            IQueryable<VwItem> query = _repository.GetQueryable();
-
-            // 🔍 البحث النصي - بدون ToLower()
-            var searchTerm = filterDto.SearchTerm?.Trim();
-            if (!string.IsNullOrWhiteSpace(searchTerm))
-            {
-                // استخدام EF.Functions.Like بدلاً من Contains للأداء الأفضل
-                query = query.Where(x =>
-                    EF.Functions.Like(x.TitleAr, $"%{searchTerm}%") ||
-                    EF.Functions.Like(x.TitleEn, $"%{searchTerm}%") ||
-                    EF.Functions.Like(x.ShortDescriptionAr, $"%{searchTerm}%") ||
-                    EF.Functions.Like(x.ShortDescriptionEn, $"%{searchTerm}%") ||
-                    EF.Functions.Like(x.CategoryTitleAr, $"%{searchTerm}%") ||
-                    EF.Functions.Like(x.CategoryTitleEn, $"%{searchTerm}%")
-                );
-            }
-
-            // 🏷️ تصفية الفئات
-            if (filterDto.CategoryIds?.Any() == true)
-            {
-                query = query.Where(x => filterDto.CategoryIds.Contains(x.CategoryId));
-            }
-
-            // 🏢 تصفية البراندات
-            if (filterDto.BrandIds?.Any() == true)
-            {
-                query = query.Where(x => x.BrandId.HasValue && filterDto.BrandIds.Contains(x.BrandId.Value));
-            }
-
-            // 💰 تصفية السعر الأدنى
-            if (filterDto.MinPrice.HasValue)
-            {
-                query = query.Where(x => x.MinimumPrice.HasValue && x.MinimumPrice >= filterDto.MinPrice.Value);
-            }
-
-            // 💰 تصفية السعر الأقصى
-            if (filterDto.MaxPrice.HasValue)
-            {
-                query = query.Where(x => x.MaximumPrice.HasValue && x.MaximumPrice <= filterDto.MaxPrice.Value);
-            }
-
-            // ⭐ تصفية تقييم المنتج
-            if (filterDto.MinItemRating.HasValue)
-            {
-                query = query.Where(x => x.ItemAverageRating >= filterDto.MinItemRating.Value);
-            }
-
-            // ⭐ تصفية تقييم البائع
-            if (filterDto.MinVendorRating.HasValue)
-            {
-                query = query.Where(x => x.VendorAverageRating >= filterDto.MinVendorRating.Value);
-            }
-
-            // 📦 تصفية التوفر
-            if (filterDto.InStockOnly == true)
-            {
-                query = query.Where(x => x.IsInStock && x.AvailableQuantity > 0);
-            }
-
-            // 📊 تصفية الحد الأدنى للكمية
-            if (filterDto.MinAvailableQuantity.HasValue)
-            {
-                query = query.Where(x => x.AvailableQuantity >= filterDto.MinAvailableQuantity.Value);
-            }
-
-            // 🚚 تصفية الشحن المجاني
-            if (filterDto.FreeShippingOnly == true)
-            {
-                query = query.Where(x => x.IsFreeShipping);
-            }
-
-            // 📅 تصفية أيام التوصيل
-            if (filterDto.MaxDeliveryDays.HasValue)
-            {
-                query = query.Where(x => x.EstimatedDeliveryDays <= filterDto.MaxDeliveryDays.Value);
-            }
-
-            // 📍 تصفية أماكن التخزين
-            if (filterDto.StorageLocations?.Any() == true)
-            {
-                query = query.Where(x => filterDto.StorageLocations.Contains(x.StorgeLocation));
-            }
-
-            // 👤 تصفية البائعين المحددين
-            if (filterDto.VendorIds?.Any() == true)
-            {
-                var vendorGuids = filterDto.VendorIds.Select(v => Guid.TryParse(v, out var g) ? g : Guid.Empty).ToList();
-                query = query.Where(x => vendorGuids.Contains(x.VendorId));
-            }
-
-            // ✅ تصفية البائعين المتحققين
-            if (filterDto.VerifiedVendorsOnly == true)
-            {
-                query = query.Where(x => x.IsVerifiedVendor);
-            }
-
-            // 👑 تصفية البائعين المميزين
-            if (filterDto.PrimeVendorsOnly == true)
-            {
-                query = query.Where(x => x.IsPrimeVendor);
-            }
-
-            // 🏷️ تصفية العروض في التخفيض
-            if (filterDto.OnSaleOnly == true)
-            {
-                query = query.Where(x => x.IsOnSale);
-            }
-
-            // 🏆 تصفية الفائزين بـ Buy Box
-            if (filterDto.BuyBoxWinnersOnly == true)
-            {
-                query = query.Where(x => x.IsBuyBoxWinner);
-            }
-
-            // 📝 تصفية حالة المنتج
-            if (filterDto.ConditionIds?.Any() == true)
-            {
-                query = query.Where(x => x.OfferConditionId.HasValue && filterDto.ConditionIds.Contains(x.OfferConditionId.Value));
-            }
-
-            // 🛡️ تصفية المنتجات بالضمان
-            if (filterDto.WithWarrantyOnly == true)
-            {
-                query = query.Where(x => x.HasWarranty);
-            }
-
-            // 🔤 تصفية قيم الخصائص (اللون، الحجم، إلخ)
-            if (filterDto.AttributeValues?.Any() == true)
-            {
-                // ملاحظة: هذا يتطلب join مع جدول الخصائص
-                // سيتم تطبيقه في مرحلة لاحقة
-            }
-
-            // 📊 الحصول على العدد الإجمالي قبل الترتيب والـ Pagination
-            var totalRecords = await query.CountAsync();
-
-            // 🔀 تطبيق الترتيب
-            IOrderedQueryable<VwItem> orderedQuery = filterDto.SortBy?.ToLower() switch
-            {
-                "price_asc" => query.OrderBy(x => x.MinimumPrice),
-                "price_desc" => query.OrderByDescending(x => x.MaximumPrice),
-                "rating" => query.OrderByDescending(x => x.ItemAverageRating),
-                "vendor_rating" => query.OrderByDescending(x => x.VendorAverageRating),
-                "fastest_delivery" => query.OrderBy(x => x.EstimatedDeliveryDays),
-                "most_sold" => query.OrderByDescending(x => x.TotalSalesCount),
-                "newest" => query.OrderByDescending(x => x.CreatedDateUtc),
-                _ => query.OrderByDescending(x => x.CreatedDateUtc)
-            };
-
-            // ⏭️ تطبيق Pagination مع AsNoTracking() للأداء الأفضل
-            var items = await orderedQuery
-                .AsNoTracking()
-                .Skip((filterDto.PageNumber - 1) * filterDto.PageSize)
-                .Take(filterDto.PageSize)
-                .ToListAsync();
-
-            var itemsDto = _mapper.MapList<VwItem, VwItemDto>(items);
-
-            return new PaginatedDataModel<VwItemDto>(itemsDto, totalRecords);
-        }
-
-        public new async Task<VwItemDto> FindByIdAsync(Guid Id)
+        public new async Task<ItemDto> FindByIdAsync(Guid Id)
         {
             if (Id == Guid.Empty)
                 throw new ArgumentNullException(nameof(Id));
@@ -405,7 +228,7 @@ namespace BL.Service.ECommerce.Item
                 //var combinationsSaved = await ProcessItemCombinationsAsync(itemId, dto.ItemCombinations ?? new List<ItemCombinationDto>(), category, categoryAttributes.ToList(), userId);
 
                 await _unitOfWork.CommitAsync();
-                return itemSaved.Success && imagesSaved && attributesSaved ;
+                return itemSaved.Success && imagesSaved && attributesSaved;
             }
             catch (Exception ex)
             {
@@ -415,7 +238,7 @@ namespace BL.Service.ECommerce.Item
             }
         }
 
- 
+
         // Helper functions
         private async Task<string> SaveImageSync(string image)
         {

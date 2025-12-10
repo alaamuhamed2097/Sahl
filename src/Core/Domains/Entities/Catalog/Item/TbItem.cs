@@ -25,7 +25,7 @@ namespace Domains.Entities.Catalog.Item
 
         [StringLength(500)]
         public string DescriptionAr { get; set; }
-       
+
         [StringLength(500)]
         public string DescriptionEn { get; set; }
 
@@ -48,7 +48,7 @@ namespace Domains.Entities.Catalog.Item
 
         [Column(TypeName = "decimal(18,2)")]
         public decimal? BasePrice { get; set; }
-       
+
         [Column(TypeName = "decimal(18,2)")]
         public decimal? MinimumPrice { get; set; }
 
@@ -57,7 +57,7 @@ namespace Domains.Entities.Catalog.Item
 
         public Guid BrandId { get; set; }
 
-        public ProductVisibilityStatus VisibilityScope { get; set; }
+        public ProductVisibilityStatus VisibilityScope { get; set; } = ProductVisibilityStatus.Visible;
 
         // Navigation Properties
         [ForeignKey("CategoryId")]

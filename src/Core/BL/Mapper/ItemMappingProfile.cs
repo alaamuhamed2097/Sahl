@@ -41,6 +41,10 @@ namespace BL.Mapper
                         : new List<ItemAttributeDto>()))
                 .ReverseMap();
 
+            // Search result mappings
+            CreateMap<Domains.Views.Item.SpSearchItemsMultiVendor, SpSearchItemsResultDto>()
+                .ReverseMap();
+
             // Item combination mapping
             CreateMap<TbItemCombination, ItemCombinationDto>()
                 .ReverseMap();
