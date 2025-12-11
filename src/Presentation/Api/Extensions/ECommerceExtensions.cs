@@ -6,6 +6,7 @@ using BL.Contracts.Service.ECommerce.Category;
 using BL.Contracts.Service.ECommerce.Item;
 using BL.Contracts.Service.ECommerce.Unit;
 using BL.Contracts.Service.Pricing;
+using BL.Contracts.Service.Review;
 using BL.Contracts.Service.Setting;
 using BL.Contracts.Service.ShippingCompny;
 using BL.Contracts.Service.Vendor;
@@ -18,6 +19,7 @@ using BL.Service.ECommerce.Unit;
 using BL.Service.Order;
 using BL.Service.Pricing;
 using BL.Service.PromoCode;
+using BL.Service.Review;
 using BL.Service.Setting;
 using BL.Service.ShippingCompany;
 using BL.Service.Vendor;
@@ -74,10 +76,13 @@ namespace Api.Extensions
             services.AddScoped<IOfferRepository, OfferRepository>();
             services.AddScoped<IOrderRepository, OrderRepository>();
 
-			// Review Services
+			// Review repositories
 			services.AddScoped<IOfferReviewRepository, OfferReviewRepository>();
 			//services.AddScoped<IReviewVoteRepository, ReviewVoteRepository>();
 			//services.AddScoped<IReviewReportRepository, ReviewReportRepository>();
+
+			// Review Services
+			services.AddScoped<IOfferReviewService, OfferReviewService>();
 
 
 			return services;

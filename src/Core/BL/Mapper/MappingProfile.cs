@@ -27,6 +27,7 @@ namespace BL.Mapper
             ConfigurePricingMappings();
             ConfigureCartMappings();
             ConfigureOfferReviewMappings();
+			ConfigureCustomerMappings();
 		}
     }
 }

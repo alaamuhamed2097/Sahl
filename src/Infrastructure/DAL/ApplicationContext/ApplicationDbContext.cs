@@ -1,4 +1,5 @@
-﻿using Domains.Entities.Base;
+﻿using DAL.Configurations;
+using Domains.Entities.Base;
 using Domains.Entities.BrandManagement;
 using Domains.Entities.BuyBox;
 using Domains.Entities.Campaign;
@@ -13,6 +14,7 @@ using Domains.Entities.CouponCode;
 using Domains.Entities.Currency;
 using Domains.Entities.ECommerceSystem;
 using Domains.Entities.ECommerceSystem.Cart;
+using Domains.Entities.ECommerceSystem.Customer;
 using Domains.Entities.ECommerceSystem.Review;
 using Domains.Entities.ECommerceSystem.Support;
 using Domains.Entities.ECommerceSystem.Vendor;
@@ -120,7 +122,7 @@ namespace DAL.ApplicationContext
         public DbSet<TbSupportTicketMessage> TbSupportTicketMessages { get; set; }
 
         // Review Management
-        public DbSet<TbOfferReview> TbProductReviews { get; set; }
+        public DbSet<TbOfferReview> TbOfferReviews { get; set; }
         public DbSet<TbSalesReview> TbSalesReviews { get; set; }
         public DbSet<TbDeliveryReview> TbDeliveryReviews { get; set; }
         public DbSet<TbReviewVote> TbReviewVotes { get; set; }
@@ -214,12 +216,15 @@ namespace DAL.ApplicationContext
         // Pricing System Settings
         public DbSet<TbPricingSystemSetting> TbPricingSystemSettings { get; set; }
 
-        #endregion
+		// E-Commerce System - Customers
+		public DbSet<TbCustomer> TbCustomers { get; set; }
 
-        #region DbSets - Views
+		#endregion
 
-        // Category Views
-        public DbSet<VwAttributeWithOptions> VwAttributeWithOptions { get; set; }
+		#region DbSets - Views
+
+		// Category Views
+		public DbSet<VwAttributeWithOptions> VwAttributeWithOptions { get; set; }
         public DbSet<VwCategoryItems> VwCategoryItems { get; set; }
         public DbSet<VwCategoryWithAttributes> VwCategoryWithAttributes { get; set; }
 
@@ -242,8 +247,10 @@ namespace DAL.ApplicationContext
             base.OnModelCreating(modelBuilder);
 
             modelBuilder.ApplyConfigurationsFromAssembly(typeof(ApplicationDbContext).Assembly);
+            
+			//modelBuilder.ApplyConfiguration(new CustomerConfiguration());
 
-            ConfigureBaseEntities(modelBuilder);
+			ConfigureBaseEntities(modelBuilder);
             ConfigureViews(modelBuilder);
 
             // Apply missing/explicit relationship configurations that might not be covered

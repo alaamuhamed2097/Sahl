@@ -16,6 +16,13 @@ namespace DAL.Repositories
 		public OfferReviewRepository(ApplicationDbContext dbContext, ILogger logger)
 			: base(dbContext, logger) { }
 
+		/// <summary>
+		/// Retrieves all approved (visible) reviews for a given offer.
+		/// Filters by OfferId, ensures the review is approved and not soft-deleted.
+		/// </summary>
+		/// <param name="OfferId">ID of the offer to retrieve reviews for.</param>
+		/// <param name="cancellationToken">Cancellation token.</param>
+		/// <returns>A list of approved reviews sorted by newest first.</returns>
 		public async Task<IEnumerable<TbOfferReview>> GetReviewsByOfferIdAsync(
 			Guid OfferId,
 			CancellationToken cancellationToken = default)
@@ -38,6 +45,13 @@ namespace DAL.Repositories
 			}
 		}
 
+		/// <summary>
+		/// Retrieves full details of a specific review including related votes and reports.
+		/// Only includes records that are not soft-deleted.
+		/// </summary>
+		/// <param name="reviewId">ID of the review.</param>
+		/// <param name="cancellationToken">Cancellation token.</param>
+		/// <returns>The review with related data, or null if not found.</returns>
 		public async Task<TbOfferReview?> GetReviewDetailsAsync(
 			Guid reviewId,
 			CancellationToken cancellationToken = default)
@@ -45,13 +59,12 @@ namespace DAL.Repositories
 			try
 			{
 				return await _dbContext.Set<TbOfferReview>()
-	.AsNoTracking()
-	.Include(r => r.ReviewVotes.Where(v => !v.IsDeleted))
-	.Include(r => r.ReviewReports.Where(rr => !rr.IsDeleted))
-	.FirstOrDefaultAsync(
-		r => r.Id == reviewId && !r.IsDeleted,
-		cancellationToken
-	);
+					.AsNoTracking()
+					.Include(r => r.ReviewVotes.Where(v => !v.IsDeleted))
+					.Include(r => r.ReviewReports.Where(rr => !rr.IsDeleted))
+					.FirstOrDefaultAsync(
+						r => r.Id == reviewId && !r.IsDeleted,
+						cancellationToken);
 			}
 			catch (Exception ex)
 			{
@@ -60,7 +73,14 @@ namespace DAL.Repositories
 				return null;
 			}
 		}
-
+		/// <summary>
+		/// Retrieves a customer's review for a specific order item.
+		/// Useful for preventing duplicate reviews for the same purchased item.
+		/// </summary>
+		/// <param name="orderItemId">Order item ID.</param>
+		/// <param name="customerId">Customer ID.</param>
+		/// <param name="cancellationToken">Cancellation token.</param>
+		/// <returns>The review if found; otherwise null.</returns>
 		public async Task<TbOfferReview?> GetCustomerReviewForOrderItemAsync(
 			Guid orderItemId,
 			Guid customerId,
@@ -82,7 +102,13 @@ namespace DAL.Repositories
 				return null;
 			}
 		}
-
+		/// <summary>
+		/// Calculates the average rating for a specific offer
+		/// considering only approved, non-deleted reviews.
+		/// </summary>
+		/// <param name="OfferId">Offer ID.</param>
+		/// <param name="cancellationToken">Cancellation token.</param>
+		/// <returns>The average rating, or 0 if no reviews exist.</returns>
 		public async Task<decimal> GetAverageRatingAsync(
 			Guid OfferId,
 			CancellationToken cancellationToken = default)
@@ -106,7 +132,17 @@ namespace DAL.Repositories
 				return 0;
 			}
 		}
-
+		
+		/// <summary>
+		/// Retrieves paginated list of reviews with optional filters (OfferId and Status).
+		/// Useful for admin panels and customer history views.
+		/// </summary>
+		/// <param name="OfferId">Optional filter by offer.</param>
+		/// <param name="status">Optional filter by review status.</param>
+		/// <param name="pageNumber">Page index starting from 1.</param>
+		/// <param name="pageSize">Number of items per page.</param>
+		/// <param name="cancellationToken">Cancellation token.</param>
+		/// <returns>A paginated data model wrapping reviews and total count.</returns>
 		public async Task<PaginatedDataModel<TbOfferReview>> GetPaginatedReviewsAsync(
 			Guid? OfferId = null,
 			ReviewStatus? status = null,
@@ -146,6 +182,12 @@ namespace DAL.Repositories
 			}
 		}
 
+
+		/// <summary>
+		/// Retrieves all reviews currently pending admin approval.
+		/// </summary>
+		/// <param name="cancellationToken">Cancellation token.</param>
+		/// <returns>A list of pending reviews sorted by creation date.</returns>
 		public async Task<IEnumerable<TbOfferReview>> GetPendingReviewsAsync(
 			CancellationToken cancellationToken = default)
 		{
@@ -166,6 +208,15 @@ namespace DAL.Repositories
 			}
 		}
 
+
+
+		/// <summary>
+		/// Counts the number of approved, non-deleted reviews for a given offer.
+		/// Used for statistics and rating calculations.
+		/// </summary>
+		/// <param name="OfferId">Offer ID.</param>
+		/// <param name="cancellationToken">Cancellation token.</param>
+		/// <returns>The count of approved reviews.</returns>
 		public async Task<int> GetReviewCountByOfferIdAsync(
 			Guid OfferId,
 			CancellationToken cancellationToken = default)
@@ -186,5 +237,32 @@ namespace DAL.Repositories
 				return 0;
 			}
 		}
+
+
+		/// <summary>
+		/// Returns the distribution of ratings (1-5 stars) for a specific offer.
+		/// Groups ratings and returns a dictionary: Key = rating, Value = count.
+		/// </summary>
+		/// <param name="OfferId">Offer ID.</param>
+		/// <param name="cancellationToken">Cancellation token.</param>
+		/// <returns>Dictionary of rating value and count.</returns>
+		public async Task<Dictionary<int, int>> GetRatingDistributionAsync(
+		   Guid OfferId,
+		   CancellationToken cancellationToken = default)
+		{
+			var reviews = await _dbContext.Set<TbOfferReview>()
+				.AsNoTracking()
+				.Where(r => r.OfferID == OfferId
+					&& r.Status == ReviewStatus.Approved
+					&& !r.IsDeleted)
+				.Select(r => r.Rating)
+				.ToListAsync(cancellationToken);
+
+			return reviews
+				.GroupBy(r => (int)Math.Round(r))
+				.ToDictionary(g => g.Key, g => g.Count());
+		}
+
+
 	}
 }

@@ -1,21 +1,45 @@
-using Shared.DTOs.Base;
 using Common.Enumerations.Review;
+using Resources;
+using Shared.DTOs.Base;
+using System.ComponentModel.DataAnnotations;
 
 namespace Shared.DTOs.Review
 {
     public class OfferReviewDto : BaseDto
     {
-        public int ReviewNumber { get; set; }
-        public Guid OfferID { get; set; }
-        public Guid CustomerID { get; set; }
-        public Guid? OrderItemID { get; set; }
-        public decimal Rating { get; set; }
-        public string ReviewTitle { get; set; } = null!;
-        public string ReviewText { get; set; } = null!;
-        public bool IsVerifiedPurchase { get; set; }
-        public int HelpfulCount { get; set; }
-        public int NotHelpfulCount { get; set; }
-        public ReviewStatus Status { get; set; }
-        public bool IsEdited { get; set; }
-    }
+		[Required]
+		public int ReviewNumber { get; set; }
+
+		[Required(ErrorMessageResourceName = "FieldRequired", ErrorMessageResourceType = typeof(ValidationResources))]
+		public Guid OfferID { get; set; }
+
+		[Required(ErrorMessageResourceName = "FieldRequired", ErrorMessageResourceType = typeof(ValidationResources))]
+		public Guid CustomerID { get; set; }
+
+		public Guid? OrderItemID { get; set; }
+
+		[Range(0, 5, ErrorMessageResourceName = "FieldRequired", ErrorMessageResourceType = typeof(ValidationResources))]
+		public decimal Rating { get; set; }
+
+		[Required(ErrorMessageResourceName = "FieldRequired", ErrorMessageResourceType = typeof(ValidationResources))]
+		[StringLength(200, MinimumLength = 2, ErrorMessageResourceName = "TitleLength", ErrorMessageResourceType = typeof(ValidationResources))]
+		public string ReviewTitle { get; set; } = null!;
+
+		[Required(ErrorMessageResourceName = "FieldRequired", ErrorMessageResourceType = typeof(ValidationResources))]
+		[StringLength(1000, MinimumLength = 2, ErrorMessageResourceName = "ReviewTextLength", ErrorMessageResourceType = typeof(ValidationResources))]
+		public string ReviewText { get; set; } = null!;
+
+		public bool IsVerifiedPurchase { get; set; } = false;
+
+		[Range(0, int.MaxValue, ErrorMessageResourceName = "FieldRequired", ErrorMessageResourceType = typeof(ValidationResources))]
+		public int HelpfulCount { get; set; } = 0;
+
+		[Range(0, int.MaxValue, ErrorMessageResourceName = "FieldRequired", ErrorMessageResourceType = typeof(ValidationResources))]
+		public int NotHelpfulCount { get; set; } = 0;
+
+		[Required]
+		public ReviewStatus Status { get; set; } = ReviewStatus.Pending;
+
+		public bool IsEdited { get; set; } = false;
+	}
 }
