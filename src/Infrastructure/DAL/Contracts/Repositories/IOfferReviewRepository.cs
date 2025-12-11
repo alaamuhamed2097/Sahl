@@ -56,12 +56,12 @@ namespace DAL.Contracts.Repositories
 		/// <param name="pageSize">Page size (default: 10).</param>
 		/// <param name="cancellationToken">Token to cancel the operation.</param>
 		/// <returns>A paginated model containing reviews and metadata.</returns>
-		Task<PaginatedDataModel<TbOfferReview>> GetPaginatedReviewsAsync(
-			Guid? OfferId = null,
-			ReviewStatus? status = null,
-			int pageNumber = 1,
-			int pageSize = 10,
-			CancellationToken cancellationToken = default);
+		//Task<PaginatedDataModel<TbOfferReview>> GetPaginatedReviewsAsync(
+		//	Guid? OfferId = null,
+		//	ReviewStatus? status = null,
+		//	int pageNumber = 1,
+		//	int pageSize = 10,
+		//	CancellationToken cancellationToken = default);
 
 
 		/// <summary>

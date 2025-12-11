@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Mvc;
 using Resources;
 using Shared.DTOs.Review;
 using Shared.GeneralModels;
+using Shared.GeneralModels.SearchCriteriaModels;
 using System.Security.Claims;
 
 using static Shared.ErrorCodes.ErrorCodes;
@@ -29,6 +30,35 @@ namespace Api.Controllers.v1.Review.OfferReview
 		public OfferReviewController(IOfferReviewService reviewService, ILogger<CartController> logger)
 		{
 			_reviewService = reviewService;
+		}
+
+		/// <summary>
+		/// Get review by ID with full details
+		/// </summary>
+		/// <remarks>
+		/// API Version: 1.0+
+		/// </remarks>
+		[HttpGet("{reviewId}")]
+		[Authorize(Roles = nameof(UserRole.Customer))]
+		[ProducesResponseType(StatusCodes.Status200OK)]
+		[ProducesResponseType(StatusCodes.Status404NotFound)]
+		public async Task<IActionResult> GetReviewById(Guid reviewId)
+		{
+			var review = await _reviewService.GetReviewByIdAsync(reviewId);
+
+			if (review == null)
+				return NotFound(new ResponseModel<string>
+				{
+					Success = false,
+					Message = NotifiAndAlertsResources.NoDataFound
+				});
+
+			return Ok(new ResponseModel<OfferReviewDto>
+			{
+				Success = true,
+				Message = NotifiAndAlertsResources.DataRetrieved,
+				Data = review
+			});
 		}
 
 		/// <summary>
@@ -156,16 +186,11 @@ namespace Api.Controllers.v1.Review.OfferReview
 		/// <remarks>
 		/// API Version: 1.0+
 		/// </remarks>
-		[HttpGet("paginated")]
+		[HttpGet("search")]
 		[ProducesResponseType(StatusCodes.Status200OK)]
-		public async Task<IActionResult> GetPaginatedReviews(
-			[FromQuery] Guid? OfferId,
-			[FromQuery] ReviewStatus? status,
-			[FromQuery] int pageNumber = 1,
-			[FromQuery] int pageSize = 10)
+		public async Task<IActionResult> Search([FromQuery] OfferReviewSearchCriteriaModel criteria)
 		{
-			var result = await _reviewService.GetPaginatedReviewsAsync(
-				OfferId, status, pageNumber, pageSize);
+			var result = await _reviewService.GetPaginatedReviewsAsync(criteria);
 
 			return Ok(new ResponseModel<PaginatedDataModel<OfferReviewDto>>
 			{

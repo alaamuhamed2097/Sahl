@@ -3,6 +3,7 @@ using Common.Enumerations.Review;
 using DAL.Models;
 using Domains.Entities.ECommerceSystem.Review;
 using Shared.DTOs.Review;
+using Shared.GeneralModels.SearchCriteriaModels;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -11,6 +12,8 @@ namespace BL.Contracts.Service.Review
 {
 	public interface IOfferReviewService : IBaseService<TbOfferReview, OfferReviewDto>
 	{
+		Task<OfferReviewDto?> GetReviewByIdAsync(Guid reviewId, CancellationToken cancellationToken = default);
+
 		/// <summary>
 		/// Submits a new review for a specific offer.
 		/// </summary>
@@ -58,12 +61,7 @@ namespace BL.Contracts.Service.Review
 		/// <param name="pageSize">Number of items per page (default: 10).</param>
 		/// <param name="cancellationToken">Token to cancel the operation.</param>
 		/// <returns>A paginated data model containing filtered reviews.</returns>
-		Task<PaginatedDataModel<OfferReviewDto>> GetPaginatedReviewsAsync(
-			Guid? OfferId = null,
-			ReviewStatus? status = null,
-			int pageNumber = 1,
-			int pageSize = 10,
-			CancellationToken cancellationToken = default);
+		Task<PaginatedDataModel<OfferReviewDto>> GetPaginatedReviewsAsync(OfferReviewSearchCriteriaModel criteriaModel, CancellationToken cancellationToken = default);
 
 
 		/// <summary>

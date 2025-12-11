@@ -1,45 +1,83 @@
 using AutoMapper;
 using BL.Contracts.IMapper;
 using BL.Contracts.Service.Review;
+using BL.Extensions;
 using BL.Service.Base;
 using Common.Enumerations.Review;
 using DAL.Contracts.Repositories;
 using DAL.Exceptions;
 using DAL.Models;
+using DAL.Repositories;
+using Domains.Entities.Catalog.Item;
 using Domains.Entities.ECommerceSystem.Review;
+using Microsoft.AspNetCore.Mvc;
+using Resources;
 using Serilog;
+using Shared.DTOs.ECommerce.Item;
 using Shared.DTOs.Review;
+using Shared.GeneralModels.SearchCriteriaModels;
+using System.Linq.Expressions;
+
 
 namespace BL.Service.Review
 {
-   
 
-    public class OfferReviewService : BaseService<TbOfferReview, OfferReviewDto>, IOfferReviewService
-    {
+
+	public class OfferReviewService : BaseService<TbOfferReview, OfferReviewDto>, IOfferReviewService
+	{
 		private readonly IOfferReviewRepository _reviewRepo;
+		private readonly ITableRepository<TbOfferReview> _tableRepository;
 		private readonly IBaseMapper _mapper;
 		private readonly ILogger _logger;
 		public OfferReviewService(
 			IBaseMapper mapper,
 			ITableRepository<TbOfferReview> repository,
 			IOfferReviewRepository reviewRepo,
-			ILogger logger)
+			ILogger logger,
+			ITableRepository<TbOfferReview> tableRepository)
 			: base(repository, mapper)
 		{
 			_mapper = mapper;
 			_logger = logger;
 			_reviewRepo = reviewRepo;
+			_tableRepository = tableRepository;
 		}
 
-		//public OfferReviewService(
-		//	IOfferReviewRepository reviewRepo,
-		//	IMapper mapper,
-		//	ILogger logger)
-		//{
-		//	_reviewRepo = reviewRepo;
-		//	_mapper = mapper;
-		//	_logger = logger;
-		//}
+		/// <summary>
+		/// Retrieves the details of a specific offer review by its unique identifier.
+		/// </summary>
+		/// <param name="reviewId">The unique identifier of the offer review. Must not be <see cref="Guid.Empty"/>.</param>
+		/// <param name="cancellationToken">Optional cancellation token to cancel the operation.</param>
+		/// <returns>
+		/// An <see cref="OfferReviewDto"/> representing the review details if found; otherwise, <c>null</c>.
+		/// </returns>
+		/// <remarks>
+		/// This method validates the input, fetches the review entity from the repository,
+		/// maps it to a DTO using AutoMapper, and propagates any exceptions to the caller.
+		/// </remarks>
+		/// <exception cref="ArgumentException">Thrown when <paramref name="reviewId"/> is <see cref="Guid.Empty"/>.</exception>
+		/// <exception cref="Exception">Thrown when an unexpected error occurs during retrieval.</exception>
+		public async Task<OfferReviewDto?> GetReviewByIdAsync(
+			Guid reviewId,
+			CancellationToken cancellationToken = default)
+		{
+			if (reviewId == Guid.Empty)
+				throw new ArgumentException("ReviewId cannot be empty.", nameof(reviewId));
+
+			try
+			{
+				var review = await _reviewRepo.GetReviewDetailsAsync(reviewId, cancellationToken);
+
+				if (review == null)
+					return null;
+
+				return _mapper.MapModel<TbOfferReview, OfferReviewDto>(review);
+			}
+			catch (Exception ex)
+			{
+				throw new Exception($"An error occurred while retrieving review with ID {reviewId}.", ex);
+			}
+		}
 
 		/// <summary>
 		/// Creates a new review for a given offer by a customer.
@@ -81,7 +119,7 @@ namespace BL.Service.Review
 				}
 
 				// Create review
-				var review = _mapper.MapModel<OfferReviewDto,TbOfferReview >(reviewDto);
+				var review = _mapper.MapModel<OfferReviewDto, TbOfferReview>(reviewDto);
 				review.Status = ReviewStatus.Pending;
 
 				var result = await _reviewRepo.CreateAsync(review, reviewDto.CustomerID, cancellationToken);
@@ -109,7 +147,7 @@ namespace BL.Service.Review
 		/// <returns>The updated review DTO.</returns>
 
 		public async Task<OfferReviewDto> updateReviewAsync(
-			
+
 			OfferReviewDto reviewDto,
 			Guid currentUserId,
 			CancellationToken cancellationToken = default)
@@ -150,7 +188,7 @@ namespace BL.Service.Review
 				if (!result.Success)
 					throw new Exception("Failed to update review");
 
-				return _mapper.MapModel<TbOfferReview,OfferReviewDto>(review);
+				return _mapper.MapModel<TbOfferReview, OfferReviewDto>(review);
 			}
 			catch (Exception ex)
 			{
@@ -202,7 +240,7 @@ namespace BL.Service.Review
 			try
 			{
 				var reviews = await _reviewRepo.GetReviewsByOfferIdAsync(OfferId, cancellationToken);
-				return _mapper.MapList<TbOfferReview,OfferReviewDto> (reviews);
+				return _mapper.MapList<TbOfferReview, OfferReviewDto>(reviews);
 			}
 			catch (Exception ex)
 			{
@@ -212,48 +250,187 @@ namespace BL.Service.Review
 		}
 
 		/// <summary>
-		/// Retrieves a paginated list of offer reviews, filtered optionally by offer and review status.
-		/// Useful for admin or listing pages.
+		/// Retrieves a paginated list of offer reviews based on a comprehensive set of search criteria.
+		/// Ideal for building admin dashboards or customer-facing review listing pages with advanced filtering and sorting.
 		/// </summary>
-		/// <param name="OfferId">Optional filter by offer id.</param>
-		/// <param name="status">Optional filter by review status (Pending/Approved/Rejected).</param>
-		/// <param name="pageNumber">Page number (default 1).</param>
-		/// <param name="pageSize">Page size (default 10).</param>
-		/// <param name="cancellationToken">Cancellation token.</param>
-		/// <returns>Paginated data model containing matching reviews.</returns>
-		public async Task<PaginatedDataModel<OfferReviewDto>> GetPaginatedReviewsAsync(
-			Guid? OfferId = null,
-			ReviewStatus? status = null,
-			int pageNumber = 1,
-			int pageSize = 10,
-			CancellationToken cancellationToken = default)
+		/// <param name="criteriaModel">
+		/// A model containing all search, sort, and pagination criteria.
+		/// Allows filtering by:
+		/// - A search term in the review title or text.
+		/// - A specific Offer ID.
+		/// - A specific Customer ID.
+		/// - A rating range (from RatingFrom to RatingTo).
+		/// - Whether the purchase is verified (IsVerifiedPurchase).
+		/// - A list of one or more review statuses (e.g., Pending, Approved).
+		/// 
+		/// Supports dynamic sorting by specifying a SortBy column (e.g., Rating, CreatedDateUtc) 
+		/// and a SortDirection (asc or desc).
+		/// 
+		/// Supports pagination using PageNumber and PageSize.
+		/// </param>
+		/// <param name="cancellationToken">A token to cancel the operation.</param>
+		/// <returns>
+		/// A <see cref="PaginatedDataModel{OfferReviewDto}"/> containing the list of matching reviews 
+		/// and the total record count.
+		/// </returns>
+		public async Task<PaginatedDataModel<OfferReviewDto>> GetPaginatedReviewsAsync(OfferReviewSearchCriteriaModel criteriaModel, CancellationToken cancellationToken = default)
 		{
-			try
-			{
-				var result = await _reviewRepo.GetPaginatedReviewsAsync(
-					OfferId, status, pageNumber, pageSize, cancellationToken);
+			if (criteriaModel == null)
+				throw new ArgumentNullException(nameof(criteriaModel));
 
-				var reviewDtos = _mapper.MapList<TbOfferReview,OfferReviewDto>(result.Items);
-				return new PaginatedDataModel<OfferReviewDto>(reviewDtos, result.TotalRecords);
-			}
-			catch (Exception ex)
+			if (criteriaModel.PageNumber < 1)
+				throw new ArgumentOutOfRangeException(nameof(criteriaModel.PageNumber), ValidationResources.PageNumberGreaterThanZero);
+
+			if (criteriaModel.PageSize < 1 || criteriaModel.PageSize > 100)
+				throw new ArgumentOutOfRangeException(nameof(criteriaModel.PageSize), ValidationResources.PageSizeRange);
+
+			Expression<Func<TbOfferReview, bool>> filter = x => !x.IsDeleted;
+
+			var searchTerm = criteriaModel.SearchTerm?.Trim().ToLower();
+			if (!string.IsNullOrWhiteSpace(searchTerm))
 			{
-				_logger.Error(ex, $"Error in {nameof(GetPaginatedReviewsAsync)}");
-				throw;
+				filter = filter.And(x =>
+					(x.ReviewTitle != null && x.ReviewTitle.ToLower().Contains(searchTerm)) ||
+					(x.ReviewText != null && x.ReviewText.ToLower().Contains(searchTerm))
+				);
 			}
+
+			if (criteriaModel.OfferId.HasValue)
+			{
+				filter = filter.And(x => x.OfferID == criteriaModel.OfferId.Value);
+			}
+
+			if (criteriaModel.CustomerId.HasValue)
+			{
+				filter = filter.And(x => x.CustomerID == criteriaModel.CustomerId.Value);
+			}
+
+			if (criteriaModel.RatingFrom.HasValue)
+			{
+				filter = filter.And(x => x.Rating >= criteriaModel.RatingFrom.Value);
+			}
+
+			if (criteriaModel.RatingTo.HasValue)
+			{
+				filter = filter.And(x => x.Rating <= criteriaModel.RatingTo.Value);
+			}
+
+			if (criteriaModel.IsVerifiedPurchase.HasValue)
+			{
+				filter = filter.And(x => x.IsVerifiedPurchase == criteriaModel.IsVerifiedPurchase.Value);
+			}
+
+			if (criteriaModel.Statuses != null && criteriaModel.Statuses.Any())
+			{
+				filter = filter.And(x => criteriaModel.Statuses.Contains(x.Status));
+			}
+
+			Func<IQueryable<TbOfferReview>, IOrderedQueryable<TbOfferReview>> orderByExpression = null;
+
+			if (!string.IsNullOrWhiteSpace(criteriaModel.SortBy))
+			{
+				switch (criteriaModel.SortBy.ToLowerInvariant())
+				{
+					case "rating":
+						orderByExpression = criteriaModel.SortDirection.ToLowerInvariant() == "desc"
+							? q => q.OrderByDescending(x => x.Rating)
+							: q => q.OrderBy(x => x.Rating);
+						break;
+					case "helpfulcount":
+						orderByExpression = criteriaModel.SortDirection.ToLowerInvariant() == "desc"
+							? q => q.OrderByDescending(x => x.HelpfulCount)
+							: q => q.OrderBy(x => x.HelpfulCount);
+						break;
+					case "createddateutc":
+					default:
+						orderByExpression = criteriaModel.SortDirection.ToLowerInvariant() == "desc"
+							? q => q.OrderByDescending(x => x.CreatedDateUtc)
+							: q => q.OrderBy(x => x.CreatedDateUtc);
+						break;
+				}
+			}
+			else
+			{
+				orderByExpression = q => q.OrderByDescending(x => x.CreatedDateUtc);
+			}
+
+			var items = await _tableRepository.GetPageAsync(
+			criteriaModel.PageNumber,
+			criteriaModel.PageSize,
+			filter,
+			orderBy: orderByExpression
+		);
+
+			var itemsDto = _mapper.MapList<TbOfferReview, OfferReviewDto>(items.Items);
+
+			return new PaginatedDataModel<OfferReviewDto>(itemsDto, items.TotalRecords);
 		}
+		//public async Task<PaginatedDataModel<OfferReviewDto>> GetPaginatedReviewsAsync(OfferReviewSearchCriteriaModel criteriaModel, CancellationToken cancellationToken = default)
+		//{
+		//	if (criteriaModel == null)
+		//		throw new ArgumentNullException(nameof(criteriaModel));
+
+		//	if (criteriaModel.PageNumber < 1)
+		//		throw new ArgumentOutOfRangeException(nameof(criteriaModel.PageNumber), ValidationResources.PageNumberGreaterThanZero);
+
+		//	if (criteriaModel.PageSize < 1 || criteriaModel.PageSize > 100)
+		//		throw new ArgumentOutOfRangeException(nameof(criteriaModel.PageSize), ValidationResources.PageSizeRange);
+
+		//	// Base filter
+		//	Expression<Func<TbOfferReview, bool>> filter = x => !x.IsDeleted;
+
+		//	// Combine expressions manually
+		//	var searchTerm = criteriaModel.SearchTerm?.Trim().ToLower();
+		//	if (!string.IsNullOrWhiteSpace(searchTerm))
+		//	{
+		//		filter = filter.And(x =>
+		//			(x.TitleAr != null && x.TitleAr.ToLower().Contains(searchTerm)) ||
+		//			(x.TitleEn != null && x.TitleEn.ToLower().Contains(searchTerm)) ||
+		//			(x.ShortDescriptionAr != null && x.ShortDescriptionAr.ToLower().Contains(searchTerm)) ||
+		//			(x.ShortDescriptionEn != null && x.ShortDescriptionEn.ToLower().Contains(searchTerm))
+		//		);
+		//	}
+
+		//	if (criteriaModel.CategoryIds?.Any() == true)
+		//	{
+		//		filter = filter.And(x => criteriaModel.CategoryIds.Contains(x.CategoryId));
+		//	}
+
+		//	// New Item Flags Filters
+		//	if (criteriaModel.IsNewArrival.HasValue)
+		//	{
+		//		filter = filter.And(x => x.CreatedDateUtc.Date >= DateTime.UtcNow.AddDays(-3).Date);
+		//	}
+
+		//	// Get paginated data from repository
+		//	var items = await _tableRepository.GetPageAsync(
+		//		criteriaModel.PageNumber,
+		//		criteriaModel.PageSize,
+		//		filter,
+		//		orderBy: q => q.OrderByDescending(x => x.CreatedDateUtc)
+		//	);
+
+		//	var itemsDto = _mapper.MapList<TbOfferReview, OfferReviewDto>(items.Items);
+
+		//	return new PaginatedDataModel<OfferReviewDto>(itemsDto, items.TotalRecords);
+		//}
+
+
+
+
+
 		/// <summary>
 		/// Retrieves reviews currently pending approval.
 		/// </summary>
 		/// <param name="cancellationToken">Cancellation token.</param>
 		/// <returns>Enumerable of pending OfferReviewDto.</returns>
 		public async Task<IEnumerable<OfferReviewDto>> GetPendingReviewsAsync(
-			CancellationToken cancellationToken = default)
+				CancellationToken cancellationToken = default)
 		{
 			try
 			{
 				var reviews = await _reviewRepo.GetPendingReviewsAsync(cancellationToken);
-				return _mapper.MapList< TbOfferReview,OfferReviewDto > (reviews);
+				return _mapper.MapList<TbOfferReview, OfferReviewDto>(reviews);
 			}
 			catch (Exception ex)
 			{
@@ -407,6 +584,6 @@ namespace BL.Service.Review
 		//		   EqualityComparer<IBaseMapper>.Default.Equals(_mapper, service._mapper);
 		//}
 
-		
+
 	}
 }
