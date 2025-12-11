@@ -16,7 +16,10 @@ namespace Domains.Entities.Offer
 		[Required]
 		public Guid OfferId { get; set; }
 
-		[Column(TypeName = "decimal(18,2)")]
+		[Required]
+        public Guid OfferConditionId { get; set; }
+
+        [Column(TypeName = "decimal(18,2)")]
 		public decimal Price { get; set; }
 
 		[Column(TypeName = "decimal(18,2)")]
@@ -40,17 +43,17 @@ namespace Domains.Entities.Offer
 		public int LockedQuantity { get; set; }
 
 		public StockStatus StockStatus { get; set; }
+		public DateTime? LastStockUpdate { get; set; }
 
-		// Stock Management
-		public int MinOrderQuantity { get; set; } = 1;
+        // Stock Management
+        public int MinOrderQuantity { get; set; } = 1;
 		public int MaxOrderQuantity { get; set; } = 999;
 		public int LowStockThreshold { get; set; } = 5;
 
-        // Timestamps
-        public DateTime? LastPriceUpdate { get; set; }
-		public DateTime? LastStockUpdate { get; set; }
+        [ForeignKey("OfferConditionId")]
+        public virtual TbOfferCondition OfferCondition { get; set; }
 
-		[ForeignKey("ItemCombinationId")]
+        [ForeignKey("ItemCombinationId")]
 		public virtual TbItemCombination ItemCombination { get; set; }
 
 		[ForeignKey("OfferId")]

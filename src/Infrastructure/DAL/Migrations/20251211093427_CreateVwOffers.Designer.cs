@@ -4,6 +4,7 @@ using DAL.ApplicationContext;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DAL.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251211093427_CreateVwOffers")]
+    partial class CreateVwOffers
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1638,52 +1641,6 @@ namespace DAL.Migrations
                         .IsUnique();
 
                     b.ToTable("TbItemCombinations");
-                });
-
-            modelBuilder.Entity("Domains.Entities.Catalog.Item.ItemAttributes.TbItemCombinationImage", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier")
-                        .HasDefaultValueSql("NEWID()");
-
-                    b.Property<Guid>("CreatedBy")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("CreatedDateUtc")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2(2)")
-                        .HasDefaultValueSql("GETUTCDATE()");
-
-                    b.Property<bool>("IsDeleted")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(false);
-
-                    b.Property<Guid>("ItemCombinationId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<int>("Order")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Path")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
-
-                    b.Property<Guid?>("UpdatedBy")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime?>("UpdatedDateUtc")
-                        .HasColumnType("datetime2(2)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("IsDeleted");
-
-                    b.HasIndex("ItemCombinationId");
-
-                    b.ToTable("TbItemCombinationImages");
                 });
 
             modelBuilder.Entity("Domains.Entities.Catalog.Item.TbItem", b =>
@@ -7253,110 +7210,6 @@ namespace DAL.Migrations
                     b.ToView("VwItems", (string)null);
                 });
 
-            modelBuilder.Entity("Domains.Views.Offer.VwOffer", b =>
-                {
-                    b.Property<Guid>("BrandId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("BrandTitleAr")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("BrandTitleEn")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<Guid>("CategoryId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("CategoryTitleAr")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("CategoryTitleEn")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("CreatedDateUtc")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("FulfillmentType")
-                        .HasColumnType("int");
-
-                    b.Property<int>("HandlingTimeInDays")
-                        .HasColumnType("int");
-
-                    b.Property<Guid>("Id")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<bool>("IsBuyBoxWinner")
-                        .HasColumnType("bit");
-
-                    b.Property<Guid>("ItemId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("ItemTitleAr")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ItemTitleEn")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("OfferCombinationsJson")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("PricingSystemType")
-                        .HasColumnType("int");
-
-                    b.Property<int>("StorgeLocation")
-                        .HasColumnType("int");
-
-                    b.Property<string>("VendorCompanyName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("VendorEmail")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("VendorFullName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("VendorFullPhoneNumber")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<Guid>("VendorId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<decimal>("VendorRatingForThisItem")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<int>("VendorSalesCountForThisItem")
-                        .HasColumnType("int");
-
-                    b.Property<int>("VisibilityScope")
-                        .HasColumnType("int");
-
-                    b.Property<Guid?>("WarrantyId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<int?>("WarrantyPeriodMonths")
-                        .HasColumnType("int");
-
-                    b.Property<string>("WarrantyPolicy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int?>("WarrantyType")
-                        .HasColumnType("int");
-
-                    b.ToTable((string)null);
-
-                    b.ToView("VwOffers", (string)null);
-                });
-
             modelBuilder.Entity("Domains.Views.Unit.VwUnitWithConversionsUnits", b =>
                 {
                     b.Property<string>("ConversionUnitsFromJson")
@@ -7872,17 +7725,6 @@ namespace DAL.Migrations
                         .HasConstraintName("FK_TbItemCombinations_TbItems_ItemId");
 
                     b.Navigation("Item");
-                });
-
-            modelBuilder.Entity("Domains.Entities.Catalog.Item.ItemAttributes.TbItemCombinationImage", b =>
-                {
-                    b.HasOne("Domains.Entities.Catalog.Item.ItemAttributes.TbItemCombination", "ItemCombination")
-                        .WithMany("ItemCombinationImages")
-                        .HasForeignKey("ItemCombinationId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("ItemCombination");
                 });
 
             modelBuilder.Entity("Domains.Entities.Catalog.Item.TbItem", b =>
@@ -8847,8 +8689,6 @@ namespace DAL.Migrations
             modelBuilder.Entity("Domains.Entities.Catalog.Item.ItemAttributes.TbItemCombination", b =>
                 {
                     b.Navigation("CombinationAttributesValues");
-
-                    b.Navigation("ItemCombinationImages");
 
                     b.Navigation("OfferCombinationPricings");
                 });

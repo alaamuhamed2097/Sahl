@@ -13,6 +13,7 @@ namespace BL.Mapper
             ConfigureAttributeMappings();
             ConfigureUnitMappings();
             ConfigureItemMappings();
+            ConfigureOfferMappings();
             ConfigureCurrencyMappings();
             ConfigureBrandMapping();
             ConfigureMediaMappings();

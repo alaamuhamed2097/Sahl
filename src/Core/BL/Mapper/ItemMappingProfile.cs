@@ -44,15 +44,10 @@ namespace BL.Mapper
             // Item combination mapping
             CreateMap<TbItemCombination, ItemCombinationDto>()
                 .ReverseMap();
+            CreateMap<TbItemCombinationImage, ItemCombinationDto>() .ReverseMap();
 
             // Item attribute mappings
             CreateMap<TbItemAttribute, ItemAttributeDto>()
-                .ReverseMap();
-            CreateMap<TbAttributeValuePriceModifier, AttributeValuePriceModifierDto>()
-                .ReverseMap();
-
-            // Combination attribute mappings
-            CreateMap<TbCombinationAttribute, CombinationAttributeDto>()
                 .ReverseMap();
 
             // Combination attribute value mappings

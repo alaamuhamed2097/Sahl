@@ -3,8 +3,10 @@ using DAL.Contracts.Repositories;
 using DAL.Exceptions;
 using DAL.ResultModels.DAL.ResultModels;
 using Domains.Entities.Offer;
+using Domains.Views.Offer;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
+using System;
 using System.Linq.Expressions;
 
 namespace DAL.Repositories
@@ -32,18 +34,12 @@ namespace DAL.Repositories
             /// <summary>
             /// Get offer with all related data
             /// </summary>
-            public async Task<TbOffer> GetOfferWithDetailsAsync(Guid offerId, CancellationToken cancellationToken = default)
+            public async Task<VwOffer> GetOfferWithDetailsAsync(Guid offerId, CancellationToken cancellationToken = default)
             {
                 try
                 {
-                    var offer = await _dbContext.Set<TbOffer>()
-                        .AsNoTracking()
-                        .Include(o => o.Item)
-                        .Include(o => o.Vendor)
-                        .Include(o => o.OfferCombinationPricings)
-                        .ThenInclude(p => p.ItemCombination)
+                    var offer = await _dbContext.Set<VwOffer>()
                         .FirstOrDefaultAsync(o => o.Id == offerId, cancellationToken);
-
                     return offer;
                 }
                 catch (Exception ex)
@@ -56,17 +52,12 @@ namespace DAL.Repositories
             /// <summary>
             /// Get offers by item ID
             /// </summary>
-            public async Task<IEnumerable<TbOffer>> GetOffersByItemIdAsync(Guid itemId, CancellationToken cancellationToken = default)
+            public async Task<IEnumerable<VwOffer>> GetOffersByItemIdAsync(Guid itemId, CancellationToken cancellationToken = default)
             {
                 try
                 {
-                    _logger.Information($"Getting offers for item ID: {itemId}");
-
-                    var offers = await _dbContext.Set<TbOffer>()
-                        .AsNoTracking()
-                        .Include(o => o.Vendor)
-                        .Include(o => o.OfferCombinationPricings)
-                        .Where(o => o.ItemId == itemId && !o.IsDeleted)
+                    var offers = await _dbContext.Set<VwOffer>()
+                        .Where(o => o.ItemId == itemId )
                         .ToListAsync(cancellationToken);
 
                     return offers;
@@ -81,17 +72,12 @@ namespace DAL.Repositories
             /// <summary>
             /// Get offers by vendor ID
             /// </summary>
-            public async Task<IEnumerable<TbOffer>> GetOffersByVendorIdAsync(Guid vendorId, CancellationToken cancellationToken = default)
+            public async Task<IEnumerable<VwOffer>> GetOffersByVendorIdAsync(Guid vendorId, CancellationToken cancellationToken = default)
             {
                 try
                 {
-                    _logger.Information($"Getting offers for vendor ID: {vendorId}");
-
-                    var offers = await _dbContext.Set<TbOffer>()
-                        .AsNoTracking()
-                        .Include(o => o.Item)
-                        .Include(o => o.OfferCombinationPricings)
-                        .Where(o => o.VendorId == vendorId && !o.IsDeleted)
+                    var offers = await _dbContext.Set<VwOffer>()
+                        .Where(o => o.VendorId == vendorId)
                         .ToListAsync(cancellationToken);
 
                     return offers;

@@ -322,203 +322,203 @@ namespace BL.Service.ECommerce.Item
                 .AddRangeAsync(attributeEntities, userId);
         }
 
-        private async Task<bool> ProcessItemCombinationsAsync(Guid itemId, List<ItemCombinationDto> itemCombinations, TbCategory category, List<TbCategoryAttribute> categoryAttributes, Guid userId)
-        {
-            if (itemCombinations == null || !itemCombinations.Any())
-                return true;
+        //private async Task<bool> ProcessItemCombinationsAsync(Guid itemId, List<ItemCombinationDto> itemCombinations, TbCategory category, List<TbCategoryAttribute> categoryAttributes, Guid userId)
+        //{
+        //    if (itemCombinations == null || !itemCombinations.Any())
+        //        return true;
 
-            var comboEntitiesToCreate = new List<TbItemCombination>();
-            var comboEntitiesToUpdate = new List<TbItemCombination>();
-            var comboEntityPerDto = new List<TbItemCombination>();
+        //    var comboEntitiesToCreate = new List<TbItemCombination>();
+        //    var comboEntitiesToUpdate = new List<TbItemCombination>();
+        //    var comboEntityPerDto = new List<TbItemCombination>();
 
-            // Handle pricing system types
-            var pricingType = category.PricingSystemType;
+        //    // Handle pricing system types
+        //    var pricingType = category.PricingSystemType;
 
-            // For standard-like pricing systems
-            if (pricingType == PricingSystemType.Standard || pricingType == PricingSystemType.Quantity || pricingType == PricingSystemType.CustomerSegmentPricing)
-            {
-                var singleDto = itemCombinations.FirstOrDefault();
-                if (singleDto == null)
-                {
-                    singleDto = new ItemCombinationDto { ItemId = itemId, Barcode = "111111", SKU = "DEFAULT", IsDefault = true };
-                    itemCombinations = new List<ItemCombinationDto> { singleDto };
-                }
+        //    // For standard-like pricing systems
+        //    if (pricingType == PricingSystemType.Standard || pricingType == PricingSystemType.Quantity || pricingType == PricingSystemType.CustomerSegmentPricing)
+        //    {
+        //        var singleDto = itemCombinations.FirstOrDefault();
+        //        if (singleDto == null)
+        //        {
+        //            singleDto = new ItemCombinationDto { ItemId = itemId, Barcode = "111111", SKU = "DEFAULT", IsDefault = true };
+        //            itemCombinations = new List<ItemCombinationDto> { singleDto };
+        //        }
 
-                if (singleDto.Id != Guid.Empty)
-                {
-                    var comboToUpdate = _mapper.MapModel<ItemCombinationDto, TbItemCombination>(singleDto);
-                    comboToUpdate.ItemId = itemId;
-                    comboEntitiesToUpdate.Add(comboToUpdate);
-                    comboEntityPerDto.Add(comboToUpdate);
-                }
-                else
-                {
-                    var comboToCreate = _mapper.MapModel<ItemCombinationDto, TbItemCombination>(singleDto);
-                    comboToCreate.ItemId = itemId;
-                    comboEntitiesToCreate.Add(comboToCreate);
-                    comboEntityPerDto.Add(comboToCreate);
-                }
+        //        if (singleDto.Id != Guid.Empty)
+        //        {
+        //            var comboToUpdate = _mapper.MapModel<ItemCombinationDto, TbItemCombination>(singleDto);
+        //            comboToUpdate.ItemId = itemId;
+        //            comboEntitiesToUpdate.Add(comboToUpdate);
+        //            comboEntityPerDto.Add(comboToUpdate);
+        //        }
+        //        else
+        //        {
+        //            var comboToCreate = _mapper.MapModel<ItemCombinationDto, TbItemCombination>(singleDto);
+        //            comboToCreate.ItemId = itemId;
+        //            comboEntitiesToCreate.Add(comboToCreate);
+        //            comboEntityPerDto.Add(comboToCreate);
+        //        }
 
-                if (comboEntitiesToCreate.Any())
-                    await _unitOfWork.TableRepository<TbItemCombination>().AddRangeAsync(comboEntitiesToCreate, userId);
+        //        if (comboEntitiesToCreate.Any())
+        //            await _unitOfWork.TableRepository<TbItemCombination>().AddRangeAsync(comboEntitiesToCreate, userId);
 
-                if (comboEntitiesToUpdate.Any())
-                    await _unitOfWork.TableRepository<TbItemCombination>().UpdateRangeAsync(comboEntitiesToUpdate, userId);
-            }
-            else
-            {
-                // Combination-based systems
-                for (int i = 0; i < itemCombinations.Count; i++)
-                {
-                    var comboDto = itemCombinations[i];
-                    var comboEntityModel = _mapper.MapModel<ItemCombinationDto, TbItemCombination>(comboDto);
-                    comboEntityModel.ItemId = itemId;
+        //        if (comboEntitiesToUpdate.Any())
+        //            await _unitOfWork.TableRepository<TbItemCombination>().UpdateRangeAsync(comboEntitiesToUpdate, userId);
+        //    }
+        //    else
+        //    {
+        //        // Combination-based systems
+        //        for (int i = 0; i < itemCombinations.Count; i++)
+        //        {
+        //            var comboDto = itemCombinations[i];
+        //            var comboEntityModel = _mapper.MapModel<ItemCombinationDto, TbItemCombination>(comboDto);
+        //            comboEntityModel.ItemId = itemId;
 
-                    if (comboDto.Id != Guid.Empty)
-                    {
-                        comboEntityModel.Id = comboDto.Id;
-                        comboEntitiesToUpdate.Add(comboEntityModel);
-                        comboEntityPerDto.Add(comboEntityModel);
-                    }
-                    else
-                    {
-                        comboEntitiesToCreate.Add(comboEntityModel);
-                        comboEntityPerDto.Add(comboEntityModel);
-                    }
-                }
+        //            if (comboDto.Id != Guid.Empty)
+        //            {
+        //                comboEntityModel.Id = comboDto.Id;
+        //                comboEntitiesToUpdate.Add(comboEntityModel);
+        //                comboEntityPerDto.Add(comboEntityModel);
+        //            }
+        //            else
+        //            {
+        //                comboEntitiesToCreate.Add(comboEntityModel);
+        //                comboEntityPerDto.Add(comboEntityModel);
+        //            }
+        //        }
 
-                if (comboEntitiesToCreate.Any())
-                    await _unitOfWork.TableRepository<TbItemCombination>().AddRangeAsync(comboEntitiesToCreate, userId);
+        //        if (comboEntitiesToCreate.Any())
+        //            await _unitOfWork.TableRepository<TbItemCombination>().AddRangeAsync(comboEntitiesToCreate, userId);
 
-                if (comboEntitiesToUpdate.Any())
-                    await _unitOfWork.TableRepository<TbItemCombination>().UpdateRangeAsync(comboEntitiesToUpdate, userId);
+        //        if (comboEntitiesToUpdate.Any())
+        //            await _unitOfWork.TableRepository<TbItemCombination>().UpdateRangeAsync(comboEntitiesToUpdate, userId);
 
-                // Create combination attributes/values/modifiers
-                var combinationAttributeEntities = new List<TbCombinationAttribute>();
-                var createdAttrEntitiesPerCombo = new List<List<TbCombinationAttribute>>();
+        //        // Create combination attributes/values/modifiers
+        //        var combinationAttributeEntities = new List<TbCombinationAttribute>();
+        //        var createdAttrEntitiesPerCombo = new List<List<TbCombinationAttribute>>();
 
-                for (int comboIndex = 0; comboIndex < itemCombinations.Count; comboIndex++)
-                {
-                    var comboDto = itemCombinations[comboIndex];
-                    var comboEntity = comboEntityPerDto[comboIndex];
-                    var createdForCombo = new List<TbCombinationAttribute>();
+        //        for (int comboIndex = 0; comboIndex < itemCombinations.Count; comboIndex++)
+        //        {
+        //            var comboDto = itemCombinations[comboIndex];
+        //            var comboEntity = comboEntityPerDto[comboIndex];
+        //            var createdForCombo = new List<TbCombinationAttribute>();
 
-                    if (comboDto.CombinationAttributes?.Any() == true)
-                    {
-                        foreach (var attrDto in comboDto.CombinationAttributes)
-                        {
-                            var hasPricingValues = attrDto.combinationAttributeValueDtos?.Any(v => categoryAttributes.Any(ca => ca.AttributeId == v.AttributeId && ca.AffectsPricing)) == true;
-                            if (!hasPricingValues)
-                                continue;
+        //            if (comboDto.CombinationAttributes?.Any() == true)
+        //            {
+        //                foreach (var attrDto in comboDto.CombinationAttributes)
+        //                {
+        //                    var hasPricingValues = attrDto.combinationAttributeValueDtos?.Any(v => categoryAttributes.Any(ca => ca.AttributeId == v.AttributeId && ca.AffectsPricing)) == true;
+        //                    if (!hasPricingValues)
+        //                        continue;
 
-                            var attrEntity = new TbCombinationAttribute { ItemCombinationId = comboEntity.Id };
-                            combinationAttributeEntities.Add(attrEntity);
-                            createdForCombo.Add(attrEntity);
-                        }
-                    }
+        //                    var attrEntity = new TbCombinationAttribute { ItemCombinationId = comboEntity.Id };
+        //                    combinationAttributeEntities.Add(attrEntity);
+        //                    createdForCombo.Add(attrEntity);
+        //                }
+        //            }
 
-                    createdAttrEntitiesPerCombo.Add(createdForCombo);
-                }
+        //            createdAttrEntitiesPerCombo.Add(createdForCombo);
+        //        }
 
-                if (combinationAttributeEntities.Any())
-                    await _unitOfWork.TableRepository<TbCombinationAttribute>().AddRangeAsync(combinationAttributeEntities, userId);
+        //        if (combinationAttributeEntities.Any())
+        //            await _unitOfWork.TableRepository<TbCombinationAttribute>().AddRangeAsync(combinationAttributeEntities, userId);
 
-                var combinationAttributeValueEntities = new List<TbCombinationAttributesValue>();
-                var createdValuesPerAttrPerCombo = new List<List<List<TbCombinationAttributesValue>>>();
+        //        var combinationAttributeValueEntities = new List<TbCombinationAttributesValue>();
+        //        var createdValuesPerAttrPerCombo = new List<List<List<TbCombinationAttributesValue>>>();
 
-                for (int comboIndex = 0; comboIndex < itemCombinations.Count; comboIndex++)
-                {
-                    var comboDto = itemCombinations[comboIndex];
-                    var attrDtos = comboDto.CombinationAttributes;
-                    var createdAttrs = createdAttrEntitiesPerCombo.ElementAtOrDefault(comboIndex) ?? new List<TbCombinationAttribute>();
-                    var valuesPerAttr = new List<List<TbCombinationAttributesValue>>();
+        //        for (int comboIndex = 0; comboIndex < itemCombinations.Count; comboIndex++)
+        //        {
+        //            var comboDto = itemCombinations[comboIndex];
+        //            var attrDtos = comboDto.CombinationAttributes;
+        //            var createdAttrs = createdAttrEntitiesPerCombo.ElementAtOrDefault(comboIndex) ?? new List<TbCombinationAttribute>();
+        //            var valuesPerAttr = new List<List<TbCombinationAttributesValue>>();
 
-                    if (attrDtos?.Any() == true)
-                    {
-                        for (int attrIndex = 0; attrIndex < attrDtos.Count; attrIndex++)
-                        {
-                            var attrDto = attrDtos[attrIndex];
-                            var createdAttrEntity = createdAttrs.ElementAtOrDefault(attrIndex);
-                            var createdValuesForAttr = new List<TbCombinationAttributesValue>();
+        //            if (attrDtos?.Any() == true)
+        //            {
+        //                for (int attrIndex = 0; attrIndex < attrDtos.Count; attrIndex++)
+        //                {
+        //                    var attrDto = attrDtos[attrIndex];
+        //                    var createdAttrEntity = createdAttrs.ElementAtOrDefault(attrIndex);
+        //                    var createdValuesForAttr = new List<TbCombinationAttributesValue>();
 
-                            if (attrDto?.combinationAttributeValueDtos?.Any() == true && createdAttrEntity != null)
-                            {
-                                foreach (var valDto in attrDto.combinationAttributeValueDtos)
-                                {
-                                    if (!categoryAttributes.Any(ca => ca.AttributeId == valDto.AttributeId && ca.AffectsPricing))
-                                        continue;
+        //                    if (attrDto?.combinationAttributeValueDtos?.Any() == true && createdAttrEntity != null)
+        //                    {
+        //                        foreach (var valDto in attrDto.combinationAttributeValueDtos)
+        //                        {
+        //                            if (!categoryAttributes.Any(ca => ca.AttributeId == valDto.AttributeId && ca.AffectsPricing))
+        //                                continue;
 
-                                    var valEntity = new TbCombinationAttributesValue
-                                    {
-                                        CombinationAttributeId = createdAttrEntity.Id,
-                                        AttributeId = valDto.AttributeId,
-                                        Value = valDto.Value
-                                    };
-                                    combinationAttributeValueEntities.Add(valEntity);
-                                    createdValuesForAttr.Add(valEntity);
-                                }
-                            }
+        //                            var valEntity = new TbCombinationAttributesValue
+        //                            {
+        //                                CombinationAttributeId = createdAttrEntity.Id,
+        //                                AttributeId = valDto.AttributeId,
+        //                                Value = valDto.Value
+        //                            };
+        //                            combinationAttributeValueEntities.Add(valEntity);
+        //                            createdValuesForAttr.Add(valEntity);
+        //                        }
+        //                    }
 
-                            valuesPerAttr.Add(createdValuesForAttr);
-                        }
-                    }
+        //                    valuesPerAttr.Add(createdValuesForAttr);
+        //                }
+        //            }
 
-                    createdValuesPerAttrPerCombo.Add(valuesPerAttr);
-                }
+        //            createdValuesPerAttrPerCombo.Add(valuesPerAttr);
+        //        }
 
-                if (combinationAttributeValueEntities.Any())
-                    await _unitOfWork.TableRepository<TbCombinationAttributesValue>().AddRangeAsync(combinationAttributeValueEntities, userId);
+        //        if (combinationAttributeValueEntities.Any())
+        //            await _unitOfWork.TableRepository<TbCombinationAttributesValue>().AddRangeAsync(combinationAttributeValueEntities, userId);
 
-                var attributeValuePriceModifierEntities = new List<TbAttributeValuePriceModifier>();
+        //        var attributeValuePriceModifierEntities = new List<TbAttributeValuePriceModifier>();
 
-                for (int comboIndex = 0; comboIndex < itemCombinations.Count; comboIndex++)
-                {
-                    var comboDto = itemCombinations[comboIndex];
-                    var attrDtos = comboDto.CombinationAttributes;
-                    var valuesPerAttr = createdValuesPerAttrPerCombo.ElementAtOrDefault(comboIndex) ?? new List<List<TbCombinationAttributesValue>>();
+        //        for (int comboIndex = 0; comboIndex < itemCombinations.Count; comboIndex++)
+        //        {
+        //            var comboDto = itemCombinations[comboIndex];
+        //            var attrDtos = comboDto.CombinationAttributes;
+        //            var valuesPerAttr = createdValuesPerAttrPerCombo.ElementAtOrDefault(comboIndex) ?? new List<List<TbCombinationAttributesValue>>();
 
-                    if (attrDtos?.Any() == true)
-                    {
-                        for (int attrIndex = 0; attrIndex < attrDtos.Count; attrIndex++)
-                        {
-                            var attrDto = attrDtos[attrIndex];
-                            var createdValuesForAttr = valuesPerAttr.ElementAtOrDefault(attrIndex) ?? new List<TbCombinationAttributesValue>();
+        //            if (attrDtos?.Any() == true)
+        //            {
+        //                for (int attrIndex = 0; attrIndex < attrDtos.Count; attrIndex++)
+        //                {
+        //                    var attrDto = attrDtos[attrIndex];
+        //                    var createdValuesForAttr = valuesPerAttr.ElementAtOrDefault(attrIndex) ?? new List<TbCombinationAttributesValue>();
 
-                            if (attrDto?.combinationAttributeValueDtos?.Any() == true)
-                            {
-                                for (int valIndex = 0; valIndex < attrDto.combinationAttributeValueDtos.Count; valIndex++)
-                                {
-                                    var valDto = attrDto.combinationAttributeValueDtos[valIndex];
-                                    var createdValEntity = createdValuesForAttr.ElementAtOrDefault(valIndex);
+        //                    if (attrDto?.combinationAttributeValueDtos?.Any() == true)
+        //                    {
+        //                        for (int valIndex = 0; valIndex < attrDto.combinationAttributeValueDtos.Count; valIndex++)
+        //                        {
+        //                            var valDto = attrDto.combinationAttributeValueDtos[valIndex];
+        //                            var createdValEntity = createdValuesForAttr.ElementAtOrDefault(valIndex);
 
-                                    if (createdValEntity != null && valDto.AttributeValuePriceModifiers?.Any() == true)
-                                    {
-                                        foreach (var modDto in valDto.AttributeValuePriceModifiers)
-                                        {
-                                            var modEntity = new TbAttributeValuePriceModifier
-                                            {
-                                                CombinationAttributeValueId = createdValEntity.Id,
-                                                AttributeId = valDto.AttributeId,
-                                                ModifierType = modDto.ModifierType,
-                                                PriceModifierCategory = modDto.PriceModifierCategory,
-                                                ModifierValue = modDto.ModifierValue,
-                                                DisplayOrder = modDto.DisplayOrder
-                                            };
-                                            attributeValuePriceModifierEntities.Add(modEntity);
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
+        //                            if (createdValEntity != null && valDto.AttributeValuePriceModifiers?.Any() == true)
+        //                            {
+        //                                foreach (var modDto in valDto.AttributeValuePriceModifiers)
+        //                                {
+        //                                    var modEntity = new TbAttributeValuePriceModifier
+        //                                    {
+        //                                        CombinationAttributeValueId = createdValEntity.Id,
+        //                                        AttributeId = valDto.AttributeId,
+        //                                        ModifierType = modDto.ModifierType,
+        //                                        PriceModifierCategory = modDto.PriceModifierCategory,
+        //                                        ModifierValue = modDto.ModifierValue,
+        //                                        DisplayOrder = modDto.DisplayOrder
+        //                                    };
+        //                                    attributeValuePriceModifierEntities.Add(modEntity);
+        //                                }
+        //                            }
+        //                        }
+        //                    }
+        //                }
+        //            }
+        //        }
 
-                if (attributeValuePriceModifierEntities.Any())
-                    await _unitOfWork.TableRepository<TbAttributeValuePriceModifier>().AddRangeAsync(attributeValuePriceModifierEntities, userId);
-            }
+        //        if (attributeValuePriceModifierEntities.Any())
+        //            await _unitOfWork.TableRepository<TbAttributeValuePriceModifier>().AddRangeAsync(attributeValuePriceModifierEntities, userId);
+        //    }
 
-            return true;
-        }
+        //    return true;
+        //}
 
     }
 }

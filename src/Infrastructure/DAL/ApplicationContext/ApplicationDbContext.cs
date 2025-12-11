@@ -38,6 +38,7 @@ using Domains.Entities.Warehouse;
 using Domains.Identity;
 using Domains.Views.Category;
 using Domains.Views.Item;
+using Domains.Views.Offer;
 using Domains.Views.Unit;
 using Domains.Views.UserNotification;
 using Microsoft.AspNetCore.Identity;
@@ -74,10 +75,9 @@ namespace DAL.ApplicationContext
         // Item Management
         public DbSet<TbItem> TbItems { get; set; }
         public DbSet<TbItemAttribute> TbItemAttributes { get; set; }
-        public DbSet<TbAttributeValuePriceModifier> TbAttributeValuePriceModifiers { get; set; }
         public DbSet<TbItemImage> TbItemImages { get; set; }
         public DbSet<TbItemCombination> TbItemCombinations { get; set; }
-        public DbSet<TbCombinationAttribute> TbCombinationAttributes { get; set; }
+        public DbSet<TbItemCombinationImage> TbItemCombinationImages { get; set; }
         public DbSet<TbCombinationAttributesValue> TbCombinationAttributesValues { get; set; }
 
         // Notification Management
@@ -225,6 +225,9 @@ namespace DAL.ApplicationContext
 
         // Item Views
         public DbSet<VwItem> VwItems { get; set; }
+        
+        //Offer
+        public DbSet<VwOffer> VwOffers { get; set; }
 
         // Unit Views
         public DbSet<VwUnitWithConversionsUnits> VwUnitWithConversionsUnits { get; set; }
@@ -296,25 +299,6 @@ namespace DAL.ApplicationContext
 
                 entity.HasIndex(e => e.ItemCombinationId);
                 entity.HasIndex(e => e.OfferId);
-            });
-
-            // Attribute value price modifier relations
-            modelBuilder.Entity<TbAttributeValuePriceModifier>(entity =>
-            {
-                entity.HasKey(e => e.Id);
-
-                entity.HasOne(e => e.CombinationAttributesValue)
-                      .WithMany()
-                      .HasForeignKey(e => e.CombinationAttributeValueId)
-                      .OnDelete(DeleteBehavior.Restrict);
-
-                entity.HasOne(e => e.Attribute)
-                      .WithMany()
-                      .HasForeignKey(e => e.AttributeId)
-                      .OnDelete(DeleteBehavior.Restrict);
-
-                entity.HasIndex(e => e.CombinationAttributeValueId);
-                entity.HasIndex(e => e.AttributeId);
             });
         }
 
@@ -397,6 +381,9 @@ namespace DAL.ApplicationContext
 
             // Item Views
             modelBuilder.Entity<VwItem>().HasNoKey().ToView("VwItems");
+            
+            // Offer Views
+            modelBuilder.Entity<VwOffer>().HasNoKey().ToView("VwOffers");
 
             // Unit Views
             modelBuilder.Entity<VwUnitWithConversionsUnits>(entity =>

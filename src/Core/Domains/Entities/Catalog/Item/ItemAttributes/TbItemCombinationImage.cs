@@ -2,9 +2,9 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Domains.Entities.Catalog.Item
+namespace Domains.Entities.Catalog.Item.ItemAttributes
 {
-    public class TbItemImage : BaseEntity
+    public class TbItemCombinationImage : BaseEntity
     {
         [Required]
         [MaxLength(200)]
@@ -14,9 +14,9 @@ namespace Domains.Entities.Catalog.Item
         public int Order { get; set; }
 
         [Required]
-        public Guid ItemId { get; set; }
+        public Guid ItemCombinationId { get; set; }
 
-        [ForeignKey("ItemId")]
-        public virtual TbItem Item { get; set; } = null!;
+        [ForeignKey("ItemCombinationId")]
+        public virtual TbItemCombination ItemCombination { get; set; } = null!;
 	}
 }

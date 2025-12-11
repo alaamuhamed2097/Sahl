@@ -20,14 +20,12 @@ namespace Domains.Entities.Catalog.Item.ItemAttributes
 
 		public bool IsDefault { get; set; } = false;
 
-        [Column(TypeName = "decimal(18,2)")]
-        public decimal? BasePrice { get; set; }
-
         // Navigation Properties
         [ForeignKey("ItemId")]
 		public virtual TbItem Item { get; set; }
 
-		public virtual ICollection<TbCombinationAttribute> CombinationAttributes { get; set; }
+		public virtual ICollection<TbCombinationAttributesValue> CombinationAttributesValues { get; set; }
 		public virtual ICollection<TbOfferCombinationPricing> OfferCombinationPricings { get; set; }
+		public virtual ICollection<TbItemCombinationImage> ItemCombinationImages { get; set; }
 	}
 }

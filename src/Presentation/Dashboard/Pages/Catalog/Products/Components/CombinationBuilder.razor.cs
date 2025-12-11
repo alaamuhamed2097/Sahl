@@ -77,45 +77,12 @@ namespace Dashboard.Pages.Catalog.Products.Components
             }
         }
 
-        protected decimal CalculateTotalPrice(ItemCombinationDto combination)
-        {
-            decimal total = combination.BasePrice;
-
-            foreach (var combinationAttr in combination.CombinationAttributes)
-            {
-                foreach (var attrValue in combinationAttr.combinationAttributeValueDtos)
-                {
-                    if (ValuePriceModifiers.ContainsKey(attrValue.AttributeId))
-                    {
-                        var modifiers = ValuePriceModifiers[attrValue.AttributeId];
-                        if (modifiers.ContainsKey(attrValue.Value))
-                        {
-                            var modifierInfo = modifiers[attrValue.Value];
-
-                            // Apply the modifier based on its type
-                            if (modifierInfo.Type == PriceModifierType.Fixed)
-                            {
-                                total += modifierInfo.Value;
-                            }
-                            else // Percentage
-                            {
-                                total += total * (modifierInfo.Value / 100);
-                            }
-                        }
-                    }
-                }
-            }
-
-            return total;
-        }
-
         protected async Task AddNewCombination()
         {
             EditingCombination = null;
             TempCombination = new ItemCombinationDto
             {
                 CombinationAttributes = new List<CombinationAttributeDto>(),
-                BasePrice = 0,
                 IsDefault = !Combinations.Any()
             };
 
@@ -133,13 +100,6 @@ namespace Dashboard.Pages.Catalog.Products.Components
         }
         protected async Task SaveCombination()
         {
-
-            // Validate base price
-            if (TempCombination.BasePrice <= 0)
-            {
-                await JSRuntime.InvokeVoidAsync("swal", "Validation Error", "Base price must be greater than 0", "error");
-                return;
-            }
 
             // Build combination attributes from selections
             TempCombination.CombinationAttributes = new List<CombinationAttributeDto>();
