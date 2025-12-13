@@ -1,6 +1,6 @@
 ﻿using Common.Enumerations.Review;
 using DAL.ApplicationContext;
-using DAL.Contracts.Repositories;
+using DAL.Contracts.Repositories.Review;
 using DAL.Models;
 using Domains.Entities.ECommerceSystem.Review;
 using Microsoft.EntityFrameworkCore;
@@ -9,7 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace DAL.Repositories
+namespace DAL.Repositories.Review
 {
 	public class OfferReviewRepository : TableRepository<TbOfferReview>, IOfferReviewRepository
 	{
@@ -143,45 +143,7 @@ namespace DAL.Repositories
 		/// <param name="pageSize">Number of items per page.</param>
 		/// <param name="cancellationToken">Cancellation token.</param>
 		/// <returns>A paginated data model wrapping reviews and total count.</returns>
-		//public async Task<PaginatedDataModel<TbOfferReview>> GetPaginatedReviewsAsync(
-		//	Guid? OfferId = null,
-		//	ReviewStatus? status = null,
-		//	int pageNumber = 1,
-		//	int pageSize = 10,
-		//	CancellationToken cancellationToken = default)
-		//{
-		//	try
-		//	{
-		//		ValidatePaginationParameters(pageNumber, pageSize);
-
-		//		var query = _dbContext.Set<TbOfferReview>()
-		//			.AsNoTracking()
-		//			.Where(r => !r.IsDeleted);
-
-		//		if (OfferId.HasValue)
-		//			query = query.Where(r => r.OfferID == OfferId.Value);
-
-		//		if (status.HasValue)
-		//			query = query.Where(r => r.Status == status.Value);
-
-		//		var totalCount = await query.CountAsync(cancellationToken);
-
-		//		var reviews = await query
-		//			.OrderByDescending(r => r.CreatedDateUtc)
-		//			.Skip((pageNumber - 1) * pageSize)
-		//			.Take(pageSize)
-		//			.ToListAsync(cancellationToken);
-
-		//		return new PaginatedDataModel<TbOfferReview>(reviews, totalCount);
-		//	}
-		//	catch (Exception ex)
-		//	{
-		//		HandleException(nameof(GetPaginatedReviewsAsync),
-		//			$"Error occurred while retrieving paginated reviews.", ex);
-		//		return new PaginatedDataModel<TbOfferReview>(new List<TbOfferReview>(), 0);
-		//	}
-		//}
-
+		
 
 		/// <summary>
 		/// Retrieves all reviews currently pending admin approval.

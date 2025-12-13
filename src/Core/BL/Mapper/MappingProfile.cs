@@ -26,7 +26,7 @@ namespace BL.Mapper
             ConfigureContentAndNotificationChannelMappings();
             ConfigurePricingMappings();
             ConfigureCartMappings();
-            ConfigureOfferReviewMappings();
+            
 			ConfigureCustomerMappings();
 		}
     }

@@ -5,6 +5,7 @@ using BL.Extensions;
 using BL.Service.Base;
 using Common.Enumerations.Review;
 using DAL.Contracts.Repositories;
+using DAL.Contracts.Repositories.Review;
 using DAL.Exceptions;
 using DAL.Models;
 using DAL.Repositories;
@@ -31,11 +32,10 @@ namespace BL.Service.Review
 		private readonly ILogger _logger;
 		public OfferReviewService(
 			IBaseMapper mapper,
-			ITableRepository<TbOfferReview> repository,
 			IOfferReviewRepository reviewRepo,
 			ILogger logger,
 			ITableRepository<TbOfferReview> tableRepository)
-			: base(repository, mapper)
+			: base(tableRepository, mapper)
 		{
 			_mapper = mapper;
 			_logger = logger;
@@ -365,6 +365,9 @@ namespace BL.Service.Review
 
 			return new PaginatedDataModel<OfferReviewDto>(itemsDto, items.TotalRecords);
 		}
+	
+		
+		
 		//public async Task<PaginatedDataModel<OfferReviewDto>> GetPaginatedReviewsAsync(OfferReviewSearchCriteriaModel criteriaModel, CancellationToken cancellationToken = default)
 		//{
 		//	if (criteriaModel == null)

@@ -25,8 +25,10 @@ using BL.Service.ShippingCompany;
 using BL.Service.Vendor;
 using BL.Services.Order;
 using DAL.Contracts.Repositories;
+using DAL.Contracts.Repositories.Review;
 using DAL.Repositories;
 using DAL.Repositories.DAL.Repositories;
+using DAL.Repositories.Review;
 
 namespace Api.Extensions
 {

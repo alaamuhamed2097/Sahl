@@ -5,7 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace DAL.Contracts.Repositories
+namespace DAL.Contracts.Repositories.Review
 {
 	public interface IOfferReviewRepository : ITableRepository<TbOfferReview>
 	{

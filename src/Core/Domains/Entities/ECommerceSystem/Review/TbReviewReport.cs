@@ -9,7 +9,7 @@ namespace Domains.Entities.ECommerceSystem.Review
         public Guid ReviewID { get; set; }
         public Guid CustomerID { get; set; }
 
-        public string Reason { get; set; } = null!; // ???: abusive, spam, fake
+        public ReviewReportReason Reason { get; set; }  
         public string? Details { get; set; }
         public ReviewReportStatus Status { get; set; } = ReviewReportStatus.Pending; // Pending, Reviewed, Resolved
 
