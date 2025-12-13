@@ -81,10 +81,11 @@ namespace Api.Extensions
 			// Review repositories
 			services.AddScoped<IOfferReviewRepository, OfferReviewRepository>();
 			//services.AddScoped<IReviewVoteRepository, ReviewVoteRepository>();
-			//services.AddScoped<IReviewReportRepository, ReviewReportRepository>();
+			services.AddScoped<IReviewReportRepository, ReviewReportRepository>();
 
 			// Review Services
 			services.AddScoped<IOfferReviewService, OfferReviewService>();
+			services.AddScoped<IReviewReportService, ReviewReportService>();
 
 
 			return services;

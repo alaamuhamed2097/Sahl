@@ -134,7 +134,7 @@ namespace Api.Controllers.v1.Review.OfferReview
 		[Authorize(Roles = nameof(UserRole.Customer))]
 		[ProducesResponseType(StatusCodes.Status200OK)]
 		[ProducesResponseType(StatusCodes.Status404NotFound)]
-		public async Task<IActionResult> DeleteReview([FromBody] Guid reviewId)
+		public async Task<IActionResult> DeleteReview([FromBody] OfferReviewDto reviewDto)
 		{
 			if (string.IsNullOrEmpty(UserId))
 				return Unauthorized(new ResponseModel<string>
@@ -143,7 +143,7 @@ namespace Api.Controllers.v1.Review.OfferReview
 					Message = NotifiAndAlertsResources.UnauthorizedAccess
 				});
 
-			var result = await _reviewService.DeleteReviewAsync(reviewId, GuidUserId);
+			var result = await _reviewService.DeleteReviewAsync(reviewDto.Id, GuidUserId);
 
 			if (!result)
 				return NotFound(new ResponseModel<string>
@@ -249,11 +249,11 @@ namespace Api.Controllers.v1.Review.OfferReview
 		/// API Version: 1.0+
 		/// Requires Admin role.
 		/// </remarks>
-		[HttpGet("approve/{reviewId}")]
+		[HttpPost("approve")]
 		[Authorize(Roles = nameof(UserRole.Admin))]
 		[ProducesResponseType(StatusCodes.Status200OK)]
 		[ProducesResponseType(StatusCodes.Status404NotFound)]
-		public async Task<IActionResult> ApproveReview(Guid reviewId)
+		public async Task<IActionResult> ApproveReview([FromBody] OfferReviewDto reviewDto)
 		{
 			if (string.IsNullOrEmpty(UserId))
 				return Unauthorized(new ResponseModel<string>
@@ -262,7 +262,7 @@ namespace Api.Controllers.v1.Review.OfferReview
 					Message = NotifiAndAlertsResources.UnauthorizedAccess
 				});
 
-			var result = await _reviewService.ApproveReviewAsync(reviewId, GuidUserId);
+			var result = await _reviewService.ApproveReviewAsync(reviewDto.Id, GuidUserId);
 
 			if (!result)
 				return NotFound(new ResponseModel<string>
@@ -286,11 +286,11 @@ namespace Api.Controllers.v1.Review.OfferReview
 		/// API Version: 1.0+
 		/// Requires Admin role.
 		/// </remarks>
-		[HttpGet("reject/{reviewId}")]
+		[HttpPost("reject")]
 		[Authorize(Roles = nameof(UserRole.Admin))]
 		[ProducesResponseType(StatusCodes.Status200OK)]
 		[ProducesResponseType(StatusCodes.Status404NotFound)]
-		public async Task<IActionResult> RejectReview(Guid reviewId)
+		public async Task<IActionResult> RejectReview([FromBody] OfferReviewDto reviewDto)
 		{
 			if (string.IsNullOrEmpty(UserId))
 				return Unauthorized(new ResponseModel<string>
@@ -299,7 +299,7 @@ namespace Api.Controllers.v1.Review.OfferReview
 					Message = NotifiAndAlertsResources.UnauthorizedAccess
 				});
 
-			var result = await _reviewService.RejectReviewAsync(reviewId, GuidUserId);
+			var result = await _reviewService.RejectReviewAsync(reviewDto.Id, GuidUserId);
 
 			if (!result)
 				return NotFound(new ResponseModel<string>
