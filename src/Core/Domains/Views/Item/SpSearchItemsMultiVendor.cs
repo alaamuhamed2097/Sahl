@@ -77,5 +77,21 @@ namespace Domains.Views.Item
         /// Example: "guid-id|vendor-id|699.99|999.99|15|1|2"
         /// </summary>
         public string BestOfferData { get; set; }
+
+        /// <summary>
+        /// Raw best offer data string from stored procedure
+        /// Will be parsed by BL layer
+        /// </summary>
+        public string BestOfferDataRaw { get; set; }
+
+        /// <summary>
+        /// Average price calculated from min and max
+        /// </summary>
+        public decimal AvgPrice { get; set; }
+
+        /// <summary>
+        /// Final relevance score for search ranking
+        /// </summary>
+        public double FinalScore { get; set; }
     }
 }

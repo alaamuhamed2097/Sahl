@@ -210,7 +210,7 @@ namespace BL.Service.ECommerce.Item
                 entity.ItemAttributes = null;
                 entity.ItemCombinations = null;
                 entity.ItemImages = null;
-                entity.VisibilityScope = ProductVisibilityStatus.PendingApproval;
+                entity.VisibilityScope = (int)ProductVisibilityStatus.PendingApproval;
                 var itemSaved = await _unitOfWork.TableRepository<TbItem>().SaveAsync(entity, userId);
                 var itemId = itemSaved.Id;
 

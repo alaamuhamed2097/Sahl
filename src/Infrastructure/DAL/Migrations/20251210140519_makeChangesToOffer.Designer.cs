@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DAL.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20251209131158_CreateVwItems")]
-    partial class CreateVwItems
+    [Migration("20251210140519_makeChangesToOffer")]
+    partial class makeChangesToOffer
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -58,15 +58,15 @@ namespace DAL.Migrations
                         .HasColumnType("datetime2(2)")
                         .HasDefaultValueSql("GETUTCDATE()");
 
-                    b.Property<int>("CurrentState")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValue(1);
-
                     b.Property<bool>("IsActive")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bit")
                         .HasDefaultValue(true);
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
 
                     b.Property<string>("Notes")
                         .HasMaxLength(500)
@@ -94,9 +94,9 @@ namespace DAL.Migrations
 
                     b.HasIndex("BrandId");
 
-                    b.HasIndex("CurrentState");
-
                     b.HasIndex("IsActive");
+
+                    b.HasIndex("IsDeleted");
 
                     b.HasIndex("VendorId");
 
@@ -128,11 +128,6 @@ namespace DAL.Migrations
                         .HasColumnType("datetime2(2)")
                         .HasDefaultValueSql("GETUTCDATE()");
 
-                    b.Property<int>("CurrentState")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValue(1);
-
                     b.Property<string>("DocumentName")
                         .IsRequired()
                         .HasMaxLength(200)
@@ -152,6 +147,11 @@ namespace DAL.Migrations
 
                     b.Property<long>("FileSize")
                         .HasColumnType("bigint");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
 
                     b.Property<bool>("IsVerified")
                         .ValueGeneratedOnAdd()
@@ -181,9 +181,9 @@ namespace DAL.Migrations
 
                     b.HasIndex("BrandRegistrationRequestId");
 
-                    b.HasIndex("CurrentState");
-
                     b.HasIndex("DocumentType");
+
+                    b.HasIndex("IsDeleted");
 
                     b.HasIndex("IsVerified");
 
@@ -231,11 +231,6 @@ namespace DAL.Migrations
                         .HasColumnType("datetime2(2)")
                         .HasDefaultValueSql("GETUTCDATE()");
 
-                    b.Property<int>("CurrentState")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValue(1);
-
                     b.Property<string>("DescriptionAr")
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
@@ -243,6 +238,11 @@ namespace DAL.Migrations
                     b.Property<string>("DescriptionEn")
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
 
                     b.Property<string>("OfficialWebsite")
                         .HasMaxLength(200)
@@ -290,7 +290,7 @@ namespace DAL.Migrations
 
                     b.HasIndex("BrandType");
 
-                    b.HasIndex("CurrentState");
+                    b.HasIndex("IsDeleted");
 
                     b.HasIndex("ReviewedByUserId");
 
@@ -333,16 +333,16 @@ namespace DAL.Migrations
                         .HasColumnType("datetime2(2)")
                         .HasDefaultValueSql("GETUTCDATE()");
 
-                    b.Property<int>("CurrentState")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValue(1);
-
                     b.Property<DateTime?>("ExpiresAt")
                         .HasColumnType("datetime2(2)");
 
                     b.Property<decimal>("FBMUsageScore")
                         .HasColumnType("decimal(5,2)");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
 
                     b.Property<Guid>("ItemCombinationId")
                         .HasColumnType("uniqueidentifier");
@@ -390,9 +390,9 @@ namespace DAL.Migrations
 
                     b.HasIndex("CalculatedAt");
 
-                    b.HasIndex("CurrentState");
-
                     b.HasIndex("ExpiresAt");
+
+                    b.HasIndex("IsDeleted");
 
                     b.HasIndex("ItemCombinationId");
 
@@ -424,15 +424,15 @@ namespace DAL.Migrations
                         .HasColumnType("datetime2(2)")
                         .HasDefaultValueSql("GETUTCDATE()");
 
-                    b.Property<int>("CurrentState")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValue(1);
-
                     b.Property<int>("DurationInMinutes")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasDefaultValue(0);
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
 
                     b.Property<Guid>("ItemId")
                         .HasColumnType("uniqueidentifier");
@@ -464,7 +464,7 @@ namespace DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CurrentState");
+                    b.HasIndex("IsDeleted");
 
                     b.HasIndex("ItemId");
 
@@ -529,10 +529,10 @@ namespace DAL.Migrations
                         .HasColumnType("datetime2(2)")
                         .HasDefaultValueSql("GETUTCDATE()");
 
-                    b.Property<int>("CurrentState")
+                    b.Property<bool>("IsDeleted")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValue(1);
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
 
                     b.Property<DateTime?>("LastUpdated")
                         .HasColumnType("datetime2(2)");
@@ -582,7 +582,7 @@ namespace DAL.Migrations
 
                     b.HasIndex("BuyBoxWinRate");
 
-                    b.HasIndex("CurrentState");
+                    b.HasIndex("IsDeleted");
 
                     b.HasIndex("OrderCompletionRate");
 
@@ -620,11 +620,6 @@ namespace DAL.Migrations
                         .HasColumnType("datetime2(2)")
                         .HasDefaultValueSql("GETUTCDATE()");
 
-                    b.Property<int>("CurrentState")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValue(1);
-
                     b.Property<string>("DescriptionAr")
                         .HasColumnType("nvarchar(max)");
 
@@ -646,6 +641,11 @@ namespace DAL.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bit")
                         .HasDefaultValue(true);
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
 
                     b.Property<bool>("IsFeatured")
                         .ValueGeneratedOnAdd()
@@ -717,11 +717,11 @@ namespace DAL.Migrations
 
                     b.HasIndex("CampaignType");
 
-                    b.HasIndex("CurrentState");
-
                     b.HasIndex("EndDate");
 
                     b.HasIndex("IsActive");
+
+                    b.HasIndex("IsDeleted");
 
                     b.HasIndex("IsFeatured");
 
@@ -763,11 +763,6 @@ namespace DAL.Migrations
                         .HasColumnType("datetime2(2)")
                         .HasDefaultValueSql("GETUTCDATE()");
 
-                    b.Property<int>("CurrentState")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValue(1);
-
                     b.Property<decimal>("DiscountPercentage")
                         .HasColumnType("decimal(5,2)");
 
@@ -780,6 +775,11 @@ namespace DAL.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bit")
                         .HasDefaultValue(true);
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
 
                     b.Property<Guid>("ItemId")
                         .HasColumnType("uniqueidentifier");
@@ -816,11 +816,11 @@ namespace DAL.Migrations
 
                     b.HasIndex("CampaignId");
 
-                    b.HasIndex("CurrentState");
-
                     b.HasIndex("DisplayOrder");
 
                     b.HasIndex("IsActive");
+
+                    b.HasIndex("IsDeleted");
 
                     b.HasIndex("ItemId");
 
@@ -861,12 +861,12 @@ namespace DAL.Migrations
                         .HasColumnType("datetime2(2)")
                         .HasDefaultValueSql("GETUTCDATE()");
 
-                    b.Property<int>("CurrentState")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValue(1);
-
                     b.Property<bool>("IsApproved")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<bool>("IsDeleted")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bit")
                         .HasDefaultValue(false);
@@ -910,9 +910,9 @@ namespace DAL.Migrations
 
                     b.HasIndex("CampaignId");
 
-                    b.HasIndex("CurrentState");
-
                     b.HasIndex("IsApproved");
+
+                    b.HasIndex("IsDeleted");
 
                     b.HasIndex("VendorId");
 
@@ -941,11 +941,6 @@ namespace DAL.Migrations
                         .HasColumnType("datetime2(2)")
                         .HasDefaultValueSql("GETUTCDATE()");
 
-                    b.Property<int>("CurrentState")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValue(1);
-
                     b.Property<string>("DescriptionAr")
                         .HasColumnType("nvarchar(max)");
 
@@ -967,6 +962,11 @@ namespace DAL.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bit")
                         .HasDefaultValue(true);
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
 
                     b.Property<int?>("MaxProducts")
                         .HasColumnType("int");
@@ -1014,11 +1014,11 @@ namespace DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CurrentState");
-
                     b.HasIndex("EndDate");
 
                     b.HasIndex("IsActive");
+
+                    b.HasIndex("IsDeleted");
 
                     b.HasIndex("StartDate");
 
@@ -1053,11 +1053,6 @@ namespace DAL.Migrations
                         .HasColumnType("datetime2(2)")
                         .HasDefaultValueSql("GETUTCDATE()");
 
-                    b.Property<int>("CurrentState")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValue(1);
-
                     b.Property<decimal>("DiscountPercentage")
                         .HasColumnType("decimal(5,2)");
 
@@ -1076,6 +1071,11 @@ namespace DAL.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bit")
                         .HasDefaultValue(true);
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
 
                     b.Property<Guid>("ItemId")
                         .HasColumnType("uniqueidentifier");
@@ -1104,13 +1104,13 @@ namespace DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CurrentState");
-
                     b.HasIndex("DisplayOrder");
 
                     b.HasIndex("FlashSaleId");
 
                     b.HasIndex("IsActive");
+
+                    b.HasIndex("IsDeleted");
 
                     b.HasIndex("ItemId");
 
@@ -1139,13 +1139,13 @@ namespace DAL.Migrations
                         .HasColumnType("datetime2(2)")
                         .HasDefaultValueSql("GETUTCDATE()");
 
-                    b.Property<int>("CurrentState")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValue(1);
-
                     b.Property<int>("FieldType")
                         .HasColumnType("int");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
 
                     b.Property<bool>("IsRangeFieldType")
                         .HasColumnType("bit");
@@ -1171,7 +1171,7 @@ namespace DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CurrentState");
+                    b.HasIndex("IsDeleted");
 
                     b.ToTable("TbAttributes");
                 });
@@ -1194,14 +1194,14 @@ namespace DAL.Migrations
                         .HasColumnType("datetime2(2)")
                         .HasDefaultValueSql("GETUTCDATE()");
 
-                    b.Property<int>("CurrentState")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValue(1);
-
                     b.Property<int>("DisplayOrder")
                         .HasColumnType("int")
                         .HasColumnName("DisplayOrder");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
 
                     b.Property<string>("TitleAr")
                         .IsRequired()
@@ -1223,7 +1223,7 @@ namespace DAL.Migrations
 
                     b.HasIndex("AttributeId");
 
-                    b.HasIndex("CurrentState");
+                    b.HasIndex("IsDeleted");
 
                     b.ToTable("TbAttributeOptions");
                 });
@@ -1243,11 +1243,6 @@ namespace DAL.Migrations
                         .HasColumnType("datetime2(2)")
                         .HasDefaultValueSql("GETUTCDATE()");
 
-                    b.Property<int>("CurrentState")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValue(1);
-
                     b.Property<string>("DescriptionAr")
                         .IsRequired()
                         .HasMaxLength(100)
@@ -1262,6 +1257,11 @@ namespace DAL.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasDefaultValue(0);
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
 
                     b.Property<bool>("IsPopular")
                         .HasColumnType("bit");
@@ -1304,9 +1304,9 @@ namespace DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CurrentState");
-
                     b.HasIndex("DisplayOrder");
+
+                    b.HasIndex("IsDeleted");
 
                     b.ToTable("TbBrands");
                 });
@@ -1326,11 +1326,6 @@ namespace DAL.Migrations
                         .HasColumnType("datetime2(2)")
                         .HasDefaultValueSql("GETUTCDATE()");
 
-                    b.Property<int>("CurrentState")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValue(1);
-
                     b.Property<int>("DisplayOrder")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
@@ -1343,6 +1338,11 @@ namespace DAL.Migrations
                     b.Property<string>("ImageUrl")
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
 
                     b.Property<bool>("IsFeaturedCategory")
                         .HasColumnType("bit");
@@ -1399,7 +1399,7 @@ namespace DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CurrentState");
+                    b.HasIndex("IsDeleted");
 
                     b.HasIndex("PricingSystemId");
 
@@ -1435,13 +1435,13 @@ namespace DAL.Migrations
                         .HasColumnType("datetime2(2)")
                         .HasDefaultValueSql("GETUTCDATE()");
 
-                    b.Property<int>("CurrentState")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValue(1);
-
                     b.Property<int>("DisplayOrder")
                         .HasColumnType("int");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
 
                     b.Property<bool>("IsRequired")
                         .HasColumnType("bit");
@@ -1464,7 +1464,7 @@ namespace DAL.Migrations
 
                     b.HasIndex("CategoryId");
 
-                    b.HasIndex("CurrentState");
+                    b.HasIndex("IsDeleted");
 
                     b.ToTable("TbCategoryAttributes");
                 });
@@ -1490,13 +1490,13 @@ namespace DAL.Migrations
                         .HasColumnType("datetime2(2)")
                         .HasDefaultValueSql("GETUTCDATE()");
 
-                    b.Property<int>("CurrentState")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValue(1);
-
                     b.Property<int>("DisplayOrder")
                         .HasColumnType("int");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
 
                     b.Property<int>("ModifierType")
                         .HasColumnType("int");
@@ -1522,7 +1522,7 @@ namespace DAL.Migrations
 
                     b.HasIndex("CombinationAttributeValueId");
 
-                    b.HasIndex("CurrentState");
+                    b.HasIndex("IsDeleted");
 
                     b.HasIndex("TbCombinationAttributesValueId");
 
@@ -1544,10 +1544,10 @@ namespace DAL.Migrations
                         .HasColumnType("datetime2(2)")
                         .HasDefaultValueSql("GETUTCDATE()");
 
-                    b.Property<int>("CurrentState")
+                    b.Property<bool>("IsDeleted")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValue(1);
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
 
                     b.Property<Guid>("ItemCombinationId")
                         .HasColumnType("uniqueidentifier");
@@ -1560,7 +1560,7 @@ namespace DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CurrentState");
+                    b.HasIndex("IsDeleted");
 
                     b.HasIndex("ItemCombinationId");
 
@@ -1588,10 +1588,10 @@ namespace DAL.Migrations
                         .HasColumnType("datetime2(2)")
                         .HasDefaultValueSql("GETUTCDATE()");
 
-                    b.Property<int>("CurrentState")
+                    b.Property<bool>("IsDeleted")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValue(1);
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
 
                     b.Property<Guid?>("UpdatedBy")
                         .HasColumnType("uniqueidentifier");
@@ -1610,7 +1610,7 @@ namespace DAL.Migrations
 
                     b.HasIndex("CombinationAttributeId");
 
-                    b.HasIndex("CurrentState");
+                    b.HasIndex("IsDeleted");
 
                     b.ToTable("TbCombinationAttributesValues");
                 });
@@ -1633,16 +1633,16 @@ namespace DAL.Migrations
                         .HasColumnType("datetime2(2)")
                         .HasDefaultValueSql("GETUTCDATE()");
 
-                    b.Property<int>("CurrentState")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValue(1);
-
                     b.Property<int>("DisplayOrder")
                         .HasColumnType("int");
 
                     b.Property<int>("FieldType")
                         .HasColumnType("int");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
 
                     b.Property<bool>("IsRangeFieldType")
                         .HasColumnType("bit");
@@ -1677,7 +1677,7 @@ namespace DAL.Migrations
 
                     b.HasIndex("AttributeId");
 
-                    b.HasIndex("CurrentState");
+                    b.HasIndex("IsDeleted");
 
                     b.HasIndex("ItemId");
 
@@ -1707,13 +1707,13 @@ namespace DAL.Migrations
                         .HasColumnType("datetime2(2)")
                         .HasDefaultValueSql("GETUTCDATE()");
 
-                    b.Property<int>("CurrentState")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValue(1);
-
                     b.Property<bool>("IsDefault")
                         .HasColumnType("bit");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
 
                     b.Property<Guid>("ItemId")
                         .HasColumnType("uniqueidentifier");
@@ -1734,7 +1734,7 @@ namespace DAL.Migrations
                     b.HasIndex("Barcode")
                         .IsUnique();
 
-                    b.HasIndex("CurrentState");
+                    b.HasIndex("IsDeleted");
 
                     b.HasIndex("ItemId");
 
@@ -1772,11 +1772,6 @@ namespace DAL.Migrations
                         .HasColumnType("datetime2(2)")
                         .HasDefaultValueSql("GETUTCDATE()");
 
-                    b.Property<int>("CurrentState")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValue(1);
-
                     b.Property<string>("DescriptionAr")
                         .IsRequired()
                         .HasMaxLength(500)
@@ -1786,6 +1781,11 @@ namespace DAL.Migrations
                         .IsRequired()
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
 
                     b.Property<decimal?>("MaximumPrice")
                         .HasColumnType("decimal(18,2)");
@@ -1822,6 +1822,12 @@ namespace DAL.Migrations
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
 
+                    b.Property<Guid?>("TbBrandId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("TbCategoryId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<string>("ThumbnailImage")
                         .IsRequired()
                         .HasMaxLength(200)
@@ -1854,7 +1860,9 @@ namespace DAL.Migrations
                         .HasColumnType("nvarchar(200)");
 
                     b.Property<int>("VisibilityScope")
-                        .HasColumnType("int");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(1);
 
                     b.HasKey("Id");
 
@@ -1862,11 +1870,15 @@ namespace DAL.Migrations
 
                     b.HasIndex("CategoryId");
 
-                    b.HasIndex("CurrentState");
+                    b.HasIndex("IsDeleted");
+
+                    b.HasIndex("TbBrandId");
+
+                    b.HasIndex("TbCategoryId");
 
                     b.HasIndex("UnitId");
 
-                    b.ToTable("TbItems");
+                    b.ToTable("TbItems", (string)null);
                 });
 
             modelBuilder.Entity("Domains.Entities.Catalog.Item.TbItemImage", b =>
@@ -1884,10 +1896,10 @@ namespace DAL.Migrations
                         .HasColumnType("datetime2(2)")
                         .HasDefaultValueSql("GETUTCDATE()");
 
-                    b.Property<int>("CurrentState")
+                    b.Property<bool>("IsDeleted")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValue(1);
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
 
                     b.Property<Guid>("ItemId")
                         .HasColumnType("uniqueidentifier");
@@ -1908,7 +1920,7 @@ namespace DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CurrentState");
+                    b.HasIndex("IsDeleted");
 
                     b.HasIndex("ItemId");
 
@@ -1932,10 +1944,10 @@ namespace DAL.Migrations
                         .HasColumnType("datetime2(2)")
                         .HasDefaultValueSql("GETUTCDATE()");
 
-                    b.Property<int>("CurrentState")
+                    b.Property<bool>("IsDeleted")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValue(1);
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
 
                     b.Property<string>("TitleAr")
                         .IsRequired()
@@ -1955,7 +1967,7 @@ namespace DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CurrentState");
+                    b.HasIndex("IsDeleted");
 
                     b.ToTable("TbUnits");
                 });
@@ -1978,13 +1990,13 @@ namespace DAL.Migrations
                         .HasColumnType("datetime2(2)")
                         .HasDefaultValueSql("GETUTCDATE()");
 
-                    b.Property<int>("CurrentState")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValue(1);
-
                     b.Property<Guid>("FromUnitId")
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
 
                     b.Property<Guid>("ToUnitId")
                         .HasColumnType("uniqueidentifier");
@@ -1997,9 +2009,9 @@ namespace DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CurrentState");
-
                     b.HasIndex("FromUnitId");
+
+                    b.HasIndex("IsDeleted");
 
                     b.HasIndex("ToUnitId");
 
@@ -2026,11 +2038,6 @@ namespace DAL.Migrations
                         .HasColumnType("datetime2(2)")
                         .HasDefaultValueSql("GETUTCDATE()");
 
-                    b.Property<int>("CurrentState")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValue(1);
-
                     b.Property<string>("DescriptionAr")
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
@@ -2048,6 +2055,11 @@ namespace DAL.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bit")
                         .HasDefaultValue(true);
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
 
                     b.Property<string>("TitleAr")
                         .IsRequired()
@@ -2070,11 +2082,11 @@ namespace DAL.Migrations
                     b.HasIndex("AreaCode")
                         .IsUnique();
 
-                    b.HasIndex("CurrentState");
-
                     b.HasIndex("DisplayOrder");
 
                     b.HasIndex("IsActive");
+
+                    b.HasIndex("IsDeleted");
 
                     b.ToTable("TbContentAreas", (string)null);
                 });
@@ -2097,11 +2109,6 @@ namespace DAL.Migrations
                         .HasColumnType("datetime2(2)")
                         .HasDefaultValueSql("GETUTCDATE()");
 
-                    b.Property<int>("CurrentState")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValue(1);
-
                     b.Property<string>("DescriptionAr")
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
@@ -2122,6 +2129,11 @@ namespace DAL.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bit")
                         .HasDefaultValue(true);
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
 
                     b.Property<string>("LinkUrl")
                         .HasMaxLength(500)
@@ -2161,11 +2173,11 @@ namespace DAL.Migrations
 
                     b.HasIndex("ContentAreaId");
 
-                    b.HasIndex("CurrentState");
-
                     b.HasIndex("DisplayOrder");
 
                     b.HasIndex("IsActive");
+
+                    b.HasIndex("IsDeleted");
 
                     b.HasIndex("MediaType");
 
@@ -2195,15 +2207,15 @@ namespace DAL.Migrations
                         .HasColumnType("datetime2(2)")
                         .HasDefaultValueSql("GETUTCDATE()");
 
-                    b.Property<int>("CurrentState")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValue(1);
-
                     b.Property<DateTime>("EndDateUTC")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime2(2)")
                         .HasDefaultValueSql("GETUTCDATE()");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
 
                     b.Property<DateTime>("StartDateUTC")
                         .ValueGeneratedOnAdd()
@@ -2245,7 +2257,7 @@ namespace DAL.Migrations
                     b.HasIndex("Code")
                         .IsUnique();
 
-                    b.HasIndex("CurrentState");
+                    b.HasIndex("IsDeleted");
 
                     b.ToTable("TbCouponCodes");
                 });
@@ -2275,11 +2287,6 @@ namespace DAL.Migrations
                         .HasColumnType("datetime2(2)")
                         .HasDefaultValueSql("GETUTCDATE()");
 
-                    b.Property<int>("CurrentState")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValue(1);
-
                     b.Property<decimal>("ExchangeRate")
                         .HasColumnType("decimal(18,6)");
 
@@ -2288,6 +2295,11 @@ namespace DAL.Migrations
 
                     b.Property<bool>("IsBaseCurrency")
                         .HasColumnType("bit");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
 
                     b.Property<string>("NameAr")
                         .IsRequired()
@@ -2315,11 +2327,11 @@ namespace DAL.Migrations
                     b.HasIndex("Code")
                         .IsUnique();
 
-                    b.HasIndex("CurrentState");
-
                     b.HasIndex("IsActive");
 
                     b.HasIndex("IsBaseCurrency");
+
+                    b.HasIndex("IsDeleted");
 
                     b.ToTable("TbCurrencies");
                 });
@@ -2339,11 +2351,6 @@ namespace DAL.Migrations
                         .HasColumnType("datetime2(2)")
                         .HasDefaultValueSql("GETUTCDATE()");
 
-                    b.Property<int>("CurrentState")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValue(1);
-
                     b.Property<DateTime?>("ExpiresAt")
                         .HasColumnType("datetime2");
 
@@ -2351,6 +2358,11 @@ namespace DAL.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bit")
                         .HasDefaultValue(true);
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
 
                     b.Property<Guid?>("UpdatedBy")
                         .HasColumnType("uniqueidentifier");
@@ -2364,7 +2376,7 @@ namespace DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CurrentState");
+                    b.HasIndex("IsDeleted");
 
                     b.HasIndex("UserId");
 
@@ -2386,15 +2398,15 @@ namespace DAL.Migrations
                         .HasColumnType("datetime2(2)")
                         .HasDefaultValueSql("GETUTCDATE()");
 
-                    b.Property<int>("CurrentState")
+                    b.Property<bool>("IsDeleted")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValue(1);
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
 
                     b.Property<Guid>("ItemId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("OfferId")
+                    b.Property<Guid>("OfferCombinationPricingId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<int>("Quantity")
@@ -2414,13 +2426,15 @@ namespace DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CurrentState");
+                    b.HasIndex("IsDeleted");
 
                     b.HasIndex("ItemId");
 
-                    b.HasIndex("OfferId");
+                    b.HasIndex("OfferCombinationPricingId");
 
                     b.HasIndex("ShoppingCartId");
+
+                    b.HasIndex("ShoppingCartId", "ItemId", "OfferCombinationPricingId");
 
                     b.ToTable("TbShoppingCartItems", (string)null);
                 });
@@ -2443,13 +2457,13 @@ namespace DAL.Migrations
                         .HasColumnType("datetime2(2)")
                         .HasDefaultValueSql("GETUTCDATE()");
 
-                    b.Property<int>("CurrentState")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValue(1);
-
                     b.Property<Guid>("CustomerID")
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
 
                     b.Property<Guid>("OrderID")
                         .HasColumnType("uniqueidentifier");
@@ -2482,9 +2496,9 @@ namespace DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CurrentState");
-
                     b.HasIndex("CustomerID");
+
+                    b.HasIndex("IsDeleted");
 
                     b.HasIndex("OrderID");
 
@@ -2517,11 +2531,6 @@ namespace DAL.Migrations
                         .HasColumnType("datetime2(2)")
                         .HasDefaultValueSql("GETUTCDATE()");
 
-                    b.Property<int>("CurrentState")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValue(1);
-
                     b.Property<Guid>("CustomerID")
                         .HasColumnType("uniqueidentifier");
 
@@ -2529,6 +2538,11 @@ namespace DAL.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasDefaultValue(0);
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
 
                     b.Property<bool>("IsEdited")
                         .HasColumnType("bit");
@@ -2575,9 +2589,9 @@ namespace DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CurrentState");
-
                     b.HasIndex("CustomerID");
+
+                    b.HasIndex("IsDeleted");
 
                     b.HasIndex("IsVerifiedPurchase");
 
@@ -2612,16 +2626,16 @@ namespace DAL.Migrations
                         .HasColumnType("datetime2(2)")
                         .HasDefaultValueSql("GETUTCDATE()");
 
-                    b.Property<int>("CurrentState")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValue(1);
-
                     b.Property<Guid>("CustomerID")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Details")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
 
                     b.Property<string>("Reason")
                         .IsRequired()
@@ -2645,9 +2659,9 @@ namespace DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CurrentState");
-
                     b.HasIndex("CustomerID");
+
+                    b.HasIndex("IsDeleted");
 
                     b.HasIndex("ReportID")
                         .IsUnique();
@@ -2674,13 +2688,13 @@ namespace DAL.Migrations
                         .HasColumnType("datetime2(2)")
                         .HasDefaultValueSql("GETUTCDATE()");
 
-                    b.Property<int>("CurrentState")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValue(1);
-
                     b.Property<Guid>("CustomerID")
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
 
                     b.Property<Guid>("ReviewID")
                         .HasColumnType("uniqueidentifier");
@@ -2696,9 +2710,9 @@ namespace DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CurrentState");
-
                     b.HasIndex("CustomerID");
+
+                    b.HasIndex("IsDeleted");
 
                     b.HasIndex("ReviewID");
 
@@ -2728,13 +2742,13 @@ namespace DAL.Migrations
                         .HasColumnType("datetime2(2)")
                         .HasDefaultValueSql("GETUTCDATE()");
 
-                    b.Property<int>("CurrentState")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValue(1);
-
                     b.Property<Guid>("CustomerID")
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
 
                     b.Property<Guid>("OrderItemID")
                         .HasColumnType("uniqueidentifier");
@@ -2773,9 +2787,9 @@ namespace DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CurrentState");
-
                     b.HasIndex("CustomerID");
+
+                    b.HasIndex("IsDeleted");
 
                     b.HasIndex("OrderItemID");
 
@@ -2817,11 +2831,6 @@ namespace DAL.Migrations
                         .HasColumnType("datetime2(2)")
                         .HasDefaultValueSql("GETUTCDATE()");
 
-                    b.Property<int>("CurrentState")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValue(1);
-
                     b.Property<string>("Details")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -2832,6 +2841,11 @@ namespace DAL.Migrations
                     b.Property<string>("Evidence")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
 
                     b.Property<Guid>("MessageID")
                         .HasColumnType("uniqueidentifier");
@@ -2895,10 +2909,10 @@ namespace DAL.Migrations
 
                     b.HasIndex("CreatedDateUtc");
 
-                    b.HasIndex("CurrentState");
-
                     b.HasIndex("DisputeNumber")
                         .IsUnique();
+
+                    b.HasIndex("IsDeleted");
 
                     b.HasIndex("OrderID");
 
@@ -2927,13 +2941,13 @@ namespace DAL.Migrations
                         .HasColumnType("datetime2(2)")
                         .HasDefaultValueSql("GETUTCDATE()");
 
-                    b.Property<int>("CurrentState")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValue(1);
-
                     b.Property<Guid>("DisputeID")
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
 
                     b.Property<string>("Message")
                         .IsRequired()
@@ -2963,9 +2977,9 @@ namespace DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CurrentState");
-
                     b.HasIndex("DisputeID");
+
+                    b.HasIndex("IsDeleted");
 
                     b.HasIndex("SenderID");
 
@@ -3005,14 +3019,14 @@ namespace DAL.Migrations
                         .HasColumnType("datetime2(2)")
                         .HasDefaultValueSql("GETUTCDATE()");
 
-                    b.Property<int>("CurrentState")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValue(1);
-
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
 
                     b.Property<string>("Priority")
                         .IsRequired()
@@ -3059,7 +3073,7 @@ namespace DAL.Migrations
 
                     b.HasIndex("CreatedDateUtc");
 
-                    b.HasIndex("CurrentState");
+                    b.HasIndex("IsDeleted");
 
                     b.HasIndex("Priority");
 
@@ -3091,13 +3105,13 @@ namespace DAL.Migrations
                         .HasColumnType("datetime2(2)")
                         .HasDefaultValueSql("GETUTCDATE()");
 
-                    b.Property<int>("CurrentState")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValue(1);
-
                     b.Property<string>("InternalNote")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
 
                     b.Property<string>("Message")
                         .IsRequired()
@@ -3130,7 +3144,7 @@ namespace DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CurrentState");
+                    b.HasIndex("IsDeleted");
 
                     b.HasIndex("SenderID");
 
@@ -3162,13 +3176,13 @@ namespace DAL.Migrations
                         .HasColumnType("datetime2(2)")
                         .HasDefaultValueSql("GETUTCDATE()");
 
-                    b.Property<int>("CurrentState")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValue(1);
-
                     b.Property<bool>("IsDefault")
                         .HasColumnType("bit");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
 
                     b.Property<string>("PhoneCode")
                         .IsRequired()
@@ -3197,7 +3211,7 @@ namespace DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CurrentState");
+                    b.HasIndex("IsDeleted");
 
                     b.HasIndex("UserId");
 
@@ -3231,13 +3245,13 @@ namespace DAL.Migrations
                         .HasColumnType("datetime2(2)")
                         .HasDefaultValueSql("GETUTCDATE()");
 
-                    b.Property<int>("CurrentState")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValue(1);
-
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
 
                     b.Property<string>("Notes")
                         .HasColumnType("nvarchar(max)");
@@ -3271,7 +3285,7 @@ namespace DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CurrentState");
+                    b.HasIndex("IsDeleted");
 
                     b.ToTable("TbVendors");
                 });
@@ -3291,10 +3305,10 @@ namespace DAL.Migrations
                         .HasColumnType("datetime2(2)")
                         .HasDefaultValueSql("GETUTCDATE()");
 
-                    b.Property<int>("CurrentState")
+                    b.Property<bool>("IsDeleted")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValue(1);
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
 
                     b.Property<Guid>("StateId")
                         .HasColumnType("uniqueidentifier");
@@ -3319,7 +3333,7 @@ namespace DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CurrentState");
+                    b.HasIndex("IsDeleted");
 
                     b.HasIndex("StateId");
 
@@ -3341,10 +3355,10 @@ namespace DAL.Migrations
                         .HasColumnType("datetime2(2)")
                         .HasDefaultValueSql("GETUTCDATE()");
 
-                    b.Property<int>("CurrentState")
+                    b.Property<bool>("IsDeleted")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValue(1);
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
 
                     b.Property<string>("TitleAr")
                         .IsRequired()
@@ -3366,7 +3380,7 @@ namespace DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CurrentState");
+                    b.HasIndex("IsDeleted");
 
                     b.ToTable("TbCountries");
                 });
@@ -3389,10 +3403,10 @@ namespace DAL.Migrations
                         .HasColumnType("datetime2(2)")
                         .HasDefaultValueSql("GETUTCDATE()");
 
-                    b.Property<int>("CurrentState")
+                    b.Property<bool>("IsDeleted")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValue(1);
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
 
                     b.Property<string>("TitleAr")
                         .IsRequired()
@@ -3414,7 +3428,7 @@ namespace DAL.Migrations
 
                     b.HasIndex("CountryId");
 
-                    b.HasIndex("CurrentState");
+                    b.HasIndex("IsDeleted");
 
                     b.ToTable("TbStates");
                 });
@@ -3442,15 +3456,15 @@ namespace DAL.Migrations
                         .HasColumnType("datetime2(2)")
                         .HasDefaultValueSql("GETUTCDATE()");
 
-                    b.Property<int>("CurrentState")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValue(1);
-
                     b.Property<decimal>("ExpiredPoints")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("decimal(18,2)")
                         .HasDefaultValue(0m);
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
 
                     b.Property<DateTime?>("LastTierUpgradeDate")
                         .HasColumnType("datetime2(2)");
@@ -3497,7 +3511,7 @@ namespace DAL.Migrations
 
                     b.HasIndex("AvailablePoints");
 
-                    b.HasIndex("CurrentState");
+                    b.HasIndex("IsDeleted");
 
                     b.HasIndex("LoyaltyTierId");
 
@@ -3522,11 +3536,6 @@ namespace DAL.Migrations
                         .HasColumnType("datetime2(2)")
                         .HasDefaultValueSql("GETUTCDATE()");
 
-                    b.Property<int>("CurrentState")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValue(1);
-
                     b.Property<Guid>("CustomerLoyaltyId")
                         .HasColumnType("uniqueidentifier");
 
@@ -3542,6 +3551,11 @@ namespace DAL.Migrations
 
                     b.Property<DateTime?>("ExpiryDate")
                         .HasColumnType("datetime2(2)");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
 
                     b.Property<bool>("IsExpired")
                         .ValueGeneratedOnAdd()
@@ -3577,9 +3591,9 @@ namespace DAL.Migrations
 
                     b.HasIndex("CreatedDateUtc");
 
-                    b.HasIndex("CurrentState");
-
                     b.HasIndex("CustomerLoyaltyId");
+
+                    b.HasIndex("IsDeleted");
 
                     b.HasIndex("IsExpired");
 
@@ -3622,11 +3636,6 @@ namespace DAL.Migrations
                         .HasColumnType("datetime2(2)")
                         .HasDefaultValueSql("GETUTCDATE()");
 
-                    b.Property<int>("CurrentState")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValue(1);
-
                     b.Property<string>("DescriptionAr")
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
@@ -3646,6 +3655,11 @@ namespace DAL.Migrations
                         .HasDefaultValue(false);
 
                     b.Property<bool>("HasPrioritySupport")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<bool>("IsDeleted")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bit")
                         .HasDefaultValue(false);
@@ -3679,9 +3693,9 @@ namespace DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CurrentState");
-
                     b.HasIndex("DisplayOrder");
+
+                    b.HasIndex("IsDeleted");
 
                     b.HasIndex("TierNameEn")
                         .IsUnique();
@@ -3714,11 +3728,6 @@ namespace DAL.Migrations
                         .HasColumnType("datetime2(2)")
                         .HasDefaultValueSql("GETUTCDATE()");
 
-                    b.Property<int>("CurrentState")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValue(1);
-
                     b.Property<int>("DisplayOrder")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
@@ -3738,6 +3747,11 @@ namespace DAL.Migrations
                         .HasColumnType("bit")
                         .HasDefaultValue(true);
 
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
                     b.Property<bool>("IsFeatured")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bit")
@@ -3754,13 +3768,13 @@ namespace DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CurrentState");
-
                     b.HasIndex("DisplayOrder");
 
                     b.HasIndex("HomepageBlockId");
 
                     b.HasIndex("IsActive");
+
+                    b.HasIndex("IsDeleted");
 
                     b.HasIndex("IsFeatured");
 
@@ -3810,11 +3824,6 @@ namespace DAL.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
-                    b.Property<int>("CurrentState")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValue(1);
-
                     b.Property<string>("DescriptionAr")
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
@@ -3830,6 +3839,11 @@ namespace DAL.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bit")
                         .HasDefaultValue(true);
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
 
                     b.Property<bool>("IsVisible")
                         .ValueGeneratedOnAdd()
@@ -3872,11 +3886,11 @@ namespace DAL.Migrations
 
                     b.HasIndex("BlockType");
 
-                    b.HasIndex("CurrentState");
-
                     b.HasIndex("DisplayOrder");
 
                     b.HasIndex("IsActive");
+
+                    b.HasIndex("IsDeleted");
 
                     b.HasIndex("IsVisible");
 
@@ -3902,11 +3916,6 @@ namespace DAL.Migrations
                         .HasColumnType("datetime2(2)")
                         .HasDefaultValueSql("GETUTCDATE()");
 
-                    b.Property<int>("CurrentState")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValue(1);
-
                     b.Property<string>("Data")
                         .HasColumnType("nvarchar(max)");
 
@@ -3918,6 +3927,11 @@ namespace DAL.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasDefaultValue(1);
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
 
                     b.Property<bool>("IsRead")
                         .ValueGeneratedOnAdd()
@@ -3964,7 +3978,7 @@ namespace DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CurrentState");
+                    b.HasIndex("IsDeleted");
 
                     b.HasIndex("IsRead");
 
@@ -3999,15 +4013,15 @@ namespace DAL.Migrations
                         .HasColumnType("datetime2(2)")
                         .HasDefaultValueSql("GETUTCDATE()");
 
-                    b.Property<int>("CurrentState")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValue(1);
-
                     b.Property<bool>("IsActive")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bit")
                         .HasDefaultValue(true);
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
 
                     b.Property<string>("TitleAr")
                         .IsRequired()
@@ -4029,9 +4043,9 @@ namespace DAL.Migrations
 
                     b.HasIndex("Channel");
 
-                    b.HasIndex("CurrentState");
-
                     b.HasIndex("IsActive");
+
+                    b.HasIndex("IsDeleted");
 
                     b.ToTable("TbNotificationChannels", (string)null);
                 });
@@ -4051,11 +4065,6 @@ namespace DAL.Migrations
                         .HasColumnType("datetime2(2)")
                         .HasDefaultValueSql("GETUTCDATE()");
 
-                    b.Property<int>("CurrentState")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValue(1);
-
                     b.Property<bool>("EnableEmail")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bit")
@@ -4072,6 +4081,11 @@ namespace DAL.Migrations
                         .HasDefaultValue(true);
 
                     b.Property<bool>("EnableSMS")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<bool>("IsDeleted")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bit")
                         .HasDefaultValue(false);
@@ -4094,7 +4108,7 @@ namespace DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CurrentState");
+                    b.HasIndex("IsDeleted");
 
                     b.HasIndex("NotificationType");
 
@@ -4123,10 +4137,10 @@ namespace DAL.Migrations
                         .HasColumnType("datetime2(2)")
                         .HasDefaultValueSql("GETUTCDATE()");
 
-                    b.Property<int>("CurrentState")
+                    b.Property<bool>("IsDeleted")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValue(1);
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
 
                     b.Property<bool>("IsRead")
                         .ValueGeneratedOnAdd()
@@ -4148,7 +4162,7 @@ namespace DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CurrentState");
+                    b.HasIndex("IsDeleted");
 
                     b.HasIndex("IsRead");
 
@@ -4179,10 +4193,10 @@ namespace DAL.Migrations
                         .HasColumnType("datetime2(2)")
                         .HasDefaultValueSql("GETUTCDATE()");
 
-                    b.Property<int>("CurrentState")
+                    b.Property<bool>("IsDeleted")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValue(1);
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
 
                     b.Property<bool>("IsVerifiedPurchase")
                         .HasColumnType("bit");
@@ -4205,7 +4219,7 @@ namespace DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CurrentState");
+                    b.HasIndex("IsDeleted");
 
                     b.HasIndex("OfferId");
 
@@ -4229,13 +4243,23 @@ namespace DAL.Migrations
                         .HasColumnType("datetime2(2)")
                         .HasDefaultValueSql("GETUTCDATE()");
 
-                    b.Property<int>("CurrentState")
+                    b.Property<int>("FulfillmentType")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
-                        .HasDefaultValue(1);
+                        .HasDefaultValue(2);
 
                     b.Property<int>("HandlingTimeInDays")
-                        .HasColumnType("int");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0);
+
+                    b.Property<bool>("IsBuyBoxWinner")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
 
                     b.Property<Guid>("ItemId")
                         .HasColumnType("uniqueidentifier");
@@ -4246,15 +4270,26 @@ namespace DAL.Migrations
                     b.Property<int>("StorgeLocation")
                         .HasColumnType("int");
 
+                    b.Property<Guid?>("TbOfferConditionId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("TbWarrantyId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<Guid?>("UpdatedBy")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime?>("UpdatedDateUtc")
                         .HasColumnType("datetime2(2)");
 
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<Guid>("VendorId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<decimal?>("VendorRatingForThisItem")
+                        .HasColumnType("decimal(3,2)");
+
+                    b.Property<int>("VendorSalesCountForThisItem")
+                        .HasColumnType("int");
 
                     b.Property<int>("VisibilityScope")
                         .HasColumnType("int");
@@ -4264,15 +4299,19 @@ namespace DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CurrentState");
+                    b.HasIndex("IsDeleted");
 
                     b.HasIndex("ItemId")
                         .HasDatabaseName("IX_TbOffers_ItemId");
 
                     b.HasIndex("OfferConditionId");
 
-                    b.HasIndex("UserId")
-                        .HasDatabaseName("IX_TbOffers_UserId");
+                    b.HasIndex("TbOfferConditionId");
+
+                    b.HasIndex("TbWarrantyId");
+
+                    b.HasIndex("VendorId")
+                        .HasDatabaseName("IX_TbOffers_VendorId");
 
                     b.HasIndex("WarrantyId")
                         .HasDatabaseName("IX_TbOffers_WarrantyId");
@@ -4288,7 +4327,9 @@ namespace DAL.Migrations
                         .HasDefaultValueSql("NEWID()");
 
                     b.Property<int>("AvailableQuantity")
-                        .HasColumnType("int");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0);
 
                     b.Property<decimal?>("CostPrice")
                         .HasColumnType("decimal(18,2)");
@@ -4301,40 +4342,49 @@ namespace DAL.Migrations
                         .HasColumnType("datetime2(2)")
                         .HasDefaultValueSql("GETUTCDATE()");
 
-                    b.Property<int>("CurrentState")
+                    b.Property<int>("DamagedQuantity")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
-                        .HasDefaultValue(1);
-
-                    b.Property<int>("DamagedQuantity")
-                        .HasColumnType("int");
+                        .HasDefaultValue(0);
 
                     b.Property<int>("InTransitQuantity")
-                        .HasColumnType("int");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0);
 
-                    b.Property<bool>("IsDefault")
-                        .HasColumnType("bit");
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
 
                     b.Property<Guid>("ItemCombinationId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime?>("LastPriceUpdate")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("datetime2(2)");
 
                     b.Property<DateTime?>("LastStockUpdate")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("datetime2(2)");
 
                     b.Property<int>("LockedQuantity")
-                        .HasColumnType("int");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0);
 
                     b.Property<int>("LowStockThreshold")
-                        .HasColumnType("int");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(5);
 
                     b.Property<int>("MaxOrderQuantity")
-                        .HasColumnType("int");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(999);
 
                     b.Property<int>("MinOrderQuantity")
-                        .HasColumnType("int");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(1);
 
                     b.Property<Guid>("OfferId")
                         .HasColumnType("uniqueidentifier");
@@ -4343,13 +4393,19 @@ namespace DAL.Migrations
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<int>("RefundedQuantity")
-                        .HasColumnType("int");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0);
 
                     b.Property<int>("ReservedQuantity")
-                        .HasColumnType("int");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0);
 
                     b.Property<int>("ReturnedQuantity")
-                        .HasColumnType("int");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0);
 
                     b.Property<decimal>("SalesPrice")
                         .HasColumnType("decimal(18,2)");
@@ -4368,7 +4424,7 @@ namespace DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CurrentState");
+                    b.HasIndex("IsDeleted");
 
                     b.HasIndex("ItemCombinationId");
 
@@ -4376,7 +4432,7 @@ namespace DAL.Migrations
 
                     b.HasIndex("TbItemCombinationId");
 
-                    b.ToTable("TbOfferCombinationPricings");
+                    b.ToTable("TbOfferCombinationPricing", (string)null);
                 });
 
             modelBuilder.Entity("Domains.Entities.Offer.TbOfferCondition", b =>
@@ -4394,10 +4450,10 @@ namespace DAL.Migrations
                         .HasColumnType("datetime2(2)")
                         .HasDefaultValueSql("GETUTCDATE()");
 
-                    b.Property<int>("CurrentState")
+                    b.Property<bool>("IsDeleted")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValue(1);
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
 
                     b.Property<bool>("IsNew")
                         .HasColumnType("bit");
@@ -4420,7 +4476,7 @@ namespace DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CurrentState");
+                    b.HasIndex("IsDeleted");
 
                     b.ToTable("TbOfferConditions");
                 });
@@ -4444,13 +4500,10 @@ namespace DAL.Migrations
                         .HasColumnType("datetime2(2)")
                         .HasDefaultValueSql("GETUTCDATE()");
 
-                    b.Property<int>("CurrentState")
+                    b.Property<bool>("IsDeleted")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValue(1);
-
-                    b.Property<Guid>("ItemCombinationId")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
 
                     b.Property<decimal>("NewPrice")
                         .HasColumnType("decimal(18,2)");
@@ -4460,9 +4513,6 @@ namespace DAL.Migrations
 
                     b.Property<decimal>("OldPrice")
                         .HasColumnType("decimal(18,2)");
-
-                    b.Property<Guid?>("TbItemCombinationId")
-                        .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid?>("TbOfferCombinationPricingId")
                         .HasColumnType("uniqueidentifier");
@@ -4475,13 +4525,9 @@ namespace DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CurrentState");
-
-                    b.HasIndex("ItemCombinationId");
+                    b.HasIndex("IsDeleted");
 
                     b.HasIndex("OfferCombinationPricingId");
-
-                    b.HasIndex("TbItemCombinationId");
 
                     b.HasIndex("TbOfferCombinationPricingId");
 
@@ -4507,10 +4553,10 @@ namespace DAL.Migrations
                         .HasColumnType("datetime2(2)")
                         .HasDefaultValueSql("GETUTCDATE()");
 
-                    b.Property<int>("CurrentState")
+                    b.Property<bool>("IsDeleted")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValue(1);
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
 
                     b.Property<decimal>("NewStatus")
                         .HasColumnType("decimal(18,2)");
@@ -4532,7 +4578,7 @@ namespace DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CurrentState");
+                    b.HasIndex("IsDeleted");
 
                     b.HasIndex("OfferId");
 
@@ -4548,9 +4594,6 @@ namespace DAL.Migrations
                         .HasColumnType("uniqueidentifier")
                         .HasDefaultValueSql("NEWID()");
 
-                    b.Property<Guid?>("CityId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<Guid>("CreatedBy")
                         .HasColumnType("uniqueidentifier");
 
@@ -4559,10 +4602,10 @@ namespace DAL.Migrations
                         .HasColumnType("datetime2(2)")
                         .HasDefaultValueSql("GETUTCDATE()");
 
-                    b.Property<int>("CurrentState")
+                    b.Property<bool>("IsDeleted")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValue(1);
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
 
                     b.Property<Guid?>("UpdatedBy")
                         .HasColumnType("uniqueidentifier");
@@ -4588,9 +4631,7 @@ namespace DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CityId");
-
-                    b.HasIndex("CurrentState");
+                    b.HasIndex("IsDeleted");
 
                     b.ToTable("TbWarranties", (string)null);
                 });
@@ -4613,17 +4654,17 @@ namespace DAL.Migrations
                         .HasColumnType("datetime2(2)")
                         .HasDefaultValueSql("GETUTCDATE()");
 
-                    b.Property<int>("CurrentState")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValue(1);
-
                     b.Property<Guid>("DeliveryAddressId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("InvoiceId")
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
 
                     b.Property<string>("Number")
                         .IsRequired()
@@ -4673,9 +4714,9 @@ namespace DAL.Migrations
                     b.HasIndex("CreatedDateUtc")
                         .HasDatabaseName("IX_Orders_Date");
 
-                    b.HasIndex("CurrentState");
-
                     b.HasIndex("DeliveryAddressId");
+
+                    b.HasIndex("IsDeleted");
 
                     b.HasIndex("Number")
                         .HasDatabaseName("IX_Orders_Number");
@@ -4708,13 +4749,13 @@ namespace DAL.Migrations
                         .HasColumnType("datetime2(2)")
                         .HasDefaultValueSql("GETUTCDATE()");
 
-                    b.Property<int>("CurrentState")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValue(1);
-
                     b.Property<decimal>("DiscountAmount")
                         .HasColumnType("decimal(18,2)");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
 
                     b.Property<Guid>("ItemId")
                         .HasColumnType("uniqueidentifier");
@@ -4751,7 +4792,7 @@ namespace DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CurrentState");
+                    b.HasIndex("IsDeleted");
 
                     b.HasIndex("ItemId")
                         .HasDatabaseName("IX_OrderDetails_ItemId");
@@ -4793,10 +4834,10 @@ namespace DAL.Migrations
                         .HasColumnType("datetime2(2)")
                         .HasDefaultValueSql("GETUTCDATE()");
 
-                    b.Property<int>("CurrentState")
+                    b.Property<bool>("IsDeleted")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValue(1);
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
 
                     b.Property<Guid>("OrderId")
                         .HasColumnType("uniqueidentifier");
@@ -4830,7 +4871,7 @@ namespace DAL.Migrations
 
                     b.HasIndex("AdminUserId");
 
-                    b.HasIndex("CurrentState");
+                    b.HasIndex("IsDeleted");
 
                     b.HasIndex("OrderId");
 
@@ -4860,10 +4901,10 @@ namespace DAL.Migrations
                         .HasColumnType("datetime2(2)")
                         .HasDefaultValueSql("GETUTCDATE()");
 
-                    b.Property<int>("CurrentState")
+                    b.Property<bool>("IsDeleted")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValue(1);
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
 
                     b.Property<int>("PageType")
                         .HasColumnType("int");
@@ -4894,7 +4935,7 @@ namespace DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CurrentState");
+                    b.HasIndex("IsDeleted");
 
                     b.ToTable("TbPages");
                 });
@@ -4920,10 +4961,10 @@ namespace DAL.Migrations
                     b.Property<Guid>("CurrencyId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("CurrentState")
+                    b.Property<bool>("IsDeleted")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValue(1);
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
 
                     b.Property<string>("Notes")
                         .HasColumnType("nvarchar(max)");
@@ -4963,7 +5004,7 @@ namespace DAL.Migrations
                     b.HasIndex("CurrencyId")
                         .HasDatabaseName("IX_OrderPayments_CurrencyId");
 
-                    b.HasIndex("CurrentState");
+                    b.HasIndex("IsDeleted");
 
                     b.HasIndex("OrderId")
                         .HasDatabaseName("IX_OrderPayments_OrderId");
@@ -4992,15 +5033,15 @@ namespace DAL.Migrations
                         .HasColumnType("datetime2(2)")
                         .HasDefaultValueSql("GETUTCDATE()");
 
-                    b.Property<int>("CurrentState")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValue(1);
-
                     b.Property<bool>("IsActive")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bit")
                         .HasDefaultValue(true);
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
 
                     b.Property<int>("MethodType")
                         .HasColumnType("int");
@@ -5027,9 +5068,9 @@ namespace DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CurrentState");
-
                     b.HasIndex("IsActive");
+
+                    b.HasIndex("IsDeleted");
 
                     b.HasIndex("MethodType");
 
@@ -5051,11 +5092,6 @@ namespace DAL.Migrations
                         .HasColumnType("datetime2(2)")
                         .HasDefaultValueSql("GETUTCDATE()");
 
-                    b.Property<int>("CurrentState")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValue(1);
-
                     b.Property<decimal?>("DiscountPercentage")
                         .HasColumnType("decimal(5,2)");
 
@@ -5069,6 +5105,11 @@ namespace DAL.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bit")
                         .HasDefaultValue(true);
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
 
                     b.Property<int>("MinimumOrderQuantity")
                         .ValueGeneratedOnAdd()
@@ -5092,9 +5133,9 @@ namespace DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CurrentState");
-
                     b.HasIndex("IsActive");
+
+                    b.HasIndex("IsDeleted");
 
                     b.HasIndex("OfferId");
 
@@ -5132,12 +5173,12 @@ namespace DAL.Migrations
                         .HasColumnType("datetime2(2)")
                         .HasDefaultValueSql("GETUTCDATE()");
 
-                    b.Property<int>("CurrentState")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValue(1);
-
                     b.Property<bool>("IsAutomatic")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<bool>("IsDeleted")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bit")
                         .HasDefaultValue(false);
@@ -5167,9 +5208,9 @@ namespace DAL.Migrations
 
                     b.HasIndex("ChangedByUserId");
 
-                    b.HasIndex("CurrentState");
-
                     b.HasIndex("IsAutomatic");
+
+                    b.HasIndex("IsDeleted");
 
                     b.HasIndex("OfferId");
 
@@ -5193,13 +5234,13 @@ namespace DAL.Migrations
                         .HasColumnType("datetime2(2)")
                         .HasDefaultValueSql("GETUTCDATE()");
 
-                    b.Property<int>("CurrentState")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValue(1);
-
                     b.Property<int>("DisplayOrder")
                         .HasColumnType("int");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
 
                     b.Property<bool>("IsEnabled")
                         .ValueGeneratedOnAdd()
@@ -5227,7 +5268,7 @@ namespace DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CurrentState");
+                    b.HasIndex("IsDeleted");
 
                     b.HasIndex("SystemType")
                         .IsUnique()
@@ -5241,8 +5282,8 @@ namespace DAL.Migrations
                             Id = new Guid("11111111-1111-1111-1111-111111111111"),
                             CreatedBy = new Guid("00000000-0000-0000-0000-000000000001"),
                             CreatedDateUtc = new DateTime(2025, 11, 30, 0, 0, 0, 0, DateTimeKind.Utc),
-                            CurrentState = 1,
                             DisplayOrder = 1,
+                            IsDeleted = false,
                             IsEnabled = true,
                             SystemNameAr = "التسعير القياسي",
                             SystemNameEn = "Standard Pricing",
@@ -5253,8 +5294,8 @@ namespace DAL.Migrations
                             Id = new Guid("22222222-2222-2222-2222-222222222222"),
                             CreatedBy = new Guid("00000000-0000-0000-0000-000000000001"),
                             CreatedDateUtc = new DateTime(2025, 11, 30, 0, 0, 0, 0, DateTimeKind.Utc),
-                            CurrentState = 1,
                             DisplayOrder = 2,
+                            IsDeleted = false,
                             IsEnabled = true,
                             SystemNameAr = "تسعير بالتركيبات",
                             SystemNameEn = "Combination Pricing",
@@ -5265,8 +5306,8 @@ namespace DAL.Migrations
                             Id = new Guid("33333333-3333-3333-3333-333333333333"),
                             CreatedBy = new Guid("00000000-0000-0000-0000-000000000001"),
                             CreatedDateUtc = new DateTime(2025, 11, 30, 0, 0, 0, 0, DateTimeKind.Utc),
-                            CurrentState = 1,
                             DisplayOrder = 3,
+                            IsDeleted = false,
                             IsEnabled = true,
                             SystemNameAr = "تسعير حسب الكمية",
                             SystemNameEn = "Quantity Pricing",
@@ -5277,8 +5318,8 @@ namespace DAL.Migrations
                             Id = new Guid("44444444-4444-4444-4444-444444444444"),
                             CreatedBy = new Guid("00000000-0000-0000-0000-000000000001"),
                             CreatedDateUtc = new DateTime(2025, 11, 30, 0, 0, 0, 0, DateTimeKind.Utc),
-                            CurrentState = 1,
                             DisplayOrder = 4,
+                            IsDeleted = false,
                             IsEnabled = true,
                             SystemNameAr = "التركيبات مع مستويات الكمية",
                             SystemNameEn = "Combination + Quantity",
@@ -5289,8 +5330,8 @@ namespace DAL.Migrations
                             Id = new Guid("55555555-5555-5555-5555-555555555555"),
                             CreatedBy = new Guid("00000000-0000-0000-0000-000000000001"),
                             CreatedDateUtc = new DateTime(2025, 11, 30, 0, 0, 0, 0, DateTimeKind.Utc),
-                            CurrentState = 1,
                             DisplayOrder = 5,
+                            IsDeleted = false,
                             IsEnabled = true,
                             SystemNameAr = "تسعير حسب شريحة العميل",
                             SystemNameEn = "Customer Segment Pricing",
@@ -5313,11 +5354,6 @@ namespace DAL.Migrations
                         .HasColumnType("datetime2(2)")
                         .HasDefaultValueSql("GETUTCDATE()");
 
-                    b.Property<int>("CurrentState")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValue(1);
-
                     b.Property<decimal>("DiscountPercentage")
                         .HasColumnType("decimal(5,2)");
 
@@ -5330,6 +5366,11 @@ namespace DAL.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bit")
                         .HasDefaultValue(true);
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
 
                     b.Property<int?>("MaximumQuantity")
                         .HasColumnType("int");
@@ -5351,9 +5392,9 @@ namespace DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CurrentState");
-
                     b.HasIndex("IsActive");
+
+                    b.HasIndex("IsDeleted");
 
                     b.HasIndex("MinimumQuantity");
 
@@ -5387,10 +5428,10 @@ namespace DAL.Migrations
                         .HasColumnType("datetime2(2)")
                         .HasDefaultValueSql("GETUTCDATE()");
 
-                    b.Property<int>("CurrentState")
+                    b.Property<bool>("IsDeleted")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValue(1);
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
 
                     b.Property<bool>("IsInternal")
                         .ValueGeneratedOnAdd()
@@ -5414,7 +5455,7 @@ namespace DAL.Migrations
 
                     b.HasIndex("CreatedDateUtc");
 
-                    b.HasIndex("CurrentState");
+                    b.HasIndex("IsDeleted");
 
                     b.HasIndex("SellerRequestId");
 
@@ -5440,11 +5481,6 @@ namespace DAL.Migrations
                         .HasColumnType("datetime2(2)")
                         .HasDefaultValueSql("GETUTCDATE()");
 
-                    b.Property<int>("CurrentState")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValue(1);
-
                     b.Property<string>("DocumentName")
                         .IsRequired()
                         .HasMaxLength(200)
@@ -5461,6 +5497,11 @@ namespace DAL.Migrations
 
                     b.Property<long>("FileSize")
                         .HasColumnType("bigint");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
 
                     b.Property<Guid>("SellerRequestId")
                         .HasColumnType("uniqueidentifier");
@@ -5479,9 +5520,9 @@ namespace DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CurrentState");
-
                     b.HasIndex("DocumentType");
+
+                    b.HasIndex("IsDeleted");
 
                     b.HasIndex("SellerRequestId");
 
@@ -5507,11 +5548,6 @@ namespace DAL.Migrations
                         .HasColumnType("datetime2(2)")
                         .HasDefaultValueSql("GETUTCDATE()");
 
-                    b.Property<int>("CurrentState")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValue(1);
-
                     b.Property<string>("DescriptionAr")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -5519,6 +5555,11 @@ namespace DAL.Migrations
                     b.Property<string>("DescriptionEn")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
 
                     b.Property<int>("Priority")
                         .ValueGeneratedOnAdd()
@@ -5575,7 +5616,7 @@ namespace DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CurrentState");
+                    b.HasIndex("IsDeleted");
 
                     b.HasIndex("Priority");
 
@@ -5624,11 +5665,6 @@ namespace DAL.Migrations
                         .HasColumnType("datetime2(2)")
                         .HasDefaultValueSql("GETUTCDATE()");
 
-                    b.Property<int>("CurrentState")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValue(1);
-
                     b.Property<string>("DescriptionAr")
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
@@ -5672,6 +5708,11 @@ namespace DAL.Migrations
                         .HasColumnType("bit")
                         .HasDefaultValue(true);
 
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
                     b.Property<int?>("MaximumOrders")
                         .HasColumnType("int");
 
@@ -5701,11 +5742,11 @@ namespace DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CurrentState");
-
                     b.HasIndex("DisplayOrder");
 
                     b.HasIndex("IsActive");
+
+                    b.HasIndex("IsDeleted");
 
                     b.HasIndex("TierCode")
                         .IsUnique();
@@ -5743,11 +5784,6 @@ namespace DAL.Migrations
                         .HasColumnType("datetime2(2)")
                         .HasDefaultValueSql("GETUTCDATE()");
 
-                    b.Property<int>("CurrentState")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValue(1);
-
                     b.Property<string>("DescriptionAr")
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
@@ -5770,6 +5806,11 @@ namespace DAL.Migrations
                         .HasColumnType("bit")
                         .HasDefaultValue(true);
 
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
                     b.Property<Guid>("SellerTierId")
                         .HasColumnType("uniqueidentifier");
 
@@ -5781,11 +5822,11 @@ namespace DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CurrentState");
-
                     b.HasIndex("DisplayOrder");
 
                     b.HasIndex("IsActive");
+
+                    b.HasIndex("IsDeleted");
 
                     b.HasIndex("SellerTierId");
 
@@ -5810,11 +5851,6 @@ namespace DAL.Migrations
                         .HasColumnType("datetime2(2)")
                         .HasDefaultValueSql("GETUTCDATE()");
 
-                    b.Property<int>("CurrentState")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValue(1);
-
                     b.Property<DateTime?>("EndedAt")
                         .HasColumnType("datetime2(2)");
 
@@ -5822,6 +5858,11 @@ namespace DAL.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bit")
                         .HasDefaultValue(true);
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
 
                     b.Property<string>("Notes")
                         .HasMaxLength(500)
@@ -5849,9 +5890,9 @@ namespace DAL.Migrations
 
                     b.HasIndex("AchievedAt");
 
-                    b.HasIndex("CurrentState");
-
                     b.HasIndex("EndedAt");
+
+                    b.HasIndex("IsDeleted");
 
                     b.HasIndex("SellerTierId");
 
@@ -5882,11 +5923,6 @@ namespace DAL.Migrations
                         .HasColumnType("datetime2(2)")
                         .HasDefaultValueSql("GETUTCDATE()");
 
-                    b.Property<int>("CurrentState")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValue(1);
-
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasMaxLength(100)
@@ -5899,6 +5935,11 @@ namespace DAL.Migrations
                     b.Property<string>("InstagramUrl")
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
 
                     b.Property<string>("LinkedInUrl")
                         .HasMaxLength(200)
@@ -5962,7 +6003,7 @@ namespace DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CurrentState");
+                    b.HasIndex("IsDeleted");
 
                     b.ToTable("TbSettings");
                 });
@@ -5985,16 +6026,16 @@ namespace DAL.Migrations
                         .HasColumnType("datetime2(2)")
                         .HasDefaultValueSql("GETUTCDATE()");
 
-                    b.Property<int>("CurrentState")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValue(1);
-
                     b.Property<DateTime?>("EstimatedDeliveryDate")
                         .HasColumnType("datetime2");
 
                     b.Property<int>("FulfillmentType")
                         .HasColumnType("int");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
 
                     b.Property<string>("Notes")
                         .HasColumnType("nvarchar(max)");
@@ -6009,7 +6050,7 @@ namespace DAL.Migrations
                     b.Property<int>("ShipmentStatus")
                         .HasColumnType("int");
 
-                    b.Property<Guid>("ShippingCompanyId")
+                    b.Property<Guid?>("ShippingCompanyId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<decimal>("ShippingCost")
@@ -6038,7 +6079,7 @@ namespace DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CurrentState");
+                    b.HasIndex("IsDeleted");
 
                     b.HasIndex("OrderId")
                         .HasDatabaseName("IX_OrderShipments_OrderId");
@@ -6074,10 +6115,10 @@ namespace DAL.Migrations
                         .HasColumnType("datetime2(2)")
                         .HasDefaultValueSql("GETUTCDATE()");
 
-                    b.Property<int>("CurrentState")
+                    b.Property<bool>("IsDeleted")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValue(1);
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
 
                     b.Property<Guid?>("ItemCombinationId")
                         .HasColumnType("uniqueidentifier");
@@ -6108,7 +6149,7 @@ namespace DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CurrentState");
+                    b.HasIndex("IsDeleted");
 
                     b.HasIndex("ItemId");
 
@@ -6134,10 +6175,10 @@ namespace DAL.Migrations
                         .HasColumnType("datetime2(2)")
                         .HasDefaultValueSql("GETUTCDATE()");
 
-                    b.Property<int>("CurrentState")
+                    b.Property<bool>("IsDeleted")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValue(1);
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
 
                     b.Property<string>("LogoImagePath")
                         .IsRequired()
@@ -6167,7 +6208,7 @@ namespace DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CurrentState");
+                    b.HasIndex("IsDeleted");
 
                     b.ToTable("TbShippingCompanies");
                 });
@@ -6190,16 +6231,16 @@ namespace DAL.Migrations
                         .HasColumnType("datetime2(2)")
                         .HasDefaultValueSql("GETUTCDATE()");
 
-                    b.Property<int>("CurrentState")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValue(1);
-
                     b.Property<int>("FulfillmentType")
                         .HasColumnType("int");
 
                     b.Property<bool>("IsCODSupported")
                         .HasColumnType("bit");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
 
                     b.Property<int>("MaximumEstimatedDays")
                         .HasColumnType("int");
@@ -6226,7 +6267,7 @@ namespace DAL.Migrations
 
                     b.HasIndex("CityId");
 
-                    b.HasIndex("CurrentState");
+                    b.HasIndex("IsDeleted");
 
                     b.HasIndex("OfferId");
 
@@ -6248,10 +6289,10 @@ namespace DAL.Migrations
                         .HasColumnType("datetime2(2)")
                         .HasDefaultValueSql("GETUTCDATE()");
 
-                    b.Property<int>("CurrentState")
+                    b.Property<bool>("IsDeleted")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValue(1);
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
 
                     b.Property<string>("TitleAr")
                         .IsRequired()
@@ -6271,7 +6312,7 @@ namespace DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CurrentState");
+                    b.HasIndex("IsDeleted");
 
                     b.ToTable("TbVideoProviders");
                 });
@@ -6291,11 +6332,6 @@ namespace DAL.Migrations
                         .HasColumnType("datetime2(2)")
                         .HasDefaultValueSql("GETUTCDATE()");
 
-                    b.Property<int>("CurrentState")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValue(1);
-
                     b.Property<bool>("HasActiveOffers")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bit")
@@ -6307,6 +6343,11 @@ namespace DAL.Migrations
                         .HasDefaultValue(false);
 
                     b.Property<bool>("IsApproved")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<bool>("IsDeleted")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bit")
                         .HasDefaultValue(false);
@@ -6331,7 +6372,7 @@ namespace DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CurrentState");
+                    b.HasIndex("IsDeleted");
 
                     b.HasIndex("ItemId")
                         .IsUnique();
@@ -6358,13 +6399,13 @@ namespace DAL.Migrations
                         .HasColumnType("datetime2(2)")
                         .HasDefaultValueSql("GETUTCDATE()");
 
-                    b.Property<int>("CurrentState")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValue(1);
-
                     b.Property<DateTime>("DetectedAt")
                         .HasColumnType("datetime2(2)");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
 
                     b.Property<bool>("IsResolved")
                         .ValueGeneratedOnAdd()
@@ -6402,9 +6443,9 @@ namespace DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CurrentState");
-
                     b.HasIndex("DetectedAt");
+
+                    b.HasIndex("IsDeleted");
 
                     b.HasIndex("IsResolved");
 
@@ -6444,12 +6485,12 @@ namespace DAL.Migrations
                         .HasColumnType("datetime2(2)")
                         .HasDefaultValueSql("GETUTCDATE()");
 
-                    b.Property<int>("CurrentState")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValue(1);
-
                     b.Property<bool>("IsAutomatic")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<bool>("IsDeleted")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bit")
                         .HasDefaultValue(false);
@@ -6475,9 +6516,9 @@ namespace DAL.Migrations
 
                     b.HasIndex("ChangedByUserId");
 
-                    b.HasIndex("CurrentState");
-
                     b.HasIndex("IsAutomatic");
+
+                    b.HasIndex("IsDeleted");
 
                     b.HasIndex("ItemId");
 
@@ -6512,10 +6553,10 @@ namespace DAL.Migrations
                     b.Property<Guid>("CurrencyId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("CurrentState")
+                    b.Property<bool>("IsDeleted")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValue(1);
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
 
                     b.Property<DateTime?>("LastTransactionDate")
                         .HasColumnType("datetime2(2)");
@@ -6553,7 +6594,7 @@ namespace DAL.Migrations
 
                     b.HasIndex("CurrencyId");
 
-                    b.HasIndex("CurrentState");
+                    b.HasIndex("IsDeleted");
 
                     b.HasIndex("UserId")
                         .IsUnique();
@@ -6584,15 +6625,15 @@ namespace DAL.Migrations
                     b.Property<Guid>("CurrencyId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("CurrentState")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValue(1);
-
                     b.Property<decimal>("CustomerWalletsTotal")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("decimal(18,2)")
                         .HasDefaultValue(0m);
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
 
                     b.Property<DateTime?>("LastReconciliationDate")
                         .HasColumnType("datetime2(2)");
@@ -6651,7 +6692,7 @@ namespace DAL.Migrations
 
                     b.HasIndex("CurrencyId");
 
-                    b.HasIndex("CurrentState");
+                    b.HasIndex("IsDeleted");
 
                     b.HasIndex("LastReconciliationDate");
 
@@ -6681,10 +6722,10 @@ namespace DAL.Migrations
                     b.Property<Guid>("CurrencyId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("CurrentState")
+                    b.Property<bool>("IsDeleted")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValue(1);
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
 
                     b.Property<DateTime?>("LastTransactionDate")
                         .HasColumnType("datetime2(2)");
@@ -6732,7 +6773,7 @@ namespace DAL.Migrations
 
                     b.HasIndex("CurrencyId");
 
-                    b.HasIndex("CurrentState");
+                    b.HasIndex("IsDeleted");
 
                     b.HasIndex("VendorId")
                         .IsUnique();
@@ -6764,11 +6805,6 @@ namespace DAL.Migrations
                         .HasColumnType("datetime2(2)")
                         .HasDefaultValueSql("GETUTCDATE()");
 
-                    b.Property<int>("CurrentState")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValue(1);
-
                     b.Property<Guid?>("CustomerWalletId")
                         .HasColumnType("uniqueidentifier");
 
@@ -6781,6 +6817,11 @@ namespace DAL.Migrations
                         .IsRequired()
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
 
                     b.Property<string>("Notes")
                         .HasMaxLength(500)
@@ -6821,9 +6862,9 @@ namespace DAL.Migrations
 
                     b.HasIndex("CreatedDateUtc");
 
-                    b.HasIndex("CurrentState");
-
                     b.HasIndex("CustomerWalletId");
+
+                    b.HasIndex("IsDeleted");
 
                     b.HasIndex("OrderId");
 
@@ -6867,17 +6908,17 @@ namespace DAL.Migrations
                         .HasColumnType("datetime2(2)")
                         .HasDefaultValueSql("GETUTCDATE()");
 
-                    b.Property<int>("CurrentState")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValue(1);
-
                     b.Property<bool>("IsActive")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bit")
                         .HasDefaultValue(true);
 
                     b.Property<bool>("IsDefaultPlatformWarehouse")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<bool>("IsDeleted")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bit")
                         .HasDefaultValue(false);
@@ -6911,11 +6952,11 @@ namespace DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CurrentState");
-
                     b.HasIndex("IsActive");
 
                     b.HasIndex("IsDefaultPlatformWarehouse");
+
+                    b.HasIndex("IsDeleted");
 
                     b.HasIndex("VendorId");
 
@@ -7194,17 +7235,79 @@ namespace DAL.Migrations
                     b.ToView("VwCategoryWithAttributes", (string)null);
                 });
 
-            modelBuilder.Entity("Domains.Views.Item.VwItem", b =>
+            modelBuilder.Entity("Domains.Views.Item.SpSearchItemsMultiVendor", b =>
                 {
-                    b.Property<string>("Barcode")
+                    b.Property<string>("BestOfferData")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid?>("ByBoxOfferId")
+                    b.Property<Guid?>("BrandId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid?>("ByBoxUserId")
+                    b.Property<Guid>("CategoryId")
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedDateUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("FastestDelivery")
+                        .HasColumnType("int");
+
+                    b.Property<Guid>("ItemId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<decimal>("MaxPrice")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal>("MinPrice")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("OffersCount")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ShortDescriptionAr")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ShortDescriptionEn")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ThumbnailImage")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("TitleAr")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("TitleEn")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.ToTable((string)null);
+
+                    b.ToView("SpSearchItemsMultiVendor", (string)null);
+                });
+
+            modelBuilder.Entity("Domains.Views.Item.VwItem", b =>
+                {
+                    b.Property<string>("Barcode")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal?>("BasePrice")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<Guid>("BrandId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("BrandTitleAr")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("BrandTitleEn")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<Guid>("CategoryId")
                         .HasColumnType("uniqueidentifier");
@@ -7215,9 +7318,6 @@ namespace DAL.Migrations
 
                     b.Property<string>("CategoryTitleEn")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("CombinationsJson")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("CreatedDateUtc")
@@ -7234,10 +7334,10 @@ namespace DAL.Migrations
                     b.Property<Guid>("Id")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<bool>("IsNewArrival")
-                        .HasColumnType("bit");
+                    b.Property<string>("Images")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("ItemImagesJson")
+                    b.Property<string>("ItemAttributes")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<decimal?>("MaximumPrice")
@@ -7246,8 +7346,19 @@ namespace DAL.Migrations
                     b.Property<decimal?>("MinimumPrice")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<string>("SKU")
+                    b.Property<string>("SEODescription")
                         .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("SEOMetaTags")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("SEOTitle")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("SKU")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ShortDescriptionAr")
@@ -7281,9 +7392,6 @@ namespace DAL.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("VideoLink")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<Guid?>("VideoProviderId")
                         .HasColumnType("uniqueidentifier");
 
@@ -7293,9 +7401,40 @@ namespace DAL.Migrations
                     b.Property<string>("VideoProviderTitleEn")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("VideoUrl")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("VisibilityScope")
+                        .HasColumnType("int");
+
                     b.ToTable((string)null);
 
                     b.ToView("VwItems", (string)null);
+                });
+
+            modelBuilder.Entity("Domains.Views.Item.VwItemBestPrice", b =>
+                {
+                    b.Property<decimal>("BestPrice")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("FastestDelivery")
+                        .HasColumnType("int");
+
+                    b.Property<int>("HasFreeShipping")
+                        .HasColumnType("int");
+
+                    b.Property<Guid>("ItemId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("TotalOffers")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TotalStock")
+                        .HasColumnType("int");
+
+                    b.ToTable((string)null);
+
+                    b.ToView("VwItemBestPrices", (string)null);
                 });
 
             modelBuilder.Entity("Domains.Views.Unit.VwUnitWithConversionsUnits", b =>
@@ -7852,25 +7991,33 @@ namespace DAL.Migrations
             modelBuilder.Entity("Domains.Entities.Catalog.Item.TbItem", b =>
                 {
                     b.HasOne("Domains.Entities.Catalog.Brand.TbBrand", "Brand")
-                        .WithMany("Items")
+                        .WithMany()
                         .HasForeignKey("BrandId")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired()
-                        .HasConstraintName("FK_TbItems_TbBrands_BrandId");
+                        .HasConstraintName("FK_TbItems_TbBrands");
 
                     b.HasOne("Domains.Entities.Catalog.Category.TbCategory", "Category")
-                        .WithMany("Items")
+                        .WithMany()
                         .HasForeignKey("CategoryId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired()
-                        .HasConstraintName("FK_TbItems_TbCategories_CategoryId");
+                        .HasConstraintName("FK_TbItems_TbCategories");
+
+                    b.HasOne("Domains.Entities.Catalog.Brand.TbBrand", null)
+                        .WithMany("Items")
+                        .HasForeignKey("TbBrandId");
+
+                    b.HasOne("Domains.Entities.Catalog.Category.TbCategory", null)
+                        .WithMany("Items")
+                        .HasForeignKey("TbCategoryId");
 
                     b.HasOne("Domains.Entities.Catalog.Unit.TbUnit", "Unit")
                         .WithMany()
                         .HasForeignKey("UnitId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired()
-                        .HasConstraintName("FK_TbItems_TbUnits_UnitId");
+                        .HasConstraintName("FK_TbItems_TbUnits");
 
                     b.Navigation("Brand");
 
@@ -7937,13 +8084,13 @@ namespace DAL.Migrations
                     b.HasOne("Domains.Entities.Catalog.Item.TbItem", "Item")
                         .WithMany()
                         .HasForeignKey("ItemId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("Domains.Entities.Offer.TbOffer", "Offer")
+                    b.HasOne("Domains.Entities.Offer.TbOfferCombinationPricing", "OfferCombinationPricing")
                         .WithMany()
-                        .HasForeignKey("OfferId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .HasForeignKey("OfferCombinationPricingId")
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("Domains.Entities.ECommerceSystem.Cart.TbShoppingCart", "ShoppingCart")
@@ -7954,7 +8101,7 @@ namespace DAL.Migrations
 
                     b.Navigation("Item");
 
-                    b.Navigation("Offer");
+                    b.Navigation("OfferCombinationPricing");
 
                     b.Navigation("ShoppingCart");
                 });
@@ -8159,28 +8306,41 @@ namespace DAL.Migrations
                         .WithMany()
                         .HasForeignKey("ItemId")
                         .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("FK_TbOffers_TbItems");
 
                     b.HasOne("Domains.Entities.Offer.TbOfferCondition", "OfferCondition")
-                        .WithMany("Offers")
-                        .HasForeignKey("OfferConditionId");
-
-                    b.HasOne("Domains.Identity.ApplicationUser", "User")
                         .WithMany()
-                        .HasForeignKey("UserId")
+                        .HasForeignKey("OfferConditionId")
+                        .OnDelete(DeleteBehavior.SetNull)
+                        .HasConstraintName("FK_TbOffers_TbOfferConditions");
+
+                    b.HasOne("Domains.Entities.Offer.TbOfferCondition", null)
+                        .WithMany("Offers")
+                        .HasForeignKey("TbOfferConditionId");
+
+                    b.HasOne("Domains.Entities.Offer.Warranty.TbWarranty", null)
+                        .WithMany("OffersList")
+                        .HasForeignKey("TbWarrantyId");
+
+                    b.HasOne("Domains.Entities.ECommerceSystem.Vendor.TbVendor", "Vendor")
+                        .WithMany()
+                        .HasForeignKey("VendorId")
                         .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("FK_TbOffers_TbVendors");
 
                     b.HasOne("Domains.Entities.Offer.Warranty.TbWarranty", "Warranty")
-                        .WithMany("OffersList")
+                        .WithMany()
                         .HasForeignKey("WarrantyId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.SetNull)
+                        .HasConstraintName("FK_TbOffers_TbWarranties");
 
                     b.Navigation("Item");
 
                     b.Navigation("OfferCondition");
 
-                    b.Navigation("User");
+                    b.Navigation("Vendor");
 
                     b.Navigation("Warranty");
                 });
@@ -8191,13 +8351,15 @@ namespace DAL.Migrations
                         .WithMany()
                         .HasForeignKey("ItemCombinationId")
                         .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("FK_TbOfferCombinationPricing_TbItemCombination");
 
                     b.HasOne("Domains.Entities.Offer.TbOffer", "Offer")
                         .WithMany("OfferCombinationPricings")
                         .HasForeignKey("OfferId")
                         .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("FK_TbOfferCombinationPricing_TbOffer");
 
                     b.HasOne("Domains.Entities.Catalog.Item.ItemAttributes.TbItemCombination", null)
                         .WithMany("OfferCombinationPricings")
@@ -8210,27 +8372,15 @@ namespace DAL.Migrations
 
             modelBuilder.Entity("Domains.Entities.Offer.TbOfferPriceHistory", b =>
                 {
-                    b.HasOne("Domains.Entities.Catalog.Item.ItemAttributes.TbItemCombination", "ItemCombination")
-                        .WithMany()
-                        .HasForeignKey("ItemCombinationId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
                     b.HasOne("Domains.Entities.Offer.TbOfferCombinationPricing", "OfferCombinationPricing")
                         .WithMany()
                         .HasForeignKey("OfferCombinationPricingId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("Domains.Entities.Catalog.Item.ItemAttributes.TbItemCombination", null)
-                        .WithMany("OfferPriceHistories")
-                        .HasForeignKey("TbItemCombinationId");
-
                     b.HasOne("Domains.Entities.Offer.TbOfferCombinationPricing", null)
                         .WithMany("OfferPriceHistories")
                         .HasForeignKey("TbOfferCombinationPricingId");
-
-                    b.Navigation("ItemCombination");
 
                     b.Navigation("OfferCombinationPricing");
                 });
@@ -8248,16 +8398,6 @@ namespace DAL.Migrations
                         .HasForeignKey("TbOfferId");
 
                     b.Navigation("Offer");
-                });
-
-            modelBuilder.Entity("Domains.Entities.Offer.Warranty.TbWarranty", b =>
-                {
-                    b.HasOne("Domains.Entities.Location.TbCity", "City")
-                        .WithMany()
-                        .HasForeignKey("CityId")
-                        .OnDelete(DeleteBehavior.SetNull);
-
-                    b.Navigation("City");
                 });
 
             modelBuilder.Entity("Domains.Entities.Order.TbOrder", b =>
@@ -8511,9 +8651,7 @@ namespace DAL.Migrations
 
                     b.HasOne("Domains.Entities.Shipping.TbShippingCompany", "ShippingCompany")
                         .WithMany()
-                        .HasForeignKey("ShippingCompanyId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("ShippingCompanyId");
 
                     b.HasOne("Domains.Entities.ECommerceSystem.Vendor.TbVendor", "Vendor")
                         .WithMany()
@@ -8834,8 +8972,6 @@ namespace DAL.Migrations
                     b.Navigation("CombinationAttributes");
 
                     b.Navigation("OfferCombinationPricings");
-
-                    b.Navigation("OfferPriceHistories");
                 });
 
             modelBuilder.Entity("Domains.Entities.Catalog.Item.TbItem", b =>

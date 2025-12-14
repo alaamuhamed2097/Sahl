@@ -221,9 +221,6 @@ namespace BL.GeneralService.UserManagement
                     throw new InvalidOperationException("Failed to add user to the specified role.");
                 }
 
-                _logger.Information("Customer {UserId} registered successfully with phone {Phone}",
-                    applicationUser.Id, normalizedPhone);
-
                 // Sign in the user automatically using email or username
                 var signInIdentifier = !string.IsNullOrWhiteSpace(userDto.Email)
                     ? userDto.Email

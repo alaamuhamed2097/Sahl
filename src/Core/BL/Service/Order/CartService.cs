@@ -42,7 +42,6 @@ namespace BL.Service.Order
 
                 if (cart == null || cart.Id == Guid.Empty)
                 {
-                    _logger.Information($"No cart found for user {customerId}, returning empty cart");
                     return new CartSummaryDto { CartId = Guid.Empty, Items = new() };
                 }
 
@@ -130,8 +129,6 @@ namespace BL.Service.Order
         {
             try
             {
-                _logger.Information($"Removing cart item {cartItemId}");
-
                 if (string.IsNullOrWhiteSpace(customerId))
                     throw new ArgumentException("User ID cannot be empty", nameof(customerId));
                 if (cartItemId == Guid.Empty)
@@ -144,8 +141,6 @@ namespace BL.Service.Order
                     _logger.Error($"Failed to remove cart item {cartItemId}");
                     throw new InvalidOperationException("Cart item not found");
                 }
-
-                _logger.Information($"Successfully removed cart item");
 
                 return await MapToCartSummaryDtoAsync(result.Cart);
             }
@@ -163,8 +158,6 @@ namespace BL.Service.Order
         {
             try
             {
-                _logger.Information($"Updating cart item {request.CartItemId}");
-
                 if (string.IsNullOrWhiteSpace(customerId))
                     throw new ArgumentException("Customer ID cannot be empty", nameof(customerId));
                 if (request == null)
@@ -209,8 +202,6 @@ namespace BL.Service.Order
                     _logger.Error($"Failed to update cart item");
                     throw new InvalidOperationException("Failed to update cart item");
                 }
-
-                _logger.Information($"Successfully updated cart item to quantity {request.Quantity}");
 
                 return await MapToCartSummaryDtoAsync(result.Cart);
             }
@@ -279,8 +270,6 @@ namespace BL.Service.Order
         {
             try
             {
-                _logger.Information($"Merging guest cart into user cart");
-
                 if (string.IsNullOrWhiteSpace(guestId))
                     throw new ArgumentException("Guest ID cannot be empty", nameof(guestId));
                 if (string.IsNullOrWhiteSpace(userId))
@@ -293,8 +282,6 @@ namespace BL.Service.Order
                     _logger.Error($"Failed to merge carts");
                     throw new InvalidOperationException("Failed to merge carts");
                 }
-
-                _logger.Information($"Successfully merged carts");
 
                 return await MapToCartSummaryDtoAsync(result.Cart);
             }

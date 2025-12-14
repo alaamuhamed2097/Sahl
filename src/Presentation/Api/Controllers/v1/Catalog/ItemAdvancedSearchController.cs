@@ -1,12 +1,10 @@
 using Api.Controllers.v1.Base;
-using Api.Extensions;
 using Asp.Versioning;
 using BL.Contracts.Service.ECommerce.Item;
-using Common.Enumerations.User;
+using Common.Models.Filters;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Resources;
-using Shared.DTOs.ECommerce.Item;
 using Shared.GeneralModels;
 
 namespace Api.Controllers.v1.Catalog
@@ -179,18 +177,6 @@ namespace Api.Controllers.v1.Catalog
             if (filter.MinItemRating.HasValue)
                 filter.MinItemRating = Math.Max(0, Math.Min(filter.MinItemRating.Value, 5));
 
-            if (filter.MinVendorRating.HasValue)
-                filter.MinVendorRating = Math.Max(0, Math.Min(filter.MinVendorRating.Value, 5));
-
-            // Validate delivery days
-            if (filter.MaxDeliveryDays.HasValue)
-                filter.MaxDeliveryDays = Math.Max(filter.MaxDeliveryDays.Value, 1);
-
-            // Validate quantity
-            if (filter.MinAvailableQuantity.HasValue)
-                filter.MinAvailableQuantity = Math.Max(filter.MinAvailableQuantity.Value, 0);
-
-            // Normalize sort by
             if (!string.IsNullOrWhiteSpace(filter.SortBy))
             {
                 filter.SortBy = filter.SortBy.ToLower().Trim();

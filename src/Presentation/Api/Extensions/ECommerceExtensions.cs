@@ -22,9 +22,6 @@ using BL.Service.Setting;
 using BL.Service.ShippingCompany;
 using BL.Service.Vendor;
 using BL.Services.Order;
-using DAL.Contracts.Repositories;
-using DAL.Repositories;
-using DAL.Repositories.DAL.Repositories;
 
 namespace Api.Extensions
 {
@@ -70,10 +67,6 @@ namespace Api.Extensions
             services.AddScoped<ICartService, CartService>();
             services.AddScoped<IOrderService, OrderService>();
 
-            // Register required repositories for CartService
-            services.AddScoped<ICartRepository, CartRepository>();
-            services.AddScoped<IOfferRepository, OfferRepository>();
-            services.AddScoped<IOrderRepository, OrderRepository>();
             return services;
         }
     }

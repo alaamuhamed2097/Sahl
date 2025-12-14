@@ -1862,16 +1862,7 @@ namespace DAL.Migrations
                     BrandId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     VisibilityScope = table.Column<int>(type: "int", nullable: false),
                     CurrentState = table.Column<int>(type: "int", nullable: false, defaultValue: 1),
-                    CreatedBy = table.Column<
-
-
-
-
-
-
-
-
-                        uid>(type: "uniqueidentifier", nullable: false),
+                    CreatedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     CreatedDateUtc = table.Column<DateTime>(type: "datetime2(2)", nullable: false, defaultValueSql: "GETUTCDATE()"),
                     UpdatedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     UpdatedDateUtc = table.Column<DateTime>(type: "datetime2(2)", nullable: true),

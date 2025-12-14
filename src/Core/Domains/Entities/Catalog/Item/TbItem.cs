@@ -1,5 +1,4 @@
-﻿using Common.Enumerations.Visibility;
-using Domains.Entities.Catalog.Brand;
+﻿using Domains.Entities.Catalog.Brand;
 using Domains.Entities.Catalog.Category;
 using Domains.Entities.Catalog.Item.ItemAttributes;
 using Domains.Entities.Catalog.Unit;
@@ -57,7 +56,9 @@ namespace Domains.Entities.Catalog.Item
 
         public Guid BrandId { get; set; }
 
-        public ProductVisibilityStatus VisibilityScope { get; set; } = ProductVisibilityStatus.Visible;
+        public int VisibilityScope { get; set; }// = ProductVisibilityStatus.Visible;
+
+        public bool IsActive { get; set; } = true;
 
         // Navigation Properties
         [ForeignKey("CategoryId")]

@@ -79,10 +79,37 @@ namespace Shared.DTOs.ECommerce.Item
         public int FastestDelivery { get; set; }
 
         /// <summary>
+        /// Final relevance score for search ranking
+        /// </summary>
+        public double FinalScore { get; set; }
+
+        /// <summary>
         /// Best offer details (aggregated from stored procedure)
         /// Usually the lowest price with fastest delivery
         /// </summary>
         public BestOfferDetailsDto BestOffer { get; set; }
+
+        /// <summary>
+        /// Badges for highlighting product characteristics (e.g., "New", "Best Seller")
+        /// </summary>
+        public List<string> Badges { get; set; } = new List<string>();
+
+        /// <summary>
+        /// Whether the item was created within the last 30 days
+        /// </summary>
+        public bool IsNew => CreatedDateUtc >= DateTime.UtcNow.AddDays(-30);
+
+        /// <summary>
+        /// Whether there are multiple offers available for this item
+        /// </summary>
+        public bool HasMultipleOffers => OffersCount > 1;
+
+        /// <summary>
+        /// Display-formatted price range with currency
+        /// </summary>
+        public string PriceDisplay => MinPrice == MaxPrice 
+            ? $"{MinPrice:N2} ????" 
+            : $"{MinPrice:N2} - {MaxPrice:N2} ????";
     }
 
     /// <summary>
@@ -188,5 +215,36 @@ namespace Shared.DTOs.ECommerce.Item
         /// Whether there's a next page
         /// </summary>
         public bool HasNextPage => PageNumber < TotalPages;
+    }
+
+    /// <summary>
+    /// Best price information for an item across all vendors
+    /// </summary>
+    public class ItemBestPriceDto
+    {
+        /// <summary>
+        /// Item unique identifier
+        /// </summary>
+        public Guid ItemId { get; set; }
+
+        /// <summary>
+        /// Best price available for this item
+        /// </summary>
+        public decimal BestPrice { get; set; }
+
+        /// <summary>
+        /// Total available stock across all vendors
+        /// </summary>
+        public int TotalStock { get; set; }
+
+        /// <summary>
+        /// Total number of offers for this item
+        /// </summary>
+        public int TotalOffers { get; set; }
+
+        /// <summary>
+        /// Buy Box winner ratio (0-1)
+        /// </summary>
+        public double BuyBoxRatio { get; set; }
     }
 }

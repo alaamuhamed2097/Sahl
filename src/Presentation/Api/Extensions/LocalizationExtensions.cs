@@ -18,7 +18,7 @@ namespace Api.Extensions
         public static IApplicationBuilder UseLocalizationConfiguration(this IApplicationBuilder app)
         {
             // Set default language
-            ResourceManager.CurrentLanguage = Language.Arabic;
+            ResourceManager.CurrentLanguage = Language.English;
 
             var supportedCultures = new List<CultureInfo>
             {
@@ -42,7 +42,7 @@ namespace Api.Extensions
             app.Use(async (context, next) =>
             {
                 var feature = context.Features.Get<IRequestCultureFeature>();
-                var culture = feature?.RequestCulture.Culture.Name ?? "ar-EG";
+                var culture = feature?.RequestCulture.Culture.Name ?? "en-US";
                 await next();
             });
 

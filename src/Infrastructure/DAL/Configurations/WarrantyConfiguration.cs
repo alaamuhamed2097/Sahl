@@ -1,9 +1,8 @@
 using Domains.Entities.Offer.Warranty;
-using Domains.Entities.Location;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace DAL.ApplicationContext.Configurations
+namespace DAL.Configurations
 {
     public class WarrantyConfiguration : IEntityTypeConfiguration<TbWarranty>
     {

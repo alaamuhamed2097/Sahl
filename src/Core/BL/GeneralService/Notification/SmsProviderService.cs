@@ -18,8 +18,6 @@ namespace Bl.GeneralService.Notification
         {
             try
             {
-                _logger.Information("Sending SMS to {PhoneNumber}", request.PhoneNumber);
-
                 // Implement your SMS provider logic here
                 // Example with Twilio, AWS SNS, or any other SMS service
 

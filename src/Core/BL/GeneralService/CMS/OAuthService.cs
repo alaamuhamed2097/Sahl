@@ -2,7 +2,6 @@ using BL.Contracts.GeneralService.CMS;
 using Common.Enumerations.User;
 using Google.Apis.Auth;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Resources;
 using Shared.DTOs.User.OAuth;
@@ -41,8 +40,6 @@ namespace BL.GeneralService.CMS
         {
             try
             {
-                _logger.Information("Processing Google sign-in with token");
-
                 // Verify Google ID token
                 var googleSettings = new GoogleJsonWebSignature.ValidationSettings()
                 {
@@ -115,8 +112,6 @@ namespace BL.GeneralService.CMS
 
                     // Add to Customer role
                     await _userManager.AddToRoleAsync(user, "Customer");
-
-                    _logger.Information("New customer created via Google OAuth: {UserId}", user.Id);
                 }
                 else if (user.UserState == UserStateType.Deleted)
                 {
@@ -157,8 +152,6 @@ namespace BL.GeneralService.CMS
                 // Create refresh token
                 var refreshToken = await _tokenService.CreateRefreshTokenAsync(user, clientType);
 
-                _logger.Information("Google sign-in successful for user: {UserId}", user.Id);
-
                 return new ServiceResult<SignInResult>
                 {
                     Success = true,
@@ -190,8 +183,6 @@ namespace BL.GeneralService.CMS
         {
             try
             {
-                _logger.Information("Processing Facebook sign-in");
-
                 // Verify Facebook token and get user info
                 var facebookUser = await GetFacebookUserAsync(accessToken);
                 if (facebookUser == null)
@@ -239,8 +230,6 @@ namespace BL.GeneralService.CMS
 
                     // Add to Customer role
                     await _userManager.AddToRoleAsync(user, "Customer");
-
-                    _logger.Information("New customer created via Facebook OAuth: {UserId}", user.Id);
                 }
                 else if (user.UserState == UserStateType.Deleted)
                 {
@@ -280,8 +269,6 @@ namespace BL.GeneralService.CMS
 
                 // Create refresh token
                 var refreshToken = await _tokenService.CreateRefreshTokenAsync(user, clientType);
-
-                _logger.Information("Facebook sign-in successful for user: {UserId}", user.Id);
 
                 return new ServiceResult<SignInResult>
                 {

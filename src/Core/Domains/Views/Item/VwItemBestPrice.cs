@@ -39,5 +39,10 @@ namespace Domains.Views.Item
         /// Fastest delivery time in days
         /// </summary>
         public int FastestDelivery { get; set; }
+
+        /// <summary>
+        /// Buy Box winner ratio (0-1)
+        /// </summary>
+        public decimal BuyBoxRatio { get; set; }
     }
 }

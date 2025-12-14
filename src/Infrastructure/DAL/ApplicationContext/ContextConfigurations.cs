@@ -1,33 +1,4 @@
-﻿usin
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    Common.Enumerations.User;
+﻿using Common.Enumerations.User;
 using Domains.Entities.Setting;
 using Domains.Identity;
 using Microsoft.AspNetCore.Identity;
