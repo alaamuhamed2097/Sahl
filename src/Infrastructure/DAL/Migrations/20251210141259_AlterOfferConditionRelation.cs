@@ -1,5 +1,4 @@
-﻿using System;
-using Microsoft.EntityFrameworkCore.Migrations;
+﻿using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
@@ -49,6 +48,8 @@ namespace DAL.Migrations
                 name: "IX_TbOfferCombinationPricings_OfferConditionId",
                 table: "TbOfferCombinationPricings",
                 column: "OfferConditionId");
+
+            migrationBuilder.Sql(@"delete from TbOfferCombinationPricings");
 
             migrationBuilder.AddForeignKey(
                 name: "FK_TbOfferCombinationPricings_TbOfferConditions_OfferConditionId",

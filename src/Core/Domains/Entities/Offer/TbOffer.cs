@@ -30,6 +30,7 @@ namespace Domains.Entities.Offer
 
         // Optional properties
         public Guid? WarrantyId { get; set; }
+        public Guid? OfferConditionId { get; set; }
 
 
         // Navigation properties
@@ -39,6 +40,8 @@ namespace Domains.Entities.Offer
         public virtual TbVendor Vendor { get; set; }
         [ForeignKey("WarrantyId")]
         public virtual TbWarranty Warranty { get; set; }
+        [ForeignKey("OfferConditionId")]
+        public virtual TbOfferCondition OfferCondition { get; set; }
 
         // Collections
         public virtual ICollection<TbUserOfferRating> UserOfferRatings { get; set; }
