@@ -12,8 +12,8 @@ namespace DAL.Contracts.Repositories.Review
 		//Task<TbReviewReport> CreateReportAsync(TbReviewReport report, CancellationToken cancellationToken = default);
 		Task<TbReviewReport?> GetByIdAsync(Guid reportId, CancellationToken cancellationToken = default);
 		Task<bool> IsAlreadyReportedAsync(Guid reviewId, Guid userId, CancellationToken cancellationToken = default);
-		Task<List<TbReviewReport>> GetReportsByReviewIdAsync(Guid reviewId, CancellationToken cancellationToken = default);
-		Task<List<TbReviewReport>> GetReportsByUserIdAsync(Guid userId, CancellationToken cancellationToken = default);
+		Task<IEnumerable<TbReviewReport>> GetReportsByReviewIdAsync(Guid reviewId, CancellationToken cancellationToken = default);
+		Task<IEnumerable<TbReviewReport>> GetReportsByUserIdAsync(Guid userId, CancellationToken cancellationToken = default);
 		//Task<PaginatedDataModel<TbReviewReport>> GetAllReportsAsync(
 		//	ReviewReportStatus? status = null,
 		//	int pageNumber = 1,

@@ -69,10 +69,11 @@ namespace Api.Extensions
             services.AddScoped<ICartService, CartService>();
             services.AddScoped<IOrderService, OrderService>();
 
-
             // Review Services
             services.AddScoped<IOfferReviewService, OfferReviewService>();
             services.AddScoped<IReviewReportService, ReviewReportService>();
+            services.AddScoped<IReviewVoteService, ReviewVoteService>();
+
             return services;
         }
     }

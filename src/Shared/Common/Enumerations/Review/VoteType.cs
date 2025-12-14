@@ -2,7 +2,7 @@ namespace Common.Enumerations.Review
 {
     public enum VoteType
     {
-        Helpful,
-        NotHelpful
+        Helpful=1 ,
+        NotHelpful=2
     }
 }

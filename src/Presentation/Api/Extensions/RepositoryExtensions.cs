@@ -29,11 +29,14 @@ namespace Api.Extensions
             services.AddScoped<IItemSearchRepository, ItemSearchRepository>();
 
 
+
             // Review repositories
             services.AddScoped<IOfferReviewRepository, OfferReviewRepository>();
             services.AddScoped<IReviewReportRepository, ReviewReportRepository>();
+			services.AddScoped<IReviewVoteRepository, ReviewVoteRepository>();
 
-            return services;
+
+			return services;
         }
     }
 }
