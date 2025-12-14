@@ -1170,7 +1170,7 @@ namespace DAL.Migrations
 
                     b.HasIndex("IsDeleted");
 
-                    b.ToTable("TbAttributes");
+                    b.ToTable("TbAttributes", (string)null);
                 });
 
             modelBuilder.Entity("Domains.Entities.Catalog.Attribute.TbAttributeOption", b =>
@@ -1222,7 +1222,7 @@ namespace DAL.Migrations
 
                     b.HasIndex("IsDeleted");
 
-                    b.ToTable("TbAttributeOptions");
+                    b.ToTable("TbAttributeOptions", (string)null);
                 });
 
             modelBuilder.Entity("Domains.Entities.Catalog.Brand.TbBrand", b =>
@@ -1305,7 +1305,7 @@ namespace DAL.Migrations
 
                     b.HasIndex("IsDeleted");
 
-                    b.ToTable("TbBrands");
+                    b.ToTable("TbBrands", (string)null);
                 });
 
             modelBuilder.Entity("Domains.Entities.Catalog.Category.TbCategory", b =>
@@ -1463,10 +1463,10 @@ namespace DAL.Migrations
 
                     b.HasIndex("IsDeleted");
 
-                    b.ToTable("TbCategoryAttributes");
+                    b.ToTable("TbCategoryAttributes", (string)null);
                 });
 
-            modelBuilder.Entity("Domains.Entities.Catalog.Item.ItemAttributes.TbCombinationAttributesValue", b =>
+            modelBuilder.Entity("Domains.Entities.Catalog.Item.ItemAttributes.TbAttributeValuePriceModifier", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -1475,6 +1475,63 @@ namespace DAL.Migrations
 
                     b.Property<Guid>("AttributeId")
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("CombinationAttributeValueId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("CreatedBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedDateUtc")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2(2)")
+                        .HasDefaultValueSql("GETUTCDATE()");
+
+                    b.Property<int>("DisplayOrder")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<int>("ModifierType")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("ModifierValue")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("PriceModifierCategory")
+                        .HasColumnType("int");
+
+                    b.Property<Guid?>("TbCombinationAttributesValueId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("UpdatedBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("UpdatedDateUtc")
+                        .HasColumnType("datetime2(2)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AttributeId");
+
+                    b.HasIndex("CombinationAttributeValueId");
+
+                    b.HasIndex("IsDeleted");
+
+                    b.HasIndex("TbCombinationAttributesValueId");
+
+                    b.ToTable("TbAttributeValuePriceModifiers", (string)null);
+                });
+
+            modelBuilder.Entity("Domains.Entities.Catalog.Item.ItemAttributes.TbCombinationAttribute", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier")
+                        .HasDefaultValueSql("NEWID()");
 
                     b.Property<Guid>("CreatedBy")
                         .HasColumnType("uniqueidentifier");
@@ -1498,6 +1555,47 @@ namespace DAL.Migrations
                     b.Property<DateTime?>("UpdatedDateUtc")
                         .HasColumnType("datetime2(2)");
 
+                    b.HasKey("Id");
+
+                    b.HasIndex("IsDeleted");
+
+                    b.HasIndex("ItemCombinationId");
+
+                    b.ToTable("TbCombinationAttributes", (string)null);
+                });
+
+            modelBuilder.Entity("Domains.Entities.Catalog.Item.ItemAttributes.TbCombinationAttributesValue", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier")
+                        .HasDefaultValueSql("NEWID()");
+
+                    b.Property<Guid>("AttributeId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("CombinationAttributeId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("CreatedBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedDateUtc")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2(2)")
+                        .HasDefaultValueSql("GETUTCDATE()");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<Guid?>("UpdatedBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("UpdatedDateUtc")
+                        .HasColumnType("datetime2(2)");
+
                     b.Property<string>("Value")
                         .IsRequired()
                         .HasMaxLength(200)
@@ -1507,11 +1605,11 @@ namespace DAL.Migrations
 
                     b.HasIndex("AttributeId");
 
+                    b.HasIndex("CombinationAttributeId");
+
                     b.HasIndex("IsDeleted");
 
-                    b.HasIndex("ItemCombinationId");
-
-                    b.ToTable("TbCombinationAttributesValues");
+                    b.ToTable("TbCombinationAttributesValues", (string)null);
                 });
 
             modelBuilder.Entity("Domains.Entities.Catalog.Item.ItemAttributes.TbItemAttribute", b =>
@@ -1580,7 +1678,7 @@ namespace DAL.Migrations
 
                     b.HasIndex("ItemId");
 
-                    b.ToTable("TbItemAttributes");
+                    b.ToTable("TbItemAttributes", (string)null);
                 });
 
             modelBuilder.Entity("Domains.Entities.Catalog.Item.ItemAttributes.TbItemCombination", b =>
@@ -1594,6 +1692,9 @@ namespace DAL.Migrations
                         .IsRequired()
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
+
+                    b.Property<decimal?>("BasePrice")
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<Guid>("CreatedBy")
                         .HasColumnType("uniqueidentifier");
@@ -1637,53 +1738,7 @@ namespace DAL.Migrations
                     b.HasIndex("SKU")
                         .IsUnique();
 
-                    b.ToTable("TbItemCombinations");
-                });
-
-            modelBuilder.Entity("Domains.Entities.Catalog.Item.ItemAttributes.TbItemCombinationImage", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier")
-                        .HasDefaultValueSql("NEWID()");
-
-                    b.Property<Guid>("CreatedBy")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("CreatedDateUtc")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2(2)")
-                        .HasDefaultValueSql("GETUTCDATE()");
-
-                    b.Property<bool>("IsDeleted")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(false);
-
-                    b.Property<Guid>("ItemCombinationId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<int>("Order")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Path")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
-
-                    b.Property<Guid?>("UpdatedBy")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime?>("UpdatedDateUtc")
-                        .HasColumnType("datetime2(2)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("IsDeleted");
-
-                    b.HasIndex("ItemCombinationId");
-
-                    b.ToTable("TbItemCombinationImages");
+                    b.ToTable("TbItemCombinations", (string)null);
                 });
 
             modelBuilder.Entity("Domains.Entities.Catalog.Item.TbItem", b =>
@@ -1848,7 +1903,7 @@ namespace DAL.Migrations
 
                     SqlServerIndexBuilderExtensions.IncludeProperties(b.HasIndex("IsActive", "IsDeleted"), new[] { "TitleAr", "TitleEn", "CategoryId", "BrandId", "ThumbnailImage", "CreatedDateUtc" });
 
-                    b.ToTable("TbItems");
+                    b.ToTable("TbItems", (string)null);
                 });
 
             modelBuilder.Entity("Domains.Entities.Catalog.Item.TbItemImage", b =>
@@ -1896,7 +1951,7 @@ namespace DAL.Migrations
 
                     b.HasIndex("Order");
 
-                    b.ToTable("TbItemImages");
+                    b.ToTable("TbItemImages", (string)null);
                 });
 
             modelBuilder.Entity("Domains.Entities.Catalog.Unit.TbUnit", b =>
@@ -1939,7 +1994,7 @@ namespace DAL.Migrations
 
                     b.HasIndex("IsDeleted");
 
-                    b.ToTable("TbUnits");
+                    b.ToTable("TbUnits", (string)null);
                 });
 
             modelBuilder.Entity("Domains.Entities.Catalog.Unit.TbUnitConversion", b =>
@@ -1985,7 +2040,7 @@ namespace DAL.Migrations
 
                     b.HasIndex("ToUnitId");
 
-                    b.ToTable("TbUnitConversions");
+                    b.ToTable("TbUnitConversions", (string)null);
                 });
 
             modelBuilder.Entity("Domains.Entities.Content.TbContentArea", b =>
@@ -2229,7 +2284,7 @@ namespace DAL.Migrations
 
                     b.HasIndex("IsDeleted");
 
-                    b.ToTable("TbCouponCodes");
+                    b.ToTable("TbCouponCodes", (string)null);
                 });
 
             modelBuilder.Entity("Domains.Entities.Currency.TbCurrency", b =>
@@ -2303,7 +2358,7 @@ namespace DAL.Migrations
 
                     b.HasIndex("IsDeleted");
 
-                    b.ToTable("TbCurrencies");
+                    b.ToTable("TbCurrencies", (string)null);
                 });
 
             modelBuilder.Entity("Domains.Entities.ECommerceSystem.Cart.TbShoppingCart", b =>
@@ -2409,43 +2464,6 @@ namespace DAL.Migrations
                     b.ToTable("TbShoppingCartItems", (string)null);
                 });
 
-            modelBuilder.Entity("Domains.Entities.ECommerceSystem.Customer.TbCustomer", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier")
-                        .HasDefaultValueSql("NEWID()");
-
-                    b.Property<Guid>("CreatedBy")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("CreatedDateUtc")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2(2)")
-                        .HasDefaultValueSql("GETUTCDATE()");
-
-                    b.Property<bool>("IsDeleted")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(false);
-
-                    b.Property<Guid?>("UpdatedBy")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime?>("UpdatedDateUtc")
-                        .HasColumnType("datetime2(2)");
-
-                    b.Property<string>("UserId")
-                        .HasMaxLength(250)
-                        .HasColumnType("nvarchar(250)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("IsDeleted");
-
-                    b.ToTable("TbCustomer", (string)null);
-                });
-
             modelBuilder.Entity("Domains.Entities.ECommerceSystem.Review.TbDeliveryReview", b =>
                 {
                     b.Property<Guid>("Id")
@@ -2520,10 +2538,10 @@ namespace DAL.Migrations
 
                     b.HasIndex("OrderID", "CustomerID");
 
-                    b.ToTable("TbDeliveryReviews");
+                    b.ToTable("TbDeliveryReviews", (string)null);
                 });
 
-            modelBuilder.Entity("Domains.Entities.ECommerceSystem.Review.TbOfferReview", b =>
+            modelBuilder.Entity("Domains.Entities.ECommerceSystem.Review.TbProductReview", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -2564,10 +2582,10 @@ namespace DAL.Migrations
                         .HasColumnType("int")
                         .HasDefaultValue(0);
 
-                    b.Property<Guid>("OfferID")
+                    b.Property<Guid?>("OrderItemID")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid?>("OrderItemID")
+                    b.Property<Guid>("ProductID")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<decimal>("Rating")
@@ -2602,9 +2620,9 @@ namespace DAL.Migrations
 
                     b.HasIndex("IsVerifiedPurchase");
 
-                    b.HasIndex("OfferID");
-
                     b.HasIndex("OrderItemID");
+
+                    b.HasIndex("ProductID");
 
                     b.HasIndex("Rating");
 
@@ -2613,9 +2631,9 @@ namespace DAL.Migrations
 
                     b.HasIndex("Status");
 
-                    b.HasIndex("OfferID", "CustomerID");
+                    b.HasIndex("ProductID", "CustomerID");
 
-                    b.ToTable("TbOfferReviews");
+                    b.ToTable("TbProductReviews", (string)null);
                 });
 
             modelBuilder.Entity("Domains.Entities.ECommerceSystem.Review.TbReviewReport", b =>
@@ -2644,9 +2662,10 @@ namespace DAL.Migrations
                         .HasColumnType("bit")
                         .HasDefaultValue(false);
 
-                    b.Property<int>("Reason")
+                    b.Property<string>("Reason")
+                        .IsRequired()
                         .HasMaxLength(100)
-                        .HasColumnType("int");
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<Guid>("ReportID")
                         .HasColumnType("uniqueidentifier");
@@ -2676,7 +2695,7 @@ namespace DAL.Migrations
 
                     b.HasIndex("Status");
 
-                    b.ToTable("TbReviewReports");
+                    b.ToTable("TbReviewReports", (string)null);
                 });
 
             modelBuilder.Entity("Domains.Entities.ECommerceSystem.Review.TbReviewVote", b =>
@@ -2727,7 +2746,7 @@ namespace DAL.Migrations
                     b.HasIndex("ReviewID", "CustomerID", "VoteType")
                         .IsUnique();
 
-                    b.ToTable("TbReviewVotes");
+                    b.ToTable("TbReviewVotes", (string)null);
                 });
 
             modelBuilder.Entity("Domains.Entities.ECommerceSystem.Review.TbSalesReview", b =>
@@ -2812,7 +2831,7 @@ namespace DAL.Migrations
 
                     b.HasIndex("VendorID", "CustomerID");
 
-                    b.ToTable("TbSalesReviews");
+                    b.ToTable("TbSalesReviews", (string)null);
                 });
 
             modelBuilder.Entity("Domains.Entities.ECommerceSystem.Support.TbDispute", b =>
@@ -2926,7 +2945,7 @@ namespace DAL.Migrations
 
                     b.HasIndex("Status");
 
-                    b.ToTable("TbDisputes");
+                    b.ToTable("TbDisputes", (string)null);
                 });
 
             modelBuilder.Entity("Domains.Entities.ECommerceSystem.Support.TbDisputeMessage", b =>
@@ -2994,7 +3013,7 @@ namespace DAL.Migrations
                     b.HasIndex("DisputeID", "MessageNumber")
                         .IsUnique();
 
-                    b.ToTable("TbDisputeMessages");
+                    b.ToTable("TbDisputeMessages", (string)null);
                 });
 
             modelBuilder.Entity("Domains.Entities.ECommerceSystem.Support.TbSupportTicket", b =>
@@ -3090,7 +3109,7 @@ namespace DAL.Migrations
 
                     b.HasIndex("UserID");
 
-                    b.ToTable("TbSupportTickets");
+                    b.ToTable("TbSupportTickets", (string)null);
                 });
 
             modelBuilder.Entity("Domains.Entities.ECommerceSystem.Support.TbSupportTicketMessage", b =>
@@ -3161,7 +3180,7 @@ namespace DAL.Migrations
                     b.HasIndex("TicketID", "MessageNumber")
                         .IsUnique();
 
-                    b.ToTable("TbSupportTicketMessages");
+                    b.ToTable("TbSupportTicketMessages", (string)null);
                 });
 
             modelBuilder.Entity("Domains.Entities.ECommerceSystem.TbCustomerAddress", b =>
@@ -3221,7 +3240,7 @@ namespace DAL.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("TbCustomerAddresses");
+                    b.ToTable("TbCustomerAddresses", (string)null);
                 });
 
             modelBuilder.Entity("Domains.Entities.ECommerceSystem.Vendor.TbVendor", b =>
@@ -3278,8 +3297,7 @@ namespace DAL.Migrations
                         .HasColumnType("datetime2(2)");
 
                     b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("VATRegistered")
                         .HasColumnType("bit");
@@ -3294,9 +3312,7 @@ namespace DAL.Migrations
 
                     b.HasIndex("IsDeleted");
 
-                    b.HasIndex("UserId");
-
-                    b.ToTable("TbVendors");
+                    b.ToTable("TbVendors", (string)null);
                 });
 
             modelBuilder.Entity("Domains.Entities.Location.TbCity", b =>
@@ -3346,7 +3362,7 @@ namespace DAL.Migrations
 
                     b.HasIndex("StateId");
 
-                    b.ToTable("TbCities");
+                    b.ToTable("TbCities", (string)null);
                 });
 
             modelBuilder.Entity("Domains.Entities.Location.TbCountry", b =>
@@ -3391,7 +3407,7 @@ namespace DAL.Migrations
 
                     b.HasIndex("IsDeleted");
 
-                    b.ToTable("TbCountries");
+                    b.ToTable("TbCountries", (string)null);
                 });
 
             modelBuilder.Entity("Domains.Entities.Location.TbState", b =>
@@ -3439,7 +3455,7 @@ namespace DAL.Migrations
 
                     b.HasIndex("IsDeleted");
 
-                    b.ToTable("TbStates");
+                    b.ToTable("TbStates", (string)null);
                 });
 
             modelBuilder.Entity("Domains.Entities.Loyalty.TbCustomerLoyalty", b =>
@@ -4179,7 +4195,7 @@ namespace DAL.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("TbUserNotifications");
+                    b.ToTable("TbUserNotifications", (string)null);
                 });
 
             modelBuilder.Entity("Domains.Entities.Offer.Rating.TbUserOfferRating", b =>
@@ -4234,7 +4250,7 @@ namespace DAL.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("TbUserOfferRatings");
+                    b.ToTable("TbUserOfferRatings", (string)null);
                 });
 
             modelBuilder.Entity("Domains.Entities.Offer.TbOffer", b =>
@@ -4368,6 +4384,9 @@ namespace DAL.Migrations
                     b.Property<Guid>("ItemCombinationId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<DateTime?>("LastPriceUpdate")
+                        .HasColumnType("datetime2");
+
                     b.Property<DateTime?>("LastStockUpdate")
                         .HasColumnType("datetime2");
 
@@ -4382,9 +4401,6 @@ namespace DAL.Migrations
 
                     b.Property<int>("MinOrderQuantity")
                         .HasColumnType("int");
-
-                    b.Property<Guid>("OfferConditionId")
-                        .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid>("OfferId")
                         .HasColumnType("uniqueidentifier");
@@ -4421,8 +4437,6 @@ namespace DAL.Migrations
                     b.HasIndex("IsDeleted");
 
                     b.HasIndex("ItemCombinationId");
-
-                    b.HasIndex("OfferConditionId");
 
                     b.HasIndex("OfferId");
 
@@ -4490,7 +4504,7 @@ namespace DAL.Migrations
 
                     b.HasIndex("IsDeleted");
 
-                    b.ToTable("TbOfferConditions");
+                    b.ToTable("TbOfferConditions", (string)null);
                 });
 
             modelBuilder.Entity("Domains.Entities.Offer.TbOfferPriceHistory", b =>
@@ -4543,7 +4557,7 @@ namespace DAL.Migrations
 
                     b.HasIndex("TbOfferCombinationPricingId");
 
-                    b.ToTable("TbOfferPriceHistories");
+                    b.ToTable("TbOfferPriceHistories", (string)null);
                 });
 
             modelBuilder.Entity("Domains.Entities.Offer.TbOfferStatusHistory", b =>
@@ -4596,7 +4610,7 @@ namespace DAL.Migrations
 
                     b.HasIndex("TbOfferId");
 
-                    b.ToTable("TbOfferStatusHistories");
+                    b.ToTable("TbOfferStatusHistories", (string)null);
                 });
 
             modelBuilder.Entity("Domains.Entities.Offer.Warranty.TbWarranty", b =>
@@ -4887,7 +4901,7 @@ namespace DAL.Migrations
 
                     b.HasIndex("OrderId");
 
-                    b.ToTable("TbRefundRequests");
+                    b.ToTable("TbRefundRequests", (string)null);
                 });
 
             modelBuilder.Entity("Domains.Entities.Page.TbPage", b =>
@@ -4949,7 +4963,7 @@ namespace DAL.Migrations
 
                     b.HasIndex("IsDeleted");
 
-                    b.ToTable("TbPages");
+                    b.ToTable("TbPages", (string)null);
                 });
 
             modelBuilder.Entity("Domains.Entities.Payment.TbOrderPayment", b =>
@@ -6017,7 +6031,7 @@ namespace DAL.Migrations
 
                     b.HasIndex("IsDeleted");
 
-                    b.ToTable("TbSettings");
+                    b.ToTable("TbSettings", (string)null);
                 });
 
             modelBuilder.Entity("Domains.Entities.Shipping.TbOrderShipment", b =>
@@ -6169,7 +6183,7 @@ namespace DAL.Migrations
 
                     b.HasIndex("ShipmentId");
 
-                    b.ToTable("TbOrderShipmentItems");
+                    b.ToTable("TbOrderShipmentItems", (string)null);
                 });
 
             modelBuilder.Entity("Domains.Entities.Shipping.TbShippingCompany", b =>
@@ -6222,7 +6236,7 @@ namespace DAL.Migrations
 
                     b.HasIndex("IsDeleted");
 
-                    b.ToTable("TbShippingCompanies");
+                    b.ToTable("TbShippingCompanies", (string)null);
                 });
 
             modelBuilder.Entity("Domains.Entities.Shipping.TbShippingDetail", b =>
@@ -6283,7 +6297,7 @@ namespace DAL.Migrations
 
                     b.HasIndex("OfferId");
 
-                    b.ToTable("TbShippingDetails");
+                    b.ToTable("TbShippingDetails", (string)null);
                 });
 
             modelBuilder.Entity("Domains.Entities.VideoProvider.TbVideoProvider", b =>
@@ -6326,7 +6340,7 @@ namespace DAL.Migrations
 
                     b.HasIndex("IsDeleted");
 
-                    b.ToTable("TbVideoProviders");
+                    b.ToTable("TbVideoProviders", (string)null);
                 });
 
             modelBuilder.Entity("Domains.Entities.Visibility.TbProductVisibilityRule", b =>
@@ -8042,6 +8056,40 @@ namespace DAL.Migrations
                     b.Navigation("Category");
                 });
 
+            modelBuilder.Entity("Domains.Entities.Catalog.Item.ItemAttributes.TbAttributeValuePriceModifier", b =>
+                {
+                    b.HasOne("Domains.Entities.Catalog.Attribute.TbAttribute", "Attribute")
+                        .WithMany()
+                        .HasForeignKey("AttributeId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Domains.Entities.Catalog.Item.ItemAttributes.TbCombinationAttributesValue", "CombinationAttributesValue")
+                        .WithMany()
+                        .HasForeignKey("CombinationAttributeValueId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Domains.Entities.Catalog.Item.ItemAttributes.TbCombinationAttributesValue", null)
+                        .WithMany("AttributeValuePriceModifiers")
+                        .HasForeignKey("TbCombinationAttributesValueId");
+
+                    b.Navigation("Attribute");
+
+                    b.Navigation("CombinationAttributesValue");
+                });
+
+            modelBuilder.Entity("Domains.Entities.Catalog.Item.ItemAttributes.TbCombinationAttribute", b =>
+                {
+                    b.HasOne("Domains.Entities.Catalog.Item.ItemAttributes.TbItemCombination", "ItemCombination")
+                        .WithMany("CombinationAttributes")
+                        .HasForeignKey("ItemCombinationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ItemCombination");
+                });
+
             modelBuilder.Entity("Domains.Entities.Catalog.Item.ItemAttributes.TbCombinationAttributesValue", b =>
                 {
                     b.HasOne("Domains.Entities.Catalog.Attribute.TbAttribute", "Attribute")
@@ -8050,15 +8098,15 @@ namespace DAL.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Domains.Entities.Catalog.Item.ItemAttributes.TbItemCombination", "ItemCombination")
+                    b.HasOne("Domains.Entities.Catalog.Item.ItemAttributes.TbCombinationAttribute", "CombinationAttribute")
                         .WithMany("CombinationAttributesValues")
-                        .HasForeignKey("ItemCombinationId")
+                        .HasForeignKey("CombinationAttributeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Attribute");
 
-                    b.Navigation("ItemCombination");
+                    b.Navigation("CombinationAttribute");
                 });
 
             modelBuilder.Entity("Domains.Entities.Catalog.Item.ItemAttributes.TbItemAttribute", b =>
@@ -8090,17 +8138,6 @@ namespace DAL.Migrations
                         .HasConstraintName("FK_TbItemCombinations_TbItems_ItemId");
 
                     b.Navigation("Item");
-                });
-
-            modelBuilder.Entity("Domains.Entities.Catalog.Item.ItemAttributes.TbItemCombinationImage", b =>
-                {
-                    b.HasOne("Domains.Entities.Catalog.Item.ItemAttributes.TbItemCombination", "ItemCombination")
-                        .WithMany("ItemCombinationImages")
-                        .HasForeignKey("ItemCombinationId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("ItemCombination");
                 });
 
             modelBuilder.Entity("Domains.Entities.Catalog.Item.TbItem", b =>
@@ -8220,7 +8257,7 @@ namespace DAL.Migrations
 
             modelBuilder.Entity("Domains.Entities.ECommerceSystem.Review.TbReviewReport", b =>
                 {
-                    b.HasOne("Domains.Entities.ECommerceSystem.Review.TbOfferReview", "Review")
+                    b.HasOne("Domains.Entities.ECommerceSystem.Review.TbProductReview", "Review")
                         .WithMany("ReviewReports")
                         .HasForeignKey("ReviewID")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -8231,7 +8268,7 @@ namespace DAL.Migrations
 
             modelBuilder.Entity("Domains.Entities.ECommerceSystem.Review.TbReviewVote", b =>
                 {
-                    b.HasOne("Domains.Entities.ECommerceSystem.Review.TbOfferReview", "Review")
+                    b.HasOne("Domains.Entities.ECommerceSystem.Review.TbProductReview", "Review")
                         .WithMany("ReviewVotes")
                         .HasForeignKey("ReviewID")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -8266,17 +8303,6 @@ namespace DAL.Migrations
                 {
                     b.HasOne("Domains.Identity.ApplicationUser", "User")
                         .WithMany("CustomerAddresses")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("Domains.Entities.ECommerceSystem.Vendor.TbVendor", b =>
-                {
-                    b.HasOne("Domains.Identity.ApplicationUser", "User")
-                        .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -8343,7 +8369,7 @@ namespace DAL.Migrations
                         .HasForeignKey("OrderId")
                         .OnDelete(DeleteBehavior.Restrict);
 
-                    b.HasOne("Domains.Entities.ECommerceSystem.Review.TbOfferReview", "Review")
+                    b.HasOne("Domains.Entities.ECommerceSystem.Review.TbProductReview", "Review")
                         .WithMany()
                         .HasForeignKey("ReviewId")
                         .OnDelete(DeleteBehavior.Restrict);
@@ -8432,7 +8458,7 @@ namespace DAL.Migrations
                         .IsRequired();
 
                     b.HasOne("Domains.Entities.Offer.TbOfferCondition", "OfferCondition")
-                        .WithMany()
+                        .WithMany("Offers")
                         .HasForeignKey("OfferConditionId");
 
                     b.HasOne("Domains.Entities.ECommerceSystem.Vendor.TbVendor", "Vendor")
@@ -8463,12 +8489,6 @@ namespace DAL.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("Domains.Entities.Offer.TbOfferCondition", "OfferCondition")
-                        .WithMany("OfferCombinationPricings")
-                        .HasForeignKey("OfferConditionId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("Domains.Entities.Offer.TbOffer", "Offer")
                         .WithMany("OfferCombinationPricings")
                         .HasForeignKey("OfferId")
@@ -8482,8 +8502,6 @@ namespace DAL.Migrations
                     b.Navigation("ItemCombination");
 
                     b.Navigation("Offer");
-
-                    b.Navigation("OfferCondition");
                 });
 
             modelBuilder.Entity("Domains.Entities.Offer.TbOfferPriceHistory", b =>
@@ -9073,11 +9091,19 @@ namespace DAL.Migrations
                     b.Navigation("Items");
                 });
 
-            modelBuilder.Entity("Domains.Entities.Catalog.Item.ItemAttributes.TbItemCombination", b =>
+            modelBuilder.Entity("Domains.Entities.Catalog.Item.ItemAttributes.TbCombinationAttribute", b =>
                 {
                     b.Navigation("CombinationAttributesValues");
+                });
 
-                    b.Navigation("ItemCombinationImages");
+            modelBuilder.Entity("Domains.Entities.Catalog.Item.ItemAttributes.TbCombinationAttributesValue", b =>
+                {
+                    b.Navigation("AttributeValuePriceModifiers");
+                });
+
+            modelBuilder.Entity("Domains.Entities.Catalog.Item.ItemAttributes.TbItemCombination", b =>
+                {
+                    b.Navigation("CombinationAttributes");
 
                     b.Navigation("OfferCombinationPricings");
                 });
@@ -9106,7 +9132,7 @@ namespace DAL.Migrations
                     b.Navigation("Items");
                 });
 
-            modelBuilder.Entity("Domains.Entities.ECommerceSystem.Review.TbOfferReview", b =>
+            modelBuilder.Entity("Domains.Entities.ECommerceSystem.Review.TbProductReview", b =>
                 {
                     b.Navigation("ReviewReports");
 
@@ -9173,7 +9199,7 @@ namespace DAL.Migrations
 
             modelBuilder.Entity("Domains.Entities.Offer.TbOfferCondition", b =>
                 {
-                    b.Navigation("OfferCombinationPricings");
+                    b.Navigation("Offers");
                 });
 
             modelBuilder.Entity("Domains.Entities.Offer.Warranty.TbWarranty", b =>
