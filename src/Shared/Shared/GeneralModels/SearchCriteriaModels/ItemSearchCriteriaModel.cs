@@ -5,9 +5,6 @@
         // Categories
         public List<Guid>? CategoryIds { get; set; } = null;
 
-        // Units
-        public List<Guid>? UnitIds { get; set; } = null;
-
         // Stock Status
         public bool? IsInStock { get; set; } = null;
 

@@ -1,12 +1,14 @@
 ﻿using BL.Contracts.GeneralService.CMS;
-using BL.Contracts.GeneralService.Location;
 using BL.Contracts.IMapper;
 using BL.Contracts.Service.ECommerce.Item;
 using BL.Extensions;
 using BL.Service.Base;
+using Common.Enumerations.Pricing;
+using Common.Enumerations.Visibility;
 using DAL.Contracts.Repositories;
 using DAL.Contracts.UnitOfWork;
 using DAL.Models;
+using Domains.Entities.Catalog.Category;
 using Domains.Entities.Catalog.Item;
 using Domains.Entities.Catalog.Item.ItemAttributes;
 using Domains.Views.Item;
@@ -25,11 +27,11 @@ namespace BL.Service.ECommerce.Item
         private const int MaxImageCount = 10;
         private readonly ITableRepository<TbItem> _tableRepository;
         private readonly IRepository<VwItem> _repository;
+        private readonly ITableRepository<TbCategory> _categoryRepository;
         private readonly IFileUploadService _fileUploadService;
         private readonly IImageProcessingService _imageProcessingService;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IBaseMapper _mapper;
-        private readonly ILocationBasedCurrencyService _locationBasedCurrencyService;
         private readonly ILogger _logger;
 
         public ItemService(IBaseMapper mapper,
@@ -38,8 +40,8 @@ namespace BL.Service.ECommerce.Item
             IRepository<VwItem> repository,
             IFileUploadService fileUploadService,
             IImageProcessingService imageProcessingService,
-            ILocationBasedCurrencyService locationBasedCurrencyService,
-            ILogger logger)
+            ILogger logger,
+            ITableRepository<TbCategory> categoryRepository)
             : base(tableRepository, mapper)
         {
             _mapper = mapper;
@@ -48,11 +50,11 @@ namespace BL.Service.ECommerce.Item
             _repository = repository;
             _fileUploadService = fileUploadService;
             _imageProcessingService = imageProcessingService;
-            _locationBasedCurrencyService = locationBasedCurrencyService;
             _logger = logger;
+            _categoryRepository = categoryRepository;
         }
 
-        public async Task<PaginatedDataModel<VwItemDto>> GetPage(ItemSearchCriteriaModel criteriaModel)
+        public async Task<PaginatedDataModel<ItemDto>> GetPage(ItemSearchCriteriaModel criteriaModel)
         {
             if (criteriaModel == null)
                 throw new ArgumentNullException(nameof(criteriaModel));
@@ -64,7 +66,7 @@ namespace BL.Service.ECommerce.Item
                 throw new ArgumentOutOfRangeException(nameof(criteriaModel.PageSize), ValidationResources.PageSizeRange);
 
             // Base filter
-            Expression<Func<VwItem, bool>> filter = x => true;
+            Expression<Func<TbItem, bool>> filter = x => !x.IsDeleted;
 
             // Combine expressions manually
             var searchTerm = criteriaModel.SearchTerm?.Trim().ToLower();
@@ -74,9 +76,7 @@ namespace BL.Service.ECommerce.Item
                     (x.TitleAr != null && x.TitleAr.ToLower().Contains(searchTerm)) ||
                     (x.TitleEn != null && x.TitleEn.ToLower().Contains(searchTerm)) ||
                     (x.ShortDescriptionAr != null && x.ShortDescriptionAr.ToLower().Contains(searchTerm)) ||
-                    (x.ShortDescriptionEn != null && x.ShortDescriptionEn.ToLower().Contains(searchTerm)) ||
-                    (x.CategoryTitleAr != null && x.CategoryTitleAr.ToLower().Contains(searchTerm)) ||
-                    (x.CategoryTitleEn != null && x.CategoryTitleEn.ToLower().Contains(searchTerm))
+                    (x.ShortDescriptionEn != null && x.ShortDescriptionEn.ToLower().Contains(searchTerm))
                 );
             }
 
@@ -85,84 +85,41 @@ namespace BL.Service.ECommerce.Item
                 filter = filter.And(x => criteriaModel.CategoryIds.Contains(x.CategoryId));
             }
 
-            if (criteriaModel.UnitIds?.Any() == true)
-            {
-                filter = filter.And(x => criteriaModel.UnitIds.Contains(x.UnitId));
-            }
-
-            if (criteriaModel.IsInStock.HasValue)
-            {
-                filter = filter.And(x => x.StockStatus == criteriaModel.IsInStock.Value);
-            }
-
-            if (criteriaModel.PriceFrom.HasValue)
-            {
-                filter = filter.And(x => x.DefaultPrice >= criteriaModel.PriceFrom.Value);
-            }
-
-            if (criteriaModel.PriceTo.HasValue)
-            {
-                filter = filter.And(x => x.DefaultPrice <= criteriaModel.PriceTo.Value);
-            }
-
-            if (criteriaModel.QuantityFrom.HasValue)
-            {
-                filter = filter.And(x => x.DefaultQuantity >= criteriaModel.QuantityFrom.Value);
-            }
-
-            if (criteriaModel.QuantityTo.HasValue)
-            {
-                filter = filter.And(x => x.DefaultQuantity <= criteriaModel.QuantityTo.Value);
-            }
-
             // New Item Flags Filters
             if (criteriaModel.IsNewArrival.HasValue)
             {
-                filter = filter.And(x => x.IsNewArrival == criteriaModel.IsNewArrival.Value);
-            }
-
-            if (criteriaModel.IsBestSeller.HasValue)
-            {
-                filter = filter.And(x => x.IsBestSeller == criteriaModel.IsBestSeller.Value);
-            }
-
-            if (criteriaModel.IsRecommended.HasValue)
-            {
-                filter = filter.And(x => x.IsRecommended == criteriaModel.IsRecommended.Value);
+                filter = filter.And(x => x.CreatedDateUtc.Date >= DateTime.UtcNow.AddDays(-3).Date);
             }
 
             // Get paginated data from repository
-            var items = await _repository.GetPageAsync(
+            var items = await _tableRepository.GetPageAsync(
                 criteriaModel.PageNumber,
                 criteriaModel.PageSize,
                 filter,
                 orderBy: q => q.OrderByDescending(x => x.CreatedDateUtc)
             );
 
-            var itemsDto = _mapper.MapList<VwItem, VwItemDto>(items.Items);
+            var itemsDto = _mapper.MapList<TbItem, ItemDto>(items.Items);
 
-            return new PaginatedDataModel<VwItemDto>(itemsDto, items.TotalRecords);
+            return new PaginatedDataModel<ItemDto>(itemsDto, items.TotalRecords);
         }
 
-        public override async Task<ItemDto> FindByIdAsync(Guid Id)
+        public new async Task<ItemDto> FindByIdAsync(Guid Id)
         {
             if (Id == Guid.Empty)
                 throw new ArgumentNullException(nameof(Id));
 
-            var items = await _tableRepository.GetAsync(
+            var items = await _repository.GetAsync(
                 x => x.Id == Id,
-                orderBy: null,
-                take: null,
-                includeProperties: "ItemImages,Category,ItemAttributes,ItemAttributeCombinationPricings"
+                orderBy: i => i.OrderByDescending(x => x.CreatedDateUtc)
             );
 
             var item = items.FirstOrDefault();
             if (item == null)
                 throw new KeyNotFoundException(ValidationResources.EntityNotFound);
 
-            return _mapper.MapModel<TbItem, ItemDto>(item);
+            return _mapper.MapModel<VwItem, ItemDto>(item);
         }
-
         public new async Task<bool> Save(ItemDto dto, Guid userId)
         {
             if (dto == null)
@@ -176,46 +133,13 @@ namespace BL.Service.ECommerce.Item
 
             // Only validate image count for new items
             if (dto.Id == Guid.Empty && (!dto.Images.Any() || dto.Images.Count > MaxImageCount))
-            {
                 throw new ArgumentException($"{ValidationResources.MaximumOf} {MaxImageCount} {ValidationResources.ImagesAllowed}", nameof(dto.Images));
-            }
+            if (dto.CategoryId == Guid.Empty)
+                throw new ValidationException("Category is required !! ");
 
-            // Ensure every item has at least one combination (default combination)
-            if (dto.ItemAttributeCombinationPricings == null || !dto.ItemAttributeCombinationPricings.Any())
-            {
-                _logger.Information("No combinations found, creating default combination for item {ItemId}", dto.Id);
-
-                // Create a default combination with no attributes
-                dto.ItemAttributeCombinationPricings = new List<ItemAttributeCombinationPricingDto>
-                {
-                    new ItemAttributeCombinationPricingDto
-                    {
-                        AttributeIds = string.Empty, // Empty means default/no attributes
-                        Price = 0,
-                        SalesPrice = 0,
-                        Quantity = 0,
-                        IsDefault = true
-                    }
-                };
-            }
-
-            // Ensure only one combination is marked as default
-            var defaultCombinations = dto.ItemAttributeCombinationPricings.Where(c => c.IsDefault).ToList();
-            if (defaultCombinations.Count == 0)
-            {
-                // No default set, mark the first one as default
-                _logger.Information("No default combination found, setting first combination as default for item {ItemId}", dto.Id);
-                dto.ItemAttributeCombinationPricings.First().IsDefault = true;
-            }
-            else if (defaultCombinations.Count > 1)
-            {
-                // Multiple defaults found, keep only the first one
-                _logger.Warning("Multiple default combinations found for item {ItemId}, keeping only the first", dto.Id);
-                foreach (var combo in defaultCombinations.Skip(1))
-                {
-                    combo.IsDefault = false;
-                }
-            }
+            var category = await _categoryRepository.FindByIdAsync(dto.CategoryId);
+            var categoryAttributes = await _unitOfWork.TableRepository<TbCategoryAttribute>()
+                                                      .GetAsync(ca => ca.CategoryId == dto.CategoryId, includeProperties: "Attribute");
 
             try
             {
@@ -225,138 +149,86 @@ namespace BL.Service.ECommerce.Item
                 if (!string.IsNullOrEmpty(dto.ThumbnailImage) && _fileUploadService.ValidateFile(dto.ThumbnailImage).isValid)
                     dto.ThumbnailImage = await SaveImageSync(dto.ThumbnailImage);
 
+                // Process images
                 var imageEntities = new List<TbItemImage>();
                 if (dto.Images?.Any() == true)
                 {
                     foreach (var image in dto.Images)
                     {
-                        if (image.IsNew)
+                        if (image.IsNew && !string.IsNullOrEmpty(image.Path) && _fileUploadService.ValidateFile(image.Path).isValid)
                         {
-                            if (!string.IsNullOrEmpty(image.Path) && _fileUploadService.ValidateFile(image.Path).isValid)
-                            {
-                                image.Path = await SaveImageSync(image.Path);
-                                var imageEntity = _mapper.MapModel<ItemImageDto, TbItemImage>(image);
-                                imageEntities.Add(imageEntity);
-                            }
+                            image.Path = await SaveImageSync(image.Path);
+                            imageEntities.Add(_mapper.MapModel<ItemImageDto, TbItemImage>(image));
                         }
                     }
                 }
 
-                // If this is an update (item has an ID), fetch existing item to get old image paths
+                // Update deletion handling
                 if (dto.Id != Guid.Empty)
                 {
-                    // Get existing images for this item
-                    var existingImages = await _unitOfWork
-                        .TableRepository<TbItemImage>()
-                        .GetAsync(ii => ii.ItemId == dto.Id);
+                    // Delete removed images
+                    var existingImages = await _unitOfWork.TableRepository<TbItemImage>().GetAsync(ii => ii.ItemId == dto.Id);
+                    var newImagePaths = dto.Images.Select(i => i.Path);
+                    var imagesToRemove = existingImages.Where(i => !newImagePaths.Contains(i.Path));
 
-                    var newImagesPaths = dto.Images?.Select(i => i.Path) ?? Enumerable.Empty<string>();
+                    foreach (var img in imagesToRemove)
+                        await _unitOfWork.TableRepository<TbItemImage>().HardDeleteAsync(img.Id);
 
-                    var imagesToDelete = existingImages.Where(i => !newImagesPaths.Contains(i.Path));
+                    // Delete existing item attributes
+                    var existingAttributes = await _unitOfWork.TableRepository<TbItemAttribute>().GetAsync(a => a.ItemId == dto.Id);
+                    foreach (var attr in existingAttributes)
+                        await _unitOfWork.TableRepository<TbItemAttribute>().HardDeleteAsync(attr.Id);
 
-                    if (imagesToDelete.Any())
-                    {
-                        foreach (var image in imagesToDelete)
-                        {
-                            await _unitOfWork
-                            .TableRepository<TbItemImage>()
-                            .HardDeleteAsync(image.Id);
-                        }
-                    }
+                    // Delete old combinations (unchanged logic)
+                    //if (category.PricingSystemType == PricingSystemType.CombinationWithQuantity ||
+                    //    category.PricingSystemType == PricingSystemType.Combination)
+                    //{
+                    //    var oldCombinations = await _unitOfWork.TableRepository<TbItemCombination>()
+                    //                                           .GetAsync(c => c.ItemId == dto.Id, includeProperties: "CombinationAttributes");
 
-                    // Delete existing attributes
-                    var existingAttributes = await _unitOfWork
-                        .TableRepository<TbItemAttribute>()
-                        .GetAsync(ia => ia.ItemId == dto.Id);
+                    //    foreach (var combo in oldCombinations)
+                    //    {
+                    //        var comboAttrIds = combo.CombinationAttributes.Select(c => c.Id).ToList();
+                    //        var comboValuesIds = (await _unitOfWork.TableRepository<TbCombinationAttributesValue>()
+                    //                                .GetAsync(v => comboAttrIds.Contains(v.CombinationAttributeId)))
+                    //                                .Select(v => v.Id);
 
-                    if (existingAttributes.Any())
-                    {
-                        foreach (var attr in existingAttributes)
-                        {
-                            await _unitOfWork
-                                .TableRepository<TbItemAttribute>()
-                                .HardDeleteAsync(attr.Id);
-                        }
-                    }
+                    //        var priceModifierIds = (await _unitOfWork.TableRepository<TbAttributeValuePriceModifier>()
+                    //                                .GetAsync(v => comboValuesIds.Contains(v.CombinationAttributeValueId)))
+                    //                                .Select(v => v.Id);
 
-                    // Delete existing combinations
-                    var existingCombinations = await _unitOfWork
-                        .TableRepository<TbItemAttributeCombinationPricing>()
-                        .GetAsync(c => c.ItemId == dto.Id);
-
-                    if (existingCombinations.Any())
-                    {
-                        foreach (var combo in existingCombinations)
-                        {
-                            await _unitOfWork
-                                .TableRepository<TbItemAttributeCombinationPricing>()
-                                .HardDeleteAsync(combo.Id);
-                        }
-                    }
+                    //        await _unitOfWork.TableRepository<TbAttributeValuePriceModifier>().BulkHardDeleteByIdsAsync(priceModifierIds);
+                    //        await _unitOfWork.TableRepository<TbCombinationAttributesValue>().BulkHardDeleteByIdsAsync(comboValuesIds);
+                    //        await _unitOfWork.TableRepository<TbCombinationAttribute>().BulkHardDeleteByIdsAsync(comboAttrIds);
+                    //    }
+                    //}
                 }
 
                 var entity = _mapper.MapModel<ItemDto, TbItem>(dto);
                 entity.Brand = null;
                 entity.Category = null;
-
+                entity.ItemAttributes = null;
+                entity.ItemCombinations = null;
+                entity.ItemImages = null;
+                entity.VisibilityScope = (int)ProductVisibilityStatus.PendingApproval;
                 var itemSaved = await _unitOfWork.TableRepository<TbItem>().SaveAsync(entity, userId);
-
                 var itemId = itemSaved.Id;
-                if (imageEntities.Any())
-                {
-                    foreach (var imageEntity in imageEntities)
-                    {
-                        imageEntity.ItemId = itemId;
-                    }
-                }
 
-                var imagesSaved = true;
-                if (dto.Images?.Count(x => x.IsNew) > 0)
-                    imagesSaved = await _unitOfWork.TableRepository<TbItemImage>().AddRangeAsync(imageEntities, userId);
+                // Save new images
+                if (imageEntities.Any()) foreach (var img in imageEntities) img.ItemId = itemId;
 
-                // Save ItemAttributes
-                var attributesSaved = true;
-                if (dto.ItemAttributes?.Any() == true)
-                {
-                    var attributeEntities = new List<TbItemAttribute>();
-                    foreach (var attr in dto.ItemAttributes)
-                    {
-                        // Only save attributes with values
-                        if (!string.IsNullOrWhiteSpace(attr.Value))
-                        {
-                            var attributeEntity = _mapper.MapModel<ItemAttributeDto, TbItemAttribute>(attr);
-                            attributeEntity.ItemId = itemId;
-                            attributeEntities.Add(attributeEntity);
-                        }
-                    }
+                var imagesSaved = dto.Images?.Count(x => x.IsNew) > 0
+                    ? await _unitOfWork.TableRepository<TbItemImage>().AddRangeAsync(imageEntities, userId)
+                    : true;
 
-                    if (attributeEntities.Any())
-                    {
-                        attributesSaved = await _unitOfWork.TableRepository<TbItemAttribute>().AddRangeAsync(attributeEntities, userId);
-                    }
-                }
+                // Save item attributes
+                var attributesSaved = await SaveItemAttributesAsync(itemId, dto.ItemAttributes ?? new List<ItemAttributeDto>(), categoryAttributes.ToList(), userId);
 
-                // Save ItemAttributeCombinationPricings
-                var combinationsSaved = true;
-                if (dto.ItemAttributeCombinationPricings?.Any() == true)
-                {
-                    var combinationEntities = new List<TbItemAttributeCombinationPricing>();
-                    foreach (var combo in dto.ItemAttributeCombinationPricings)
-                    {
-                        var combinationEntity = _mapper.MapModel<ItemAttributeCombinationPricingDto, TbItemAttributeCombinationPricing>(combo);
-                        combinationEntity.ItemId = itemId;
-                        combinationEntities.Add(combinationEntity);
-                    }
-
-                    if (combinationEntities.Any())
-                    {
-                        combinationsSaved = await _unitOfWork.TableRepository<TbItemAttributeCombinationPricing>().AddRangeAsync(combinationEntities, userId);
-                    }
-                }
+                // Save item combinations
+                //var combinationsSaved = await ProcessItemCombinationsAsync(itemId, dto.ItemCombinations ?? new List<ItemCombinationDto>(), category, categoryAttributes.ToList(), userId);
 
                 await _unitOfWork.CommitAsync();
-
-                return itemSaved.Success && imagesSaved && attributesSaved && combinationsSaved;
+                return itemSaved.Success && imagesSaved && attributesSaved;
             }
             catch (Exception ex)
             {
@@ -366,59 +238,6 @@ namespace BL.Service.ECommerce.Item
             }
         }
 
-        // Currency conversion methods
-        public async Task<ItemDto?> GetByIdWithCurrencyConversionAsync(Guid id, string clientIp, bool applyConversion = true)
-        {
-            try
-            {
-                var item = await FindByIdAsync(id);
-                if (item == null) return null;
-
-                var (targetCurrency, baseCurrency) = await _locationBasedCurrencyService.GetCurrencyInfoAsync(applyConversion ? clientIp : "0");
-                return await _locationBasedCurrencyService.ApplyCurrencyConversionAsync(item, baseCurrency?.Code, targetCurrency?.Code);
-            }
-            catch (Exception ex)
-            {
-                _logger.Error(ex, "Error getting item by ID with currency conversion. ItemId: {ItemId}, ClientIp: {ClientIp}, ApplyConversion: {ApplyConversion}", id, clientIp, applyConversion);
-                throw;
-            }
-        }
-
-        public async Task<IEnumerable<ItemDto>> GetAllWithCurrencyConversionAsync(string clientIp, bool applyConversion = true)
-        {
-            try
-            {
-                var items = await GetAllAsync();
-                if (items?.Any() != true) return items ?? Enumerable.Empty<ItemDto>();
-
-                var (targetCurrency, baseCurrency) = await _locationBasedCurrencyService.GetCurrencyInfoAsync(applyConversion ? clientIp : "0");
-                return await _locationBasedCurrencyService.ApplyCurrencyConversionAsync(items, baseCurrency?.Code, targetCurrency?.Code);
-            }
-            catch (Exception ex)
-            {
-                _logger.Error(ex, "Error getting all items with currency conversion. ClientIp: {ClientIp}, ApplyConversion: {ApplyConversion}", clientIp, applyConversion);
-                throw;
-            }
-        }
-
-        public async Task<PaginatedDataModel<VwItemDto>> GetPageWithCurrencyConversionAsync(ItemSearchCriteriaModel criteriaModel, string clientIp, bool applyConversion = true)
-        {
-            try
-            {
-                var result = await GetPage(criteriaModel);
-                if (result?.Items?.Any() != true) return result;
-
-                var (targetCurrency, baseCurrency) = await _locationBasedCurrencyService.GetCurrencyInfoAsync(applyConversion ? clientIp : "0");
-                var convertedItems = await _locationBasedCurrencyService.ApplyCurrencyConversionAsync(result.Items, baseCurrency?.Code, targetCurrency?.Code);
-
-                return new PaginatedDataModel<VwItemDto>(convertedItems, result.TotalRecords);
-            }
-            catch (Exception ex)
-            {
-                _logger.Error(ex, "Error getting paginated items with currency conversion. ClientIp: {ClientIp}, ApplyConversion: {ApplyConversion}", clientIp, applyConversion);
-                throw;
-            }
-        }
 
         // Helper functions
         private async Task<string> SaveImageSync(string image)
@@ -460,5 +279,242 @@ namespace BL.Service.ECommerce.Item
                 throw new ApplicationException(ValidationResources.ErrorProcessingImage, ex);
             }
         }
+
+        private async Task<bool> SaveItemAttributesAsync(
+    Guid itemId,
+    List<ItemAttributeDto> itemAttributes,
+    List<TbCategoryAttribute> categoryAttributes,
+    Guid userId)
+        {
+            if (itemAttributes == null || !itemAttributes.Any())
+                return true; // nothing to save
+
+            var attributeEntities = new List<TbItemAttribute>();
+
+            foreach (var attr in itemAttributes)
+            {
+                var attribute = categoryAttributes.FirstOrDefault(ca => ca.AttributeId == attr.AttributeId)?.Attribute;
+
+                // Only save attributes with values
+                if (!string.IsNullOrWhiteSpace(attr.Value) && attribute != null)
+                {
+                    var attributeEntity = _mapper.MapModel<ItemAttributeDto, TbItemAttribute>(attr);
+                    attributeEntity.ItemId = itemId;
+                    attributeEntity.FieldType = attribute.FieldType;
+                    attributeEntity.IsRangeFieldType = attribute.IsRangeFieldType;
+                    attributeEntity.MaxLength = attribute.MaxLength ?? 100;
+                    attributeEntity.TitleAr = attribute.TitleAr;
+                    attributeEntity.TitleEn = attribute.TitleEn;
+
+                    attributeEntities.Add(attributeEntity);
+                }
+            }
+
+            if (!attributeEntities.Any())
+                return true;
+
+            return await _unitOfWork
+                .TableRepository<TbItemAttribute>()
+                .AddRangeAsync(attributeEntities, userId);
+        }
+
+        //private async Task<bool> ProcessItemCombinationsAsync(Guid itemId, List<ItemCombinationDto> itemCombinations, TbCategory category, List<TbCategoryAttribute> categoryAttributes, Guid userId)
+        //{
+        //    if (itemCombinations == null || !itemCombinations.Any())
+        //        return true;
+
+        //    var comboEntitiesToCreate = new List<TbItemCombination>();
+        //    var comboEntitiesToUpdate = new List<TbItemCombination>();
+        //    var comboEntityPerDto = new List<TbItemCombination>();
+
+        //    // Handle pricing system types
+        //    var pricingType = category.PricingSystemType;
+
+        //    // For standard-like pricing systems
+        //    if (pricingType == PricingSystemType.Standard || pricingType == PricingSystemType.Quantity || pricingType == PricingSystemType.CustomerSegmentPricing)
+        //    {
+        //        var singleDto = itemCombinations.FirstOrDefault();
+        //        if (singleDto == null)
+        //        {
+        //            singleDto = new ItemCombinationDto { ItemId = itemId, Barcode = "111111", SKU = "DEFAULT", IsDefault = true };
+        //            itemCombinations = new List<ItemCombinationDto> { singleDto };
+        //        }
+
+        //        if (singleDto.Id != Guid.Empty)
+        //        {
+        //            var comboToUpdate = _mapper.MapModel<ItemCombinationDto, TbItemCombination>(singleDto);
+        //            comboToUpdate.ItemId = itemId;
+        //            comboEntitiesToUpdate.Add(comboToUpdate);
+        //            comboEntityPerDto.Add(comboToUpdate);
+        //        }
+        //        else
+        //        {
+        //            var comboToCreate = _mapper.MapModel<ItemCombinationDto, TbItemCombination>(singleDto);
+        //            comboToCreate.ItemId = itemId;
+        //            comboEntitiesToCreate.Add(comboToCreate);
+        //            comboEntityPerDto.Add(comboToCreate);
+        //        }
+
+        //        if (comboEntitiesToCreate.Any())
+        //            await _unitOfWork.TableRepository<TbItemCombination>().AddRangeAsync(comboEntitiesToCreate, userId);
+
+        //        if (comboEntitiesToUpdate.Any())
+        //            await _unitOfWork.TableRepository<TbItemCombination>().UpdateRangeAsync(comboEntitiesToUpdate, userId);
+        //    }
+        //    else
+        //    {
+        //        // Combination-based systems
+        //        for (int i = 0; i < itemCombinations.Count; i++)
+        //        {
+        //            var comboDto = itemCombinations[i];
+        //            var comboEntityModel = _mapper.MapModel<ItemCombinationDto, TbItemCombination>(comboDto);
+        //            comboEntityModel.ItemId = itemId;
+
+        //            if (comboDto.Id != Guid.Empty)
+        //            {
+        //                comboEntityModel.Id = comboDto.Id;
+        //                comboEntitiesToUpdate.Add(comboEntityModel);
+        //                comboEntityPerDto.Add(comboEntityModel);
+        //            }
+        //            else
+        //            {
+        //                comboEntitiesToCreate.Add(comboEntityModel);
+        //                comboEntityPerDto.Add(comboEntityModel);
+        //            }
+        //        }
+
+        //        if (comboEntitiesToCreate.Any())
+        //            await _unitOfWork.TableRepository<TbItemCombination>().AddRangeAsync(comboEntitiesToCreate, userId);
+
+        //        if (comboEntitiesToUpdate.Any())
+        //            await _unitOfWork.TableRepository<TbItemCombination>().UpdateRangeAsync(comboEntitiesToUpdate, userId);
+
+        //        // Create combination attributes/values/modifiers
+        //        var combinationAttributeEntities = new List<TbCombinationAttribute>();
+        //        var createdAttrEntitiesPerCombo = new List<List<TbCombinationAttribute>>();
+
+        //        for (int comboIndex = 0; comboIndex < itemCombinations.Count; comboIndex++)
+        //        {
+        //            var comboDto = itemCombinations[comboIndex];
+        //            var comboEntity = comboEntityPerDto[comboIndex];
+        //            var createdForCombo = new List<TbCombinationAttribute>();
+
+        //            if (comboDto.CombinationAttributes?.Any() == true)
+        //            {
+        //                foreach (var attrDto in comboDto.CombinationAttributes)
+        //                {
+        //                    var hasPricingValues = attrDto.combinationAttributeValueDtos?.Any(v => categoryAttributes.Any(ca => ca.AttributeId == v.AttributeId && ca.AffectsPricing)) == true;
+        //                    if (!hasPricingValues)
+        //                        continue;
+
+        //                    var attrEntity = new TbCombinationAttribute { ItemCombinationId = comboEntity.Id };
+        //                    combinationAttributeEntities.Add(attrEntity);
+        //                    createdForCombo.Add(attrEntity);
+        //                }
+        //            }
+
+        //            createdAttrEntitiesPerCombo.Add(createdForCombo);
+        //        }
+
+        //        if (combinationAttributeEntities.Any())
+        //            await _unitOfWork.TableRepository<TbCombinationAttribute>().AddRangeAsync(combinationAttributeEntities, userId);
+
+        //        var combinationAttributeValueEntities = new List<TbCombinationAttributesValue>();
+        //        var createdValuesPerAttrPerCombo = new List<List<List<TbCombinationAttributesValue>>>();
+
+        //        for (int comboIndex = 0; comboIndex < itemCombinations.Count; comboIndex++)
+        //        {
+        //            var comboDto = itemCombinations[comboIndex];
+        //            var attrDtos = comboDto.CombinationAttributes;
+        //            var createdAttrs = createdAttrEntitiesPerCombo.ElementAtOrDefault(comboIndex) ?? new List<TbCombinationAttribute>();
+        //            var valuesPerAttr = new List<List<TbCombinationAttributesValue>>();
+
+        //            if (attrDtos?.Any() == true)
+        //            {
+        //                for (int attrIndex = 0; attrIndex < attrDtos.Count; attrIndex++)
+        //                {
+        //                    var attrDto = attrDtos[attrIndex];
+        //                    var createdAttrEntity = createdAttrs.ElementAtOrDefault(attrIndex);
+        //                    var createdValuesForAttr = new List<TbCombinationAttributesValue>();
+
+        //                    if (attrDto?.combinationAttributeValueDtos?.Any() == true && createdAttrEntity != null)
+        //                    {
+        //                        foreach (var valDto in attrDto.combinationAttributeValueDtos)
+        //                        {
+        //                            if (!categoryAttributes.Any(ca => ca.AttributeId == valDto.AttributeId && ca.AffectsPricing))
+        //                                continue;
+
+        //                            var valEntity = new TbCombinationAttributesValue
+        //                            {
+        //                                CombinationAttributeId = createdAttrEntity.Id,
+        //                                AttributeId = valDto.AttributeId,
+        //                                Value = valDto.Value
+        //                            };
+        //                            combinationAttributeValueEntities.Add(valEntity);
+        //                            createdValuesForAttr.Add(valEntity);
+        //                        }
+        //                    }
+
+        //                    valuesPerAttr.Add(createdValuesForAttr);
+        //                }
+        //            }
+
+        //            createdValuesPerAttrPerCombo.Add(valuesPerAttr);
+        //        }
+
+        //        if (combinationAttributeValueEntities.Any())
+        //            await _unitOfWork.TableRepository<TbCombinationAttributesValue>().AddRangeAsync(combinationAttributeValueEntities, userId);
+
+        //        var attributeValuePriceModifierEntities = new List<TbAttributeValuePriceModifier>();
+
+        //        for (int comboIndex = 0; comboIndex < itemCombinations.Count; comboIndex++)
+        //        {
+        //            var comboDto = itemCombinations[comboIndex];
+        //            var attrDtos = comboDto.CombinationAttributes;
+        //            var valuesPerAttr = createdValuesPerAttrPerCombo.ElementAtOrDefault(comboIndex) ?? new List<List<TbCombinationAttributesValue>>();
+
+        //            if (attrDtos?.Any() == true)
+        //            {
+        //                for (int attrIndex = 0; attrIndex < attrDtos.Count; attrIndex++)
+        //                {
+        //                    var attrDto = attrDtos[attrIndex];
+        //                    var createdValuesForAttr = valuesPerAttr.ElementAtOrDefault(attrIndex) ?? new List<TbCombinationAttributesValue>();
+
+        //                    if (attrDto?.combinationAttributeValueDtos?.Any() == true)
+        //                    {
+        //                        for (int valIndex = 0; valIndex < attrDto.combinationAttributeValueDtos.Count; valIndex++)
+        //                        {
+        //                            var valDto = attrDto.combinationAttributeValueDtos[valIndex];
+        //                            var createdValEntity = createdValuesForAttr.ElementAtOrDefault(valIndex);
+
+        //                            if (createdValEntity != null && valDto.AttributeValuePriceModifiers?.Any() == true)
+        //                            {
+        //                                foreach (var modDto in valDto.AttributeValuePriceModifiers)
+        //                                {
+        //                                    var modEntity = new TbAttributeValuePriceModifier
+        //                                    {
+        //                                        CombinationAttributeValueId = createdValEntity.Id,
+        //                                        AttributeId = valDto.AttributeId,
+        //                                        ModifierType = modDto.ModifierType,
+        //                                        PriceModifierCategory = modDto.PriceModifierCategory,
+        //                                        ModifierValue = modDto.ModifierValue,
+        //                                        DisplayOrder = modDto.DisplayOrder
+        //                                    };
+        //                                    attributeValuePriceModifierEntities.Add(modEntity);
+        //                                }
+        //                            }
+        //                        }
+        //                    }
+        //                }
+        //            }
+        //        }
+
+        //        if (attributeValuePriceModifierEntities.Any())
+        //            await _unitOfWork.TableRepository<TbAttributeValuePriceModifier>().AddRangeAsync(attributeValuePriceModifierEntities, userId);
+        //    }
+
+        //    return true;
+        //}
+
     }
 }

@@ -19,9 +19,6 @@ namespace DAL.Configurations
                 .IsRequired()
                 .HasConversion<int>();
 
-            entity.Property(e => e.IsVisible)
-                .HasDefaultValue(true);
-
             entity.Property(e => e.HasActiveOffers)
                 .HasDefaultValue(false);
 
@@ -30,15 +27,6 @@ namespace DAL.Configurations
 
             entity.Property(e => e.IsApproved)
                 .HasDefaultValue(false);
-
-            entity.Property(e => e.HasValidCategory)
-                .HasDefaultValue(false);
-
-            entity.Property(e => e.AllSellersActive)
-                .HasDefaultValue(false);
-
-            entity.Property(e => e.LastCheckedAt)
-                .HasColumnType("datetime2(2)");
 
             entity.Property(e => e.SuppressedAt)
                 .HasColumnType("datetime2(2)");
@@ -59,12 +47,6 @@ namespace DAL.Configurations
                 .IsUnique();
 
             entity.HasIndex(e => e.VisibilityStatus);
-
-            entity.HasIndex(e => e.IsVisible);
-
-            entity.HasIndex(e => e.LastCheckedAt);
-
-            entity.HasIndex(e => new { e.IsVisible, e.VisibilityStatus });
         }
     }
 }

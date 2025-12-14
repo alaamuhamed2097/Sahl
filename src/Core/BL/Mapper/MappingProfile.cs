@@ -13,17 +13,21 @@ namespace BL.Mapper
             ConfigureAttributeMappings();
             ConfigureUnitMappings();
             ConfigureItemMappings();
+            ConfigureOfferMappings();
             ConfigureCurrencyMappings();
             ConfigureBrandMapping();
             ConfigureMediaMappings();
             ConfigureOrderMappings();
             ConfigureSettingMappings();
             ConfigureVendorMappings();
-            ConfigureCustomerMappings();
             ConfigureSupportMappings();
             ConfigureReviewMappings();
             ConfigureWarehouseAndInventoryMappings();
             ConfigureContentAndNotificationChannelMappings();
+            ConfigurePricingMappings();
+            ConfigureCartMappings();
+            
+			ConfigureCustomerMappings();
 		}
     }
 }

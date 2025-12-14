@@ -14,18 +14,13 @@ namespace Dashboard.Pages.Catalog.Products
         protected override string AddRoute { get; } = $"/product";
         protected override string EditRouteTemplate { get; } = "/product/{id}";
         protected override string SearchEndpoint { get; } = ApiEndpoints.Item.Search;
+
         protected override Dictionary<string, Func<ItemDto, object>> ExportColumns { get; }
         = new Dictionary<string, Func<ItemDto, object>>
         {
             [FormResources.Image] = x => $"{baseUrl}/{x.ThumbnailImage}",
             [FormResources.Title] = x => ResourceManager.CurrentLanguage == Language.Arabic ? x.TitleAr : x.TitleEn,
-            [ECommerceResources.StockStatus] = x => x.StockStatus ? ECommerceResources.InStock : ECommerceResources.OutOfStock,
-            // Get Quantity from default combination or first combination
-            [ECommerceResources.Quantity] = x => x.ItemAttributeCombinationPricings?.FirstOrDefault(c => c.IsDefault)?.Quantity
-                                                  ?? x.ItemAttributeCombinationPricings?.FirstOrDefault()?.Quantity
-                                                  ?? 0,
-            // Get Price from default combination or first combination using GetPrice() method
-            [FormResources.Price] = x => x.GetPrice(),
+            [FormResources.Price] = x => x.BasePrice != null ? $"{x.BasePrice?.ToString("F2")} EGP" : "N/A",
         };
 
         [Inject] protected IItemService ItemService { get; set; } = null!;
@@ -34,14 +29,7 @@ namespace Dashboard.Pages.Catalog.Products
         protected override async Task<ResponseModel<IEnumerable<ItemDto>>> GetAllItemsAsync()
         {
             var result = await ItemService.GetAllAsync();
-            if (result.Success)
-            {
-                return result;
-            }
-            else
-            {
-                return result;
-            }
+            return result;
         }
 
         protected override async Task<ResponseModel<bool>> DeleteItemAsync(Guid id)
@@ -58,6 +46,5 @@ namespace Dashboard.Pages.Catalog.Products
         {
             Navigation.NavigateTo("/products/import");
         }
-
     }
 }

@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.ResponseCompression;
 using Shared.GeneralModels;
 using System.IO.Compression;
+using Asp.Versioning;
 
 namespace Api.Extensions
 {
@@ -35,6 +36,23 @@ namespace Api.Extensions
 
                     return new BadRequestObjectResult(response);
                 };
+            });
+
+            // Add API Versioning
+            services.AddApiVersioning(options =>
+            {
+                options.DefaultApiVersion = new ApiVersion(1, 0);
+                options.AssumeDefaultVersionWhenUnspecified = true;
+                options.ReportApiVersions = true;
+                options.ApiVersionReader = ApiVersionReader.Combine(
+                    new HeaderApiVersionReader("api-version"),
+                    new QueryStringApiVersionReader("api-version"),
+                    new UrlSegmentApiVersionReader()
+                );
+            }).AddApiExplorer(options =>
+            {
+                options.GroupNameFormat = "'v'VVV";
+                options.SubstituteApiVersionInUrl = true;
             });
 
             return services;

@@ -1,11 +1,13 @@
 using BL.Contracts.GeneralService.CMS;
 using BL.Contracts.GeneralService.UserManagement;
 using BL.Contracts.IMapper;
+using BL.Utils;
 using Common.Enumerations.User;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Resources;
 using Shared.DTOs.User.Admin;
+using Shared.DTOs.User.Customer;
 using Shared.GeneralModels.ResultModels;
 using SixLabors.ImageSharp;
 using System.ComponentModel.DataAnnotations;
@@ -19,18 +21,21 @@ namespace BL.GeneralService.UserManagement
         private readonly IImageProcessingService _imageProcessingService;
         private readonly IUserAuthenticationService _userAuthenticationService;
         private readonly IBaseMapper _mapper;
+        private readonly Serilog.ILogger _logger;
 
         public UserRegistrationService(UserManager<ApplicationUser> userManager,
             IFileUploadService fileUploadService,
             IUserAuthenticationService userAuthenticationService,
             IImageProcessingService imageProcessingService,
-            IBaseMapper mapper)
+            IBaseMapper mapper,
+            Serilog.ILogger logger)
         {
             _userManager = userManager;
             _fileUploadService = fileUploadService;
             _userAuthenticationService = userAuthenticationService;
             _imageProcessingService = imageProcessingService;
             _mapper = mapper;
+            _logger = logger;
         }
 
         public async Task<OperationResult> RegisterAdminAsync(AdminRegistrationDto userDto, Guid CreatorId)
@@ -68,21 +73,9 @@ namespace BL.GeneralService.UserManagement
             applicationUser.CreatedDateUtc = DateTime.UtcNow;
             applicationUser.UserState = UserStateType.Inactive;
 
-            // Generate and save verification code via UserActivationService
-            //var codeSent = await _userActivationService.SendActivationCodeAsync(user.PhoneNumber);
-            //if (!codeSent)
-            //{
-            //    return new BaseResult
-            //    {
-            //        Success = false,
-            //        Message = UserResources.VerificationCodeError
-            //    };
-            //}
-
             try
             {
                 var result = await _userManager.CreateAsync(applicationUser, userDto.Password);
-                // Create the user
 
                 if (result.Succeeded)
                 {
@@ -123,383 +116,159 @@ namespace BL.GeneralService.UserManagement
             }
         }
 
-        //public async Task<SignInResult> RegisterCustomerAsync(
-        //    CustomerRegistrationDto userDto, string clientType)
-        //{
-        //    try
-        //    {
-        //        // Check if the customer is already registered by Email or UserName
-        //        var existingUser = await _userManager.Users
-        //            .FirstOrDefaultAsync(u => u.Email == userDto.Email || u.UserName == userDto.UserName);
+        public async Task<ServiceResult<CustomerRegistrationResponseDto>> RegisterCustomerAsync(
+            CustomerRegistrationDto userDto, string clientType)
+        {
+            try
+            {
+                // Validate phone uniqueness
+                var normalizedPhone = PhoneNormalizationHelper.CreateNormalizedPhone(
+                    userDto.PhoneCode, userDto.PhoneNumber);
 
-        //        if (existingUser != null)
-        //        {
-        //            return new SignInResult
-        //            {
-        //                Success = false,
-        //                Message = (existingUser.Email == userDto.Email)
-        //                              ? string.Format(UserResources.Email_Duplicate, userDto.Email)
-        //                              : string.Format(UserResources.UserName_Duplicate, userDto.UserName),
-        //                Errors = (existingUser.Email == userDto.Email)
-        //                              ? new List<string> { string.Format(UserResources.Email_Duplicate, userDto.Email) }
-        //                              : new List<string> { string.Format(UserResources.UserName_Duplicate, userDto.UserName) }
-        //            };
-        //        }
+                var existingUserByPhone = await _userManager.Users
+                    .FirstOrDefaultAsync(u => u.NormalizedPhone == normalizedPhone);
 
-        //        // Map Customer Registration Dto to ApplicationUser
-        //        var customer = _mapper.MapModel<CustomerRegistrationDto, TbCustomer>(userDto);
+                if (existingUserByPhone != null)
+                {
+                    return new ServiceResult<CustomerRegistrationResponseDto>
+                    {
+                        Success = false,
+                        Message = "This phone number is already registered",
+                        Errors = new List<string> { "Phone number already in use" }
+                    };
+                }
 
-        //        var applicationUser = customer.ApplicationUser;
-        //        applicationUser.Id = Guid.NewGuid().ToString();
-        //        applicationUser.ProfileImagePath = "uploads/Images/ProfileImages/Customers/default.png";
-        //        applicationUser.CreatedBy = Guid.Empty;
-        //        applicationUser.CreatedDateUtc = DateTime.UtcNow;
-        //        applicationUser.UserState = UserStateType.Inactive;
+                // Check email uniqueness only if email is provided
+                if (!string.IsNullOrWhiteSpace(userDto.Email))
+                {
+                    var existingUserByEmail = await _userManager.Users
+                        .FirstOrDefaultAsync(u => u.Email == userDto.Email);
 
-        //        await _marketerUnitOfWork.BeginTransactionAsync();
+                    if (existingUserByEmail != null)
+                    {
+                        return new ServiceResult<CustomerRegistrationResponseDto>
+                        {
+                            Success = false,
+                            Message = string.Format(UserResources.Email_Duplicate, userDto.Email),
+                            Errors = new List<string> { string.Format(UserResources.Email_Duplicate, userDto.Email) }
+                        };
+                    }
+                }
 
-        //        // Create the user
-        //        var result = await _userManager.CreateAsync(applicationUser, userDto.Password);
-        //        if (!result.Succeeded)
-        //        {
-        //            var friendlyErrors = result.Errors
-        //                .Select(e => GetUserFriendlyErrorMessage(e.Code))
-        //                .ToList();
+                // Auto-generate username if not provided
+                var username = userDto.PhoneNumber;
+                if (string.IsNullOrWhiteSpace(username))
+                {
+                    username = await UsernameGenerationHelper.GenerateUniqueUsernameAsync(
+                        userDto.FirstName, _userManager);
+                }
+                else
+                {
+                    // Check if provided username already exists
+                    var existingUserByUsername = await _userManager.Users
+                        .FirstOrDefaultAsync(u => u.UserName == username);
 
-        //            return new SignInResult
-        //            {
-        //                Success = false,
-        //                Message = NotifiAndAlertsResources.RegistrationFailed,
-        //                Errors = friendlyErrors
-        //            };
-        //        }
+                    if (existingUserByUsername != null)
+                    {
+                        return new ServiceResult<CustomerRegistrationResponseDto>
+                        {
+                            Success = false,
+                            Message = string.Format(UserResources.UserName_Duplicate, username),
+                            Errors = new List<string> { string.Format(UserResources.UserName_Duplicate, username) }
+                        };
+                    }
+                }
 
-        //        // Add user to Customer role
-        //        var addedToRole = (await _userManager.AddToRoleAsync(applicationUser, "Customer")).Succeeded;
-        //        if (!addedToRole)
-        //        {
-        //            throw new InvalidOperationException("Failed to add user to the specified role.");
-        //        }
+                // Create ApplicationUser
+                var applicationUser = new ApplicationUser
+                {
+                    Id = Guid.NewGuid().ToString(),
+                    Email = userDto.Email,
+                    UserName = username,
+                    FirstName = userDto.FirstName,
+                    LastName = userDto.LastName,
+                    PhoneNumber = userDto.PhoneNumber,
+                    PhoneCode = userDto.PhoneCode,
+                    NormalizedPhone = normalizedPhone,
+                    ProfileImagePath = "uploads/Images/ProfileImages/Customers/default.png",
+                    CreatedBy = Guid.Empty,
+                    CreatedDateUtc = DateTime.UtcNow,
+                    UserState = UserStateType.Active,
+                    EmailConfirmed = !string.IsNullOrWhiteSpace(userDto.Email)
+                };
 
-        //        // Create The marketer
-        //        customer.ApplicationUserId = applicationUser.Id;
+                // Create the user with password
+                var result = await _userManager.CreateAsync(applicationUser, userDto.Password);
+                if (!result.Succeeded)
+                {
+                    var friendlyErrors = result.Errors
+                        .Select(e => GetUserFriendlyErrorMessage(e.Code))
+                        .ToList();
 
-        //        var saveCustomerResult = await _marketerUnitOfWork.TableRepository<TbCustomer>().CreateAsync(customer, new Guid());
+                    return new ServiceResult<CustomerRegistrationResponseDto>
+                    {
+                        Success = false,
+                        Message = NotifiAndAlertsResources.RegistrationFailed,
+                        Errors = friendlyErrors
+                    };
+                }
 
-        //        await _marketerUnitOfWork.CommitAsync();
+                // Add user to Customer role
+                var addedToRole = (await _userManager.AddToRoleAsync(applicationUser, "Customer")).Succeeded;
+                if (!addedToRole)
+                {
+                    _logger.Error("Failed to add user {UserId} to Customer role", applicationUser.Id);
+                    throw new InvalidOperationException("Failed to add user to the specified role.");
+                }
 
-        //        var signInResult = await _userAuthenticationService.EmailOrUserNameSignInAsync(userDto.Email, userDto.Password, clientType);
+                // Sign in the user automatically using email or username
+                var signInIdentifier = !string.IsNullOrWhiteSpace(userDto.Email)
+                    ? userDto.Email
+                    : username;
 
-        //        return signInResult;
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        _marketerUnitOfWork.Rollback();
-        //        return new SignInResult
-        //        {
-        //            Success = false,
-        //            Message = ex.Message,
-        //            Errors = new List<string> { ex.InnerException?.Message ?? "" }
-        //        };
-        //    }
-        //}
+                var signInResult = await _userAuthenticationService.EmailOrUserNameSignInAsync(
+                    signInIdentifier, userDto.Password, clientType);
 
-        //public async Task<OperationResult> RegisterMarketerAsync(string recruitmentLinkCode, MarketerRegistrationDto userDto)
-        //{
-        //    try
-        //    {
-        //        // Validate the recruitment link
-        //        var recruitmentLinkValidation = await IsValidLinkForMarketerRegistration(recruitmentLinkCode);
-        //        if (!recruitmentLinkValidation.Success)
-        //            return recruitmentLinkValidation;
+                if (!signInResult.Success)
+                {
+                    return new ServiceResult<CustomerRegistrationResponseDto>
+                    {
+                        Success = false,
+                        Message = "Registration successful but automatic login failed"
+                    };
+                }
 
-        //        // Check if the marketer is already registered
-        //        var existingUser = await _userManager.Users.FirstOrDefaultAsync(u => u.Email == userDto.Email || u.UserName == userDto.UserName);
-        //        if (existingUser != null)
-        //        {
-        //            return new OperationResult
-        //            {
-        //                Success = false,
-        //                Message = string.Format(UserResources.Email_Duplicate, userDto.Email),
-        //                Errors = (existingUser.Email == userDto.Email)
-        //                              ? new List<string> { string.Format(UserResources.Email_Duplicate, userDto.Email) }
-        //                              : new List<string> { string.Format(UserResources.UserName_Duplicate, userDto.UserName) }
-        //            };
-        //        }
-
-        //        // Map Marketer Registration Dto to TbMarketer
-        //        var marketer = _mapper.MapModel<MarketerRegistrationDto, TbMarketer>(userDto);
-
-        //        // ApplicationUser
-        //        var applicationUser = marketer.ApplicationUser;
-        //        applicationUser.Id = Guid.NewGuid().ToString();
-        //        applicationUser.ProfileImagePath = "uploads/Images/ProfileImages/Marketers/default.png";
-        //        applicationUser.CreatedBy = Guid.Empty;
-        //        applicationUser.CreatedDateUtc = DateTime.UtcNow;
-        //        applicationUser.UserState = UserStateType.Inactive;
-
-        //        await _marketerUnitOfWork.BeginTransactionAsync();
-
-        //        // Create the user
-        //        var result = await _userManager.CreateAsync(applicationUser, userDto.Password);
-        //        if (!result.Succeeded)
-        //        {
-        //            // Map identity errors to user-friendly messages
-        //            var friendlyErrors = result.Errors
-        //                .Select(e => GetUserFriendlyErrorMessage(e.Code))
-        //                .ToList();
-
-        //            return new OperationResult
-        //            {
-        //                Success = false,
-        //                Message = NotifiAndAlertsResources.RegistrationFailed,
-        //                Errors = friendlyErrors
-        //            };
-        //        }
-
-        //        // Add user to the specified role
-        //        var addedToRole = (await _userManager.AddToRoleAsync(applicationUser, "Marketer")).Succeeded;
-        //        if (!addedToRole)
-        //        {
-        //            throw new InvalidOperationException("Failed to add user to the specified role.");
-        //        }
-        //        var recruitmentLink = await _marketerUnitOfWork.TableRepository<TbRecruitment>().FindAsync(c => c.Code == recruitmentLinkCode);
-
-        //        // Create The marketer
-        //        marketer.Address = "";
-        //        marketer.PathCode = (await _marketerUnitOfWork.TableRepository<TbRecruitment>().GetAsync(l => l.Code == recruitmentLinkCode)).Select(r => r.PathCode).First();
-        //        marketer.JoinDate = DateTime.UtcNow;
-        //        marketer.TotalPVs = 0;
-        //        marketer.OldPVs = 0;
-        //        marketer.ApplicationUserId = applicationUser.Id;
-        //        marketer.RecruitmentId = recruitmentLink.Id;
-        //        marketer.IsProfileCompleted = true;
-        //        marketer.NationalIdImagePath1 = await SaveImage(userDto.NationalIdImageFiles[0]);
-        //        marketer.NationalIdImagePath2 = (userDto.NationalIdImageFiles.Count > 1 && userDto.NationalIdImageFiles[1] != null && userDto.NationalIdImageFiles[1].Length > 0) ? await SaveImage(userDto.NationalIdImageFiles[1]) : null;
-
-        //        var saveMarketerResult = await _marketerUnitOfWork.TableRepository<TbMarketer>().CreateAsync(marketer, new Guid());
-
-        //        var parentMarketer = await _marketerUnitOfWork.TableRepository<TbMarketer>()
-        //            .FindAsync(m => m.PathCode == marketer.PathCode.Remove(marketer.PathCode.Length - 2));
-
-        //        var sponsorMarketer = await _marketerUnitOfWork.TableRepository<TbMarketer>()
-        //            .FindAsync(m => m.Id == recruitmentLink.SponsorId);
-
-        //        if (parentMarketer == null || sponsorMarketer == null)
-        //        {
-        //            throw new ValidationException(UserResources.UserNotFound);
-        //        }
-
-        //        //// send notifications
-        //        //if (sponsorMarketer.ApplicationUserId != parentMarketer.ApplicationUserId)
-        //        //{
-        //        //    var sent = await _notificationService.SendNotificationAsync
-        //        //   (new NotificationRequest()
-        //        //   {
-        //        //       Channel = NotificationChannel.SignalR,
-        //        //       Type = NotificationType.NewIndirectMarketerJoined,
-        //        //       Recipient = sponsorMarketer.ApplicationUserId
-        //        //   });
-        //        //}
-
-        //        //var response = await _notificationService.SendNotificationAsync
-        //        //(new NotificationRequest()
-        //        //{
-        //        //    Channel = NotificationChannel.SignalR,
-        //        //    Type = NotificationType.NewDirectMarketerRegistered,
-        //        //    Recipient = parentMarketer.ApplicationUserId.ToString(),
-        //        //});
-        //        await _marketerUnitOfWork.CommitAsync();
-
-        //        return new OperationResult
-        //        {
-        //            Success = true,
-        //            Message = NotifiAndAlertsResources.RegistrationSuccessful
-        //        };
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        _marketerUnitOfWork.Rollback();
-        //        throw new Exception(ex.Message, ex.InnerException);
-        //    }
-        //}
-
-        //public async Task<OperationResult> IsValidLinkForMarketerRegistration(string recruitmentLinkCode)
-        //{
-        //    // 1- code is exist in db
-        //    var codeInDb = await _marketerUnitOfWork.TableRepository<TbRecruitment>().FindAsync(c => c.Code == recruitmentLinkCode);
-        //    if (codeInDb == null)
-        //        return new OperationResult() { Success = false, Message = ValidationResources.CodeNotFound };
-
-        //    // 2- the code without marketer
-        //    var isWithMarketer = await _marketerUnitOfWork.TableRepository<TbMarketer>().IsExistsAsync("RecruitmentId", codeInDb.Id);
-        //    if (isWithMarketer)
-        //        return new OperationResult() { Success = false, Message = ValidationResources.RecruitmentLinkLimit };
-
-        //    return new OperationResult() { Success = true };
-        //}
-
-        //public async Task<ServiceResult<bool>> GetProfileCompletionStatusAsync(string userId)
-        //{
-        //    try
-        //    {
-        //        // Find the marketer by user ID
-        //        var marketer = await _marketerUnitOfWork.TableRepository<TbMarketer>()
-        //            .GetAsync(m => m.ApplicationUserId == userId);
-
-        //        if (marketer == null || !marketer.Any())
-        //        {
-        //            return new ServiceResult<bool>
-        //            {
-        //                Success = false,
-        //                Message = UserResources.UserNotFound,
-        //                Errors = new List<string> { UserResources.UserNotFound }
-        //            };
-        //        }
-
-        //        var marketerEntity = marketer.First();
-
-        //        return new ServiceResult<bool>
-        //        {
-        //            Success = true,
-        //            Data = marketerEntity.IsProfileCompleted,
-        //            Message = marketerEntity.IsProfileCompleted 
-        //                ? "Profile is completed." 
-        //                : "Profile is not completed."
-        //        };
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        return new ServiceResult<bool>
-        //        {
-        //            Success = false,
-        //            Message = ex.Message,
-        //            Errors = new List<string> { ex.InnerException?.Message ?? ex.Message }
-        //        };
-        //    }
-        //}
-
-        //public async Task<ServiceResult<bool>> CompleteMarketerProfileAsync(string userId, MarketerProfileCompletionDto profileDto)
-        //{
-        //    try
-        //    {
-        //        // Find the marketer by user ID
-        //        var marketerEntity = (await _marketerUnitOfWork.TableRepository<TbMarketer>()
-        //            .GetAsync(m => m.ApplicationUserId == userId))
-        //            .FirstOrDefault();
-
-        //        var applicationUser = await _userManager.FindByIdAsync(userId);
-
-        //        if (marketerEntity == null || applicationUser == null)
-        //        {
-        //            return new ServiceResult<bool>
-        //            {
-        //                Success = false,
-        //                Data = false,
-        //                Message = UserResources.UserNotFound,
-        //                Errors = new List<string> { UserResources.UserNotFound }
-        //            };
-        //        }
-
-        //        // Check if profile is already completed
-        //        if (marketerEntity.IsProfileCompleted)
-        //        {
-        //            return new ServiceResult<bool>
-        //            {
-        //                Success = false,
-        //                Data = marketerEntity.IsProfileCompleted,
-        //                Message = "Profile is already completed.",
-        //                Errors = new List<string> { "Profile is already completed." }
-        //            };
-        //        }
-
-        //        await _marketerUnitOfWork.BeginTransactionAsync();
-
-        //        // Update ApplicationUser information
-
-        //        // Verify old password before allowing changes
-        //        var passwordCheck = await _userManager.CheckPasswordAsync(applicationUser, profileDto.OldPassword);
-        //        if (!passwordCheck)
-        //        {
-        //            return new ServiceResult<bool>
-        //            {
-        //                Success = false,
-        //                Message = UserResources.Invalid_UsernamePassword_Couple,
-        //                Errors = new List<string> { UserResources.Invalid_UsernamePassword_Couple }
-        //            };
-        //        }
-
-        //        applicationUser.FirstName = profileDto.FirstName;
-        //        applicationUser.LastName = profileDto.LastName;
-        //        applicationUser.PhoneNumber = profileDto.PhoneNumber;
-        //        applicationUser.PhoneCode = profileDto.PhoneCode;
-
-        //        var updateUserResult = await _userManager.UpdateAsync(applicationUser);
-        //        if (!updateUserResult.Succeeded)
-        //        {
-        //            var friendlyErrors = updateUserResult.Errors
-        //                .Select(e => GetUserFriendlyErrorMessage(e.Code))
-        //                .ToList();
-
-        //            return new ServiceResult<bool>
-        //            {
-        //                Success = false,
-        //                Message = NotifiAndAlertsResources.SaveFailed,
-        //                Errors = friendlyErrors
-        //            };
-        //        }
-
-        //        // Change password
-        //        var passwordChangeResult = await _userManager.ChangePasswordAsync(applicationUser, profileDto.OldPassword, profileDto.NewPassword);
-        //        if (!passwordChangeResult.Succeeded)
-        //        {
-        //            var friendlyErrors = passwordChangeResult.Errors
-        //                .Select(e => GetUserFriendlyErrorMessage(e.Code))
-        //                .ToList();
-
-        //            return new ServiceResult<bool>
-        //            {
-        //                Success = false,
-        //                Message = NotifiAndAlertsResources.SaveFailed,
-        //                Errors = friendlyErrors
-        //            };
-        //        }
-
-        //        // Update Marketer information
-        //        marketerEntity.Address = profileDto.Address;
-        //        marketerEntity.ZipCode = profileDto.ZipCode;
-        //        marketerEntity.NationalIdNumber = profileDto.NationalIdNumber;
-        //        marketerEntity.CityId = profileDto.CityId;
-        //        marketerEntity.TeamId = profileDto.TeamId;
-        //        marketerEntity.NationalIdImagePath1 = await SaveImage(profileDto.NationalIdImageFiles[0]);
-        //        marketerEntity.NationalIdImagePath2 = (profileDto.NationalIdImageFiles.Count > 1 && 
-        //            profileDto.NationalIdImageFiles[1] != null && 
-        //            profileDto.NationalIdImageFiles[1].Length > 0) 
-        //            ? await SaveImage(profileDto.NationalIdImageFiles[1]) 
-        //            : null;
-        //        marketerEntity.IsProfileCompleted = true;
-        //        marketerEntity.IsProfileCompleted = true;
-
-        //        await _marketerUnitOfWork.TableRepository<TbMarketer>().UpdateAsync(marketerEntity, Guid.Empty);
-        //        await _marketerUnitOfWork.CommitAsync();
-
-        //        return new ServiceResult<bool>
-        //        {
-        //            Success = true,
-        //            Message = NotifiAndAlertsResources.SavedSuccessfully,
-        //        };
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        _marketerUnitOfWork.Rollback();
-        //        return new ServiceResult<bool>
-        //        {
-        //            Success = false,
-        //            Message = ex.Message,
-        //            Errors = new List<string> { ex.InnerException?.Message ?? ex.Message }
-        //        };
-        //    }
-        //}
+                return new ServiceResult<CustomerRegistrationResponseDto>
+                {
+                    Success = true,
+                    Message = NotifiAndAlertsResources.RegistrationSuccessful,
+                    Data = new CustomerRegistrationResponseDto
+                    {
+                        UserId = applicationUser.Id,
+                        FirstName = applicationUser.FirstName,
+                        LastName = applicationUser.LastName,
+                        Email = applicationUser.Email,
+                        UserName = applicationUser.UserName,
+                        PhoneNumber = applicationUser.PhoneNumber,
+                        PhoneCode = applicationUser.PhoneCode,
+                        ProfileImagePath = applicationUser.ProfileImagePath,
+                        Token = signInResult.Token,
+                        RefreshToken = signInResult.RefreshToken,
+                        RegisteredDate = DateTime.UtcNow
+                    }
+                };
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex, "Error registering customer");
+                return new ServiceResult<CustomerRegistrationResponseDto>
+                {
+                    Success = false,
+                    Message = NotifiAndAlertsResources.SomethingWentWrong,
+                    Errors = new List<string> { ex.Message }
+                };
+            }
+        }
 
         #region Helper functions
 

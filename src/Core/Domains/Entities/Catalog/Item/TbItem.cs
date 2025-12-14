@@ -22,30 +22,31 @@ namespace Domains.Entities.Catalog.Item
         [StringLength(200)]
         public string ShortDescriptionEn { get; set; }
 
-        [StringLength(200)]
-        public string Barcode { get; set; }
-
-        [StringLength(200)]
-        public string SKU { get; set; }
-
+        [StringLength(500)]
         public string DescriptionAr { get; set; }
 
+        [StringLength(500)]
         public string DescriptionEn { get; set; }
 
         [Required]
         public Guid CategoryId { get; set; }
 
-        public Guid? SubCategoryId { get; set; }
-
-        public Guid? UnitId { get; set; }
+        public Guid UnitId { get; set; }
 
         public Guid? VideoProviderId { get; set; }
 
         [StringLength(200)]
-        public string VideoUrl { get; set; }
+        public string? VideoUrl { get; set; }
 
         [StringLength(200)]
-        public string ThumbnailImage { get; set; }
+        public string ThumbnailImage { get; set; } = null!;
+        [StringLength(200)]
+        public string? Barcode { get; set; }
+        [StringLength(200)]
+        public string? SKU { get; set; }
+
+        [Column(TypeName = "decimal(18,2)")]
+        public decimal? BasePrice { get; set; }
 
         [Column(TypeName = "decimal(18,2)")]
         public decimal? MinimumPrice { get; set; }
@@ -53,20 +54,11 @@ namespace Domains.Entities.Catalog.Item
         [Column(TypeName = "decimal(18,2)")]
         public decimal? MaximumPrice { get; set; }
 
-        public bool IsNewArrival { get; set; }
+        public Guid BrandId { get; set; }
 
-        [StringLength(100)]
-        public string SEOTitle { get; set; }
+        public int VisibilityScope { get; set; }// = ProductVisibilityStatus.Visible;
 
-        [StringLength(1000)]
-        public string SEODescription { get; set; }
-
-        [StringLength(200)]
-        public string SEOMetaTags { get; set; }
-
-        public Guid? BrandId { get; set; }
-
-        public int VisibilityScope { get; set; }
+        public bool IsActive { get; set; } = true;
 
         // Navigation Properties
         [ForeignKey("CategoryId")]
@@ -81,6 +73,5 @@ namespace Domains.Entities.Catalog.Item
         public virtual ICollection<TbItemImage> ItemImages { get; set; }
         public virtual ICollection<TbItemCombination> ItemCombinations { get; set; }
         public virtual ICollection<TbItemAttribute> ItemAttributes { get; set; }
-        public virtual ICollection<TbItemAttributeCombinationPricing> ItemAttributeCombinationPricings { get; set; }
     }
 }

@@ -8,12 +8,8 @@ namespace BL.Contracts.Service.ECommerce.Item
 {
     public interface IItemService : IBaseService<TbItem, ItemDto>
     {
-        Task<PaginatedDataModel<VwItemDto>> GetPage(ItemSearchCriteriaModel criteriaModel);
+        Task<PaginatedDataModel<ItemDto>> GetPage(ItemSearchCriteriaModel criteriaModel);
+        new Task<ItemDto> FindByIdAsync(Guid Id);
         new Task<bool> Save(ItemDto dto, Guid userId);
-
-        // Add new currency conversion methods with optional conversion
-        Task<ItemDto> GetByIdWithCurrencyConversionAsync(Guid id, string clientIp, bool applyConversion = true);
-        Task<IEnumerable<ItemDto>> GetAllWithCurrencyConversionAsync(string clientIp, bool applyConversion = true);
-        Task<PaginatedDataModel<VwItemDto>> GetPageWithCurrencyConversionAsync(ItemSearchCriteriaModel criteriaModel, string clientIp, bool applyConversion = true);
     }
 }

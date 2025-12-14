@@ -20,7 +20,7 @@ namespace BL.Services.Wallet
         public async Task<CustomerWalletDto> GetCustomerWalletAsync(Guid customerId)
         {
             var wallet = await _context.TbCustomerWallets
-                .FirstOrDefaultAsync(w => w.CustomerId == customerId);
+                .FirstOrDefaultAsync(w => w.UserId == customerId.ToString());
 
             if (wallet == null) return null;
 
@@ -47,20 +47,20 @@ namespace BL.Services.Wallet
         public async Task<CustomerWalletDto> CreateCustomerWalletAsync(Guid customerId)
         {
             var existingWallet = await _context.TbCustomerWallets
-                .FirstOrDefaultAsync(w => w.CustomerId == customerId);
+                .FirstOrDefaultAsync(w => w.UserId == customerId.ToString());
 
             if (existingWallet != null)
                 throw new Exception("Customer already has a wallet");
 
             var wallet = new TbCustomerWallet
             {
-                CustomerId = customerId,
+                UserId = customerId.ToString(),
                 AvailableBalance = 0,
                 PendingBalance = 0,
                 TotalEarned = 0,
                 TotalSpent = 0,
                 CurrencyId = Guid.Parse("00000000-0000-0000-0000-000000000001"), // Default currency
-                CurrentState = 1 // Active
+                IsDeleted = false // Active
             };
 
             _context.TbCustomerWallets.Add(wallet);
@@ -74,7 +74,7 @@ namespace BL.Services.Wallet
             var wallet = await _context.TbCustomerWallets.FindAsync(walletId);
             if (wallet == null) return false;
 
-            wallet.CurrentState = 1;
+            wallet.IsDeleted = false;
             wallet.UpdatedDateUtc = DateTime.UtcNow;
             await _context.SaveChangesAsync();
             return true;
@@ -85,7 +85,7 @@ namespace BL.Services.Wallet
             var wallet = await _context.TbCustomerWallets.FindAsync(walletId);
             if (wallet == null) return false;
 
-            wallet.CurrentState = 0;
+            wallet.IsDeleted = true;
             wallet.UpdatedDateUtc = DateTime.UtcNow;
             await _context.SaveChangesAsync();
             return true;
@@ -139,7 +139,7 @@ namespace BL.Services.Wallet
                 TotalWithdrawn = 0,
                 TotalCommissionPaid = 0,
                 CurrencyId = Guid.Parse("00000000-0000-0000-0000-000000000001"), // Default currency
-                CurrentState = 1 // Active
+                IsDeleted = false // Active
             };
 
             _context.TbVendorWallets.Add(wallet);
@@ -153,7 +153,7 @@ namespace BL.Services.Wallet
             var wallet = await _context.TbVendorWallets.FindAsync(walletId);
             if (wallet == null) return false;
 
-            wallet.CurrentState = 1;
+            wallet.IsDeleted = false;
             wallet.UpdatedDateUtc = DateTime.UtcNow;
             await _context.SaveChangesAsync();
             return true;
@@ -164,7 +164,7 @@ namespace BL.Services.Wallet
             var wallet = await _context.TbVendorWallets.FindAsync(walletId);
             if (wallet == null) return false;
 
-            wallet.CurrentState = 0;
+            wallet.IsDeleted = true;
             wallet.UpdatedDateUtc = DateTime.UtcNow;
             await _context.SaveChangesAsync();
             return true;
@@ -340,12 +340,12 @@ namespace BL.Services.Wallet
         public async Task<WalletTransactionDto> ProcessDepositAsync(DepositRequestDto dto)
         {
             var wallet = await _context.TbCustomerWallets
-                .FirstOrDefaultAsync(w => w.CustomerId == dto.CustomerId);
+                .FirstOrDefaultAsync(w => w.UserId == dto.UserId);
 
             if (wallet == null)
                 throw new Exception("Customer wallet not found");
 
-            if (wallet.CurrentState != 1)
+            if (wallet.IsDeleted)
                 throw new Exception("Wallet is not active");
 
             var transaction = new TbWalletTransaction
@@ -378,7 +378,7 @@ namespace BL.Services.Wallet
                 if (wallet == null)
                     throw new Exception("Customer wallet not found");
 
-                if (wallet.CurrentState != 1)
+                if (wallet.IsDeleted)
                     throw new Exception("Wallet is not active");
 
                 if (wallet.AvailableBalance < dto.Amount)
@@ -403,7 +403,7 @@ namespace BL.Services.Wallet
                 if (wallet == null)
                     throw new Exception("Vendor wallet not found");
 
-                if (wallet.CurrentState != 1)
+                if (wallet.IsDeleted)
                     throw new Exception("Wallet is not active");
 
                 var availableBalance = wallet.AvailableBalance;
@@ -437,7 +437,7 @@ namespace BL.Services.Wallet
         public async Task<decimal> GetCustomerBalanceAsync(Guid customerId)
         {
             var wallet = await _context.TbCustomerWallets
-                .FirstOrDefaultAsync(w => w.CustomerId == customerId);
+                .FirstOrDefaultAsync(w => w.UserId == customerId.ToString());
 
             return wallet?.AvailableBalance ?? 0;
         }
@@ -558,8 +558,8 @@ namespace BL.Services.Wallet
                 .Where(t => t.CreatedDateUtc >= today)
                 .ToListAsync();
 
-            var activeCustomerWallets = await _context.TbCustomerWallets.CountAsync(w => w.CurrentState == 1);
-            var activeVendorWallets = await _context.TbVendorWallets.CountAsync(w => w.CurrentState == 1);
+            var activeCustomerWallets = await _context.TbCustomerWallets.CountAsync(w => !w.IsDeleted);
+            var activeVendorWallets = await _context.TbVendorWallets.CountAsync(w => !w.IsDeleted);
 
             return new WalletStatisticsDto
             {
@@ -639,13 +639,13 @@ namespace BL.Services.Wallet
             return new CustomerWalletDto
             {
                 Id = wallet.Id,
-                CustomerId = wallet.CustomerId,
+                UserId = wallet.UserId,
                 CustomerName = "N/A", // Would need to join
                 Balance = wallet.AvailableBalance,
                 TotalDeposits = wallet.TotalEarned,
                 TotalWithdrawals = wallet.TotalSpent,
                 PendingAmount = wallet.PendingBalance,
-                IsActive = wallet.CurrentState == 1,
+                IsActive = !wallet.IsDeleted,
                 CreatedDateUtc = wallet.CreatedDateUtc,
                 ModifiedDateUtc = wallet.UpdatedDateUtc
             };
@@ -663,7 +663,7 @@ namespace BL.Services.Wallet
                 TotalWithdrawals = wallet.TotalWithdrawn,
                 PendingAmount = wallet.PendingBalance,
                 HeldAmount = 0, // Calculated field if needed
-                IsActive = wallet.CurrentState == 1,
+                IsActive = !wallet.IsDeleted,
                 CreatedDateUtc = wallet.CreatedDateUtc,
                 ModifiedDateUtc = wallet.UpdatedDateUtc
             };

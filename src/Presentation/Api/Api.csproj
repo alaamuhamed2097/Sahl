@@ -16,17 +16,16 @@
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 			<TreatAsUsed>true</TreatAsUsed>
 		</PackageReference>
-		<PackageReference Include="Swashbuckle.AspNetCore" Version="10.0.0" />
+		<PackageReference Include="Swashbuckle.AspNetCore" Version="10.0.1" />
+		<PackageReference Include="Asp.Versioning.Mvc" Version="8.1.0" />
+		<PackageReference Include="Asp.Versioning.Mvc.ApiExplorer" Version="8.1.0" />
+		<PackageReference Include="Microsoft.OpenApi" Version="2.3.9" />
 	</ItemGroup>
 
 	<ItemGroup>
 	  <ProjectReference Include="..\..\Core\BL\BL.csproj" />
 	  <ProjectReference Include="..\..\Infrastructure\DAL\DAL.csproj" />
 	  <ProjectReference Include="..\..\Shared\Common\Common.csproj" />
-	</ItemGroup>
-
-	<ItemGroup>
-	  <Folder Include="Controllers\Marketing\" />
 	</ItemGroup>
 
 </Project>

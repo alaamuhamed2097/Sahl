@@ -1,0 +1,177 @@
+﻿@using Common.Enumerations
+@using Common.Enumerations.User
+@using Resources
+@using Shared.DTOs.ECommerce
+@using Shared.DTOs.ECommerce.Category
+@using Shared.DTOs.ECommerce.Item
+@attribute [Authorize(Roles = nameof(UserRole.Admin))]
+
+<div class="card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h5 class="mb-0 text-primary">@ECommerceResources.AttributeCombinations</h5>
+        @if (HasValidAttributeValues())
+        {
+            <button type="button" class="btn btn-primary btn-sm" @onclick="AddNewCombination">
+                <i class="fas fa-plus me-1"></i> @ActionsResources.Add Combination
+            </button>
+        }
+    </div>
+    <div class="card-body">
+        @if (!HasValidAttributeValues())
+        {
+            <div class="alert alert-warning">
+                <i class="fas fa-exclamation-triangle me-2"></i>
+                <strong>No attribute values configured!</strong>
+                <p class="mb-0 mt-2">
+                    Please go back to the previous step (Attributes) and add values for your pricing attributes.
+                    You need to:
+                </p>
+                <ul class="mb-0 mt-2">
+                    <li>For attributes with predefined options: Check the options you want to offer</li>
+                    <li>For custom value attributes: Add at least one value using the "Add Value" button</li>
+                </ul>
+            </div>
+        }
+        else if (Combinations != null && Combinations.Any())
+        {
+            <div class="table-responsive">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>@ECommerceResources.Attributes</th>
+                            <th>Barcode</th>
+                            <th>SKU</th>
+                            <th>BasePrice <span class="text-danger">*</span></th>
+                            <th>Is Default</th>
+                            <th>@FormResources.Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var combination in Combinations)
+                        {
+                            <tr>
+                                <td>
+                                    @GetCombinationAttributesDisplay(combination)
+                                </td>
+                                <td>
+                                    <InputText class="form-control"
+                                               @bind-Value="combination.Barcode" />
+                                </td>
+                                <td>
+                                    <InputText class="form-control"
+                                               @bind-Value="combination.SKU" />
+                                </td>
+                                <td>
+                                    <InputCheckbox class="form-check-input"
+                                                   @bind-Value="combination.IsDefault" />
+                                </td>
+                                <td>
+                                    <button type="button" class="btn btn-sm btn-danger"
+                                            @onclick="() => RemoveCombination(combination)">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+        else
+        {
+            <div class="text-center py-4 text-muted">
+                <i class="fas fa-list-alt fa-3x mb-3"></i>
+                <p>@NotifiAndAlertsResources.NoAttributeCombinations</p>
+            </div>
+        }
+    </div>
+</div>
+
+<!-- Add/Edit Combination Modal -->
+<div class="modal fade" id="combinationModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    @(EditingCombination == null ? ActionsResources.Add : ActionsResources.Edit) Combination
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label>Barcode</label>
+                        <InputText class="form-control" @bind-Value="TempCombination.Barcode" />
+                    </div>
+                    <div class="col-md-6">
+                        <label>SKU</label>
+                        <InputText class="form-control" @bind-Value="TempCombination.SKU" />
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <div class="form-check mt-4">
+                            <InputCheckbox class="form-check-input"
+                                           @bind-Value="TempCombination.IsDefault" />
+                            <label class="form-check-label">Is Default</label>
+                        </div>
+                    </div>
+                </div>
+
+                <h6 class="text-primary mb-3">@ECommerceResources.Attributes</h6>
+
+                @if (CategoryAttributes != null && CategoryAttributes.Any())
+                {
+                    @foreach (var attribute in CategoryAttributes)
+                    {
+                        // SAFE ACCESS: Check if attribute values exist
+                        // FIX: Use AttributeId instead of Id
+                        var hasValues = PricingAttributeValues != null && PricingAttributeValues.ContainsKey(attribute.AttributeId);
+                        var values = hasValues ? PricingAttributeValues[attribute.AttributeId] : new List<string>();
+
+                        // Filter out empty values
+                        var nonEmptyValues = values?.Where(v => !string.IsNullOrWhiteSpace(v)).ToList() ?? new List<string>();
+
+                        @if (nonEmptyValues != null && nonEmptyValues.Any())
+                        {
+                            <div class="mb-3">
+                                <label>@(attribute.Title)</label>
+                                @* USE STANDARD SELECT INSTEAD OF InputSelect *@
+                                <select class="form-select"
+                                        value="@GetSelectedAttributeValue(attribute.AttributeId)"
+                                        @onchange="@(e => SetSelectedAttributeValue(attribute.AttributeId, e.Value?.ToString() ?? ""))">
+                                    <option value="">@FormResources.Select</option>
+                                    @foreach (var value in nonEmptyValues)
+                                    {
+                                        var displayValue = GetDisplayValue(attribute, value);
+                                        <option value="@value">@displayValue</option>
+                                    }
+                                </select>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="alert alert-warning mb-3">
+                                <i class="fas fa-exclamation-triangle me-2"></i>
+                                No values available for <strong>@(attribute.Title)</strong>.
+                                Please add values in the previous step.
+                            </div>
+                        }
+                    }
+                }
+                else
+                {
+                    <div class="alert alert-warning">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        No attribute values available. Please add attribute values first.
+                    </div>
+                }
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">@ActionsResources.Cancel</button>
+                <button type="button" class="btn btn-primary" @onclick="SaveCombination">@ActionsResources.Save</button>
+            </div>
+        </div>
+    </div>
+</div>

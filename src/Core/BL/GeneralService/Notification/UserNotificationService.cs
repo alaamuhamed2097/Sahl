@@ -183,13 +183,13 @@ namespace BL.GeneralService.Notification
             try
             {
                 await _userNotificationUnitOfWork.BeginTransactionAsync();
-                await _userNotificationUnitOfWork.TableRepository<TbNotification>().UpdateCurrentStateAsync(id, userId, 0);
+                await _userNotificationUnitOfWork.TableRepository<TbNotification>().UpdateCurrentStateAsync(id, userId, true);
                 var userNotifications = await _userNotificationUnitOfWork.TableRepository<TbUserNotification>().GetAsync(x => x.NotificationId == id);
                 if (userNotifications?.Count() > 0)
                 {
                     foreach (var userNotification in userNotifications)
                     {
-                        var isUpdatedCurrentState = await _userNotificationUnitOfWork.TableRepository<TbUserNotification>().UpdateCurrentStateAsync(userNotification.Id, userId, 0);
+                        var isUpdatedCurrentState = await _userNotificationUnitOfWork.TableRepository<TbUserNotification>().UpdateCurrentStateAsync(userNotification.Id, userId, true);
                         if (!isUpdatedCurrentState)
                             throw new Exception(NotifiAndAlertsResources.DeleteFailed);
                     }

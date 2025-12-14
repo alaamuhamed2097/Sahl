@@ -1,0 +1,18 @@
+using System.ComponentModel.DataAnnotations.Schema;
+
+namespace Domains.Entities.ECommerceSystem.Cart
+{
+    public class TbShoppingCart : BaseEntity
+    {
+        [ForeignKey("User")]
+        public string UserId { get; set; }
+
+        public bool IsActive { get; set; } = true;
+
+        public DateTime? ExpiresAt { get; set; }
+
+        public virtual ApplicationUser User { get; set; } = null!;
+
+        public virtual ICollection<TbShoppingCartItem> Items { get; set; } = new HashSet<TbShoppingCartItem>();
+    }
+}

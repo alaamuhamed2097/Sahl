@@ -32,7 +32,7 @@ namespace BL.Service.Notification
                 throw new ArgumentNullException(nameof(userId));
 
             var preferences = await _preferencesRepository
-                .GetAsync(x => x.UserId == userId && x.CurrentState == 1);
+                .GetAsync(x => x.UserId == userId && !x.IsDeleted);
 
             return _mapper.MapList<TbNotificationPreferences, NotificationPreferencesDto>(preferences).ToList();
         }
@@ -43,7 +43,7 @@ namespace BL.Service.Notification
                 throw new ArgumentNullException(nameof(userId));
 
             var preference = (await _preferencesRepository
-                .GetAsync(x => x.UserId == userId && x.NotificationType == notificationType && x.CurrentState == 1))
+                .GetAsync(x => x.UserId == userId && x.NotificationType == notificationType && !x.IsDeleted))
                 .FirstOrDefault();
 
             if (preference == null) return null;
@@ -70,7 +70,7 @@ namespace BL.Service.Notification
                     && x.UserType == dto.UserType
                     && x.NotificationType == dto.NotificationType
                     && x.Id != dto.Id
-                    && x.CurrentState == 1))
+                    && !x.IsDeleted))
                 .FirstOrDefault();
 
             if (existing != null)
@@ -89,7 +89,7 @@ namespace BL.Service.Notification
 
         public async Task<bool> DeleteAsync(Guid id, Guid userId)
         {
-            return await _preferencesRepository.UpdateCurrentStateAsync(id, userId, 0);
+            return await _preferencesRepository.UpdateCurrentStateAsync(id, userId, true);
         }
 
         public async Task<bool> UpdatePreferenceAsync(
@@ -102,7 +102,7 @@ namespace BL.Service.Notification
             Guid updaterId)
         {
             var preference = (await _preferencesRepository
-                .GetAsync(x => x.UserId == userId && x.NotificationType == notificationType && x.CurrentState == 1))
+                .GetAsync(x => x.UserId == userId && x.NotificationType == notificationType && !x.IsDeleted))
                 .FirstOrDefault();
 
             if (preference == null)

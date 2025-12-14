@@ -6,7 +6,6 @@ using Dashboard.Contracts.Customer;
 using Dashboard.Contracts.ECommerce.Category;
 using Dashboard.Contracts.ECommerce.Item;
 using Dashboard.Contracts.General;
-using Dashboard.Contracts.Inventory;
 using Dashboard.Contracts.Location;
 using Dashboard.Contracts.Order;
 using Dashboard.Contracts.User;
@@ -20,7 +19,6 @@ using Dashboard.Services.Customer;
 using Dashboard.Services.ECommerce.Category;
 using Dashboard.Services.ECommerce.Item;
 using Dashboard.Services.General;
-using Dashboard.Services.Inventory;
 using Dashboard.Services.Location;
 using Dashboard.Services.Order;
 using Dashboard.Services.User;
@@ -53,8 +51,6 @@ namespace Dashboard.Extensions
 
             // Warehouse & Inventory Services
             services.AddScoped<IWarehouseService, WarehouseService>();
-            services.AddScoped<IInventoryMovementService, InventoryMovementService>();
-            services.AddScoped<IReturnMovementService, ReturnMovementService>();
 
             // Content Management Services
             services.AddScoped<IContentAreaService, ContentAreaService>();

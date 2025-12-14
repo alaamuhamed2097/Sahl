@@ -1,4 +1,6 @@
 ﻿using Api.Extensions;
+using Api.Middleware;
+using Asp.Versioning.ApiExplorer;
 using BL.GeneralService.Notification;
 using DAL.ApplicationContext;
 using Domains.Identity;
@@ -44,9 +46,14 @@ builder.Services.AddInfrastructureServices();
 // Configure Localization
 builder.Services.AddLocalizationConfiguration();
 
-// Configure MVC & Compression
+// Configure MVC & Compression (includes versioning)
 builder.Services.AddMvcConfiguration();
 builder.Services.AddCompressionConfiguration();
+
+// API Versioning is configured in AddMvcConfiguration()
+// Controllers are organized in v1 folder with [ApiVersion("1.0")] attribute
+// Routes follow pattern: api/v{version:apiVersion}/[controller]
+// Swagger is configured to display all API versions
 
 // Configure CORS
 builder.Services.AddCorsConfiguration(builder.Environment);
@@ -60,17 +67,26 @@ builder.Services.AddHttpClient();
 
 var app = builder.Build();
 
+// Get the API version description provider
+var apiVersionProvider = app.Services.GetRequiredService<IApiVersionDescriptionProvider>();
+
 // Configure middleware pipeline
 app.UseSwagger(options =>
 {
     options.RouteTemplate = "openapi/{documentName}.json";
 });
 
-//if (app.Environment.IsDevelopment())
-//{
+// Use versioned Swagger UI configuration
 app.UseSwaggerUI(options =>
 {
-    options.SwaggerEndpoint("/openapi/v1.json", "Sahl API v1");
+    foreach (var description in apiVersionProvider.ApiVersionDescriptions)
+    {
+        options.SwaggerEndpoint(
+            $"/openapi/{description.GroupName}.json",
+            description.GroupName.ToUpperInvariant()
+        );
+    }
+
     options.RoutePrefix = "swagger";
 
     app.MapGet("/", () => Results.Redirect("/swagger"))
@@ -103,28 +119,7 @@ app.MapGet("/openapi/export", async context =>
     var filePath = Path.Combine(specsPath, "swagger.json");
     await File.WriteAllTextAsync(filePath, openApiJson);
 
-    //return Results.Ok(new
-    //{
-    //    message = "OpenAPI JSON exported successfully",
-    //    path = filePath,
-    //    url = openApiUrl
-    //});
 }).ExcludeFromDescription();
-//}
-//else
-//{
-//    app.UseSwaggerUI(c =>
-//    {
-//        app.MapGet("/", () => Results.Redirect("/swagger"));
-//        c.DefaultModelsExpandDepth(-1);
-//        c.DocExpansion(Swashbuckle.AspNetCore.SwaggerUI.DocExpansion.None);
-//        c.EnableDeepLinking();
-//        c.DisplayRequestDuration();
-//        c.EnableFilter();
-//        c.ShowExtensions();
-//        c.EnableValidator();
-//    });
-//}
 
 // Middleware order
 app.UseStaticFiles();
@@ -146,6 +141,12 @@ app.UseAuthorization();
 // SignalR hub mapping
 app.MapHub<NotificationHub>("/notificationHub");
 
+// Use the ClientIP middleware
+app.UseMiddleware<ClientIPMiddleware>();
+
+// Use the Exception Handling middleware (must be placed after routing but before map endpoints)
+app.UseMiddleware<ExceptionHandlingMiddleware>();
+
 app.MapControllers();
 
 // Apply migrations and seed data
@@ -161,21 +162,8 @@ using (var scope = app.Services.CreateScope())
     await dbContext.Database.MigrateAsync();
 
     // Seed data
-    // await ContextConfigurations.SeedDataAsync(dbContext, userManager, roleManager);
+    await ContextConfigurations.SeedDataAsync(dbContext, userManager, roleManager);
 }
 
-// Add debugging middleware for Swagger
-app.Use(async (context, next) =>
-{
-    if (context.Request.Path.StartsWithSegments("/swagger"))
-    {
-        Console.WriteLine($"Swagger request: {context.Request.Path}");
-    }
-    await next();
-});
-
-// Use the ClientIP middleware
-app.UseMiddleware<Api.Middleware.ClientIPMiddleware>();
-
 // run
-app.Run();
+await app.RunAsync();

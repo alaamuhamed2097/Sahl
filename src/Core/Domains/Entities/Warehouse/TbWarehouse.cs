@@ -1,5 +1,6 @@
-using Domains.Entities.Inventory;
+using Domains.Entities.ECommerceSystem.Vendor;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Domains.Entities.Warehouse
 {
@@ -22,8 +23,15 @@ namespace Domains.Entities.Warehouse
         [MaxLength(4)]
         public string? PhoneCode { get; set; }
 
+        // Warehouse type indicators
+        public bool IsDefaultPlatformWarehouse { get; set; } = false;
+
+        [ForeignKey("Vendor")]
+        public Guid? VendorId { get; set; }
+
         public bool IsActive { get; set; } = true;
 
-        public virtual ICollection<TbMovitemsdetail>? MovitemsDetails { get; set; }
+        // Navigation Properties
+        public virtual TbVendor? Vendor { get; set; }
     }
 }

@@ -8,8 +8,6 @@ using Domains.Entities.CouponCode;
 using Resources;
 using Serilog;
 using Shared.DTOs.ECommerce.CouponCode;
-using Shared.DTOs.ECommerce.Order;
-using Shared.GeneralModels.Parameters;
 using Shared.GeneralModels.ResultModels;
 using Shared.GeneralModels.SearchCriteriaModels;
 using System.Linq.Expressions;
@@ -46,13 +44,13 @@ namespace BL.Service.PromoCode
                 throw new ArgumentOutOfRangeException(nameof(criteriaModel.PageSize), ValidationResources.PageSizeRange);
 
             // Base filter for active entities
-            Expression<Func<TbCouponCode, bool>> filter = x => x.CurrentState == 1;
+            Expression<Func<TbCouponCode, bool>> filter = x => !x.IsDeleted;
 
             // Apply search term if provided
             if (!string.IsNullOrWhiteSpace(criteriaModel.SearchTerm))
             {
                 string searchTerm = criteriaModel.SearchTerm.Trim().ToLower();
-                filter = x => x.CurrentState == 1 &&
+                filter = x => !x.IsDeleted &&
                               (x.TitleAR != null && x.TitleAR.ToLower().Contains(searchTerm) ||
                                x.TitleEN != null && x.TitleEN.ToLower().Contains(searchTerm) ||
                                x.Code != null && x.Code.ToLower().Contains(searchTerm));
@@ -93,7 +91,7 @@ namespace BL.Service.PromoCode
 
             var promo = (await _unitOfWork.TableRepository<TbCouponCode>()
                 .GetAsync(
-                    predicate: p => p.CurrentState == 1 && p.Id == id,
+                    predicate: p => !p.IsDeleted && p.Id == id,
                     includeProperties: "Orders"))
                 .FirstOrDefault();
 
@@ -158,7 +156,7 @@ namespace BL.Service.PromoCode
 
             if (entity.Id != Guid.Empty)
             {
-                var exists = (await _unitOfWork.TableRepository<TbCouponCode>().GetAsync(p => p.Id == entity.Id && p.CurrentState == 0)).Any();
+                var exists = (await _unitOfWork.TableRepository<TbCouponCode>().GetAsync(p => p.Id == entity.Id && !p.IsDeleted)).Any();
                 if (exists)
                     throw new ArgumentException("Invalid promo code ID");
             }
@@ -188,69 +186,69 @@ namespace BL.Service.PromoCode
             }
         }
 
-        public async Task<ServiceResult<AppliedCouponCodeResult>> ApplyCouponCode(ApplyCouponCodeRequest request)
-        {
-            try
-            {
-                // Validate the promo code
-                var validationResult = await ValidateCouponCodeAsync(request.Code, request.UserId);
+        //public async Task<ServiceResult<AppliedCouponCodeResult>> ApplyCouponCode(ApplyCouponCodeRequest request)
+        //{
+        //    try
+        //    {
+        //        // Validate the promo code
+        //        var validationResult = await ValidateCouponCodeAsync(request.Code, request.UserId);
 
-                // First get all prices from the database
-                var priceLookupResult = await GetPricesForCartItemsAsync(request.OrderItems);
-                if (!priceLookupResult.Success)
-                    return ServiceResult<AppliedCouponCodeResult>.FailureResult(priceLookupResult.Message);
+        //        // First get all prices from the database
+        //        var priceLookupResult = await GetPricesForCartItemsAsync(request.OrderItems);
+        //        if (!priceLookupResult.Success)
+        //            return ServiceResult<AppliedCouponCodeResult>.FailureResult(priceLookupResult.Message);
 
-                var itemPrices = priceLookupResult.Data;
-                decimal cartTotal = itemPrices.Sum(x => x.Price * x.Quantity);
+        //        var itemPrices = priceLookupResult.Data;
+        //        decimal cartTotal = itemPrices.Sum(x => x.Price * x.Quantity);
 
-                if (!validationResult.Success || !validationResult.Data.IsValid)
-                    return ServiceResult<AppliedCouponCodeResult>.FailureResult(validationResult.Message);
+        //        if (!validationResult.Success || !validationResult.Data.IsValid)
+        //            return ServiceResult<AppliedCouponCodeResult>.FailureResult(validationResult.Message);
 
-                // Get the full promo code entity
-                var couponCode = (await _unitOfWork.TableRepository<TbCouponCode>()
-                    .GetAsync(p => p.Id == validationResult.Data.CouponCodeId && p.CurrentState == 1))
-                    .FirstOrDefault();
+        //        // Get the full promo code entity
+        //        var couponCode = (await _unitOfWork.TableRepository<TbCouponCode>()
+        //            .GetAsync(p => p.Id == validationResult.Data.CouponCodeId && !p.IsDeleted))
+        //            .FirstOrDefault();
 
-                if (couponCode == null)
-                    return ServiceResult<AppliedCouponCodeResult>.FailureResult("Promo code not found");
+        //        if (couponCode == null)
+        //            return ServiceResult<AppliedCouponCodeResult>.FailureResult("Promo code not found");
 
-                decimal totalDiscount = 0;
+        //        decimal totalDiscount = 0;
 
-                // Calculate cart-wide discount
-                totalDiscount = CalculateCartDiscount(_mapper.MapModel<TbCouponCode, CouponCodeDto>(couponCode), cartTotal);
+        //        // Calculate cart-wide discount
+        //        totalDiscount = CalculateCartDiscount(_mapper.MapModel<TbCouponCode, CouponCodeDto>(couponCode), cartTotal);
 
-                // Update usage count
-                couponCode.UsageCount++;
-                await _unitOfWork.TableRepository<TbCouponCode>().SaveAsync(couponCode, Guid.Empty);
+        //        // Update usage count
+        //        couponCode.UsageCount++;
+        //        await _unitOfWork.TableRepository<TbCouponCode>().SaveAsync(couponCode, Guid.Empty);
 
-                try
-                {
-                    await _unitOfWork.CommitAsync();
-                }
-                catch
-                {
-                    _unitOfWork.Rollback();
-                    throw;
-                }
+        //        try
+        //        {
+        //            await _unitOfWork.CommitAsync();
+        //        }
+        //        catch
+        //        {
+        //            _unitOfWork.Rollback();
+        //            throw;
+        //        }
 
-                var result = new AppliedCouponCodeResult
-                {
-                    CouponCodeId = couponCode.Id,
-                    Code = couponCode.Code,
-                    TotalDiscount = totalDiscount,
-                    DiscountType = couponCode.CouponCodeType,
-                    NewTotal = cartTotal - totalDiscount,
-                    OriginalTotal = cartTotal
-                };
+        //        var result = new AppliedCouponCodeResult
+        //        {
+        //            CouponCodeId = couponCode.Id,
+        //            Code = couponCode.Code,
+        //            TotalDiscount = totalDiscount,
+        //            DiscountType = couponCode.CouponCodeType,
+        //            NewTotal = cartTotal - totalDiscount,
+        //            OriginalTotal = cartTotal
+        //        };
 
-                return ServiceResult<AppliedCouponCodeResult>.SuccessResult(result);
-            }
-            catch (Exception ex)
-            {
-                _logger.Error(ex, $"Error applying promo code {request.Code}");
-                return ServiceResult<AppliedCouponCodeResult>.FailureResult("Error applying promo code");
-            }
-        }
+        //        return ServiceResult<AppliedCouponCodeResult>.SuccessResult(result);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        _logger.Error(ex, $"Error applying promo code {request.Code}");
+        //        return ServiceResult<AppliedCouponCodeResult>.FailureResult("Error applying promo code");
+        //    }
+        //}
 
         public async Task<ServiceResult<CouponCodeValidationResult>> ValidateCouponCodeAsync(string code, string userId)
         {
@@ -258,7 +256,7 @@ namespace BL.Service.PromoCode
             {
                 // Get active promo code
                 var couponCode = (await _unitOfWork.TableRepository<TbCouponCode>()
-                    .GetAsync(predicate: p => p.Code == code && p.CurrentState == 1,
+                    .GetAsync(predicate: p => p.Code == code && !p.IsDeleted,
                          includeProperties: "Orders")).FirstOrDefault();
 
                 if (couponCode == null)
@@ -304,38 +302,38 @@ namespace BL.Service.PromoCode
             return true;
         }
 
-        private async Task<ServiceResult<List<OrderItemPriceDto>>> GetPricesForCartItemsAsync(IEnumerable<OrderItemDto> orderItems)
-        {
-            var result = new List<OrderItemPriceDto>();
+        //private async Task<ServiceResult<List<OrderItemPriceDto>>> GetPricesForCartItemsAsync(IEnumerable<OrderItemDto> orderItems)
+        //{
+        //    var result = new List<OrderItemPriceDto>();
 
-            try
-            {
-                foreach (var item in orderItems)
-                {
-                    var product = await _itemService.FindByIdAsync(item.Id);
+        //    try
+        //    {
+        //        foreach (var item in orderItems)
+        //        {
+        //            var product = await _itemService.FindByIdAsync(item.Id);
 
-                    if (product == null)
-                        return ServiceResult<List<OrderItemPriceDto>>.FailureResult($"Product {item.Id} not found");
+        //            if (product == null)
+        //                return ServiceResult<List<OrderItemPriceDto>>.FailureResult($"Product {item.Id} not found");
 
-                    // Use GetPrice() method instead of Price property (now handled by combinations)
-                    decimal price = product.GetPrice();
+        //            // Use GetPrice() method instead of Price property (now handled by combinations)
+        //            decimal price = product.GetPrice();
 
-                    result.Add(new OrderItemPriceDto
-                    {
-                        ItemId = item.Id,
-                        Price = price,
-                        Quantity = item.Quantity
-                    });
-                }
+        //            result.Add(new OrderItemPriceDto
+        //            {
+        //                ItemId = item.Id,
+        //                Price = price,
+        //                Quantity = item.Quantity
+        //            });
+        //        }
 
-                return ServiceResult<List<OrderItemPriceDto>>.SuccessResult(result);
-            }
-            catch (Exception ex)
-            {
-                _logger.Error(ex, "Error fetching prices for cart items");
-                return ServiceResult<List<OrderItemPriceDto>>.FailureResult("Error fetching item prices");
-            }
-        }
+        //        return ServiceResult<List<OrderItemPriceDto>>.SuccessResult(result);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        _logger.Error(ex, "Error fetching prices for cart items");
+        //        return ServiceResult<List<OrderItemPriceDto>>.FailureResult("Error fetching item prices");
+        //    }
+        //}
 
         private ServiceResult<CouponCodeValidationResult> ValidateCartPromo(CouponCodeDto couponCode)
         {

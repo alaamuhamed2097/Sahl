@@ -1,12 +1,11 @@
-﻿namespace Domains.Entities.ECommerceSystem.Customer;
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
 
-public class TbCustomer : BaseEntity
+namespace Domains.Entities.ECommerceSystem.Customer
 {
-    public string? UserId { get; set; }
-    public string? Notes { get; set; }
-    public string FirstName { get; set; } = null!;
-
-    public string LastName { get; set; } = null!;
-
-    public string Email { get; set; } = null!;
+	public class TbCustomer : BaseEntity
+	{
+		public string? UserId { get; set; }
+	}
 }

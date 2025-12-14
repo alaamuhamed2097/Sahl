@@ -53,6 +53,12 @@ namespace DAL.Contracts.Repositories
             Expression<Func<T, bool>> predicate,
             CancellationToken cancellationToken = default);
 
+        /// <summary>
+        /// Gets IQueryable for advanced LINQ queries - للأداء الأفضل
+        /// Use this when you need to compose complex queries
+        /// </summary>
+        IQueryable<T> GetQueryable();
+
         // ============================================
         // READ OPERATIONS - Count & Existence
         // ============================================

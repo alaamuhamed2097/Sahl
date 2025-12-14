@@ -19,7 +19,7 @@ namespace Resources {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "17.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "18.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     public class ECommerceResources {
@@ -97,7 +97,7 @@ namespace Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to الحسابات المفعلّة .
+        ///   Looks up a localized string similar to الحسابات المفعلّة.
         /// </summary>
         public static string ActivatedAccounts {
             get {
@@ -304,15 +304,6 @@ namespace Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to الفائدة بالعربية .
-        /// </summary>
-        public static string ArabicBenefit {
-            get {
-                return ResourceManager.GetString("ArabicBenefit", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to اسم التخصص باللغة العربية.
         /// </summary>
         public static string ArabicSpecializationName {
@@ -345,15 +336,6 @@ namespace Resources {
         public static string Attributes {
             get {
                 return ResourceManager.GetString("Attributes", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to يرجى إدخال نص الميزة باللغة العربية والإنجليزية..
-        /// </summary>
-        public static string BenefitValidationMessage {
-            get {
-                return ResourceManager.GetString("BenefitValidationMessage", resourceCulture);
             }
         }
         
@@ -763,7 +745,7 @@ namespace Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to الفائدة بالإنجليزية .
+        ///   Looks up a localized string similar to الفائدة بالإنجليزية.
         /// </summary>
         public static string EnglishBenefit {
             get {
@@ -777,15 +759,6 @@ namespace Resources {
         public static string EnglishSpecializationName {
             get {
                 return ResourceManager.GetString("EnglishSpecializationName", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to القيمة المكافئة بالدولار .
-        /// </summary>
-        public static string EquivalentDollars {
-            get {
-                return ResourceManager.GetString("EquivalentDollars", resourceCulture);
             }
         }
         
@@ -853,7 +826,7 @@ namespace Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to لكل أسبوع .
+        ///   Looks up a localized string similar to لكل أسبوع.
         /// </summary>
         public static string ForEveryWeek {
             get {
@@ -988,7 +961,7 @@ namespace Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to  ضمن القائمة الرئيسية.
+        ///   Looks up a localized string similar to ضمن القائمة الرئيسية.
         /// </summary>
         public static string IsMainCategory {
             get {
@@ -1069,47 +1042,11 @@ namespace Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to قيمة PVs اليسرى .
-        /// </summary>
-        public static string LeftPVsAmount {
-            get {
-                return ResourceManager.GetString("LeftPVsAmount", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to المستوى.
         /// </summary>
         public static string Level {
             get {
                 return ResourceManager.GetString("Level", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to نسبة العمولة للمستوى الأول.
-        /// </summary>
-        public static string Level1PercentageCommission {
-            get {
-                return ResourceManager.GetString("Level1PercentageCommission", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to نسبة العمولة للمستوى الثاني.
-        /// </summary>
-        public static string Level2PercentageCommission {
-            get {
-                return ResourceManager.GetString("Level2PercentageCommission", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to نسبة العمولة للمستوى الثالث.
-        /// </summary>
-        public static string Level3PercentageCommission {
-            get {
-                return ResourceManager.GetString("Level3PercentageCommission", resourceCulture);
             }
         }
         
@@ -1195,38 +1132,11 @@ namespace Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to الحد الأقصى للأرباح/الأسبوع .
-        /// </summary>
-        public static string MaxEarnsWeek {
-            get {
-                return ResourceManager.GetString("MaxEarnsWeek", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to الطول الأقصى.
         /// </summary>
         public static string MaxLength {
             get {
                 return ResourceManager.GetString("MaxLength", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to الحد الأقصى لـ PVs  .
-        /// </summary>
-        public static string MaxLimitPVs {
-            get {
-                return ResourceManager.GetString("MaxLimitPVs", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to الحد الأدنى لـ PVs   .
-        /// </summary>
-        public static string MinLimitPVs {
-            get {
-                return ResourceManager.GetString("MinLimitPVs", resourceCulture);
             }
         }
         
@@ -1555,6 +1465,24 @@ namespace Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to نظام التسعير.
+        /// </summary>
+        public static string PricingSystem {
+            get {
+                return ResourceManager.GetString("PricingSystem", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to نظام التسعير مطلوب.
+        /// </summary>
+        public static string PricingSystemRequired {
+            get {
+                return ResourceManager.GetString("PricingSystemRequired", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to منتج.
         /// </summary>
         public static string Product {
@@ -1605,15 +1533,6 @@ namespace Resources {
         public static string PromoCodes {
             get {
                 return ResourceManager.GetString("PromoCodes", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to يرجى إدخال قيم صحيحة لليسار، اليمين والدولار..
-        /// </summary>
-        public static string PVValidationMessage {
-            get {
-                return ResourceManager.GetString("PVValidationMessage", resourceCulture);
             }
         }
         
@@ -1740,15 +1659,6 @@ namespace Resources {
         public static string Returned {
             get {
                 return ResourceManager.GetString("Returned", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to قيمة PVs اليمنى .
-        /// </summary>
-        public static string RightPVsAmount {
-            get {
-                return ResourceManager.GetString("RightPVsAmount", resourceCulture);
             }
         }
         
@@ -1915,20 +1825,11 @@ namespace Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to يبدأ من .
+        ///   Looks up a localized string similar to يبدأ من.
         /// </summary>
         public static string StartBy {
             get {
                 return ResourceManager.GetString("StartBy", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to أدخل قيمة PVs الابتدائية.
-        /// </summary>
-        public static string StartingPVsValuePlaceHolder {
-            get {
-                return ResourceManager.GetString("StartingPVsValuePlaceHolder", resourceCulture);
             }
         }
         

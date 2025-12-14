@@ -1,11 +1,18 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using Common.Enumerations.Visibility;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.Resources;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace Domains.Views.Item
 {
     public class VwItem
     {
         public Guid Id { get; set; }
+        public string SEOTitle { get; set; } = null!;
+        public string SEODescription { get; set; } = null!;
+        public string SEOMetaTags { get; set; } = null!;
         public string TitleAr { get; set; }
         public string TitleEn { get; set; }
         public string ShortDescriptionAr { get; set; }
@@ -18,67 +25,23 @@ namespace Domains.Views.Item
         public Guid UnitId { get; set; }
         public string UnitTitleAr { get; set; }
         public string UnitTitleEn { get; set; }
+        public Guid BrandId { get; set; }
+        public string BrandTitleAr { get; set; }
+        public string BrandTitleEn { get; set; }
+        public Guid? VideoProviderId { get; set; }
+        public string? VideoProviderTitleAr { get; set; }
+        public string? VideoProviderTitleEn { get; set; }
+        public string? VideoUrl { get; set; }
         public string ThumbnailImage { get; set; }
-        public bool StockStatus { get; set; }
-
-        /// <summary>
-        /// Default price from the default combination (IsDefault = true)
-        /// </summary>
-        public decimal DefaultPrice { get; set; }
-
-        /// <summary>
-        /// Default quantity from the default combination (IsDefault = true)
-        /// </summary>
-        public int DefaultQuantity { get; set; }
-
+        public string? Barcode { get; set; } 
+        public string? SKU { get; set; } 
+        public decimal? BasePrice { get; set; }
+        public decimal? MinimumPrice { get; set; }
+        public decimal? MaximumPrice { get; set; }
         public DateTime CreatedDateUtc { get; set; }
-        public string? VideoLink { get; set; }
-        public bool IsNewArrival { get; set; }
-        public bool IsBestSeller { get; set; }
-        public bool IsRecommended { get; set; }
+        public ProductVisibilityStatus VisibilityScope { get; set; }
 
-        [Column("ItemImagesJson")]
-        public string? ItemImagesJson { get; set; }
-
-        /// <summary>
-        /// JSON string containing all pricing combinations
-        /// Format: [{"AttributeIds":"guid1,guid2","Price":100,"SalesPrice":90,"Quantity":50,"IsDefault":true}]
-        /// </summary>
-        [Column("CombinationsJson")]
-        public string? CombinationsJson { get; set; }
-
-        /// <summary>
-        /// Parsed list of pricing combinations
-        /// </summary>
-        [NotMapped]
-        public List<ItemCombination>? Combinations
-        {
-            get
-            {
-                if (string.IsNullOrEmpty(CombinationsJson))
-                    return new List<ItemCombination>();
-
-                try
-                {
-                    return JsonSerializer.Deserialize<List<ItemCombination>>(CombinationsJson);
-                }
-                catch
-                {
-                    return new List<ItemCombination>();
-                }
-            }
-        }
-    }
-
-    /// <summary>
-    /// Represents a pricing combination for an item
-    /// </summary>
-    public class ItemCombination
-    {
-        public string AttributeIds { get; set; } = string.Empty;
-        public decimal Price { get; set; }
-        public decimal SalesPrice { get; set; }
-        public int Quantity { get; set; }
-        public bool IsDefault { get; set; }
+        public string? Images { get; set; }
+        public string? ItemAttributes { get; set; }
     }
 }

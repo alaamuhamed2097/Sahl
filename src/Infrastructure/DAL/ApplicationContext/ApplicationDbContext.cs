@@ -1,4 +1,5 @@
-﻿using Domains.Entities.Base;
+﻿using DAL.Configurations;
+using Domains.Entities.Base;
 using Domains.Entities.BrandManagement;
 using Domains.Entities.BuyBox;
 using Domains.Entities.Campaign;
@@ -11,12 +12,12 @@ using Domains.Entities.Catalog.Unit;
 using Domains.Entities.Content;
 using Domains.Entities.CouponCode;
 using Domains.Entities.Currency;
+using Domains.Entities.ECommerceSystem;
+using Domains.Entities.ECommerceSystem.Cart;
 using Domains.Entities.ECommerceSystem.Customer;
 using Domains.Entities.ECommerceSystem.Review;
 using Domains.Entities.ECommerceSystem.Support;
 using Domains.Entities.ECommerceSystem.Vendor;
-using Domains.Entities.Fulfillment;
-using Domains.Entities.Inventory;
 using Domains.Entities.Location;
 using Domains.Entities.Loyalty;
 using Domains.Entities.Merchandising;
@@ -26,6 +27,7 @@ using Domains.Entities.Offer.Rating;
 using Domains.Entities.Offer.Warranty;
 using Domains.Entities.Order;
 using Domains.Entities.Page;
+using Domains.Entities.Payment;
 using Domains.Entities.Pricing;
 using Domains.Entities.SellerRequest;
 using Domains.Entities.SellerTier;
@@ -38,6 +40,7 @@ using Domains.Entities.Warehouse;
 using Domains.Identity;
 using Domains.Views.Category;
 using Domains.Views.Item;
+using Domains.Views.Offer;
 using Domains.Views.Unit;
 using Domains.Views.UserNotification;
 using Microsoft.AspNetCore.Identity;
@@ -73,11 +76,10 @@ namespace DAL.ApplicationContext
 
         // Item Management
         public DbSet<TbItem> TbItems { get; set; }
-        public DbSet<TbItemAttribute> TbItemAttribute { get; set; }
-        public DbSet<TbItemAttributeCombinationPricing> TbItemAttributeCombinationPricings { get; set; }
+        public DbSet<TbItemAttribute> TbItemAttributes { get; set; }
         public DbSet<TbItemImage> TbItemImages { get; set; }
         public DbSet<TbItemCombination> TbItemCombinations { get; set; }
-        public DbSet<TbCombinationAttribute> TbCombinationAttributes { get; set; }
+        public DbSet<TbItemCombinationImage> TbItemCombinationImages { get; set; }
         public DbSet<TbCombinationAttributesValue> TbCombinationAttributesValues { get; set; }
 
         // Notification Management
@@ -110,9 +112,6 @@ namespace DAL.ApplicationContext
         // Vendor
         public DbSet<TbVendor> TbVendors { get; set; }
 
-        // Customer
-        public DbSet<TbCustomer> TbCustomers { get; set; }
-
         // Video Provider Management
         public DbSet<TbVideoProvider> TbVideoProviders { get; set; }
 
@@ -123,18 +122,15 @@ namespace DAL.ApplicationContext
         public DbSet<TbSupportTicketMessage> TbSupportTicketMessages { get; set; }
 
         // Review Management
-        public DbSet<TbProductReview> TbProductReviews { get; set; }
+        public DbSet<TbOfferReview> TbOfferReviews { get; set; }
         public DbSet<TbSalesReview> TbSalesReviews { get; set; }
         public DbSet<TbDeliveryReview> TbDeliveryReviews { get; set; }
         public DbSet<TbReviewVote> TbReviewVotes { get; set; }
+        public DbSet<TbReviewReport> TbReviewReports { get; set; }
 
         // Warehouse Management
         public DbSet<TbWarehouse> TbWarehouses { get; set; }
 
-        // Inventory Management
-        public DbSet<TbMoitem> TbMoitems { get; set; }
-        public DbSet<TbMortem> TbMortems { get; set; }
-        public DbSet<TbMovitemsdetail> TbMovitemsdetails { get; set; }
 
         // Content Management
         public DbSet<TbContentArea> TbContentAreas { get; set; }
@@ -168,11 +164,6 @@ namespace DAL.ApplicationContext
         public DbSet<TbFlashSale> TbFlashSales { get; set; }
         public DbSet<TbFlashSaleProduct> TbFlashSaleProducts { get; set; }
 
-        // Fulfillment System (FBS/FBM)
-        public DbSet<TbFulfillmentMethod> TbFulfillmentMethods { get; set; }
-        public DbSet<TbFBMInventory> TbFBMInventories { get; set; }
-        public DbSet<TbFulfillmentFee> TbFulfillmentFees { get; set; }
-        public DbSet<TbFBMShipment> TbFBMShipments { get; set; }
 
         // Advanced Pricing
         public DbSet<TbQuantityPricing> TbQuantityPricings { get; set; }
@@ -204,6 +195,8 @@ namespace DAL.ApplicationContext
         public DbSet<TbOfferCondition> TbOfferConditions { get; set; }
         public DbSet<TbWarranty> TbWarranties { get; set; }
         public DbSet<TbUserOfferRating> TbUserOfferRatings { get; set; }
+        public DbSet<TbOfferStatusHistory> TbOfferStatusHistories { get; set; }
+        public DbSet<TbOfferPriceHistory> TbOfferPriceHistories { get; set; }
 
         // Order Management
         public DbSet<TbOrder> TbOrders { get; set; }
@@ -211,17 +204,39 @@ namespace DAL.ApplicationContext
         public DbSet<TbRefundRequest> TbRefundRequests { get; set; }
         public DbSet<TbShippingDetail> TbShippingDetails { get; set; }
 
-        #endregion
+        // New E-commerce tables: Shopping Cart, Shipments, Payments, Customer Addresses
+        public DbSet<TbShoppingCart> TbShoppingCarts { get; set; }
+        public DbSet<TbShoppingCartItem> TbShoppingCartItems { get; set; }
+        public DbSet<TbOrderShipment> TbOrderShipments { get; set; }
+        public DbSet<TbOrderShipmentItem> TbOrderShipmentItems { get; set; }
+        public DbSet<TbCustomerAddress> TbCustomerAddresses { get; set; }
+        public DbSet<TbPaymentMethod> TbPaymentMethods { get; set; }
+        public DbSet<TbOrderPayment> TbOrderPayments { get; set; }
 
-        #region DbSets - Views
+        // Pricing System Settings
+        public DbSet<TbPricingSystemSetting> TbPricingSystemSettings { get; set; }
 
-        // Category Views
-        public DbSet<VwAttributeWithOptions> VwAttributeWithOptions { get; set; }
+		// E-Commerce System - Customers
+		public DbSet<TbCustomer> TbCustomers { get; set; }
+
+		#endregion
+
+		#region DbSets - Views
+
+		// Category Views
+		public DbSet<VwAttributeWithOptions> VwAttributeWithOptions { get; set; }
         public DbSet<VwCategoryItems> VwCategoryItems { get; set; }
         public DbSet<VwCategoryWithAttributes> VwCategoryWithAttributes { get; set; }
 
         // Item Views
         public DbSet<VwItem> VwItems { get; set; }
+        
+        //Offer
+        public DbSet<VwOffer> VwOffers { get; set; }
+
+        // Item Search Views (from stored procedure and denormalized view)
+        public DbSet<SpSearchItemsMultiVendor> SpSearchItemsMultiVendor { get; set; }
+        public DbSet<VwItemBestPrice> VwItemBestPrices { get; set; }
 
         // Unit Views
         public DbSet<VwUnitWithConversionsUnits> VwUnitWithConversionsUnits { get; set; }
@@ -236,9 +251,66 @@ namespace DAL.ApplicationContext
             base.OnModelCreating(modelBuilder);
 
             modelBuilder.ApplyConfigurationsFromAssembly(typeof(ApplicationDbContext).Assembly);
+            
+			//modelBuilder.ApplyConfiguration(new CustomerConfiguration());
 
-            ConfigureBaseEntities(modelBuilder);
+			ConfigureBaseEntities(modelBuilder);
             ConfigureViews(modelBuilder);
+
+            // Apply missing/explicit relationship configurations that might not be covered
+            // by IEntityTypeConfiguration classes in the DAL assembly (or are defined elsewhere)
+            ConfigureMissingRelations(modelBuilder);
+        }
+
+        /// <summary>
+        /// Explicitly configures relations that may be missing or defined in other assemblies.
+        /// This avoids relying solely on conventions when some configuration classes live
+        /// outside the DAL assembly or are not yet implemented.
+        /// </summary>
+        private void ConfigureMissingRelations(ModelBuilder modelBuilder)
+        {
+            // Offer price history relations
+            modelBuilder.Entity<TbOfferPriceHistory>(entity =>
+            {
+                entity.HasKey(e => e.Id);
+
+                entity.HasOne(e => e.OfferCombinationPricing)
+                      .WithMany()
+                      .HasForeignKey(e => e.OfferCombinationPricingId)
+                      .OnDelete(DeleteBehavior.Restrict);
+            });
+
+            // Offer status history relations
+            modelBuilder.Entity<TbOfferStatusHistory>(entity =>
+            {
+                entity.HasKey(e => e.Id);
+
+                entity.HasOne(e => e.Offer)
+                      .WithMany()
+                      .HasForeignKey(e => e.OfferId)
+                      .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasIndex(e => e.OfferId);
+            });
+
+            // Offer combination pricing relations (ensure FKs for item combination and offer)
+            modelBuilder.Entity<TbOfferCombinationPricing>(entity =>
+            {
+                entity.HasKey(e => e.Id);
+
+                entity.HasOne(e => e.ItemCombination)
+                      .WithMany()
+                      .HasForeignKey(e => e.ItemCombinationId)
+                      .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasOne(e => e.Offer)
+                      .WithMany(o => o.OfferCombinationPricings)
+                      .HasForeignKey(e => e.OfferId)
+                      .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasIndex(e => e.ItemCombinationId);
+                entity.HasIndex(e => e.OfferId);
+            });
         }
 
         /// <summary>
@@ -246,33 +318,49 @@ namespace DAL.ApplicationContext
         /// </summary>
         private void ConfigureBaseEntities(ModelBuilder modelBuilder)
         {
-            foreach (var entityType in modelBuilder.Model.GetEntityTypes())
-            {
-                if (entityType.ClrType != null && typeof(BaseEntity).IsAssignableFrom(entityType.ClrType))
-                {
-                    var entity = modelBuilder.Entity(entityType.ClrType);
+            // Take a snapshot of entity types to avoid mutating the model while enumerating
+            var entityTypes = modelBuilder.Model
+                .GetEntityTypes()
+                .Where(t => t.ClrType != null && typeof(BaseEntity).IsAssignableFrom(t.ClrType))
+                .ToList();
 
-                    // Configure ID with NEWID() default
+            foreach (var entityType in entityTypes)
+            {
+                var clrType = entityType.ClrType!;
+                var entity = modelBuilder.Entity(clrType);
+
+                // Configure ID with NEWID() default if property exists
+                if (entityType.FindProperty(nameof(BaseEntity.Id)) != null)
+                {
                     entity.Property(nameof(BaseEntity.Id))
                           .HasDefaultValueSql("NEWID()")
                           .ValueGeneratedOnAdd();
+                }
 
-                    // Configure CreatedDateUtc with GETUTCDATE() default
+                // Configure CreatedDateUtc with GETUTCDATE() default if property exists
+                if (entityType.FindProperty(nameof(BaseEntity.CreatedDateUtc)) != null)
+                {
                     entity.Property(nameof(BaseEntity.CreatedDateUtc))
                           .HasDefaultValueSql("GETUTCDATE()")
                           .HasColumnType("datetime2(2)");
+                }
 
-                    // Configure UpdatedDateUtc as nullable
+                // Configure UpdatedDateUtc as nullable if property exists
+                if (entityType.FindProperty(nameof(BaseEntity.UpdatedDateUtc)) != null)
+                {
                     entity.Property(nameof(BaseEntity.UpdatedDateUtc))
                           .HasColumnType("datetime2(2)")
                           .IsRequired(false);
+                }
 
-                    // Configure CurrentState with default value
-                    entity.Property(nameof(BaseEntity.CurrentState))
-                          .HasDefaultValue(1);
+                // Configure CurrentState with default value and index if property exists
+                if (entityType.FindProperty(nameof(BaseEntity.IsDeleted)) != null)
+                {
+                    entity.Property(nameof(BaseEntity.IsDeleted))
+                          .HasDefaultValue(0);
 
                     // Add index for CurrentState for better query performance
-                    entity.HasIndex(nameof(BaseEntity.CurrentState))
+                    entity.HasIndex(nameof(BaseEntity.IsDeleted))
                           .IsUnique(false);
                 }
             }
@@ -304,6 +392,19 @@ namespace DAL.ApplicationContext
 
             // Item Views
             modelBuilder.Entity<VwItem>().HasNoKey().ToView("VwItems");
+            
+            // Offer Views
+            modelBuilder.Entity<VwOffer>().HasNoKey().ToView("VwOffers");
+
+            // Item Search Result View (from stored procedure - no actual view, used for mapping results)
+            modelBuilder.Entity<SpSearchItemsMultiVendor>().HasNoKey().ToView("SpSearchItemsMultiVendor");
+
+            // Item Best Price View (from denormalized database view)
+            modelBuilder.Entity<VwItemBestPrice>(entity =>
+            {
+                entity.HasNoKey();
+                entity.ToView("VwItemBestPrices");
+            });
 
             // Unit Views
             modelBuilder.Entity<VwUnitWithConversionsUnits>(entity =>

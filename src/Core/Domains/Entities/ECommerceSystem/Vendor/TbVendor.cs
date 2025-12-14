@@ -1,22 +1,23 @@
 ﻿using Common.Enumerations.VendorType;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Domains.Entities.ECommerceSystem.Vendor
 {
     public class TbVendor : BaseEntity
     {
-        public string? UserId { get; set; }
+        public string UserId { get; set; } = null!;
         public VendorType VendorType { get; set; }
         public string? CompanyName { get; set; }
         public string? ContactName { get; set; }
         public string? VendorCode { get; set; }
 
-        //
+        // Contact Information
         public string? PostalCode { get; set; }
 
         public string? Address { get; set; }
 
 
-        //
+        // Contact Information
         public string? CommercialRegister { get; set; }
         public bool VATRegistered { get; set; }
         public string? TaxNumber { get; set; }
@@ -24,5 +25,9 @@ namespace Domains.Entities.ECommerceSystem.Vendor
         public string? Notes { get; set; }
         public bool IsActive { get; set; } = true;
         public byte? Rating { get; set; }
+
+        // Navigation Properties
+        [ForeignKey("UserId")]
+        public virtual ApplicationUser User { get; set; } = null!;
     }
 }

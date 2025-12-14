@@ -72,11 +72,6 @@
                                             </span>
                                             <hr />
                                             <span class="px-3 d-block">
-                                                <i class="fas fa-circle text-c-red f-10 m-r-5"></i><strong class="fw-bold">PVs : </strong>
-                                                @Model.PVs 
-                                            </span>
-                                            <hr />
-                                            <span class="px-3 d-block">
                                                 <i class="fas fa-circle text-c-red f-10 m-r-5"></i><strong class="fw-bold">@ECommerceResources.PaymentStatus : </strong>
                                                 @switch (Model.PaymentStatus)
                                             {
@@ -90,11 +85,6 @@
                                                     <span class="text-secondary">@Model.PaymentStatus.ToString()</span>
                                                     break;
                                             }
-                                        </span>
-                                        <hr />
-                                        <span class="px-3 d-block">
-                                            <i class="fas fa-circle text-c-red f-10 m-r-5"></i><strong class="fw-bold">@ECommerceResources.PaymentMethod : </strong>
-                                            @Model.PaymentGatewayMethodTitle
                                         </span>
                                         <hr />
                                     </div>
@@ -222,16 +212,6 @@
                                                 </div>
                                                 <div class="d-flex justify-content-between gap-2 align-items-center w-50 mx-auto mb-3">
                                                     <div class="d-flex justify-content-center align-items-center flex-column">
-                                                        <label class="form-label d-block" for="shippingCompany">@ECommerceResources.ShippingCompany</label>
-                                                        <InputSelect class="form-control" id="shippingCompany" @bind-Value="@Model.ShippingCompanyId">
-                                                            <option selected value="@Guid.Empty">@FormResources.Select @ECommerceResources.ShippingCompany</option>
-                                                            @foreach(var company in ShippingCompanies)
-                                                            {
-                                                                <option value="@company.Id">@company.Name</option>
-                                                            }
-                                                        </InputSelect>
-                                                    </div>
-                                                    <div class="d-flex justify-content-center align-items-center flex-column">
                                                         <label for="shippingDate" class="form-label d-block">@ECommerceResources.ExpectedDelivery</label>
                                                         <InputDate class="form-control"  id="shippingDate" @bind-Value="Model.OrderDeliveryDate" />
                                                     </div>
@@ -323,4 +303,3 @@
         </div>
     </div>
 </div>
-                         

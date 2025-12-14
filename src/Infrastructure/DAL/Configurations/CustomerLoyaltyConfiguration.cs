@@ -51,9 +51,9 @@ namespace DAL.Configurations
                 .HasColumnType("datetime2(2)");
 
             // Relationships
-            entity.HasOne(e => e.Customer)
+            entity.HasOne(e => e.User)
                 .WithMany()
-                .HasForeignKey(e => e.CustomerId)
+                .HasForeignKey(e => e.UserId)
                 .OnDelete(DeleteBehavior.Cascade);
 
             entity.HasOne(e => e.LoyaltyTier)
@@ -62,7 +62,7 @@ namespace DAL.Configurations
                 .OnDelete(DeleteBehavior.Restrict);
 
             // Indexes
-            entity.HasIndex(e => e.CustomerId)
+            entity.HasIndex(e => e.UserId)
                 .IsUnique();
 
             entity.HasIndex(e => e.LoyaltyTierId);

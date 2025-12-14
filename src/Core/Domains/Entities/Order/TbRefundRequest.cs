@@ -22,7 +22,7 @@ namespace Domains.Entities.Order
 
         public DateTime? ProcessedDate { get; set; }
 
-        public PaymentGatewayMethod? RefundMethod { get; set; }
+        public PaymentMethod? RefundMethod { get; set; }
 
         [ForeignKey("Admin")]
         public string? AdminUserId { get; set; }

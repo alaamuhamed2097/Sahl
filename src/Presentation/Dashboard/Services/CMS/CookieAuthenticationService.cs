@@ -5,6 +5,8 @@ using Dashboard.Models;
 using Dashboard.Providers;
 using Microsoft.JSInterop;
 using Shared.DTOs.User;
+using Shared.DTOs.User.Customer;
+using Shared.DTOs.User.OAuth;
 using Shared.GeneralModels;
 using Shared.GeneralModels.ResultModels;
 
@@ -76,6 +78,120 @@ namespace Dashboard.Services.CMS
             };
         }
 
+        public async Task<ResponseModel<CustomerRegistrationResponseDto>> RegisterCustomer(CustomerRegistrationDto model)
+        {
+            var response = await _apiService.PostAsync<CustomerRegistrationDto, CustomerRegistrationResponseDto>(
+                "api/v1/auth/register-customer",
+                model);
+
+            if (response.Success && response.Data != null)
+            {
+                // Store token in localStorage for Bearer authentication
+                if (!string.IsNullOrEmpty(response.Data.Token))
+                {
+                    try
+                    {
+                        await _jsRuntime.InvokeVoidAsync("localStorage.setItem", "authToken", response.Data.Token);
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"[CookieAuthService] ? Failed to store token: {ex.Message}");
+                    }
+                }
+
+                return new ResponseModel<CustomerRegistrationResponseDto>
+                {
+                    Success = true,
+                    Message = response.Message,
+                    Data = response.Data
+                };
+            }
+
+            return new ResponseModel<CustomerRegistrationResponseDto>
+            {
+                Success = false,
+                Message = response.Message ?? "Registration failed"
+            };
+        }
+
+        public async Task<ResponseModel<SignInResult>> GoogleOAuthSignIn(GoogleOAuthTokenDto tokenDto)
+        {
+            var response = await _apiService.PostAsync<GoogleOAuthTokenDto, SignInResult>(
+                "api/v1/auth/google-signin",
+                tokenDto);
+
+            if (response.Success && response.Data != null)
+            {
+                // Store token in localStorage
+                if (!string.IsNullOrEmpty(response.Data.Token))
+                {
+                    try
+                    {
+                        await _jsRuntime.InvokeVoidAsync("localStorage.setItem", "authToken", response.Data.Token);
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"[CookieAuthService] ? Failed to store token: {ex.Message}");
+                    }
+                }
+
+                // Notify auth state provider
+                await _authStateProvider.MarkUserAsAuthenticated();
+
+                return new ResponseModel<SignInResult>
+                {
+                    Success = true,
+                    Message = response.Message,
+                    Data = response.Data
+                };
+            }
+
+            return new ResponseModel<SignInResult>
+            {
+                Success = false,
+                Message = response.Message ?? "Google sign-in failed"
+            };
+        }
+
+        public async Task<ResponseModel<SignInResult>> FacebookOAuthSignIn(FacebookOAuthTokenDto tokenDto)
+        {
+            var response = await _apiService.PostAsync<FacebookOAuthTokenDto, SignInResult>(
+                "api/v1/auth/facebook-signin",
+                tokenDto);
+
+            if (response.Success && response.Data != null)
+            {
+                // Store token in localStorage
+                if (!string.IsNullOrEmpty(response.Data.Token))
+                {
+                    try
+                    {
+                        await _jsRuntime.InvokeVoidAsync("localStorage.setItem", "authToken", response.Data.Token);
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"[CookieAuthService] ? Failed to store token: {ex.Message}");
+                    }
+                }
+
+                // Notify auth state provider
+                await _authStateProvider.MarkUserAsAuthenticated();
+
+                return new ResponseModel<SignInResult>
+                {
+                    Success = true,
+                    Message = response.Message,
+                    Data = response.Data
+                };
+            }
+
+            return new ResponseModel<SignInResult>
+            {
+                Success = false,
+                Message = response.Message ?? "Facebook sign-in failed"
+            };
+        }
+
         public async Task Logout()
         {
             // Clear token from localStorage
@@ -94,7 +210,7 @@ namespace Dashboard.Services.CMS
 
         /// <summary>
         /// Checks if the user is authenticated by calling the auth state provider.
-        /// </summary>
+        /// /// </summary>
         public async Task<bool> IsAuthenticatedAsync()
         {
             var result = await _authStateProvider.IsAuthenticatedAsync();

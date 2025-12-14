@@ -13,6 +13,7 @@ namespace Domains.Entities.Catalog.Item.ItemAttributes
         public Guid AttributeId { get; set; }
 
         public string Value { get; set; } = null!;
+        public int DisplayOrder { get; set; } 
 
 		[MaxLength(100)]
 		public string TitleAr { get; set; } 

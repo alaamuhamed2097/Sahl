@@ -27,6 +27,26 @@
                         </div>
                     </div>
                 </div>
+
+                @* Pricing system selector: show only when more than one system available *@
+                @if (ShowPricingSelector)
+                {
+                    <div class="row mt-3">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>@ECommerceResources.PricingSystem</label>
+                                <InputSelect class="form-select" @bind-Value="Model.PricingSystemType">
+                                    @foreach (var p in PricingSystems)
+                                    {
+                                        <option value="@p.SystemType">@p.SystemName</option>
+                                    }
+                                </InputSelect>
+                                <ValidationMessage For="@(() => Model.PricingSystemType)" />
+                            </div>
+                        </div>
+                    </div>
+                }
+
                 <div class="row mt-3">
                     <div class="col-md-6">
                         <div class="form-group">
@@ -80,7 +100,7 @@
                             <label>@FormResources.Image</label>
                             <div class="form-file ">
                                 <InputFile class="form-control" aria-label="file example" OnChange="HandleSelectedImage" accept="image/*"
-                                           placeholder="@(FormResources.Select + ' ' + @FormResources.Image)" />
+                                           placeholder="@($"{FormResources.Select} {FormResources.Image}")" />
                                 <div class="invalid-feedback"></div>
                                 <ValidationMessage For="@(() => Model.ImageUrl)" />
                             </div>
@@ -103,7 +123,7 @@
                             </label>
                             <div class="form-file ">
                                 <InputFile class="form-control" aria-label="file example" OnChange="HandleIconUpload" accept="image/*"
-                                           placeholder="@(FormResources.Select + ' ' + @FormResources.Icon)" />
+                                           placeholder="@($"{FormResources.Select} {FormResources.Icon}")" />
                                 <div class="invalid-feedback"></div>
                                 <ValidationMessage For="@(() => Model.Icon)" />
                             </div>
@@ -118,37 +138,7 @@
                         </div>
                     </div>
                 </div>
-                @* <div class="row align-items-center">
-                    <div class="col-md-6">
-                        <label class="form-label fw-semibold">@FormResources.DisplayOrder</label>
-                        <div class="input-group">
-                            <InputNumber class="form-control"
-                                         @bind-Value="Model.DisplayOrder"
-                                         @onchange="OnDisplayOrderChanged"
-                                         min="1" />
-                        </div>
-                        <small class="text-muted">@FormResources.DisplayOrderHint</small>
-                    </div>
-                    @if (Model.Id != Guid.Empty)
-                    {
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label fw-semibold">@ECommerceResources.CurrentPosition</label>
-                            <div class="alert alert-info py-2 mb-0">
-                                <i class="feather icon-info me-1"></i>
-                                @string.Format(FormResources.DisplayOrderStatus, Model.DisplayOrder, AllCategories.Count)
-                            </div>
-                        </div>
-                    }
-                    else
-                    {
-                        <div class="col-md-6 mt-2">
-                            <div class="alert alert-success py-2 mb-0">
-                                <i class="feather icon-info me-1"></i>
-                                @string.Format(FormResources.NewEntityOrderInfo, Model.DisplayOrder, ECommerceResources.Category)
-                            </div>
-                        </div>
-                    }
-                </div> *@
+
                 <!-- Attributes Section -->
                 <div class="row mt-4">
                     <div class="col-md-12">
@@ -264,7 +254,6 @@
                     }
                 </button>
             </div>
-            
         </EditForm>
     </div>
 </div>

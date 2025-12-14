@@ -1,0 +1,185 @@
+﻿@using Common.Enumerations
+@using Common.Enumerations.FieldType
+@using Common.Enumerations.Pricing
+@using Common.Enumerations.User
+@using Resources
+@using Shared.DTOs.ECommerce
+@using Shared.DTOs.ECommerce.Category
+@using Shared.DTOs.ECommerce.Item
+@attribute [Authorize(Roles = nameof(UserRole.Admin))]
+
+<div class="card mb-4">
+    <div class="card-header">
+        <h5 class="mb-0 text-primary">Attribute Values</h5>
+        <small class="text-muted">Configure attributes for this product</small>
+    </div>
+    <div class="card-body">
+        @if (CategoryAttributes != null && CategoryAttributes.Any())
+        {
+            @* Non-pricing attributes *@
+            @foreach (var attribute in CategoryAttributes.Where(a => !a.AffectsPricing))
+            {
+                <div class="row align-items-start mb-4 pb-3 border-bottom">
+                    <div class="col-md-10">
+                        <label class="form-label fw-bold">
+                            @(attribute.Title)
+                            @if (attribute.IsRequired)
+                            {
+                                <span class="text-danger">*</span>
+                            }
+                        </label>
+
+                        <div class="border rounded p-3" style="background-color: #f8f9fa;" >
+                            @if (attribute.AttributeOptions != null && attribute.AttributeOptions.Any())
+                            {
+                                @* Check if this is a MultiSelect field (checkboxes) *@
+                                @if (attribute.FieldType == FieldType.MultiSelectList)
+                                {
+                                    @* MultiSelect as Checkboxes *@
+                                    <div class="mb-2">
+                                        <div class="d-flex justify-content-between align-items-center mb-2">
+                                            <small class="text-muted">
+                                                <i class="fas fa-check-square"></i> Select multiple options
+                                            </small>
+                                            @if (_multiSelectValues.ContainsKey(attribute.AttributeId) && _multiSelectValues[attribute.AttributeId].Any())
+                                            {
+                                                <span class="badge bg-info">
+                                                    @_multiSelectValues[attribute.AttributeId].Count selected
+                                                </span>
+                                            }
+                                        </div>
+
+                                        @* Checkbox grid *@
+                                        <div class="row g-2">
+                                            @foreach (var option in attribute.AttributeOptions.OrderBy(o => o.DisplayOrder))
+                                            {
+                                                <div class="col-md-6 col-lg-4">
+                                                    <div>
+                                                        <input type="checkbox"
+                                                               class="form-check-input"
+                                                               id="multi_@(attribute.AttributeId)_@(option.Id)"
+                                                               checked="@IsOptionSelected(attribute.AttributeId, option.Id.ToString())"
+                                                               @onchange="@(e => HandleCheckboxChange(attribute.AttributeId, option.Id.ToString(), e))" />
+                                                        <label class="form-check-label" for="multi_@(attribute.AttributeId)_@(option.Id)">
+                                                            @option.Title
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            }
+                                        </div>
+
+                                        @* Selected items summary *@
+                                        @if (_multiSelectValues.ContainsKey(attribute.AttributeId) && _multiSelectValues[attribute.AttributeId].Any())
+                                        {
+                                            <div class="mt-3 pt-2 border-top">
+                                                <small class="text-muted d-block mb-2">
+                                                    <strong>Selected options:</strong>
+                                                </small>
+                                                <div class="d-flex flex-wrap gap-1">
+                                                    @foreach (var selectedId in _multiSelectValues[attribute.AttributeId])
+                                                    {
+                                                        var optionTitle = attribute.AttributeOptions
+                                                        .FirstOrDefault(o => o.Id.ToString() == selectedId)?.Title ?? "Unknown";
+                                                        <span class="badge bg-primary">
+                                                            @optionTitle
+                                                            <button type="button"
+                                                                    class="btn-close btn-close-white ms-1"
+                                                                    style="font-size: 0.7em;"
+                                                                    @onclick="@(() => RemoveMultiSelectOption(attribute.AttributeId, selectedId))">
+                                                            </button>
+                                                        </span>
+                                                    }
+                                                </div>
+                                            </div>
+                                        }
+                                    </div>
+                                }
+                                else
+                                {
+                                    @* Single Select Dropdown *@
+                                    <div class="mb-2">
+                                        <select class="form-select"
+                                                @bind="_nonPricingAttributeValues[attribute.AttributeId]"
+                                                @bind:after="NotifyValuesChanged">
+                                            <option value="">@FormResources.Select</option>
+                                            @foreach (var option in attribute.AttributeOptions.OrderBy(o => o.DisplayOrder))
+                                            {
+                                                <option value="@option.Id.ToString()">@option.Title</option>
+                                            }
+                                        </select>
+                                    </div>
+                                }
+                            }
+                            else
+                            {
+                                @* Custom Input Fields *@
+                                @if (attribute.FieldType == FieldType.IntegerNumber)
+                                {
+                                    <input type="number"
+                                           class="form-control"
+                                           placeholder="Enter value"
+                                           @bind="_nonPricingIntValues[attribute.AttributeId]"
+                                           @bind:event="oninput"
+                                           @bind:after="NotifyValuesChanged" />
+                                }
+                                else if (attribute.FieldType == FieldType.DecimalNumber)
+                                {
+                                    <input type="number"
+                                           step="0.01"
+                                           class="form-control"
+                                           placeholder="Enter value"
+                                           @bind="_nonPricingDecimalValues[attribute.AttributeId]"
+                                           @bind:event="oninput"
+                                           @bind:after="NotifyValuesChanged" />
+                                }
+                                else if (attribute.FieldType == FieldType.Date)
+                                {
+                                    <input type="date"
+                                           class="form-control"
+                                           @bind="_nonPricingDateValues[attribute.AttributeId]"
+                                           @bind:format="yyyy-MM-dd"
+                                           @bind:after="NotifyValuesChanged" />
+                                }
+                                else if (attribute.FieldType == FieldType.CheckBox)
+                                {
+                                    <div class="form-check">
+                                        <input type="checkbox"
+                                               class="form-check-input"
+                                               id="checkbox_@(attribute.AttributeId)"
+                                               @bind="_nonPricingBoolValues[(attribute.AttributeId)]"
+                                               @bind:after="NotifyValuesChanged" />
+                                        <label class="form-check-label" for="checkbox_@(attribute.AttributeId)">
+                                            Check this option
+                                        </label>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <input type="text"
+                                           class="form-control"
+                                           placeholder="Enter value"
+                                           maxlength="@(attribute.MaxLength ?? 255)"
+                                           @bind="_nonPricingAttributeValues[attribute.AttributeId]"
+                                           @bind:event="oninput"
+                                           @bind:after="NotifyValuesChanged" />
+                                }
+                            }
+                        </div>
+
+                        @if (attribute.IsRequired && !HasNonPricingValue(attribute.AttributeId))
+                        {
+                            <div class="text-danger small mt-1">@ValidationResources.FieldRequired</div>
+                        }
+                    </div>
+                </div>
+            }
+        }
+        else
+        {
+            <div class="alert alert-warning">
+                <i class="fas fa-exclamation-triangle me-2"></i>
+                No attributes available for this category
+            </div>
+        }
+    </div>
+</div>

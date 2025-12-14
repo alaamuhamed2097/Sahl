@@ -1,13 +1,8 @@
-using BL.Services.Loyalty;
 using Common.Enumerations.Loyalty;
 using DAL.ApplicationContext;
 using Domains.Entities.Loyalty;
 using Microsoft.EntityFrameworkCore;
 using Shared.DTOs.Loyalty;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace BL.Services.Loyalty
 {
@@ -57,7 +52,7 @@ namespace BL.Services.Loyalty
         {
             var tiers = await _context.TbLoyaltyTiers
                 .Include(t => t.CustomerLoyalties)
-                .Where(t => t.CurrentState == 1)
+                .Where(t => !t.IsDeleted)
                 .OrderBy(t => t.DisplayOrder)
                 .ToListAsync();
 
@@ -81,7 +76,7 @@ namespace BL.Services.Loyalty
                 BadgeColor = dto.BadgeColor,
                 BadgeIconPath = dto.BadgeIconPath,
                 DisplayOrder = dto.DisplayOrder,
-                CurrentState = dto.IsActive ? 1 : 0
+                IsDeleted = !dto.IsActive
             };
 
             _context.TbLoyaltyTiers.Add(tier);
@@ -108,7 +103,7 @@ namespace BL.Services.Loyalty
             tier.BadgeColor = dto.BadgeColor;
             tier.BadgeIconPath = dto.BadgeIconPath;
             tier.DisplayOrder = dto.DisplayOrder;
-            tier.CurrentState = dto.IsActive ? 1 : 0;
+            tier.IsDeleted = !dto.IsActive;
             tier.UpdatedDateUtc = DateTime.UtcNow;
 
             await _context.SaveChangesAsync();
@@ -134,7 +129,7 @@ namespace BL.Services.Loyalty
             var tier = await _context.TbLoyaltyTiers.FindAsync(id);
             if (tier == null) return false;
 
-            tier.CurrentState = 1;
+            tier.IsDeleted = false;
             tier.UpdatedDateUtc = DateTime.UtcNow;
             await _context.SaveChangesAsync();
             return true;
@@ -145,7 +140,7 @@ namespace BL.Services.Loyalty
             var tier = await _context.TbLoyaltyTiers.FindAsync(id);
             if (tier == null) return false;
 
-            tier.CurrentState = 0;
+            tier.IsDeleted = true;
             tier.UpdatedDateUtc = DateTime.UtcNow;
             await _context.SaveChangesAsync();
             return true;
@@ -159,8 +154,8 @@ namespace BL.Services.Loyalty
         {
             var loyalty = await _context.TbCustomerLoyalties
                 .Include(cl => cl.LoyaltyTier)
-                .Include(cl => cl.Customer)
-                .FirstOrDefaultAsync(cl => cl.CustomerId == customerId);
+                .Include(cl => cl.User)
+                .FirstOrDefaultAsync(cl => cl.UserId == customerId.ToString());
 
             if (loyalty == null) return null;
 
@@ -171,7 +166,7 @@ namespace BL.Services.Loyalty
         {
             var loyalty = await _context.TbCustomerLoyalties
                 .Include(cl => cl.LoyaltyTier)
-                .Include(cl => cl.Customer)
+                .Include(cl => cl.User)
                 .FirstOrDefaultAsync(cl => cl.Id == id);
 
             if (loyalty == null) return null;
@@ -183,7 +178,7 @@ namespace BL.Services.Loyalty
         {
             var loyalties = await _context.TbCustomerLoyalties
                 .Include(cl => cl.LoyaltyTier)
-                .Include(cl => cl.Customer)
+                .Include(cl => cl.User)
                 .Where(cl => cl.LoyaltyTierId == tierId)
                 .ToListAsync();
 
@@ -193,7 +188,7 @@ namespace BL.Services.Loyalty
         public async Task<CustomerLoyaltyDto> CreateCustomerLoyaltyAsync(Guid customerId)
         {
             var lowestTier = await _context.TbLoyaltyTiers
-                .Where(t => t.CurrentState == 1)
+                .Where(t => !t.IsDeleted)
                 .OrderBy(t => t.MinimumOrdersPerYear)
                 .FirstOrDefaultAsync();
 
@@ -202,7 +197,7 @@ namespace BL.Services.Loyalty
 
             var loyalty = new TbCustomerLoyalty
             {
-                CustomerId = customerId,
+                UserId = customerId.ToString(),
                 LoyaltyTierId = lowestTier.Id,
                 TotalPoints = 0,
                 AvailablePoints = 0,
@@ -222,7 +217,7 @@ namespace BL.Services.Loyalty
         public async Task<bool> UpdateCustomerTierAsync(Guid customerId, Guid newTierId)
         {
             var loyalty = await _context.TbCustomerLoyalties
-                .FirstOrDefaultAsync(cl => cl.CustomerId == customerId);
+                .FirstOrDefaultAsync(cl => cl.UserId == customerId.ToString());
 
             if (loyalty == null) return false;
 
@@ -238,12 +233,12 @@ namespace BL.Services.Loyalty
         {
             var loyalty = await _context.TbCustomerLoyalties
                 .Include(cl => cl.LoyaltyTier)
-                .FirstOrDefaultAsync(cl => cl.CustomerId == customerId);
+                .FirstOrDefaultAsync(cl => cl.UserId == customerId.ToString());
 
             if (loyalty == null) return false;
 
             var appropriateTier = await _context.TbLoyaltyTiers
-                .Where(t => t.CurrentState == 1 && t.MinimumOrdersPerYear <= loyalty.TotalOrdersThisYear)
+                .Where(t => !t.IsDeleted && t.MinimumOrdersPerYear <= loyalty.TotalOrdersThisYear)
                 .Where(t => t.MaximumOrdersPerYear >= loyalty.TotalOrdersThisYear)
                 .OrderByDescending(t => t.MinimumOrdersPerYear)
                 .FirstOrDefaultAsync();
@@ -266,7 +261,7 @@ namespace BL.Services.Loyalty
         public async Task<LoyaltyPointsTransactionDto> AddPointsAsync(LoyaltyPointsTransactionCreateDto dto)
         {
             var loyalty = await _context.TbCustomerLoyalties
-                .FirstOrDefaultAsync(cl => cl.CustomerId == dto.CustomerId);
+                .FirstOrDefaultAsync(cl => cl.UserId == dto.UserId);
 
             if (loyalty == null)
                 throw new Exception("Customer loyalty not found");
@@ -289,7 +284,8 @@ namespace BL.Services.Loyalty
             _context.TbLoyaltyPointsTransactions.Add(transaction);
             await _context.SaveChangesAsync();
 
-            await RecalculateCustomerTierAsync(dto.CustomerId);
+            if (Guid.TryParse(dto.UserId, out var customerId))
+                await RecalculateCustomerTierAsync(customerId);
 
             return MapToTransactionDto(transaction);
         }
@@ -297,7 +293,7 @@ namespace BL.Services.Loyalty
         public async Task<LoyaltyPointsTransactionDto> RedeemPointsAsync(Guid customerId, decimal points, string description)
         {
             var loyalty = await _context.TbCustomerLoyalties
-                .FirstOrDefaultAsync(cl => cl.CustomerId == customerId);
+                .FirstOrDefaultAsync(cl => cl.UserId == customerId.ToString());
 
             if (loyalty == null)
                 throw new Exception("Customer loyalty not found");
@@ -327,7 +323,7 @@ namespace BL.Services.Loyalty
         public async Task<decimal> GetCustomerPointsBalanceAsync(Guid customerId)
         {
             var loyalty = await _context.TbCustomerLoyalties
-                .FirstOrDefaultAsync(cl => cl.CustomerId == customerId);
+                .FirstOrDefaultAsync(cl => cl.UserId == customerId.ToString());
 
             return loyalty?.AvailablePoints ?? 0;
         }
@@ -335,7 +331,7 @@ namespace BL.Services.Loyalty
         public async Task<List<LoyaltyPointsTransactionDto>> GetCustomerTransactionsAsync(Guid customerId, int pageNumber = 1, int pageSize = 20)
         {
             var loyalty = await _context.TbCustomerLoyalties
-                .FirstOrDefaultAsync(cl => cl.CustomerId == customerId);
+                .FirstOrDefaultAsync(cl => cl.UserId == customerId.ToString());
 
             if (loyalty == null) return new List<LoyaltyPointsTransactionDto>();
 
@@ -353,11 +349,11 @@ namespace BL.Services.Loyalty
         {
             var query = _context.TbLoyaltyPointsTransactions.AsQueryable();
 
-            if (request.CustomerId.HasValue)
+            if (!string.IsNullOrWhiteSpace(request.UserId))
             {
                 var loyalty = await _context.TbCustomerLoyalties
-                    .FirstOrDefaultAsync(cl => cl.CustomerId == request.CustomerId.Value);
-                
+                    .FirstOrDefaultAsync(cl => cl.UserId == request.UserId);
+
                 if (loyalty != null)
                     query = query.Where(t => t.CustomerLoyaltyId == loyalty.Id);
             }
@@ -398,7 +394,7 @@ namespace BL.Services.Loyalty
         {
             var loyalty = await _context.TbCustomerLoyalties
                 .Include(cl => cl.LoyaltyTier)
-                .FirstOrDefaultAsync(cl => cl.CustomerId == customerId);
+                .FirstOrDefaultAsync(cl => cl.UserId == customerId.ToString());
 
             if (loyalty == null)
                 return false;
@@ -407,7 +403,7 @@ namespace BL.Services.Loyalty
 
             await AddPointsAsync(new LoyaltyPointsTransactionCreateDto
             {
-                CustomerId = customerId,
+                UserId = customerId.ToString(),
                 TransactionType = (int)PointsTransactionType.Bonus,
                 Points = bonusPoints,
                 Description = "Birthday Bonus Points"
@@ -420,12 +416,12 @@ namespace BL.Services.Loyalty
         {
             var loyalty = await _context.TbCustomerLoyalties
                 .Include(cl => cl.LoyaltyTier)
-                .FirstOrDefaultAsync(cl => cl.CustomerId == customerId);
+                .FirstOrDefaultAsync(cl => cl.UserId == customerId.ToString());
 
             if (loyalty == null) return null;
 
             var nextTier = await _context.TbLoyaltyTiers
-                .Where(t => t.CurrentState == 1 && t.MinimumOrdersPerYear > loyalty.LoyaltyTier.MinimumOrdersPerYear)
+                .Where(t => !t.IsDeleted && t.MinimumOrdersPerYear > loyalty.LoyaltyTier.MinimumOrdersPerYear)
                 .OrderBy(t => t.MinimumOrdersPerYear)
                 .FirstOrDefaultAsync();
 
@@ -436,7 +432,7 @@ namespace BL.Services.Loyalty
         {
             var loyalty = await _context.TbCustomerLoyalties
                 .Include(cl => cl.LoyaltyTier)
-                .FirstOrDefaultAsync(cl => cl.CustomerId == customerId);
+                .FirstOrDefaultAsync(cl => cl.UserId == customerId.ToString());
 
             if (loyalty == null) return 0;
 
@@ -472,7 +468,7 @@ namespace BL.Services.Loyalty
         {
             var topCustomers = await _context.TbCustomerLoyalties
                 .Include(cl => cl.LoyaltyTier)
-                .Include(cl => cl.Customer)
+                .Include(cl => cl.User)
                 .OrderByDescending(cl => cl.AvailablePoints)
                 .Take(count)
                 .ToListAsync();
@@ -502,7 +498,7 @@ namespace BL.Services.Loyalty
                 BadgeColor = tier.BadgeColor,
                 BadgeIconPath = tier.BadgeIconPath,
                 DisplayOrder = tier.DisplayOrder,
-                IsActive = tier.CurrentState == 1,
+                IsActive = !tier.IsDeleted,
                 CurrentCustomersCount = tier.CustomerLoyalties?.Count ?? 0,
                 CreatedDateUtc = tier.CreatedDateUtc,
                 ModifiedDateUtc = tier.UpdatedDateUtc
@@ -512,12 +508,12 @@ namespace BL.Services.Loyalty
         private CustomerLoyaltyDto MapToCustomerLoyaltyDto(TbCustomerLoyalty loyalty)
         {
             var nextTier = _context.TbLoyaltyTiers
-                .Where(t => t.CurrentState == 1 && t.MinimumOrdersPerYear > loyalty.LoyaltyTier.MinimumOrdersPerYear)
+                .Where(t => !t.IsDeleted && t.MinimumOrdersPerYear > loyalty.LoyaltyTier.MinimumOrdersPerYear)
                 .OrderBy(t => t.MinimumOrdersPerYear)
                 .FirstOrDefault();
 
-            var customerName = loyalty.Customer != null 
-                ? $"{loyalty.Customer.FirstName ?? ""} {loyalty.Customer.LastName ?? ""}".Trim()
+            var customerName = loyalty.User != null
+                ? $"{loyalty.User.FirstName ?? ""} {loyalty.User.LastName ?? ""}".Trim()
                 : "N/A";
 
             if (string.IsNullOrWhiteSpace(customerName))
@@ -526,7 +522,7 @@ namespace BL.Services.Loyalty
             return new CustomerLoyaltyDto
             {
                 Id = loyalty.Id,
-                CustomerId = loyalty.CustomerId,
+                UserId = loyalty.UserId,
                 CustomerName = customerName,
                 LoyaltyTierId = loyalty.LoyaltyTierId,
                 TierName = loyalty.LoyaltyTier?.TierNameEn ?? "N/A",
@@ -547,7 +543,7 @@ namespace BL.Services.Loyalty
             return new LoyaltyPointsTransactionDto
             {
                 Id = transaction.Id,
-                CustomerId = transaction.CustomerLoyalty?.CustomerId ?? Guid.Empty,
+                UserId = transaction.CustomerLoyalty?.UserId ?? Guid.Empty.ToString(),
                 CustomerName = "N/A",
                 TransactionType = (int)transaction.TransactionType,
                 TransactionTypeName = transaction.TransactionType.ToString(),

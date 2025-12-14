@@ -21,6 +21,12 @@ namespace Api.Extensions
             // Base mapper
             services.AddScoped(typeof(IBaseMapper), typeof(BaseMapper));
 
+            services.AddScoped<ICartRepository, CartRepository>();
+            services.AddScoped<IOfferRepository, OfferRepository>();
+            services.AddScoped<IOrderRepository, OrderRepository>();
+            services.AddScoped<IItemSearchRepository, ItemSearchRepository>();
+
+
             return services;
         }
     }

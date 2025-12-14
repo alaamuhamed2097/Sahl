@@ -1,25 +1,24 @@
 ﻿using Common.Enumerations.Order;
 using Common.Enumerations.Payment;
-using Resources;
-using Resources.Enumerations;
 using Shared.DTOs.Base;
 using System.Text.Json.Serialization;
 
 namespace Shared.DTOs.ECommerce.Order
 {
+    /// <summary>
+    /// Complete Order DTO for full details in Dashboard and comprehensive views
+    /// </summary>
     public class OrderDto : BaseDto
     {
         public string Number { get; set; } = null!;
         public decimal Price { get; set; }
         public decimal ShippingAmount { get; set; } = 0m;
         public string Address { get; set; }
-        public int PVs { get; set; }
         public PaymentStatus PaymentStatus { get; set; }
         public string? InvoiceId { get; set; }
         public OrderStatus CurrentState { get; set; }
         public DateTime CreatedDateUtc { get; set; }
         public DateTime? OrderDeliveryDate { get; set; }
-        public Guid? DirectSaleLinkId { get; set; }
 
         [JsonIgnore]
         public string CreatedDateLocalFormatted =>
@@ -32,6 +31,7 @@ namespace Shared.DTOs.ECommerce.Order
         // Calculated property to check if refund is still valid (within 15 days)
         public bool IsWithinRefundPeriod => DateTime.UtcNow.Subtract(CreatedDateUtc).Days <= 15;
 
+        // User Information
         public string UserId { get; set; } = null!;
         public string UserName { get; set; } = null!;
         public string Email { get; set; } = null!;
@@ -41,38 +41,17 @@ namespace Shared.DTOs.ECommerce.Order
         public string LastName { get; set; } = null!;
         public string ProfileImagePath { get; set; } = null!;
 
+        // Sponsor Information
         public string? SponsorFirstName { get; set; }
         public string? SponsorLastName { get; set; }
         public string? SponsorUserName { get; set; }
 
-        public Guid PaymentGatewayMethodId { get; set; }
+        // Payment Gateway Information
         public string PaymentGatewayMethodTitleEn { get; set; } = null!;
         public string PaymentGatewayMethodTitleAr { get; set; } = null!;
         public PaymentGatewayMethod PaymentGatewayMethodType { get; set; }
-        public Guid? ShippingCompanyId { get; set; }
 
-        [JsonIgnore]
-        public string PaymentGatewayMethodTitle => ResourceManager.CurrentLanguage == Language.Arabic ? PaymentGatewayMethodTitleAr : PaymentGatewayMethodTitleEn;
-
-        // Business Points Information
-        /// <summary>
-        /// Number of business points used for this order
-        /// </summary>
-        public int BusinessPointsUsed { get; set; }
-
-        /// <summary>
-        /// Dollar value of business points consumed
-        /// </summary>
-        public decimal BusinessPointsValue { get; set; }
-
-        /// <summary>
-        /// Total order price before business points were applied
-        /// </summary>
-        public decimal TotalBeforePoints { get; set; }
-
-        [JsonIgnore]
-        public bool UsedBusinessPoints => BusinessPointsUsed > 0;
-
+        // Order Items
         public List<OrderDetailsDto> OrderDetails { get; set; }
     }
 }

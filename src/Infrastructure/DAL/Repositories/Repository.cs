@@ -183,6 +183,15 @@ namespace DAL.Repositories
         }
 
         /// <summary>
+        /// Gets IQueryable for advanced LINQ queries - للأداء الأفضل
+        /// Use this when you need to compose complex queries
+        /// </summary>
+        public virtual IQueryable<T> GetQueryable()
+        {
+            return DbSet.AsNoTracking();
+        }
+
+        /// <summary>
         /// Counts entities matching the predicate asynchronously.
         /// </summary>
         public virtual async Task<int> CountAsync(

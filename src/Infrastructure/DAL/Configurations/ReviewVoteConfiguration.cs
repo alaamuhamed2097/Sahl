@@ -15,17 +15,9 @@ namespace DAL.Configurations
 
             entity.Property(e => e.VoteType)
                 .IsRequired()
-                .HasMaxLength(50);
+                .HasConversion<int>();
 
-            entity.Property(e => e.VoteValue)
-                .IsRequired()
-                .HasMaxLength(50);
-
-            entity.Property(e => e.WithType)
-                .IsRequired()
-                .HasMaxLength(50);
-
-            entity.Property(e => e.CurrentState)
+            entity.Property(e => e.IsDeleted)
                 .HasDefaultValue(1);
 
             entity.Property(e => e.CreatedDateUtc)
@@ -36,11 +28,10 @@ namespace DAL.Configurations
                 .HasColumnType("datetime2(2)");
 
             // Indexes
-            entity.HasIndex(e => e.CurrentState);
+            entity.HasIndex(e => e.IsDeleted);
             entity.HasIndex(e => e.ReviewID);
             entity.HasIndex(e => e.CustomerID);
             entity.HasIndex(e => e.VoteType);
-            entity.HasIndex(e => e.VoteValue);
             entity.HasIndex(e => new { e.ReviewID, e.CustomerID, e.VoteType }).IsUnique();
 
             // Relationships are configured in ProductReviewConfiguration

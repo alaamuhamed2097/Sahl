@@ -36,7 +36,7 @@ namespace BL.Service.Content
         public async Task<IEnumerable<MediaContentDto>> GetAllAsync()
         {
             var media = await _mediaContentRepository
-                .GetAsync(x => x.CurrentState == 1, orderBy: q => q.OrderBy(x => x.DisplayOrder));
+                .GetAsync(x => !x.IsDeleted, orderBy: q => q.OrderBy(x => x.DisplayOrder));
 
             return _mapper.MapList<TbMediaContent, MediaContentDto>(media).ToList();
         }
@@ -44,7 +44,7 @@ namespace BL.Service.Content
         public async Task<IEnumerable<MediaContentDto>> GetByContentAreaIdAsync(Guid contentAreaId)
         {
             var media = await _mediaContentRepository
-                .GetAsync(x => x.ContentAreaId == contentAreaId && x.CurrentState == 1,
+                .GetAsync(x => x.ContentAreaId == contentAreaId && !x.IsDeleted,
                     orderBy: q => q.OrderBy(x => x.DisplayOrder));
 
             return _mapper.MapList<TbMediaContent, MediaContentDto>(media).ToList();
@@ -53,7 +53,7 @@ namespace BL.Service.Content
         public async Task<IEnumerable<MediaContentDto>> GetActiveMediaByAreaCodeAsync(string areaCode)
         {
             var area = await _contentAreaRepository
-                .FindAsync(x => x.AreaCode == areaCode && x.CurrentState == 1 && x.IsActive);
+                .FindAsync(x => x.AreaCode == areaCode && !x.IsDeleted && x.IsActive);
 
             if (area == null)
                 return Enumerable.Empty<MediaContentDto>();
@@ -61,7 +61,7 @@ namespace BL.Service.Content
             var now = DateTime.UtcNow;
             var media = await _mediaContentRepository
                 .GetAsync(x => x.ContentAreaId == area.Id
-                    && x.CurrentState == 1
+                    && !x.IsDeleted
                     && x.IsActive
                     && (!x.StartDate.HasValue || x.StartDate.Value <= now)
                     && (!x.EndDate.HasValue || x.EndDate.Value >= now),
@@ -92,7 +92,7 @@ namespace BL.Service.Content
             if (criteriaModel.PageSize < 1 || criteriaModel.PageSize > 100)
                 throw new ArgumentOutOfRangeException(nameof(criteriaModel.PageSize), ValidationResources.PageSizeRange);
 
-            Expression<Func<TbMediaContent, bool>> filter = x => x.CurrentState == 1;
+            Expression<Func<TbMediaContent, bool>> filter = x => !x.IsDeleted;
 
             var searchTerm = criteriaModel.SearchTerm?.Trim().ToLower();
             if (!string.IsNullOrWhiteSpace(searchTerm))
@@ -124,7 +124,7 @@ namespace BL.Service.Content
 
         public async Task<bool> DeleteAsync(Guid id, Guid userId)
         {
-            return await _mediaContentRepository.UpdateCurrentStateAsync(id, userId, 0);
+            return await _mediaContentRepository.UpdateCurrentStateAsync(id, userId, true);
         }
 
         public async Task<bool> ToggleActiveStatusAsync(Guid id, Guid userId)

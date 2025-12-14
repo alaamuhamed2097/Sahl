@@ -24,8 +24,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Entities\Review\" />
     <Folder Include="Entities\Support\" />
+    <Folder Include="Procedures\" />
   </ItemGroup>
 
 </Project>

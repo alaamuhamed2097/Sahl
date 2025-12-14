@@ -61,7 +61,7 @@ namespace Shared.DTOs.Loyalty
     public class CustomerLoyaltyDto
     {
         public Guid Id { get; set; }
-        public Guid CustomerId { get; set; }
+        public string UserId { get; set; }
         public string CustomerName { get; set; }
         public Guid LoyaltyTierId { get; set; }
         public string TierName { get; set; }
@@ -79,7 +79,7 @@ namespace Shared.DTOs.Loyalty
 
     public class LoyaltyPointsTransactionCreateDto
     {
-        public Guid CustomerId { get; set; }
+        public string UserId { get; set; }
         public int TransactionType { get; set; }
         public decimal Points { get; set; }
         public Guid? OrderId { get; set; }
@@ -90,7 +90,7 @@ namespace Shared.DTOs.Loyalty
     public class LoyaltyPointsTransactionDto
     {
         public Guid Id { get; set; }
-        public Guid CustomerId { get; set; }
+        public string UserId { get; set; }
         public string CustomerName { get; set; }
         public int TransactionType { get; set; }
         public string TransactionTypeName { get; set; }
@@ -124,7 +124,7 @@ namespace Shared.DTOs.Loyalty
 
     public class LoyaltyPointsTransactionSearchRequest
     {
-        public Guid? CustomerId { get; set; }
+        public string UserId { get; set; }
         public int? TransactionType { get; set; }
         public DateTime? FromDate { get; set; }
         public DateTime? ToDate { get; set; }

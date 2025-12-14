@@ -2,11 +2,13 @@ using BL.Contracts.GeneralService.CMS;
 using BL.Contracts.IMapper;
 using BL.Contracts.Service.ECommerce.Category;
 using BL.Service.Base;
+using Common.Enumerations.Pricing;
 using DAL.Contracts.UnitOfWork;
 using DAL.Models;
 using Domains.Entities.Catalog.Category;
 using Domains.Entities.Catalog.Item;
 using Domains.Views.Category;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Resources;
 using Shared.DTOs.ECommerce.Category;
 using Shared.DTOs.ECommerce.Item;
@@ -14,6 +16,7 @@ using Shared.GeneralModels.SearchCriteriaModels;
 using Shared.Helpers;
 using System.ComponentModel.DataAnnotations;
 using System.Linq.Expressions;
+using System.Reflection.Metadata;
 
 namespace BL.Service.ECommerce.Category
 {
@@ -48,7 +51,7 @@ namespace BL.Service.ECommerce.Category
                 throw new ArgumentOutOfRangeException(nameof(criteriaModel.PageSize), ValidationResources.PageSizeRange);
 
             // Base filter for active entities
-            Expression<Func<TbCategory, bool>> filter = x => x.CurrentState == 1;
+            Expression<Func<TbCategory, bool>> filter = x => !x.IsDeleted;
 
             // Apply search term if provided
             if (!string.IsNullOrWhiteSpace(criteriaModel.SearchTerm))
@@ -97,7 +100,7 @@ namespace BL.Service.ECommerce.Category
         }
         public override async Task<IEnumerable<CategoryDto>> GetAllAsync()
         {
-            var categories = await _categoryUnitOfWork.Repository<TbCategory>().GetAsync(c => c.CurrentState == 1);
+            var categories = await _categoryUnitOfWork.Repository<TbCategory>().GetAsync(c => !c.IsDeleted);
 
             if (categories == null)
                 throw new Exception(string.Format(ValidationResources.EntityNotFound, ECommerceResources.Category));
@@ -126,7 +129,7 @@ namespace BL.Service.ECommerce.Category
             {
                 await _categoryUnitOfWork.BeginTransactionAsync();
                 var allCategories = (await _categoryUnitOfWork.TableRepository<TbCategory>()
-                    .GetAsync(c => c.CurrentState == 1)).ToList();
+                    .GetAsync(c => !c.IsDeleted)).ToList();
                 var maxDisplayOrder = allCategories.Any() ? allCategories.Max(c => c.DisplayOrder) : 0;
 
                 // Handle TreeViewSerial (unchanged)
@@ -355,6 +358,12 @@ namespace BL.Service.ECommerce.Category
                     entity.IsFinal = true;
                 }
 
+                // Handle pricing system defaulting
+                if (entity.PricingSystemId == Guid.Empty)
+                {
+                    entity.PricingSystemType = PricingSystemType.Combination;
+                    entity.PricingSystemId = Guid.Parse("22222222-2222-2222-2222-222222222222");
+                }
                 // Save entity
                 var result1 = await _categoryUnitOfWork.TableRepository<TbCategory>().SaveAsync(entity, userId);
                 var categoryId = result1.Id;
@@ -373,7 +382,7 @@ namespace BL.Service.ECommerce.Category
                 if (dto.Id != Guid.Empty)
                 {
                     var existingAttributes = await _categoryUnitOfWork.TableRepository<TbCategoryAttribute>()
-                        .GetAsync(c => c.CategoryId == dto.Id && c.CurrentState == 1);
+                        .GetAsync(c => c.CategoryId == dto.Id && !c.IsDeleted);
                     if (existingAttributes?.Any() == true)
                     {
                         foreach (var attribute in existingAttributes)
@@ -403,7 +412,7 @@ namespace BL.Service.ECommerce.Category
             catch (Exception ex)
             {
                 _categoryUnitOfWork.Rollback();
-                throw new Exception(string.Format(ValidationResources.SaveEntityError, ECommerceResources.Category), ex);
+                throw new Exception("Faild to save category", ex);
             }
         }
         public async Task<bool> UpdateSerialsAsync(Dictionary<Guid, string> serialAssignments, Guid userId)
@@ -455,7 +464,7 @@ namespace BL.Service.ECommerce.Category
                 Guid? parentId = entity.ParentId;
 
                 // Check if the item exists
-                var categoryItemsEntities = await _categoryUnitOfWork.TableRepository<TbItem>().GetAsync(i => i.CategoryId == id && i.CurrentState == 1);
+                var categoryItemsEntities = await _categoryUnitOfWork.TableRepository<TbItem>().GetAsync(i => i.CategoryId == id && !i.IsDeleted);
                 var categoryItems = _mapper.MapList<TbItem, ItemDto>(categoryItemsEntities);
 
                 // Prevent deletion if category is in use by items
@@ -487,7 +496,7 @@ namespace BL.Service.ECommerce.Category
                 }
 
                 var hasChild = (await _categoryUnitOfWork.TableRepository<TbCategory>()
-                    .GetAsync(x => x.ParentId == id && x.CurrentState == 1)).Any();
+                    .GetAsync(x => x.ParentId == id && !x.IsDeleted)).Any();
                 if (hasChild)
                 {
                     _categoryUnitOfWork.Rollback();
@@ -503,7 +512,7 @@ namespace BL.Service.ECommerce.Category
                 await _categoryUnitOfWork.TableRepository<TbCategory>().UpdateAsync(entity, userId);
 
                 // Update current state (soft delete)
-                await _categoryUnitOfWork.TableRepository<TbCategory>().UpdateCurrentStateAsync(id, userId, 0);
+                await _categoryUnitOfWork.TableRepository<TbCategory>().UpdateCurrentStateAsync(id, userId, true);
 
                 // Handle category attributes
                 var categoryAttributes = (await _categoryUnitOfWork.TableRepository<TbCategoryAttribute>()
@@ -512,7 +521,7 @@ namespace BL.Service.ECommerce.Category
                 {
                     foreach (var attribute in categoryAttributes)
                     {
-                        await _categoryUnitOfWork.TableRepository<TbCategoryAttribute>().UpdateCurrentStateAsync(attribute.Id, userId, 0);
+                        await _categoryUnitOfWork.TableRepository<TbCategoryAttribute>().UpdateCurrentStateAsync(attribute.Id, userId, true);
                     }
                 }
 
@@ -542,7 +551,7 @@ namespace BL.Service.ECommerce.Category
             try
             {
                 var mainCategories = (await _categoryUnitOfWork.TableRepository<TbCategory>()
-                    .GetAsync(c => c.IsMainCategory && c.CurrentState == 1)).Take(4);
+                    .GetAsync(c => c.IsMainCategory && !c.IsDeleted)).Take(4);
 
                 if (mainCategories == null || !mainCategories.Any())
                     return new List<MainCategoryDto>();
@@ -560,7 +569,7 @@ namespace BL.Service.ECommerce.Category
             {
                 ////Parents Categotries
                 //var categories = _categoryUnitOfWork.TableRepository<TbCategory>()
-                //    .Get(c => c.CurrentState == 1 && (c.ParentId == null || c.ParentId == Guid.Empty) &&
+                //    .Get(c => !c.IsDeleted && (c.ParentId == null || c.ParentId == Guid.Empty) &&
                 //        (!isFeaturedCategory || c.IsFeaturedCategory)).ToList();
 
                 Expression<Func<VwCategoryWithAttributes, bool>> filter = x => (!isFeaturedCategory || x.IsFeaturedCategory == true) &&
@@ -708,7 +717,7 @@ namespace BL.Service.ECommerce.Category
             {
                 // Get all active categories
                 var allCategories = await _categoryUnitOfWork.TableRepository<TbCategory>()
-                    .GetAsync(c => c.CurrentState == 1);
+                    .GetAsync(c => !c.IsDeleted);
 
                 // Determine the parent serial for siblings
                 string parentSerial = "";
@@ -782,7 +791,7 @@ namespace BL.Service.ECommerce.Category
             {
                 // Get all descendants of the parent
                 var descendants = await _categoryUnitOfWork.TableRepository<TbCategory>()
-                    .GetAsync(c => c.TreeViewSerial.StartsWith(oldParentSerial + ".") && c.CurrentState == 1);
+                    .GetAsync(c => c.TreeViewSerial.StartsWith(oldParentSerial + ".") && !c.IsDeleted);
 
                 foreach (var descendant in descendants)
                 {
@@ -805,7 +814,7 @@ namespace BL.Service.ECommerce.Category
         {
             // Get all active categories with display order greater than the deleted category
             var categoriesToShift = await _categoryUnitOfWork.TableRepository<TbCategory>()
-                .GetAsync(c => c.CurrentState == 1 && c.DisplayOrder > deletedDisplayOrder);
+                .GetAsync(c => !c.IsDeleted && c.DisplayOrder > deletedDisplayOrder);
 
             if (!categoriesToShift.Any()) return;
 
@@ -827,7 +836,7 @@ namespace BL.Service.ECommerce.Category
         {
             // Get all categories at or after the insert position
             var categoriesToShift = await _categoryUnitOfWork.TableRepository<TbCategory>()
-                .GetAsync(c => c.CurrentState == 1 && c.DisplayOrder >= insertPosition);
+                .GetAsync(c => !c.IsDeleted && c.DisplayOrder >= insertPosition);
 
             if (!categoriesToShift.Any()) return;
 
@@ -862,7 +871,7 @@ namespace BL.Service.ECommerce.Category
             if (!maxDisplayOrder.HasValue)
             {
                 var allCategories = (await _categoryUnitOfWork.TableRepository<TbCategory>()
-                    .GetAsync(c => c.CurrentState == 1)).ToList();
+                    .GetAsync(c => !c.IsDeleted)).ToList();
                 maxDisplayOrder = allCategories.Any() ? allCategories.Max(c => c.DisplayOrder) : 0;
             }
 
@@ -877,7 +886,7 @@ namespace BL.Service.ECommerce.Category
 
             // Get all active categories (excluding the target category)
             var categories = (await _categoryUnitOfWork.TableRepository<TbCategory>()
-                .GetAsync(c => c.Id != categoryId && c.CurrentState == 1)).ToList();
+                .GetAsync(c => c.Id != categoryId && !c.IsDeleted)).ToList();
 
             // Prepare bulk updates
             var updates = new Dictionary<Guid, Dictionary<string, object>>();

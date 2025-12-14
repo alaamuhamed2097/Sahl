@@ -1,4 +1,7 @@
+﻿using Asp.Versioning.ApiExplorer;
+using Microsoft.Extensions.Options;
 using Microsoft.OpenApi;
+using Swashbuckle.AspNetCore.SwaggerGen;
 using System.Reflection;
 
 namespace Api.Extensions
@@ -10,11 +13,21 @@ namespace Api.Extensions
             services.AddEndpointsApiExplorer();
             services.AddSwaggerGen(options =>
             {
-                options.SwaggerDoc("v1", new OpenApiInfo
+                // Define Bearer security scheme
+                options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
                 {
-                    Title = "Sahl API",
-                    Version = "v1",
-                    Description = "API for Sahl Project"
+                    Description = "JWT Authorization header using the Bearer scheme. Example: \"Authorization: Bearer {token}\"",
+                    Name = "Authorization",
+                    In = ParameterLocation.Header,
+                    Type = SecuritySchemeType.Http,
+                    Scheme = "Bearer",
+                    BearerFormat = "JWT"
+                });
+
+                // Apply Bearer security globally using OpenApiSecuritySchemeReference
+                options.AddSecurityRequirement(document => new OpenApiSecurityRequirement
+                {
+                    [new OpenApiSecuritySchemeReference("Bearer", document)] = []
                 });
 
                 // Add XML comments for better documentation
@@ -25,7 +38,7 @@ namespace Api.Extensions
                     options.IncludeXmlComments(xmlPath, includeControllerXmlComments: true);
                 }
 
-                // Include XML comments for referenced assemblies (DTOs, etc.)
+                // Include XML comments for referenced assemblies
                 var sharedXmlFile = "Shared.xml";
                 var sharedXmlPath = Path.Combine(AppContext.BaseDirectory, sharedXmlFile);
                 if (File.Exists(sharedXmlPath))
@@ -34,19 +47,69 @@ namespace Api.Extensions
                 }
             });
 
+            services.ConfigureOptions<ConfigureSwaggerOptions>();
+
             return services;
         }
 
-        public static IApplicationBuilder UseSwaggerConfiguration(this IApplicationBuilder app)
+        public static IApplicationBuilder UseSwaggerConfiguration(this IApplicationBuilder app, IApiVersionDescriptionProvider provider)
         {
-            app.UseSwagger();
+            app.UseSwagger(options =>
+            {
+                options.RouteTemplate = "openapi/{documentName}.json";
+            });
+
             app.UseSwaggerUI(options =>
             {
-                options.SwaggerEndpoint("/swagger/v1/swagger.json", "Sahl API v1");
+                foreach (var description in provider.ApiVersionDescriptions)
+                {
+                    options.SwaggerEndpoint(
+                        $"/openapi/{description.GroupName}.json",
+                        description.GroupName.ToUpperInvariant()
+                    );
+                }
+
                 options.RoutePrefix = "swagger";
+                options.DefaultModelsExpandDepth(-1);
+                options.DocExpansion(Swashbuckle.AspNetCore.SwaggerUI.DocExpansion.None);
+                options.EnableDeepLinking();
+                options.DisplayRequestDuration();
+                options.EnableFilter();
+                options.ShowExtensions();
+                options.EnableValidator();
             });
 
             return app;
+        }
+    }
+
+    /// <summary>
+    /// Configures swagger generation options for API versioning support.
+    /// </summary>
+    public class ConfigureSwaggerOptions : IConfigureNamedOptions<SwaggerGenOptions>
+    {
+        private readonly IApiVersionDescriptionProvider _provider;
+
+        public ConfigureSwaggerOptions(IApiVersionDescriptionProvider provider)
+        {
+            _provider = provider;
+        }
+
+        public void Configure(string name, SwaggerGenOptions options) => Configure(options);
+
+        public void Configure(SwaggerGenOptions options)
+        {
+            foreach (var description in _provider.ApiVersionDescriptions)
+            {
+                var info = new OpenApiInfo
+                {
+                    Title = $"Basit E-Commerce Marketplace API {description.ApiVersion}",
+                    Version = description.ApiVersion.ToString(),
+                    Description = "API Documentation for Basit E-Commerce Marketplace"
+                };
+
+                options.SwaggerDoc(description.GroupName, info);
+            }
         }
     }
 }
