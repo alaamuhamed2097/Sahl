@@ -24,6 +24,8 @@ using BL.Service.Setting;
 using BL.Service.ShippingCompany;
 using BL.Service.Vendor;
 using BL.Services.Order;
+using DAL.Contracts.Repositories.Review;
+using DAL.Repositories.Review;
 
 namespace Api.Extensions
 {
@@ -70,14 +72,14 @@ namespace Api.Extensions
             services.AddScoped<IOrderService, OrderService>();
 
             // Register required repositories for CartService
-            services.AddScoped<ICartRepository, CartRepository>();
-            services.AddScoped<IOfferRepository, OfferRepository>();
-            services.AddScoped<IOrderRepository, OrderRepository>();
+            //services.AddScoped<ICartRepository, CartRepository>();
+            //services.AddScoped<IOfferRepository, OfferRepository>();
+            //services.AddScoped<IOrderRepository, OrderRepository>();
 
-			// Review repositories
-			services.AddScoped<IOfferReviewRepository, OfferReviewRepository>();
-			services.AddScoped<IReviewVoteRepository, ReviewVoteRepository>();
-			services.AddScoped<IReviewReportRepository, ReviewReportRepository>();
+            // Review repositories
+   //         services.AddScoped<IOfferReviewRepository, OfferReviewRepository>();
+			//services.AddScoped<IReviewVoteRepository, ReviewVoteRepository>();
+			//services.AddScoped<IReviewReportRepository, ReviewReportRepository>();
 
 			// Review Services
 			services.AddScoped<IOfferReviewService, OfferReviewService>();

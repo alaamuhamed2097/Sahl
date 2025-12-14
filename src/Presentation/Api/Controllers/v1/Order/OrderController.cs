@@ -49,14 +49,40 @@ namespace Api.Controllers.v1.Order
                 });
         }
 
-        /// <summary>
-        /// Get Order by ID
-        /// </summary>
-        /// <remarks>
-        /// API Version: 1.0+<br/>
-        /// Requires Customer, Admin, or Vendor role.
-        /// </remarks>
-        [HttpGet("{orderId}")]
+		/// <summary>
+		/// Get My Orders - Simple List (Original)
+		/// </summary>
+		/// <remarks>
+		/// API Version: 1.0+<br/>
+		/// Requires Customer role.<br/>
+		/// Returns a simple list of customer orders without full pagination details.
+		/// </remarks>
+		[HttpGet("my-orders")]
+		[Authorize(Roles = nameof(UserRole.Customer))]
+		[ProducesResponseType(StatusCodes.Status200OK)]
+		[ProducesResponseType(StatusCodes.Status401Unauthorized)]
+		public async Task<IActionResult> GetCustomerOrders(
+			[FromQuery] int pageNumber = 1,
+			[FromQuery] int pageSize = 10)
+		{
+			var orders = await _orderService.GetCustomerOrdersAsync(UserId, pageNumber, pageSize);
+
+			return Ok(new ResponseModel<List<OrderListItemDto>>
+			{
+				Success = true,
+				Message = "Data retrieved successfully.",
+				Data = orders
+			});
+		}
+
+		/// <summary>
+		/// Get Order by ID
+		/// </summary>
+		/// <remarks>
+		/// API Version: 1.0+<br/>
+		/// Requires Customer, Admin, or Vendor role.
+		/// </remarks>
+		[HttpGet("{orderId}")]
         [Authorize(Roles = nameof(UserRole.Customer) + "," + nameof(UserRole.Admin) + "," + nameof(UserRole.Vendor))]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -129,20 +155,20 @@ namespace Api.Controllers.v1.Order
         /// API Version: 1.0+<br/>
         /// Requires Customer role.
         /// </remarks>
-        [HttpGet("my-orders")]
-        [Authorize(Roles = nameof(UserRole.Customer))]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<IActionResult> GetCustomerOrders([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
-        {
-            var orders = await _orderService.GetCustomerOrdersAsync(UserId, pageNumber, pageSize);
+        //[HttpGet("my-orders")]
+        //[Authorize(Roles = nameof(UserRole.Customer))]
+        //[ProducesResponseType(StatusCodes.Status200OK)]
+        //public async Task<IActionResult> GetCustomerOrders([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
+        //{
+        //    var orders = await _orderService.GetCustomerOrdersAsync(UserId, pageNumber, pageSize);
 
-            return Ok(new ResponseModel<List<OrderListItemDto>>
-            {
-                Success = true,
-                Message = "Data retrieved successfully.",
-                Data = orders
-            });
-        }
+        //    return Ok(new ResponseModel<List<OrderListItemDto>>
+        //    {
+        //        Success = true,
+        //        Message = "Data retrieved successfully.",
+        //        Data = orders
+        //    });
+        //}
 
         /// <summary>
         /// Get Order with Shipments and Details
