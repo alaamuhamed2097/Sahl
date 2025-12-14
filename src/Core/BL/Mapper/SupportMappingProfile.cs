@@ -15,13 +15,6 @@ namespace BL.Mapper
             CreateMap<TbSupportTicketMessage, SupportTicketMessageDto>().ReverseMap();
         }
 
-        private void ConfigureReviewMappings()
-        {
-            CreateMap<TbProductReview, ProductReviewDto>().ReverseMap();
-            CreateMap<TbSalesReview, SalesReviewDto>().ReverseMap();
-            CreateMap<TbDeliveryReview, DeliveryReviewDto>().ReverseMap();
-            CreateMap<TbReviewVote, ReviewVoteDto>().ReverseMap();
-            CreateMap<TbReviewReport, ReviewReportDto>().ReverseMap();
-        }
+      
     }
 }

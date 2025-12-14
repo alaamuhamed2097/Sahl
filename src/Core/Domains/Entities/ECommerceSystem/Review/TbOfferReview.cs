@@ -2,10 +2,10 @@ using Common.Enumerations.Review;
 
 namespace Domains.Entities.ECommerceSystem.Review
 {
-    public class TbProductReview : BaseEntity
+    public class TbOfferReview : BaseEntity
     {
         public int ReviewNumber { get; set; }
-        public Guid ProductID { get; set; }
+        public Guid OfferID { get; set; }
         public Guid CustomerID { get; set; }
         public Guid? OrderItemID { get; set; }
         public decimal Rating { get; set; }

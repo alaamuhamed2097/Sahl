@@ -13,6 +13,7 @@ namespace BL.Mapper
             ConfigureAttributeMappings();
             ConfigureUnitMappings();
             ConfigureItemMappings();
+            ConfigureOfferMappings();
             ConfigureCurrencyMappings();
             ConfigureBrandMapping();
             ConfigureMediaMappings();
@@ -25,6 +26,8 @@ namespace BL.Mapper
             ConfigureContentAndNotificationChannelMappings();
             ConfigurePricingMappings();
             ConfigureCartMappings();
+            
+			ConfigureCustomerMappings();
 		}
     }
 }

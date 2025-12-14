@@ -24,7 +24,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Entities\ECommerceSystem\Customer\" />
     <Folder Include="Entities\Support\" />
     <Folder Include="Procedures\" />
   </ItemGroup>

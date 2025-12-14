@@ -18,8 +18,5 @@ namespace Domains.Entities.Catalog.Item
 
         [ForeignKey("ItemId")]
         public virtual TbItem Item { get; set; } = null!;
-
-		
-
 	}
 }

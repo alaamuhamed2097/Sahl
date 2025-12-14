@@ -15,6 +15,6 @@ namespace Domains.Entities.Offer
 
 		public bool IsNew { get; set; }
 
-		public virtual ICollection<TbOffer> Offers { get; set; }
+		public virtual ICollection<TbOfferCombinationPricing> OfferCombinationPricings { get; set; }
 	}
 }

@@ -6,6 +6,7 @@ using BL.Contracts.Service.ECommerce.Category;
 using BL.Contracts.Service.ECommerce.Item;
 using BL.Contracts.Service.ECommerce.Unit;
 using BL.Contracts.Service.Pricing;
+using BL.Contracts.Service.Review;
 using BL.Contracts.Service.Setting;
 using BL.Contracts.Service.ShippingCompny;
 using BL.Contracts.Service.Vendor;
@@ -18,10 +19,16 @@ using BL.Service.ECommerce.Unit;
 using BL.Service.Order;
 using BL.Service.Pricing;
 using BL.Service.PromoCode;
+using BL.Service.Review;
 using BL.Service.Setting;
 using BL.Service.ShippingCompany;
 using BL.Service.Vendor;
 using BL.Services.Order;
+using DAL.Contracts.Repositories;
+using DAL.Contracts.Repositories.Review;
+using DAL.Repositories;
+using DAL.Repositories.DAL.Repositories;
+using DAL.Repositories.Review;
 
 namespace Api.Extensions
 {
@@ -67,7 +74,22 @@ namespace Api.Extensions
             services.AddScoped<ICartService, CartService>();
             services.AddScoped<IOrderService, OrderService>();
 
-            return services;
+            // Register required repositories for CartService
+            services.AddScoped<ICartRepository, CartRepository>();
+            services.AddScoped<IOfferRepository, OfferRepository>();
+            services.AddScoped<IOrderRepository, OrderRepository>();
+
+			// Review repositories
+			services.AddScoped<IOfferReviewRepository, OfferReviewRepository>();
+			//services.AddScoped<IReviewVoteRepository, ReviewVoteRepository>();
+			services.AddScoped<IReviewReportRepository, ReviewReportRepository>();
+
+			// Review Services
+			services.AddScoped<IOfferReviewService, OfferReviewService>();
+			services.AddScoped<IReviewReportService, ReviewReportService>();
+
+
+			return services;
         }
     }
 }

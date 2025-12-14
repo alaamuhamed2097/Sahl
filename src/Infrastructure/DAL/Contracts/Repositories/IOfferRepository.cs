@@ -1,5 +1,6 @@
 ﻿using DAL.ResultModels.DAL.ResultModels;
 using Domains.Entities.Offer;
+using Domains.Views.Offer;
 
 namespace DAL.Contracts.Repositories;
 
@@ -11,17 +12,17 @@ public interface IOfferRepository : ITableRepository<TbOffer>
     /// <summary>
     /// Get offer with all related data (item, user, pricing combinations)
     /// </summary>
-    Task<TbOffer> GetOfferWithDetailsAsync(Guid offerId, CancellationToken cancellationToken = default);
+    Task<VwOffer> GetOfferWithDetailsAsync(Guid offerId, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Get offers by item ID
     /// </summary>
-    Task<IEnumerable<TbOffer>> GetOffersByItemIdAsync(Guid itemId, CancellationToken cancellationToken = default);
+    Task<IEnumerable<VwOffer>> GetOffersByItemIdAsync(Guid itemId, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Get offers by vendor ID
     /// </summary>
-    Task<IEnumerable<TbOffer>> GetOffersByVendorIdAsync(Guid vendorId, CancellationToken cancellationToken = default);
+    Task<IEnumerable<VwOffer>> GetOffersByVendorIdAsync(Guid vendorId, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Get offers with available stock information

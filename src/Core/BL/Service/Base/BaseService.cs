@@ -9,7 +9,7 @@ namespace BL.Service.Base
     public abstract class BaseService<TS, TD> : IBaseService<TS, TD> where TS : BaseEntity
     {
         private readonly ITableRepository<TS> _baseRepository;
-        private readonly IBaseMapper _mapper;
+		private readonly IBaseMapper _mapper;
         public BaseService(ITableRepository<TS> baseRepository, IBaseMapper mapper)
         {
             _baseRepository = baseRepository;

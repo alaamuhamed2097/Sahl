@@ -1,4 +1,5 @@
-﻿using Domains.Entities.Base;
+﻿using DAL.Configurations;
+using Domains.Entities.Base;
 using Domains.Entities.BrandManagement;
 using Domains.Entities.BuyBox;
 using Domains.Entities.Campaign;
@@ -13,6 +14,7 @@ using Domains.Entities.CouponCode;
 using Domains.Entities.Currency;
 using Domains.Entities.ECommerceSystem;
 using Domains.Entities.ECommerceSystem.Cart;
+using Domains.Entities.ECommerceSystem.Customer;
 using Domains.Entities.ECommerceSystem.Review;
 using Domains.Entities.ECommerceSystem.Support;
 using Domains.Entities.ECommerceSystem.Vendor;
@@ -38,6 +40,7 @@ using Domains.Entities.Warehouse;
 using Domains.Identity;
 using Domains.Views.Category;
 using Domains.Views.Item;
+using Domains.Views.Offer;
 using Domains.Views.Unit;
 using Domains.Views.UserNotification;
 using Microsoft.AspNetCore.Identity;
@@ -74,10 +77,9 @@ namespace DAL.ApplicationContext
         // Item Management
         public DbSet<TbItem> TbItems { get; set; }
         public DbSet<TbItemAttribute> TbItemAttributes { get; set; }
-        public DbSet<TbAttributeValuePriceModifier> TbAttributeValuePriceModifiers { get; set; }
         public DbSet<TbItemImage> TbItemImages { get; set; }
         public DbSet<TbItemCombination> TbItemCombinations { get; set; }
-        public DbSet<TbCombinationAttribute> TbCombinationAttributes { get; set; }
+        public DbSet<TbItemCombinationImage> TbItemCombinationImages { get; set; }
         public DbSet<TbCombinationAttributesValue> TbCombinationAttributesValues { get; set; }
 
         // Notification Management
@@ -120,7 +122,7 @@ namespace DAL.ApplicationContext
         public DbSet<TbSupportTicketMessage> TbSupportTicketMessages { get; set; }
 
         // Review Management
-        public DbSet<TbProductReview> TbProductReviews { get; set; }
+        public DbSet<TbOfferReview> TbOfferReviews { get; set; }
         public DbSet<TbSalesReview> TbSalesReviews { get; set; }
         public DbSet<TbDeliveryReview> TbDeliveryReviews { get; set; }
         public DbSet<TbReviewVote> TbReviewVotes { get; set; }
@@ -214,17 +216,23 @@ namespace DAL.ApplicationContext
         // Pricing System Settings
         public DbSet<TbPricingSystemSetting> TbPricingSystemSettings { get; set; }
 
-        #endregion
+		// E-Commerce System - Customers
+		public DbSet<TbCustomer> TbCustomers { get; set; }
 
-        #region DbSets - Views
+		#endregion
 
-        // Category Views
-        public DbSet<VwAttributeWithOptions> VwAttributeWithOptions { get; set; }
+		#region DbSets - Views
+
+		// Category Views
+		public DbSet<VwAttributeWithOptions> VwAttributeWithOptions { get; set; }
         public DbSet<VwCategoryItems> VwCategoryItems { get; set; }
         public DbSet<VwCategoryWithAttributes> VwCategoryWithAttributes { get; set; }
 
         // Item Views
         public DbSet<VwItem> VwItems { get; set; }
+        
+        //Offer
+        public DbSet<VwOffer> VwOffers { get; set; }
 
         // Item Search Views (from stored procedure and denormalized view)
         public DbSet<SpSearchItemsMultiVendor> SpSearchItemsMultiVendor { get; set; }
@@ -243,8 +251,10 @@ namespace DAL.ApplicationContext
             base.OnModelCreating(modelBuilder);
 
             modelBuilder.ApplyConfigurationsFromAssembly(typeof(ApplicationDbContext).Assembly);
+            
+			//modelBuilder.ApplyConfiguration(new CustomerConfiguration());
 
-            ConfigureBaseEntities(modelBuilder);
+			ConfigureBaseEntities(modelBuilder);
             ConfigureViews(modelBuilder);
 
             // Apply missing/explicit relationship configurations that might not be covered
@@ -300,25 +310,6 @@ namespace DAL.ApplicationContext
 
                 entity.HasIndex(e => e.ItemCombinationId);
                 entity.HasIndex(e => e.OfferId);
-            });
-
-            // Attribute value price modifier relations
-            modelBuilder.Entity<TbAttributeValuePriceModifier>(entity =>
-            {
-                entity.HasKey(e => e.Id);
-
-                entity.HasOne(e => e.CombinationAttributesValue)
-                      .WithMany()
-                      .HasForeignKey(e => e.CombinationAttributeValueId)
-                      .OnDelete(DeleteBehavior.Restrict);
-
-                entity.HasOne(e => e.Attribute)
-                      .WithMany()
-                      .HasForeignKey(e => e.AttributeId)
-                      .OnDelete(DeleteBehavior.Restrict);
-
-                entity.HasIndex(e => e.CombinationAttributeValueId);
-                entity.HasIndex(e => e.AttributeId);
             });
         }
 
@@ -401,6 +392,9 @@ namespace DAL.ApplicationContext
 
             // Item Views
             modelBuilder.Entity<VwItem>().HasNoKey().ToView("VwItems");
+            
+            // Offer Views
+            modelBuilder.Entity<VwOffer>().HasNoKey().ToView("VwOffers");
 
             // Item Search Result View (from stored procedure - no actual view, used for mapping results)
             modelBuilder.Entity<SpSearchItemsMultiVendor>().HasNoKey().ToView("SpSearchItemsMultiVendor");
