@@ -69,11 +69,23 @@ namespace Api.Extensions
             services.AddScoped<ICartService, CartService>();
             services.AddScoped<IOrderService, OrderService>();
 
+            // Register required repositories for CartService
+            services.AddScoped<ICartRepository, CartRepository>();
+            services.AddScoped<IOfferRepository, OfferRepository>();
+            services.AddScoped<IOrderRepository, OrderRepository>();
 
-            // Review Services
-            services.AddScoped<IOfferReviewService, OfferReviewService>();
-            services.AddScoped<IReviewReportService, ReviewReportService>();
-            return services;
+			// Review repositories
+			services.AddScoped<IOfferReviewRepository, OfferReviewRepository>();
+			services.AddScoped<IReviewVoteRepository, ReviewVoteRepository>();
+			services.AddScoped<IReviewReportRepository, ReviewReportRepository>();
+
+			// Review Services
+			services.AddScoped<IOfferReviewService, OfferReviewService>();
+			services.AddScoped<IReviewReportService, ReviewReportService>();
+			services.AddScoped<IReviewVoteService, ReviewVoteService>();
+
+
+			return services;
         }
     }
 }

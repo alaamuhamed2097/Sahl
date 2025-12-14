@@ -120,7 +120,10 @@ namespace BL.Service.Review
 
 				// Create review
 				var review = _mapper.MapModel<OfferReviewDto, TbOfferReview>(reviewDto);
+				review.HelpfulCount = 0;
+				review.NotHelpfulCount = 0;
 				review.Status = ReviewStatus.Pending;
+				review.IsEdited = false;
 
 				var result = await _reviewRepo.CreateAsync(review, reviewDto.CustomerID, cancellationToken);
 

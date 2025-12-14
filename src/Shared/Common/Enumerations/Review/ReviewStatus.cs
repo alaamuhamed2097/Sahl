@@ -2,9 +2,9 @@ namespace Common.Enumerations.Review
 {
     public enum ReviewStatus
     {
-        Pending,
-        Approved,
-        Rejected,
-        Flagged
+        Pending=1,
+        Approved=2,
+        Rejected=3,
+        Flagged=4
     }
 }

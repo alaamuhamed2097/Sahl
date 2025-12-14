@@ -23,7 +23,9 @@ namespace Api.Controllers.v1.Review.OfferReview
 	[ApiController]
 	[ApiVersion("1.0")]
 	[Route("api/v{version:apiVersion}/[controller]")]
-	[Authorize(Roles = nameof(UserRole.Customer))]
+	//[Authorize(Roles = nameof(UserRole.Customer))]
+	[Authorize(Roles = $"{nameof(UserRole.Customer)},{nameof(UserRole.Admin)}")]
+
 	public class OfferReviewController : BaseController
 	{
 		private readonly IOfferReviewService _reviewService;

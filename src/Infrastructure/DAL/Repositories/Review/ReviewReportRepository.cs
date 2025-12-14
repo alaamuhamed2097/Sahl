@@ -83,7 +83,7 @@ namespace DAL.Repositories.Review
 			}
 		}
 
-		public async Task<List<TbReviewReport>> GetReportsByReviewIdAsync(
+		public async Task<IEnumerable<TbReviewReport>> GetReportsByReviewIdAsync(
 			Guid reviewId,
 			CancellationToken cancellationToken = default)
 		{
@@ -104,7 +104,7 @@ namespace DAL.Repositories.Review
 			}
 		}
 
-		public async Task<List<TbReviewReport>> GetReportsByUserIdAsync(
+		public async Task<IEnumerable<TbReviewReport>> GetReportsByUserIdAsync(
 			Guid userId,
 			CancellationToken cancellationToken = default)
 		{
