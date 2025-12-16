@@ -4,6 +4,7 @@ using DAL.ApplicationContext;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DAL.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251215102614_addSeedData3")]
+    partial class addSeedData3
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -7105,99 +7108,6 @@ namespace DAL.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
-            modelBuilder.Entity("Domains.Procedures.SpGetAvailableSearchFilters", b =>
-                {
-                    b.Property<string>("AttributesJson")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("BrandsJson")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("CategoriesJson")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ConditionsJson")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("FeaturesJson")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("PriceRangeJson")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("VendorsJson")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.ToTable((string)null);
-
-                    b.ToView("SpGetAvailableSearchFilters", (string)null);
-                });
-
-            modelBuilder.Entity("Domains.Procedures.SpSearchItemsMultiVendor", b =>
-                {
-                    b.Property<decimal>("AvgPrice")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<string>("BestOfferData")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("BestOfferDataRaw")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<Guid?>("BrandId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("CategoryId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("CreatedDateUtc")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("FastestDelivery")
-                        .HasColumnType("int");
-
-                    b.Property<double>("FinalScore")
-                        .HasColumnType("float");
-
-                    b.Property<Guid>("ItemId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<decimal>("MaxPrice")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<decimal>("MinPrice")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<int>("OffersCount")
-                        .HasColumnType("int");
-
-                    b.Property<string>("ShortDescriptionAr")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ShortDescriptionEn")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ThumbnailImage")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("TitleAr")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("TitleEn")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.ToTable((string)null);
-
-                    b.ToView("SpSearchItemsMultiVendor", (string)null);
-                });
-
             modelBuilder.Entity("Domains.Views.Category.VwAttributeWithOptions", b =>
                 {
                     b.Property<string>("AttributeOptionsJson")
@@ -7338,6 +7248,71 @@ namespace DAL.Migrations
                     b.ToTable((string)null);
 
                     b.ToView("VwCategoryWithAttributes", (string)null);
+                });
+
+            modelBuilder.Entity("Domains.Views.Item.SpSearchItemsMultiVendor", b =>
+                {
+                    b.Property<decimal>("AvgPrice")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("BestOfferData")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("BestOfferDataRaw")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid?>("BrandId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("CategoryId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedDateUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("FastestDelivery")
+                        .HasColumnType("int");
+
+                    b.Property<double>("FinalScore")
+                        .HasColumnType("float");
+
+                    b.Property<Guid>("ItemId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<decimal>("MaxPrice")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal>("MinPrice")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("OffersCount")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ShortDescriptionAr")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ShortDescriptionEn")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ThumbnailImage")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("TitleAr")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("TitleEn")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.ToTable((string)null);
+
+                    b.ToView("SpSearchItemsMultiVendor", (string)null);
                 });
 
             modelBuilder.Entity("Domains.Views.Item.VwItem", b =>

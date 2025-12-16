@@ -1,7 +1,7 @@
 using Api.Controllers.v1.Base;
 using Asp.Versioning;
 using BL.Contracts.Service.ECommerce.Item;
-using Common.Models.Filters;
+using Common.Filters;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Resources;
@@ -59,7 +59,7 @@ namespace Api.Controllers.v1.Catalog
         /// <param name="filter">Advanced search filter criteria</param>
         [HttpPost("search")]
         [AllowAnonymous]
-        public async Task<IActionResult> Search([FromBody] ItemFilterDto filter)
+        public async Task<IActionResult> Search([FromBody] ItemFilterQuery filter)
         {
             if (filter == null)
                 return BadRequest(CreateErrorResponse(NotifiAndAlertsResources.InvalidInputAlert));
@@ -105,7 +105,7 @@ namespace Api.Controllers.v1.Catalog
         /// <param name="filter">Current search filter to apply</param>
         [HttpPost("filters")]
         [AllowAnonymous]
-        public async Task<IActionResult> GetAvailableFilters([FromBody] ItemFilterDto filter)
+        public async Task<IActionResult> GetAvailableFilters([FromBody] AvailableFiltersQuery filter)
         {
             if (filter == null)
                 return BadRequest(CreateErrorResponse(NotifiAndAlertsResources.InvalidInputAlert));
@@ -159,7 +159,7 @@ namespace Api.Controllers.v1.Catalog
         /// <summary>
         /// Validates and normalizes item filter parameters
         /// </summary>
-        private static void ValidateAndNormalizeItemFilter(ItemFilterDto filter)
+        private static void ValidateAndNormalizeItemFilter(ItemFilterQuery filter)
         {
             // Validate pagination
             filter.PageNumber = Math.Max(filter.PageNumber, 1);

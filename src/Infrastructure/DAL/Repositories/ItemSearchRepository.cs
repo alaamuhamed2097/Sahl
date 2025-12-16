@@ -1,13 +1,15 @@
-﻿using Common.Models.Filters;
+﻿using Common.Filters;
 using DAL.ApplicationContext;
 using DAL.Contracts.Repositories;
 using DAL.Exceptions;
 using DAL.Models.ItemSearch;
+using Domains.Procedures;
 using Domains.Views.Item;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
 using System.Data;
+using System.Text.Json;
 
 namespace DAL.Repositories;
 
@@ -16,12 +18,13 @@ namespace DAL.Repositories;
 /// Uses SpSearchItemsMultiVendor stored procedure for optimal performance
 /// Returns domain entities, not DTOs
 /// </summary>
-public class ItemSearchRepository : IItemSearchRepository
+public class ItemSearchRepository : Repository<SpGetAvailableSearchFilters>, IItemSearchRepository
 {
     private readonly ApplicationDbContext _context;
     private readonly ILogger _logger;
 
     public ItemSearchRepository(ApplicationDbContext context, ILogger logger)
+        : base(context, logger)
     {
         _context = context ?? throw new ArgumentNullException(nameof(context));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
@@ -31,7 +34,7 @@ public class ItemSearchRepository : IItemSearchRepository
     /// Execute stored procedure search and return domain entities
     /// </summary>
     public async Task<(List<SpSearchItemsMultiVendor> Items, int TotalCount)> SearchItemsAsync(
-     ItemFilterDto filter,
+     ItemFilterQuery filter,
      CancellationToken cancellationToken = default)
     {
         if (filter == null)
@@ -184,93 +187,53 @@ public class ItemSearchRepository : IItemSearchRepository
     /// <summary>
     /// Get available filter options
     /// </summary>
-    public async Task<AvailableFiltersData> GetAvailableFiltersAsync(
-        ItemFilterDto currentFilter,
-        CancellationToken cancellationToken = default)
+    public async Task<SearchFilters> GetAvailableFiltersAsync(
+    AvailableFiltersQuery filtersQuery)
     {
-        if (currentFilter == null)
-            throw new ArgumentNullException(nameof(currentFilter));
-
-        try
+        var parameters = new[]
         {
-            // Build base query with existing filters
-            var query = from item in _context.TbItems
-                        join offer in _context.TbOffers on item.Id equals offer.ItemId
-                        join pricing in _context.TbOfferCombinationPricings on offer.Id equals pricing.OfferId
-                        where item.IsActive && !item.IsDeleted
-                            && offer.VisibilityScope == Common.Enumerations.Offer.OfferVisibilityScope.Active
-                            && !offer.IsDeleted
-                            && !pricing.IsDeleted
-                        select new { item, offer, pricing };
+            new SqlParameter("@SearchTerm", filtersQuery.SearchTerm ?? (object)DBNull.Value),
+            new SqlParameter("@CategoryId", filtersQuery.CategoryId ?? (object)DBNull.Value),
+            new SqlParameter("@VendorId", filtersQuery.VendorId ?? (object)DBNull.Value)
+        };
 
-            // Apply existing filters (except the one we're calculating)
-            if (!string.IsNullOrEmpty(currentFilter.SearchTerm))
-            {
-                var searchLower = currentFilter.SearchTerm.ToLower();
-                query = query.Where(x =>
-                    x.item.TitleAr.ToLower().Contains(searchLower) ||
-                    x.item.TitleEn.ToLower().Contains(searchLower));
-            }
+        var result = (await ExecuteStoredProcedureAsync("SpGetAvailableSearchFilters", default, parameters))
+            .FirstOrDefault();
 
-            if (currentFilter.MinPrice.HasValue)
-                query = query.Where(x => x.pricing.SalesPrice >= currentFilter.MinPrice);
+        if (result == null)
+            return new SearchFilters();
 
-            if (currentFilter.MaxPrice.HasValue)
-                query = query.Where(x => x.pricing.SalesPrice <= currentFilter.MaxPrice);
-
-            // Get available categories with counts
-            var categories = await query
-                .GroupBy(x => new { x.item.CategoryId, x.item.Category.TitleAr, x.item.Category.TitleEn })
-                .Select(g => new FilterCategoryOption
-                {
-                    Id = g.Key.CategoryId,
-                    NameAr = g.Key.TitleAr,
-                    NameEn = g.Key.TitleEn,
-                    Count = g.Select(x => x.item.Id).Distinct().Count()
-                })
-                .OrderByDescending(x => x.Count)
-                .Take(20)
-                .ToListAsync(cancellationToken);
-
-            // Get available brands with counts
-            var brands = await query
-                .Where(x => x.item.BrandId != null)
-                .GroupBy(x => new { x.item.BrandId, x.item.Brand.NameAr, x.item.Brand.NameEn })
-                .Select(g => new FilterBrandOption
-                {
-                    Id = g.Key.BrandId,
-                    NameAr = g.Key.NameAr,
-                    NameEn = g.Key.NameEn,
-                    Count = g.Select(x => x.item.Id).Distinct().Count()
-                })
-                .OrderByDescending(x => x.Count)
-                .Take(20)
-                .ToListAsync(cancellationToken);
-
-            // Get price range
-            var priceStats = await query
-                .GroupBy(x => 1)
-                .Select(g => new
-                {
-                    MinPrice = g.Min(x => x.pricing.SalesPrice),
-                    MaxPrice = g.Max(x => x.pricing.SalesPrice)
-                })
-                .FirstOrDefaultAsync(cancellationToken);
-
-            return new AvailableFiltersData
-            {
-                Categories = categories,
-                Brands = brands,
-                Vendors = new List<FilterVendorOption>(),
-                MinPrice = priceStats?.MinPrice,
-                MaxPrice = priceStats?.MaxPrice
-            };
-        }
-        catch (Exception ex)
+        // Parse JSON
+        return new SearchFilters
         {
-            _logger.Error(ex, "Error getting available filters");
-            throw new DataAccessException("Failed to retrieve available filters", ex, _logger);
-        }
+            Categories = string.IsNullOrEmpty(result.CategoriesJson)
+                ? new List<CategoryFilter>()
+                : JsonSerializer.Deserialize<List<CategoryFilter>>(result.CategoriesJson),
+
+            Brands = string.IsNullOrEmpty(result.BrandsJson)
+                ? new List<BrandFilter>()
+                : JsonSerializer.Deserialize<List<BrandFilter>>(result.BrandsJson),
+
+            Vendors = string.IsNullOrEmpty(result.VendorsJson)
+                ? new List<VendorFilter>()
+                : JsonSerializer.Deserialize<List<VendorFilter>>(result.VendorsJson),
+
+            PriceRange = string.IsNullOrEmpty(result.PriceRangeJson)
+                ? new PriceRangeFilter()
+                : JsonSerializer.Deserialize<PriceRangeFilter>(result.PriceRangeJson),
+
+            Attributes = string.IsNullOrEmpty(result.AttributesJson)
+                ? new List<AttributeFilter>()
+                : JsonSerializer.Deserialize<List<AttributeFilter>>(result.AttributesJson),
+
+            Conditions = string.IsNullOrEmpty(result.ConditionsJson)
+                ? new List<ConditionFilter>()
+                : JsonSerializer.Deserialize<List<ConditionFilter>>(result.ConditionsJson),
+
+            Features = string.IsNullOrEmpty(result.FeaturesJson)
+                ? new FeaturesFilter()
+                : JsonSerializer.Deserialize<FeaturesFilter>(result.FeaturesJson)
+        };
     }
 
     /// <summary>
