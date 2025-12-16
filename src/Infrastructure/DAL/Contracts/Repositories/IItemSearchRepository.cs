@@ -1,5 +1,6 @@
-﻿using Common.Models.Filters;
+﻿using Common.Filters;
 using DAL.Models.ItemSearch;
+using Domains.Procedures;
 using Domains.Views.Item;
 
 namespace DAL.Contracts.Repositories;
@@ -16,16 +17,15 @@ public interface IItemSearchRepository
     /// Returns domain entities that represent search results
     /// </summary>
     Task<(List<SpSearchItemsMultiVendor> Items, int TotalCount)> SearchItemsAsync(
-        ItemFilterDto filter,
+        ItemFilterQuery filter,
         CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Get available filter options based on current search criteria
     /// Returns entities representing available filters
     /// </summary>
-    Task<AvailableFiltersData> GetAvailableFiltersAsync(
-        ItemFilterDto currentFilter,
-        CancellationToken cancellationToken = default);
+    Task<SearchFilters> GetAvailableFiltersAsync(
+    AvailableFiltersQuery filtersQuery);
 
     /// <summary>
     /// Get best prices for multiple items from VwItemBestPrices view

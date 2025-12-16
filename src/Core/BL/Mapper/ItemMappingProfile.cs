@@ -1,5 +1,6 @@
 ﻿using Domains.Entities.Catalog.Item;
 using Domains.Entities.Catalog.Item.ItemAttributes;
+using Domains.Procedures;
 using Domains.Views.Item;
 using Shared.DTOs.ECommerce.Category;
 using Shared.DTOs.ECommerce.Item;
@@ -42,7 +43,7 @@ namespace BL.Mapper
                 .ReverseMap();
 
             // Search result mappings
-            CreateMap<Domains.Views.Item.SpSearchItemsMultiVendor, SpSearchItemsResultDto>()
+            CreateMap<SpSearchItemsMultiVendor, SearchItemDto>()
                 .ReverseMap();
 
             // Item combination mapping

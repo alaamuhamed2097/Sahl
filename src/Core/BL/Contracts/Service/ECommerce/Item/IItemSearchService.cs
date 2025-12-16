@@ -1,4 +1,4 @@
-using Common.Models.Filters;
+using Common.Filters;
 using Shared.DTOs.ECommerce.Item;
 
 namespace BL.Contracts.Service.ECommerce.Item
@@ -12,15 +12,14 @@ namespace BL.Contracts.Service.ECommerce.Item
         /// Search items with comprehensive filtering and scoring
         /// </summary>
         Task<PagedSpSearchResultDto> SearchItemsAsync(
-            ItemFilterDto filter,
+            ItemFilterQuery filter,
             CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Get available filter options based on current search
         /// </summary>
         Task<AvailableSearchFiltersDto> GetAvailableFiltersAsync(
-            ItemFilterDto filter,
-            CancellationToken cancellationToken = default);
+            AvailableFiltersQuery filtersQuery);
 
         /// <summary>
         /// Get best prices for multiple items

@@ -6,7 +6,7 @@ namespace Shared.DTOs.ECommerce.Item
     /// Result DTO for SpSearchItemsMultiVendor stored procedure
     /// Optimized for high-performance multi-vendor search
     /// </summary>
-    public class SpSearchItemsResultDto
+    public class SearchItemDto
     {
         /// <summary>
         /// Unique identifier for the item
@@ -107,8 +107,8 @@ namespace Shared.DTOs.ECommerce.Item
         /// <summary>
         /// Display-formatted price range with currency
         /// </summary>
-        public string PriceDisplay => MinPrice == MaxPrice 
-            ? $"{MinPrice:N2} ????" 
+        public string PriceDisplay => MinPrice == MaxPrice
+            ? $"{MinPrice:N2} ????"
             : $"{MinPrice:N2} - {MaxPrice:N2} ????";
     }
 
@@ -184,7 +184,7 @@ namespace Shared.DTOs.ECommerce.Item
         /// <summary>
         /// List of items on current page
         /// </summary>
-        public List<SpSearchItemsResultDto> Items { get; set; } = new List<SpSearchItemsResultDto>();
+        public List<SearchItemDto> Items { get; set; } = new List<SearchItemDto>();
 
         /// <summary>
         /// Total number of items matching search criteria

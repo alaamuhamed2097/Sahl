@@ -1,5 +1,4 @@
-﻿using DAL.Configurations;
-using Domains.Entities.Base;
+﻿using Domains.Entities.Base;
 using Domains.Entities.BrandManagement;
 using Domains.Entities.BuyBox;
 using Domains.Entities.Campaign;
@@ -38,6 +37,7 @@ using Domains.Entities.Visibility;
 using Domains.Entities.Wallet;
 using Domains.Entities.Warehouse;
 using Domains.Identity;
+using Domains.Procedures;
 using Domains.Views.Category;
 using Domains.Views.Item;
 using Domains.Views.Offer;
@@ -216,26 +216,27 @@ namespace DAL.ApplicationContext
         // Pricing System Settings
         public DbSet<TbPricingSystemSetting> TbPricingSystemSettings { get; set; }
 
-		// E-Commerce System - Customers
-		public DbSet<TbCustomer> TbCustomers { get; set; }
+        // E-Commerce System - Customers
+        public DbSet<TbCustomer> TbCustomers { get; set; }
 
-		#endregion
+        #endregion
 
-		#region DbSets - Views
+        #region DbSets - Views
 
-		// Category Views
-		public DbSet<VwAttributeWithOptions> VwAttributeWithOptions { get; set; }
+        // Category Views
+        public DbSet<VwAttributeWithOptions> VwAttributeWithOptions { get; set; }
         public DbSet<VwCategoryItems> VwCategoryItems { get; set; }
         public DbSet<VwCategoryWithAttributes> VwCategoryWithAttributes { get; set; }
 
         // Item Views
         public DbSet<VwItem> VwItems { get; set; }
-        
+
         //Offer
         public DbSet<VwOffer> VwOffers { get; set; }
 
         // Item Search Views (from stored procedure and denormalized view)
         public DbSet<SpSearchItemsMultiVendor> SpSearchItemsMultiVendor { get; set; }
+        public DbSet<SpGetAvailableSearchFilters> SpGetAvailableSearchFilters { get; set; }
         public DbSet<VwItemBestPrice> VwItemBestPrices { get; set; }
 
         // Unit Views
@@ -251,10 +252,10 @@ namespace DAL.ApplicationContext
             base.OnModelCreating(modelBuilder);
 
             modelBuilder.ApplyConfigurationsFromAssembly(typeof(ApplicationDbContext).Assembly);
-            
-			//modelBuilder.ApplyConfiguration(new CustomerConfiguration());
 
-			ConfigureBaseEntities(modelBuilder);
+            //modelBuilder.ApplyConfiguration(new CustomerConfiguration());
+
+            ConfigureBaseEntities(modelBuilder);
             ConfigureViews(modelBuilder);
 
             // Apply missing/explicit relationship configurations that might not be covered
@@ -392,12 +393,13 @@ namespace DAL.ApplicationContext
 
             // Item Views
             modelBuilder.Entity<VwItem>().HasNoKey().ToView("VwItems");
-            
+
             // Offer Views
             modelBuilder.Entity<VwOffer>().HasNoKey().ToView("VwOffers");
 
             // Item Search Result View (from stored procedure - no actual view, used for mapping results)
             modelBuilder.Entity<SpSearchItemsMultiVendor>().HasNoKey().ToView("SpSearchItemsMultiVendor");
+            modelBuilder.Entity<SpGetAvailableSearchFilters>().HasNoKey().ToView("SpGetAvailableSearchFilters");
 
             // Item Best Price View (from denormalized database view)
             modelBuilder.Entity<VwItemBestPrice>(entity =>

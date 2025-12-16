@@ -21,6 +21,18 @@ namespace Shared.DTOs.ECommerce.Item
         public List<FilterOptionDto> Vendors { get; set; } = new List<FilterOptionDto>();
 
         /// <summary>
+        /// Available attributes with item counts
+        /// </summary>
+        public List<AttributeFilterDto> Attributes { get; set; } = new List<AttributeFilterDto>();
+
+        /// <summary>
+        /// Available conditions with item counts
+        /// </summary>
+        public List<FilterOptionDto> Conditions { get; set; } = new List<FilterOptionDto>();
+
+        public FeaturesFilterDto Features { get; set; }
+
+        /// <summary>
         /// Price range statistics
         /// </summary>
         public PriceRangeDto PriceRange { get; set; }

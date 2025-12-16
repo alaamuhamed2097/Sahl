@@ -1,10 +1,10 @@
-namespace Common.Models.Filters
+namespace Common.Filters
 {
     /// <summary>
     /// Advanced filter model for customer website item search
     /// Supports filtering by price, rating, availability, vendor info, and more
     /// </summary>
-    public class ItemFilterDto
+    public class ItemFilterQuery
     {
         // === Item-level Filters ===
         public string SearchTerm { get; set; }

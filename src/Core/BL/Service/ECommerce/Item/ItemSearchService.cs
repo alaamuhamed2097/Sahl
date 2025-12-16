@@ -1,8 +1,8 @@
 ﻿using BL.Contracts.Service.ECommerce.Item;
 using Common.Enumerations.Fulfillment;
-using Common.Models.Filters;
+using Common.Filters;
 using DAL.Contracts.Repositories;
-using Domains.Views.Item;
+using Domains.Procedures;
 using Serilog;
 using Shared.DTOs.ECommerce.Item;
 
@@ -30,7 +30,7 @@ namespace BL.Service.ECommerce.Item
         /// Converts domain entities to DTOs
         /// </summary>
         public async Task<PagedSpSearchResultDto> SearchItemsAsync(
-            ItemFilterDto filter,
+            ItemFilterQuery filter,
             CancellationToken cancellationToken = default)
         {
             if (filter == null)
@@ -73,16 +73,18 @@ namespace BL.Service.ECommerce.Item
         /// Converts domain data to DTOs
         /// </summary>
         public async Task<AvailableSearchFiltersDto> GetAvailableFiltersAsync(
-            ItemFilterDto filter,
-            CancellationToken cancellationToken = default)
+            AvailableFiltersQuery filtersQuery)
         {
-            if (filter == null)
-                throw new ArgumentNullException(nameof(filter));
+            if (filtersQuery == null)
+                throw new ArgumentNullException(nameof(filtersQuery));
+
+            if (filtersQuery.SearchTerm == null && filtersQuery.CategoryId == null && filtersQuery.VendorId == null)
+                throw new ArgumentNullException("At least one search parameter must be provided");
 
             try
             {
-                // Get domain data
-                var filterData = await _searchRepository.GetAvailableFiltersAsync(filter, cancellationToken);
+                // Get domain data from repository
+                var filterData = await _searchRepository.GetAvailableFiltersAsync(filtersQuery);
 
                 // Convert to DTOs
                 return new AvailableSearchFiltersDto
@@ -90,34 +92,73 @@ namespace BL.Service.ECommerce.Item
                     Categories = filterData.Categories.Select(c => new FilterOptionDto
                     {
                         Id = c.Id,
-                        NameAr = c.NameAr,
-                        NameEn = c.NameEn,
-                        Count = c.Count
+                        NameAr = c.TitleAr,
+                        NameEn = c.TitleEn,
+                        Count = c.ItemCount
                     }).ToList(),
+
                     Brands = filterData.Brands.Select(b => new FilterOptionDto
                     {
                         Id = b.Id,
                         NameAr = b.NameAr,
                         NameEn = b.NameEn,
-                        Count = b.Count
+                        Count = b.ItemCount
                     }).ToList(),
+
                     Vendors = filterData.Vendors.Select(v => new FilterOptionDto
                     {
                         Id = v.Id,
-                        NameAr = v.NameAr,
-                        NameEn = v.NameEn,
-                        Count = v.Count
+                        NameAr = v.StoreNameAr ?? v.StoreName,
+                        NameEn = v.StoreName,
+                        Count = v.ItemCount
                     }).ToList(),
+
                     PriceRange = new PriceRangeDto
                     {
-                        MinPrice = filterData.MinPrice ?? 0,
-                        MaxPrice = filterData.MaxPrice ?? 0
+                        MinPrice = filterData.PriceRange.MinPrice,
+                        MaxPrice = filterData.PriceRange.MaxPrice,
+                        AvgPrice = filterData.PriceRange.AvgPrice
+                    },
+
+                    Attributes = filterData.Attributes.Select(a => new AttributeFilterDto
+                    {
+                        AttributeId = a.AttributeId,
+                        NameAr = a.NameAr,
+                        NameEn = a.NameEn,
+                        DisplayOrder = a.DisplayOrder,
+                        Values = a.Values.Select(v => new AttributeValueFilterDto
+                        {
+                            ValueId = v.ValueId,
+                            ValueAr = v.ValueAr,
+                            ValueEn = v.ValueEn,
+                            Count = v.ItemCount
+                        }).ToList()
+                    }).ToList(),
+
+                    Conditions = filterData.Conditions.Select(c => new FilterOptionDto
+                    {
+                        Id = c.Id,
+                        NameAr = c.NameAr,
+                        NameEn = c.NameEn,
+                        Count = c.ItemCount
+                    }).ToList(),
+
+                    Features = new FeaturesFilterDto
+                    {
+                        FreeShippingCount = filterData.Features.FreeShippingCount,
+                        HasFreeShipping = filterData.Features.HasFreeShipping == 1,
+                        WithWarrantyCount = filterData.Features.WithWarrantyCount,
+                        HasWarranty = filterData.Features.HasWarranty == 1,
+                        InStockCount = filterData.Features.InStockCount,
+                        HasInStock = filterData.Features.HasInStock == 1,
+                        TotalItems = filterData.Features.TotalItems
                     }
                 };
             }
             catch (Exception ex)
             {
-                _logger.Error(ex, "Error in GetAvailableFiltersAsync");
+                _logger.Error(ex, string.Format("Error in GetAvailableFiltersAsync with params: SearchTerm={SearchTerm}, CategoryId={CategoryId}, VendorId={VendorId}",
+                    filtersQuery.SearchTerm, filtersQuery.CategoryId, filtersQuery.VendorId));
                 throw;
             }
         }
@@ -158,9 +199,9 @@ namespace BL.Service.ECommerce.Item
         /// <summary>
         /// Map SpSearchItemsMultiVendor entity to SpSearchItemsResultDto
         /// </summary>
-        private SpSearchItemsResultDto MapEntityToDto(SpSearchItemsMultiVendor entity)
+        private SearchItemDto MapEntityToDto(SpSearchItemsMultiVendor entity)
         {
-            var dto = new SpSearchItemsResultDto
+            var dto = new SearchItemDto
             {
                 ItemId = entity.ItemId,
                 TitleAr = entity.TitleAr,
@@ -235,7 +276,7 @@ namespace BL.Service.ECommerce.Item
         /// <summary>
         /// Validate and sanitize filter parameters
         /// </summary>
-        private void ValidateAndSanitizeFilter(ItemFilterDto filter)
+        private void ValidateAndSanitizeFilter(ItemFilterQuery filter)
         {
             if (filter.PageNumber < 1)
                 filter.PageNumber = 1;
@@ -282,7 +323,7 @@ namespace BL.Service.ECommerce.Item
         /// <summary>
         /// Add badges to search results based on scores and properties
         /// </summary>
-        private void EnrichResultsWithBadges(List<SpSearchItemsResultDto> items)
+        private void EnrichResultsWithBadges(List<SearchItemDto> items)
         {
             foreach (var item in items)
             {
