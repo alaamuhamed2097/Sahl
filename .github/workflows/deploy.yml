@@ -2,13 +2,14 @@ name: 🚀 CI/CD - Build, Test, Migrate & Deploy to IIS
 
 on:
   push:
-    branches:
-      - main
-      - dev
+    branches: [ main, dev ]
   pull_request:
-    branches:
-      - main
+    branches: [ main ]
   workflow_dispatch:
+
+env:
+  SOLUTION_PATH: Project/Sahl.sln
+  PROJECT_DIR: Project
 
 jobs:
   # ============================================
@@ -29,6 +30,7 @@ jobs:
       
       # 3️⃣ Restore dependencies
       - name: Restore dependencies
+        working-directory: ${{ env.PROJECT_DIR }}
         run: |
           Write-Host "=========================================="
           Write-Host "Restoring NuGet packages..."
@@ -37,6 +39,7 @@ jobs:
       
       # 4️⃣ Build solution
       - name: Build Solution
+        working-directory: ${{ env.PROJECT_DIR }}
         run: |
           Write-Host "=========================================="
           Write-Host "Building solution in Release mode..."
@@ -45,6 +48,7 @@ jobs:
       
       # 5️⃣ Run Unit Tests
       - name: Run Unit Tests
+        working-directory: ${{ env.PROJECT_DIR }}
         run: |
           Write-Host "=========================================="
           Write-Host "Running Unit Tests..."
@@ -66,6 +70,7 @@ jobs:
       
       # 6️⃣ Run Integration Tests
       - name: Run Integration Tests
+        working-directory: ${{ env.PROJECT_DIR }}
         run: |
           Write-Host "=========================================="
           Write-Host "Running Integration Tests..."
