@@ -157,8 +157,7 @@ namespace BL.Service.ECommerce.Item
             }
             catch (Exception ex)
             {
-                _logger.Error(ex, string.Format("Error in GetAvailableFiltersAsync with params: SearchTerm={SearchTerm}, CategoryId={CategoryId}, VendorId={VendorId}",
-                    filtersQuery.SearchTerm, filtersQuery.CategoryId, filtersQuery.VendorId));
+                _logger.Error(ex, $"Error in GetAvailableFiltersAsync with params: SearchTerm={filtersQuery.SearchTerm}, CategoryId={filtersQuery.CategoryId}, VendorId={filtersQuery.VendorId}");
                 throw;
             }
         }
@@ -335,7 +334,7 @@ namespace BL.Service.ECommerce.Item
                 if (item.IsNew)
                     item.Badges.Add("جديد");
 
-                if (item.BestOffer?.DiscountPercentage > 20)
+                if (item.BestOffer?.DiscountPercentage >= 20)
                     item.Badges.Add($"خصم {item.BestOffer.DiscountPercentage:F0}%");
 
                 if (item.OffersCount > 5)
