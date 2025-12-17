@@ -40,12 +40,34 @@ public interface IOfferRepository : ITableRepository<TbOffer>
     Task<IEnumerable<TbOfferCombinationPricing>> GetOfferPricingCombinationsAsync(Guid offerId, CancellationToken cancellationToken = default);
 
     /// <summary>
-    /// Update offer pricing with transaction support
+    /// Update offer pricing and stock quantities
     /// </summary>
+    /// <param name="pricingId"></param>
+    /// <param name="newPrice"></param>
+    /// <param name="newSalesPrice"></param>
+    /// <param name="changeNote"></param>
+    /// <param name="availableQty"></param>
+    /// <param name="reservedQty"></param>
+    /// <param name="refundedQty"></param>
+    /// <param name="damagedQty"></param>
+    /// <param name="inTransitQty"></param>
+    /// <param name="returnedQty"></param>
+    /// <param name="lockedQty"></param>
+    /// <param name="updatedBy"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
     Task<OfferTransactionResult> UpdateOfferPricingAsync(
         Guid pricingId,
-        decimal newPrice,
-        int newQuantity,
+        decimal? newPrice,
+        decimal? newSalesPrice,
+        string? changeNote,
+        int? availableQty,
+        int? reservedQty,
+        int? refundedQty,
+        int? damagedQty,
+        int? inTransitQty,
+        int? returnedQty,
+        int? lockedQty,
         string updatedBy,
         CancellationToken cancellationToken = default);
 
@@ -73,4 +95,32 @@ public interface IOfferRepository : ITableRepository<TbOffer>
         int quantity,
         string releasedBy,
         CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Create a new offer with its pricing combinations
+    /// </summary>
+    /// <param name="offer"></param>
+    /// <param name="pricingList"></param>
+    /// <param name="createdBy"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    Task<OfferTransactionResult> CreateOfferAsync(
+    TbOffer offer,
+    IEnumerable<TbOfferCombinationPricing> pricingList,
+    string createdBy,
+    CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Update an existing offer and its pricing combinations
+    /// </summary>
+    /// <param name="offer"></param>
+    /// <param name="pricingList"></param>
+    /// <param name="updatedBy"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    Task<OfferTransactionResult> UpdateOfferAsync(
+    TbOffer offer,
+    IEnumerable<TbOfferCombinationPricing> pricingList,
+    string updatedBy,
+    CancellationToken cancellationToken = default);
 }
