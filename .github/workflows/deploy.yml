@@ -154,7 +154,7 @@ jobs:
       
       # 3️⃣ Restore dependencies
       - name: Restore dependencies
-        run: dotnet restore Sahl.sln
+        run: dotnet restore "$env:GITHUB_WORKSPACE\Sahl.sln"
       
       # 4️⃣ Cache .NET workloads
       - name: Cache .NET workloads
@@ -179,7 +179,7 @@ jobs:
       
       # 6️⃣ Build Solution
       - name: Build Solution
-        run: dotnet build Sahl.sln -c Release --no-restore
+        run: dotnet build "$env:GITHUB_WORKSPACE\Sahl.sln" -c Release --no-restore
       
       # 7️⃣ Install EF Core Tools (for migrations)
       - name: Install EF Core Tools
