@@ -194,6 +194,7 @@ SELECT
     i.ShortDescriptionEn,
     i.DescriptionAr, 
     i.DescriptionEn,
+    i.VideoUrl AS VideoLink, -- Changed from VideoLink to VideoUrl
     i.CategoryId, 
     c.TitleAr AS CategoryTitleAr, 
     c.TitleEn AS CategoryTitleEn, 
@@ -215,7 +216,12 @@ SELECT
 	i.MaximumPrice,
     i.CreatedDateUtc,
 	i.VisibilityScope,
-    -- Get all item images as JSON
+    -- 
+
+
+
+
+et all item images as JSON
     (
         SELECT 
 		img.Id,

@@ -183,6 +183,15 @@ namespace DAL.Repositories
         }
 
         /// <summary>
+        /// Gets IQueryable for advanced LINQ queries - للأداء الأفضل
+        /// Use this when you need to compose complex queries
+        /// </summary>
+        public virtual IQueryable<T> GetQueryable()
+        {
+            return DbSet.AsNoTracking();
+        }
+
+        /// <summary>
         /// Counts entities matching the predicate asynchronously.
         /// </summary>
         public virtual async Task<int> CountAsync(
@@ -241,30 +250,23 @@ namespace DAL.Repositories
                 if (string.IsNullOrWhiteSpace(storedProcedureName))
                     throw new ArgumentException("Stored procedure name cannot be null or empty.", nameof(storedProcedureName));
 
-                var safeParameters = parameters?.Select(param =>
-                {
-                    if (param.Value == null)
-                    {
-                        param.Value = DBNull.Value;
-                    }
-                    return param;
-                }).ToArray() ?? Array.Empty<SqlParameter>();
+                // Just pass the parameters directly
+                var safeParameters = parameters ?? Array.Empty<SqlParameter>();
 
-                var commandText = BuildStoredProcedureCommand(storedProcedureName, safeParameters);
+                // Simple SQL - EF Core will handle parameter mapping
+                var paramNames = string.Join(", ", safeParameters.Select(p =>
+                    p.ParameterName.StartsWith("@") ? p.ParameterName : "@" + p.ParameterName));
 
-                return await DbSet.FromSqlRaw(commandText, safeParameters)
+                var sql = $"EXEC {storedProcedureName} {paramNames}";
+
+                return await DbSet.FromSqlRaw(sql, safeParameters)
                     .AsNoTracking()
                     .ToListAsync(cancellationToken);
             }
-            catch (SqlException sqlEx) when (sqlEx.Number == SQL_CUSTOM_ERROR_NUMBER)
-            {
-                _logger.Error(sqlEx, $"{nameof(ExecuteStoredProcedureAsync)}: Custom error from stored procedure: {storedProcedureName}");
-                throw new DataAccessException(sqlEx.Message, sqlEx, _logger);
-            }
             catch (Exception ex)
             {
-                HandleException(nameof(ExecuteStoredProcedureAsync), $"Error occurred while executing stored procedure.", ex);
-                return new List<T>();
+                _logger.Error(ex, $"Error executing stored procedure '{storedProcedureName}'");
+                throw;
             }
         }
 

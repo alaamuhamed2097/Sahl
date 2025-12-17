@@ -1,5 +1,6 @@
 ﻿using Domains.Entities.Catalog.Item;
 using Domains.Entities.Catalog.Item.ItemAttributes;
+using Domains.Procedures;
 using Domains.Views.Item;
 using Shared.DTOs.ECommerce.Category;
 using Shared.DTOs.ECommerce.Item;
@@ -39,6 +40,10 @@ namespace BL.Mapper
                                 DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
                             }) ?? new List<ItemAttributeDto>()
                         : new List<ItemAttributeDto>()))
+                .ReverseMap();
+
+            // Search result mappings
+            CreateMap<SpSearchItemsMultiVendor, SearchItemDto>()
                 .ReverseMap();
 
             // Item combination mapping

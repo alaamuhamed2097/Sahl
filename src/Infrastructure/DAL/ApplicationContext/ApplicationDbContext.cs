@@ -13,6 +13,7 @@ using Domains.Entities.CouponCode;
 using Domains.Entities.Currency;
 using Domains.Entities.ECommerceSystem;
 using Domains.Entities.ECommerceSystem.Cart;
+using Domains.Entities.ECommerceSystem.Customer;
 using Domains.Entities.ECommerceSystem.Review;
 using Domains.Entities.ECommerceSystem.Support;
 using Domains.Entities.ECommerceSystem.Vendor;
@@ -36,6 +37,7 @@ using Domains.Entities.Visibility;
 using Domains.Entities.Wallet;
 using Domains.Entities.Warehouse;
 using Domains.Identity;
+using Domains.Procedures;
 using Domains.Views.Category;
 using Domains.Views.Item;
 using Domains.Views.Offer;
@@ -120,7 +122,7 @@ namespace DAL.ApplicationContext
         public DbSet<TbSupportTicketMessage> TbSupportTicketMessages { get; set; }
 
         // Review Management
-        public DbSet<TbProductReview> TbProductReviews { get; set; }
+        public DbSet<TbOfferReview> TbOfferReviews { get; set; }
         public DbSet<TbSalesReview> TbSalesReviews { get; set; }
         public DbSet<TbDeliveryReview> TbDeliveryReviews { get; set; }
         public DbSet<TbReviewVote> TbReviewVotes { get; set; }
@@ -214,6 +216,9 @@ namespace DAL.ApplicationContext
         // Pricing System Settings
         public DbSet<TbPricingSystemSetting> TbPricingSystemSettings { get; set; }
 
+        // E-Commerce System - Customers
+        public DbSet<TbCustomer> TbCustomers { get; set; }
+
         #endregion
 
         #region DbSets - Views
@@ -225,9 +230,14 @@ namespace DAL.ApplicationContext
 
         // Item Views
         public DbSet<VwItem> VwItems { get; set; }
-        
+
         //Offer
         public DbSet<VwOffer> VwOffers { get; set; }
+
+        // Item Search Views (from stored procedure and denormalized view)
+        public DbSet<SpSearchItemsMultiVendor> SpSearchItemsMultiVendor { get; set; }
+        public DbSet<SpGetAvailableSearchFilters> SpGetAvailableSearchFilters { get; set; }
+        public DbSet<VwItemBestPrice> VwItemBestPrices { get; set; }
 
         // Unit Views
         public DbSet<VwUnitWithConversionsUnits> VwUnitWithConversionsUnits { get; set; }
@@ -242,6 +252,8 @@ namespace DAL.ApplicationContext
             base.OnModelCreating(modelBuilder);
 
             modelBuilder.ApplyConfigurationsFromAssembly(typeof(ApplicationDbContext).Assembly);
+
+            //modelBuilder.ApplyConfiguration(new CustomerConfiguration());
 
             ConfigureBaseEntities(modelBuilder);
             ConfigureViews(modelBuilder);
@@ -381,9 +393,20 @@ namespace DAL.ApplicationContext
 
             // Item Views
             modelBuilder.Entity<VwItem>().HasNoKey().ToView("VwItems");
-            
+
             // Offer Views
             modelBuilder.Entity<VwOffer>().HasNoKey().ToView("VwOffers");
+
+            // Item Search Result View (from stored procedure - no actual view, used for mapping results)
+            modelBuilder.Entity<SpSearchItemsMultiVendor>().HasNoKey().ToView("SpSearchItemsMultiVendor");
+            modelBuilder.Entity<SpGetAvailableSearchFilters>().HasNoKey().ToView("SpGetAvailableSearchFilters");
+
+            // Item Best Price View (from denormalized database view)
+            modelBuilder.Entity<VwItemBestPrice>(entity =>
+            {
+                entity.HasNoKey();
+                entity.ToView("VwItemBestPrices");
+            });
 
             // Unit Views
             modelBuilder.Entity<VwUnitWithConversionsUnits>(entity =>

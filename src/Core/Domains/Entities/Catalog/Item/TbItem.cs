@@ -1,5 +1,4 @@
-﻿using Common.Enumerations.Visibility;
-using Domains.Entities.Catalog.Brand;
+﻿using Domains.Entities.Catalog.Brand;
 using Domains.Entities.Catalog.Category;
 using Domains.Entities.Catalog.Item.ItemAttributes;
 using Domains.Entities.Catalog.Unit;
@@ -25,7 +24,7 @@ namespace Domains.Entities.Catalog.Item
 
         [StringLength(500)]
         public string DescriptionAr { get; set; }
-       
+
         [StringLength(500)]
         public string DescriptionEn { get; set; }
 
@@ -48,7 +47,7 @@ namespace Domains.Entities.Catalog.Item
 
         [Column(TypeName = "decimal(18,2)")]
         public decimal? BasePrice { get; set; }
-       
+
         [Column(TypeName = "decimal(18,2)")]
         public decimal? MinimumPrice { get; set; }
 
@@ -57,7 +56,9 @@ namespace Domains.Entities.Catalog.Item
 
         public Guid BrandId { get; set; }
 
-        public ProductVisibilityStatus VisibilityScope { get; set; }
+        public int VisibilityScope { get; set; }// = ProductVisibilityStatus.Visible;
+
+        public bool IsActive { get; set; } = true;
 
         // Navigation Properties
         [ForeignKey("CategoryId")]

@@ -4,9 +4,9 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace DAL.Configurations
 {
-    public class ProductReviewConfiguration : IEntityTypeConfiguration<TbProductReview>
+    public class OfferReviewConfiguration : IEntityTypeConfiguration<TbOfferReview>
     {
-        public void Configure(EntityTypeBuilder<TbProductReview> entity)
+        public void Configure(EntityTypeBuilder<TbOfferReview> entity)
         {
             entity.HasKey(e => e.Id);
 
@@ -52,14 +52,14 @@ namespace DAL.Configurations
 
             // Indexes
             entity.HasIndex(e => e.IsDeleted);
-            entity.HasIndex(e => e.ProductID);
+            entity.HasIndex(e => e.OfferID);
             entity.HasIndex(e => e.CustomerID);
             entity.HasIndex(e => e.OrderItemID);
             entity.HasIndex(e => e.Status);
             entity.HasIndex(e => e.Rating);
             entity.HasIndex(e => e.IsVerifiedPurchase);
             entity.HasIndex(e => e.ReviewNumber).IsUnique();
-            entity.HasIndex(e => new { e.ProductID, e.CustomerID });
+            entity.HasIndex(e => new { e.OfferID, e.CustomerID });
 
             // Relationships
             entity.HasMany(e => e.ReviewVotes)

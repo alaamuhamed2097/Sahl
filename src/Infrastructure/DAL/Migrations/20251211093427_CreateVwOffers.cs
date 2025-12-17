@@ -17,7 +17,6 @@ SELECT
     o.Id,
     o.ItemId,
     o.VendorId,
-    o.StorgeLocation,
     o.HandlingTimeInDays,
     o.VisibilityScope,
     o.FulfillmentType,

@@ -91,6 +91,8 @@ namespace Api.Controllers.v1.Catalog
 
             return Ok(CreateSuccessResponse(result, NotifiAndAlertsResources.DataRetrieved));
         }
+
+
         ///// <summary>
         ///// Retrieves best seller items with currency conversion.
         ///// </summary>

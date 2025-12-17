@@ -542,10 +542,6 @@ namespace BL.Service.Order
                     else
                     {
                         warehouseId = vendorWarehouse.Id;
-
-                        _logger.Information(
-                            "Shipment {ShipmentId}: Using vendor warehouse {WarehouseId} (FBS) for vendor {VendorId}",
-                            shipmentId, warehouseId, group.Key.VendorId);
                     }
                 }
 

@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Domains.Views.Offer
+﻿namespace Domains.Views.Offer
 {
     public class VwOffer
     {
@@ -10,7 +6,6 @@ namespace Domains.Views.Offer
         public Guid Id { get; set; }
         public Guid ItemId { get; set; }
         public Guid VendorId { get; set; }
-        public int StorgeLocation { get; set; }
         public int HandlingTimeInDays { get; set; }
         public int VisibilityScope { get; set; }
         public int FulfillmentType { get; set; }

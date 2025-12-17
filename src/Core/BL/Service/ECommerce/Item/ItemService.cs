@@ -1,5 +1,4 @@
 ﻿using BL.Contracts.GeneralService.CMS;
-using BL.Contracts.GeneralService.Location;
 using BL.Contracts.IMapper;
 using BL.Contracts.Service.ECommerce.Item;
 using BL.Extensions;
@@ -33,7 +32,6 @@ namespace BL.Service.ECommerce.Item
         private readonly IImageProcessingService _imageProcessingService;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IBaseMapper _mapper;
-        private readonly ILocationBasedCurrencyService _locationBasedCurrencyService;
         private readonly ILogger _logger;
 
         public ItemService(IBaseMapper mapper,
@@ -42,7 +40,6 @@ namespace BL.Service.ECommerce.Item
             IRepository<VwItem> repository,
             IFileUploadService fileUploadService,
             IImageProcessingService imageProcessingService,
-            ILocationBasedCurrencyService locationBasedCurrencyService,
             ILogger logger,
             ITableRepository<TbCategory> categoryRepository)
             : base(tableRepository, mapper)
@@ -53,7 +50,6 @@ namespace BL.Service.ECommerce.Item
             _repository = repository;
             _fileUploadService = fileUploadService;
             _imageProcessingService = imageProcessingService;
-            _locationBasedCurrencyService = locationBasedCurrencyService;
             _logger = logger;
             _categoryRepository = categoryRepository;
         }
@@ -70,7 +66,7 @@ namespace BL.Service.ECommerce.Item
                 throw new ArgumentOutOfRangeException(nameof(criteriaModel.PageSize), ValidationResources.PageSizeRange);
 
             // Base filter
-            Expression<Func<TbItem, bool>> filter = x => !x.IsDeleted ;
+            Expression<Func<TbItem, bool>> filter = x => !x.IsDeleted;
 
             // Combine expressions manually
             var searchTerm = criteriaModel.SearchTerm?.Trim().ToLower();
@@ -214,7 +210,7 @@ namespace BL.Service.ECommerce.Item
                 entity.ItemAttributes = null;
                 entity.ItemCombinations = null;
                 entity.ItemImages = null;
-                entity.VisibilityScope = ProductVisibilityStatus.PendingApproval;
+                entity.VisibilityScope = (int)ProductVisibilityStatus.PendingApproval;
                 var itemSaved = await _unitOfWork.TableRepository<TbItem>().SaveAsync(entity, userId);
                 var itemId = itemSaved.Id;
 
@@ -232,7 +228,7 @@ namespace BL.Service.ECommerce.Item
                 //var combinationsSaved = await ProcessItemCombinationsAsync(itemId, dto.ItemCombinations ?? new List<ItemCombinationDto>(), category, categoryAttributes.ToList(), userId);
 
                 await _unitOfWork.CommitAsync();
-                return itemSaved.Success && imagesSaved && attributesSaved ;
+                return itemSaved.Success && imagesSaved && attributesSaved;
             }
             catch (Exception ex)
             {
@@ -242,7 +238,7 @@ namespace BL.Service.ECommerce.Item
             }
         }
 
- 
+
         // Helper functions
         private async Task<string> SaveImageSync(string image)
         {

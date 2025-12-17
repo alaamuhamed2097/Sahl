@@ -1,0 +1,45 @@
+namespace Common.Filters
+{
+    /// <summary>
+    /// Advanced filter model for customer website item search
+    /// Supports filtering by price, rating, availability, vendor info, and more
+    /// </summary>
+    public class ItemFilterQuery
+    {
+        // === Item-level Filters ===
+        public string SearchTerm { get; set; }
+        public List<Guid> CategoryIds { get; set; }
+        public List<Guid> BrandIds { get; set; }
+
+        // === Price Filters (across all offers) ===
+        public decimal? MinPrice { get; set; }
+        public decimal? MaxPrice { get; set; }
+
+        // === Rating Filters ===
+        public decimal? MinItemRating { get; set; }
+
+        // === Availability Filters ===
+        public bool? InStockOnly { get; set; }
+
+        // === Shipping Filters ===
+        public bool? FreeShippingOnly { get; set; }
+
+        // === Vendor Filters ===
+        public List<Guid> VendorIds { get; set; }
+
+        // === Condition and Warranty Filters ===
+        public List<Guid> ConditionIds { get; set; }
+        public bool? WithWarrantyOnly { get; set; }
+
+        // === Attribute Filters (Color, Size, etc.) ===
+        public Dictionary<Guid, List<Guid>> AttributeValues { get; set; }
+
+        // === Sorting ===
+        public string SortBy { get; set; }
+        // Options: "Featured", "price_asc", "price_desc", "customer review", "best seller", "newest arrival"
+
+        // === Pagination ===
+        public int PageNumber { get; set; } = 1;
+        public int PageSize { get; set; } = 20;
+    }
+}
