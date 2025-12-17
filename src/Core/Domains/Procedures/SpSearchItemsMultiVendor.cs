@@ -2,7 +2,7 @@ namespace Domains.Procedures;
 
 /// <summary>
 /// Result model for SpSearchItemsMultiVendor stored procedure
-/// Contains aggregated item data with best offer information
+/// Amazon-style search results with BuyBox winner selection
 /// </summary>
 public class SpSearchItemsMultiVendor
 {
@@ -52,45 +52,37 @@ public class SpSearchItemsMultiVendor
     public DateTime CreatedDateUtc { get; set; }
 
     /// <summary>
-    /// Minimum price across all vendors
+    /// Average rating for this item (0.00 to 5.00)
     /// </summary>
-    public decimal MinPrice { get; set; }
+    public decimal? ItemRating { get; set; }
 
     /// <summary>
-    /// Maximum price across all vendors
+    /// Original price (before discount)
     /// </summary>
-    public decimal MaxPrice { get; set; }
+    public decimal Price { get; set; }
 
     /// <summary>
-    /// Total number of offers available for this item
+    /// Current sales price (the price customer pays)
     /// </summary>
-    public int OffersCount { get; set; }
+    public decimal SalesPrice { get; set; }
 
     /// <summary>
-    /// Fastest delivery time in days among all offers
+    /// Available quantity in stock
     /// </summary>
-    public int FastestDelivery { get; set; }
+    public int AvailableQuantity { get; set; }
 
     /// <summary>
-    /// Best offer data (concatenated string with pipe separators)
-    /// Format: OfferId|VendorId|SalesPrice|OriginalPrice|AvailableQuantity|IsFreeShipping|EstimatedDeliveryDays
-    /// Example: "guid-id|vendor-id|699.99|999.99|15|1|2"
+    /// Stock status as string: InStock, OutOfStock, LimitedStock, ComingSoon
     /// </summary>
-    public string BestOfferData { get; set; }
+    public string StockStatus { get; set; }
 
     /// <summary>
-    /// Raw best offer data string from stored procedure
-    /// Will be parsed by BL layer
+    /// Whether free shipping is available for this item
     /// </summary>
-    public string BestOfferDataRaw { get; set; }
+    public bool IsFreeShipping { get; set; }
 
     /// <summary>
-    /// Average price calculated from min and max
+    /// Total number of records (for pagination)
     /// </summary>
-    public decimal AvgPrice { get; set; }
-
-    /// <summary>
-    /// Final relevance score for search ranking
-    /// </summary>
-    public double FinalScore { get; set; }
+    public int TotalRecords { get; set; }
 }

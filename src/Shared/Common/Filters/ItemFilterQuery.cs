@@ -8,8 +8,8 @@ namespace Common.Filters
     {
         // === Item-level Filters ===
         public string SearchTerm { get; set; }
-        public List<Guid> CategoryIds { get; set; }
-        public List<Guid> BrandIds { get; set; }
+        public Guid? CategoryId { get; set; }
+        public Guid? BrandId { get; set; }
 
         // === Price Filters (across all offers) ===
         public decimal? MinPrice { get; set; }
@@ -25,10 +25,10 @@ namespace Common.Filters
         public bool? FreeShippingOnly { get; set; }
 
         // === Vendor Filters ===
-        public List<Guid> VendorIds { get; set; }
+        public Guid? VendorId { get; set; }
 
         // === Condition and Warranty Filters ===
-        public List<Guid> ConditionIds { get; set; }
+        public Guid? ConditionId { get; set; }
         public bool? WithWarrantyOnly { get; set; }
 
         // === Attribute Filters (Color, Size, etc.) ===

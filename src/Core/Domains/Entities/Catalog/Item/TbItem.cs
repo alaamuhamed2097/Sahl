@@ -60,6 +60,9 @@ namespace Domains.Entities.Catalog.Item
 
         public bool IsActive { get; set; } = true;
 
+        [Column(TypeName = "decimal(3,2)")]
+        public decimal? AverageRating { get; set; }
+
         // Navigation Properties
         [ForeignKey("CategoryId")]
         public virtual TbCategory Category { get; set; }
