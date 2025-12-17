@@ -2,14 +2,13 @@ name: 🚀 CI/CD - Build, Test, Migrate & Deploy to IIS
 
 on:
   push:
-    branches: [ main, dev ]
+    branches:
+      - main
+      - dev
   pull_request:
-    branches: [ main ]
+    branches:
+      - main
   workflow_dispatch:
-
-env:
-  SOLUTION_PATH: Project/Sahl.sln
-  PROJECT_DIR: Project
 
 jobs:
   # ============================================
@@ -30,30 +29,28 @@ jobs:
       
       # 3️⃣ Restore dependencies
       - name: Restore dependencies
-        working-directory: ${{ env.PROJECT_DIR }}
         run: |
           Write-Host "=========================================="
           Write-Host "Restoring NuGet packages..."
           Write-Host "=========================================="
-          dotnet restore Sahl.sln
+          Write-Host "Current directory: $PWD"
+          dotnet restore "$env:GITHUB_WORKSPACE\Sahl.sln"
       
       # 4️⃣ Build solution
       - name: Build Solution
-        working-directory: ${{ env.PROJECT_DIR }}
         run: |
           Write-Host "=========================================="
           Write-Host "Building solution in Release mode..."
           Write-Host "=========================================="
-          dotnet build Sahl.sln -c Release --no-restore
+          dotnet build "$env:GITHUB_WORKSPACE\Sahl.sln" -c Release --no-restore
       
       # 5️⃣ Run Unit Tests
       - name: Run Unit Tests
-        working-directory: ${{ env.PROJECT_DIR }}
         run: |
           Write-Host "=========================================="
           Write-Host "Running Unit Tests..."
           Write-Host "=========================================="
-          dotnet test tests/UnitTests/UnitTests.csproj `
+          dotnet test "$env:GITHUB_WORKSPACE\tests\UnitTests\UnitTests.csproj" `
             --configuration Release `
             --no-build `
             --verbosity normal `
@@ -70,12 +67,11 @@ jobs:
       
       # 6️⃣ Run Integration Tests
       - name: Run Integration Tests
-        working-directory: ${{ env.PROJECT_DIR }}
         run: |
           Write-Host "=========================================="
           Write-Host "Running Integration Tests..."
           Write-Host "=========================================="
-          dotnet test tests/IntegrationTests/IntegrationTests.csproj `
+          dotnet test "$env:GITHUB_WORKSPACE\tests\IntegrationTests\IntegrationTests.csproj" `
             --configuration Release `
             --no-build `
             --verbosity normal `
@@ -265,7 +261,7 @@ jobs:
             $appsettings = Get-Content $appsettingsPath | ConvertFrom-Json
             $connectionString = $appsettings.ConnectionStrings.DefaultConnection
             
-            $pendingMigrations = dotnet ef migrations list --project src/Infrastructure/DAL --startup-project src/Presentation/Api --connection "$connectionString" --no-build 2>&1 | Select-String "Pending"
+            $pendingMigrations = dotnet ef migrations list --project "$env:GITHUB_WORKSPACE\src\Infrastructure\DAL" --startup-project "$env:GITHUB_WORKSPACE\src\Presentation\Api" --connection "$connectionString" --no-build 2>&1 | Select-String "Pending"
             
             if ($pendingMigrations) {
               Write-Host "⚠️ Found pending migrations:" -ForegroundColor Yellow
@@ -294,7 +290,7 @@ jobs:
           $connectionString = $appsettings.ConnectionStrings.DefaultConnection
           
           try {
-            dotnet ef database update --project src/Infrastructure/DAL --startup-project src/Presentation/Api --connection "$connectionString" --no-build --verbose
+            dotnet ef database update --project "$env:GITHUB_WORKSPACE\src\Infrastructure\DAL" --startup-project "$env:GITHUB_WORKSPACE\src\Presentation\Api" --connection "$connectionString" --no-build --verbose
             
             if ($LASTEXITCODE -eq 0) {
               Write-Host "✅ Migrations applied successfully!" -ForegroundColor Green
@@ -312,11 +308,11 @@ jobs:
       
       # 1️⃣1️⃣ Publish API
       - name: Publish API
-        run: dotnet publish src/Presentation/Api/Api.csproj -c Release -o "$env:TEMP\publish\api" --no-build
+        run: dotnet publish "$env:GITHUB_WORKSPACE\src\Presentation\Api\Api.csproj" -c Release -o "$env:TEMP\publish\api" --no-build
       
       # 1️⃣2️⃣ Publish Dashboard
       - name: Publish Dashboard
-        run: dotnet publish src/Presentation/Dashboard/Dashboard.csproj -c Release -o "$env:TEMP\publish\dashboard" --no-build
+        run: dotnet publish "$env:GITHUB_WORKSPACE\src\Presentation\Dashboard\Dashboard.csproj" -c Release -o "$env:TEMP\publish\dashboard" --no-build
       
       # 1️⃣3️⃣ Prepare temp directory
       - name: Prepare temp directory
@@ -361,7 +357,7 @@ jobs:
           
           # Enable maintenance mode
           Write-Host "Step 3: Enabling maintenance mode..."
-          Copy-Item ".github/workflows/maintenance.html" "C:\0ALI\WebSites\BasitApi\app_offline.htm" -Force
+          Copy-Item "$env:GITHUB_WORKSPACE\.github\workflows\maintenance.html" "C:\0ALI\WebSites\BasitApi\app_offline.htm" -Force
           Start-Sleep -Seconds 2
           
           # Deploy new files
@@ -446,7 +442,7 @@ jobs:
           
           # Enable maintenance mode
           Write-Host "Step 3: Enabling maintenance mode..."
-          Copy-Item ".github/workflows/maintenance.html" "C:\0ALI\WebSites\BasitDashboard\app_offline.htm" -Force
+          Copy-Item "$env:GITHUB_WORKSPACE\.github\workflows\maintenance.html" "C:\0ALI\WebSites\BasitDashboard\app_offline.htm" -Force
           Start-Sleep -Seconds 2
           
           # Deploy new files
