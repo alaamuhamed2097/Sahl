@@ -47,7 +47,7 @@
     <Project Path="src/Shared/Shared/Shared.csproj" />
   </Folder>
   <Folder Name="/tests/">
-    <Project Path="IntegrationTests/IntegrationTests.csproj" Id="12c93e47-3892-4521-8a40-08b3db8cd696" />
+    <Project Path="tests/IntegrationTests/IntegrationTests.csproj" Id="12c93e47-3892-4521-8a40-08b3db8cd696" />
     <Project Path="tests/UnitTests/UnitTests.csproj" Id="6b56d694-78dd-4cdb-b42b-270c0231eb86" />
   </Folder>
 </Solution>

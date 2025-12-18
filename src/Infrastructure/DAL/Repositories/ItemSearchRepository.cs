@@ -43,21 +43,10 @@ public class ItemSearchRepository : Repository<SpGetAvailableSearchFilters>, IIt
         try
         {
             // Convert list parameters to comma-separated strings
-            var categoryIds = filter.CategoryIds?.Any() == true
-                ? string.Join(",", filter.CategoryIds)
-                : null;
-
-            var brandIds = filter.BrandIds?.Any() == true
-                ? string.Join(",", filter.BrandIds)
-                : null;
-
-            var vendorIds = filter.VendorIds?.Any() == true
-                ? string.Join(",", filter.VendorIds)
-                : null;
-
-            var conditionIds = filter.ConditionIds?.Any() == true
-                ? string.Join(",", filter.ConditionIds)
-                : null;
+            var categoryId = filter.CategoryId;
+            var brandId = filter.BrandId;
+            var vendorId = filter.VendorId;
+            var conditionId = filter.ConditionId;
 
             // Convert attribute filter to pipe-separated format
             string attributeIds = null;
@@ -82,9 +71,9 @@ public class ItemSearchRepository : Repository<SpGetAvailableSearchFilters>, IIt
             {
             // Item-level filters
             new SqlParameter("@SearchTerm", (object)filter.SearchTerm ?? DBNull.Value),
-            new SqlParameter("@CategoryIds", (object)categoryIds ?? DBNull.Value),
-            new SqlParameter("@BrandIds", (object)brandIds ?? DBNull.Value),
-            
+            new SqlParameter("@CategoryId", (object)categoryId ?? DBNull.Value),
+            new SqlParameter("@BrandId", (object)brandId ?? DBNull.Value),
+
             // Price filters
             new SqlParameter("@MinPrice", (object)filter.MinPrice ?? DBNull.Value),
             new SqlParameter("@MaxPrice", (object)filter.MaxPrice ?? DBNull.Value),
@@ -99,10 +88,10 @@ public class ItemSearchRepository : Repository<SpGetAvailableSearchFilters>, IIt
             new SqlParameter("@FreeShippingOnly", filter.FreeShippingOnly ?? false),
             
             // Vendor filters
-            new SqlParameter("@VendorIds", (object)vendorIds ?? DBNull.Value),
+            new SqlParameter("@VendorId", (object)vendorId ?? DBNull.Value),
             
             // Condition and warranty filters
-            new SqlParameter("@ConditionIds", (object)conditionIds ?? DBNull.Value),
+            new SqlParameter("@ConditionId", (object)conditionId ?? DBNull.Value),
             new SqlParameter("@WithWarrantyOnly", filter.WithWarrantyOnly ?? false),
             
             // Attribute filters
@@ -274,23 +263,19 @@ public class ItemSearchRepository : Repository<SpGetAvailableSearchFilters>, IIt
             CategoryId = reader.GetGuid(reader.GetOrdinal("CategoryId")),
             BrandId = GetNullableGuid(reader, "BrandId"),
             ThumbnailImage = GetString(reader, "ThumbnailImage"),
-            CreatedDateUtc = reader.GetDateTime(reader.GetOrdinal("CreatedDateUtc")),
-            MinPrice = reader.GetDecimal(reader.GetOrdinal("MinPrice")),
-            MaxPrice = reader.GetDecimal(reader.GetOrdinal("MaxPrice")),
-            OffersCount = reader.GetInt32(reader.GetOrdinal("OffersCount")),
-            FinalScore = GetDouble(reader, "FinalScore")
+            CreatedDateUtc = reader.GetDateTime(reader.GetOrdinal("CreatedDateUtc"))
         };
 
         // Calculate average price
-        result.AvgPrice = (result.MinPrice + result.MaxPrice) / 2;
+        //result.AvgPrice = (result.MinPrice + result.MaxPrice) / 2;
 
         // Parse BestOfferData
         var bestOfferData = GetString(reader, "BestOfferData");
-        if (!string.IsNullOrEmpty(bestOfferData))
-        {
-            // Store raw data - BL will parse and transform
-            result.BestOfferDataRaw = bestOfferData;
-        }
+        //if (!string.IsNullOrEmpty(bestOfferData))
+        //{
+        //    // Store raw data - BL will parse and transform
+        //    result.BestOfferDataRaw = bestOfferData;
+        //}
 
         return result;
     }

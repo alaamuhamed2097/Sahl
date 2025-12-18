@@ -54,34 +54,14 @@ namespace Shared.DTOs.ECommerce.Item
         public DateTime CreatedDateUtc { get; set; }
 
         /// <summary>
-        /// Minimum price across all vendors for this item
+        /// Original price (before discount)
         /// </summary>
-        public decimal MinPrice { get; set; }
+        public decimal Price { get; set; }
 
         /// <summary>
-        /// Maximum price across all vendors for this item
+        /// Current sales price (the price customer pays)
         /// </summary>
-        public decimal MaxPrice { get; set; }
-
-        /// <summary>
-        /// Average price across all vendors
-        /// </summary>
-        public decimal AvgPrice { get; set; }
-
-        /// <summary>
-        /// Total number of active offers for this item
-        /// </summary>
-        public int OffersCount { get; set; }
-
-        /// <summary>
-        /// Fastest delivery time in days among all offers
-        /// </summary>
-        public int FastestDelivery { get; set; }
-
-        /// <summary>
-        /// Final relevance score for search ranking
-        /// </summary>
-        public double FinalScore { get; set; }
+        public decimal SalesPrice { get; set; }
 
         /// <summary>
         /// Best offer details (aggregated from stored procedure)
@@ -98,18 +78,6 @@ namespace Shared.DTOs.ECommerce.Item
         /// Whether the item was created within the last 30 days
         /// </summary>
         public bool IsNew => CreatedDateUtc >= DateTime.UtcNow.AddDays(-30);
-
-        /// <summary>
-        /// Whether there are multiple offers available for this item
-        /// </summary>
-        public bool HasMultipleOffers => OffersCount > 1;
-
-        /// <summary>
-        /// Display-formatted price range with currency
-        /// </summary>
-        public string PriceDisplay => MinPrice == MaxPrice
-            ? $"{MinPrice:N2} ????"
-            : $"{MinPrice:N2} - {MaxPrice:N2} ????";
     }
 
     /// <summary>

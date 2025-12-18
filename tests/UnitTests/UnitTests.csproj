@@ -27,9 +27,4 @@
     <ProjectReference Include="..\..\src\Shared\Common\Common.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Core\BL\UserManagement\" />
-    <Folder Include="Services\Order\" />
-  </ItemGroup>
-
 </Project>

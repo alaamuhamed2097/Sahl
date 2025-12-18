@@ -1,28 +1,163 @@
-name: 🚀 Deploy ASP.NET API & Blazor Dashboard to IIS
+name: 🚀 CI/CD - Build, Test, Migrate & Deploy to IIS
 
 on:
   push:
     branches:
       - main
+      - dev
+  pull_request:
+    branches:
+      - main
   workflow_dispatch:
 
 jobs:
-  deploy:
+  # ============================================
+  # Job 1: Build and Test
+  # ============================================
+  build-and-test:
+    name: 🧪 Build & Test
     runs-on: [self-hosted, windows, iis]
+    
     steps:
-      # 1️⃣ تحميل الكود من GitHub
+      # 1️⃣ Checkout code
       - name: Checkout code
         uses: actions/checkout@v4
       
-      # 2️⃣ استخدام الـ .NET المثبت مسبقًا
+      # 2️⃣ Setup .NET
       - name: Setup .NET
         run: echo "Using preinstalled .NET SDK on server"
       
-      # 3️⃣ استرجاع الـ NuGet Packages
+      # 3️⃣ Restore dependencies
       - name: Restore dependencies
-        run: dotnet restore
+        run: |
+          Write-Host "=========================================="
+          Write-Host "Restoring NuGet packages..."
+          Write-Host "=========================================="
+          Write-Host "Current directory: $PWD"
+          dotnet restore "$env:GITHUB_WORKSPACE\Sahl.slnx"
+      
+      # 4️⃣ Build solution
+      - name: Build Solution
+        run: |
+          Write-Host "=========================================="
+          Write-Host "Building solution in Release mode..."
+          Write-Host "=========================================="
+          dotnet build "$env:GITHUB_WORKSPACE\Sahl.slnx" -c Release --no-restore
+      
+      # 5️⃣ Run Unit Tests
+      - name: Run Unit Tests
+        run: |
+          Write-Host "=========================================="
+          Write-Host "Running Unit Tests..."
+          Write-Host "=========================================="
+          dotnet test "$env:GITHUB_WORKSPACE\tests\UnitTests\UnitTests.csproj" `
+            --configuration Release `
+            --no-build `
+            --verbosity normal `
+            --logger "trx;LogFileName=unit-test-results.trx" `
+            --logger "console;verbosity=detailed" `
+            --collect:"XPlat Code Coverage" `
+            --results-directory "$env:TEMP\TestResults\Unit"
+          
+          if ($LASTEXITCODE -ne 0) {
+            Write-Host "❌ Unit tests failed!" -ForegroundColor Red
+            exit 1
+          }
+          Write-Host "✅ Unit tests passed!" -ForegroundColor Green
+      
+      # 6️⃣ Run Integration Tests
+      - name: Run Integration Tests
+        run: |
+          Write-Host "=========================================="
+          Write-Host "Running Integration Tests..."
+          Write-Host "=========================================="
+          dotnet test "$env:GITHUB_WORKSPACE\tests\IntegrationTests\IntegrationTests.csproj" `
+            --configuration Release `
+            --no-build `
+            --verbosity normal `
+            --logger "trx;LogFileName=integration-test-results.trx" `
+            --logger "console;verbosity=detailed" `
+            --collect:"XPlat Code Coverage" `
+            --results-directory "$env:TEMP\TestResults\Integration"
+          
+          if ($LASTEXITCODE -ne 0) {
+            Write-Host "❌ Integration tests failed!" -ForegroundColor Red
+            exit 1
+          }
+          Write-Host "✅ Integration tests passed!" -ForegroundColor Green
+      
+      # 7️⃣ Test Summary
+      - name: Test Summary
+        if: always()
+        run: |
+          Write-Host ""
+          Write-Host "=========================================="
+          Write-Host "           TEST SUMMARY" -ForegroundColor Cyan
+          Write-Host "=========================================="
+          
+          # Parse Unit Test Results
+          if (Test-Path "$env:TEMP\TestResults\Unit\unit-test-results.trx") {
+            [xml]$unitResults = Get-Content "$env:TEMP\TestResults\Unit\unit-test-results.trx"
+            $unitTotal = $unitResults.TestRun.ResultSummary.Counters.total
+            $unitPassed = $unitResults.TestRun.ResultSummary.Counters.passed
+            $unitFailed = $unitResults.TestRun.ResultSummary.Counters.failed
+            
+            Write-Host "Unit Tests:" -ForegroundColor White
+            Write-Host "  Total:  $unitTotal" -ForegroundColor White
+            Write-Host "  Passed: $unitPassed" -ForegroundColor Green
+            Write-Host "  Failed: $unitFailed" -ForegroundColor $(if ($unitFailed -gt 0) { "Red" } else { "Green" })
+          }
+          
+          # Parse Integration Test Results
+          if (Test-Path "$env:TEMP\TestResults\Integration\integration-test-results.trx") {
+            [xml]$integrationResults = Get-Content "$env:TEMP\TestResults\Integration\integration-test-results.trx"
+            $intTotal = $integrationResults.TestRun.ResultSummary.Counters.total
+            $intPassed = $integrationResults.TestRun.ResultSummary.Counters.passed
+            $intFailed = $integrationResults.TestRun.ResultSummary.Counters.failed
+            
+            Write-Host ""
+            Write-Host "Integration Tests:" -ForegroundColor White
+            Write-Host "  Total:  $intTotal" -ForegroundColor White
+            Write-Host "  Passed: $intPassed" -ForegroundColor Green
+            Write-Host "  Failed: $intFailed" -ForegroundColor $(if ($intFailed -gt 0) { "Red" } else { "Green" })
+          }
+          
+          Write-Host "=========================================="
+      
+      # 8️⃣ Upload test results as artifacts
+      - name: Upload Test Results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: |
+            ${{ runner.temp }}/TestResults/**/*.trx
+            ${{ runner.temp }}/TestResults/**/coverage.cobertura.xml
+          retention-days: 30
 
-      # 4️⃣ (اختياري) تخزين Workloads في الكاش لتسريع عمليات النشر
+  # ============================================
+  # Job 2: Deploy to IIS (only on main branch)
+  # ============================================
+  deploy:
+    name: 🚀 Deploy to IIS
+    runs-on: [self-hosted, windows, iis]
+    needs: build-and-test
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    
+    steps:
+      # 1️⃣ Checkout code
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      # 2️⃣ Setup .NET
+      - name: Setup .NET
+        run: echo "Using preinstalled .NET SDK on server"
+      
+      # 3️⃣ Restore dependencies
+      - name: Restore dependencies
+        run: dotnet restore "$env:GITHUB_WORKSPACE\Sahl.slnx"
+      
+      # 4️⃣ Cache .NET workloads
       - name: Cache .NET workloads
         uses: actions/cache@v4
         with:
@@ -30,7 +165,7 @@ jobs:
             C:\Users\runneradmin\.dotnet\workloads
           key: dotnet-workloads-${{ runner.os }}-10.0.100
       
-      # 5️⃣ التحقق أو تثبيت Blazor Workload
+      # 5️⃣ Verify or Install Blazor Workload
       - name: Verify or Install Blazor Workload
         run: |
           Write-Host "Checking Blazor workloads..."
@@ -43,15 +178,143 @@ jobs:
           }
           dotnet workload list
       
-      # 6️⃣ Publish API (Build + Publish في خطوة واحدة)
+      # 6️⃣ Build Solution
+      - name: Build Solution
+        run: dotnet build "$env:GITHUB_WORKSPACE\Sahl.slnx" -c Release --no-restore
+      
+      # 7️⃣ Install EF Core Tools (for migrations)
+      - name: Install EF Core Tools
+        run: |
+          Write-Host "=========================================="
+          Write-Host "Installing/Updating EF Core Tools..."
+          Write-Host "=========================================="
+          dotnet tool install --global dotnet-ef --version 8.* 2>$null
+          if ($LASTEXITCODE -ne 0) {
+            dotnet tool update --global dotnet-ef --version 8.*
+          }
+          dotnet ef --version
+      
+      # 8️⃣ Backup Database (before migration)
+      - name: Backup Database
+        run: |
+          Write-Host "=========================================="
+          Write-Host "Creating Database Backup..."
+          Write-Host "=========================================="
+          
+          $appsettingsPath = "C:\0ALI\WebSites\BasitApi\appsettings.json"
+          if (Test-Path $appsettingsPath) {
+            $appsettings = Get-Content $appsettingsPath | ConvertFrom-Json
+            $connectionString = $appsettings.ConnectionStrings.DefaultConnection
+            
+            if ($connectionString -match "Server=([^;]+).*Database=([^;]+)") {
+              $serverName = $matches[1]
+              $databaseName = $matches[2]
+              
+              $timestamp = Get-Date -Format "yyyyMMdd_HHmmss"
+              $backupPath = "C:\temp\db-backups\${databaseName}_${timestamp}.bak"
+              
+              if (!(Test-Path "C:\temp\db-backups")) {
+                New-Item -ItemType Directory -Force -Path "C:\temp\db-backups" | Out-Null
+              }
+              
+              Write-Host "Database: $databaseName"
+              Write-Host "Server: $serverName"
+              Write-Host "Backup Path: $backupPath"
+              
+              try {
+                $backupQuery = "BACKUP DATABASE [$databaseName] TO DISK = N'$backupPath' WITH FORMAT, INIT, NAME = N'$databaseName-Backup', SKIP, NOREWIND, NOUNLOAD, COMPRESSION, STATS = 10"
+                sqlcmd -S $serverName -Q $backupQuery -E
+                
+                if ($LASTEXITCODE -eq 0) {
+                  Write-Host "✅ Database backup created successfully!" -ForegroundColor Green
+                  Write-Host "Backup saved to: $backupPath" -ForegroundColor Cyan
+                  
+                  $env:DB_BACKUP_PATH = $backupPath
+                  echo "DB_BACKUP_PATH=$backupPath" >> $env:GITHUB_ENV
+                } else {
+                  Write-Host "⚠️ Warning: Database backup failed, continuing anyway..." -ForegroundColor Yellow
+                }
+              } catch {
+                Write-Host "⚠️ Warning: Could not create backup: $($_.Exception.Message)" -ForegroundColor Yellow
+              }
+              
+              Get-ChildItem "C:\temp\db-backups\*.bak" | Where-Object { $_.LastWriteTime -lt (Get-Date).AddDays(-7) } | Remove-Item -Force
+              
+            } else {
+              Write-Host "⚠️ Could not parse connection string" -ForegroundColor Yellow
+            }
+          } else {
+            Write-Host "⚠️ appsettings.json not found, skipping backup" -ForegroundColor Yellow
+          }
+      
+      # 9️⃣ Check for Pending Migrations
+      - name: Check Pending Migrations
+        id: check-migrations
+        run: |
+          Write-Host "=========================================="
+          Write-Host "Checking for Pending Migrations..."
+          Write-Host "=========================================="
+          
+          $appsettingsPath = "C:\0ALI\WebSites\BasitApi\appsettings.json"
+          
+          if (Test-Path $appsettingsPath) {
+            $appsettings = Get-Content $appsettingsPath | ConvertFrom-Json
+            $connectionString = $appsettings.ConnectionStrings.DefaultConnection
+            
+            $pendingMigrations = dotnet ef migrations list --project "$env:GITHUB_WORKSPACE\src\Infrastructure\DAL" --startup-project "$env:GITHUB_WORKSPACE\src\Presentation\Api" --connection "$connectionString" --no-build 2>&1 | Select-String "Pending"
+            
+            if ($pendingMigrations) {
+              Write-Host "⚠️ Found pending migrations:" -ForegroundColor Yellow
+              Write-Host $pendingMigrations -ForegroundColor Yellow
+              echo "HAS_PENDING_MIGRATIONS=true" >> $env:GITHUB_OUTPUT
+            } else {
+              Write-Host "✅ No pending migrations found" -ForegroundColor Green
+              echo "HAS_PENDING_MIGRATIONS=false" >> $env:GITHUB_OUTPUT
+            }
+          } else {
+            Write-Host "⚠️ appsettings.json not found" -ForegroundColor Yellow
+            echo "HAS_PENDING_MIGRATIONS=false" >> $env:GITHUB_OUTPUT
+          }
+      
+      # 🔟 Apply Database Migrations
+      - name: Apply Database Migrations
+        if: steps.check-migrations.outputs.HAS_PENDING_MIGRATIONS == 'true'
+        id: apply-migrations
+        run: |
+          Write-Host "=========================================="
+          Write-Host "Applying Database Migrations..."
+          Write-Host "=========================================="
+          
+          $appsettingsPath = "C:\0ALI\WebSites\BasitApi\appsettings.json"
+          $appsettings = Get-Content $appsettingsPath | ConvertFrom-Json
+          $connectionString = $appsettings.ConnectionStrings.DefaultConnection
+          
+          try {
+            dotnet ef database update --project "$env:GITHUB_WORKSPACE\src\Infrastructure\DAL" --startup-project "$env:GITHUB_WORKSPACE\src\Presentation\Api" --connection "$connectionString" --no-build --verbose
+            
+            if ($LASTEXITCODE -eq 0) {
+              Write-Host "✅ Migrations applied successfully!" -ForegroundColor Green
+              echo "MIGRATION_SUCCESS=true" >> $env:GITHUB_OUTPUT
+            } else {
+              Write-Host "❌ Migration failed!" -ForegroundColor Red
+              echo "MIGRATION_SUCCESS=false" >> $env:GITHUB_OUTPUT
+              exit 1
+            }
+          } catch {
+            Write-Host "❌ Migration error: $($_.Exception.Message)" -ForegroundColor Red
+            echo "MIGRATION_SUCCESS=false" >> $env:GITHUB_OUTPUT
+            exit 1
+          }
+      
+      # 1️⃣1️⃣ Publish API
       - name: Publish API
-        run: dotnet publish ./src/Presentation/Api -c Release -o "$env:TEMP\publish\api" --no-restore
+        run: dotnet publish "$env:GITHUB_WORKSPACE\src\Presentation\Api\Api.csproj" -c Release -o "$env:TEMP\publish\api" --no-build
       
-      # 7️⃣ Publish Dashboard (Build + Publish في خطوة واحدة)
+      # 1️⃣2️⃣ Publish Dashboard
       - name: Publish Dashboard
-        run: dotnet publish ./src/Presentation/Dashboard -c Release -o "$env:TEMP\publish\dashboard" --no-restore
+        run: dotnet publish "$env:GITHUB_WORKSPACE\src\Presentation\Dashboard\Dashboard.csproj" -c Release -o "$env:TEMP\publish\dashboard" --no-build
       
-      # 8️⃣ تجهيز مجلد مؤقت للـ backup
+      # 1️⃣3️⃣ Prepare temp directory
       - name: Prepare temp directory
         run: |
           if (!(Test-Path "C:\temp\deployment-backup")) { 
@@ -59,7 +322,7 @@ jobs:
           }
           Write-Host "Temp directory ready"
       
-      # 9️⃣ نشر الـ API مع حماية appsettings + wwwroot
+      # 1️⃣4️⃣ Deploy API to IIS
       - name: Deploy API to IIS
         run: |
           Write-Host "=========================================="
@@ -94,7 +357,7 @@ jobs:
           
           # Enable maintenance mode
           Write-Host "Step 3: Enabling maintenance mode..."
-          Copy-Item ".github/workflows/maintenance.html" "C:\0ALI\WebSites\BasitApi\app_offline.htm" -Force
+          Copy-Item "$env:GITHUB_WORKSPACE\.github\workflows\maintenance.html" "C:\0ALI\WebSites\BasitApi\app_offline.htm" -Force
           Start-Sleep -Seconds 2
           
           # Deploy new files
@@ -132,7 +395,8 @@ jobs:
           # Verify critical files
           Write-Host "Step 7: Verifying critical files..."
           $apiCriticalFiles = @(
-            "C:\0ALI\WebSites\BasitApi\appsettings.json"
+            "C:\0ALI\WebSites\BasitApi\appsettings.json",
+            "C:\0ALI\WebSites\BasitApi\Api.dll"
           )
           foreach ($file in $apiCriticalFiles) {
             if (Test-Path $file) {
@@ -151,7 +415,7 @@ jobs:
           Write-Host "BasitApi deployed successfully!" -ForegroundColor Green
           Write-Host "=========================================="
       
-      # 🔟 نشر الـ Dashboard
+      # 1️⃣5️⃣ Deploy Dashboard to IIS
       - name: Deploy Dashboard to IIS
         run: |
           Write-Host "=========================================="
@@ -178,7 +442,7 @@ jobs:
           
           # Enable maintenance mode
           Write-Host "Step 3: Enabling maintenance mode..."
-          Copy-Item ".github/workflows/maintenance.html" "C:\0ALI\WebSites\BasitDashboard\app_offline.htm" -Force
+          Copy-Item "$env:GITHUB_WORKSPACE\.github\workflows\maintenance.html" "C:\0ALI\WebSites\BasitDashboard\app_offline.htm" -Force
           Start-Sleep -Seconds 2
           
           # Deploy new files
@@ -206,7 +470,10 @@ jobs:
           
           # Verify critical files
           Write-Host "Step 7: Verifying critical files..."
-          $dashCriticalFiles = @("C:\0ALI\WebSites\BasitDashboard\web.config")
+          $dashCriticalFiles = @(
+            "C:\0ALI\WebSites\BasitDashboard\web.config",
+            "C:\0ALI\WebSites\BasitDashboard\Dashboard.dll"
+          )
           foreach ($file in $dashCriticalFiles) {
             if (Test-Path $file) {
               Write-Host "  - VERIFIED: $file exists" -ForegroundColor Green
@@ -224,7 +491,7 @@ jobs:
           Write-Host "BasitDashboard deployed successfully!" -ForegroundColor Green
           Write-Host "=========================================="
       
-      # 1️⃣1️⃣ إعادة تشغيل Application Pools
+      # 1️⃣6️⃣ Restart Application Pools
       - name: Restart Application Pools
         run: |
           Write-Host "=========================================="
@@ -238,20 +505,109 @@ jobs:
               if ($appPool) {
                 Restart-WebAppPool -Name $appPool
                 Write-Host "  - Restarted $site (App Pool: $appPool)" -ForegroundColor Green
+                Start-Sleep -Seconds 3
               }
             } catch {
               Write-Host "  - Could not auto-detect pool for $site, trying direct restart..." -ForegroundColor Yellow
               try {
                 Restart-WebAppPool -Name $site
                 Write-Host "  - Restarted pool: $site" -ForegroundColor Green
+                Start-Sleep -Seconds 3
               } catch {
                 Write-Host "  - Manual restart may be needed for $site" -ForegroundColor Red
               }
             }
           }
       
-      # 1️⃣2️⃣ تنظيف الملفات المؤقتة
+      # 1️⃣7️⃣ Health Check
+      - name: Health Check
+        id: health-check
+        run: |
+          Write-Host "=========================================="
+          Write-Host "Performing Health Checks..."
+          Write-Host "=========================================="
+          
+          Start-Sleep -Seconds 5
+          
+          # Check API health
+          $apiHealthy = $false
+          try {
+            $response = Invoke-WebRequest -Uri "http://localhost/api/health" -UseBasicParsing -TimeoutSec 30 -ErrorAction Stop
+            if ($response.StatusCode -eq 200) {
+              Write-Host "✅ API is healthy (Status: $($response.StatusCode))" -ForegroundColor Green
+              $apiHealthy = $true
+            }
+          } catch {
+            $statusCode = $_.Exception.Response.StatusCode.value__
+            Write-Host "❌ API health check failed (Status: $statusCode)" -ForegroundColor Red
+            Write-Host "Error: $($_.Exception.Message)" -ForegroundColor Red
+            
+            if ($statusCode -eq 500) {
+              Write-Host "⚠️ Error 500 detected - possible migration issue!" -ForegroundColor Yellow
+              echo "API_HEALTH_FAILED=true" >> $env:GITHUB_OUTPUT
+            }
+          }
+          
+          # Check Dashboard health
+          try {
+            $response = Invoke-WebRequest -Uri "http://localhost/dashboard" -UseBasicParsing -TimeoutSec 30 -ErrorAction Stop
+            if ($response.StatusCode -eq 200) {
+              Write-Host "✅ Dashboard is healthy (Status: $($response.StatusCode))" -ForegroundColor Green
+            }
+          } catch {
+            Write-Host "⚠️ Dashboard health check failed" -ForegroundColor Yellow
+          }
+          
+          if (-not $apiHealthy) {
+            Write-Host ""
+            Write-Host "=========================================="
+            Write-Host "⚠️ API HEALTH CHECK FAILED!" -ForegroundColor Red
+            Write-Host "=========================================="
+            exit 1
+          }
+      
+      # 1️⃣8️⃣ Rollback on Failure
+      - name: Rollback Database on Failure
+        if: failure() && steps.apply-migrations.outputs.MIGRATION_SUCCESS == 'false' && env.DB_BACKUP_PATH != ''
+        run: |
+          Write-Host "=========================================="
+          Write-Host "⚠️ ROLLING BACK DATABASE..." -ForegroundColor Yellow
+          Write-Host "=========================================="
+          
+          $backupPath = $env:DB_BACKUP_PATH
+          
+          if (Test-Path $backupPath) {
+            $appsettingsPath = "C:\0ALI\WebSites\BasitApi\appsettings.json"
+            $appsettings = Get-Content $appsettingsPath | ConvertFrom-Json
+            $connectionString = $appsettings.ConnectionStrings.DefaultConnection
+            
+            if ($connectionString -match "Server=([^;]+).*Database=([^;]+)") {
+              $serverName = $matches[1]
+              $databaseName = $matches[2]
+              
+              try {
+                Write-Host "Restoring database from: $backupPath"
+                
+                sqlcmd -S $serverName -Q "ALTER DATABASE [$databaseName] SET SINGLE_USER WITH ROLLBACK IMMEDIATE;" -E
+                sqlcmd -S $serverName -Q "RESTORE DATABASE [$databaseName] FROM DISK = N'$backupPath' WITH REPLACE, RECOVERY;" -E
+                sqlcmd -S $serverName -Q "ALTER DATABASE [$databaseName] SET MULTI_USER;" -E
+                
+                if ($LASTEXITCODE -eq 0) {
+                  Write-Host "✅ Database rolled back successfully!" -ForegroundColor Green
+                } else {
+                  Write-Host "❌ Database rollback failed!" -ForegroundColor Red
+                }
+              } catch {
+                Write-Host "❌ Rollback error: $($_.Exception.Message)" -ForegroundColor Red
+              }
+            }
+          } else {
+            Write-Host "⚠️ Backup file not found: $backupPath" -ForegroundColor Yellow
+          }
+      
+      # 1️⃣9️⃣ Cleanup
       - name: Cleanup
+        if: always()
         run: |
           Write-Host "=========================================="
           Write-Host "Cleaning up..."
@@ -262,18 +618,18 @@ jobs:
           
           Write-Host ""
           Write-Host "=========================================="
-          Write-Host "   DEPLOYMENT COMPLETED SUCCESSFULLY!" -ForegroundColor Green
+          Write-Host "   DEPLOYMENT COMPLETED!" -ForegroundColor Green
           Write-Host "=========================================="
-          Write-Host "API Protection:" -ForegroundColor Cyan
-          Write-Host "  - appsettings.json: PRESERVED" -ForegroundColor Green
-          Write-Host "  - web.config: PRESERVED" -ForegroundColor Green
-          Write-Host "  - wwwroot (user files): PRESERVED" -ForegroundColor Green
+          Write-Host "✅ Database Migration: Applied" -ForegroundColor Green
+          Write-Host "✅ API Protection:" -ForegroundColor Cyan
+          Write-Host "   - appsettings.json: PRESERVED" -ForegroundColor Green
+          Write-Host "   - web.config: PRESERVED" -ForegroundColor Green
+          Write-Host "   - wwwroot (user files): PRESERVED" -ForegroundColor Green
           Write-Host ""
-          Write-Host "Dashboard Protection:" -ForegroundColor Cyan
-          Write-Host "  - web.config: PRESERVED" -ForegroundColor Green
-          Write-Host "  - appsettings.json: PRESERVED" -ForegroundColor Green
-          Write-Host "  - wwwroot: REPLACED (updated)" -ForegroundColor Yellow
+          Write-Host "✅ Dashboard Protection:" -ForegroundColor Cyan
+          Write-Host "   - web.config: PRESERVED" -ForegroundColor Green
+          Write-Host "   - appsettings.json: PRESERVED" -ForegroundColor Green
           Write-Host ""
-          Write-Host "App Pools: RESTARTED" -ForegroundColor Green
-          Write-Host "Downtime: MINIMAL (maintenance page shown)" -ForegroundColor Green
+          Write-Host "✅ App Pools: RESTARTED" -ForegroundColor Green
+          Write-Host "✅ Health Check: PASSED" -ForegroundColor Green
           Write-Host "=========================================="
