@@ -358,7 +358,7 @@ namespace DAL.ApplicationContext
                 if (entityType.FindProperty(nameof(BaseEntity.IsDeleted)) != null)
                 {
                     entity.Property(nameof(BaseEntity.IsDeleted))
-                          .HasDefaultValue(0);
+                          .HasDefaultValue(false);
 
                     // Add index for CurrentState for better query performance
                     entity.HasIndex(nameof(BaseEntity.IsDeleted))

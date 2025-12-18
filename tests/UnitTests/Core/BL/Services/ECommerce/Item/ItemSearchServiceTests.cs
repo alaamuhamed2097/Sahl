@@ -178,7 +178,7 @@ namespace UnitTests.Core.BL.Services.ECommerce.Item
             var filter = new ItemFilterQuery { PageNumber = 1, PageSize = 20 };
 
             var entity = CreateMockSearchEntity(itemId, "Test Item", 900m, 1000m);
-            entity.BestOfferDataRaw = $"{offerId}|{vendorId}|900.00|1000.00|10|1|3|1|1";
+            //entity.BestOfferDataRaw = $"{offerId}|{vendorId}|900.00|1000.00|10|1|3|1|1";
 
             _mockRepository
                 .Setup(r => r.SearchItemsAsync(It.IsAny<ItemFilterQuery>(), It.IsAny<CancellationToken>()))
@@ -209,9 +209,6 @@ namespace UnitTests.Core.BL.Services.ECommerce.Item
             var filter = new ItemFilterQuery { PageNumber = 1, PageSize = 20 };
 
             var entity = CreateMockSearchEntity(Guid.NewGuid(), "Test", 800m, 1000m);
-            entity.FinalScore = 0.9;
-            entity.OffersCount = 6;
-            entity.BestOfferDataRaw = $"{Guid.NewGuid()}|{Guid.NewGuid()}|800.00|1000.00|10|1|3|1|1";
 
             _mockRepository
                 .Setup(r => r.SearchItemsAsync(It.IsAny<ItemFilterQuery>(), It.IsAny<CancellationToken>()))
@@ -430,11 +427,11 @@ namespace UnitTests.Core.BL.Services.ECommerce.Item
                 BrandId = Guid.NewGuid(),
                 ThumbnailImage = "image.jpg",
                 CreatedDateUtc = DateTime.UtcNow,
-                MinPrice = minPrice,
-                MaxPrice = maxPrice,
-                AvgPrice = (minPrice + maxPrice) / 2,
-                OffersCount = 3,
-                FinalScore = 0.75
+                //MinPrice = minPrice,
+                //MaxPrice = maxPrice,
+                //AvgPrice = (minPrice + maxPrice) / 2,
+                //OffersCount = 3,
+                //FinalScore = 0.75
             };
         }
 

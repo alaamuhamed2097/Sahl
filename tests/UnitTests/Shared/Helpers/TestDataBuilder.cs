@@ -36,9 +36,9 @@ namespace UnitTests.Shared.Helpers
                 PageSize = 20
             };
 
-            public static ItemFilterQuery WithCategories(params Guid[] categoryIds) => new ItemFilterQuery
+            public static ItemFilterQuery WithCategories(Guid categoryId) => new ItemFilterQuery
             {
-                CategoryIds = categoryIds.ToList(),
+                CategoryId = categoryId,
                 PageNumber = 1,
                 PageSize = 20
             };
@@ -46,8 +46,8 @@ namespace UnitTests.Shared.Helpers
             public static ItemFilterQuery Complex() => new ItemFilterQuery
             {
                 SearchTerm = "laptop",
-                CategoryIds = new List<Guid> { Guid.NewGuid() },
-                BrandIds = new List<Guid> { Guid.NewGuid() },
+                CategoryId = Guid.NewGuid(),
+                BrandId = Guid.NewGuid(),
                 MinPrice = 500,
                 MaxPrice = 5000,
                 MinItemRating = 4.0m,
@@ -79,12 +79,12 @@ namespace UnitTests.Shared.Helpers
                     BrandId = Guid.NewGuid(),
                     ThumbnailImage = "test-image.jpg",
                     CreatedDateUtc = DateTime.UtcNow.AddDays(-7),
-                    MinPrice = 100,
-                    MaxPrice = 150,
-                    AvgPrice = 125,
-                    OffersCount = 3,
-                    FinalScore = 0.75,
-                    FastestDelivery = 2
+                    //MinPrice = 100,
+                    //MaxPrice = 150,
+                    //AvgPrice = 125,
+                    //OffersCount = 3,
+                    //FinalScore = 0.75,
+                    //FastestDelivery = 2
                 };
             }
 
@@ -99,18 +99,9 @@ namespace UnitTests.Shared.Helpers
                 var offerId = Guid.NewGuid();
                 var vendorId = Guid.NewGuid();
 
-                entity.BestOfferDataRaw = $"{offerId}|{vendorId}|{salesPrice:F2}|{originalPrice:F2}|10|{(isFreeShipping ? "1" : "0")}|3|{(isBuyBoxWinner ? "1" : "0")}|1";
-
                 return entity;
             }
 
-            public static SpSearchItemsMultiVendor HighScore(Guid? itemId = null)
-            {
-                var entity = Basic(itemId);
-                entity.FinalScore = 0.95;
-                entity.OffersCount = 10;
-                return entity;
-            }
 
             public static List<SpSearchItemsMultiVendor> CreateList(int count)
             {

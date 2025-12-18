@@ -263,23 +263,19 @@ public class ItemSearchRepository : Repository<SpGetAvailableSearchFilters>, IIt
             CategoryId = reader.GetGuid(reader.GetOrdinal("CategoryId")),
             BrandId = GetNullableGuid(reader, "BrandId"),
             ThumbnailImage = GetString(reader, "ThumbnailImage"),
-            CreatedDateUtc = reader.GetDateTime(reader.GetOrdinal("CreatedDateUtc")),
-            MinPrice = reader.GetDecimal(reader.GetOrdinal("MinPrice")),
-            MaxPrice = reader.GetDecimal(reader.GetOrdinal("MaxPrice")),
-            OffersCount = reader.GetInt32(reader.GetOrdinal("OffersCount")),
-            FinalScore = GetDouble(reader, "FinalScore")
+            CreatedDateUtc = reader.GetDateTime(reader.GetOrdinal("CreatedDateUtc"))
         };
 
         // Calculate average price
-        result.AvgPrice = (result.MinPrice + result.MaxPrice) / 2;
+        //result.AvgPrice = (result.MinPrice + result.MaxPrice) / 2;
 
         // Parse BestOfferData
         var bestOfferData = GetString(reader, "BestOfferData");
-        if (!string.IsNullOrEmpty(bestOfferData))
-        {
-            // Store raw data - BL will parse and transform
-            result.BestOfferDataRaw = bestOfferData;
-        }
+        //if (!string.IsNullOrEmpty(bestOfferData))
+        //{
+        //    // Store raw data - BL will parse and transform
+        //    result.BestOfferDataRaw = bestOfferData;
+        //}
 
         return result;
     }
