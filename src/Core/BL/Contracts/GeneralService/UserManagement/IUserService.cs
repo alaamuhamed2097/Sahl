@@ -11,7 +11,7 @@ namespace BL.Contracts.GeneralService.UserManagement
     {
         //Task<PaginatedDataModel<T>> GetPage(BaseSearchCriteriaModel criteriaModel);
 
-        Task<PaginatedDataModel<TBaseDto>> GetPage(BaseSearchCriteriaModel criteriaModel);
+        Task<PagedResult<TBaseDto>> GetPage(BaseSearchCriteriaModel criteriaModel);
         Task<IEnumerable<TBaseDto>> GetAllAsync();
         Task<TBaseDto> FindByIdAsync(Guid id);
         Task<TBaseDto> CreateAsync(TBaseCreateDto createDto, Guid creatorId);

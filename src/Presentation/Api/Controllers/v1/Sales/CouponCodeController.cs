@@ -142,7 +142,7 @@ namespace Api.Controllers.v1.Sales
 
             if (result == null || !result.Items.Any())
             {
-                return Ok(new ResponseModel<PaginatedDataModel<CouponCodeDto>>
+                return Ok(new ResponseModel<PagedResult<CouponCodeDto>>
                 {
                     Success = true,
                     Message = NotifiAndAlertsResources.NoDataFound,
@@ -150,7 +150,7 @@ namespace Api.Controllers.v1.Sales
                 });
             }
 
-            return Ok(new ResponseModel<PaginatedDataModel<CouponCodeDto>>
+            return Ok(new ResponseModel<PagedResult<CouponCodeDto>>
             {
                 Success = true,
                 Message = NotifiAndAlertsResources.DataRetrieved,

@@ -11,7 +11,7 @@ namespace BL.Contracts.GeneralService.UserManagement
         Task<bool> DeleteAccount(Guid id, Guid updatorId);
         Task<UserStateType> GetUserStateAsync(Guid Id);
 
-        Task<PaginatedDataModel<AdminProfileDto>> GetAdminsPage(BaseSearchCriteriaModel criteriaModel);
+        Task<PagedResult<AdminProfileDto>> GetAdminsPage(BaseSearchCriteriaModel criteriaModel);
         Task<IEnumerable<AdminProfileDto>> GetAllAdminsAsync();
         Task<AdminRegistrationDto> FindAdminDtoByIdAsync(string userId);
         Task<AdminProfileDto> GetAdminProfileAsync(string userId);

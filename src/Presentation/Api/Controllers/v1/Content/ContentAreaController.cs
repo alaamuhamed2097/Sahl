@@ -132,7 +132,7 @@ namespace Api.Controllers.v1.Content
 
             var result = await _contentAreaService.SearchAsync(criteriaModel);
 
-            return Ok(new ResponseModel<PaginatedDataModel<ContentAreaDto>>
+            return Ok(new ResponseModel<PagedResult<ContentAreaDto>>
             {
                 Success = true,
                 Message = GetResource<NotifiAndAlertsResources>(nameof(NotifiAndAlertsResources.DataRetrieved)),

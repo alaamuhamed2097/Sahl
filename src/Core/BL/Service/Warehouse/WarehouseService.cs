@@ -57,7 +57,7 @@ namespace BL.Service.Warehouse
             return _mapper.MapModel<TbWarehouse, WarehouseDto>(warehouse);
         }
 
-        public async Task<PaginatedDataModel<WarehouseDto>> SearchAsync(BaseSearchCriteriaModel criteriaModel)
+        public async Task<PagedResult<WarehouseDto>> SearchAsync(BaseSearchCriteriaModel criteriaModel)
         {
             if (criteriaModel == null)
                 throw new ArgumentNullException(nameof(criteriaModel));
@@ -88,7 +88,7 @@ namespace BL.Service.Warehouse
 
             var itemsDto = _mapper.MapList<TbWarehouse, WarehouseDto>(warehouses.Items).ToList();
 
-            return new PaginatedDataModel<WarehouseDto>(itemsDto, warehouses.TotalRecords);
+            return new PagedResult<WarehouseDto>(itemsDto, warehouses.TotalRecords);
         }
 
         public async Task<bool> SaveAsync(WarehouseDto dto, Guid userId)

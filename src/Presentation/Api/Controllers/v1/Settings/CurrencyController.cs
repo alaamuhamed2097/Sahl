@@ -111,9 +111,9 @@ namespace Api.Controllers.v1.Settings
                     .Take(criteria.PageSize)
                     .ToList();
 
-                var paginatedResult = new PaginatedDataModel<CurrencyDto>(pagedData, totalRecords);
+                var paginatedResult = new PagedResult<CurrencyDto>(pagedData, totalRecords);
 
-                return Ok(new ResponseModel<PaginatedDataModel<CurrencyDto>>
+                return Ok(new ResponseModel<PagedResult<CurrencyDto>>
                 {
                     Success = true,
                     Data = paginatedResult

@@ -8,7 +8,7 @@ namespace BL.Contracts.Service.CouponCode
 {
     public interface ICouponCodeService
     {
-        public Task<PaginatedDataModel<CouponCodeDto>> GetPage(BaseSearchCriteriaModel criteriaModel);
+        public Task<PagedResult<CouponCodeDto>> GetPage(BaseSearchCriteriaModel criteriaModel);
         public Task<List<CouponCodeDto>> GetAll();
         public Task<CouponCodeDto> GetById(Guid id);
         public Task<bool> Save(CouponCodeDto dto, Guid userId);

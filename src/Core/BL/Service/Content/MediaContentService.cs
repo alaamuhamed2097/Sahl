@@ -81,7 +81,7 @@ namespace BL.Service.Content
             return _mapper.MapModel<TbMediaContent, MediaContentDto>(media);
         }
 
-        public async Task<PaginatedDataModel<MediaContentDto>> SearchAsync(BaseSearchCriteriaModel criteriaModel)
+        public async Task<PagedResult<MediaContentDto>> SearchAsync(BaseSearchCriteriaModel criteriaModel)
         {
             if (criteriaModel == null)
                 throw new ArgumentNullException(nameof(criteriaModel));
@@ -112,7 +112,7 @@ namespace BL.Service.Content
 
             var itemsDto = _mapper.MapList<TbMediaContent, MediaContentDto>(media.Items).ToList();
 
-            return new PaginatedDataModel<MediaContentDto>(itemsDto, media.TotalRecords);
+            return new PagedResult<MediaContentDto>(itemsDto, media.TotalRecords);
         }
 
         public async Task<bool> SaveAsync(MediaContentDto dto, Guid userId)

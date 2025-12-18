@@ -273,10 +273,10 @@ namespace BL.Service.Review
 		/// </param>
 		/// <param name="cancellationToken">A token to cancel the operation.</param>
 		/// <returns>
-		/// A <see cref="PaginatedDataModel{OfferReviewDto}"/> containing the list of matching reviews 
+		/// A <see cref="PagedResult{OfferReviewDto}"/> containing the list of matching reviews 
 		/// and the total record count.
 		/// </returns>
-		public async Task<PaginatedDataModel<OfferReviewDto>> GetPaginatedReviewsAsync(OfferReviewSearchCriteriaModel criteriaModel, CancellationToken cancellationToken = default)
+		public async Task<PagedResult<OfferReviewDto>> GetPaginatedReviewsAsync(OfferReviewSearchCriteriaModel criteriaModel, CancellationToken cancellationToken = default)
 		{
 			if (criteriaModel == null)
 				throw new ArgumentNullException(nameof(criteriaModel));
@@ -366,7 +366,7 @@ namespace BL.Service.Review
 
 			var itemsDto = _mapper.MapList<TbOfferReview, OfferReviewDto>(items.Items);
 
-			return new PaginatedDataModel<OfferReviewDto>(itemsDto, items.TotalRecords);
+			return new PagedResult<OfferReviewDto>(itemsDto, items.TotalRecords);
 		}
 	
 		

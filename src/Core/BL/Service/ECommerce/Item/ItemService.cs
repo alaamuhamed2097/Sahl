@@ -54,7 +54,7 @@ namespace BL.Service.ECommerce.Item
             _categoryRepository = categoryRepository;
         }
 
-        public async Task<PaginatedDataModel<ItemDto>> GetPage(ItemSearchCriteriaModel criteriaModel)
+        public async Task<PagedResult<ItemDto>> GetPage(ItemSearchCriteriaModel criteriaModel)
         {
             if (criteriaModel == null)
                 throw new ArgumentNullException(nameof(criteriaModel));
@@ -101,7 +101,7 @@ namespace BL.Service.ECommerce.Item
 
             var itemsDto = _mapper.MapList<TbItem, ItemDto>(items.Items);
 
-            return new PaginatedDataModel<ItemDto>(itemsDto, items.TotalRecords);
+            return new PagedResult<ItemDto>(itemsDto, items.TotalRecords);
         }
 
         public new async Task<ItemDto> FindByIdAsync(Guid Id)

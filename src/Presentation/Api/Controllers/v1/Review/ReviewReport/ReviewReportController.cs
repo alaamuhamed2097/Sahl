@@ -105,7 +105,7 @@ namespace Api.Controllers.v1.Review.ReviewReport
 		{
 			var result = await _reportService.GetPaginatedReviewReportsAsync(criteriaModel);
 
-			return Ok(new ResponseModel<PaginatedDataModel<ReviewReportDto>>
+			return Ok(new ResponseModel<PagedResult<ReviewReportDto>>
 			{
 				Success = true,
 				Message = NotifiAndAlertsResources.DataRetrieved,

@@ -137,14 +137,14 @@ namespace Api.Controllers.v1.Catalog
 
             if (result == null || !result.Items.Any())
             {
-                return Ok(new ResponseModel<PaginatedDataModel<AttributeDto>>
+                return Ok(new ResponseModel<PagedResult<AttributeDto>>
                 {
                     Message = NotifiAndAlertsResources.NoDataFound,
                     Data = result
                 });
             }
 
-            return Ok(new ResponseModel<PaginatedDataModel<AttributeDto>>
+            return Ok(new ResponseModel<PagedResult<AttributeDto>>
             {
                 Message = NotifiAndAlertsResources.DataRetrieved,
                 Data = result

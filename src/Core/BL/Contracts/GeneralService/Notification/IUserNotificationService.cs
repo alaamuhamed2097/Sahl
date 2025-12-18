@@ -7,7 +7,7 @@ namespace BL.Contracts.GeneralService.Notification
 {
     public interface IUserNotificationService
     {
-        Task<UserNotificationResult<PaginatedDataModel<UserNotificationRequest>>> GetPage(BaseSearchCriteriaModel criteriaModel, string userId);
+        Task<UserNotificationResult<PagedResult<UserNotificationRequest>>> GetPage(BaseSearchCriteriaModel criteriaModel, string userId);
         Task<UserNotificationResult<IEnumerable<UserNotificationRequest>>> GetAll(string userId);
         Task<UserNotificationRequest> FindById(Guid Id);
         Task<bool> Save(UserNotificationRequest dto, Guid userId);

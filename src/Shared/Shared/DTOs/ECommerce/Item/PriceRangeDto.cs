@@ -14,10 +14,5 @@ namespace Shared.DTOs.ECommerce.Item
         /// Maximum price in search results
         /// </summary>
         public decimal MaxPrice { get; set; }
-
-        /// <summary>
-        /// Average price in search results
-        /// </summary>
-        public decimal AvgPrice { get; set; }
     }
 }

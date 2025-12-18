@@ -8,7 +8,7 @@ namespace BL.Contracts.Service.Brand
     {
         Task<IEnumerable<BrandDto>> GetAllAsync();
         Task<BrandDto?> GetByIdAsync(Guid id);
-        Task<PaginatedDataModel<BrandDto>> SearchAsync(BaseSearchCriteriaModel criteria);
+        Task<PagedResult<BrandDto>> SearchAsync(BaseSearchCriteriaModel criteria);
         Task<bool> SaveAsync(BrandDto dto, Guid userId);
         Task<bool> DeleteAsync(Guid id, Guid userId);
     }

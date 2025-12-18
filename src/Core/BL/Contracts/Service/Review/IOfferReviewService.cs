@@ -61,7 +61,7 @@ namespace BL.Contracts.Service.Review
 		/// <param name="pageSize">Number of items per page (default: 10).</param>
 		/// <param name="cancellationToken">Token to cancel the operation.</param>
 		/// <returns>A paginated data model containing filtered reviews.</returns>
-		Task<PaginatedDataModel<OfferReviewDto>> GetPaginatedReviewsAsync(OfferReviewSearchCriteriaModel criteriaModel, CancellationToken cancellationToken = default);
+		Task<PagedResult<OfferReviewDto>> GetPaginatedReviewsAsync(OfferReviewSearchCriteriaModel criteriaModel, CancellationToken cancellationToken = default);
 
 
 		/// <summary>

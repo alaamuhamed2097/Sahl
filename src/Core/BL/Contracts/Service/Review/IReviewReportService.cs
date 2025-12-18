@@ -17,7 +17,7 @@ namespace BL.Contracts.Service.Review
 		Task<ReviewReportDto?> GetReportByIdAsync(
 			Guid reportId,
 			CancellationToken cancellationToken = default);
-		Task<PaginatedDataModel<ReviewReportDto>> GetPaginatedReviewReportsAsync(
+		Task<PagedResult<ReviewReportDto>> GetPaginatedReviewReportsAsync(
 	ReviewReportSearchCriteriaModel criteriaModel,
 	CancellationToken cancellationToken = default);
 		Task<IEnumerable<ReviewReportDto>> GetReportsByReviewIdAsync(

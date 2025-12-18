@@ -122,7 +122,7 @@ namespace DAL.Repositories
         /// <summary>
         /// Retrieves paginated data asynchronously.
         /// </summary>
-        public virtual async Task<PaginatedDataModel<T>> GetPageAsync(
+        public virtual async Task<PagedResult<T>> GetPageAsync(
             int pageNumber,
             int pageSize,
             Expression<Func<T, bool>> filter = null,
@@ -151,7 +151,7 @@ namespace DAL.Repositories
 
                 var data = await query.ToListAsync(cancellationToken);
 
-                return new PaginatedDataModel<T>(data, totalCount);
+                return new PagedResult<T>(data, totalCount);
             }
             catch (Exception ex)
             {

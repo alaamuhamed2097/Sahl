@@ -9,7 +9,7 @@ namespace BL.Contracts.Service.Warehouse
         Task<IEnumerable<WarehouseDto>> GetAllAsync();
         Task<IEnumerable<WarehouseDto>> GetActiveWarehousesAsync();
         Task<WarehouseDto?> GetByIdAsync(Guid id);
-        Task<PaginatedDataModel<WarehouseDto>> SearchAsync(BaseSearchCriteriaModel criteria);
+        Task<PagedResult<WarehouseDto>> SearchAsync(BaseSearchCriteriaModel criteria);
         Task<bool> SaveAsync(WarehouseDto dto, Guid userId);
         Task<bool> DeleteAsync(Guid id, Guid userId);
         Task<bool> ToggleActiveStatusAsync(Guid id, Guid userId);

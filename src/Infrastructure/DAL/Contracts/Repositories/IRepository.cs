@@ -39,7 +39,7 @@ namespace DAL.Contracts.Repositories
         /// <summary>
         /// Retrieves paginated data
         /// </summary>
-        Task<PaginatedDataModel<T>> GetPageAsync(
+        Task<PagedResult<T>> GetPageAsync(
             int pageNumber,
             int pageSize,
             Expression<Func<T, bool>> filter = null,

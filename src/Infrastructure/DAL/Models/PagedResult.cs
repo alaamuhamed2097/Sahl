@@ -1,11 +1,11 @@
 ﻿namespace DAL.Models
 {
-    public class PaginatedDataModel<T>
+    public class PagedResult<T>
     {
         public IEnumerable<T> Items { get; }
         public int TotalRecords { get; }
 
-        public PaginatedDataModel(IEnumerable<T> items, int totalRecords)
+        public PagedResult(IEnumerable<T> items, int totalRecords)
         {
             Items = items.ToList();
             TotalRecords = totalRecords;

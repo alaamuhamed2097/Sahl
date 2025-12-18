@@ -39,7 +39,7 @@ namespace BL.Service.ECommerce.Category
             _imageProcessingService = imageProcessingService;
         }
 
-        public async Task<PaginatedDataModel<CategoryDto>> GetPageAsync(BaseSearchCriteriaModel criteriaModel)
+        public async Task<PagedResult<CategoryDto>> GetPageAsync(BaseSearchCriteriaModel criteriaModel)
         {
             if (criteriaModel == null)
                 throw new ArgumentNullException(nameof(criteriaModel));
@@ -96,7 +96,7 @@ namespace BL.Service.ECommerce.Category
 
             var categories = _mapper.MapList<TbCategory, CategoryDto>(vwCategoryWithAttributes.Items);
 
-            return new PaginatedDataModel<CategoryDto>(categories, vwCategoryWithAttributes.TotalRecords);
+            return new PagedResult<CategoryDto>(categories, vwCategoryWithAttributes.TotalRecords);
         }
         public override async Task<IEnumerable<CategoryDto>> GetAllAsync()
         {
