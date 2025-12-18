@@ -136,8 +136,14 @@ namespace BL.Service.ECommerce.Item
                 throw new ArgumentException($"{ValidationResources.MaximumOf} {MaxImageCount} {ValidationResources.ImagesAllowed}", nameof(dto.Images));
             if (dto.CategoryId == Guid.Empty)
                 throw new ValidationException("Category is required !! ");
+            
+            // Fetch category to validate pricing system
+            var category = await _categoryRepository.FindByIdAsync(dto.CategoryId) ?? throw new ValidationException("Category not found!! ");
+            
+            // Validate BasePrice for Standard pricing system
+            if (category.PricingSystemType == PricingSystemType.Standard && (dto.BasePrice == null || dto.BasePrice <= 0 ))
+                throw new ValidationException("Base Price is required!! ");
 
-            var category = await _categoryRepository.FindByIdAsync(dto.CategoryId);
             var categoryAttributes = await _unitOfWork.TableRepository<TbCategoryAttribute>()
                                                       .GetAsync(ca => ca.CategoryId == dto.CategoryId, includeProperties: "Attribute");
 
@@ -205,12 +211,17 @@ namespace BL.Service.ECommerce.Item
                 }
 
                 var entity = _mapper.MapModel<ItemDto, TbItem>(dto);
+                // Detach navigation properties to avoid EF Core tracking issues
                 entity.Brand = null;
                 entity.Category = null;
                 entity.ItemAttributes = null;
                 entity.ItemCombinations = null;
                 entity.ItemImages = null;
                 entity.VisibilityScope = (int)ProductVisibilityStatus.PendingApproval;
+                entity.ItemAttributes = null;
+                entity.ItemCombinations = null;
+                entity.ItemImages = null;
+                entity.Unit = null;
                 var itemSaved = await _unitOfWork.TableRepository<TbItem>().SaveAsync(entity, userId);
                 var itemId = itemSaved.Id;
 

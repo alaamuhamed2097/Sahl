@@ -1,4 +1,4 @@
-﻿using Common.Enumerations.Offer;
+﻿ using Common.Enumerations.Offer;
 using Domains.Entities.Catalog.Item.ItemAttributes;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;

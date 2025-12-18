@@ -1,4 +1,5 @@
-﻿using Dashboard.Configuration;
+﻿using Common.Enumerations.Pricing;
+using Dashboard.Configuration;
 using Dashboard.Contracts.Brand;
 using Dashboard.Contracts.ECommerce.Category;
 using Dashboard.Contracts.ECommerce.Item;
@@ -79,6 +80,7 @@ namespace Dashboard.Pages.Catalog.Products
 
         // Data collections
         private IEnumerable<CategoryDto> categories = Array.Empty<CategoryDto>();
+        private CategoryDto currentCategory = new CategoryDto();
         private IEnumerable<UnitDto> units = Array.Empty<UnitDto>();
         private IEnumerable<VideoProviderDto> videoProviders = Array.Empty<VideoProviderDto>();
         protected List<CategoryAttributeDto> categoryAttributes = new();
@@ -353,7 +355,7 @@ namespace Dashboard.Pages.Catalog.Products
             {
                 // Reset attribute values when category changes
                 attributeValues = new Dictionary<Guid, List<string>>();
-
+                currentCategory = categories.FirstOrDefault(c => c.Id == Model.CategoryId) ?? new CategoryDto();    
                 // Load category attributes
                 await LoadCategoryAttributes();
             }
@@ -739,7 +741,12 @@ namespace Dashboard.Pages.Catalog.Products
                 case 3: // Media
                     return !string.IsNullOrEmpty(Model.ThumbnailImage) ||
                            (Model.Images != null && Model.Images.Count > 0);
-
+                case 4: //Default pricing
+                    if(currentCategory.PricingSystemType == PricingSystemType.Standard)
+                        return Model.BasePrice.HasValue &&
+                               Model.BasePrice.Value > 0;
+                    else
+                        return true;
                 case 5: // Attributes - FIXED VALIDATION
                         // Sync the attribute values first
                     if (attributeValuesSectionRef != null)
@@ -809,7 +816,7 @@ namespace Dashboard.Pages.Catalog.Products
                 1 => ValidationResources.FillSEOFields,
                 2 => ValidationResources.SelectCategoryBrandUnit,
                 3 => ValidationResources.UploadThumbnailOrImages,
-                4 => "Please add values for all required attributes. For pricing attributes, you must add at least one value to create combinations.",
+                4 => "Please enter item base price.",
                 _ => ValidationResources.PleaseFixValidationErrors
             };
         }

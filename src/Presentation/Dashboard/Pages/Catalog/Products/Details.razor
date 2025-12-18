@@ -1,6 +1,7 @@
 ﻿@page "/product"
 @page "/product/{id:guid}"
 
+@using Common.Enumerations.Pricing
 @using Common.Enumerations.User
 @using Dashboard.Pages.Catalog.Products.Components
 @attribute [Authorize(Roles = nameof(UserRole.Admin))]
@@ -407,7 +408,14 @@
 
                                 <div class="col-md-4">
                                     <div class="form-group">
-                                        <label>Base Price</label>
+                                        <label>Base Price
+                                            @{
+                                               if(currentCategory.PricingSystemType == PricingSystemType.Standard)
+                                               {  
+                                                 <span class="text-danger">*</span>
+                                               }
+                                             }
+                                        </label>
                                         <InputNumber type="number"
                                                      placeholder="0.00"
                                                      class="form-control"
