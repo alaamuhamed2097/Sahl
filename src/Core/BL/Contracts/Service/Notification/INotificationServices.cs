@@ -11,7 +11,7 @@ namespace BL.Contracts.Service.Notification
         Task<IEnumerable<NotificationChannelDto>> GetActiveChannelsAsync();
         Task<NotificationChannelDto?> GetByIdAsync(Guid id);
         Task<NotificationChannelDto?> GetByChannelTypeAsync(NotificationChannel channelType);
-        Task<PaginatedDataModel<NotificationChannelDto>> SearchAsync(BaseSearchCriteriaModel criteria);
+        Task<PagedResult<NotificationChannelDto>> SearchAsync(BaseSearchCriteriaModel criteria);
         Task<bool> SaveAsync(NotificationChannelDto dto, Guid userId);
         Task<bool> DeleteAsync(Guid id, Guid userId);
         Task<bool> ToggleActiveStatusAsync(Guid id, Guid userId);
@@ -23,7 +23,7 @@ namespace BL.Contracts.Service.Notification
         Task<IEnumerable<NotificationsDto>> GetByRecipientAsync(int recipientId, RecipientType recipientType);
         Task<IEnumerable<NotificationsDto>> GetUnreadByRecipientAsync(int recipientId, RecipientType recipientType);
         Task<NotificationsDto?> GetByIdAsync(Guid id);
-        Task<PaginatedDataModel<NotificationsDto>> SearchAsync(BaseSearchCriteriaModel criteria);
+        Task<PagedResult<NotificationsDto>> SearchAsync(BaseSearchCriteriaModel criteria);
         Task<bool> SaveAsync(NotificationsDto dto, Guid userId);
         Task<bool> MarkAsReadAsync(Guid id, Guid userId);
         Task<bool> MarkMultipleAsReadAsync(List<Guid> ids, Guid userId);

@@ -24,7 +24,7 @@ namespace BL.GeneralService.Notification
             _mapper = mapper;
             _logger = logger;
         }
-        public async Task<UserNotificationResult<PaginatedDataModel<UserNotificationRequest>>> GetPage(BaseSearchCriteriaModel criteriaModel, string userId)
+        public async Task<UserNotificationResult<PagedResult<UserNotificationRequest>>> GetPage(BaseSearchCriteriaModel criteriaModel, string userId)
         {
             if (criteriaModel == null)
                 throw new ArgumentNullException(nameof(criteriaModel));
@@ -57,9 +57,9 @@ namespace BL.GeneralService.Notification
             var totalCount = userNotifications.Count();
             var dtoList = _mapper.MapList<VwUserNotification, UserNotificationRequest>(entitiesList.Items);
 
-            return new UserNotificationResult<PaginatedDataModel<UserNotificationRequest>>()
+            return new UserNotificationResult<PagedResult<UserNotificationRequest>>()
             {
-                Value = new PaginatedDataModel<UserNotificationRequest>(dtoList, entitiesList.TotalRecords),
+                Value = new PagedResult<UserNotificationRequest>(dtoList, entitiesList.TotalRecords),
                 UnReadCount = unReadCount,
                 TotalCount = totalCount
             };

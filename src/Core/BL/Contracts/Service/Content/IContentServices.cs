@@ -10,7 +10,7 @@ namespace BL.Contracts.Service.Content
         Task<IEnumerable<ContentAreaDto>> GetActiveAreasAsync();
         Task<ContentAreaDto?> GetByIdAsync(Guid id);
         Task<ContentAreaDto?> GetByAreaCodeAsync(string areaCode);
-        Task<PaginatedDataModel<ContentAreaDto>> SearchAsync(BaseSearchCriteriaModel criteria);
+        Task<PagedResult<ContentAreaDto>> SearchAsync(BaseSearchCriteriaModel criteria);
         Task<bool> SaveAsync(ContentAreaDto dto, Guid userId);
         Task<bool> DeleteAsync(Guid id, Guid userId);
         Task<bool> ToggleActiveStatusAsync(Guid id, Guid userId);
@@ -22,7 +22,7 @@ namespace BL.Contracts.Service.Content
         Task<IEnumerable<MediaContentDto>> GetByContentAreaIdAsync(Guid contentAreaId);
         Task<IEnumerable<MediaContentDto>> GetActiveMediaByAreaCodeAsync(string areaCode);
         Task<MediaContentDto?> GetByIdAsync(Guid id);
-        Task<PaginatedDataModel<MediaContentDto>> SearchAsync(BaseSearchCriteriaModel criteria);
+        Task<PagedResult<MediaContentDto>> SearchAsync(BaseSearchCriteriaModel criteria);
         Task<bool> SaveAsync(MediaContentDto dto, Guid userId);
         Task<bool> DeleteAsync(Guid id, Guid userId);
         Task<bool> ToggleActiveStatusAsync(Guid id, Guid userId);

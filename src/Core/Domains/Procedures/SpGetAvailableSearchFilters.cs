@@ -8,5 +8,4 @@ public class SpGetAvailableSearchFilters
     public string? PriceRangeJson { get; set; }
     public string? AttributesJson { get; set; }
     public string? ConditionsJson { get; set; }
-    public string? FeaturesJson { get; set; }
 }

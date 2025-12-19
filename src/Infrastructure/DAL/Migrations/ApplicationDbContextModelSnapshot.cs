@@ -7122,9 +7122,6 @@ namespace DAL.Migrations
                     b.Property<string>("ConditionsJson")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("FeaturesJson")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("PriceRangeJson")
                         .HasColumnType("nvarchar(max)");
 
@@ -7143,6 +7140,14 @@ namespace DAL.Migrations
 
                     b.Property<Guid?>("BrandId")
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("BrandNameAr")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("BrandNameEn")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<Guid>("CategoryId")
                         .HasColumnType("uniqueidentifier");
@@ -7188,9 +7193,6 @@ namespace DAL.Migrations
                     b.Property<string>("TitleEn")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("TotalRecords")
-                        .HasColumnType("int");
 
                     b.ToTable((string)null);
 

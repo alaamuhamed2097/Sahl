@@ -4,6 +4,7 @@ using DAL.Contracts.Repositories;
 using DAL.Contracts.Repositories.Review;
 using DAL.Contracts.UnitOfWork;
 using DAL.Repositories;
+using DAL.Repositories.Item;
 using DAL.Repositories.Review;
 using DAL.UnitOfWork;
 
@@ -28,15 +29,16 @@ namespace Api.Extensions
             services.AddScoped<IOrderRepository, OrderRepository>();
             services.AddScoped<IItemSearchRepository, ItemSearchRepository>();
 
-
+            // Register repositories
+            services.AddScoped<IItemDetailsRepository, ItemDetailsRepository>();
 
             // Review repositories
             services.AddScoped<IOfferReviewRepository, OfferReviewRepository>();
             services.AddScoped<IReviewReportRepository, ReviewReportRepository>();
-			services.AddScoped<IReviewVoteRepository, ReviewVoteRepository>();
+            services.AddScoped<IReviewVoteRepository, ReviewVoteRepository>();
 
 
-			return services;
+            return services;
         }
     }
 }

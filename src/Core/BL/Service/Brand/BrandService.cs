@@ -68,7 +68,7 @@ namespace BL.Service.Brand
             return brandDto;
         }
 
-        public async Task<PaginatedDataModel<BrandDto>> SearchAsync(BaseSearchCriteriaModel criteriaModel)
+        public async Task<PagedResult<BrandDto>> SearchAsync(BaseSearchCriteriaModel criteriaModel)
         {
             if (criteriaModel == null)
                 throw new ArgumentNullException(nameof(criteriaModel));
@@ -100,7 +100,7 @@ namespace BL.Service.Brand
 
             var itemsDto = _mapper.MapList<TbBrand, BrandDto>(brands.Items).ToList();
 
-            return new PaginatedDataModel<BrandDto>(itemsDto, brands.TotalRecords);
+            return new PagedResult<BrandDto>(itemsDto, brands.TotalRecords);
         }
 
         public async Task<bool> SaveAsync(BrandDto dto, Guid userId)

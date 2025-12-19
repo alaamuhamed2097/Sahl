@@ -122,7 +122,7 @@ namespace Api.Controllers.v1.Warehouse
 
             var result = await _warehouseService.SearchAsync(criteriaModel);
 
-            return Ok(new ResponseModel<PaginatedDataModel<WarehouseDto>>
+            return Ok(new ResponseModel<PagedResult<WarehouseDto>>
             {
                 Success = true,
                 Message = GetResource<NotifiAndAlertsResources>(nameof(NotifiAndAlertsResources.DataRetrieved)),

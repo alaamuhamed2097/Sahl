@@ -70,7 +70,7 @@ namespace DAL.Repositories
             }
         }
 
-        public override async Task<PaginatedDataModel<T>> GetPageAsync(
+        public override async Task<PagedResult<T>> GetPageAsync(
             int pageNumber,
             int pageSize,
             Expression<Func<T, bool>> filter = null,
@@ -99,7 +99,7 @@ namespace DAL.Repositories
 
                 var data = await query.ToListAsync(cancellationToken);
 
-                return new PaginatedDataModel<T>(data, totalCount);
+                return new PagedResult<T>(data, totalCount);
             }
             catch (Exception ex)
             {

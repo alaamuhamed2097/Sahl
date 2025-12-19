@@ -66,7 +66,7 @@ namespace BL.Service.Vendor
         //	return new PaginatedDataModel<VendorDto>(_mapper.MapList<ApplicationUser, VendorDto>(users), totalRecords);
         //}
 
-        public async Task<PaginatedDataModel<VendorDto>> GetPage(BaseSearchCriteriaModel criteriaModel)
+        public async Task<PagedResult<VendorDto>> GetPage(BaseSearchCriteriaModel criteriaModel)
         {
             if (criteriaModel == null)
                 throw new ArgumentNullException(nameof(criteriaModel));
@@ -116,10 +116,10 @@ namespace BL.Service.Vendor
 
             var dtoList = _mapper.MapList<TbVendor, VendorDto>(entitiesList.Items);
 
-            return new PaginatedDataModel<VendorDto>(dtoList, entitiesList.TotalRecords);
+            return new PagedResult<VendorDto>(dtoList, entitiesList.TotalRecords);
         }
 
-        public async Task<PaginatedDataModel<VendorDto>> SearchAsync(BaseSearchCriteriaModel criteriaModel)
+        public async Task<PagedResult<VendorDto>> SearchAsync(BaseSearchCriteriaModel criteriaModel)
         {
             if (criteriaModel == null)
                 throw new ArgumentNullException(nameof(criteriaModel));
@@ -152,10 +152,10 @@ namespace BL.Service.Vendor
 
             var itemsDto = _mapper.MapList<TbVendor, VendorDto>(vendors.Items);
 
-            return new PaginatedDataModel<VendorDto>(itemsDto, vendors.TotalRecords);
+            return new PagedResult<VendorDto>(itemsDto, vendors.TotalRecords);
         }
 
-        public async Task<PaginatedDataModel<VendorDto>> GetPageAsync(BaseSearchCriteriaModel criteriaModel)
+        public async Task<PagedResult<VendorDto>> GetPageAsync(BaseSearchCriteriaModel criteriaModel)
         {
             if (criteriaModel == null)
                 throw new ArgumentNullException(nameof(criteriaModel));
@@ -205,7 +205,7 @@ namespace BL.Service.Vendor
 
             var dtoList = _mapper.MapList<TbVendor, VendorDto>(entitiesList.Items);
 
-            return new PaginatedDataModel<VendorDto>(dtoList, entitiesList.TotalRecords);
+            return new PagedResult<VendorDto>(dtoList, entitiesList.TotalRecords);
         }
     }
 }

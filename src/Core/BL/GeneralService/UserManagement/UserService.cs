@@ -23,7 +23,7 @@ namespace BL.GeneralService.UserManagement
             _mapper = mapper;
         }
 
-        public async Task<PaginatedDataModel<TBaseDto>> GetPage(BaseSearchCriteriaModel criteriaModel)
+        public async Task<PagedResult<TBaseDto>> GetPage(BaseSearchCriteriaModel criteriaModel)
         {
             if (criteriaModel == null)
                 throw new ArgumentNullException(nameof(criteriaModel));
@@ -46,7 +46,7 @@ namespace BL.GeneralService.UserManagement
 
             var totalRecords = users.Count();
             users = users.Skip((criteriaModel.PageNumber - 1) * criteriaModel.PageSize).Take(criteriaModel.PageSize);
-            return new PaginatedDataModel<TBaseDto>(_mapper.Map<IEnumerable<TBaseDto>>(users), totalRecords);
+            return new PagedResult<TBaseDto>(_mapper.Map<IEnumerable<TBaseDto>>(users), totalRecords);
         }
 
         public async Task<IEnumerable<TBaseDto>> GetAllAsync()

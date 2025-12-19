@@ -32,7 +32,7 @@ namespace BL.Service.PromoCode
             _logger = logger;
         }
 
-        public async Task<PaginatedDataModel<CouponCodeDto>> GetPage(BaseSearchCriteriaModel criteriaModel)
+        public async Task<PagedResult<CouponCodeDto>> GetPage(BaseSearchCriteriaModel criteriaModel)
         {
             if (criteriaModel == null)
                 throw new ArgumentNullException(nameof(criteriaModel));
@@ -68,7 +68,7 @@ namespace BL.Service.PromoCode
                 item.IsActive = IsActiveCouponCode(item);
             }
 
-            return new PaginatedDataModel<CouponCodeDto>(itemsDto, items.TotalRecords);
+            return new PagedResult<CouponCodeDto>(itemsDto, items.TotalRecords);
         }
 
         public async Task<List<CouponCodeDto>> GetAll()

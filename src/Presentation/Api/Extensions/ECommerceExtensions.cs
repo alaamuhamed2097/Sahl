@@ -45,6 +45,9 @@ namespace Api.Extensions
             services.AddScoped<IItemSearchService, ItemSearchService>();
             services.AddScoped<IUnitService, UnitService>();
 
+            // Register services
+            services.AddScoped<IItemDetailsService, ItemDetailsService>();
+
             // Brand Services
             services.AddScoped<IBrandService, BrandService>();
 

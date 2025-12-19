@@ -102,7 +102,7 @@ namespace Api.Controllers.v1.Shipping
 
             if (result == null || !result.Items.Any())
             {
-                return Ok(new ResponseModel<PaginatedDataModel<ShippingCompanyDto>>
+                return Ok(new ResponseModel<PagedResult<ShippingCompanyDto>>
                 {
                     Success = true,
                     Message = NotifiAndAlertsResources.NoDataFound,
@@ -110,7 +110,7 @@ namespace Api.Controllers.v1.Shipping
                 });
             }
 
-            return Ok(new ResponseModel<PaginatedDataModel<ShippingCompanyDto>>
+            return Ok(new ResponseModel<PagedResult<ShippingCompanyDto>>
             {
                 Success = true,
                 Message = NotifiAndAlertsResources.DataRetrieved,

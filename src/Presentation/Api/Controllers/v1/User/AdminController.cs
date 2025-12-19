@@ -103,14 +103,14 @@ namespace Api.Controllers.v1.User
 
             if (result == null || !result.Items.Any())
             {
-                return NotFound(new ResponseModel<PaginatedDataModel<string>>
+                return NotFound(new ResponseModel<PagedResult<string>>
                 {
                     Success = false,
                     Message = NotifiAndAlertsResources.NoDataFound
                 });
             }
 
-            return Ok(new ResponseModel<PaginatedDataModel<AdminProfileDto>>
+            return Ok(new ResponseModel<PagedResult<AdminProfileDto>>
             {
                 Success = true,
                 Message = NotifiAndAlertsResources.DataRetrieved,
