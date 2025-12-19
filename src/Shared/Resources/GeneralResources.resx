@@ -1179,4 +1179,19 @@
   <data name="PriceMustBeGreaterThanZero" xml:space="preserve">
     <value>يجب أن يكون السعر أكبر من 0</value>
   </data>
+	<data name="Note" xml:space="preserve">
+  <value>ملاحظة</value>
+</data>
+<data name="MaximumPrice" xml:space="preserve">
+  <value>السعر الأقصى {0}</value>
+</data>
+<data name="MinimumPrice" xml:space="preserve">
+  <value>السعر الأدنى {0}</value>
+</data>
+<data name="StartingPrice" xml:space="preserve">
+  <value>السعر الابتدائي {0}</value>
+</data>
+<data name="ProductBarcode" xml:space="preserve">
+  <value>باركود المنتج</value>
+</data>
 </root>

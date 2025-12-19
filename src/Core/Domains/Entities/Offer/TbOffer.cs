@@ -23,9 +23,6 @@ namespace Domains.Entities.Offer
         public FulfillmentType FulfillmentType { get; set; } = FulfillmentType.Seller;
 
         // Vendor performance metrics
-        [Column(TypeName = "decimal(3,2)")]
-        public decimal? VendorRatingForThisItem { get; set; }
-        public int VendorSalesCountForThisItem { get; set; }
         public bool IsBuyBoxWinner { get; set; } = false;
 
         // Optional properties

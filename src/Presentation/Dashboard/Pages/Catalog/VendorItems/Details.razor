@@ -1,11 +1,11 @@
-﻿@page "/product"
-@page "/product/{id:guid}"
+﻿@* @page "/vendor-item"
+@page "/vendor-item/{id:guid}"
 
 @using Common.Enumerations.Pricing
 @using Common.Enumerations.User
 @using Dashboard.Pages.Catalog.Products.Components
-@attribute [Authorize(Roles = nameof(UserRole.Admin))]
-<PageTitle>@ECommerceResources.Product</PageTitle>
+@attribute [Authorize(Roles = nameof(UserRole.Vendor))]
+<PageTitle>@ECommerceResources.VendorItem</PageTitle>
 
 <div class="container-fluid p-0">
     <div class="card shadow-sm border-0">
@@ -522,4 +522,4 @@
             </div>
         </EditForm>
     </div>
-</div>
+</div> *@

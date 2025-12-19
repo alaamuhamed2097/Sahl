@@ -322,7 +322,7 @@ namespace Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to مجموعات السمات.
+        ///   Looks up a localized string similar to مجموعات الخصائص.
         /// </summary>
         public static string AttributeCombinations {
             get {
@@ -336,6 +336,33 @@ namespace Resources {
         public static string Attributes {
             get {
                 return ResourceManager.GetString("Attributes", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to قيم الخصائص.
+        /// </summary>
+        public static string AttributeValues {
+            get {
+                return ResourceManager.GetString("AttributeValues", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to الباركود.
+        /// </summary>
+        public static string Barcode {
+            get {
+                return ResourceManager.GetString("Barcode", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to السعر الأساسي.
+        /// </summary>
+        public static string BasePrice {
+            get {
+                return ResourceManager.GetString("BasePrice", resourceCulture);
             }
         }
         
@@ -511,6 +538,15 @@ namespace Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to قم بتكوين الخصائص لهذا المنتج.
+        /// </summary>
+        public static string ConfigureAttributes {
+            get {
+                return ResourceManager.GetString("ConfigureAttributes", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to اسم المسؤول.
         /// </summary>
         public static string ContactName {
@@ -660,6 +696,15 @@ namespace Resources {
         public static string DecimalNumber {
             get {
                 return ResourceManager.GetString("DecimalNumber", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to سيتم استخدام التسعير الافتراضي إذا لم يتم تعيين أسعار للخيارات..
+        /// </summary>
+        public static string DefaultPricingNote {
+            get {
+                return ResourceManager.GetString("DefaultPricingNote", resourceCulture);
             }
         }
         
@@ -1132,11 +1177,29 @@ namespace Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to السعر الأقصى.
+        /// </summary>
+        public static string MaximumPrice {
+            get {
+                return ResourceManager.GetString("MaximumPrice", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to الطول الأقصى.
         /// </summary>
         public static string MaxLength {
             get {
                 return ResourceManager.GetString("MaxLength", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to السعر الأدنى.
+        /// </summary>
+        public static string MinimumPrice {
+            get {
+                return ResourceManager.GetString("MinimumPrice", resourceCulture);
             }
         }
         
@@ -1465,6 +1528,15 @@ namespace Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to معلومات التسعير.
+        /// </summary>
+        public static string PricingInformation {
+            get {
+                return ResourceManager.GetString("PricingInformation", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to نظام التسعير.
         /// </summary>
         public static string PricingSystem {
@@ -1735,6 +1807,15 @@ namespace Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to تعيين التسعير الافتراضي.
+        /// </summary>
+        public static string SetDefaultPricing {
+            get {
+                return ResourceManager.GetString("SetDefaultPricing", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to قيد الشحن.
         /// </summary>
         public static string Shipping {
@@ -1780,7 +1861,7 @@ namespace Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to رمز المنتج )SKU(.
+        ///   Looks up a localized string similar to رمز المنتج (SKU).
         /// </summary>
         public static string SKU {
             get {
@@ -1875,6 +1956,15 @@ namespace Resources {
         public static string Step2UploadFile {
             get {
                 return ResourceManager.GetString("Step2UploadFile", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to وحدة حفظ المخزون (SKU).
+        /// </summary>
+        public static string StockKeepingUnit {
+            get {
+                return ResourceManager.GetString("StockKeepingUnit", resourceCulture);
             }
         }
         

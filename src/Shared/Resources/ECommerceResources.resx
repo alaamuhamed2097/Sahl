@@ -328,13 +328,13 @@
     <value>التصنيف</value>
   </data>
   <data name="SKU" xml:space="preserve">
-    <value>رمز المنتج )SKU(</value>
+    <value>رمز المنتج (SKU)</value>
   </data>
   <data name="ItemAttributes" xml:space="preserve">
     <value>سمات العنصر</value>
   </data>
   <data name="AttributeCombinations" xml:space="preserve">
-    <value>مجموعات السمات</value>
+    <value>مجموعات الخصائص</value>
   </data>
   <data name="NoPaymentMethodsAvailable" xml:space="preserve">
     <value>لا توجد طرق دفع متاحة حالياً. </value>
@@ -813,4 +813,34 @@
   <data name="SalesPrice" xml:space="preserve">
     <value>سعر البيع</value>
   </data>
+	<data name="AttributeValues" xml:space="preserve">
+  <value>قيم الخصائص</value>
+</data>
+	<data name="DefaultPricingNote" xml:space="preserve">
+  <value>سيتم استخدام التسعير الافتراضي إذا لم يتم تعيين أسعار للخيارات.</value>
+</data>
+	<data name="MaximumPrice" xml:space="preserve">
+  <value>السعر الأقصى</value>
+</data>
+	<data name="MinimumPrice" xml:space="preserve">
+  <value>السعر الأدنى</value>
+</data>
+	<data name="BasePrice" xml:space="preserve">
+  <value>السعر الأساسي</value>
+</data>
+	<data name="StockKeepingUnit" xml:space="preserve">
+  <value>وحدة حفظ المخزون (SKU)</value>
+</data>
+	<data name="SetDefaultPricing" xml:space="preserve">
+  <value>تعيين التسعير الافتراضي</value>
+</data>
+	<data name="PricingInformation" xml:space="preserve">
+  <value>معلومات التسعير</value>
+</data>
+	<data name="Barcode" xml:space="preserve">
+  <value>الباركود</value>
+</data>
+	<data name="ConfigureAttributes" xml:space="preserve">
+  <value>قم بتكوين الخصائص لهذا المنتج</value>
+</data>
 </root>

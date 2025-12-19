@@ -103,7 +103,7 @@ namespace Dashboard.Pages.Catalog.Products
             // REMOVED: Quantity and ThumbnailImage validation - handled elsewhere
             fieldValidation["ThumbnailImage"] = true;
 
-            await LoadData();
+             LoadData();
             _initialized = true;
         }
 
@@ -294,6 +294,7 @@ namespace Dashboard.Pages.Catalog.Products
                     // Load category attributes if category is set
                     if (Model.CategoryId != Guid.Empty)
                     {
+                        currentCategory = categories.Where(c=> c.Id == Model.CategoryId).FirstOrDefault() ?? new CategoryDto();
                         await LoadCategoryAttributes();
                         // IMPORTANT: Load existing attribute values into the component
                         // Give the component time to initialize after attributes are loaded

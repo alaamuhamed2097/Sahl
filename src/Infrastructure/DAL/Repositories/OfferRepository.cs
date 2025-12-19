@@ -674,16 +674,16 @@ namespace DAL.Repositories
                             else
                             {
                                 // Price History
-                                if (existing.Price != p.Price)
+                                if (existing.SalesPrice != p.SalesPrice)
                                 {
                                     await _dbContext.AddAsync(new TbOfferPriceHistory
                                     {
                                         Id = Guid.NewGuid(),
                                         OfferCombinationPricingId = existing.Id,
-                                        OldPrice = existing.Price,
-                                        NewPrice = p.Price,
-                                        UpdatedDateUtc = DateTime.UtcNow,
-                                        UpdatedBy = updatedByGuid
+                                        OldPrice = existing.SalesPrice,
+                                        NewPrice = p.SalesPrice,
+                                        CreatedDateUtc = DateTime.UtcNow,
+                                        CreatedBy = updatedByGuid
                                     }, cancellationToken);
                                 }
 

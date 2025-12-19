@@ -1180,5 +1180,19 @@
   <data name="PriceMustBeGreaterThanZero" xml:space="preserve">
     <value>Price must be greater than 0</value>
   </data>
-
+	<data name="Note" xml:space="preserve">
+  <value>Note</value>
+</data>
+	<data name="MaximumPrice" xml:space="preserve">
+  <value>Maximum Price {0}</value>
+</data>
+	<data name="MinimumPrice" xml:space="preserve">
+  <value>Minimum Price {0}</value>
+</data>
+	<data name="StartingPrice" xml:space="preserve">
+  <value>Starting Price {0}</value>
+</data>
+	<data name="ProductBarcode" xml:space="preserve">
+  <value>Product Barcode</value>
+</data>
 </root>
