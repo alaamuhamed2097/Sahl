@@ -12,8 +12,8 @@ namespace DAL.Repositories
 {
     public class Repository<T> : IRepository<T> where T : class
     {
-        private readonly ApplicationDbContext _dbContext;
-        private readonly ILogger _logger;
+        protected readonly ApplicationDbContext _dbContext;
+        protected readonly ILogger _logger;
 
         // Constants for SQL error codes
         private const int SQL_CUSTOM_ERROR_NUMBER = 50000;
@@ -240,26 +240,24 @@ namespace DAL.Repositories
         /// <summary>
         /// Executes a stored procedure and maps the results to the entity class asynchronously.
         /// </summary>
-        public async Task<List<T>> ExecuteStoredProcedureAsync(
+        public async Task<List<TResult>> ExecuteStoredProcedureAsync<TResult>(
             string storedProcedureName,
             CancellationToken cancellationToken = default,
-            params SqlParameter[] parameters)
+            params SqlParameter[] parameters) where TResult : class
         {
             try
             {
                 if (string.IsNullOrWhiteSpace(storedProcedureName))
                     throw new ArgumentException("Stored procedure name cannot be null or empty.", nameof(storedProcedureName));
 
-                // Just pass the parameters directly
                 var safeParameters = parameters ?? Array.Empty<SqlParameter>();
-
-                // Simple SQL - EF Core will handle parameter mapping
                 var paramNames = string.Join(", ", safeParameters.Select(p =>
                     p.ParameterName.StartsWith("@") ? p.ParameterName : "@" + p.ParameterName));
 
                 var sql = $"EXEC {storedProcedureName} {paramNames}";
 
-                return await DbSet.FromSqlRaw(sql, safeParameters)
+                return await _dbContext.Set<TResult>()
+                    .FromSqlRaw(sql, safeParameters)
                     .AsNoTracking()
                     .ToListAsync(cancellationToken);
             }

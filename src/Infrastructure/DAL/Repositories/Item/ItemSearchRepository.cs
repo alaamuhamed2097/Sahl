@@ -139,7 +139,7 @@ namespace DAL.Repositories.Item
             new SqlParameter("@VendorId", filtersQuery.VendorId ?? (object)DBNull.Value)
         };
 
-            var result = (await ExecuteStoredProcedureAsync("SpGetAvailableSearchFilters", default, parameters))
+            var result = (await ExecuteStoredProcedureAsync<SpGetAvailableSearchFilters>("SpGetAvailableSearchFilters", default, parameters))
                 .FirstOrDefault();
 
             if (result == null)

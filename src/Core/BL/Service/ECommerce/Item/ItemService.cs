@@ -3,7 +3,6 @@ using BL.Contracts.IMapper;
 using BL.Contracts.Service.ECommerce.Item;
 using BL.Extensions;
 using BL.Service.Base;
-using Common.Enumerations.Pricing;
 using Common.Enumerations.Visibility;
 using DAL.Contracts.Repositories;
 using DAL.Contracts.UnitOfWork;

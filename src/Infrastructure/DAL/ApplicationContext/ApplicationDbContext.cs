@@ -237,6 +237,8 @@ namespace DAL.ApplicationContext
         // Item Search Views (from stored procedure and denormalized view)
         public DbSet<SpSearchItemsMultiVendor> SpSearchItemsMultiVendor { get; set; }
         public DbSet<SpGetAvailableSearchFilters> SpGetAvailableSearchFilters { get; set; }
+        public DbSet<SpGetItemDetails> SpGetItemDetails { get; set; }
+        public DbSet<SpGetAvailableOptionsForSelection> SpGetAvailableOptionsForSelection { get; set; }
         public DbSet<VwItemBestPrice> VwItemBestPrices { get; set; }
 
         // Unit Views
@@ -400,6 +402,8 @@ namespace DAL.ApplicationContext
             // Item Search Result View (from stored procedure - no actual view, used for mapping results)
             modelBuilder.Entity<SpSearchItemsMultiVendor>().HasNoKey().ToView("SpSearchItemsMultiVendor");
             modelBuilder.Entity<SpGetAvailableSearchFilters>().HasNoKey().ToView("SpGetAvailableSearchFilters");
+            modelBuilder.Entity<SpGetItemDetails>().HasNoKey().ToView("SpGetItemDetails");
+            modelBuilder.Entity<SpGetAvailableOptionsForSelection>().HasNoKey().ToView("SpGetAvailableOptionsForSelection");
 
             // Item Best Price View (from denormalized database view)
             modelBuilder.Entity<VwItemBestPrice>(entity =>
