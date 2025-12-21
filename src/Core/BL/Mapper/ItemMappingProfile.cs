@@ -42,6 +42,42 @@ namespace BL.Mapper
                         : new List<ItemAttributeDto>()))
                 .ReverseMap();
 
+            CreateMap<SpGetItemDetails, ItemDetailsDto>()
+                .ForMember(dest => dest.Category, opt => opt.MapFrom(src => new CategoryInfoDto
+                {
+                    Id = src.CategoryId,
+                    NameAr = src.CategoryNameAr,
+                    NameEn = src.CategoryNameEn
+                }))
+                .ForMember(dest => dest.Brand, opt => opt.MapFrom(src =>
+                    src.BrandId.HasValue
+                        ? new BrandInfoDto
+                        {
+                            Id = src.BrandId,
+                            NameAr = src.BrandNameAr,
+                            NameEn = src.BrandNameEn,
+                            LogoUrl = src.BrandLogoUrl
+                        }
+                        : new BrandInfoDto()))
+                .ForMember(dest => dest.GeneralImages, opt => opt.MapFrom(src =>
+                    string.IsNullOrWhiteSpace(src.GeneralImagesJson)
+                        ? new List<ItemImageDto>()
+                        : DeserializeGeneralImages(src.GeneralImagesJson)))
+                .ForMember(dest => dest.Attributes, opt => opt.MapFrom(src =>
+                    string.IsNullOrWhiteSpace(src.AttributesJson)
+                        ? new List<ItemAttributeDefinitionDto>()
+                        : DeserializeAttributes(src.AttributesJson)))
+                .ForMember(dest => dest.DefaultCombination, opt => opt.MapFrom(src =>
+                    string.IsNullOrWhiteSpace(src.DefaultCombinationJson)
+                        ? null
+                        : DeserializeDefaultCombination(src.DefaultCombinationJson)))
+                .ForMember(dest => dest.Pricing, opt => opt.MapFrom(src =>
+                    string.IsNullOrWhiteSpace(src.PricingJson)
+                        ? null
+                        : DeserializePricing(src.PricingJson)))
+                .ReverseMap();
+
+
             // Search result mappings
             CreateMap<SpSearchItemsMultiVendor, SearchItemDto>()
                 .ReverseMap();
@@ -49,7 +85,8 @@ namespace BL.Mapper
             // Item combination mapping
             CreateMap<TbItemCombination, ItemCombinationDto>()
                 .ReverseMap();
-            CreateMap<TbItemCombinationImage, ItemCombinationDto>() .ReverseMap();
+            CreateMap<TbItemCombinationImage, ItemCombinationDto>()
+                .ReverseMap();
 
             // Item attribute mappings
             CreateMap<TbItemAttribute, ItemAttributeDto>()
@@ -105,5 +142,141 @@ namespace BL.Mapper
                 return new List<ItemCombinationDto>();
             }
         }
+
+        private static readonly JsonSerializerOptions JsonOptions = new()
+        {
+            PropertyNameCaseInsensitive = true,
+            DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
+        };
+
+        private static List<ItemImageDto> DeserializeGeneralImages(string json)
+        {
+            if (string.IsNullOrWhiteSpace(json))
+                return new();
+
+            try
+            {
+                var images = JsonSerializer.Deserialize<List<ItemImage>>(json, JsonOptions);
+                return images?.Select(img => new ItemImageDto
+                {
+                    Path = img.ImageUrl,
+                    Order = img.DisplayOrder
+                }).ToList() ?? new();
+            }
+            catch
+            {
+                return new();
+            }
+        }
+
+        private static List<ItemAttributeDefinitionDto> DeserializeAttributes(string json)
+        {
+            if (string.IsNullOrWhiteSpace(json))
+                return new();
+
+            try
+            {
+                var attributes = JsonSerializer.Deserialize<List<AttributeInfo>>(json, JsonOptions);
+
+                return attributes?.Select(attr => new ItemAttributeDefinitionDto
+                {
+                    AttributeId = attr.AttributeId,
+                    NameAr = attr.NameAr,
+                    NameEn = attr.NameEn,
+                    FieldType = attr.FieldType,
+                    DisplayOrder = attr.DisplayOrder,
+                    Value = attr.Value
+                }).ToList()?? new List<ItemAttributeDefinitionDto>();
+            }
+            catch
+            {
+                return new();
+            }
+        }
+
+        private static DefaultCombinationDto DeserializeDefaultCombination(string json)
+        {
+            if (string.IsNullOrWhiteSpace(json))
+                return null;
+
+            try
+            {
+                var combo = JsonSerializer.Deserialize<DefaultCombination>(json, JsonOptions);
+                if (combo == null) return null;
+
+                return new DefaultCombinationDto
+                {
+                    CombinationId = combo.CombinationId,
+                    SKU = combo.SKU,
+                    Barcode = combo.Barcode,
+                    IsDefault = combo.IsDefault,
+                    SelectedAttributes = combo.SelectedAttributes?.Select(sa => new SelectedAttributeDto
+                    {
+                        AttributeId = sa.AttributeId,
+                        AttributeNameAr = sa.AttributeNameAr,
+                        AttributeNameEn = sa.AttributeNameEn,
+                        CombinationValueId = sa.CombinationValueId,
+                        Value = sa.Value
+                    }).ToList(),
+                    Images = combo.Images?.Select(img => new ItemImageDto
+                    {
+                        Path = img.ImageUrl,
+                        Order = img.DisplayOrder
+                    }).ToList()
+                };
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
+        private static PricingDto DeserializePricing(string json)
+        {
+            if (string.IsNullOrWhiteSpace(json))
+                return null;
+
+            var pricing = JsonSerializer.Deserialize<PricingInfo>(json, JsonOptions);
+            if (pricing == null)
+                return null;
+
+            BestOffer? bestOffer = null;
+
+            if (!string.IsNullOrWhiteSpace(pricing.BestOffer))
+            {
+                bestOffer = JsonSerializer.Deserialize<BestOffer>(
+                    pricing.BestOffer,
+                    JsonOptions
+                );
+            }
+
+            return new PricingDto
+            {
+                VendorCount = pricing.VendorCount,
+                MinPrice = pricing.MinPrice,
+                MaxPrice = pricing.MaxPrice,
+                BestOffer = bestOffer == null
+                    ? new BestPriceOfferDto()
+                    : new BestPriceOfferDto
+                    {
+                        OfferId = bestOffer.OfferId,
+                        VendorId = bestOffer.VendorId,
+                        VendorName = bestOffer.VendorName,
+                        VendorRating = bestOffer.VendorRating ?? 0.0m,
+                        Price = bestOffer.Price,
+                        SalesPrice = bestOffer.SalesPrice,
+                        DiscountPercentage = bestOffer.DiscountPercentage,
+                        AvailableQuantity = bestOffer.AvailableQuantity,
+                        StockStatus = bestOffer.StockStatus,
+                        IsFreeShipping = bestOffer.IsFreeShipping,
+                        EstimatedDeliveryDays = bestOffer.EstimatedDeliveryDays,
+                        IsBuyBoxWinner = bestOffer.IsBuyBoxWinner,
+                        MinOrderQuantity = bestOffer.MinOrderQuantity,
+                        MaxOrderQuantity = bestOffer.MaxOrderQuantity
+                    }
+            };
+        }
+
+
     }
 }

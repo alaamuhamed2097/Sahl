@@ -19,11 +19,11 @@ namespace DAL.Repositories.Item
         /// <summary>
         /// Get item details - matches search result price
         /// </summary>
-        public async Task<SpGetItemDetails> GetItemDetailsAsync(Guid itemId)
+        public async Task<SpGetItemDetails> GetItemDetailsAsync(Guid itemCombinationId)
         {
             var parameters = new[]
             {
-                new SqlParameter("@ItemId", SqlDbType.UniqueIdentifier) { Value = itemId }
+                new SqlParameter("@ItemCombinationId", SqlDbType.UniqueIdentifier) { Value = itemCombinationId }
             };
 
             try
@@ -35,7 +35,7 @@ namespace DAL.Repositories.Item
             }
             catch (Exception ex)
             {
-                _logger.Error(ex, "Error getting item details for ItemId: {ItemId}", itemId);
+                _logger.Error(ex, "Error getting item details for ItemCombinationId: {ItemCombinationId}", itemCombinationId);
                 throw new DataAccessException("Failed to retrieve item details", ex, _logger);
             }
         }

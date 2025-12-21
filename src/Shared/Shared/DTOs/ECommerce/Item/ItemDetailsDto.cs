@@ -1,4 +1,5 @@
 ﻿using Common.Enumerations.FieldType;
+using Common.Enumerations.Offer;
 
 namespace Shared.DTOs.ECommerce.Item
 {
@@ -64,27 +65,11 @@ namespace Shared.DTOs.ECommerce.Item
     public class ItemAttributeDefinitionDto
     {
         public Guid AttributeId { get; set; }
-        public string NameAr { get; set; }
-        public string NameEn { get; set; }
+        public string NameAr { get; set; } = null!;
+        public string NameEn { get; set; } = null!;
         public FieldType FieldType { get; set; }
         public int DisplayOrder { get; set; }
-
-        /// <summary>
-        /// If true: show as selectable options (affects price)
-        /// If false: show as static name-value pair (for display only)
-        /// </summary>
-        public bool AffectsPricing { get; set; }
-        public bool IsRequired { get; set; }
-
-        /// <summary>
-        /// For pricing attributes - list of selectable options
-        /// </summary>
-        public List<ItemAttributeOptionDto> Options { get; set; }
-
-        /// <summary>
-        /// For spec attributes - single value
-        /// </summary>
-        public AttributeValueDto Value { get; set; }
+        public string Value { get; set; }
     }
 
     public class ItemAttributeOptionDto
@@ -105,19 +90,20 @@ namespace Shared.DTOs.ECommerce.Item
     public class DefaultCombinationDto
     {
         public Guid CombinationId { get; set; }
-        public string SKU { get; set; }
-        public List<SelectedAttributeDto> SelectedAttributes { get; set; }
-        public List<ItemImageDto> Images { get; set; }
+        public string? SKU { get; set; }
+        public string? Barcode { get; set; }
+        public bool IsDefault { get; set; }
+        public List<SelectedAttributeDto>? SelectedAttributes { get; set; }
+        public List<ItemImageDto>? Images { get; set; }
     }
 
     public class SelectedAttributeDto
     {
         public Guid AttributeId { get; set; }
-        public string AttributeNameAr { get; set; }
-        public string AttributeNameEn { get; set; }
-        public Guid ValueId { get; set; }
-        public string ValueAr { get; set; }
-        public string ValueEn { get; set; }
+        public string AttributeNameAr { get; set; } = null!;
+        public string AttributeNameEn { get; set; } = null!;
+        public Guid CombinationValueId { get; set; }
+        public string Value { get; set; }
     }
 
     public class PricingDto
@@ -125,27 +111,26 @@ namespace Shared.DTOs.ECommerce.Item
         public int VendorCount { get; set; }
         public decimal MinPrice { get; set; }
         public decimal MaxPrice { get; set; }
-        public BestPriceOfferDto BestOffer
-        { get; set; }
+        public BestPriceOfferDto BestOffer { get; set; } = new BestPriceOfferDto();
     }
 
     public class BestPriceOfferDto
     {
         public Guid OfferId { get; set; }
         public Guid VendorId { get; set; }
-        public string VendorName { get; set; }
-        public decimal VendorRating { get; set; }
+        public string? VendorName { get; set; }
+        public decimal? VendorRating { get; set; }
         public decimal Price { get; set; }
         public decimal SalesPrice { get; set; }
         public decimal DiscountPercentage { get; set; }
         public int AvailableQuantity { get; set; }
-        public string StockStatus { get; set; }
+        public StockStatus StockStatus { get; set; }
         public bool IsFreeShipping { get; set; }
         public int EstimatedDeliveryDays { get; set; }
         public bool IsBuyBoxWinner { get; set; }
         public int MinOrderQuantity { get; set; }
         public int MaxOrderQuantity { get; set; }
-        public List<QuantityTierDto> QuantityTiers { get; set; }
+        public List<QuantityTierDto>? QuantityTiers { get; set; }
     }
 
     public class QuantityTierDto
@@ -189,7 +174,7 @@ namespace Shared.DTOs.ECommerce.Item
         public decimal SalesPrice { get; set; }
         public decimal DiscountPercentage { get; set; }
         public int AvailableQuantity { get; set; }
-        public string StockStatus { get; set; }
+        public StockStatus StockStatus { get; set; }
         public bool IsFreeShipping { get; set; }
         public decimal ShippingCost { get; set; }
         public int EstimatedDeliveryDays { get; set; }
@@ -202,7 +187,7 @@ namespace Shared.DTOs.ECommerce.Item
         public int? WarrantyPeriodMonths { get; set; }
         public int MinOrderQuantity { get; set; }
         public int MaxOrderQuantity { get; set; }
-        public List<QuantityTierDto> QuantityTiers { get; set; }
+        public List<QuantityTierDto>? QuantityTiers { get; set; }
         public int OfferRank { get; set; }
     }
 

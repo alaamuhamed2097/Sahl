@@ -4,7 +4,7 @@ namespace BL.Contracts.Service.ECommerce.Item
 {
     public interface IItemDetailsService
     {
-        Task<ItemDetailsDto> GetItemDetailsAsync(Guid itemId);
+        Task<ItemDetailsDto> GetItemDetailsAsync(Guid itemCombinationId);
         Task<CombinationDetailsDto> GetCombinationByAttributesAsync(Guid itemId, GetCombinationRequest request);
     }
 }

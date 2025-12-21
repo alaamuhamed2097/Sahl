@@ -1,4 +1,6 @@
 ﻿using Common.Enumerations.FieldType;
+using Common.Enumerations.Offer;
+using System.Text.Json.Serialization;
 
 namespace Domains.Procedures
 {
@@ -29,9 +31,9 @@ namespace Domains.Procedures
 
         // Brand Info
         public Guid? BrandId { get; set; }
-        public string BrandNameAr { get; set; }
-        public string BrandNameEn { get; set; }
-        public string BrandLogoUrl { get; set; }
+        public string? BrandNameAr { get; set; }
+        public string? BrandNameEn { get; set; }
+        public string? BrandLogoUrl { get; set; }
 
         // Flags
         public bool HasCombinations { get; set; }
@@ -41,10 +43,10 @@ namespace Domains.Procedures
         public decimal AverageRating { get; set; }
 
         // JSON Columns (to be parsed)
-        public string GeneralImagesJson { get; set; }
-        public string AttributesJson { get; set; }
-        public string DefaultCombinationJson { get; set; }
-        public string PricingJson { get; set; }
+        public string? GeneralImagesJson { get; set; }
+        public string? AttributesJson { get; set; }
+        public string? DefaultCombinationJson { get; set; }
+        public string? PricingJson { get; set; }
     }
 
     // ========== Parsed Objects (from JSON) ==========
@@ -59,19 +61,11 @@ namespace Domains.Procedures
     public class AttributeInfo
     {
         public Guid AttributeId { get; set; }
-        public string NameAr { get; set; }
-        public string NameEn { get; set; }
+        public string NameAr { get; set; } = null!;
+        public string NameEn { get; set; } = null!;
         public FieldType FieldType { get; set; }
         public int DisplayOrder { get; set; }
-        public bool AffectsPricing { get; set; }
-        public bool IsRequired { get; set; }
-        public bool IsVariant { get; set; }
-
-        // For pricing attributes (options)
-        public List<AttributeOption> Values { get; set; }
-
-        // For spec attributes (single value)
-        public AttributeValue Value { get; set; }
+        public string Value { get; set; }
     }
 
     public class AttributeOption
@@ -83,28 +77,26 @@ namespace Domains.Procedures
         public bool IsAvailable { get; set; }
     }
 
-    public class AttributeValue
-    {
-        public string ValueAr { get; set; }
-        public string ValueEn { get; set; }
-    }
-
     public class DefaultCombination
     {
         public Guid CombinationId { get; set; }
-        public string SKU { get; set; }
-        public List<SelectedAttribute> SelectedAttributes { get; set; }
-        public List<ItemImage> Images { get; set; }
+        public string? SKU { get; set; }
+        public string? Barcode { get; set; }
+        public bool IsDefault { get; set; }
+
+        [JsonPropertyName("SelectedAttributesJson")]
+        public List<SelectedAttribute>? SelectedAttributes { get; set; }
+        [JsonPropertyName("ImagesJson")]
+        public List<ItemImage>? Images { get; set; }
     }
 
     public class SelectedAttribute
     {
         public Guid AttributeId { get; set; }
-        public string AttributeNameAr { get; set; }
-        public string AttributeNameEn { get; set; }
-        public Guid ValueId { get; set; }
-        public string ValueAr { get; set; }
-        public string ValueEn { get; set; }
+        public string AttributeNameAr { get; set; } = null!;
+        public string AttributeNameEn { get; set; } = null!;
+        public Guid CombinationValueId { get; set; }
+        public string Value { get; set; }
     }
 
     public class PricingInfo
@@ -112,26 +104,28 @@ namespace Domains.Procedures
         public int VendorCount { get; set; }
         public decimal MinPrice { get; set; }
         public decimal MaxPrice { get; set; }
-        public BestOffer BestOffer { get; set; }
+        [JsonPropertyName("BestOfferJson")]
+        public string? BestOffer { get; set; }
     }
 
     public class BestOffer
     {
         public Guid OfferId { get; set; }
         public Guid VendorId { get; set; }
-        public string VendorName { get; set; }
-        public decimal VendorRating { get; set; }
+        public string? VendorName { get; set; }
+        public decimal? VendorRating { get; set; }
         public decimal Price { get; set; }
         public decimal SalesPrice { get; set; }
         public decimal DiscountPercentage { get; set; }
         public int AvailableQuantity { get; set; }
-        public string StockStatus { get; set; }
+        public StockStatus StockStatus { get; set; }
         public bool IsFreeShipping { get; set; }
         public int EstimatedDeliveryDays { get; set; }
         public bool IsBuyBoxWinner { get; set; }
         public int MinOrderQuantity { get; set; }
         public int MaxOrderQuantity { get; set; }
-        public List<QuantityTier> QuantityTiers { get; set; }
+        [JsonPropertyName("QuantityTiersJson")]
+        public List<QuantityTier>? QuantityTiers { get; set; }
     }
 
     public class QuantityTier
@@ -153,7 +147,7 @@ namespace Domains.Procedures
         public decimal SalesPrice { get; set; }
         public decimal DiscountPercentage { get; set; }
         public int AvailableQuantity { get; set; }
-        public string StockStatus { get; set; }
+        public StockStatus StockStatus { get; set; }
         public bool IsFreeShipping { get; set; }
         public decimal ShippingCost { get; set; }
         public int EstimatedDeliveryDays { get; set; }

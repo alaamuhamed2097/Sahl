@@ -5,6 +5,6 @@ namespace DAL.Contracts.Repositories;
 
 public interface IItemDetailsRepository
 {
-    Task<SpGetItemDetails> GetItemDetailsAsync(Guid itemId);
+    Task<SpGetItemDetails> GetItemDetailsAsync(Guid itemCombinationId);
     Task<SpGetAvailableOptionsForSelection> GetCombinationByAttributesAsync(Guid itemId, List<AttributeSelection> selectedAttributes);
 }
