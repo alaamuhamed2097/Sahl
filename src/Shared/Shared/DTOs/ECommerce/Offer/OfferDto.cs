@@ -1,6 +1,7 @@
 ﻿using Common.Enumerations.Fulfillment;
 using Common.Enumerations.Offer;
 using Shared.DTOs.Base;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Shared.DTOs.ECommerce.Offer
 {
@@ -12,12 +13,11 @@ namespace Shared.DTOs.ECommerce.Offer
 
         // Filtering and search optimization
         public int HandlingTimeInDays { get; set; }
+        public bool IsFreeShipping { get; set; } = false;
         public OfferVisibilityScope VisibilityScope { get; set; }
         public FulfillmentType FulfillmentType { get; set; } = FulfillmentType.Seller;
 
-        // Vendore performance metrics
-        public decimal? VendorRatingForThisItem { get; set; }
-        public int VendorSalesCountForThisItem { get; set; }
+        // Vendor performance metrics
         public bool IsBuyBoxWinner { get; set; } = false;
 
         // Optional properties
@@ -25,9 +25,6 @@ namespace Shared.DTOs.ECommerce.Offer
 
         // Collections
         public List<UserOfferRatingDto> UserOfferRatings { get; set; } = new List<UserOfferRatingDto>();
-        public List<ShippingDetailDto> ShippingDetails { get; set; } = new List<ShippingDetailDto>();
         public List<OfferCombinationPricingDto> OfferCombinationPricings { get; set; } = new List<OfferCombinationPricingDto>();
-        public List<OfferStatusHistoryDto> OfferStatusHistories { get; set; } = new List<OfferStatusHistoryDto>();
-        public List<BuyBoxCalculationDto> BuyBoxCalculations { get; set; } = new List<BuyBoxCalculationDto>();
     }
 }

@@ -22,15 +22,8 @@ namespace Domains.Entities.Offer
         public OfferVisibilityScope VisibilityScope { get; set; }
         public FulfillmentType FulfillmentType { get; set; } = FulfillmentType.Seller;
 
-        // Vendor performance metrics
-        [Column(TypeName = "decimal(3,2)")]
-        public decimal? VendorRatingForThisItem { get; set; }
-        public int VendorSalesCountForThisItem { get; set; }
-        public bool IsBuyBoxWinner { get; set; } = false;
-
         // Optional properties
         public Guid? WarrantyId { get; set; }
-        public Guid? OfferConditionId { get; set; }
 
 
         // Navigation properties
@@ -40,14 +33,11 @@ namespace Domains.Entities.Offer
         public virtual TbVendor Vendor { get; set; }
         [ForeignKey("WarrantyId")]
         public virtual TbWarranty Warranty { get; set; }
-        [ForeignKey("OfferConditionId")]
-        public virtual TbOfferCondition OfferCondition { get; set; }
 
         // Collections
         public virtual ICollection<TbUserOfferRating> UserOfferRatings { get; set; }
         public virtual ICollection<TbShippingDetail> ShippingDetails { get; set; }
         public virtual ICollection<TbOfferCombinationPricing> OfferCombinationPricings { get; set; }
         public virtual ICollection<TbOfferStatusHistory> OfferStatusHistories { get; set; }
-        public virtual ICollection<TbBuyBoxCalculation> BuyBoxCalculations { get; set; }
     }
 }

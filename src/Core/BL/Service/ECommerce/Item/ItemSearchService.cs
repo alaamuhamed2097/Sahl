@@ -169,6 +169,7 @@ namespace BL.Service.ECommerce.Item
             var dto = new SearchItemDto
             {
                 ItemId = entity.ItemId,
+                ItemCombinationId = entity.ItemCombinationId,
                 TitleAr = entity.TitleAr,
                 TitleEn = entity.TitleEn,
                 ShortDescriptionAr = entity.ShortDescriptionAr,
@@ -187,15 +188,15 @@ namespace BL.Service.ECommerce.Item
                 IsFreeShipping = entity.IsFreeShipping
             };
 
-            // Calculate discount percentage
-            if (entity.Price > entity.SalesPrice && entity.Price > 0)
-            {
-                dto.DiscountPercentage = Math.Round(
-                    ((entity.Price - entity.SalesPrice) / entity.Price) * 100, 2);
-            }
+            //// Calculate discount percentage
+            //if (entity.Price > entity.SalesPrice && entity.Price > 0)
+            //{
+            //    dto.DiscountPercentage = Math.Round(
+            //        ((entity.Price - entity.SalesPrice) / entity.Price) * 100, 2);
+            //}
 
-            // Check if new (created within last 30 days)
-            dto.IsNew = (DateTime.UtcNow - entity.CreatedDateUtc).TotalDays <= 30;
+            //// Check if new (created within last 30 days)
+            //dto.IsNew = (DateTime.UtcNow - entity.CreatedDateUtc).TotalDays <= 30;
 
             return dto;
         }
@@ -253,29 +254,29 @@ namespace BL.Service.ECommerce.Item
             {
                 item.Badges = new List<BadgeDto>();
 
-                // New item badge
-                if (item.IsNew)
-                {
-                    item.Badges.Add(new BadgeDto
-                    {
-                        TextAr = "جديد",
-                        TextEn = "New",
-                        Type = "new",
-                        Variant = "info"
-                    });
-                }
+                //// New item badge
+                //if (item.IsNew)
+                //{
+                //    item.Badges.Add(new BadgeDto
+                //    {
+                //        TextAr = "جديد",
+                //        TextEn = "New",
+                //        Type = "new",
+                //        Variant = "info"
+                //    });
+                //}
 
-                // Discount badge
-                if (item.DiscountPercentage >= 20)
-                {
-                    item.Badges.Add(new BadgeDto
-                    {
-                        TextAr = $"خصم {item.DiscountPercentage:F0}%",
-                        TextEn = $"{item.DiscountPercentage:F0}% OFF",
-                        Type = "discount",
-                        Variant = "danger"
-                    });
-                }
+                //// Discount badge
+                //if (item.DiscountPercentage >= 20)
+                //{
+                //    item.Badges.Add(new BadgeDto
+                //    {
+                //        TextAr = $"خصم {item.DiscountPercentage:F0}%",
+                //        TextEn = $"{item.DiscountPercentage:F0}% OFF",
+                //        Type = "discount",
+                //        Variant = "danger"
+                //    });
+                //}
 
                 // Stock status badges
                 if (item.StockStatus == "InStock")

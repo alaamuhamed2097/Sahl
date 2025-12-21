@@ -1,5 +1,6 @@
 using Domains.Entities.Base;
 using Domains.Entities.Catalog.Item;
+using Domains.Entities.Catalog.Item.ItemAttributes;
 using Domains.Entities.Offer;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -21,7 +22,7 @@ namespace Domains.Entities.BuyBox
         /// The winning offer for this specific combination
         /// </summary>
         [Required]
-        public Guid WinningOfferId { get; set; }
+        public Guid WinningOfferCombinationId { get; set; }
 
         /// <summary>
         /// Backwards-compatible individual score components (0-100 scaled using decimal(5,2))
@@ -80,9 +81,9 @@ namespace Domains.Entities.BuyBox
         public virtual TbItem Item { get; set; } = null!;
 
         [ForeignKey("ItemCombinationId")]
-        public virtual Domains.Entities.Catalog.Item.ItemAttributes.TbItemCombination ItemCombination { get; set; } = null!;
+        public virtual TbItemCombination ItemCombination { get; set; } = null!;
 
-        [ForeignKey("WinningOfferId")]
-        public virtual TbOffer WinningOffer { get; set; } = null!;
+        [ForeignKey("WinningOfferCombinationId")]
+        public virtual TbOfferCombinationPricing WinningOfferCombination { get; set; } = null!;
     }
 }

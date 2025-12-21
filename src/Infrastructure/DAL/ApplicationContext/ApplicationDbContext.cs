@@ -278,7 +278,7 @@ namespace DAL.ApplicationContext
                 entity.HasKey(e => e.Id);
 
                 entity.HasOne(e => e.OfferCombinationPricing)
-                      .WithMany()
+                      .WithMany(c=>c.OfferPriceHistories)
                       .HasForeignKey(e => e.OfferCombinationPricingId)
                       .OnDelete(DeleteBehavior.Restrict);
             });
@@ -289,7 +289,7 @@ namespace DAL.ApplicationContext
                 entity.HasKey(e => e.Id);
 
                 entity.HasOne(e => e.Offer)
-                      .WithMany()
+                      .WithMany(o=>o.OfferStatusHistories)
                       .HasForeignKey(e => e.OfferId)
                       .OnDelete(DeleteBehavior.Restrict);
 
@@ -302,7 +302,7 @@ namespace DAL.ApplicationContext
                 entity.HasKey(e => e.Id);
 
                 entity.HasOne(e => e.ItemCombination)
-                      .WithMany()
+                      .WithMany(i=>i.OfferCombinationPricings)
                       .HasForeignKey(e => e.ItemCombinationId)
                       .OnDelete(DeleteBehavior.Restrict);
 

@@ -206,6 +206,7 @@ namespace DAL.Repositories.Item
             return new SpSearchItemsMultiVendor
             {
                 ItemId = reader.GetGuid(reader.GetOrdinal("ItemId")),
+                ItemCombinationId = reader.GetGuid(reader.GetOrdinal("ItemCombinationId")),
                 TitleAr = reader.GetString(reader.GetOrdinal("TitleAr")),
                 TitleEn = reader.GetString(reader.GetOrdinal("TitleEn")),
                 ShortDescriptionAr = reader.IsDBNull(reader.GetOrdinal("ShortDescriptionAr"))

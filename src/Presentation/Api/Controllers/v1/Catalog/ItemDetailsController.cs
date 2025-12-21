@@ -26,12 +26,12 @@ namespace Api.Controllers.v1.Catalog
         /// <returns>Complete item details</returns>
         /// <response code="200">Returns the item details</response>
         /// <response code="404">Item not found</response>
-        [HttpGet("{id}")]
+        [HttpGet("{itemCombinationId}")]
         [ProducesResponseType(typeof(ItemDetailsDto), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> GetItemDetails([FromRoute] Guid id)
+        public async Task<IActionResult> GetItemDetails([FromRoute] Guid itemCombinationId )
         {
-            var result = await _itemDetailsService.GetItemDetailsAsync(id);
+            var result = await _itemDetailsService.GetItemDetailsAsync(itemCombinationId);
             return Ok(result);
         }
 

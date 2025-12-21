@@ -7,6 +7,7 @@ namespace Domains.Procedures
     public class SpSearchItemsMultiVendor
     {
         public Guid ItemId { get; set; }
+        public Guid ItemCombinationId { get; set; }
         public string TitleAr { get; set; }
         public string TitleEn { get; set; }
         public string ShortDescriptionAr { get; set; }

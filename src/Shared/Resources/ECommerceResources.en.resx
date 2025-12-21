@@ -813,4 +813,34 @@
   <data name="SalesPrice" xml:space="preserve">
     <value>Sales Price</value>
   </data>
+	<data name="AttributeValues" xml:space="preserve">
+  <value>Attribute Values</value>
+</data>
+	<data name="DefaultPricingNote" xml:space="preserve">
+  <value>Default pricing will be used if no variant prices are set.</value>
+</data>
+	<data name="MaximumPrice" xml:space="preserve">
+  <value>Maximum Price</value>
+</data>
+	<data name="MinimumPrice" xml:space="preserve">
+  <value>Minimum Price</value>
+</data>
+	<data name="BasePrice" xml:space="preserve">
+  <value>Base Price</value>
+</data>
+	<data name="StockKeepingUnit" xml:space="preserve">
+  <value>Stock Keeping Unit (SKU)</value>
+</data>
+	<data name="SetDefaultPricing" xml:space="preserve">
+  <value>Set Default Pricing</value>
+</data>
+	<data name="PricingInformation" xml:space="preserve">
+  <value>Pricing Information</value>
+</data>
+	<data name="Barcode" xml:space="preserve">
+  <value>Barcode</value>
+</data>
+	<data name="ConfigureAttributes" xml:space="preserve">
+  <value>Configure attributes for this product</value>
+</data>
 </root>

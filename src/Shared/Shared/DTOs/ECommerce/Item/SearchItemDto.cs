@@ -7,6 +7,7 @@ namespace Shared.DTOs.ECommerce.Item
     public class SearchItemDto
     {
         public Guid ItemId { get; set; }
+        public Guid ItemCombinationId { get; set; }
         public string TitleAr { get; set; }
         public string TitleEn { get; set; }
         public string ShortDescriptionAr { get; set; }
@@ -23,10 +24,6 @@ namespace Shared.DTOs.ECommerce.Item
         public int AvailableQuantity { get; set; }
         public string StockStatus { get; set; }
         public bool IsFreeShipping { get; set; }
-
-        // Calculated fields
-        public decimal DiscountPercentage { get; set; }
-        public bool IsNew { get; set; }
 
         // UI Enhancement
         public List<BadgeDto> Badges { get; set; }

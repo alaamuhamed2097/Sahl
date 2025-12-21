@@ -160,6 +160,15 @@ namespace Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to يجب أن يكون لجميع المجموعات سعر أكبر من 0.
+        /// </summary>
+        public static string AllCombinationsMustHavePriceGreaterThanZero {
+            get {
+                return ResourceManager.GetString("AllCombinationsMustHavePriceGreaterThanZero", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to الكل مقروء.
         /// </summary>
         public static string AllRead {
@@ -1492,6 +1501,15 @@ namespace Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to جاري تحميل الخصائص....
+        /// </summary>
+        public static string LoadingAttributes {
+            get {
+                return ResourceManager.GetString("LoadingAttributes", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to جاري التحميل....
         /// </summary>
         public static string LoadingDots {
@@ -1582,6 +1600,15 @@ namespace Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to السعر الأقصى {0}.
+        /// </summary>
+        public static string MaximumPrice {
+            get {
+                return ResourceManager.GetString("MaximumPrice", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to أقصى مستوى.
         /// </summary>
         public static string MaxLevel {
@@ -1614,6 +1641,15 @@ namespace Resources {
         public static string Messages {
             get {
                 return ResourceManager.GetString("Messages", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to السعر الأدنى {0}.
+        /// </summary>
+        public static string MinimumPrice {
+            get {
+                return ResourceManager.GetString("MinimumPrice", resourceCulture);
             }
         }
         
@@ -1794,6 +1830,15 @@ namespace Resources {
         public static string NotAvailable {
             get {
                 return ResourceManager.GetString("NotAvailable", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ملاحظة.
+        /// </summary>
+        public static string Note {
+            get {
+                return ResourceManager.GetString("Note", resourceCulture);
             }
         }
         
@@ -2068,6 +2113,15 @@ namespace Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to يرجى اختيار فئة في خطوة التصنيف لتكوين الخصائص..
+        /// </summary>
+        public static string PleaseSelectCategoryToConfigureAttributes {
+            get {
+                return ResourceManager.GetString("PleaseSelectCategoryToConfigureAttributes", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to الرجاء اختيار المحفظة..
         /// </summary>
         public static string PleaseSelectWallet {
@@ -2104,6 +2158,15 @@ namespace Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to يجب أن يكون السعر أكبر من 0.
+        /// </summary>
+        public static string PriceMustBeGreaterThanZero {
+            get {
+                return ResourceManager.GetString("PriceMustBeGreaterThanZero", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to جاري المعالجة.
         /// </summary>
         public static string Processing {
@@ -2118,6 +2181,15 @@ namespace Resources {
         public static string ProcessingDots {
             get {
                 return ResourceManager.GetString("ProcessingDots", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to باركود المنتج.
+        /// </summary>
+        public static string ProductBarcode {
+            get {
+                return ResourceManager.GetString("ProductBarcode", resourceCulture);
             }
         }
         
@@ -2428,7 +2500,7 @@ namespace Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to تكلفة الشحن الافتراضية مضافة إلى جميع الطلبات.
+        ///   Looks up a localized string similar to تكلفة الشحن الافتراضية مaddedت إلى جميع الطلبات.
         /// </summary>
         public static string ShippingAmountHelpText {
             get {
@@ -2523,6 +2595,15 @@ namespace Resources {
         public static string SponsorName {
             get {
                 return ResourceManager.GetString("SponsorName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to السعر الابتدائي {0}.
+        /// </summary>
+        public static string StartingPrice {
+            get {
+                return ResourceManager.GetString("StartingPrice", resourceCulture);
             }
         }
         

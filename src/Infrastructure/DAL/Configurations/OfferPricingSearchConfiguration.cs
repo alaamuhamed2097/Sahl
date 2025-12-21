@@ -33,6 +33,8 @@ namespace DAL.Configurations
 
             builder.Property(e => e.StockStatus).IsRequired();
 
+            builder.Property(e => e.IsBuyBoxWinner).IsRequired().HasDefaultValue(false);
+
             // ============================================================================
             // STRATEGIC INDEXES FOR PRICE AND STOCK QUERIES
             // ============================================================================
@@ -46,6 +48,7 @@ namespace DAL.Configurations
                 .IncludeProperties(e => new
                 {
                     e.SalesPrice,
+                    e.IsBuyBoxWinner,
                     e.Price,
                     e.AvailableQuantity,
                     e.StockStatus
@@ -72,6 +75,14 @@ namespace DAL.Configurations
                 .IsUnique(false)
                 .HasFilter("[AvailableQuantity] > 0 AND [StockStatus] = 1 AND [IsDeleted] = 0");
 
+            // ✅ 5. FILTERED INDEX for Buy Box Winners
+            // Usage: WHERE IsBuyBoxWinner = 1
+            // Small index (only ~1-5% of offers are buy box winners)
+            builder.HasIndex(e => e.IsBuyBoxWinner)
+                .HasDatabaseName("IX_TbOfferPricing_BuyBoxWinner_Filtered_NC")
+                .IsUnique(false)
+                .HasFilter("[IsBuyBoxWinner] = 1");
+
             // ============================================================================
             // Foreign Key Relationships
             // ============================================================================
@@ -82,7 +93,7 @@ namespace DAL.Configurations
                 .OnDelete(DeleteBehavior.Restrict);
 
             builder.HasOne(e => e.ItemCombination)
-                .WithMany()
+                .WithMany(c => c.OfferCombinationPricings)
                 .HasForeignKey(e => e.ItemCombinationId)
                 .OnDelete(DeleteBehavior.Restrict);
         }

@@ -18,7 +18,7 @@ namespace DAL.Configurations
             builder.Property(e => e.ItemId).IsRequired();
             builder.Property(e => e.VendorId).IsRequired();
             builder.Property(e => e.VisibilityScope).IsRequired();
-            builder.Property(e => e.IsBuyBoxWinner).IsRequired().HasDefaultValue(false);
+           
 
 
             // ============================================================================
@@ -35,7 +35,6 @@ namespace DAL.Configurations
                 .IncludeProperties(e => new
                 {
                     e.VendorId,
-                    e.IsBuyBoxWinner,
                     e.HandlingTimeInDays,
                     e.FulfillmentType
                 });
@@ -54,13 +53,6 @@ namespace DAL.Configurations
                 .HasDatabaseName("IX_TbOffers_VendorId_NC")
                 .IsUnique(false);
 
-            // ✅ 4. FILTERED INDEX for Buy Box Winners
-            // Usage: WHERE IsBuyBoxWinner = 1
-            // Small index (only ~1-5% of offers are buy box winners)
-            builder.HasIndex(e => e.IsBuyBoxWinner)
-                .HasDatabaseName("IX_TbOffers_BuyBoxWinner_Filtered_NC")
-                .IsUnique(false)
-                .HasFilter("[IsBuyBoxWinner] = 1");
 
             // ✅ 5. COMPOSITE INDEX for Vendor + Item (Unique Constraint)
             // Usage: Ensure one offer per vendor per item (business rule)

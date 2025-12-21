@@ -23,21 +23,27 @@ GO
 -- 2. Lowest price second
 -- 3. Fastest delivery third
 -- =============================================
-CREATE OR ALTER PROCEDURE [dbo].[SpGetItemDetails]
-    @ItemId UNIQUEIDENTIFIER
+CREATE OR ALTER     PROCEDURE [dbo].[SpGetItemDetails]
+    @ItemCombinationId UNIQUEIDENTIFIER
 AS
 BEGIN
     SET NOCOUNT ON;
     
-    -- Check if item exists
-    IF NOT EXISTS (
-        SELECT 1 FROM TbItems 
-        WHERE Id = @ItemId AND IsActive = 1 AND IsDeleted = 0
-    )
-    BEGIN
-        RAISERROR('Item not found', 16, 1);
-        RETURN;
-    END
+	DECLARE @ItemId UNIQUEIDENTIFIER;
+
+	SELECT TOP 1
+		@ItemId = i.Id
+	FROM TbItems i
+	INNER JOIN TbItemCombinations ic ON i.Id = ic.ItemId AND ic.Id = @ItemCombinationId
+	WHERE i.IsActive = 1
+	  AND i.IsDeleted = 0
+	  AND ic.IsDeleted = 0 ;
+
+	IF @ItemId IS NULL
+	BEGIN
+		RAISERROR ('Item not found', 16, 1);
+		RETURN;
+	END
     
     -- Get item category and pricing system
     DECLARE @CategoryId UNIQUEIDENTIFIER;
@@ -65,7 +71,7 @@ BEGIN
     BEGIN
         -- Get the combination that matches search result price
         SELECT TOP 1
-            @DefaultCombinationId = ic.Id,
+            @DefaultCombinationId = ISNULL(@ItemCombinationId, ic.Id),
             @DefaultOfferId = o.Id
         FROM TbItems i
         INNER JOIN TbOffers o ON i.Id = o.ItemId
@@ -136,14 +142,15 @@ BEGIN
             WHERE o.ItemId = @ItemId 
                 AND o.VisibilityScope = 1 
                 AND o.IsDeleted = 0
-        ) > 1 THEN 1 ELSE 0 END AS IsMultiVendor,
+        ) > 1 THEN CAST(1 AS bit)
+			  ELSE CAST(0 AS bit) END AS IsMultiVendor,
         
         -- ========== General Images JSON ==========
         (
             SELECT 
                 img.Path AS ImageUrl,
                 img.[Order] AS DisplayOrder,
-                CASE WHEN img.[Order] = 1 THEN 1 ELSE 0 END AS IsDefault
+                CASE WHEN img.[Order] = 1 THEN CAST(1 AS bit) ELSE CAST(0 AS bit) END AS IsDefault
             FROM TbItemImages img
             WHERE img.ItemId = @ItemId 
                 AND img.IsDeleted = 0
@@ -151,82 +158,21 @@ BEGIN
             FOR JSON PATH
         ) AS GeneralImagesJson,
         
-        -- ========== ALL Category Attributes JSON ==========
+        -- ========== ALL Item Attributes JSON ==========
         (
             SELECT 
                 a.Id AS AttributeId,
                 a.TitleAr AS NameAr,
                 a.TitleEn AS NameEn,
                 a.FieldType,
-                ca.DisplayOrder,
-                ca.AffectsPricing,
-                ca.IsRequired,
-                ca.IsVariant,
-                CASE 
-                    WHEN ca.AffectsPricing = 1 THEN (
-                        -- Pricing attributes: show as selectable options
-                        SELECT 
-                            ao.Id AS ValueId,
-                            ao.TitleAr AS ValueAr,
-                            ao.TitleEn AS ValueEn,
-                            ao.DisplayOrder,
-                            -- Check if available
-                            CASE WHEN EXISTS (
-                                SELECT 1 
-                                FROM TbItemCombinations ic2
-                                INNER JOIN TbCombinationAttributesValues cav2 
-                                    ON ic2.Id = cav2.ItemCombinationId
-                                INNER JOIN TbOfferCombinationPricings ocp 
-                                    ON ic2.Id = ocp.ItemCombinationId
-                                INNER JOIN TbOffers o 
-                                    ON ocp.OfferId = o.Id
-                                WHERE ic2.ItemId = @ItemId
-                                    AND cav2.AttributeId = a.Id
-                                    AND cav2.Value = ao.Id
-                                    AND o.VisibilityScope = 1
-                                    AND o.IsDeleted = 0
-                                    AND ocp.IsDeleted = 0
-                                    AND ocp.AvailableQuantity > 0
-                                    AND ocp.StockStatus = 1
-                            ) THEN 1 ELSE 0 END AS IsAvailable
-                        FROM TbAttributeOptions ao
-                        WHERE ao.AttributeId = a.Id
-                            AND ao.IsDeleted = 0
-                        ORDER BY ao.DisplayOrder
-                        FOR JSON PATH
-                    )
-                    ELSE (
-                        -- Specification attributes: show as static value
-                        SELECT 
-                            ISNULL((
-                                SELECT TOP 1 ao.TitleAr
-                                FROM TbItemCombinations ic2
-                                INNER JOIN TbCombinationAttributesValues cav2 
-                                    ON ic2.Id = cav2.ItemCombinationId
-                                INNER JOIN TbAttributeOptions ao 
-                                    ON cav2.Value = ao.Id
-                                WHERE ic2.ItemId = @ItemId
-                                    AND cav2.AttributeId = a.Id
-                            ), '') AS ValueAr,
-                            ISNULL((
-                                SELECT TOP 1 ao.TitleEn
-                                FROM TbItemCombinations ic2
-                                INNER JOIN TbCombinationAttributesValues cav2 
-                                    ON ic2.Id = cav2.ItemCombinationId
-                                INNER JOIN TbAttributeOptions ao 
-                                    ON cav2.Value = ao.Id
-                                WHERE ic2.ItemId = @ItemId
-                                    AND cav2.AttributeId = a.Id
-                            ), '') AS ValueEn
-                        FOR JSON PATH, WITHOUT_ARRAY_WRAPPER
-                    )
-                END AS ValuesJson
-            FROM TbCategoryAttributes ca
-            INNER JOIN TbAttributes a ON ca.AttributeId = a.Id
-            WHERE ca.CategoryId = @CategoryId
-                AND ca.IsDeleted = 0
+                ia.DisplayOrder,
+				ia.Value
+            FROM TbItemAttributes ia
+            INNER JOIN TbAttributes a ON ia.AttributeId = a.Id
+            WHERE ia.ItemId = @ItemId
+                AND ia.IsDeleted = 0
                 AND a.IsDeleted = 0
-            ORDER BY ca.DisplayOrder
+            ORDER BY ia.DisplayOrder
             FOR JSON PATH
         ) AS AttributesJson,
         
@@ -236,21 +182,20 @@ BEGIN
                 SELECT 
                     ic.Id AS CombinationId,
                     ic.SKU,
+					ic.Barcode,
+					ic.IsDefault,
                     -- Selected pricing attributes
                     (
                         SELECT 
                             a.Id AS AttributeId,
                             a.TitleAr AS AttributeNameAr,
                             a.TitleEn AS AttributeNameEn,
-                            ao.Id AS ValueId,
-                            ao.TitleAr AS ValueAr,
-                            ao.TitleEn AS ValueEn
+                            cav.Id AS CombinationValueId,
+                            cav.Value 
                         FROM TbCombinationAttributesValues cav
                         INNER JOIN TbAttributes a ON cav.AttributeId = a.Id
-                        INNER JOIN TbAttributeOptions ao ON cav.Value = ao.Id
                         INNER JOIN TbCategoryAttributes ca ON a.Id = ca.AttributeId AND ca.CategoryId = @CategoryId
                         WHERE cav.ItemCombinationId = ic.Id
-                            AND ca.AffectsPricing = 1
                         ORDER BY ca.DisplayOrder
                         FOR JSON PATH
                     ) AS SelectedAttributesJson,
@@ -259,7 +204,7 @@ BEGIN
                         SELECT 
                             img.Path AS ImageUrl,
                             img.[Order] AS DisplayOrder,
-                            CASE WHEN img.[Order] = 1 THEN 1 ELSE 0 END AS IsDefault
+                            CASE WHEN img.[Order] = 1 THEN CAST( 1 AS bit) ELSE CAST( 0 AS bit) END AS IsDefault
                         FROM TbItemCombinationImages img
                         WHERE img.ItemCombinationId = ic.Id
                             AND img.IsDeleted = 0
@@ -290,7 +235,7 @@ BEGIN
                     
                     -- Price range
                     (
-                        SELECT MIN(ocp2.SalesPrice)
+                        SELECT ISNULL(MIN(ocp2.SalesPrice),0.0)
                         FROM TbOffers o2
                         INNER JOIN TbOfferCombinationPricings ocp2 ON o2.Id = ocp2.OfferId
                         WHERE o2.ItemId = @ItemId
@@ -301,7 +246,7 @@ BEGIN
                     ) AS MinPrice,
                     
                     (
-                        SELECT MAX(ocp2.SalesPrice)
+                        SELECT ISNULL(MAX(ocp2.SalesPrice),0.0)
                         FROM TbOffers o2
                         INNER JOIN TbOfferCombinationPricings ocp2 ON o2.Id = ocp2.OfferId
                         WHERE o2.ItemId = @ItemId
@@ -326,12 +271,7 @@ BEGIN
                                 ELSE 0 
                             END AS DiscountPercentage,
                             ocp.AvailableQuantity,
-                            CASE ocp.StockStatus
-                                WHEN 1 THEN 'InStock'
-                                WHEN 2 THEN 'OutOfStock'
-                                WHEN 3 THEN 'LimitedStock'
-                                WHEN 4 THEN 'ComingSoon'
-                            END AS StockStatus,
+                            ocp.StockStatus,
                             o.IsFreeShipping,
                             o.HandlingTimeInDays AS EstimatedDeliveryDays,
                             o.IsBuyBoxWinner,

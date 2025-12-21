@@ -368,9 +368,6 @@ namespace DAL.Migrations
                     b.Property<decimal>("StockLevelScore")
                         .HasColumnType("decimal(5,2)");
 
-                    b.Property<Guid?>("TbOfferId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<decimal>("TotalScore")
                         .HasColumnType("decimal(5,2)");
 
@@ -380,7 +377,7 @@ namespace DAL.Migrations
                     b.Property<DateTime?>("UpdatedDateUtc")
                         .HasColumnType("datetime2(2)");
 
-                    b.Property<Guid>("WinningOfferId")
+                    b.Property<Guid>("WinningOfferCombinationId")
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
@@ -395,11 +392,9 @@ namespace DAL.Migrations
 
                     b.HasIndex("ItemId");
 
-                    b.HasIndex("TbOfferId");
-
                     b.HasIndex("TotalScore");
 
-                    b.HasIndex("WinningOfferId");
+                    b.HasIndex("WinningOfferCombinationId");
 
                     b.HasIndex("ItemId", "CalculatedAt");
 
@@ -3299,8 +3294,8 @@ namespace DAL.Migrations
                     b.Property<string>("PostalCode")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<byte?>("Rating")
-                        .HasColumnType("tinyint");
+                    b.Property<decimal?>("Rating")
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<string>("TaxNumber")
                         .HasColumnType("nvarchar(max)");
@@ -4292,11 +4287,6 @@ namespace DAL.Migrations
                     b.Property<int>("HandlingTimeInDays")
                         .HasColumnType("int");
 
-                    b.Property<bool>("IsBuyBoxWinner")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(false);
-
                     b.Property<bool>("IsDeleted")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bit")
@@ -4308,9 +4298,6 @@ namespace DAL.Migrations
                     b.Property<Guid>("ItemId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid?>("OfferConditionId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<Guid?>("UpdatedBy")
                         .HasColumnType("uniqueidentifier");
 
@@ -4320,12 +4307,6 @@ namespace DAL.Migrations
                     b.Property<Guid>("VendorId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<decimal?>("VendorRatingForThisItem")
-                        .HasColumnType("decimal(3,2)");
-
-                    b.Property<int>("VendorSalesCountForThisItem")
-                        .HasColumnType("int");
-
                     b.Property<int>("VisibilityScope")
                         .HasColumnType("int");
 
@@ -4334,13 +4315,7 @@ namespace DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("IsBuyBoxWinner")
-                        .HasDatabaseName("IX_TbOffers_BuyBoxWinner_Filtered_NC")
-                        .HasFilter("[IsBuyBoxWinner] = 1");
-
                     b.HasIndex("IsDeleted");
-
-                    b.HasIndex("OfferConditionId");
 
                     b.HasIndex("VendorId")
                         .HasDatabaseName("IX_TbOffers_VendorId_NC");
@@ -4360,7 +4335,7 @@ namespace DAL.Migrations
                     b.HasIndex("ItemId", "VisibilityScope", "IsDeleted")
                         .HasDatabaseName("IX_TbOffers_ItemId_Visibility_Deleted_Covering_NC");
 
-                    SqlServerIndexBuilderExtensions.IncludeProperties(b.HasIndex("ItemId", "VisibilityScope", "IsDeleted"), new[] { "VendorId", "IsBuyBoxWinner", "HandlingTimeInDays", "FulfillmentType" });
+                    SqlServerIndexBuilderExtensions.IncludeProperties(b.HasIndex("ItemId", "VisibilityScope", "IsDeleted"), new[] { "VendorId", "HandlingTimeInDays", "FulfillmentType" });
 
                     b.ToTable("TbOffers", (string)null);
                 });
@@ -4393,6 +4368,11 @@ namespace DAL.Migrations
 
                     b.Property<int>("InTransitQuantity")
                         .HasColumnType("int");
+
+                    b.Property<bool>("IsBuyBoxWinner")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
 
                     b.Property<bool>("IsDeleted")
                         .ValueGeneratedOnAdd()
@@ -4441,9 +4421,6 @@ namespace DAL.Migrations
                     b.Property<int>("StockStatus")
                         .HasColumnType("int");
 
-                    b.Property<Guid?>("TbItemCombinationId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<Guid?>("UpdatedBy")
                         .HasColumnType("uniqueidentifier");
 
@@ -4451,6 +4428,10 @@ namespace DAL.Migrations
                         .HasColumnType("datetime2(2)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("IsBuyBoxWinner")
+                        .HasDatabaseName("IX_TbOfferPricing_BuyBoxWinner_Filtered_NC")
+                        .HasFilter("[IsBuyBoxWinner] = 1");
 
                     b.HasIndex("IsDeleted");
 
@@ -4463,12 +4444,10 @@ namespace DAL.Migrations
                     b.HasIndex("SalesPrice")
                         .HasDatabaseName("IX_TbOfferPricing_SalesPrice_NC");
 
-                    b.HasIndex("TbItemCombinationId");
-
                     b.HasIndex("OfferId", "IsDeleted")
                         .HasDatabaseName("IX_TbOfferPricing_OfferId_Deleted_Covering_NC");
 
-                    SqlServerIndexBuilderExtensions.IncludeProperties(b.HasIndex("OfferId", "IsDeleted"), new[] { "SalesPrice", "Price", "AvailableQuantity", "StockStatus" });
+                    SqlServerIndexBuilderExtensions.IncludeProperties(b.HasIndex("OfferId", "IsDeleted"), new[] { "SalesPrice", "IsBuyBoxWinner", "Price", "AvailableQuantity", "StockStatus" });
 
                     b.HasIndex("SalesPrice", "IsDeleted")
                         .HasDatabaseName("IX_TbOfferPricing_SalesPrice_Deleted_NC")
@@ -4560,9 +4539,6 @@ namespace DAL.Migrations
                     b.Property<decimal>("OldPrice")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<Guid?>("TbOfferCombinationPricingId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<Guid?>("UpdatedBy")
                         .HasColumnType("uniqueidentifier");
 
@@ -4574,8 +4550,6 @@ namespace DAL.Migrations
                     b.HasIndex("IsDeleted");
 
                     b.HasIndex("OfferCombinationPricingId");
-
-                    b.HasIndex("TbOfferCombinationPricingId");
 
                     b.ToTable("TbOfferPriceHistories");
                 });
@@ -4613,9 +4587,6 @@ namespace DAL.Migrations
                     b.Property<decimal>("OldStatus")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<Guid?>("TbOfferId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<Guid?>("UpdatedBy")
                         .HasColumnType("uniqueidentifier");
 
@@ -4627,8 +4598,6 @@ namespace DAL.Migrations
                     b.HasIndex("IsDeleted");
 
                     b.HasIndex("OfferId");
-
-                    b.HasIndex("TbOfferId");
 
                     b.ToTable("TbOfferStatusHistories");
                 });
@@ -7212,7 +7181,6 @@ namespace DAL.Migrations
             modelBuilder.Entity("Domains.Procedures.SpGetItemDetails", b =>
                 {
                     b.Property<string>("AttributesJson")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<decimal>("AverageRating")
@@ -7222,15 +7190,12 @@ namespace DAL.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("BrandLogoUrl")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("BrandNameAr")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("BrandNameEn")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<Guid>("CategoryId")
@@ -7245,7 +7210,6 @@ namespace DAL.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("DefaultCombinationJson")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("DescriptionAr")
@@ -7257,7 +7221,6 @@ namespace DAL.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("GeneralImagesJson")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("HasCombinations")
@@ -7270,7 +7233,6 @@ namespace DAL.Migrations
                         .HasColumnType("bit");
 
                     b.Property<string>("PricingJson")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("PricingSystemNameAr")
@@ -7333,6 +7295,9 @@ namespace DAL.Migrations
 
                     b.Property<bool>("IsFreeShipping")
                         .HasColumnType("bit");
+
+                    b.Property<Guid>("ItemCombinationId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid>("ItemId")
                         .HasColumnType("uniqueidentifier");
@@ -8052,18 +8017,14 @@ namespace DAL.Migrations
                         .IsRequired();
 
                     b.HasOne("Domains.Entities.Catalog.Item.TbItem", "Item")
-                        .WithMany()
+                        .WithMany("BuyBoxCalculations")
                         .HasForeignKey("ItemId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("Domains.Entities.Offer.TbOffer", null)
+                    b.HasOne("Domains.Entities.Offer.TbOfferCombinationPricing", "WinningOfferCombination")
                         .WithMany("BuyBoxCalculations")
-                        .HasForeignKey("TbOfferId");
-
-                    b.HasOne("Domains.Entities.Offer.TbOffer", "WinningOffer")
-                        .WithMany()
-                        .HasForeignKey("WinningOfferId")
+                        .HasForeignKey("WinningOfferCombinationId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
@@ -8071,7 +8032,7 @@ namespace DAL.Migrations
 
                     b.Navigation("ItemCombination");
 
-                    b.Navigation("WinningOffer");
+                    b.Navigation("WinningOfferCombination");
                 });
 
             modelBuilder.Entity("Domains.Entities.BuyBox.TbBuyBoxHistory", b =>
@@ -8649,10 +8610,6 @@ namespace DAL.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("Domains.Entities.Offer.TbOfferCondition", "OfferCondition")
-                        .WithMany()
-                        .HasForeignKey("OfferConditionId");
-
                     b.HasOne("Domains.Entities.ECommerceSystem.Vendor.TbVendor", "Vendor")
                         .WithMany()
                         .HasForeignKey("VendorId")
@@ -8666,8 +8623,6 @@ namespace DAL.Migrations
 
                     b.Navigation("Item");
 
-                    b.Navigation("OfferCondition");
-
                     b.Navigation("Vendor");
 
                     b.Navigation("Warranty");
@@ -8676,7 +8631,7 @@ namespace DAL.Migrations
             modelBuilder.Entity("Domains.Entities.Offer.TbOfferCombinationPricing", b =>
                 {
                     b.HasOne("Domains.Entities.Catalog.Item.ItemAttributes.TbItemCombination", "ItemCombination")
-                        .WithMany()
+                        .WithMany("OfferCombinationPricings")
                         .HasForeignKey("ItemCombinationId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
@@ -8693,10 +8648,6 @@ namespace DAL.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("Domains.Entities.Catalog.Item.ItemAttributes.TbItemCombination", null)
-                        .WithMany("OfferCombinationPricings")
-                        .HasForeignKey("TbItemCombinationId");
-
                     b.Navigation("ItemCombination");
 
                     b.Navigation("Offer");
@@ -8707,14 +8658,10 @@ namespace DAL.Migrations
             modelBuilder.Entity("Domains.Entities.Offer.TbOfferPriceHistory", b =>
                 {
                     b.HasOne("Domains.Entities.Offer.TbOfferCombinationPricing", "OfferCombinationPricing")
-                        .WithMany()
+                        .WithMany("OfferPriceHistories")
                         .HasForeignKey("OfferCombinationPricingId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
-
-                    b.HasOne("Domains.Entities.Offer.TbOfferCombinationPricing", null)
-                        .WithMany("OfferPriceHistories")
-                        .HasForeignKey("TbOfferCombinationPricingId");
 
                     b.Navigation("OfferCombinationPricing");
                 });
@@ -8722,14 +8669,10 @@ namespace DAL.Migrations
             modelBuilder.Entity("Domains.Entities.Offer.TbOfferStatusHistory", b =>
                 {
                     b.HasOne("Domains.Entities.Offer.TbOffer", "Offer")
-                        .WithMany()
+                        .WithMany("OfferStatusHistories")
                         .HasForeignKey("OfferId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
-
-                    b.HasOne("Domains.Entities.Offer.TbOffer", null)
-                        .WithMany("OfferStatusHistories")
-                        .HasForeignKey("TbOfferId");
 
                     b.Navigation("Offer");
                 });
@@ -9302,6 +9245,8 @@ namespace DAL.Migrations
 
             modelBuilder.Entity("Domains.Entities.Catalog.Item.TbItem", b =>
                 {
+                    b.Navigation("BuyBoxCalculations");
+
                     b.Navigation("ItemAttributes");
 
                     b.Navigation("ItemCombinations");
@@ -9378,8 +9323,6 @@ namespace DAL.Migrations
 
             modelBuilder.Entity("Domains.Entities.Offer.TbOffer", b =>
                 {
-                    b.Navigation("BuyBoxCalculations");
-
                     b.Navigation("OfferCombinationPricings");
 
                     b.Navigation("OfferStatusHistories");
@@ -9391,6 +9334,8 @@ namespace DAL.Migrations
 
             modelBuilder.Entity("Domains.Entities.Offer.TbOfferCombinationPricing", b =>
                 {
+                    b.Navigation("BuyBoxCalculations");
+
                     b.Navigation("OfferPriceHistories");
                 });
 
