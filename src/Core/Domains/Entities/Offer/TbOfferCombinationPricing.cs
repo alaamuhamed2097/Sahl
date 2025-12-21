@@ -1,4 +1,5 @@
 ﻿ using Common.Enumerations.Offer;
+using Domains.Entities.BuyBox;
 using Domains.Entities.Catalog.Item.ItemAttributes;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -47,6 +48,9 @@ namespace Domains.Entities.Offer
         public int MaxOrderQuantity { get; set; } = 999;
         public int LowStockThreshold { get; set; } = 5;
 
+        // Vendor performance metrics
+        public bool IsBuyBoxWinner { get; set; } = false;
+
         [ForeignKey("OfferConditionId")]
         public virtual TbOfferCondition OfferCondition { get; set; }
 
@@ -57,5 +61,6 @@ namespace Domains.Entities.Offer
         public virtual TbOffer Offer { get; set; }
 
         public virtual ICollection<TbOfferPriceHistory> OfferPriceHistories { get; set; }
+        public virtual ICollection<TbBuyBoxCalculation> BuyBoxCalculations { get; set; }
     }
 }

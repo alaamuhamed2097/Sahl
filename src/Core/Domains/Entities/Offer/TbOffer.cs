@@ -22,9 +22,6 @@ namespace Domains.Entities.Offer
         public OfferVisibilityScope VisibilityScope { get; set; }
         public FulfillmentType FulfillmentType { get; set; } = FulfillmentType.Seller;
 
-        // Vendor performance metrics
-        public bool IsBuyBoxWinner { get; set; } = false;
-
         // Optional properties
         public Guid? WarrantyId { get; set; }
 
@@ -42,6 +39,5 @@ namespace Domains.Entities.Offer
         public virtual ICollection<TbShippingDetail> ShippingDetails { get; set; }
         public virtual ICollection<TbOfferCombinationPricing> OfferCombinationPricings { get; set; }
         public virtual ICollection<TbOfferStatusHistory> OfferStatusHistories { get; set; }
-        public virtual ICollection<TbBuyBoxCalculation> BuyBoxCalculations { get; set; }
     }
 }

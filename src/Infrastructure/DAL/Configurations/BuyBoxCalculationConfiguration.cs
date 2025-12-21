@@ -56,19 +56,19 @@ namespace DAL.Configurations
 
             // Relationships
             entity.HasOne(e => e.Item)
-                .WithMany()
+                .WithMany(o => o.BuyBoxCalculations)
                 .HasForeignKey(e => e.ItemId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            entity.HasOne(e => e.WinningOffer)
-                .WithMany()
-                .HasForeignKey(e => e.WinningOfferId)
+            entity.HasOne(e => e.WinningOfferCombination)
+                .WithMany(o => o.BuyBoxCalculations)
+                .HasForeignKey(e => e.WinningOfferCombinationId)
                 .OnDelete(DeleteBehavior.Restrict);
 
             // Indexes
             entity.HasIndex(e => e.ItemId);
 
-            entity.HasIndex(e => e.WinningOfferId);
+            entity.HasIndex(e => e.WinningOfferCombinationId);
 
             entity.HasIndex(e => e.TotalScore);
 
