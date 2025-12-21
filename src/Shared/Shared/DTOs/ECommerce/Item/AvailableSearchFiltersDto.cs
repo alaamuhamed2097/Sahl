@@ -30,8 +30,6 @@ namespace Shared.DTOs.ECommerce.Item
         /// </summary>
         public List<FilterOptionDto> Conditions { get; set; } = new List<FilterOptionDto>();
 
-        public FeaturesFilterDto Features { get; set; }
-
         /// <summary>
         /// Price range statistics
         /// </summary>

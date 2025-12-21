@@ -42,7 +42,7 @@ namespace BL.Service.ShippingCompany
             _mapper = mapper;
         }
 
-        public async Task<PaginatedDataModel<ShippingCompanyDto>> GetPage(BaseSearchCriteriaModel criteriaModel)
+        public async Task<PagedResult<ShippingCompanyDto>> GetPage(BaseSearchCriteriaModel criteriaModel)
         {
             if (criteriaModel == null)
                 throw new ArgumentNullException(nameof(criteriaModel));
@@ -93,10 +93,10 @@ namespace BL.Service.ShippingCompany
 
             var dtoList = _mapper.MapList<TbShippingCompany, ShippingCompanyDto>(entitiesList.Items);
 
-            return new PaginatedDataModel<ShippingCompanyDto>(dtoList, entitiesList.TotalRecords);
+            return new PagedResult<ShippingCompanyDto>(dtoList, entitiesList.TotalRecords);
         }
 
-        public async Task<PaginatedDataModel<ShippingCompanyDto>> GetPageAsync(BaseSearchCriteriaModel criteriaModel)
+        public async Task<PagedResult<ShippingCompanyDto>> GetPageAsync(BaseSearchCriteriaModel criteriaModel)
         {
             if (criteriaModel == null)
                 throw new ArgumentNullException(nameof(criteriaModel));
@@ -147,7 +147,7 @@ namespace BL.Service.ShippingCompany
 
             var dtoList = _mapper.MapList<TbShippingCompany, ShippingCompanyDto>(entitiesList.Items);
 
-            return new PaginatedDataModel<ShippingCompanyDto>(dtoList, entitiesList.TotalRecords);
+            return new PagedResult<ShippingCompanyDto>(dtoList, entitiesList.TotalRecords);
         }
 
         public async Task<bool> Save(ShippingCompanyDto dto, Guid userId)

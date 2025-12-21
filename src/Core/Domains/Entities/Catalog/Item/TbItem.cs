@@ -1,4 +1,5 @@
-﻿using Domains.Entities.Catalog.Brand;
+﻿using Domains.Entities.BuyBox;
+using Domains.Entities.Catalog.Brand;
 using Domains.Entities.Catalog.Category;
 using Domains.Entities.Catalog.Item.ItemAttributes;
 using Domains.Entities.Catalog.Unit;
@@ -60,6 +61,9 @@ namespace Domains.Entities.Catalog.Item
 
         public bool IsActive { get; set; } = true;
 
+        [Column(TypeName = "decimal(3,2)")]
+        public decimal? AverageRating { get; set; }
+
         // Navigation Properties
         [ForeignKey("CategoryId")]
         public virtual TbCategory Category { get; set; }
@@ -73,5 +77,6 @@ namespace Domains.Entities.Catalog.Item
         public virtual ICollection<TbItemImage> ItemImages { get; set; }
         public virtual ICollection<TbItemCombination> ItemCombinations { get; set; }
         public virtual ICollection<TbItemAttribute> ItemAttributes { get; set; }
+        public virtual ICollection<TbBuyBoxCalculation> BuyBoxCalculations { get; set; }
     }
 }

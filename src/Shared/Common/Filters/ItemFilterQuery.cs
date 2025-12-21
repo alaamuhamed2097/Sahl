@@ -6,40 +6,21 @@ namespace Common.Filters
     /// </summary>
     public class ItemFilterQuery
     {
-        // === Item-level Filters ===
         public string SearchTerm { get; set; }
-        public List<Guid> CategoryIds { get; set; }
-        public List<Guid> BrandIds { get; set; }
-
-        // === Price Filters (across all offers) ===
+        public Guid? CategoryId { get; set; }        // Single ID
+        public Guid? VendorId { get; set; }          // Single ID
+        public Guid? BrandId { get; set; }           // Single ID
         public decimal? MinPrice { get; set; }
         public decimal? MaxPrice { get; set; }
-
-        // === Rating Filters ===
         public decimal? MinItemRating { get; set; }
-
-        // === Availability Filters ===
         public bool? InStockOnly { get; set; }
-
-        // === Shipping Filters ===
         public bool? FreeShippingOnly { get; set; }
-
-        // === Vendor Filters ===
-        public List<Guid> VendorIds { get; set; }
-
-        // === Condition and Warranty Filters ===
-        public List<Guid> ConditionIds { get; set; }
+        public Guid? ConditionId { get; set; }
         public bool? WithWarrantyOnly { get; set; }
-
-        // === Attribute Filters (Color, Size, etc.) ===
-        public Dictionary<Guid, List<Guid>> AttributeValues { get; set; }
-
-        // === Sorting ===
+        public List<Guid> AttributeIds { get; set; }      // Converted to comma-separated
+        public List<string> AttributeValues { get; set; } // Converted to pipe-separated
         public string SortBy { get; set; }
-        // Options: "Featured", "price_asc", "price_desc", "customer review", "best seller", "newest arrival"
-
-        // === Pagination ===
-        public int PageNumber { get; set; } = 1;
-        public int PageSize { get; set; } = 20;
+        public int PageNumber { get; set; }
+        public int PageSize { get; set; }
     }
 }

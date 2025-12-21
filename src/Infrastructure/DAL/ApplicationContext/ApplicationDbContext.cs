@@ -237,6 +237,8 @@ namespace DAL.ApplicationContext
         // Item Search Views (from stored procedure and denormalized view)
         public DbSet<SpSearchItemsMultiVendor> SpSearchItemsMultiVendor { get; set; }
         public DbSet<SpGetAvailableSearchFilters> SpGetAvailableSearchFilters { get; set; }
+        public DbSet<SpGetItemDetails> SpGetItemDetails { get; set; }
+        public DbSet<SpGetAvailableOptionsForSelection> SpGetAvailableOptionsForSelection { get; set; }
         public DbSet<VwItemBestPrice> VwItemBestPrices { get; set; }
 
         // Unit Views
@@ -276,7 +278,7 @@ namespace DAL.ApplicationContext
                 entity.HasKey(e => e.Id);
 
                 entity.HasOne(e => e.OfferCombinationPricing)
-                      .WithMany()
+                      .WithMany(c=>c.OfferPriceHistories)
                       .HasForeignKey(e => e.OfferCombinationPricingId)
                       .OnDelete(DeleteBehavior.Restrict);
             });
@@ -287,7 +289,7 @@ namespace DAL.ApplicationContext
                 entity.HasKey(e => e.Id);
 
                 entity.HasOne(e => e.Offer)
-                      .WithMany()
+                      .WithMany(o=>o.OfferStatusHistories)
                       .HasForeignKey(e => e.OfferId)
                       .OnDelete(DeleteBehavior.Restrict);
 
@@ -300,7 +302,7 @@ namespace DAL.ApplicationContext
                 entity.HasKey(e => e.Id);
 
                 entity.HasOne(e => e.ItemCombination)
-                      .WithMany()
+                      .WithMany(i=>i.OfferCombinationPricings)
                       .HasForeignKey(e => e.ItemCombinationId)
                       .OnDelete(DeleteBehavior.Restrict);
 
@@ -358,7 +360,7 @@ namespace DAL.ApplicationContext
                 if (entityType.FindProperty(nameof(BaseEntity.IsDeleted)) != null)
                 {
                     entity.Property(nameof(BaseEntity.IsDeleted))
-                          .HasDefaultValue(0);
+                          .HasDefaultValue(false);
 
                     // Add index for CurrentState for better query performance
                     entity.HasIndex(nameof(BaseEntity.IsDeleted))
@@ -400,6 +402,8 @@ namespace DAL.ApplicationContext
             // Item Search Result View (from stored procedure - no actual view, used for mapping results)
             modelBuilder.Entity<SpSearchItemsMultiVendor>().HasNoKey().ToView("SpSearchItemsMultiVendor");
             modelBuilder.Entity<SpGetAvailableSearchFilters>().HasNoKey().ToView("SpGetAvailableSearchFilters");
+            modelBuilder.Entity<SpGetItemDetails>().HasNoKey().ToView("SpGetItemDetails");
+            modelBuilder.Entity<SpGetAvailableOptionsForSelection>().HasNoKey().ToView("SpGetAvailableOptionsForSelection");
 
             // Item Best Price View (from denormalized database view)
             modelBuilder.Entity<VwItemBestPrice>(entity =>

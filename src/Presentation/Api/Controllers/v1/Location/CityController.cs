@@ -101,7 +101,7 @@ namespace Api.Controllers.v1.Location
 
             if (result == null || !result.Items.Any())
             {
-                return Ok(new ResponseModel<PaginatedDataModel<CityDto>>
+                return Ok(new ResponseModel<PagedResult<CityDto>>
                 {
                     Success = false,
                     Message = NotifiAndAlertsResources.NoDataFound,
@@ -109,7 +109,7 @@ namespace Api.Controllers.v1.Location
                 });
             }
 
-            return Ok(new ResponseModel<PaginatedDataModel<CityDto>>
+            return Ok(new ResponseModel<PagedResult<CityDto>>
             {
                 Success = true,
                 Message = NotifiAndAlertsResources.DataRetrieved,

@@ -30,7 +30,7 @@ namespace BL.Service.ECommerce.Category
             _attributeUnitOfWork = attributeUnitOfWork;
         }
 
-        public async Task<PaginatedDataModel<AttributeDto>> GetPage(BaseSearchCriteriaModel criteriaModel)
+        public async Task<PagedResult<AttributeDto>> GetPage(BaseSearchCriteriaModel criteriaModel)
         {
             if (criteriaModel == null)
                 throw new ArgumentNullException(nameof(criteriaModel));
@@ -87,7 +87,7 @@ namespace BL.Service.ECommerce.Category
 
             var attributes = _mapper.MapList<TbAttribute, AttributeDto>(entitiesList.Items);
 
-            return new PaginatedDataModel<AttributeDto>(attributes, entitiesList.TotalRecords);
+            return new PagedResult<AttributeDto>(attributes, entitiesList.TotalRecords);
         }
 
         public override async Task<AttributeDto> FindByIdAsync(Guid Id)

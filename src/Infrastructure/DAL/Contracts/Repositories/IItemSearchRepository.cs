@@ -1,4 +1,5 @@
 ﻿using Common.Filters;
+using DAL.Models;
 using DAL.Models.ItemSearch;
 using Domains.Procedures;
 using Domains.Views.Item;
@@ -16,9 +17,7 @@ public interface IItemSearchRepository
     /// Execute stored procedure search with comprehensive filtering and scoring
     /// Returns domain entities that represent search results
     /// </summary>
-    Task<(List<SpSearchItemsMultiVendor> Items, int TotalCount)> SearchItemsAsync(
-        ItemFilterQuery filter,
-        CancellationToken cancellationToken = default);
+    Task<AdvancedPagedResult<SpSearchItemsMultiVendor>> SearchItemsAsync(ItemFilterQuery filter);
 
     /// <summary>
     /// Get available filter options based on current search criteria

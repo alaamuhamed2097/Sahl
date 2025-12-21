@@ -76,7 +76,7 @@ namespace BL.GeneralService.UserManagement
             return user.UserState;
         }
 
-        public async Task<PaginatedDataModel<AdminProfileDto>> GetAdminsPage(BaseSearchCriteriaModel criteriaModel)
+        public async Task<PagedResult<AdminProfileDto>> GetAdminsPage(BaseSearchCriteriaModel criteriaModel)
         {
             if (criteriaModel == null)
                 throw new ArgumentNullException(nameof(criteriaModel));
@@ -116,7 +116,7 @@ namespace BL.GeneralService.UserManagement
 
             var totalRecords = users.Count();
             users = users.Skip((criteriaModel.PageNumber - 1) * criteriaModel.PageSize).Take(criteriaModel.PageSize);
-            return new PaginatedDataModel<AdminProfileDto>(_mapper.MapList<ApplicationUser, AdminProfileDto>(users), totalRecords);
+            return new PagedResult<AdminProfileDto>(_mapper.MapList<ApplicationUser, AdminProfileDto>(users), totalRecords);
         }
 
         public async Task<IEnumerable<AdminProfileDto>> GetAllAdminsAsync()

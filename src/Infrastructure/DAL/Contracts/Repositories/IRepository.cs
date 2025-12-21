@@ -1,4 +1,5 @@
 ﻿using DAL.Models;
+using Microsoft.Data.SqlClient;
 using System.Linq.Expressions;
 
 namespace DAL.Contracts.Repositories
@@ -39,7 +40,7 @@ namespace DAL.Contracts.Repositories
         /// <summary>
         /// Retrieves paginated data
         /// </summary>
-        Task<PaginatedDataModel<T>> GetPageAsync(
+        Task<PagedResult<T>> GetPageAsync(
             int pageNumber,
             int pageSize,
             Expression<Func<T, bool>> filter = null,
@@ -85,10 +86,10 @@ namespace DAL.Contracts.Repositories
         /// <summary>
         /// Executes a stored procedure and maps results to entity
         /// </summary>
-        Task<List<T>> ExecuteStoredProcedureAsync(
+        Task<List<TResult>> ExecuteStoredProcedureAsync<TResult>(
             string storedProcedureName,
             CancellationToken cancellationToken = default,
-            params Microsoft.Data.SqlClient.SqlParameter[] parameters);
+            params SqlParameter[] parameters) where TResult : class;
 
         /// <summary>
         /// Executes a SQL function and returns a scalar value

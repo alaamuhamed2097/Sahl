@@ -25,7 +25,7 @@ namespace BL.Service.ECommerce.Unit
             _unitRepository = unitRepository;
         }
 
-        public async Task<PaginatedDataModel<UnitDto>> GetPageAsync(BaseSearchCriteriaModel criteriaModel)
+        public async Task<PagedResult<UnitDto>> GetPageAsync(BaseSearchCriteriaModel criteriaModel)
         {
             if (criteriaModel == null)
                 throw new ArgumentNullException(nameof(criteriaModel));
@@ -76,7 +76,7 @@ namespace BL.Service.ECommerce.Unit
 
             var units = _mapper.MapList<VwUnitWithConversionsUnits, UnitDto>(entitiesList.Items);
 
-            return new PaginatedDataModel<UnitDto>(units, entitiesList.TotalRecords);
+            return new PagedResult<UnitDto>(units, entitiesList.TotalRecords);
         }
 
         // Async implementations

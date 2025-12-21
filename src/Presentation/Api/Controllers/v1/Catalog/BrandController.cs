@@ -99,7 +99,7 @@ namespace Api.Controllers.v1.Catalog
 
             if (result == null || !result.Items.Any())
             {
-                return Ok(new ResponseModel<PaginatedDataModel<BrandDto>>
+                return Ok(new ResponseModel<PagedResult<BrandDto>>
                 {
                     Success = true,
                     Message = GetResource<NotifiAndAlertsResources>(nameof(NotifiAndAlertsResources.NoDataFound)),
@@ -107,7 +107,7 @@ namespace Api.Controllers.v1.Catalog
                 });
             }
 
-            return Ok(new ResponseModel<PaginatedDataModel<BrandDto>>
+            return Ok(new ResponseModel<PagedResult<BrandDto>>
             {
                 Success = true,
                 Message = GetResource<NotifiAndAlertsResources>(nameof(NotifiAndAlertsResources.DataRetrieved)),

@@ -69,7 +69,7 @@ namespace BL.Service.Notification
             return _mapper.MapModel<TbNotificationChannel, NotificationChannelDto>(channel);
         }
 
-        public async Task<PaginatedDataModel<NotificationChannelDto>> SearchAsync(BaseSearchCriteriaModel criteriaModel)
+        public async Task<PagedResult<NotificationChannelDto>> SearchAsync(BaseSearchCriteriaModel criteriaModel)
         {
             if (criteriaModel == null)
                 throw new ArgumentNullException(nameof(criteriaModel));
@@ -98,7 +98,7 @@ namespace BL.Service.Notification
 
             var itemsDto = _mapper.MapList<TbNotificationChannel, NotificationChannelDto>(channels.Items).ToList();
 
-            return new PaginatedDataModel<NotificationChannelDto>(itemsDto, channels.TotalRecords);
+            return new PagedResult<NotificationChannelDto>(itemsDto, channels.TotalRecords);
         }
 
         public async Task<bool> SaveAsync(NotificationChannelDto dto, Guid userId)

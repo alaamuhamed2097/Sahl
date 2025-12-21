@@ -24,7 +24,7 @@ namespace Domains.Entities.ECommerceSystem.Vendor
         //
         public string? Notes { get; set; }
         public bool IsActive { get; set; } = true;
-        public byte? Rating { get; set; }
+        public decimal? Rating { get; set; }
 
         // Navigation Properties
         [ForeignKey("UserId")]

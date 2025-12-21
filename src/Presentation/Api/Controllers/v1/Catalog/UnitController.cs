@@ -102,7 +102,7 @@ namespace Api.Controllers.v1.Catalog
 
             if (result == null || !result.Items.Any())
             {
-                return Ok(new ResponseModel<PaginatedDataModel<UnitDto>>
+                return Ok(new ResponseModel<PagedResult<UnitDto>>
                 {
                     Success = true,
                     Message = NotifiAndAlertsResources.NoDataFound,
@@ -110,7 +110,7 @@ namespace Api.Controllers.v1.Catalog
                 });
             }
 
-            return Ok(new ResponseModel<PaginatedDataModel<UnitDto>>
+            return Ok(new ResponseModel<PagedResult<UnitDto>>
             {
                 Success = true,
                 Message = NotifiAndAlertsResources.DataRetrieved,

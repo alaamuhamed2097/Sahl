@@ -8,9 +8,9 @@ namespace BL.Contracts.Service.Vendor
 {
     public interface IVendorService : IBaseService<TbVendor, VendorDto>
     {
-        Task<PaginatedDataModel<VendorDto>> GetPage(BaseSearchCriteriaModel criteriaModel);
-        Task<PaginatedDataModel<VendorDto>> GetPageAsync(BaseSearchCriteriaModel criteriaModel);
-        Task<PaginatedDataModel<VendorDto>> SearchAsync(BaseSearchCriteriaModel criteriaModel);
+        Task<PagedResult<VendorDto>> GetPage(BaseSearchCriteriaModel criteriaModel);
+        Task<PagedResult<VendorDto>> GetPageAsync(BaseSearchCriteriaModel criteriaModel);
+        Task<PagedResult<VendorDto>> SearchAsync(BaseSearchCriteriaModel criteriaModel);
         //Task<PaginatedDataModel<VendorDto>> SearchAsync(BaseSearchCriteriaModel criteriaModel);
 
     }

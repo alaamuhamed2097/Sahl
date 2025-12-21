@@ -1,5 +1,4 @@
 ﻿using BL.Contracts.Service.ECommerce.Item;
-using Common.Enumerations.Fulfillment;
 using Common.Filters;
 using DAL.Contracts.Repositories;
 using Domains.Procedures;
@@ -25,10 +24,6 @@ namespace BL.Service.ECommerce.Item
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
-        /// <summary>
-        /// Search items with validation and business logic
-        /// Converts domain entities to DTOs
-        /// </summary>
         public async Task<PagedSpSearchResultDto> SearchItemsAsync(
             ItemFilterQuery filter,
             CancellationToken cancellationToken = default)
@@ -38,27 +33,21 @@ namespace BL.Service.ECommerce.Item
 
             try
             {
-                // Validate and sanitize
                 ValidateAndSanitizeFilter(filter);
 
-                // Execute search - gets domain entities
-                var (entities, totalCount) = await _searchRepository.SearchItemsAsync(filter, cancellationToken);
+                var result = await _searchRepository.SearchItemsAsync(filter);
 
-                // Convert entities to DTOs
-                var dtos = entities.Select(entity => MapEntityToDto(entity)).ToList();
+                var dtos = result.Items.Select(entity => MapEntityToDto(entity)).ToList();
 
-                // Enrich DTOs with badges
                 EnrichResultsWithBadges(dtos);
 
                 return new PagedSpSearchResultDto
                 {
                     Items = dtos,
-                    TotalCount = totalCount,
+                    TotalCount = result.TotalRecords,
                     PageNumber = filter.PageNumber,
                     PageSize = filter.PageSize,
-                    TotalPages = totalCount > 0
-                        ? (int)Math.Ceiling(totalCount / (double)filter.PageSize)
-                        : 0
+                    TotalPages = result.TotalPages
                 };
             }
             catch (Exception ex)
@@ -68,10 +57,6 @@ namespace BL.Service.ECommerce.Item
             }
         }
 
-        /// <summary>
-        /// Get available filter options
-        /// Converts domain data to DTOs
-        /// </summary>
         public async Task<AvailableSearchFiltersDto> GetAvailableFiltersAsync(
             AvailableFiltersQuery filtersQuery)
         {
@@ -83,10 +68,8 @@ namespace BL.Service.ECommerce.Item
 
             try
             {
-                // Get domain data from repository
                 var filterData = await _searchRepository.GetAvailableFiltersAsync(filtersQuery);
 
-                // Convert to DTOs
                 return new AvailableSearchFiltersDto
                 {
                     Categories = filterData.Categories.Select(c => new FilterOptionDto
@@ -116,8 +99,7 @@ namespace BL.Service.ECommerce.Item
                     PriceRange = new PriceRangeDto
                     {
                         MinPrice = filterData.PriceRange.MinPrice,
-                        MaxPrice = filterData.PriceRange.MaxPrice,
-                        AvgPrice = filterData.PriceRange.AvgPrice
+                        MaxPrice = filterData.PriceRange.MaxPrice
                     },
 
                     Attributes = filterData.Attributes.Select(a => new AttributeFilterDto
@@ -141,32 +123,16 @@ namespace BL.Service.ECommerce.Item
                         NameAr = c.NameAr,
                         NameEn = c.NameEn,
                         Count = c.ItemCount
-                    }).ToList(),
-
-                    Features = new FeaturesFilterDto
-                    {
-                        FreeShippingCount = filterData.Features.FreeShippingCount,
-                        HasFreeShipping = filterData.Features.HasFreeShipping == 1,
-                        WithWarrantyCount = filterData.Features.WithWarrantyCount,
-                        HasWarranty = filterData.Features.HasWarranty == 1,
-                        InStockCount = filterData.Features.InStockCount,
-                        HasInStock = filterData.Features.HasInStock == 1,
-                        TotalItems = filterData.Features.TotalItems
-                    }
+                    }).ToList()
                 };
             }
             catch (Exception ex)
             {
-                _logger.Error(ex, string.Format("Error in GetAvailableFiltersAsync with params: SearchTerm={SearchTerm}, CategoryId={CategoryId}, VendorId={VendorId}",
-                    filtersQuery.SearchTerm, filtersQuery.CategoryId, filtersQuery.VendorId));
+                _logger.Error(ex, $"Error in GetAvailableFiltersAsync");
                 throw;
             }
         }
 
-        /// <summary>
-        /// Get best prices for multiple items
-        /// Converts view entities to DTOs
-        /// </summary>
         public async Task<List<ItemBestPriceDto>> GetItemBestPricesAsync(
             List<Guid> itemIds,
             CancellationToken cancellationToken = default)
@@ -176,10 +142,8 @@ namespace BL.Service.ECommerce.Item
 
             try
             {
-                // Get view entities from DAL
-                var viewEntities = await _searchRepository.GetItemBestPricesAsync(itemIds, cancellationToken);
+                var viewEntities = await _searchRepository.GetItemBestPricesAsync(itemIds);
 
-                // Convert to DTOs
                 return viewEntities.Select(entity => new ItemBestPriceDto
                 {
                     ItemId = entity.ItemId,
@@ -197,85 +161,46 @@ namespace BL.Service.ECommerce.Item
         }
 
         /// <summary>
-        /// Map SpSearchItemsMultiVendor entity to SpSearchItemsResultDto
+        /// Map SpSearchItemsMultiVendor entity to SearchItemDto
+        /// Now includes brand names
         /// </summary>
         private SearchItemDto MapEntityToDto(SpSearchItemsMultiVendor entity)
         {
             var dto = new SearchItemDto
             {
                 ItemId = entity.ItemId,
+                ItemCombinationId = entity.ItemCombinationId,
                 TitleAr = entity.TitleAr,
                 TitleEn = entity.TitleEn,
                 ShortDescriptionAr = entity.ShortDescriptionAr,
                 ShortDescriptionEn = entity.ShortDescriptionEn,
                 CategoryId = entity.CategoryId,
                 BrandId = entity.BrandId,
+                BrandNameAr = entity.BrandNameAr,
+                BrandNameEn = entity.BrandNameEn,
                 ThumbnailImage = entity.ThumbnailImage,
                 CreatedDateUtc = entity.CreatedDateUtc,
-                MinPrice = entity.MinPrice,
-                MaxPrice = entity.MaxPrice,
-                AvgPrice = entity.AvgPrice,
-                OffersCount = entity.OffersCount,
-                FastestDelivery = entity.FastestDelivery,
-                FinalScore = entity.FinalScore
+                ItemRating = entity.ItemRating,
+                Price = entity.Price,
+                SalesPrice = entity.SalesPrice,
+                AvailableQuantity = entity.AvailableQuantity,
+                StockStatus = entity.StockStatus,
+                IsFreeShipping = entity.IsFreeShipping
             };
 
-            // Parse best offer data if available
-            if (!string.IsNullOrEmpty(entity.BestOfferDataRaw))
-            {
-                dto.BestOffer = ParseBestOfferData(entity.BestOfferDataRaw);
-            }
+            //// Calculate discount percentage
+            //if (entity.Price > entity.SalesPrice && entity.Price > 0)
+            //{
+            //    dto.DiscountPercentage = Math.Round(
+            //        ((entity.Price - entity.SalesPrice) / entity.Price) * 100, 2);
+            //}
+
+            //// Check if new (created within last 30 days)
+            //dto.IsNew = (DateTime.UtcNow - entity.CreatedDateUtc).TotalDays <= 30;
 
             return dto;
         }
 
-        /// <summary>
-        /// Parse best offer data from pipe-separated string
-        /// Format: OfferId|VendorId|SalesPrice|OriginalPrice|AvailableQuantity|IsFreeShipping|HandlingTimeInDays|IsBuyBoxWinner|FulfillmentType
-        /// </summary>
-        private BestOfferDetailsDto ParseBestOfferData(string bestOfferData)
-        {
-            try
-            {
-                var parts = bestOfferData.Split('|');
-                if (parts.Length < 9)
-                    return null;
-
-                var salesPrice = decimal.Parse(parts[2]);
-                var originalPrice = decimal.Parse(parts[3]);
-
-                var offer = new BestOfferDetailsDto
-                {
-                    OfferId = Guid.Parse(parts[0]),
-                    VendorId = Guid.Parse(parts[1]),
-                    SalesPrice = salesPrice,
-                    OriginalPrice = originalPrice,
-                    AvailableQuantity = int.Parse(parts[4]),
-                    IsFreeShipping = parts[5] == "1",
-                    EstimatedDeliveryDays = int.Parse(parts[6]),  // HandlingTimeInDays
-                    IsBuyBoxWinner = parts[7] == "1",
-                    FulfillmentType = (FulfillmentType)int.Parse(parts[8])
-                };
-
-                // Calculate discount percentage
-                if (originalPrice > salesPrice && originalPrice > 0)
-                {
-                    offer.DiscountPercentage = Math.Round(
-                        ((originalPrice - salesPrice) / originalPrice) * 100, 2);
-                }
-
-                return offer;
-            }
-            catch (Exception ex)
-            {
-                _logger.Error(ex, "Error parsing BestOfferData: {BestOfferData}", bestOfferData);
-                return null;
-            }
-        }
-
-        /// <summary>
-        /// Validate and sanitize filter parameters
-        /// </summary>
         private void ValidateAndSanitizeFilter(ItemFilterQuery filter)
         {
             if (filter.PageNumber < 1)
@@ -295,7 +220,7 @@ namespace BL.Service.ECommerce.Item
                 throw new ArgumentException("MinPrice cannot be greater than MaxPrice");
             }
 
-            var validSorts = new[] { "relevance", "price_asc", "price_desc", "newest", "rating" };
+            var validSorts = new[] { "relevance", "price_asc", "price_desc", "newest arrival", "best seller", "customer review", "featured" };
             if (!string.IsNullOrWhiteSpace(filter.SortBy))
             {
                 filter.SortBy = filter.SortBy.ToLower();
@@ -321,31 +246,93 @@ namespace BL.Service.ECommerce.Item
         }
 
         /// <summary>
-        /// Add badges to search results based on scores and properties
+        /// Add badges to search results based on item properties (Bilingual)
         /// </summary>
         private void EnrichResultsWithBadges(List<SearchItemDto> items)
         {
             foreach (var item in items)
             {
-                item.Badges = new List<string>();
+                item.Badges = new List<BadgeDto>();
 
-                if (item.FinalScore > 0.8)
-                    item.Badges.Add("مميز");
+                //// New item badge
+                //if (item.IsNew)
+                //{
+                //    item.Badges.Add(new BadgeDto
+                //    {
+                //        TextAr = "جديد",
+                //        TextEn = "New",
+                //        Type = "new",
+                //        Variant = "info"
+                //    });
+                //}
 
-                if (item.IsNew)
-                    item.Badges.Add("جديد");
+                //// Discount badge
+                //if (item.DiscountPercentage >= 20)
+                //{
+                //    item.Badges.Add(new BadgeDto
+                //    {
+                //        TextAr = $"خصم {item.DiscountPercentage:F0}%",
+                //        TextEn = $"{item.DiscountPercentage:F0}% OFF",
+                //        Type = "discount",
+                //        Variant = "danger"
+                //    });
+                //}
 
-                if (item.BestOffer?.DiscountPercentage > 20)
-                    item.Badges.Add($"خصم {item.BestOffer.DiscountPercentage:F0}%");
+                // Stock status badges
+                if (item.StockStatus == "InStock")
+                {
+                    item.Badges.Add(new BadgeDto
+                    {
+                        TextAr = "متوفر",
+                        TextEn = "In Stock",
+                        Type = "stock",
+                        Variant = "success"
+                    });
+                }
+                else if (item.StockStatus == "LimitedStock")
+                {
+                    item.Badges.Add(new BadgeDto
+                    {
+                        TextAr = "كمية محدودة",
+                        TextEn = "Limited Stock",
+                        Type = "stock",
+                        Variant = "warning"
+                    });
+                }
+                else if (item.StockStatus == "ComingSoon")
+                {
+                    item.Badges.Add(new BadgeDto
+                    {
+                        TextAr = "قريباً",
+                        TextEn = "Coming Soon",
+                        Type = "stock",
+                        Variant = "info"
+                    });
+                }
 
-                if (item.OffersCount > 5)
-                    item.Badges.Add($"{item.OffersCount} عروض");
+                // Free shipping badge
+                if (item.IsFreeShipping)
+                {
+                    item.Badges.Add(new BadgeDto
+                    {
+                        TextAr = "شحن مجاني",
+                        TextEn = "Free Shipping",
+                        Type = "shipping",
+                        Variant = "success"
+                    });
+                }
 
-                if (item.BestOffer?.IsBuyBoxWinner == true)
-                    item.Badges.Add("الأفضل مبيعاً");
-
-                if (item.BestOffer?.IsFreeShipping == true)
-                    item.Badges.Add("شحن مجاني");
+                // Rating badge (for high ratings)
+                if (item.ItemRating.HasValue && item.ItemRating >= 4.5m)
+                {
+                    item.Badges.Add(new BadgeDto
+                    {
+                        TextAr = $"⭐ {item.ItemRating:F1}",
+                        TextEn = $"⭐ {item.ItemRating:F1}",
+                        Type = "rating",
+                        Variant = "warning"
+                    });
+                }
             }
         }
     }

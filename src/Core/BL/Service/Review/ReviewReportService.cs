@@ -128,7 +128,7 @@ namespace BL.Service.Review
 		//		throw;
 		//	}
 		//}
-		public async Task<PaginatedDataModel<ReviewReportDto>> GetPaginatedReviewReportsAsync(
+		public async Task<PagedResult<ReviewReportDto>> GetPaginatedReviewReportsAsync(
 	ReviewReportSearchCriteriaModel criteriaModel,
 	CancellationToken cancellationToken = default)
 		{
@@ -207,7 +207,7 @@ namespace BL.Service.Review
 
 			var dtoList = _mapper.MapList<TbReviewReport, ReviewReportDto>(result.Items);
 
-			return new PaginatedDataModel<ReviewReportDto>(dtoList, result.TotalRecords);
+			return new PagedResult<ReviewReportDto>(dtoList, result.TotalRecords);
 		}
 
 

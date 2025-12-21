@@ -23,7 +23,7 @@ namespace BL.Service.Location
             _mapper = mapper;
         }
 
-        public async Task<PaginatedDataModel<CityDto>> GetPage(BaseSearchCriteriaModel criteriaModel)
+        public async Task<PagedResult<CityDto>> GetPage(BaseSearchCriteriaModel criteriaModel)
         {
             if (criteriaModel == null)
                 throw new ArgumentNullException(nameof(criteriaModel));
@@ -75,7 +75,7 @@ namespace BL.Service.Location
 
             var dtoList = _mapper.MapList<TbCity, CityDto>(entitiesList.Items);
 
-            return new PaginatedDataModel<CityDto>(dtoList, entitiesList.TotalRecords);
+            return new PagedResult<CityDto>(dtoList, entitiesList.TotalRecords);
         }
     }
 }

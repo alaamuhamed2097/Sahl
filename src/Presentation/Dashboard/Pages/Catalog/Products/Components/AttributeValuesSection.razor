@@ -8,10 +8,10 @@
 @using Shared.DTOs.ECommerce.Item
 @attribute [Authorize(Roles = nameof(UserRole.Admin))]
 
-<div class="card mb-4">
-    <div class="card-header">
-        <h5 class="mb-0 text-primary">Attribute Values</h5>
-        <small class="text-muted">Configure attributes for this product</small>
+<div class="card mb-4" >
+    <div class="card-header" >
+        <h5 class="mb-0 text-primary">@ECommerceResources.AttributeValues</h5>
+        <small class="text-muted">@ECommerceResources.ConfigureAttributes</small>
     </div>
     <div class="card-body">
         @if (CategoryAttributes != null && CategoryAttributes.Any())
