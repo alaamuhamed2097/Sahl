@@ -1,9 +1,9 @@
-﻿using Common.Enumerations.Payment;
+﻿using Common.Enumerations.Order;
+using Common.Enumerations.Payment;
 using Domains.Entities.CouponCode;
 using Domains.Entities.ECommerceSystem;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Common.Enumerations.Order;
 
 namespace Domains.Entities.Order
 {

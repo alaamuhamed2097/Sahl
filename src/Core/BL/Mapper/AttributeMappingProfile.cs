@@ -21,7 +21,7 @@ namespace BL.Mapper
                 .ReverseMap();
             // Attribute with options
             CreateMap<VwAttributeWithOptions, AttributeDto>()
-                .ForMember<List<AttributeOptionDto>>(dest => dest.AttributeOptions, opt => opt.MapFrom<List<AttributeOptionDto>>(src =>
+                .ForMember<List<AttributeOptionDto>>(dest => dest.AttributeOptions, opt => opt.MapFrom(src =>
                     !string.IsNullOrEmpty(src.AttributeOptionsJson)
                         ? JsonSerializer.Deserialize<List<AttributeOptionDto>>(src.AttributeOptionsJson,
                             new JsonSerializerOptions

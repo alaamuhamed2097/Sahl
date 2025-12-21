@@ -5,6 +5,7 @@ using BL.Contracts.Service.Currency;
 using BL.Contracts.Service.ECommerce.Category;
 using BL.Contracts.Service.ECommerce.Item;
 using BL.Contracts.Service.ECommerce.Unit;
+using BL.Contracts.Service.Order;
 using BL.Contracts.Service.Pricing;
 using BL.Contracts.Service.Review;
 using BL.Contracts.Service.Setting;
@@ -23,7 +24,6 @@ using BL.Service.Review;
 using BL.Service.Setting;
 using BL.Service.ShippingCompany;
 using BL.Service.Vendor;
-using BL.Services.Order;
 
 namespace Api.Extensions
 {
@@ -71,6 +71,7 @@ namespace Api.Extensions
             // Order Services
             services.AddScoped<ICartService, CartService>();
             services.AddScoped<IOrderService, OrderService>();
+            services.AddScoped<ICustomerAddressService, CustomerAddressService>();
 
             // Review Services
             services.AddScoped<IOfferReviewService, OfferReviewService>();

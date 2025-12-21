@@ -1,10 +1,11 @@
 using Api.Controllers.v1.Base;
 using Asp.Versioning;
-using BL.Services.Order;
+using BL.Contracts.Service.Order;
 using Common.Enumerations.User;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Shared.DTOs.ECommerce.Order;
+using Shared.DTOs.Order;
+using Shared.DTOs.Order.Order;
 using Shared.GeneralModels;
 
 namespace Api.Controllers.v1.Order
@@ -49,40 +50,40 @@ namespace Api.Controllers.v1.Order
                 });
         }
 
-		/// <summary>
-		/// Get My Orders - Simple List (Original)
-		/// </summary>
-		/// <remarks>
-		/// API Version: 1.0+<br/>
-		/// Requires Customer role.<br/>
-		/// Returns a simple list of customer orders without full pagination details.
-		/// </remarks>
-		[HttpGet("my-orders")]
-		[Authorize(Roles = nameof(UserRole.Customer))]
-		[ProducesResponseType(StatusCodes.Status200OK)]
-		[ProducesResponseType(StatusCodes.Status401Unauthorized)]
-		public async Task<IActionResult> GetCustomerOrders(
-			[FromQuery] int pageNumber = 1,
-			[FromQuery] int pageSize = 10)
-		{
-			var orders = await _orderService.GetCustomerOrdersAsync(UserId, pageNumber, pageSize);
+        /// <summary>
+        /// Get My Orders - Simple List (Original)
+        /// </summary>
+        /// <remarks>
+        /// API Version: 1.0+<br/>
+        /// Requires Customer role.<br/>
+        /// Returns a simple list of customer orders without full pagination details.
+        /// </remarks>
+        [HttpGet("my-orders")]
+        [Authorize(Roles = nameof(UserRole.Customer))]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        public async Task<IActionResult> GetCustomerOrders(
+            [FromQuery] int pageNumber = 1,
+            [FromQuery] int pageSize = 10)
+        {
+            var orders = await _orderService.GetCustomerOrdersAsync(UserId, pageNumber, pageSize);
 
-			return Ok(new ResponseModel<List<OrderListItemDto>>
-			{
-				Success = true,
-				Message = "Data retrieved successfully.",
-				Data = orders
-			});
-		}
+            return Ok(new ResponseModel<List<OrderListItemDto>>
+            {
+                Success = true,
+                Message = "Data retrieved successfully.",
+                Data = orders
+            });
+        }
 
-		/// <summary>
-		/// Get Order by ID
-		/// </summary>
-		/// <remarks>
-		/// API Version: 1.0+<br/>
-		/// Requires Customer, Admin, or Vendor role.
-		/// </remarks>
-		[HttpGet("{orderId}")]
+        /// <summary>
+        /// Get Order by ID
+        /// </summary>
+        /// <remarks>
+        /// API Version: 1.0+<br/>
+        /// Requires Customer, Admin, or Vendor role.
+        /// </remarks>
+        [HttpGet("{orderId}")]
         [Authorize(Roles = nameof(UserRole.Customer) + "," + nameof(UserRole.Admin) + "," + nameof(UserRole.Vendor))]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]

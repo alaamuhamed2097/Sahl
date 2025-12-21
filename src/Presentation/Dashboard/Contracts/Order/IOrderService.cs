@@ -1,5 +1,5 @@
 ﻿using Dashboard.Models.pagintion;
-using Shared.DTOs.ECommerce.Order;
+using Shared.DTOs.Order.Order;
 using Shared.GeneralModels;
 using Shared.GeneralModels.SearchCriteriaModels;
 

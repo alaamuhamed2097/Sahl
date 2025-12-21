@@ -2,7 +2,7 @@
 using Dashboard.Contracts.General;
 using Dashboard.Contracts.Order;
 using Resources;
-using Shared.DTOs.ECommerce.Order;
+using Shared.DTOs.Order;
 using Shared.GeneralModels;
 
 namespace Dashboard.Services.Order

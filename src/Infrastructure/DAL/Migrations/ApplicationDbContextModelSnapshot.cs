@@ -3174,6 +3174,9 @@ namespace DAL.Migrations
                         .HasColumnType("uniqueidentifier")
                         .HasDefaultValueSql("NEWID()");
 
+                    b.Property<string>("ApplicationUserId")
+                        .HasColumnType("nvarchar(450)");
+
                     b.Property<Guid>("CityId")
                         .HasColumnType("uniqueidentifier");
 
@@ -3186,7 +3189,9 @@ namespace DAL.Migrations
                         .HasDefaultValueSql("GETUTCDATE()");
 
                     b.Property<bool>("IsDefault")
-                        .HasColumnType("bit");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
 
                     b.Property<bool>("IsDeleted")
                         .ValueGeneratedOnAdd()
@@ -3196,17 +3201,23 @@ namespace DAL.Migrations
                     b.Property<string>("PhoneCode")
                         .IsRequired()
                         .HasMaxLength(4)
-                        .HasColumnType("nvarchar(4)");
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(4)");
 
                     b.Property<string>("PhoneNumber")
                         .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
+                        .HasMaxLength(15)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(15)");
 
                     b.Property<string>("RecipientName")
                         .IsRequired()
                         .HasMaxLength(100)
+                        .IsUnicode(true)
                         .HasColumnType("nvarchar(100)");
+
+                    b.Property<Guid?>("TbCityId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid?>("UpdatedBy")
                         .HasColumnType("uniqueidentifier");
@@ -3216,15 +3227,35 @@ namespace DAL.Migrations
 
                     b.Property<string>("UserId")
                         .IsRequired()
+                        .HasMaxLength(450)
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("IsDeleted");
+                    b.HasIndex("ApplicationUserId");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("CityId")
+                        .HasDatabaseName("IX_CustomerAddress_CityId");
 
-                    b.ToTable("TbCustomerAddresses");
+                    b.HasIndex("IsDeleted")
+                        .HasDatabaseName("IX_CustomerAddress_IsDeleted");
+
+                    b.HasIndex("TbCityId");
+
+                    b.HasIndex("UserId", "IsDeleted")
+                        .HasDatabaseName("IX_CustomerAddress_UserId_IsDeleted")
+                        .HasFilter("[IsDeleted] = 0");
+
+                    b.HasIndex("UserId", "IsDefault", "IsDeleted")
+                        .HasDatabaseName("IX_CustomerAddress_UserId_IsDefault_IsDeleted")
+                        .HasFilter("[IsDefault] = 1 AND [IsDeleted] = 0");
+
+                    b.ToTable("TbCustomerAddresses", null, t =>
+                        {
+                            t.HasCheckConstraint("CK_CustomerAddress_PhoneCode_Format", "[PhoneCode] LIKE '+[0-9]%' OR [PhoneCode] NOT LIKE '%[^0-9]%'");
+
+                            t.HasCheckConstraint("CK_CustomerAddress_PhoneNumber_Format", "[PhoneNumber] NOT LIKE '%[^0-9]%'");
+                        });
                 });
 
             modelBuilder.Entity("Domains.Entities.ECommerceSystem.Vendor.TbVendor", b =>
@@ -7108,6 +7139,51 @@ namespace DAL.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
+            modelBuilder.Entity("Domains.Procedures.SpGetAvailableOptionsForSelection", b =>
+                {
+                    b.Property<string>("Barcode")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid?>("CombinationId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("ImagesJson")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsAvailable")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Message")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("MissingAttributesJson")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("OffersJson")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("SKU")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("SelectedAttributesJson")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("SummaryJson")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.ToTable((string)null);
+
+                    b.ToView("SpGetAvailableOptionsForSelection", (string)null);
+                });
+
             modelBuilder.Entity("Domains.Procedures.SpGetAvailableSearchFilters", b =>
                 {
                     b.Property<string>("AttributesJson")
@@ -7131,6 +7207,106 @@ namespace DAL.Migrations
                     b.ToTable((string)null);
 
                     b.ToView("SpGetAvailableSearchFilters", (string)null);
+                });
+
+            modelBuilder.Entity("Domains.Procedures.SpGetItemDetails", b =>
+                {
+                    b.Property<string>("AttributesJson")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal>("AverageRating")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<Guid?>("BrandId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("BrandLogoUrl")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("BrandNameAr")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("BrandNameEn")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("CategoryId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("CategoryNameAr")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CategoryNameEn")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("DefaultCombinationJson")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("DescriptionAr")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("DescriptionEn")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("GeneralImagesJson")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("HasCombinations")
+                        .HasColumnType("bit");
+
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<bool>("IsMultiVendor")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("PricingJson")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PricingSystemNameAr")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PricingSystemNameEn")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("PricingSystemType")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ShortDescriptionAr")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ShortDescriptionEn")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ThumbnailImage")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("TitleAr")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("TitleEn")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.ToTable((string)null);
+
+                    b.ToView("SpGetItemDetails", (string)null);
                 });
 
             modelBuilder.Entity("Domains.Procedures.SpSearchItemsMultiVendor", b =>
@@ -8290,11 +8466,27 @@ namespace DAL.Migrations
 
             modelBuilder.Entity("Domains.Entities.ECommerceSystem.TbCustomerAddress", b =>
                 {
-                    b.HasOne("Domains.Identity.ApplicationUser", "User")
+                    b.HasOne("Domains.Identity.ApplicationUser", null)
                         .WithMany("CustomerAddresses")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .HasForeignKey("ApplicationUserId");
+
+                    b.HasOne("Domains.Entities.Location.TbCity", "City")
+                        .WithMany()
+                        .HasForeignKey("CityId")
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
+
+                    b.HasOne("Domains.Entities.Location.TbCity", null)
+                        .WithMany("CustomerAddresses")
+                        .HasForeignKey("TbCityId");
+
+                    b.HasOne("Domains.Identity.ApplicationUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("City");
 
                     b.Navigation("User");
                 });
@@ -9147,6 +9339,11 @@ namespace DAL.Migrations
             modelBuilder.Entity("Domains.Entities.ECommerceSystem.Support.TbSupportTicket", b =>
                 {
                     b.Navigation("SupportTicketMessages");
+                });
+
+            modelBuilder.Entity("Domains.Entities.Location.TbCity", b =>
+                {
+                    b.Navigation("CustomerAddresses");
                 });
 
             modelBuilder.Entity("Domains.Entities.Location.TbCountry", b =>

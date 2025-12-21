@@ -1,5 +1,5 @@
 ﻿using BL.Contracts.IMapper;
-using BL.Services.Order;
+using BL.Contracts.Service.Order;
 using Common.Enumerations.Fulfillment;
 using Common.Enumerations.Order;
 using Common.Enumerations.Payment;
@@ -15,7 +15,8 @@ using Domains.Entities.Shipping;
 using Domains.Entities.Warehouse;
 using Serilog;
 using Shared.DTOs.ECommerce.Cart;
-using Shared.DTOs.ECommerce.Order;
+using Shared.DTOs.Order;
+using Shared.DTOs.Order.Order;
 
 namespace BL.Service.Order
 {

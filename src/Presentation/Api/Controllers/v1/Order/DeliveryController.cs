@@ -1,8 +1,8 @@
 using Asp.Versioning;
+using BL.Contracts.Service.Order;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Shared.DTOs.ECommerce.Shipment;
-using BL.Services.Order;
 using System.Security.Claims;
 
 namespace Api.Controllers.v1.Order
@@ -107,7 +107,7 @@ namespace Api.Controllers.v1.Order
                 _logger.LogInformation($"User {userId} confirming delivery for shipment {shipmentId}");
 
                 var result = await _deliveryService.CompleteDeliveryAsync(shipmentId);
-                
+
                 if (!result)
                     return BadRequest(new { message = "Failed to complete delivery" });
 
@@ -140,7 +140,7 @@ namespace Api.Controllers.v1.Order
                 _logger.LogInformation($"User {userId} confirming completion for order {orderId}");
 
                 var result = await _deliveryService.ConfirmOrderCompletionAsync(orderId);
-                
+
                 if (!result)
                     return BadRequest(new { message = "Order cannot be completed at this stage" });
 
@@ -200,7 +200,7 @@ namespace Api.Controllers.v1.Order
                 _logger.LogInformation($"Customer {customerId} initiating return for shipment {shipmentId}. Reason: {request.Reason}");
 
                 var result = await _deliveryService.InitiateReturnAsync(shipmentId, request.Reason);
-                
+
                 if (!result)
                     return BadRequest(new { message = "Return cannot be initiated at this stage" });
 
@@ -233,7 +233,7 @@ namespace Api.Controllers.v1.Order
                 _logger.LogInformation($"User {userId} processing return for shipment {shipmentId}. Approved: {request.Approved}");
 
                 var result = await _deliveryService.ProcessReturnAsync(shipmentId, request.Approved);
-                
+
                 if (!result)
                     return BadRequest(new { message = "Failed to process return" });
 
