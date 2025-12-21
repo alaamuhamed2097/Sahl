@@ -1,5 +1,4 @@
-﻿using System;
-using Microsoft.EntityFrameworkCore.Migrations;
+﻿using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
@@ -11,6 +10,7 @@ namespace DAL.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.Sql("delete from TbBuyBoxCalculations");
             migrationBuilder.DropForeignKey(
                 name: "FK_TbBuyBoxCalculations_TbOffers_TbOfferId",
                 table: "TbBuyBoxCalculations");
