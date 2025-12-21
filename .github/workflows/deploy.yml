@@ -317,18 +317,48 @@ jobs:
             $appsettings = Get-Content $appsettingsPath | ConvertFrom-Json
             $connectionString = $appsettings.ConnectionStrings.DefaultConnection
             
-            $pendingMigrations = dotnet ef migrations list --project "$env:GITHUB_WORKSPACE\src\Infrastructure\DAL" --startup-project "$env:GITHUB_WORKSPACE\src\Presentation\Api" --connection "$connectionString" --no-build 2>&1 | Select-String "Pending"
+            Write-Host "Building projects for EF migrations check..."
             
-            if ($pendingMigrations) {
-              Write-Host "⚠️ Found pending migrations:" -ForegroundColor Yellow
-              Write-Host $pendingMigrations -ForegroundColor Yellow
+            # عمل build للـ DAL و Api projects في Release mode
+            dotnet build "$env:GITHUB_WORKSPACE\src\Infrastructure\DAL\DAL.csproj" -c Release --no-restore
+            dotnet build "$env:GITHUB_WORKSPACE\src\Presentation\Api\Api.csproj" -c Release --no-restore
+            
+            Write-Host ""
+            Write-Host "Running EF migrations list..."
+            
+            # استخدام EF بدون --no-build أو مع --configuration Release
+            $migrationsOutput = dotnet ef migrations list `
+              --project "$env:GITHUB_WORKSPACE\src\Infrastructure\DAL" `
+              --startup-project "$env:GITHUB_WORKSPACE\src\Presentation\Api" `
+              --connection "$connectionString" `
+              --configuration Release `
+              2>&1
+            
+            Write-Host ""
+            Write-Host "Migrations output:"
+            $migrationsOutput | ForEach-Object { Write-Host $_ }
+            
+            # البحث عن pending migrations
+            $hasPending = $false
+            foreach ($line in $migrationsOutput) {
+              if ($line -match "Pending" -or $line -match "\(Pending\)") {
+                $hasPending = $true
+                Write-Host ""
+                Write-Host "⚠️ Found pending migration: $line" -ForegroundColor Yellow
+              }
+            }
+            
+            if ($hasPending) {
+              Write-Host ""
+              Write-Host "⚠️ There are pending migrations to apply" -ForegroundColor Yellow
               echo "HAS_PENDING_MIGRATIONS=true" >> $env:GITHUB_OUTPUT
             } else {
+              Write-Host ""
               Write-Host "✅ No pending migrations found" -ForegroundColor Green
               echo "HAS_PENDING_MIGRATIONS=false" >> $env:GITHUB_OUTPUT
             }
           } else {
-            Write-Host "⚠️ appsettings.json not found" -ForegroundColor Yellow
+            Write-Host "⚠️ appsettings.json not found at: $appsettingsPath" -ForegroundColor Yellow
             echo "HAS_PENDING_MIGRATIONS=false" >> $env:GITHUB_OUTPUT
           }
       
@@ -346,17 +376,29 @@ jobs:
           $connectionString = $appsettings.ConnectionStrings.DefaultConnection
           
           try {
-            dotnet ef database update --project "$env:GITHUB_WORKSPACE\src\Infrastructure\DAL" --startup-project "$env:GITHUB_WORKSPACE\src\Presentation\Api" --connection "$connectionString" --no-build --verbose
+            Write-Host "Starting database update..."
+            Write-Host "Connection: $($connectionString -replace 'password=[^;]+', 'password=***')"
+            
+            dotnet ef database update `
+              --project "$env:GITHUB_WORKSPACE\src\Infrastructure\DAL" `
+              --startup-project "$env:GITHUB_WORKSPACE\src\Presentation\Api" `
+              --connection "$connectionString" `
+              --configuration Release `
+              --no-build `
+              --verbose
             
             if ($LASTEXITCODE -eq 0) {
+              Write-Host ""
               Write-Host "✅ Migrations applied successfully!" -ForegroundColor Green
               echo "MIGRATION_SUCCESS=true" >> $env:GITHUB_OUTPUT
             } else {
-              Write-Host "❌ Migration failed!" -ForegroundColor Red
+              Write-Host ""
+              Write-Host "❌ Migration failed with exit code: $LASTEXITCODE" -ForegroundColor Red
               echo "MIGRATION_SUCCESS=false" >> $env:GITHUB_OUTPUT
               exit 1
             }
           } catch {
+            Write-Host ""
             Write-Host "❌ Migration error: $($_.Exception.Message)" -ForegroundColor Red
             echo "MIGRATION_SUCCESS=false" >> $env:GITHUB_OUTPUT
             exit 1
