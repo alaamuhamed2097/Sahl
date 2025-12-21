@@ -3,7 +3,7 @@ using Domains.Entities.Order;
 using Domains.Entities.Shipping;
 using Shared.DTOs.ECommerce;
 using Shared.DTOs.ECommerce.CouponCode;
-using Shared.DTOs.ECommerce.Order;
+using Shared.DTOs.Order.Order;
 
 namespace BL.Mapper
 {

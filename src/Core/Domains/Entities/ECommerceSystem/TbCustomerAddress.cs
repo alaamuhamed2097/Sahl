@@ -1,3 +1,4 @@
+using Domains.Entities.Location;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -25,5 +26,6 @@ namespace Domains.Entities.ECommerceSystem
         public bool IsDefault { get; set; }
 
         public virtual ApplicationUser User { get; set; } = null!;
+        public virtual TbCity City { get; set; } = null!;
     }
 }

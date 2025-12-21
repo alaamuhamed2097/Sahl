@@ -3169,6 +3169,9 @@ namespace DAL.Migrations
                         .HasColumnType("uniqueidentifier")
                         .HasDefaultValueSql("NEWID()");
 
+                    b.Property<string>("ApplicationUserId")
+                        .HasColumnType("nvarchar(450)");
+
                     b.Property<Guid>("CityId")
                         .HasColumnType("uniqueidentifier");
 
@@ -3181,7 +3184,9 @@ namespace DAL.Migrations
                         .HasDefaultValueSql("GETUTCDATE()");
 
                     b.Property<bool>("IsDefault")
-                        .HasColumnType("bit");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
 
                     b.Property<bool>("IsDeleted")
                         .ValueGeneratedOnAdd()
@@ -3191,17 +3196,23 @@ namespace DAL.Migrations
                     b.Property<string>("PhoneCode")
                         .IsRequired()
                         .HasMaxLength(4)
-                        .HasColumnType("nvarchar(4)");
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(4)");
 
                     b.Property<string>("PhoneNumber")
                         .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
+                        .HasMaxLength(15)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(15)");
 
                     b.Property<string>("RecipientName")
                         .IsRequired()
                         .HasMaxLength(100)
+                        .IsUnicode(true)
                         .HasColumnType("nvarchar(100)");
+
+                    b.Property<Guid?>("TbCityId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid?>("UpdatedBy")
                         .HasColumnType("uniqueidentifier");
@@ -3211,15 +3222,35 @@ namespace DAL.Migrations
 
                     b.Property<string>("UserId")
                         .IsRequired()
+                        .HasMaxLength(450)
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("IsDeleted");
+                    b.HasIndex("ApplicationUserId");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("CityId")
+                        .HasDatabaseName("IX_CustomerAddress_CityId");
 
-                    b.ToTable("TbCustomerAddresses");
+                    b.HasIndex("IsDeleted")
+                        .HasDatabaseName("IX_CustomerAddress_IsDeleted");
+
+                    b.HasIndex("TbCityId");
+
+                    b.HasIndex("UserId", "IsDeleted")
+                        .HasDatabaseName("IX_CustomerAddress_UserId_IsDeleted")
+                        .HasFilter("[IsDeleted] = 0");
+
+                    b.HasIndex("UserId", "IsDefault", "IsDeleted")
+                        .HasDatabaseName("IX_CustomerAddress_UserId_IsDefault_IsDeleted")
+                        .HasFilter("[IsDefault] = 1 AND [IsDeleted] = 0");
+
+                    b.ToTable("TbCustomerAddresses", null, t =>
+                        {
+                            t.HasCheckConstraint("CK_CustomerAddress_PhoneCode_Format", "[PhoneCode] LIKE '+[0-9]%' OR [PhoneCode] NOT LIKE '%[^0-9]%'");
+
+                            t.HasCheckConstraint("CK_CustomerAddress_PhoneNumber_Format", "[PhoneNumber] NOT LIKE '%[^0-9]%'");
+                        });
                 });
 
             modelBuilder.Entity("Domains.Entities.ECommerceSystem.Vendor.TbVendor", b =>
@@ -8396,11 +8427,27 @@ namespace DAL.Migrations
 
             modelBuilder.Entity("Domains.Entities.ECommerceSystem.TbCustomerAddress", b =>
                 {
-                    b.HasOne("Domains.Identity.ApplicationUser", "User")
+                    b.HasOne("Domains.Identity.ApplicationUser", null)
                         .WithMany("CustomerAddresses")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .HasForeignKey("ApplicationUserId");
+
+                    b.HasOne("Domains.Entities.Location.TbCity", "City")
+                        .WithMany()
+                        .HasForeignKey("CityId")
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
+
+                    b.HasOne("Domains.Entities.Location.TbCity", null)
+                        .WithMany("CustomerAddresses")
+                        .HasForeignKey("TbCityId");
+
+                    b.HasOne("Domains.Identity.ApplicationUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("City");
 
                     b.Navigation("User");
                 });
@@ -9237,6 +9284,11 @@ namespace DAL.Migrations
             modelBuilder.Entity("Domains.Entities.ECommerceSystem.Support.TbSupportTicket", b =>
                 {
                     b.Navigation("SupportTicketMessages");
+                });
+
+            modelBuilder.Entity("Domains.Entities.Location.TbCity", b =>
+                {
+                    b.Navigation("CustomerAddresses");
                 });
 
             modelBuilder.Entity("Domains.Entities.Location.TbCountry", b =>

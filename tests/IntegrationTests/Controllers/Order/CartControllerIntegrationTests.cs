@@ -1,5 +1,5 @@
 using Api.Controllers.v1.Order;
-using BL.Services.Order;
+using BL.Contracts.Service.Order;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;

@@ -1,6 +1,6 @@
 using Api.Controllers.v1.Base;
 using Asp.Versioning;
-using BL.Services.Order;
+using BL.Contracts.Service.Order;
 using Common.Enumerations.User;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;

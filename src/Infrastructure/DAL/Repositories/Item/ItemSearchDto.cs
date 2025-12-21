@@ -194,6 +194,4 @@ namespace DAL.Repositories.Item
         /// </summary>
         public decimal? AvgPrice { get; set; }
     }
-
-
 }

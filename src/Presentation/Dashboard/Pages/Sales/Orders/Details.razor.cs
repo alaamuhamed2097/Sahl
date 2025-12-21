@@ -8,7 +8,8 @@ using Microsoft.Extensions.Options;
 using Microsoft.JSInterop;
 using Resources;
 using Shared.DTOs.ECommerce;
-using Shared.DTOs.ECommerce.Order;
+using Shared.DTOs.Order;
+using Shared.DTOs.Order.Order;
 
 namespace Dashboard.Pages.Sales.Orders
 {

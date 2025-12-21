@@ -1,4 +1,4 @@
-﻿using Shared.DTOs.ECommerce.Order;
+﻿using Shared.DTOs.Order;
 using Shared.GeneralModels;
 
 namespace Dashboard.Contracts.Order
