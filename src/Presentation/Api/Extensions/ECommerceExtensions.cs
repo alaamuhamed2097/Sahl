@@ -2,6 +2,7 @@
 using BL.Contracts.Service.Brand;
 using BL.Contracts.Service.CouponCode;
 using BL.Contracts.Service.Currency;
+using BL.Contracts.Service.Customer.Wishlist;
 using BL.Contracts.Service.ECommerce.Category;
 using BL.Contracts.Service.ECommerce.Item;
 using BL.Contracts.Service.ECommerce.Unit;
@@ -14,6 +15,7 @@ using BL.Contracts.Service.Vendor;
 using BL.GeneralService.Location;
 using BL.Service.Brand;
 using BL.Service.Currency;
+using BL.Service.Customer.Wishlist;
 using BL.Service.ECommerce.Category;
 using BL.Service.ECommerce.Item;
 using BL.Service.ECommerce.Unit;
@@ -72,6 +74,8 @@ namespace Api.Extensions
             services.AddScoped<ICartService, CartService>();
             services.AddScoped<IOrderService, OrderService>();
             services.AddScoped<ICustomerAddressService, CustomerAddressService>();
+
+            services.AddScoped<IWishlistService, WishlistService>();
 
             // Review Services
             services.AddScoped<IOfferReviewService, OfferReviewService>();

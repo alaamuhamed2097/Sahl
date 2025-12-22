@@ -1,5 +1,5 @@
 ﻿using Common.Enumerations.FieldType;
-using Common.Enumerations.Offer;
+using Common.Enumerations.Pricing;
 
 namespace Shared.DTOs.ECommerce.Item
 {
@@ -22,7 +22,7 @@ namespace Shared.DTOs.ECommerce.Item
 
         public bool HasCombinations { get; set; }
         public bool IsMultiVendor { get; set; }
-        public int PricingSystemType { get; set; }
+        public PricingSystemType PricingSystemType { get; set; }
         public string PricingSystemName { get; set; }
 
         public decimal AverageRating { get; set; }
@@ -95,131 +95,5 @@ namespace Shared.DTOs.ECommerce.Item
         public bool IsDefault { get; set; }
         public List<SelectedAttributeDto>? SelectedAttributes { get; set; }
         public List<ItemImageDto>? Images { get; set; }
-    }
-
-    public class SelectedAttributeDto
-    {
-        public Guid AttributeId { get; set; }
-        public string AttributeNameAr { get; set; } = null!;
-        public string AttributeNameEn { get; set; } = null!;
-        public Guid CombinationValueId { get; set; }
-        public string Value { get; set; }
-    }
-
-    public class PricingDto
-    {
-        public int VendorCount { get; set; }
-        public decimal MinPrice { get; set; }
-        public decimal MaxPrice { get; set; }
-        public BestPriceOfferDto BestOffer { get; set; } = new BestPriceOfferDto();
-    }
-
-    public class BestPriceOfferDto
-    {
-        public Guid OfferId { get; set; }
-        public Guid VendorId { get; set; }
-        public string? VendorName { get; set; }
-        public decimal? VendorRating { get; set; }
-        public decimal Price { get; set; }
-        public decimal SalesPrice { get; set; }
-        public decimal DiscountPercentage { get; set; }
-        public int AvailableQuantity { get; set; }
-        public StockStatus StockStatus { get; set; }
-        public bool IsFreeShipping { get; set; }
-        public int EstimatedDeliveryDays { get; set; }
-        public bool IsBuyBoxWinner { get; set; }
-        public int MinOrderQuantity { get; set; }
-        public int MaxOrderQuantity { get; set; }
-        public List<QuantityTierDto>? QuantityTiers { get; set; }
-    }
-
-    public class QuantityTierDto
-    {
-        public int MinQuantity { get; set; }
-        public int? MaxQuantity { get; set; }
-        public decimal UnitPrice { get; set; }
-    }
-
-    /// <summary>
-    /// Response for POST /api/items/{id}/combination
-    /// </summary>
-    public class CombinationDetailsDto
-    {
-        public Guid? CombinationId { get; set; }
-        public string SKU { get; set; }
-        public string Barcode { get; set; }
-        public bool IsAvailable { get; set; }
-        public string Message { get; set; }
-
-        public List<SelectedAttributeDto> SelectedAttributes { get; set; }
-        public List<ItemImageDto> Images { get; set; }
-        public List<VendorOfferDto> Offers { get; set; }
-        public CombinationSummaryDto Summary { get; set; }
-
-        /// <summary>
-        /// If incomplete selection, shows missing attributes
-        /// </summary>
-        public List<MissingAttributeDto> MissingAttributes { get; set; }
-    }
-
-    public class VendorOfferDto
-    {
-        public Guid OfferId { get; set; }
-        public Guid VendorId { get; set; }
-        public string VendorName { get; set; }
-        public string VendorNameAr { get; set; }
-        public decimal VendorRating { get; set; }
-        public string VendorLogoUrl { get; set; }
-        public decimal Price { get; set; }
-        public decimal SalesPrice { get; set; }
-        public decimal DiscountPercentage { get; set; }
-        public int AvailableQuantity { get; set; }
-        public StockStatus StockStatus { get; set; }
-        public bool IsFreeShipping { get; set; }
-        public decimal ShippingCost { get; set; }
-        public int EstimatedDeliveryDays { get; set; }
-        public bool IsBuyBoxWinner { get; set; }
-        public bool HasWarranty { get; set; }
-        public string ConditionNameAr { get; set; }
-        public string ConditionNameEn { get; set; }
-        public string WarrantyTypeAr { get; set; }
-        public string WarrantyTypeEn { get; set; }
-        public int? WarrantyPeriodMonths { get; set; }
-        public int MinOrderQuantity { get; set; }
-        public int MaxOrderQuantity { get; set; }
-        public List<QuantityTierDto>? QuantityTiers { get; set; }
-        public int OfferRank { get; set; }
-    }
-
-    public class CombinationSummaryDto
-    {
-        public int TotalVendors { get; set; }
-        public bool IsMultiVendor { get; set; }
-        public decimal MinPrice { get; set; }
-        public decimal MaxPrice { get; set; }
-        public decimal AvgPrice { get; set; }
-        public int TotalStock { get; set; }
-    }
-
-    public class MissingAttributeDto
-    {
-        public Guid AttributeId { get; set; }
-        public string NameAr { get; set; }
-        public string NameEn { get; set; }
-        public string Status { get; set; }
-    }
-
-    /// <summary>
-    /// Request body for POST /api/items/{id}/combination
-    /// </summary>
-    public class GetCombinationRequest
-    {
-        public List<AttributeSelectionDto> SelectedAttributes { get; set; }
-    }
-
-    public class AttributeSelectionDto
-    {
-        public Guid AttributeId { get; set; }
-        public Guid ValueId { get; set; }
     }
 }

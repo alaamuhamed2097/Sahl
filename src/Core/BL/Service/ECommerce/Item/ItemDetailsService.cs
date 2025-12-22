@@ -31,31 +31,29 @@ namespace BL.Service.ECommerce.Item
             return _mapper.MapModel<SpGetItemDetails,ItemDetailsDto>(result);
         }
 
-        public async Task<CombinationDetailsDto> GetCombinationByAttributesAsync(
-            Guid itemId,
-            GetCombinationRequest request)
+        public async Task<ItemDetailsDto> GetCombinationByAttributesAsync(CombinationRequest request)
         {
-            if (request?.SelectedAttributes == null || !request.SelectedAttributes.Any())
+            if (request?.SelectedValueIds == null || !request.SelectedValueIds.Any())
             {
                 throw new ArgumentException("Selected attributes are required");
             }
 
-            var selections = request.SelectedAttributes
+            var selections = request.SelectedValueIds
                 .Select(a => new AttributeSelection
                 {
-                    AttributeId = a.AttributeId,
-                    ValueId = a.ValueId
+                    CombinationAttributeValueId = a.CombinationAttributeValueId,
+                    IsLastSelected = a.IsLastSelected
                 })
                 .ToList();
 
-            var result = await _repository.GetCombinationByAttributesAsync(itemId, selections);
+            var result = await _repository.GetCombinationByAttributesAsync(selections);
 
             if (result == null)
             {
-                throw new KeyNotFoundException($"Could not process combination for item {itemId}");
+                throw new KeyNotFoundException($"Could not process combination for this selection!!");
             }
 
-            return MapCombinationToDto(result);
+            return _mapper.MapModel<SpGetItemDetails, ItemDetailsDto>(result);
         }
 
         #region Private Mapping Methods
