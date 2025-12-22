@@ -246,47 +246,5 @@ namespace Api.Controllers.v1.Order
                 Data = new { AddressId = addressId }
             });
         }
-
-        /// <summary>
-        /// Validate address for order creation
-        /// </summary>
-        /// <remarks>
-        /// API Version: 1.0+<br/>
-        /// Requires Customer role.<br/>
-        /// Validates that an address exists and belongs to the user before order creation.
-        /// </remarks>
-        [HttpGet("{addressId}/validate")]
-        [Authorize(Roles = nameof(UserRole.Customer))]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> ValidateAddress(Guid addressId)
-        {
-            var isValid = await _addressService.ValidateAddressOwnershipAsync(addressId, UserId);
-
-            if (!isValid)
-            {
-                return NotFound(new ResponseModel<AddressValidationDto>
-                {
-                    Success = false,
-                    Message = "Address not found or invalid.",
-                    Data = new AddressValidationDto
-                    {
-                        IsValid = false,
-                        AddressId = addressId
-                    }
-                });
-            }
-
-            return Ok(new ResponseModel<AddressValidationDto>
-            {
-                Success = true,
-                Message = "Address is valid.",
-                Data = new AddressValidationDto
-                {
-                    IsValid = true,
-                    AddressId = addressId
-                }
-            });
-        }
     }
 }
