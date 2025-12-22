@@ -43,26 +43,23 @@ namespace Api.Controllers.v1.Catalog
         /// Get combination details by selected attributes
         /// Returns images, prices, and offers for the specific combination
         /// </summary>
-        /// <param name="id">Item ID</param>
         /// <param name="request">Selected attribute values</param>
         /// <returns>Combination details with all vendor offers</returns>
         /// <response code="200">Returns the combination details</response>
         /// <response code="400">Invalid or incomplete attribute selection</response>
         /// <response code="404">Item not found or combination not available</response>
-        [HttpPost("{id}/combination")]
+        [HttpPost("combination")]
         [ProducesResponseType(typeof(CombinationDetailsDto), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> GetCombinationByAttributes(
-            [FromRoute] Guid id,
-            [FromBody] CombinationRequest request)
+        public async Task<IActionResult> GetCombinationByAttributes([FromBody] CombinationRequest request)
         {
             if (request?.SelectedValueIds == null || request.SelectedValueIds.Count == 0)
             {
                 return BadRequest(new { message = "Selected attributes are required" });
             }
 
-            var result = await _itemDetailsService.GetCombinationByAttributesAsync(id, request);
+            var result = await _itemDetailsService.GetCombinationByAttributesAsync(request);
 
            if (result == null)
                 return NotFound(new { message = "Item or combination not found" });

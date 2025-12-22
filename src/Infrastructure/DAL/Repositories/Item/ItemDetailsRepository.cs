@@ -44,9 +44,7 @@ namespace DAL.Repositories.Item
         /// <summary>
         /// Get combination details by selected attributes
         /// </summary>
-        public async Task<SpGetItemDetails> GetCombinationByAttributesAsync(
-            Guid itemId,
-            List<AttributeSelection> selectedAttributes)
+        public async Task<SpGetItemDetails> GetCombinationByAttributesAsync(List<AttributeSelection> selectedAttributes)
         {
             if (selectedAttributes == null || !selectedAttributes.Any())
             {
@@ -81,7 +79,7 @@ namespace DAL.Repositories.Item
             }
             catch (Exception ex)
             {
-                _logger.Error(ex, "Error getting combination by attributes for ItemId: {ItemId}", itemId);
+                _logger.Error(ex, "Error getting combination by attributes for this selection ");
                 throw new DataAccessException("Failed to retrieve combination details", ex, _logger);
             }
         }

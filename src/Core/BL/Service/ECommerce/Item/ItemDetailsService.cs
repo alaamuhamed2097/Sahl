@@ -31,9 +31,7 @@ namespace BL.Service.ECommerce.Item
             return _mapper.MapModel<SpGetItemDetails,ItemDetailsDto>(result);
         }
 
-        public async Task<ItemDetailsDto> GetCombinationByAttributesAsync(
-            Guid itemId,
-            CombinationRequest request)
+        public async Task<ItemDetailsDto> GetCombinationByAttributesAsync(CombinationRequest request)
         {
             if (request?.SelectedValueIds == null || !request.SelectedValueIds.Any())
             {
@@ -48,11 +46,11 @@ namespace BL.Service.ECommerce.Item
                 })
                 .ToList();
 
-            var result = await _repository.GetCombinationByAttributesAsync(itemId, selections);
+            var result = await _repository.GetCombinationByAttributesAsync(selections);
 
             if (result == null)
             {
-                throw new KeyNotFoundException($"Could not process combination for item {itemId}");
+                throw new KeyNotFoundException($"Could not process combination for this selection!!");
             }
 
             return _mapper.MapModel<SpGetItemDetails, ItemDetailsDto>(result);
