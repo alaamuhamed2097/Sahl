@@ -205,10 +205,13 @@ jobs:
             $appsettings = Get-Content $appsettingsPath | ConvertFrom-Json
             $connectionString = $appsettings.ConnectionStrings.DefaultConnection
             
-            if ($connectionString -match "Server=([^;]+).*Database=([^;]+)") {
-              $serverName = $matches[1]
-              $databaseName = $matches[2]
-              
+            # استخراج معلومات الاتصال من connection string
+            if ($connectionString -match "Server=([^;]+)") { $serverName = $matches[1].Trim() }
+            if ($connectionString -match "Database=([^;]+)") { $databaseName = $matches[1].Trim() }
+            if ($connectionString -match "user id=([^;]+)") { $userId = $matches[1].Trim() }
+            if ($connectionString -match "password=([^;]+)") { $password = $matches[1].Trim() }
+            
+            if ($serverName -and $databaseName -and $userId -and $password) {
               $timestamp = Get-Date -Format "yyyyMMdd_HHmmss"
               $backupPath = "C:\temp\db-backups\${databaseName}_${timestamp}.bak"
               
@@ -218,32 +221,86 @@ jobs:
               
               Write-Host "Database: $databaseName"
               Write-Host "Server: $serverName"
+              Write-Host "User: $userId"
               Write-Host "Backup Path: $backupPath"
               
               try {
                 $backupQuery = "BACKUP DATABASE [$databaseName] TO DISK = N'$backupPath' WITH FORMAT, INIT, NAME = N'$databaseName-Backup', SKIP, NOREWIND, NOUNLOAD, COMPRESSION, STATS = 10"
-                sqlcmd -S $serverName -Q $backupQuery -E
+                
+                # استخدام SQL Server Authentication
+                sqlcmd -S $serverName -U $userId -P $password -Q $backupQuery
                 
                 if ($LASTEXITCODE -eq 0) {
                   Write-Host "✅ Database backup created successfully!" -ForegroundColor Green
                   Write-Host "Backup saved to: $backupPath" -ForegroundColor Cyan
                   
-                  $env:DB_BACKUP_PATH = $backupPath
+                  # حفظ مسار الـ backup للاستخدام في الـ rollback
                   echo "DB_BACKUP_PATH=$backupPath" >> $env:GITHUB_ENV
+                  echo "DB_SERVER=$serverName" >> $env:GITHUB_ENV
+                  echo "DB_NAME=$databaseName" >> $env:GITHUB_ENV
+                  echo "DB_USER=$userId" >> $env:GITHUB_ENV
+                  echo "DB_PASSWORD=$password" >> $env:GITHUB_ENV
                 } else {
-                  Write-Host "⚠️ Warning: Database backup failed, continuing anyway..." -ForegroundColor Yellow
+                  Write-Host "⚠️ Warning: Database backup failed (Exit code: $LASTEXITCODE)" -ForegroundColor Yellow
                 }
               } catch {
                 Write-Host "⚠️ Warning: Could not create backup: $($_.Exception.Message)" -ForegroundColor Yellow
               }
               
+              # حذف الـ backups القديمة (أكتر من 7 أيام)
+              Write-Host "Cleaning up old backups..."
               Get-ChildItem "C:\temp\db-backups\*.bak" | Where-Object { $_.LastWriteTime -lt (Get-Date).AddDays(-7) } | Remove-Item -Force
               
             } else {
-              Write-Host "⚠️ Could not parse connection string" -ForegroundColor Yellow
+              Write-Host "⚠️ Could not parse connection string properly" -ForegroundColor Yellow
+              Write-Host "Server: $serverName, Database: $databaseName, User: $userId" -ForegroundColor Yellow
             }
           } else {
-            Write-Host "⚠️ appsettings.json not found, skipping backup" -ForegroundColor Yellow
+            Write-Host "⚠️ appsettings.json not found at: $appsettingsPath" -ForegroundColor Yellow
+          }
+
+      # 1️⃣8️⃣ Rollback Database on Failure
+      - name: Rollback Database on Failure
+        if: failure() && steps.apply-migrations.outputs.MIGRATION_SUCCESS == 'false' && env.DB_BACKUP_PATH != ''
+        run: |
+          Write-Host "=========================================="
+          Write-Host "⚠️ ROLLING BACK DATABASE..." -ForegroundColor Yellow
+          Write-Host "=========================================="
+          
+          $backupPath = $env:DB_BACKUP_PATH
+          $serverName = $env:DB_SERVER
+          $databaseName = $env:DB_NAME
+          $userId = $env:DB_USER
+          $password = $env:DB_PASSWORD
+          
+          if (Test-Path $backupPath) {
+            try {
+              Write-Host "Restoring database from: $backupPath"
+              Write-Host "Server: $serverName"
+              Write-Host "Database: $databaseName"
+              
+              # تحويل الـ database لـ single user mode
+              Write-Host "Setting database to SINGLE_USER mode..."
+              sqlcmd -S $serverName -U $userId -P $password -Q "ALTER DATABASE [$databaseName] SET SINGLE_USER WITH ROLLBACK IMMEDIATE;"
+              
+              # استعادة الـ database
+              Write-Host "Restoring database..."
+              sqlcmd -S $serverName -U $userId -P $password -Q "RESTORE DATABASE [$databaseName] FROM DISK = N'$backupPath' WITH REPLACE, RECOVERY;"
+              
+              # إرجاع الـ database لـ multi user mode
+              Write-Host "Setting database to MULTI_USER mode..."
+              sqlcmd -S $serverName -U $userId -P $password -Q "ALTER DATABASE [$databaseName] SET MULTI_USER;"
+              
+              if ($LASTEXITCODE -eq 0) {
+                Write-Host "✅ Database rolled back successfully!" -ForegroundColor Green
+              } else {
+                Write-Host "❌ Database rollback failed (Exit code: $LASTEXITCODE)!" -ForegroundColor Red
+              }
+            } catch {
+              Write-Host "❌ Rollback error: $($_.Exception.Message)" -ForegroundColor Red
+            }
+          } else {
+            Write-Host "⚠️ Backup file not found: $backupPath" -ForegroundColor Yellow
           }
       
       # 9️⃣ Check for Pending Migrations
@@ -260,18 +317,48 @@ jobs:
             $appsettings = Get-Content $appsettingsPath | ConvertFrom-Json
             $connectionString = $appsettings.ConnectionStrings.DefaultConnection
             
-            $pendingMigrations = dotnet ef migrations list --project "$env:GITHUB_WORKSPACE\src\Infrastructure\DAL" --startup-project "$env:GITHUB_WORKSPACE\src\Presentation\Api" --connection "$connectionString" --no-build 2>&1 | Select-String "Pending"
+            Write-Host "Building projects for EF migrations check..."
             
-            if ($pendingMigrations) {
-              Write-Host "⚠️ Found pending migrations:" -ForegroundColor Yellow
-              Write-Host $pendingMigrations -ForegroundColor Yellow
+            # عمل build للـ DAL و Api projects في Release mode
+            dotnet build "$env:GITHUB_WORKSPACE\src\Infrastructure\DAL\DAL.csproj" -c Release --no-restore
+            dotnet build "$env:GITHUB_WORKSPACE\src\Presentation\Api\Api.csproj" -c Release --no-restore
+            
+            Write-Host ""
+            Write-Host "Running EF migrations list..."
+            
+            # استخدام EF بدون --no-build أو مع --configuration Release
+            $migrationsOutput = dotnet ef migrations list `
+              --project "$env:GITHUB_WORKSPACE\src\Infrastructure\DAL" `
+              --startup-project "$env:GITHUB_WORKSPACE\src\Presentation\Api" `
+              --connection "$connectionString" `
+              --configuration Release `
+              2>&1
+            
+            Write-Host ""
+            Write-Host "Migrations output:"
+            $migrationsOutput | ForEach-Object { Write-Host $_ }
+            
+            # البحث عن pending migrations
+            $hasPending = $false
+            foreach ($line in $migrationsOutput) {
+              if ($line -match "Pending" -or $line -match "\(Pending\)") {
+                $hasPending = $true
+                Write-Host ""
+                Write-Host "⚠️ Found pending migration: $line" -ForegroundColor Yellow
+              }
+            }
+            
+            if ($hasPending) {
+              Write-Host ""
+              Write-Host "⚠️ There are pending migrations to apply" -ForegroundColor Yellow
               echo "HAS_PENDING_MIGRATIONS=true" >> $env:GITHUB_OUTPUT
             } else {
+              Write-Host ""
               Write-Host "✅ No pending migrations found" -ForegroundColor Green
               echo "HAS_PENDING_MIGRATIONS=false" >> $env:GITHUB_OUTPUT
             }
           } else {
-            Write-Host "⚠️ appsettings.json not found" -ForegroundColor Yellow
+            Write-Host "⚠️ appsettings.json not found at: $appsettingsPath" -ForegroundColor Yellow
             echo "HAS_PENDING_MIGRATIONS=false" >> $env:GITHUB_OUTPUT
           }
       
@@ -289,17 +376,29 @@ jobs:
           $connectionString = $appsettings.ConnectionStrings.DefaultConnection
           
           try {
-            dotnet ef database update --project "$env:GITHUB_WORKSPACE\src\Infrastructure\DAL" --startup-project "$env:GITHUB_WORKSPACE\src\Presentation\Api" --connection "$connectionString" --no-build --verbose
+            Write-Host "Starting database update..."
+            Write-Host "Connection: $($connectionString -replace 'password=[^;]+', 'password=***')"
+            
+            dotnet ef database update `
+              --project "$env:GITHUB_WORKSPACE\src\Infrastructure\DAL" `
+              --startup-project "$env:GITHUB_WORKSPACE\src\Presentation\Api" `
+              --connection "$connectionString" `
+              --configuration Release `
+              --no-build `
+              --verbose
             
             if ($LASTEXITCODE -eq 0) {
+              Write-Host ""
               Write-Host "✅ Migrations applied successfully!" -ForegroundColor Green
               echo "MIGRATION_SUCCESS=true" >> $env:GITHUB_OUTPUT
             } else {
-              Write-Host "❌ Migration failed!" -ForegroundColor Red
+              Write-Host ""
+              Write-Host "❌ Migration failed with exit code: $LASTEXITCODE" -ForegroundColor Red
               echo "MIGRATION_SUCCESS=false" >> $env:GITHUB_OUTPUT
               exit 1
             }
           } catch {
+            Write-Host ""
             Write-Host "❌ Migration error: $($_.Exception.Message)" -ForegroundColor Red
             echo "MIGRATION_SUCCESS=false" >> $env:GITHUB_OUTPUT
             exit 1
@@ -309,19 +408,7 @@ jobs:
       - name: Publish API
         run: dotnet publish "$env:GITHUB_WORKSPACE\src\Presentation\Api\Api.csproj" -c Release -o "$env:TEMP\publish\api" --no-build
       
-      # 1️⃣2️⃣ Publish Dashboard
-      - name: Publish Dashboard
-        run: dotnet publish "$env:GITHUB_WORKSPACE\src\Presentation\Dashboard\Dashboard.csproj" -c Release -o "$env:TEMP\publish\dashboard" --no-build
-      
-      # 1️⃣3️⃣ Prepare temp directory
-      - name: Prepare temp directory
-        run: |
-          if (!(Test-Path "C:\temp\deployment-backup")) { 
-            New-Item -ItemType Directory -Force -Path "C:\temp\deployment-backup" 
-          }
-          Write-Host "Temp directory ready"
-      
-      # 1️⃣4️⃣ Deploy API to IIS
+      # 1️⃣2️⃣ Deploy API to IIS
       - name: Deploy API to IIS
         run: |
           Write-Host "=========================================="
@@ -414,6 +501,18 @@ jobs:
           Write-Host "BasitApi deployed successfully!" -ForegroundColor Green
           Write-Host "=========================================="
       
+      # 1️⃣3️⃣ Publish Dashboard
+      - name: Publish Dashboard
+        run: dotnet publish "$env:GITHUB_WORKSPACE\src\Presentation\Dashboard\Dashboard.csproj" -c Release -o "$env:TEMP\publish\dashboard" --no-build
+      
+      # 1️⃣4️⃣ Prepare temp directory
+      - name: Prepare temp directory
+        run: |
+          if (!(Test-Path "C:\temp\deployment-backup")) { 
+            New-Item -ItemType Directory -Force -Path "C:\temp\deployment-backup" 
+          }
+          Write-Host "Temp directory ready"
+            
       # 1️⃣5️⃣ Deploy Dashboard to IIS
       - name: Deploy Dashboard to IIS
         run: |

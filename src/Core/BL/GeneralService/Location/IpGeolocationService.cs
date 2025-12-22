@@ -133,7 +133,7 @@ namespace BL.GeneralService.Location
                     ServiceUsed = "MaxMind GeoIP2"
                 };
 
-                if (_configuration.GetValue<bool>("MaxMind:EnableLogging", false))
+                if (_configuration.GetValue("MaxMind:EnableLogging", false))
                 {
                     _logger.LogDebug("IP {IpAddress} resolved to {Country}, {City}",
                         ipAddress, result.CountryName, result.City);

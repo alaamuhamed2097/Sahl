@@ -2,8 +2,8 @@ using Asp.Versioning;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Shared.DTOs.ECommerce.Payment;
-using BL.Services.Order;
 using System.Security.Claims;
+using BL.Contracts.Service.Order;
 
 namespace Api.Controllers.v1.Order
 {

@@ -1,0 +1,292 @@
+﻿using Api.Controllers.v1.Base;
+using Asp.Versioning;
+using BL.Contracts.Service.Order;
+using Common.Enumerations.User;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Shared.DTOs.Order.Address;
+using Shared.GeneralModels;
+
+namespace Api.Controllers.v1.Order
+{
+    [ApiController]
+    [ApiVersion("1.0")]
+    [Route("api/v{version:apiVersion}/[controller]")]
+    [Authorize]
+    public class CustomerAddressController : BaseController
+    {
+        private readonly ICustomerAddressService _addressService;
+
+        public CustomerAddressController(ICustomerAddressService addressService)
+        {
+            _addressService = addressService;
+        }
+
+        /// <summary>
+        /// Get all addresses for the current customer
+        /// </summary>
+        /// <remarks>
+        /// API Version: 1.0+<br/>
+        /// Requires Customer role.<br/>
+        /// Returns all saved addresses for the authenticated user.
+        /// </remarks>
+        [HttpGet]
+        [Authorize(Roles = nameof(UserRole.Customer))]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        public async Task<IActionResult> GetMyAddresses()
+        {
+            var addresses = await _addressService.GetCustomerAddressesAsync(UserId);
+
+            return Ok(new ResponseModel<List<CustomerAddressDto>>
+            {
+                Success = true,
+                Message = "Addresses retrieved successfully.",
+                Data = addresses
+            });
+        }
+
+        /// <summary>
+        /// Get a specific address by ID
+        /// </summary>
+        /// <remarks>
+        /// API Version: 1.0+<br/>
+        /// Requires Customer role.<br/>
+        /// Returns address details if it belongs to the authenticated user.
+        /// </remarks>
+        [HttpGet("{addressId}")]
+        [Authorize(Roles = nameof(UserRole.Customer))]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        public async Task<IActionResult> GetAddressById(Guid addressId)
+        {
+            var address = await _addressService.GetAddressByIdAsync(addressId, UserId);
+
+            if (address == null)
+            {
+                return NotFound(new ResponseModel<string>
+                {
+                    Success = false,
+                    Message = "Address not found or you don't have permission to access it."
+                });
+            }
+
+            return Ok(new ResponseModel<CustomerAddressDto>
+            {
+                Success = true,
+                Message = "Address retrieved successfully.",
+                Data = address
+            });
+        }
+
+        /// <summary>
+        /// Get the default address for the current customer
+        /// </summary>
+        /// <remarks>
+        /// API Version: 1.0+<br/>
+        /// Requires Customer role.<br/>
+        /// Returns the default delivery address if set.
+        /// </remarks>
+        [HttpGet("default")]
+        [Authorize(Roles = nameof(UserRole.Customer))]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> GetDefaultAddress()
+        {
+            var address = await _addressService.GetDefaultAddressAsync(UserId);
+
+            if (address == null)
+            {
+                return NotFound(new ResponseModel<string>
+                {
+                    Success = false,
+                    Message = "No default address found."
+                });
+            }
+
+            return Ok(new ResponseModel<CustomerAddressDto>
+            {
+                Success = true,
+                Message = "Default address retrieved successfully.",
+                Data = address
+            });
+        }
+
+        /// <summary>
+        /// Create a new address
+        /// </summary>
+        /// <remarks>
+        /// API Version: 1.0+<br/>
+        /// Requires Customer role.<br/>
+        /// Creates a new delivery address for the authenticated user.<br/>
+        /// If this is the first address, it will automatically be set as default.
+        /// </remarks>
+        [HttpPost]
+        [Authorize(Roles = nameof(UserRole.Customer))]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> CreateAddress([FromBody] CreateCustomerAddressRequest request)
+        {
+            var address = await _addressService.CreateAddressAsync(UserId, request);
+
+            return CreatedAtAction(
+                nameof(GetAddressById),
+                new { addressId = address.Id },
+                new ResponseModel<CustomerAddressDto>
+                {
+                    Success = true,
+                    Message = "Address created successfully.",
+                    Data = address
+                });
+        }
+
+        /// <summary>
+        /// Update an existing address
+        /// </summary>
+        /// <remarks>
+        /// API Version: 1.0+<br/>
+        /// Requires Customer role.<br/>
+        /// Updates address details. User can only update their own addresses.
+        /// </remarks>
+        [HttpPut("{addressId}")]
+        [Authorize(Roles = nameof(UserRole.Customer))]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        public async Task<IActionResult> UpdateAddress(Guid addressId, [FromBody] UpdateCustomerAddressRequest request)
+        {
+            var address = await _addressService.UpdateAddressAsync(addressId, UserId, request);
+
+            if (address == null)
+            {
+                return NotFound(new ResponseModel<string>
+                {
+                    Success = false,
+                    Message = "Address not found or you don't have permission to update it."
+                });
+            }
+
+            return Ok(new ResponseModel<CustomerAddressDto>
+            {
+                Success = true,
+                Message = "Address updated successfully.",
+                Data = address
+            });
+        }
+
+        /// <summary>
+        /// Set an address as default
+        /// </summary>
+        /// <remarks>
+        /// API Version: 1.0+<br/>
+        /// Requires Customer role.<br/>
+        /// Sets the specified address as the default delivery address.<br/>
+        /// Any previously default address will be unmarked.
+        /// </remarks>
+        [HttpPut("{addressId}/set-default")]
+        [Authorize(Roles = nameof(UserRole.Customer))]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        public async Task<IActionResult> SetDefaultAddress(Guid addressId)
+        {
+            var result = await _addressService.SetDefaultAddressAsync(addressId, UserId);
+
+            if (!result)
+            {
+                return NotFound(new ResponseModel<string>
+                {
+                    Success = false,
+                    Message = "Address not found or you don't have permission to modify it."
+                });
+            }
+
+            return Ok(new ResponseModel<object>
+            {
+                Success = true,
+                Message = "Default address updated successfully.",
+                Data = new { AddressId = addressId }
+            });
+        }
+
+        /// <summary>
+        /// Delete an address
+        /// </summary>
+        /// <remarks>
+        /// API Version: 1.0+<br/>
+        /// Requires Customer role.<br/>
+        /// Soft deletes the address. User can only delete their own addresses.<br/>
+        /// If deleting the default address and other addresses exist, another will be set as default.
+        /// </remarks>
+        [HttpDelete("{addressId}")]
+        [Authorize(Roles = nameof(UserRole.Customer))]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> DeleteAddress(Guid addressId)
+        {
+            var result = await _addressService.DeleteAddressAsync(addressId, UserId);
+
+            if (!result)
+            {
+                return NotFound(new ResponseModel<string>
+                {
+                    Success = false,
+                    Message = "Address not found or you don't have permission to delete it."
+                });
+            }
+
+            return Ok(new ResponseModel<object>
+            {
+                Success = true,
+                Message = "Address deleted successfully.",
+                Data = new { AddressId = addressId }
+            });
+        }
+
+        /// <summary>
+        /// Validate address for order creation
+        /// </summary>
+        /// <remarks>
+        /// API Version: 1.0+<br/>
+        /// Requires Customer role.<br/>
+        /// Validates that an address exists and belongs to the user before order creation.
+        /// </remarks>
+        [HttpGet("{addressId}/validate")]
+        [Authorize(Roles = nameof(UserRole.Customer))]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> ValidateAddress(Guid addressId)
+        {
+            var isValid = await _addressService.ValidateAddressOwnershipAsync(addressId, UserId);
+
+            if (!isValid)
+            {
+                return NotFound(new ResponseModel<AddressValidationDto>
+                {
+                    Success = false,
+                    Message = "Address not found or invalid.",
+                    Data = new AddressValidationDto
+                    {
+                        IsValid = false,
+                        AddressId = addressId
+                    }
+                });
+            }
+
+            return Ok(new ResponseModel<AddressValidationDto>
+            {
+                Success = true,
+                Message = "Address is valid.",
+                Data = new AddressValidationDto
+                {
+                    IsValid = true,
+                    AddressId = addressId
+                }
+            });
+        }
+    }
+}

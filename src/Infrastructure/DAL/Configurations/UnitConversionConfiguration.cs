@@ -13,19 +13,19 @@ namespace DAL.Configurations
         {
             // Property configurations
             entity.Property(e => e.ConversionFactor)
-           .HasColumnType("decimal(18,6)")
+              .HasColumnType("decimal(18,6)")
               .IsRequired();
 
             // Relationships
             entity.HasOne(uc => uc.FromUnit)
-           .WithMany()
-           .HasForeignKey(uc => uc.FromUnitId)
-             .OnDelete(DeleteBehavior.NoAction);
+               .WithMany()
+               .HasForeignKey(uc => uc.FromUnitId)
+               .OnDelete(DeleteBehavior.NoAction);
 
             entity.HasOne(uc => uc.ToUnit)
-        .WithMany()
-   .HasForeignKey(uc => uc.ToUnitId)
-.OnDelete(DeleteBehavior.NoAction);
+                .WithMany()
+                .HasForeignKey(uc => uc.ToUnitId)
+                .OnDelete(DeleteBehavior.NoAction);
         }
     }
 }

@@ -1,4 +1,6 @@
-﻿namespace Domains.Entities.Location
+﻿using Domains.Entities.ECommerceSystem;
+
+namespace Domains.Entities.Location
 {
     public class TbCity : BaseEntity
     {
@@ -6,6 +8,7 @@
         public string TitleEn { get; set; } = null!;
 
         public Guid StateId { get; set; }
-        public TbState State { get; set; } = null!;
+        public virtual TbState State { get; set; } = null!;
+        public virtual IQueryable<TbCustomerAddress> CustomerAddresses { get; set; }
     }
 }
