@@ -4,6 +4,7 @@ using DAL.Exceptions;
 using DAL.Models.ItemSearch;
 using Domains.Procedures;
 using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using Serilog;
 using System.Data;
 using System.Text.Json;
@@ -43,7 +44,7 @@ namespace DAL.Repositories.Item
         /// <summary>
         /// Get combination details by selected attributes
         /// </summary>
-        public async Task<SpGetAvailableOptionsForSelection> GetCombinationByAttributesAsync(
+        public async Task<SpGetItemDetails> GetCombinationByAttributesAsync(
             Guid itemId,
             List<AttributeSelection> selectedAttributes)
         {
@@ -51,22 +52,30 @@ namespace DAL.Repositories.Item
             {
                 throw new ArgumentException("At least one attribute must be selected", nameof(selectedAttributes));
             }
+            // Get selected attributes valus IDs
+            List<Guid> selectedAttributeValueIds = selectedAttributes.Select(a => a.CombinationAttributeValueId).ToList();
+            // Determine the last selected attribute
+            var selectedAttributeValues =await _dbContext.TbCombinationAttributesValues.AsNoTracking().Where(c=> selectedAttributeValueIds.Contains(c.Id)).ToListAsync() ;
+            var lastAttributeSelectionValue = selectedAttributes.FirstOrDefault(a => a.IsLastSelected) ?? selectedAttributes.First();
+            var lastSelectedAttribute = selectedAttributeValues.FirstOrDefault(ca => ca.Id == lastAttributeSelectionValue.CombinationAttributeValueId) 
+                 ?? throw new DataAccessException("Invalid attribute value selected", null, _logger);
 
-            // Convert to JSON format expected by stored procedure
-            var attributesJson = JsonSerializer.Serialize(
-                selectedAttributes.Select(a => new { AttributeId = a.AttributeId, ValueId = a.ValueId })
-            );
+            // Get ItemCombinationId based on selected attributes
+            Guid ItemCombinationId  ;
+            if (selectedAttributeValues.TrueForAll(s => s.ItemCombinationId == lastSelectedAttribute.ItemCombinationId))
+                ItemCombinationId = lastSelectedAttribute.ItemCombinationId;
+            else
+                ItemCombinationId = lastSelectedAttribute.ItemCombinationId;
 
             var parameters = new[]
             {
-                new SqlParameter("@ItemId", SqlDbType.UniqueIdentifier) { Value = itemId },
-                new SqlParameter("@AttributeValuesJson", SqlDbType.NVarChar, -1) { Value = attributesJson }
+                new SqlParameter("@ItemCombinationId", SqlDbType.UniqueIdentifier) { Value = ItemCombinationId }
             };
 
             try
             {
-                var result = (await ExecuteStoredProcedureAsync<SpGetAvailableOptionsForSelection>
-                    ("SpGetCombinationByAttributes", default, parameters)).FirstOrDefault();
+                var result = (await ExecuteStoredProcedureAsync<SpGetItemDetails>("SpGetItemDetails", default, parameters))
+                .FirstOrDefault();
 
                 return result;
             }

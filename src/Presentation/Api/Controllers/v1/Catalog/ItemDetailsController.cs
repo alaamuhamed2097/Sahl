@@ -32,6 +32,10 @@ namespace Api.Controllers.v1.Catalog
         public async Task<IActionResult> GetItemDetails([FromRoute] Guid itemCombinationId )
         {
             var result = await _itemDetailsService.GetItemDetailsAsync(itemCombinationId);
+            if (result == null)
+            {
+                return NotFound(new { message = "Item not found" });
+            }
             return Ok(result);
         }
 
@@ -51,49 +55,19 @@ namespace Api.Controllers.v1.Catalog
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetCombinationByAttributes(
             [FromRoute] Guid id,
-            [FromBody] GetCombinationRequest request)
+            [FromBody] CombinationRequest request)
         {
-            if (request?.SelectedAttributes == null || request.SelectedAttributes.Count == 0)
+            if (request?.SelectedValueIds == null || request.SelectedValueIds.Count == 0)
             {
                 return BadRequest(new { message = "Selected attributes are required" });
             }
 
             var result = await _itemDetailsService.GetCombinationByAttributesAsync(id, request);
 
-            // Return appropriate response based on availability
-            if (!result.IsAvailable)
-            {
-                // Combination not found or out of stock
-                if (result.CombinationId == null)
-                {
-                    // Combination doesn't exist
-                    if (result.MissingAttributes != null && result.MissingAttributes.Count > 0)
-                    {
-                        // Incomplete selection
-                        return BadRequest(new
-                        {
-                            message = result.Message,
-                            missingAttributes = result.MissingAttributes
-                        });
-                    }
-                    else
-                    {
-                        // Invalid combination
-                        return NotFound(new
-                        {
-                            message = result.Message,
-                            selectedAttributes = result.SelectedAttributes
-                        });
-                    }
-                }
-                else
-                {
-                    // Combination exists but out of stock
-                    return Ok(result); // Return 200 but with IsAvailable = false
-                }
-            }
+           if (result == null)
+                return NotFound(new { message = "Item or combination not found" });
 
-            return Ok(result);
+           return Ok(result);
         }
     }
 }
