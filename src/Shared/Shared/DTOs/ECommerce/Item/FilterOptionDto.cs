@@ -1,28 +1,30 @@
 namespace Shared.DTOs.ECommerce.Item
 {
     /// <summary>
-    /// Single filter option (category, brand, or vendor)
+    /// Single filter option (category or brand)
     /// </summary>
     public class FilterOptionDto
     {
         /// <summary>
-        /// Option identifier
+        /// Category/Brand ID
         /// </summary>
         public Guid Id { get; set; }
 
         /// <summary>
-        /// Option name in Arabic
+        /// Category/Brand name in Arabic
         /// </summary>
         public string NameAr { get; set; }
 
         /// <summary>
-        /// Option name in English
+        /// Category/Brand name in English
         /// </summary>
         public string NameEn { get; set; }
 
         /// <summary>
-        /// Number of items with this option
+        /// Number of items matching this filter
         /// </summary>
         public int Count { get; set; }
     }
+
+
 }

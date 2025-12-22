@@ -3,8 +3,8 @@ using Domains.Procedures;
 
 namespace DAL.Contracts.Repositories;
 
-public interface IItemDetailsRepository
+public interface IItemDetailsRepository 
 {
     Task<SpGetItemDetails> GetItemDetailsAsync(Guid itemCombinationId);
-    Task<SpGetAvailableOptionsForSelection> GetCombinationByAttributesAsync(Guid itemId, List<AttributeSelection> selectedAttributes);
+    Task<SpGetItemDetails> GetCombinationByAttributesAsync(List<AttributeSelection> selectedAttributes);
 }
