@@ -124,7 +124,7 @@ app.UseResponseCompression();
 app.UseHttpsRedirection();
 
 // Apply CORS policy
-app.UseCors("AllowAll");
+app.UseCors("DefaultCors");
 
 // Configure localization
 app.UseLocalizationConfiguration();
