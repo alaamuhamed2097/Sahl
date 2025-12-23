@@ -24,8 +24,8 @@ namespace Domains.Entities.Catalog.Item.ItemAttributes
         [ForeignKey("ItemId")]
 		public virtual TbItem Item { get; set; }
 
-		public virtual ICollection<TbCombinationAttributesValue> CombinationAttributesValues { get; set; }
-		public virtual ICollection<TbOfferCombinationPricing> OfferCombinationPricings { get; set; }
+        public virtual ICollection<TbCombinationAttribute> CombinationAttributes { get; set; }
+        public virtual ICollection<TbOfferCombinationPricing> OfferCombinationPricings { get; set; }
 		public virtual ICollection<TbItemCombinationImage> ItemCombinationImages { get; set; }
 	}
 }

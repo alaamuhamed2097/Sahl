@@ -11,7 +11,7 @@
         public bool IsAvailable { get; set; }
         public string Message { get; set; }
 
-        public List<SelectedAttributeDto> SelectedAttributes { get; set; }
+        public List<PricingAttributeDto> PricingAttributes { get; set; }
         public List<ItemImageDto> Images { get; set; }
         public List<VendorOfferDto> Offers { get; set; }
         public CombinationSummaryDto Summary { get; set; }

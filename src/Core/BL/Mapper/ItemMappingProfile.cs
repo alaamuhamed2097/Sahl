@@ -67,10 +67,10 @@ namespace BL.Mapper
                     string.IsNullOrWhiteSpace(src.AttributesJson)
                         ? new List<ItemAttributeDefinitionDto>()
                         : DeserializeAttributes(src.AttributesJson)))
-                .ForMember(dest => dest.DefaultCombination, opt => opt.MapFrom(src =>
-                    string.IsNullOrWhiteSpace(src.DefaultCombinationJson)
+                .ForMember(dest => dest.CurrentCombination, opt => opt.MapFrom(src =>
+                    string.IsNullOrWhiteSpace(src.CurrentCombinationJson)
                         ? null
-                        : DeserializeDefaultCombination(src.DefaultCombinationJson)))
+                        : DeserializeCurrentCombination(src.CurrentCombinationJson)))
                 .ForMember(dest => dest.Pricing, opt => opt.MapFrom(src =>
                     string.IsNullOrWhiteSpace(src.PricingJson)
                         ? null
@@ -85,6 +85,7 @@ namespace BL.Mapper
             // Item combination mapping
             CreateMap<TbItemCombination, ItemCombinationDto>()
                 .ReverseMap();
+
             CreateMap<TbItemCombinationImage, ItemCombinationDto>()
                 .ReverseMap();
 
@@ -94,6 +95,9 @@ namespace BL.Mapper
 
             // Combination attribute value mappings
             CreateMap<TbCombinationAttributesValue, CombinationAttributeValueDto>()
+                .ReverseMap();
+
+            CreateMap<TbCombinationAttribute, CombinationAttributeDto>()
                 .ReverseMap();
 
             // Item images
@@ -185,7 +189,8 @@ namespace BL.Mapper
                     NameEn = attr.NameEn,
                     FieldType = attr.FieldType,
                     DisplayOrder = attr.DisplayOrder,
-                    Value = attr.Value
+                    ValueAr = attr.ValueAr,
+                    ValueEn = attr.ValueEn
                 }).ToList()?? new List<ItemAttributeDefinitionDto>();
             }
             catch
@@ -194,29 +199,31 @@ namespace BL.Mapper
             }
         }
 
-        private static DefaultCombinationDto DeserializeDefaultCombination(string json)
+        private static CurrentCombinationDto DeserializeCurrentCombination(string json)
         {
             if (string.IsNullOrWhiteSpace(json))
                 return null;
 
             try
             {
-                var combo = JsonSerializer.Deserialize<DefaultCombination>(json, JsonOptions);
+                var combo = JsonSerializer.Deserialize<CurrentCombination>(json, JsonOptions);
                 if (combo == null) return null;
 
-                return new DefaultCombinationDto
+                return new CurrentCombinationDto
                 {
                     CombinationId = combo.CombinationId,
                     SKU = combo.SKU,
                     Barcode = combo.Barcode,
                     IsDefault = combo.IsDefault,
-                    SelectedAttributes = combo.SelectedAttributes?.Select(sa => new SelectedAttributeDto
+                    PricingAttributes = combo.PricingAttributes?.Select(sa => new PricingAttributeDto
                     {
                         AttributeId = sa.AttributeId,
                         AttributeNameAr = sa.AttributeNameAr,
                         AttributeNameEn = sa.AttributeNameEn,
                         CombinationValueId = sa.CombinationValueId,
-                        Value = sa.Value
+                        ValueAr = sa.ValueAr,
+                        ValueEn = sa.ValueEn,
+                        IsSelected = sa.IsSelected
                     }).ToList(),
                     Images = combo.Images?.Select(img => new ItemImageDto
                     {

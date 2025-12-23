@@ -1,4 +1,6 @@
 ﻿using Shared.DTOs.Base;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Shared.DTOs.ECommerce.Item
 {
@@ -11,4 +13,5 @@ namespace Shared.DTOs.ECommerce.Item
         public List<CombinationAttributeDto> CombinationAttributes { get; set; } = new List<CombinationAttributeDto>();
         public List<ItemCombinationImageDto> ItemCombinationImages { get; set; } = new List<ItemCombinationImageDto>();
     }
+
 }
