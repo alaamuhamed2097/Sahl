@@ -50,36 +50,50 @@ namespace DAL.Repositories.Item
             {
                 throw new ArgumentException("At least one attribute must be selected", nameof(selectedAttributes));
             }
-            // Get selected attributes valus IDs
-            List<Guid> selectedAttributeValueIds = selectedAttributes.Select(a => a.CombinationAttributeValueId).ToList();
-            // Determine the last selected attribute
-            var selectedAttributeValues =await _dbContext.TbCombinationAttributesValues.AsNoTracking().Where(c=> selectedAttributeValueIds.Contains(c.Id)).ToListAsync() ;
-            var lastAttributeSelectionValue = selectedAttributes.FirstOrDefault(a => a.IsLastSelected) ?? selectedAttributes.First();
-            var lastSelectedAttribute = selectedAttributeValues.FirstOrDefault(ca => ca.Id == lastAttributeSelectionValue.CombinationAttributeValueId) 
-                 ?? throw new DataAccessException("Invalid attribute value selected", null, _logger);
 
-            // Get ItemCombinationId based on selected attributes
-            Guid ItemCombinationId  ;
-            if (selectedAttributeValues.TrueForAll(s => s.ItemCombinationId == lastSelectedAttribute.ItemCombinationId))
-                ItemCombinationId = lastSelectedAttribute.ItemCombinationId;
-            else
-                ItemCombinationId = lastSelectedAttribute.ItemCombinationId;
+            // Get selected attributes values IDs
+            var selectedAttributeValueIds = selectedAttributes.Select(a => a.CombinationAttributeValueId).ToList();
+            int expectedMatchCount = selectedAttributeValueIds.Count;
+
+            // Find combination that matches ALL selected attribute values using a single optimized query
+            var itemCombinationId = await _dbContext.TbCombinationAttributes.AsNoTracking()
+                .Where(c => selectedAttributeValueIds.Contains(c.AttributeValueId))
+                .GroupBy(c => c.ItemCombinationId)
+                .Where(g => g.Count() == expectedMatchCount)
+                .Select(g => g.Key)
+                .FirstOrDefaultAsync();
+
+            // If no exact match, get the last selected attribute's combination
+            if (itemCombinationId == Guid.Empty)
+            {
+                var lastAttributeSelectionValue = selectedAttributes.FirstOrDefault(a => a.IsLastSelected)
+                    ?? selectedAttributes.Last();
+
+                itemCombinationId = await _dbContext.TbCombinationAttributes.AsNoTracking()
+                    .Where(ca => ca.AttributeValueId == lastAttributeSelectionValue.CombinationAttributeValueId)
+                    .Select(ca => ca.ItemCombinationId)
+                    .FirstOrDefaultAsync();
+
+                if (itemCombinationId == Guid.Empty)
+                {
+                    throw new DataAccessException("Invalid attribute value selected", null, _logger);
+                }
+            }
 
             var parameters = new[]
             {
-                new SqlParameter("@ItemCombinationId", SqlDbType.UniqueIdentifier) { Value = ItemCombinationId }
+                new SqlParameter("@ItemCombinationId", SqlDbType.UniqueIdentifier) { Value = itemCombinationId }
             };
 
             try
             {
                 var result = (await ExecuteStoredProcedureAsync<SpGetItemDetails>("SpGetItemDetails", default, parameters))
-                .FirstOrDefault();
-
+                    .FirstOrDefault();
                 return result;
             }
             catch (Exception ex)
             {
-                _logger.Error(ex, "Error getting combination by attributes for this selection ");
+                _logger.Error(ex, "Error getting combination by attributes for this selection");
                 throw new DataAccessException("Failed to retrieve combination details", ex, _logger);
             }
         }

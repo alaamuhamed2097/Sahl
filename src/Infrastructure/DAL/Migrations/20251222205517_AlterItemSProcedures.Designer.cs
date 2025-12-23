@@ -4,6 +4,7 @@ using DAL.ApplicationContext;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DAL.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251222205517_AlterItemSProcedures")]
+    partial class AlterItemSProcedures
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -2340,121 +2343,6 @@ namespace DAL.Migrations
                     b.HasIndex("IsDeleted");
 
                     b.ToTable("TbCurrencies");
-                });
-
-            modelBuilder.Entity("Domains.Entities.Customer.TbWishlist", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("WishlistId")
-                        .HasDefaultValueSql("NEWID()");
-
-                    b.Property<Guid>("CreatedBy")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("CreatedDate")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2")
-                        .HasColumnName("CreatedDate")
-                        .HasDefaultValueSql("GETUTCDATE()");
-
-                    b.Property<DateTime>("CreatedDateUtc")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2(2)")
-                        .HasDefaultValueSql("GETUTCDATE()");
-
-                    b.Property<string>("CustomerId")
-                        .IsRequired()
-                        .HasMaxLength(450)
-                        .HasColumnType("nvarchar(450)")
-                        .HasColumnName("CustomerId");
-
-                    b.Property<bool>("IsDeleted")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(false);
-
-                    b.Property<Guid?>("UpdatedBy")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime?>("UpdatedDateUtc")
-                        .HasColumnType("datetime2(2)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("IsDeleted");
-
-                    b.HasIndex("CustomerId", "IsDeleted")
-                        .IsUnique()
-                        .HasDatabaseName("IX_Wishlist_CustomerId_IsDeleted")
-                        .HasFilter("[IsDeleted] = 0");
-
-                    b.ToTable("TbWishlist", (string)null);
-                });
-
-            modelBuilder.Entity("Domains.Entities.Customer.TbWishlistItem", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("WishlistItemId")
-                        .HasDefaultValueSql("NEWID()");
-
-                    b.Property<Guid>("CreatedBy")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("CreatedDateUtc")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2(2)")
-                        .HasDefaultValueSql("GETUTCDATE()");
-
-                    b.Property<DateTime>("DateAdded")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2")
-                        .HasColumnName("DateAdded")
-                        .HasDefaultValueSql("GETUTCDATE()");
-
-                    b.Property<bool>("IsDeleted")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(false);
-
-                    b.Property<Guid>("ItemCombinationId")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("ItemCombinationId");
-
-                    b.Property<Guid?>("UpdatedBy")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime?>("UpdatedDateUtc")
-                        .HasColumnType("datetime2(2)");
-
-                    b.Property<Guid>("WishlistId")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("WishlistId");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("DateAdded")
-                        .HasDatabaseName("IX_WishlistItem_DateAdded");
-
-                    b.HasIndex("IsDeleted");
-
-                    b.HasIndex("ItemCombinationId", "IsDeleted")
-                        .HasDatabaseName("IX_WishlistItem_ItemCombinationId_IsDeleted")
-                        .HasFilter("[IsDeleted] = 0");
-
-                    b.HasIndex("WishlistId", "IsDeleted")
-                        .HasDatabaseName("IX_WishlistItem_WishlistId_IsDeleted")
-                        .HasFilter("[IsDeleted] = 0");
-
-                    b.HasIndex("WishlistId", "ItemCombinationId")
-                        .IsUnique()
-                        .HasDatabaseName("UQ_WishlistItem_WishlistId_ItemCombinationId")
-                        .HasFilter("[IsDeleted] = 0");
-
-                    b.ToTable("TbWishlistItem", (string)null);
                 });
 
             modelBuilder.Entity("Domains.Entities.ECommerceSystem.Cart.TbShoppingCart", b =>
@@ -8509,36 +8397,6 @@ namespace DAL.Migrations
                     b.Navigation("ContentArea");
                 });
 
-            modelBuilder.Entity("Domains.Entities.Customer.TbWishlist", b =>
-                {
-                    b.HasOne("Domains.Identity.ApplicationUser", "Customer")
-                        .WithMany()
-                        .HasForeignKey("CustomerId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("Customer");
-                });
-
-            modelBuilder.Entity("Domains.Entities.Customer.TbWishlistItem", b =>
-                {
-                    b.HasOne("Domains.Entities.Catalog.Item.ItemAttributes.TbItemCombination", "ItemCombination")
-                        .WithMany()
-                        .HasForeignKey("ItemCombinationId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("Domains.Entities.Customer.TbWishlist", "Wishlist")
-                        .WithMany("WishlistItems")
-                        .HasForeignKey("WishlistId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("ItemCombination");
-
-                    b.Navigation("Wishlist");
-                });
-
             modelBuilder.Entity("Domains.Entities.ECommerceSystem.Cart.TbShoppingCart", b =>
                 {
                     b.HasOne("Domains.Identity.ApplicationUser", "User")
@@ -9463,11 +9321,6 @@ namespace DAL.Migrations
             modelBuilder.Entity("Domains.Entities.CouponCode.TbCouponCode", b =>
                 {
                     b.Navigation("Orders");
-                });
-
-            modelBuilder.Entity("Domains.Entities.Customer.TbWishlist", b =>
-                {
-                    b.Navigation("WishlistItems");
                 });
 
             modelBuilder.Entity("Domains.Entities.ECommerceSystem.Cart.TbShoppingCart", b =>

@@ -1,38 +1,35 @@
-//using Domains.Entities.Catalog.Item.ItemAttributes;
-//using Microsoft.EntityFrameworkCore;
-//using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Domains.Entities.Catalog.Item.ItemAttributes;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-//namespace DAL.Configurations
-//{
-//    /// <summary>
-//    /// Entity configuration for TbItemAttributeCombinationPricing
-//    /// </summary>
-//    public class ItemAttributeCombinationPricingConfiguration : IEntityTypeConfiguration<TbItemAttributeCombinationPricing>
-//    {
-//        public void Configure(EntityTypeBuilder<TbItemAttributeCombinationPricing> entity)
-//        {
-//            // Property configurations
-//            entity.Property(e => e.AttributeIds)
-//                .IsRequired()
-//                .HasMaxLength(500);
+namespace DAL.Configurations
+{
+    /// <summary>
+    /// Entity configuration for TbCombinationAttribute
+    /// </summary>
+    public class CombinationAttributesConfiguration : IEntityTypeConfiguration<TbCombinationAttribute>
+    {
+        public void Configure(EntityTypeBuilder<TbCombinationAttribute> entity)
+        {
+            // Indexes
+            entity.HasIndex(e => e.ItemCombinationId)
+                .IsUnique(false);
 
-//            entity.Property(e => e.Price)
-//                .IsRequired()
-//                .HasColumnType("decimal(18,2)");
+            entity.HasIndex(e => e.AttributeValueId)
+                .IsUnique(false);
 
-//            entity.Property(e => e.SalesPrice)
-//                .IsRequired()
-//                .HasColumnType("decimal(18,2)");
+            // Relationships
+            entity.HasOne(ic => ic.ItemCombination)
+                .WithMany(i => i.CombinationAttributes)
+                .HasForeignKey(ic => ic.ItemCombinationId)
+                .HasConstraintName("FK_TbItemCombination_TbCombinationAttributes_ItemCombinationId")
+                .OnDelete(DeleteBehavior.Restrict);
 
-//            entity.Property(e => e.Quantity)
-//                .IsRequired();
-
-//            // Indexes
-//            entity.HasIndex(e => e.AttributeIds)
-//                .IsUnique(false);
-
-//            entity.HasIndex(e => e.Price)
-//                .IsUnique(false);
-//        }
-//    }
-//}
+            entity.HasOne(ic => ic.CombinationAttributeValue)
+                .WithMany(i => i.CombinationAttributes)
+                .HasForeignKey(ic => ic.AttributeValueId)
+                .HasConstraintName("FK_TbCombinationAttributesValue_TbCombinationAttributes_AttributeValueId")
+                .OnDelete(DeleteBehavior.Restrict);
+        }
+    }
+}
