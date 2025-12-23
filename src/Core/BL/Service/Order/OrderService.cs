@@ -7,6 +7,7 @@ using Common.Enumerations.Shipping;
 using DAL.Contracts.UnitOfWork;
 using DAL.Exceptions;
 using Domains.Entities.Currency;
+using Domains.Entities.ECommerceSystem;
 using Domains.Entities.ECommerceSystem.Vendor;
 using Domains.Entities.Offer;
 using Domains.Entities.Order;
@@ -55,6 +56,14 @@ namespace BL.Service.Order
                 var cartSummary = await _cartService.GetCartSummaryAsync(customerId);
                 if (cartSummary?.Items == null || !cartSummary.Items.Any())
                     throw new InvalidOperationException("Cannot create order: cart is empty.");
+
+                //validate DeliveryAddress
+                var deliveryAddressRepo = _unitOfWork.TableRepository<TbCustomerAddress>();
+                var deliveryAddress = await deliveryAddressRepo
+                    .FindAsync(a => a.Id == request.DeliveryAddressId
+                    && a.UserId == customerId && !a.IsDeleted);
+                if (deliveryAddress == null)
+                    throw new NotFoundException("Delivery address not found.", _logger);
 
                 using var transaction = await _unitOfWork.BeginTransactionAsync();
 

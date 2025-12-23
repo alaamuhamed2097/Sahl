@@ -43,11 +43,6 @@ namespace BL.Contracts.Service.Order
         Task<bool> DeleteAddressAsync(Guid addressId, string customerId);
 
         /// <summary>
-        /// Validate that an address exists and belongs to the customer
-        /// </summary>
-        Task<bool> ValidateAddressOwnershipAsync(Guid addressId, string customerId);
-
-        /// <summary>
         /// Get formatted address details for order display
         /// </summary>
         Task<AddressSelectionDto?> GetAddressForOrderAsync(Guid addressId, string customerId);

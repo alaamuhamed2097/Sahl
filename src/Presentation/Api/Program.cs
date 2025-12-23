@@ -62,9 +62,6 @@ builder.Services.AddCorsConfiguration(builder.Environment);
 builder.Services.AddSwaggerConfiguration();
 builder.Services.AddHttpClient();
 
-// Configure Hangfire
-//builder.Services.AddHangfireConfiguration(builder.Configuration);
-
 var app = builder.Build();
 
 // Get the API version description provider

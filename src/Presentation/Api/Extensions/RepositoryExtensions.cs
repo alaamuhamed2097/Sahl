@@ -1,9 +1,11 @@
 using BL.Contracts.IMapper;
 using BL.Mapper.Base;
 using DAL.Contracts.Repositories;
+using DAL.Contracts.Repositories.Customer;
 using DAL.Contracts.Repositories.Review;
 using DAL.Contracts.UnitOfWork;
 using DAL.Repositories;
+using DAL.Repositories.Customer;
 using DAL.Repositories.Item;
 using DAL.Repositories.Review;
 using DAL.UnitOfWork;
@@ -28,6 +30,8 @@ namespace Api.Extensions
             services.AddScoped<IOfferRepository, OfferRepository>();
             services.AddScoped<IOrderRepository, OrderRepository>();
             services.AddScoped<IItemSearchRepository, ItemSearchRepository>();
+
+            services.AddScoped<IWishlistRepository, WishlistRepository>();
 
             // Register repositories
             services.AddScoped<IItemDetailsRepository, ItemDetailsRepository>();

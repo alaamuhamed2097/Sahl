@@ -60,7 +60,7 @@ namespace Api.Extensions
                     // Policy for Next.js E-commerce (Production)
                     options.AddPolicy("AllowNextJs", policy =>
                     {
-                        policy.WithOrigins("https://shop.riseon-group.com", "https://www.riseon-group.com")
+                        policy.WithOrigins("http://localhost:3000", "https://localhost:3000")
                               .AllowAnyHeader()
                               .AllowAnyMethod()
                               .AllowCredentials();
