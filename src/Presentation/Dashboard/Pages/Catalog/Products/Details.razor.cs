@@ -11,12 +11,10 @@ using Microsoft.Extensions.Options;
 using Microsoft.JSInterop;
 using Resources;
 using Shared.DTOs.Brand;
-using Shared.DTOs.ECommerce.Category;
-using Shared.DTOs.ECommerce.Item;
-using Shared.DTOs.ECommerce.Unit;
+using Shared.DTOs.Catalog.Category;
+using Shared.DTOs.Catalog.Item;
+using Shared.DTOs.Catalog.Unit;
 using Shared.DTOs.Media;
-using System.ComponentModel;
-using System.Threading.Tasks;
 using static Dashboard.Pages.Catalog.Products.Components.AttributeValuesSection;
 
 
@@ -742,7 +740,7 @@ namespace Dashboard.Pages.Catalog.Products
                     return !string.IsNullOrEmpty(Model.ThumbnailImage) ||
                            (Model.Images != null && Model.Images.Count > 0);
                 case 4: //Default pricing
-                    if (currentCategory.PricingSystemType == PricingSystemType.Standard)
+                    if (currentCategory.PricingSystemType == PricingStrategyType.Simple)
                         return Model.BasePrice.HasValue &&
                                Model.BasePrice.Value > 0;
                     else

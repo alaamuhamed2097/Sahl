@@ -2,8 +2,8 @@
 using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.JSInterop;
 using Resources;
-using Shared.DTOs.ECommerce.Category;
-using Shared.DTOs.ECommerce.Item;
+using Shared.DTOs.Catalog.Category;
+using Shared.DTOs.Catalog.Item;
 using System.Text.Json;
 
 namespace Dashboard.Pages.Catalog.Products

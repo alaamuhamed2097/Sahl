@@ -1,6 +1,6 @@
 ﻿using BL.Contracts.IMapper;
+using BL.Contracts.Service.Catalog.Item;
 using BL.Contracts.Service.CouponCode;
-using BL.Contracts.Service.ECommerce.Item;
 using Common.Enumerations;
 using DAL.Contracts.UnitOfWork;
 using DAL.Models;

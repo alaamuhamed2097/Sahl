@@ -3,7 +3,7 @@ using Dashboard.Contracts.ECommerce.Item;
 using Microsoft.AspNetCore.Components;
 using Resources;
 using Resources.Enumerations;
-using Shared.DTOs.ECommerce.Item;
+using Shared.DTOs.Catalog.Item;
 using Shared.GeneralModels;
 
 namespace Dashboard.Pages.Catalog.Products

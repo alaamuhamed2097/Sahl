@@ -6,6 +6,7 @@ namespace Api.Extensions
         {
             // Add memory cache
             services.AddMemoryCache();
+            services.AddResponseCaching();
 
             // Add HTTP client
             services.AddHttpClient();

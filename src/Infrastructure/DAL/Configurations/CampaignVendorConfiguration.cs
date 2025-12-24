@@ -18,25 +18,8 @@ namespace DAL.Configurations
             entity.Property(e => e.IsApproved)
                 .HasDefaultValue(false);
 
-            entity.Property(e => e.AppliedAt)
-                .HasColumnType("datetime2(2)");
-
             entity.Property(e => e.ApprovedAt)
                 .HasColumnType("datetime2(2)");
-
-            entity.Property(e => e.TotalProductsSubmitted)
-                .HasDefaultValue(0);
-
-            entity.Property(e => e.TotalProductsApproved)
-                .HasDefaultValue(0);
-
-            entity.Property(e => e.TotalSales)
-                .HasColumnType("decimal(18,2)")
-                .HasDefaultValue(0m);
-
-            entity.Property(e => e.TotalCommissionPaid)
-                .HasColumnType("decimal(18,2)")
-                .HasDefaultValue(0m);
 
             entity.Property(e => e.Notes)
                 .HasMaxLength(1000);
@@ -50,11 +33,6 @@ namespace DAL.Configurations
             entity.HasOne(e => e.Vendor)
                 .WithMany()
                 .HasForeignKey(e => e.VendorId)
-                .OnDelete(DeleteBehavior.Restrict);
-
-            entity.HasOne(e => e.ApprovedByUser)
-                .WithMany()
-                .HasForeignKey(e => e.ApprovedByUserId)
                 .OnDelete(DeleteBehavior.Restrict);
 
             // Indexes

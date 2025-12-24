@@ -1,56 +1,107 @@
 using Dashboard.Contracts.Campaign;
-using Dashboard.Constants;
 using Dashboard.Contracts.General;
 using Shared.DTOs.Campaign;
 using Shared.GeneralModels;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace Dashboard.Services.Campaign
 {
+    /// <summary>
+    /// Blazor service for Campaign and Flash Sale management
+    /// </summary>
     public class CampaignService : ICampaignService
     {
         private readonly IApiService _apiService;
+        private const string BaseEndpoint = "api/v1/campaigns";
 
         public CampaignService(IApiService apiService)
         {
             _apiService = apiService;
         }
 
-        public async Task<ResponseModel<IEnumerable<CampaignDto>>> GetAllAsync()
+        #region Campaign Queries
+
+        /// <summary>
+        /// Get active campaigns
+        /// </summary>
+        public async Task<ResponseModel<List<CampaignDto>>> GetActiveCampaignsAsync()
         {
-            return await _apiService.GetAsync<IEnumerable<CampaignDto>>(ApiEndpoints.Campaign.Get);
+            return await _apiService.GetAsync<List<CampaignDto>>($"{BaseEndpoint}/active");
         }
 
-        public async Task<ResponseModel<CampaignDto>> GetByIdAsync(Guid id)
+        /// <summary>
+        /// Get active flash sales
+        /// </summary>
+        public async Task<ResponseModel<List<CampaignDto>>> GetActiveFlashSalesAsync()
         {
-            return await _apiService.GetAsync<CampaignDto>(string.Format(ApiEndpoints.Campaign.GetById, id));
+            return await _apiService.GetAsync<List<CampaignDto>>($"{BaseEndpoint}/flash-sales/active");
         }
 
-        public async Task<ResponseModel<IEnumerable<CampaignDto>>> GetActiveAsync()
+        /// <summary>
+        /// Get campaign by ID (admin)
+        /// </summary>
+        public async Task<ResponseModel<CampaignDto>> GetCampaignByIdAsync(Guid id)
         {
-            return await _apiService.GetAsync<IEnumerable<CampaignDto>>("api/Campaign/active");
+            return await _apiService.GetAsync<CampaignDto>($"{BaseEndpoint}/{id}");
         }
 
-        public async Task<ResponseModel<CampaignDto>> CreateAsync(CampaignCreateDto dto)
+        #endregion
+
+        #region Campaign Management (Admin)
+
+        /// <summary>
+        /// Create new campaign
+        /// </summary>
+        public async Task<ResponseModel<CampaignDto>> CreateCampaignAsync(CreateCampaignDto dto)
         {
-            return await _apiService.PostAsync<CampaignCreateDto, CampaignDto>(ApiEndpoints.Campaign.Create, dto);
+            return await _apiService.PostAsync<CreateCampaignDto, CampaignDto>(BaseEndpoint, dto);
         }
 
-        public async Task<ResponseModel<CampaignDto>> UpdateAsync(Guid id, CampaignUpdateDto dto)
+        /// <summary>
+        /// Update campaign
+        /// </summary>
+        public async Task<ResponseModel<CampaignDto>> UpdateCampaignAsync(Guid id, UpdateCampaignDto dto)
         {
-            return await _apiService.PutAsync<CampaignUpdateDto, CampaignDto>(string.Format(ApiEndpoints.Campaign.Update, id), dto);
+            return await _apiService.PutAsync<UpdateCampaignDto, CampaignDto>($"{BaseEndpoint}/{id}", dto);
         }
 
-        public async Task<ResponseModel<bool>> DeleteAsync(Guid id)
+        /// <summary>
+        /// Delete campaign
+        /// </summary>
+        public async Task<ResponseModel<object>> DeleteCampaignAsync(Guid id)
         {
-            return await _apiService.DeleteAsync<bool>(string.Format(ApiEndpoints.Campaign.Delete, id));
+            return await _apiService.DeleteAsync<object>($"{BaseEndpoint}/{id}");
         }
 
-        public async Task<ResponseModel<IEnumerable<FlashSaleDto>>> GetAllFlashSalesAsync()
+        #endregion
+
+        #region Campaign Items
+
+        /// <summary>
+        /// Get campaign items
+        /// </summary>
+        public async Task<ResponseModel<List<CampaignItemDto>>> GetCampaignItemsAsync(Guid campaignId)
         {
-            return await _apiService.GetAsync<IEnumerable<FlashSaleDto>>("api/Campaign/flashsales");
+            return await _apiService.GetAsync<List<CampaignItemDto>>($"{BaseEndpoint}/{campaignId}/items");
         }
+
+        /// <summary>
+        /// Add item to campaign
+        /// </summary>
+        public async Task<ResponseModel<CampaignItemDto>> AddItemToCampaignAsync(Guid campaignId, AddCampaignItemDto dto)
+        {
+            return await _apiService.PostAsync<AddCampaignItemDto, CampaignItemDto>(
+                $"{BaseEndpoint}/{campaignId}/items",
+                dto);
+        }
+
+        /// <summary>
+        /// Remove item from campaign
+        /// </summary>
+        public async Task<ResponseModel<object>> RemoveItemFromCampaignAsync(Guid campaignId, Guid itemId)
+        {
+            return await _apiService.DeleteAsync<object>($"{BaseEndpoint}/{campaignId}/items/{itemId}");
+        }
+
+        #endregion
     }
 }

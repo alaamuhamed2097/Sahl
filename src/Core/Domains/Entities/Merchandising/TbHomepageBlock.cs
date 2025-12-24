@@ -1,4 +1,5 @@
-using Common.Enumerations.Merchandising;
+﻿using Common.Enumerations.Merchandising;
+using Domains.Entities.Campaign;
 using System.ComponentModel.DataAnnotations;
 
 namespace Domains.Entities.Merchandising
@@ -13,45 +14,48 @@ namespace Domains.Entities.Merchandising
         [StringLength(100)]
         public string TitleAr { get; set; } = string.Empty;
 
-        [StringLength(500)]
-        public string? DescriptionEn { get; set; }
-
-        [StringLength(500)]
-        public string? DescriptionAr { get; set; }
-
         [Required]
-        public HomepageBlockType BlockType { get; set; }
+        public HomepageBlockType Type { get; set; }
 
-        [Required]
+        public DynamicBlockSource? DynamicSource { get; set; }
+
+        // === Source (لو Personalized) ===
+        public PersonalizationSource? PersonalizationSource { get; set; }
+
+        // === Campaign (لو Type = Campaign) ===
+        public Guid? CampaignId { get; set; }
+
+        // === Visual Settings (الفروقات الشكلية) ===
+        public BlockLayout Layout { get; set; }
+
+        // === Business Rules ===
         public int DisplayOrder { get; set; }
 
-        public bool IsActive { get; set; } = true;
-
-        public bool IsVisible { get; set; } = true;
-
-        [StringLength(50)]
-        public string? BackgroundColor { get; set; }
+        // === Time-based (للعروض المؤقتة) ===
+        public DateTime? VisibleFrom { get; set; }
+        public DateTime? VisibleTo { get; set; }
 
         [StringLength(500)]
-        public string? BackgroundImagePath { get; set; }
+        public string? SubtitleAr { get; set; }
 
-        [StringLength(50)]
-        public string? TextColor { get; set; }
+        [StringLength(500)]
+        public string? SubtitleEn { get; set; }
 
-        [StringLength(100)]
-        public string? CssClass { get; set; }
-
-        public int? MaxItemsToDisplay { get; set; }
+        public bool IsVisible { get; set; } = true;
 
         public bool ShowViewAllLink { get; set; } = true;
 
         [StringLength(200)]
-        public string? ViewAllLinkUrl { get; set; }
+        public string? ViewAllLinkTitleAr { get; set; }
 
-        public DateTime? ActiveFrom { get; set; }
+        [StringLength(200)]
+        public string? ViewAllLinkTitleEn { get; set; }
 
-        public DateTime? ActiveTo { get; set; }
+        // === Products (لو Manual) ===
+        public ICollection<TbBlockItem> BlockProducts { get; set; }
 
-        public ICollection<TbBlockProduct> BlockProducts { get; set; } = new HashSet<TbBlockProduct>();
+        // === Categories (لو CategoryShowcase) ===
+        public ICollection<TbBlockCategory> BlockCategories { get; set; }
+        public virtual TbCampaign? Campaign { get; set; }
     }
 }

@@ -1,6 +1,6 @@
 ﻿using Domains.Entities.Catalog.Attribute;
 using Domains.Views.Category;
-using Shared.DTOs.ECommerce.Category;
+using Shared.DTOs.Catalog.Category;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 

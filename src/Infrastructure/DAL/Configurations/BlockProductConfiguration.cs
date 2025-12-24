@@ -7,9 +7,9 @@ namespace DAL.Configurations
     /// <summary>
     /// Entity configuration for TbBlockProduct
     /// </summary>
-    public class BlockProductConfiguration : IEntityTypeConfiguration<TbBlockProduct>
+    public class BlockProductConfiguration : IEntityTypeConfiguration<TbBlockItem>
     {
-        public void Configure(EntityTypeBuilder<TbBlockProduct> entity)
+        public void Configure(EntityTypeBuilder<TbBlockItem> entity)
         {
             // Table name
             entity.ToTable("TbBlockProducts");
@@ -17,24 +17,6 @@ namespace DAL.Configurations
             // Property configurations
             entity.Property(e => e.DisplayOrder)
                 .HasDefaultValue(0);
-
-            entity.Property(e => e.IsActive)
-                .HasDefaultValue(true);
-
-            entity.Property(e => e.IsFeatured)
-                .HasDefaultValue(false);
-
-            entity.Property(e => e.BadgeText)
-                .HasMaxLength(100);
-
-            entity.Property(e => e.BadgeColor)
-                .HasMaxLength(50);
-
-            entity.Property(e => e.FeaturedFrom)
-                .HasColumnType("datetime2(2)");
-
-            entity.Property(e => e.FeaturedTo)
-                .HasColumnType("datetime2(2)");
 
             // Relationships
             entity.HasOne(e => e.HomepageBlock)
@@ -53,10 +35,6 @@ namespace DAL.Configurations
             entity.HasIndex(e => e.ItemId);
 
             entity.HasIndex(e => e.DisplayOrder);
-
-            entity.HasIndex(e => e.IsActive);
-
-            entity.HasIndex(e => e.IsFeatured);
 
             entity.HasIndex(e => new { e.HomepageBlockId, e.ItemId })
                 .IsUnique();
