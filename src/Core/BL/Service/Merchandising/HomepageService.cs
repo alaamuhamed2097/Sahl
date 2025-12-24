@@ -1,9 +1,13 @@
-﻿using AutoMapper;
+﻿using BL.Contracts.IMapper;
 using BL.Contracts.Service.Catalog.Pricing;
 using BL.Contracts.Service.Merchandising;
 using Common.Enumerations.Merchandising;
 using DAL.Contracts.Repositories;
 using DAL.Contracts.Repositories.Merchandising;
+using Domains.Entities.Campaign;
+using Domains.Entities.Catalog.Category;
+using Domains.Entities.Catalog.Item.ItemAttributes;
+using Domains.Entities.Merchandising;
 using Shared.DTOs.Merchandising.Homepage;
 
 namespace BL.Service.Merchandising
@@ -17,19 +21,22 @@ namespace BL.Service.Merchandising
         private readonly IItemCombinationRepository _combinationRepository;
         private readonly ICampaignRepository _campaignRepository;
         private readonly IPricingService _pricingService;
-        private readonly IMapper _mapper;
+        private readonly ITableRepository<TbCategory> _categoryRepository;
+        private readonly IBaseMapper _mapper;
 
         public HomepageService(
             IHomepageBlockRepository blockRepository,
             IItemCombinationRepository combinationRepository,
             ICampaignRepository campaignRepository,
             IPricingService pricingService,
-            IMapper mapper)
+            ITableRepository<TbCategory> categoryRepository,
+            IBaseMapper mapper)
         {
             _blockRepository = blockRepository;
             _combinationRepository = combinationRepository;
             _campaignRepository = campaignRepository;
             _pricingService = pricingService;
+            _categoryRepository = categoryRepository;
             _mapper = mapper;
         }
 
@@ -38,7 +45,7 @@ namespace BL.Service.Merchandising
         /// <summary>
         /// Get complete homepage with all blocks
         /// </summary>
-        public async Task<GetHomepageResponse> GetHomepageAsync(GetHomepageRequest request)
+        public async Task<GetHomepageResponse> GetHomepageAsync(string? userId)
         {
             // Get all active blocks
             var blocks = await _blockRepository.GetActiveBlocksAsync();
@@ -48,7 +55,7 @@ namespace BL.Service.Merchandising
 
             foreach (var block in blocks)
             {
-                var blockDto = await MapBlockToDtoAsync(block, request);
+                var blockDto = await MapBlockToDtoAsync(block, userId);
 
                 // Only include blocks that have content
                 if (blockDto != null && (blockDto.Products.Any() || blockDto.Categories.Any()))
@@ -74,7 +81,7 @@ namespace BL.Service.Merchandising
             var block = await _blockRepository.GetBlockByIdAsync(blockId);
             if (block == null) return null;
 
-            return await MapBlockToDtoAsync(block, new GetHomepageRequest());
+            return await MapBlockToDtoAsync(block, null);
         }
 
         #endregion
@@ -85,21 +92,21 @@ namespace BL.Service.Merchandising
         /// Map block entity to DTO using AutoMapper
         /// </summary>
         private async Task<HomepageBlockDto> MapBlockToDtoAsync(
-            Domains.Entities.Merchandising.TbHomepageBlock block,
-            GetHomepageRequest request)
+            TbHomepageBlock block,
+            string? userId)
         {
             // Map basic properties using AutoMapper
-            var dto = _mapper.Map<HomepageBlockDto>(block);
+            var dto = _mapper.MapModel<TbHomepageBlock, HomepageBlockDto>(block);
 
             // Load products based on block type
-            dto.Products = await GetBlockProductsAsync(block, request);
+            dto.Products = await GetBlockProductsAsync(block, userId);
 
             // Load categories (for CategoryShowcase blocks)
             if (block.Type == HomepageBlockType.ManualCategories && block.BlockCategories != null)
             {
-                dto.Categories = _mapper.Map<List<CategoryCardDto>>(
+                dto.Categories = _mapper.MapList<TbBlockCategory, CategoryCardDto>(
                     block.BlockCategories.Where(bc => !bc.IsDeleted).OrderBy(bc => bc.DisplayOrder)
-                );
+                ).ToList();
             }
 
             return dto;
@@ -113,15 +120,15 @@ namespace BL.Service.Merchandising
         /// Get products for a block based on its type
         /// </summary>
         private async Task<List<ItemCardDto>> GetBlockProductsAsync(
-            Domains.Entities.Merchandising.TbHomepageBlock block,
-            GetHomepageRequest request)
+            TbHomepageBlock block,
+            string? userId)
         {
             return block.Type switch
             {
                 HomepageBlockType.ManualItems => await GetManualProductsAsync(block),
                 HomepageBlockType.Campaign => await GetCampaignProductsAsync(block),
                 HomepageBlockType.Dynamic => await GetDynamicProductsAsync(block),
-                HomepageBlockType.Personalized => await GetPersonalizedProductsAsync(block, request),
+                HomepageBlockType.Personalized => await GetPersonalizedProductsAsync(block, userId),
                 _ => new List<ItemCardDto>()
             };
         }
@@ -160,8 +167,11 @@ namespace BL.Service.Merchandising
                 .OrderBy(ci => ci.DisplayOrder)
                 .ToList();
 
+            if (!activeItems.Any())
+                throw new ApplicationException("No active items found for the specified campaign.");
+
             // Use AutoMapper for mapping
-            var products = _mapper.Map<List<ItemCardDto>>(activeItems);
+            var products = _mapper.MapList<TbCampaignItem, ItemCardDto>(activeItems ?? new List<TbCampaignItem>()).ToList();
 
             // Calculate prices and discounts for each product
             for (int i = 0; i < products.Count; i++)
@@ -227,8 +237,8 @@ namespace BL.Service.Merchandising
         /// Get personalized products (View History, Purchase History, etc.)
         /// </summary>
         private async Task<List<ItemCardDto>> GetPersonalizedProductsAsync(
-            Domains.Entities.Merchandising.TbHomepageBlock block,
-            GetHomepageRequest request)
+            TbHomepageBlock block,
+            string? userId)
         {
             // TODO: Implement personalization logic with user history
             // For now, return empty list
@@ -251,7 +261,7 @@ namespace BL.Service.Merchandising
             var combinations = await _combinationRepository.GetDefaultCombinationsAsync(itemIds);
 
             // Map using AutoMapper
-            var products = _mapper.Map<List<ItemCardDto>>(combinations);
+            var products = _mapper.MapList<TbItemCombination, ItemCardDto>(combinations).ToList();
 
             // Apply pricing using PricingService
             for (int i = 0; i < products.Count; i++)
@@ -259,12 +269,15 @@ namespace BL.Service.Merchandising
                 var combination = combinations[i];
                 var product = products[i];
 
+                var category = await _categoryRepository.FindByIdAsync(combination.Item.CategoryId);
+                if (category == null) throw new ApplicationException($"Category with id={combination.Item.CategoryId} not found");
+
                 // Create PricingContext
                 var context = new PricingContext
                 {
                     ItemCombination = combination,
                     RequestedQuantity = 1,
-                    Strategy = combination.Item.Category.PricingSystemType,
+                    Strategy = category.PricingSystemType,
                     CalculationDate = DateTime.UtcNow
                 };
 

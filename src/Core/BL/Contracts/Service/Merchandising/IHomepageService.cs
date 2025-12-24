@@ -10,7 +10,7 @@ namespace BL.Contracts.Service.Merchandising
         /// <summary>
         /// Get complete homepage with all blocks
         /// </summary>
-        Task<GetHomepageResponse> GetHomepageAsync(GetHomepageRequest request);
+        Task<GetHomepageResponse> GetHomepageAsync(string? userId);
 
         /// <summary>
         /// Get single block by ID

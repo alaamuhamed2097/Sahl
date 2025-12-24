@@ -98,6 +98,11 @@ namespace Api.Extensions
             services.AddScoped<IPricingStrategy, HybridPricingStrategy>();
 
             services.AddScoped<IPricingService, PricingService>();
+            services.AddScoped<SimplePricingStrategy>();
+            services.AddScoped<CombinationBasedPricingStrategy>();
+            services.AddScoped<QuantityBasedPricingStrategy>();
+            services.AddScoped<HybridPricingStrategy>();
+
             services.AddScoped<IHomepageService, HomepageService>();
             services.AddScoped<IAdminBlockService, AdminBlockService>();
 

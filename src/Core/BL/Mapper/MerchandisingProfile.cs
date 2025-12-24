@@ -1,5 +1,4 @@
-﻿using AutoMapper;
-using Domains.Entities.Campaign;
+﻿using Domains.Entities.Campaign;
 using Domains.Entities.Catalog.Item.ItemAttributes;
 using Domains.Entities.Merchandising;
 using Shared.DTOs.Campaign;
@@ -10,9 +9,9 @@ namespace BL.Mapper
     /// <summary>
     /// AutoMapper Profile for MerchandisingProfile entities
     /// </summary>
-    public class MerchandisingProfile : Profile
+    public partial class MappingProfile
     {
-        public MerchandisingProfile()
+        private void ConfigureMerchandisingMappings()
         {
             // Block mapping
             CreateMap<TbHomepageBlock, HomepageBlockDto>()
@@ -25,41 +24,56 @@ namespace BL.Mapper
             // Campaign mapping
             CreateMap<TbCampaign, CampaignInfoDto>();
 
-            // Category mapping
+            // Category mapping - null-safe
             CreateMap<TbBlockCategory, CategoryCardDto>()
-                .ForMember(dest => dest.NameAr, opt => opt.MapFrom(src => src.Category.TitleAr))
-                .ForMember(dest => dest.NameEn, opt => opt.MapFrom(src => src.Category.TitleEn))
-                .ForMember(dest => dest.ImageUrl, opt => opt.MapFrom(src => src.Category.ImageUrl)); // ✅ Fixed
+                .ForMember(dest => dest.NameAr, opt => opt.MapFrom(src =>
+                    src.Category != null ? src.Category.TitleAr : null))
+                .ForMember(dest => dest.NameEn, opt => opt.MapFrom(src =>
+                    src.Category != null ? src.Category.TitleEn : null))
+                .ForMember(dest => dest.ImageUrl, opt => opt.MapFrom(src =>
+                    src.Category != null ? src.Category.ImageUrl : null));
 
-            // Item Combination to Product Card
+            // Item Combination to Product Card - null-safe with ThumbnailImage
             CreateMap<TbItemCombination, ItemCardDto>()
-                .ForMember(dest => dest.ItemId, opt => opt.MapFrom(src => src.Item.Id))
+                .ForMember(dest => dest.ItemId, opt => opt.MapFrom(src =>
+                    src.Item != null ? src.Item.Id : Guid.Empty))
                 .ForMember(dest => dest.ItemCombinationId, opt => opt.MapFrom(src => src.Id))
-                .ForMember(dest => dest.NameAr, opt => opt.MapFrom(src => src.Item.TitleAr))
-                .ForMember(dest => dest.NameEn, opt => opt.MapFrom(src => src.Item.TitleEn))
-                .ForMember(dest => dest.Rating, opt => opt.MapFrom(src => src.Item.AverageRating))
-                // Stock availability - check from OfferCombinationPricing
+                .ForMember(dest => dest.NameAr, opt => opt.MapFrom(src =>
+                    src.Item != null ? src.Item.TitleAr : null))
+                .ForMember(dest => dest.NameEn, opt => opt.MapFrom(src =>
+                    src.Item != null ? src.Item.TitleEn : null))
+                .ForMember(dest => dest.Rating, opt => opt.MapFrom(src =>
+                    src.Item != null ? src.Item.AverageRating : 0))
+                // Stock availability - null-safe
                 .ForMember(dest => dest.IsAvailable, opt => opt.MapFrom(src =>
+                    src.OfferCombinationPricings != null &&
                     src.OfferCombinationPricings.Any(op => !op.IsDeleted && op.AvailableQuantity > 0)))
                 .ForMember(dest => dest.InStock, opt => opt.MapFrom(src =>
+                    src.OfferCombinationPricings != null &&
                     src.OfferCombinationPricings.Any(op => !op.IsDeleted && op.AvailableQuantity > 0)))
+                // Main Image URL - using ThumbnailImage (null-safe)
                 .ForMember(dest => dest.MainImageUrl, opt => opt.MapFrom(src =>
-                    src.ItemCombinationImages.OrderBy(i => i.Order).FirstOrDefault().Path ??
-                    src.Item.ItemImages.OrderBy(i => i.Order).FirstOrDefault().Path))
+                    src.Item != null ? src.Item.ThumbnailImage : null))
                 .ForMember(dest => dest.Price, opt => opt.Ignore()) // Will be set by pricing service
                 .ForMember(dest => dest.SalePrice, opt => opt.Ignore()) // Will be set by pricing service
                 .ForMember(dest => dest.DiscountPercentage, opt => opt.Ignore()) // Will be set by pricing service
                 .ForMember(dest => dest.CampaignBadgeAr, opt => opt.Ignore())
                 .ForMember(dest => dest.CampaignBadgeEn, opt => opt.Ignore());
 
-            // Campaign Item to Product Card
+            // Campaign Item to Product Card - null-safe with ThumbnailImage
             CreateMap<TbCampaignItem, ItemCardDto>()
-                .ForMember(dest => dest.ItemId, opt => opt.MapFrom(src => src.Item.Id))
+                .ForMember(dest => dest.ItemId, opt => opt.MapFrom(src =>
+                    src.Item != null ? src.Item.Id : Guid.Empty))
                 .ForMember(dest => dest.ItemCombinationId, opt => opt.MapFrom(src =>
-                    src.Item.ItemCombinations.FirstOrDefault(c => c.IsDefault).Id))
-                .ForMember(dest => dest.NameAr, opt => opt.MapFrom(src => src.Item.TitleAr))
-                .ForMember(dest => dest.NameEn, opt => opt.MapFrom(src => src.Item.TitleEn))
-                .ForMember(dest => dest.Rating, opt => opt.MapFrom(src => src.Item.AverageRating))
+                    src.Item != null && src.Item.ItemCombinations != null && src.Item.ItemCombinations.Any(c => c.IsDefault)
+                        ? src.Item.ItemCombinations.Where(c => c.IsDefault).Select(c => c.Id).FirstOrDefault()
+                        : Guid.Empty))
+                .ForMember(dest => dest.NameAr, opt => opt.MapFrom(src =>
+                    src.Item != null ? src.Item.TitleAr : null))
+                .ForMember(dest => dest.NameEn, opt => opt.MapFrom(src =>
+                    src.Item != null ? src.Item.TitleEn : null))
+                .ForMember(dest => dest.Rating, opt => opt.MapFrom(src =>
+                    src.Item != null ? src.Item.AverageRating : 0))
                 .ForMember(dest => dest.Price, opt => opt.Ignore()) // Will be calculated from combination pricing
                 .ForMember(dest => dest.SalePrice, opt => opt.MapFrom(src => src.CampaignPrice))
                 .ForMember(dest => dest.DiscountPercentage, opt => opt.Ignore()) // Will be calculated in service
@@ -67,14 +81,15 @@ namespace BL.Mapper
                     !src.StockLimit.HasValue || (src.StockLimit.Value - src.SoldCount) > 0))
                 .ForMember(dest => dest.InStock, opt => opt.MapFrom(src =>
                     !src.StockLimit.HasValue || (src.StockLimit.Value - src.SoldCount) > 0))
+                // Main Image URL - using ThumbnailImage (null-safe)
                 .ForMember(dest => dest.MainImageUrl, opt => opt.MapFrom(src =>
-                    src.Item.ItemCombinations.FirstOrDefault(c => c.IsDefault).ItemCombinationImages
-                        .OrderBy(i => i.Order).FirstOrDefault().Path ??
-                    src.Item.ItemImages.OrderBy(i => i.Order).FirstOrDefault().Path))
-                .ForMember(dest => dest.CampaignBadgeAr, opt => opt.MapFrom(src => src.Campaign.BadgeTextAr))
-                .ForMember(dest => dest.CampaignBadgeEn, opt => opt.MapFrom(src => src.Campaign.BadgeTextEn));
+                    src.Item != null ? src.Item.ThumbnailImage : null))
+                .ForMember(dest => dest.CampaignBadgeAr, opt => opt.MapFrom(src =>
+                    src.Campaign != null ? src.Campaign.BadgeTextAr : null))
+                .ForMember(dest => dest.CampaignBadgeEn, opt => opt.MapFrom(src =>
+                    src.Campaign != null ? src.Campaign.BadgeTextEn : null));
 
-            // Campaign mappings
+            // Campaign mappings - null-safe
             CreateMap<TbCampaign, CampaignDto>()
                 .ForMember(dest => dest.TotalItems, opt => opt.MapFrom(src =>
                     src.CampaignItems != null ? src.CampaignItems.Count(ci => !ci.IsDeleted) : 0))
@@ -88,12 +103,14 @@ namespace BL.Mapper
                 .ForMember(dest => dest.CreatedDateUtc, opt => opt.Ignore())
                 .ForMember(dest => dest.CreatedBy, opt => opt.Ignore());
 
-            // Campaign Item mappings
+            // Campaign Item mappings - null-safe
             CreateMap<TbCampaignItem, CampaignItemDto>()
-                .ForMember(dest => dest.ItemNameAr, opt => opt.MapFrom(src => src.Item.TitleAr))
-                .ForMember(dest => dest.ItemNameEn, opt => opt.MapFrom(src => src.Item.TitleEn))
+                .ForMember(dest => dest.ItemNameAr, opt => opt.MapFrom(src =>
+                    src.Item != null ? src.Item.TitleAr : null))
+                .ForMember(dest => dest.ItemNameEn, opt => opt.MapFrom(src =>
+                    src.Item != null ? src.Item.TitleEn : null))
                 .ForMember(dest => dest.ItemImageUrl, opt => opt.MapFrom(src =>
-                    src.Item.ItemImages.OrderBy(i => i.Order).FirstOrDefault().Path));
+                    src.Item != null ? src.Item.ThumbnailImage : null));
 
             CreateMap<AddCampaignItemDto, TbCampaignItem>();
         }

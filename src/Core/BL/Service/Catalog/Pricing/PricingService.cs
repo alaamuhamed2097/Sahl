@@ -1,4 +1,5 @@
 using BL.Contracts.Service.Catalog.Pricing;
+using Common.Enumerations.Pricing;
 using Domains.Entities.Catalog.Item.ItemAttributes;
 using Shared.DTOs.Catalog.Pricing;
 
@@ -6,20 +7,34 @@ namespace BL.Service.Catalog.Pricing
 {
     public class PricingService : IPricingService
     {
-        private readonly IEnumerable<IPricingStrategy> _strategies;
+        private readonly Dictionary<PricingStrategyType, IPricingStrategy> _strategies;
 
-        public PricingService(IEnumerable<IPricingStrategy> strategies)
+        public PricingService(
+            SimplePricingStrategy simplePricing,
+            CombinationBasedPricingStrategy combinationPricing,
+            QuantityBasedPricingStrategy quantityPricing,
+            HybridPricingStrategy hybridPricing)
         {
-            _strategies = strategies;
+            _strategies = new Dictionary<PricingStrategyType, IPricingStrategy>
+            {
+                { PricingStrategyType.Simple, simplePricing },
+                { PricingStrategyType.CombinationBased, combinationPricing },
+                { PricingStrategyType.QuantityBased, quantityPricing },
+                { PricingStrategyType.Hybrid, hybridPricing }
+            };
         }
 
         public PricingResult CalculatePrice(PricingContext context)
         {
-            var strategy = _strategies.FirstOrDefault(s => s.CanHandle(context.Strategy));
-
-            if (strategy == null)
+            if (context == null)
             {
-                throw new InvalidOperationException($"No pricing strategy found for type {context.Strategy}");
+                throw new ArgumentNullException(nameof(context));
+            }
+
+            if (!_strategies.TryGetValue(context.Strategy, out var strategy))
+            {
+                throw new InvalidOperationException(
+                    $"No pricing strategy found for type {context.Strategy}");
             }
 
             return strategy.CalculatePrice(context);
@@ -27,7 +42,16 @@ namespace BL.Service.Catalog.Pricing
 
         public PricingResult GetBestOffer(TbItemCombination combination, int quantity = 1)
         {
-            // Determine strategy from category or item configuration
+            if (combination == null)
+            {
+                throw new ArgumentNullException(nameof(combination));
+            }
+
+            if (quantity < 1)
+            {
+                throw new ArgumentException("Quantity must be at least 1", nameof(quantity));
+            }
+
             var strategyType = combination.Item.Category.PricingSystemType;
 
             var context = new PricingContext
