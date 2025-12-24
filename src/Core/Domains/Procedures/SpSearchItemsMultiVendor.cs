@@ -19,10 +19,10 @@ namespace Domains.Procedures
         public string ThumbnailImage { get; set; }
         public DateTime CreatedDateUtc { get; set; }
         public decimal? ItemRating { get; set; }
+        public bool IsFreeShipping { get; set; }
         public decimal Price { get; set; }
         public decimal SalesPrice { get; set; }
         public int AvailableQuantity { get; set; }
         public string StockStatus { get; set; }
-        public bool IsFreeShipping { get; set; }
     }
 }

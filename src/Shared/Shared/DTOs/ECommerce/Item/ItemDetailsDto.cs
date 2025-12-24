@@ -95,6 +95,6 @@ namespace Shared.DTOs.ECommerce.Item
         public string? Barcode { get; set; }
         public bool IsDefault { get; set; }
         public List<PricingAttributeDto>? PricingAttributes { get; set; }
-        public List<ItemImageDto>? Images { get; set; }
+        public List<ImageDto>? Images { get; set; }
     }
 }
