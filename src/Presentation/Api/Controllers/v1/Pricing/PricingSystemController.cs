@@ -14,9 +14,9 @@ namespace Api.Controllers.v1.Pricing
     [Route("api/v{version:apiVersion}/[controller]")]
     public class PricingSystemController : BaseController
     {
-        private readonly IPricingService _pricingService;
+        private readonly IPricingSettingsService _pricingService;
 
-        public PricingSystemController(IPricingService pricingService)
+        public PricingSystemController(IPricingSettingsService pricingService)
         {
             _pricingService = pricingService;
         }

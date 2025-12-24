@@ -1,8 +1,8 @@
 ﻿using Api.Controllers.v1.Base;
 using Asp.Versioning;
-using BL.Contracts.Service.ECommerce.Item;
+using BL.Contracts.Service.Catalog.Item;
 using Microsoft.AspNetCore.Mvc;
-using Shared.DTOs.ECommerce.Item;
+using Shared.DTOs.Catalog.Item;
 
 namespace Api.Controllers.v1.Catalog
 {

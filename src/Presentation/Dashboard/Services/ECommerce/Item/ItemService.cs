@@ -2,7 +2,7 @@
 using Dashboard.Contracts.ECommerce.Item;
 using Dashboard.Contracts.General;
 using Resources;
-using Shared.DTOs.ECommerce.Item;
+using Shared.DTOs.Catalog.Item;
 using Shared.GeneralModels;
 
 namespace Dashboard.Services.ECommerce.Item

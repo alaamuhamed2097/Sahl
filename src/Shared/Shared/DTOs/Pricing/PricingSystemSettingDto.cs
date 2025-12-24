@@ -21,7 +21,7 @@ namespace Shared.DTOs.Pricing
         public string SystemName => ResourceManager.CurrentLanguage == Language.Arabic ? SystemNameAr : SystemNameEn;
 
         [Required]
-        public PricingSystemType SystemType { get; set; }
+        public PricingStrategyType SystemType { get; set; }
 
         public bool IsEnabled { get; set; } = true;
 

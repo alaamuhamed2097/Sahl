@@ -594,15 +594,17 @@ namespace DAL.Migrations
                         .HasColumnType("uniqueidentifier")
                         .HasDefaultValueSql("NEWID()");
 
-                    b.Property<string>("BannerImagePath")
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
+                    b.Property<string>("BadgeColor")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
-                    b.Property<decimal?>("BudgetLimit")
-                        .HasColumnType("decimal(18,2)");
+                    b.Property<string>("BadgeTextAr")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
-                    b.Property<int>("CampaignType")
-                        .HasColumnType("int");
+                    b.Property<string>("BadgeTextEn")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<Guid>("CreatedBy")
                         .HasColumnType("uniqueidentifier");
@@ -612,22 +614,11 @@ namespace DAL.Migrations
                         .HasColumnType("datetime2(2)")
                         .HasDefaultValueSql("GETUTCDATE()");
 
-                    b.Property<string>("DescriptionAr")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("DescriptionEn")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("DisplayOrder")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValue(0);
-
                     b.Property<DateTime>("EndDate")
                         .HasColumnType("datetime2(2)");
 
-                    b.Property<int>("FundingModel")
-                        .HasColumnType("int");
+                    b.Property<DateTime?>("FlashSaleEndTime")
+                        .HasColumnType("datetime2");
 
                     b.Property<bool>("IsActive")
                         .ValueGeneratedOnAdd()
@@ -639,65 +630,24 @@ namespace DAL.Migrations
                         .HasColumnType("bit")
                         .HasDefaultValue(false);
 
-                    b.Property<bool>("IsFeatured")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(false);
+                    b.Property<bool>("IsFlashSale")
+                        .HasColumnType("bit");
 
-                    b.Property<int?>("MaxParticipatingProducts")
+                    b.Property<int?>("MaxQuantityPerUser")
                         .HasColumnType("int");
 
-                    b.Property<int?>("MaxProductsPerVendor")
-                        .HasColumnType("int");
+                    b.Property<string>("NameAr")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
 
-                    b.Property<decimal>("MinimumDiscountPercentage")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("decimal(5,2)")
-                        .HasDefaultValue(20m);
-
-                    b.Property<decimal?>("MinimumOrderValue")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<decimal?>("PlatformFundingPercentage")
-                        .HasColumnType("decimal(5,2)");
-
-                    b.Property<decimal?>("SellerFundingPercentage")
-                        .HasColumnType("decimal(5,2)");
-
-                    b.Property<string>("SlugAr")
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<string>("SlugEn")
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                    b.Property<string>("NameEn")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
 
                     b.Property<DateTime>("StartDate")
                         .HasColumnType("datetime2(2)");
-
-                    b.Property<int>("Status")
-                        .HasColumnType("int");
-
-                    b.Property<string>("ThemeColor")
-                        .HasMaxLength(7)
-                        .HasColumnType("nvarchar(7)");
-
-                    b.Property<string>("ThumbnailImagePath")
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
-
-                    b.Property<string>("TitleAr")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
-
-                    b.Property<string>("TitleEn")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
-
-                    b.Property<decimal>("TotalSpent")
-                        .HasColumnType("decimal(18,2)");
 
                     b.Property<Guid?>("UpdatedBy")
                         .HasColumnType("uniqueidentifier");
@@ -707,19 +657,11 @@ namespace DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CampaignType");
-
                     b.HasIndex("EndDate");
 
                     b.HasIndex("IsActive");
 
                     b.HasIndex("IsDeleted");
-
-                    b.HasIndex("IsFeatured");
-
-                    b.HasIndex("SlugEn")
-                        .IsUnique()
-                        .HasFilter("[SlugEn] IS NOT NULL");
 
                     b.HasIndex("StartDate");
 
@@ -728,18 +670,12 @@ namespace DAL.Migrations
                     b.ToTable("TbCampaigns", (string)null);
                 });
 
-            modelBuilder.Entity("Domains.Entities.Campaign.TbCampaignProduct", b =>
+            modelBuilder.Entity("Domains.Entities.Campaign.TbCampaignItem", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier")
                         .HasDefaultValueSql("NEWID()");
-
-                    b.Property<DateTime?>("ApprovedAt")
-                        .HasColumnType("datetime2(2)");
-
-                    b.Property<string>("ApprovedByUserId")
-                        .HasColumnType("nvarchar(450)");
 
                     b.Property<Guid>("CampaignId")
                         .HasColumnType("uniqueidentifier");
@@ -754,9 +690,6 @@ namespace DAL.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime2(2)")
                         .HasDefaultValueSql("GETUTCDATE()");
-
-                    b.Property<decimal>("DiscountPercentage")
-                        .HasColumnType("decimal(5,2)");
 
                     b.Property<int>("DisplayOrder")
                         .ValueGeneratedOnAdd()
@@ -776,18 +709,10 @@ namespace DAL.Migrations
                     b.Property<Guid>("ItemId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<decimal>("OriginalPrice")
-                        .HasColumnType("decimal(18,2)");
+                    b.Property<int>("SoldCount")
+                        .HasColumnType("int");
 
-                    b.Property<decimal?>("PlatformContribution")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<int>("SoldQuantity")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValue(0);
-
-                    b.Property<int?>("StockQuantity")
+                    b.Property<int?>("StockLimit")
                         .HasColumnType("int");
 
                     b.Property<Guid?>("UpdatedBy")
@@ -796,15 +721,7 @@ namespace DAL.Migrations
                     b.Property<DateTime?>("UpdatedDateUtc")
                         .HasColumnType("datetime2(2)");
 
-                    b.Property<decimal?>("VendorContribution")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<Guid>("VendorId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.HasKey("Id");
-
-                    b.HasIndex("ApprovedByUserId");
 
                     b.HasIndex("CampaignId");
 
@@ -815,8 +732,6 @@ namespace DAL.Migrations
                     b.HasIndex("IsDeleted");
 
                     b.HasIndex("ItemId");
-
-                    b.HasIndex("VendorId");
 
                     b.HasIndex("CampaignId", "IsActive");
 
@@ -833,14 +748,8 @@ namespace DAL.Migrations
                         .HasColumnType("uniqueidentifier")
                         .HasDefaultValueSql("NEWID()");
 
-                    b.Property<DateTime?>("AppliedAt")
-                        .HasColumnType("datetime2(2)");
-
                     b.Property<DateTime?>("ApprovedAt")
                         .HasColumnType("datetime2(2)");
-
-                    b.Property<string>("ApprovedByUserId")
-                        .HasColumnType("nvarchar(450)");
 
                     b.Property<Guid>("CampaignId")
                         .HasColumnType("uniqueidentifier");
@@ -867,26 +776,6 @@ namespace DAL.Migrations
                         .HasMaxLength(1000)
                         .HasColumnType("nvarchar(1000)");
 
-                    b.Property<decimal>("TotalCommissionPaid")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("decimal(18,2)")
-                        .HasDefaultValue(0m);
-
-                    b.Property<int>("TotalProductsApproved")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValue(0);
-
-                    b.Property<int>("TotalProductsSubmitted")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValue(0);
-
-                    b.Property<decimal>("TotalSales")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("decimal(18,2)")
-                        .HasDefaultValue(0m);
-
                     b.Property<Guid?>("UpdatedBy")
                         .HasColumnType("uniqueidentifier");
 
@@ -897,8 +786,6 @@ namespace DAL.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("ApprovedByUserId");
 
                     b.HasIndex("CampaignId");
 
@@ -912,208 +799,6 @@ namespace DAL.Migrations
                         .IsUnique();
 
                     b.ToTable("TbCampaignVendors", (string)null);
-                });
-
-            modelBuilder.Entity("Domains.Entities.Campaign.TbFlashSale", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier")
-                        .HasDefaultValueSql("NEWID()");
-
-                    b.Property<string>("BannerImagePath")
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
-
-                    b.Property<Guid>("CreatedBy")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("CreatedDateUtc")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2(2)")
-                        .HasDefaultValueSql("GETUTCDATE()");
-
-                    b.Property<string>("DescriptionAr")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("DescriptionEn")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("DisplayOrder")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValue(0);
-
-                    b.Property<int>("DurationInHours")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("EndDate")
-                        .HasColumnType("datetime2(2)");
-
-                    b.Property<bool>("IsActive")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(true);
-
-                    b.Property<bool>("IsDeleted")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(false);
-
-                    b.Property<int?>("MaxProducts")
-                        .HasColumnType("int");
-
-                    b.Property<decimal>("MinimumDiscountPercentage")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("decimal(5,2)")
-                        .HasDefaultValue(20m);
-
-                    b.Property<decimal>("MinimumSellerRating")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("decimal(3,2)")
-                        .HasDefaultValue(4.0m);
-
-                    b.Property<bool>("ShowCountdownTimer")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(true);
-
-                    b.Property<DateTime>("StartDate")
-                        .HasColumnType("datetime2(2)");
-
-                    b.Property<string>("ThemeColor")
-                        .HasMaxLength(7)
-                        .HasColumnType("nvarchar(7)");
-
-                    b.Property<string>("TitleAr")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
-
-                    b.Property<string>("TitleEn")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
-
-                    b.Property<int>("TotalSales")
-                        .HasColumnType("int");
-
-                    b.Property<Guid?>("UpdatedBy")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime?>("UpdatedDateUtc")
-                        .HasColumnType("datetime2(2)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("EndDate");
-
-                    b.HasIndex("IsActive");
-
-                    b.HasIndex("IsDeleted");
-
-                    b.HasIndex("StartDate");
-
-                    b.HasIndex("StartDate", "EndDate", "IsActive");
-
-                    b.ToTable("TbFlashSales", null, t =>
-                        {
-                            t.HasCheckConstraint("CK_FlashSale_DurationInHours", "[DurationInHours] >= 6 AND [DurationInHours] <= 48");
-                        });
-                });
-
-            modelBuilder.Entity("Domains.Entities.Campaign.TbFlashSaleProduct", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier")
-                        .HasDefaultValueSql("NEWID()");
-
-                    b.Property<int>("AddToCartCount")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValue(0);
-
-                    b.Property<int>("AvailableQuantity")
-                        .HasColumnType("int");
-
-                    b.Property<Guid>("CreatedBy")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("CreatedDateUtc")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2(2)")
-                        .HasDefaultValueSql("GETUTCDATE()");
-
-                    b.Property<decimal>("DiscountPercentage")
-                        .HasColumnType("decimal(5,2)");
-
-                    b.Property<int>("DisplayOrder")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValue(0);
-
-                    b.Property<Guid>("FlashSaleId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<decimal>("FlashSalePrice")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<bool>("IsActive")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(true);
-
-                    b.Property<bool>("IsDeleted")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(false);
-
-                    b.Property<Guid>("ItemId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<decimal>("OriginalPrice")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<int>("SoldQuantity")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValue(0);
-
-                    b.Property<Guid?>("UpdatedBy")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime?>("UpdatedDateUtc")
-                        .HasColumnType("datetime2(2)");
-
-                    b.Property<Guid>("VendorId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<int>("ViewCount")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValue(0);
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("DisplayOrder");
-
-                    b.HasIndex("FlashSaleId");
-
-                    b.HasIndex("IsActive");
-
-                    b.HasIndex("IsDeleted");
-
-                    b.HasIndex("ItemId");
-
-                    b.HasIndex("VendorId");
-
-                    b.HasIndex("FlashSaleId", "ItemId")
-                        .IsUnique();
-
-                    b.HasIndex("FlashSaleId", "SoldQuantity");
-
-                    b.ToTable("TbFlashSaleProducts", (string)null);
                 });
 
             modelBuilder.Entity("Domains.Entities.Catalog.Attribute.TbAttribute", b =>
@@ -1363,7 +1048,7 @@ namespace DAL.Migrations
                     b.Property<int>("PricingSystemType")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
-                        .HasDefaultValue(0);
+                        .HasDefaultValue(1);
 
                     b.Property<Guid?>("TbPricingSystemSettingId")
                         .HasColumnType("uniqueidentifier");
@@ -3858,20 +3543,12 @@ namespace DAL.Migrations
                     b.ToTable("TbLoyaltyTiers", (string)null);
                 });
 
-            modelBuilder.Entity("Domains.Entities.Merchandising.TbBlockProduct", b =>
+            modelBuilder.Entity("Domains.Entities.Merchandising.TbBlockItem", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier")
                         .HasDefaultValueSql("NEWID()");
-
-                    b.Property<string>("BadgeColor")
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<string>("BadgeText")
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
 
                     b.Property<Guid>("CreatedBy")
                         .HasColumnType("uniqueidentifier");
@@ -3886,26 +3563,10 @@ namespace DAL.Migrations
                         .HasColumnType("int")
                         .HasDefaultValue(0);
 
-                    b.Property<DateTime?>("FeaturedFrom")
-                        .HasColumnType("datetime2(2)");
-
-                    b.Property<DateTime?>("FeaturedTo")
-                        .HasColumnType("datetime2(2)");
-
                     b.Property<Guid>("HomepageBlockId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<bool>("IsActive")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(true);
-
                     b.Property<bool>("IsDeleted")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(false);
-
-                    b.Property<bool>("IsFeatured")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bit")
                         .HasDefaultValue(false);
@@ -3925,11 +3586,7 @@ namespace DAL.Migrations
 
                     b.HasIndex("HomepageBlockId");
 
-                    b.HasIndex("IsActive");
-
                     b.HasIndex("IsDeleted");
-
-                    b.HasIndex("IsFeatured");
 
                     b.HasIndex("ItemId");
 
@@ -3948,22 +3605,8 @@ namespace DAL.Migrations
                         .HasColumnType("uniqueidentifier")
                         .HasDefaultValueSql("NEWID()");
 
-                    b.Property<DateTime?>("ActiveFrom")
-                        .HasColumnType("datetime2(2)");
-
-                    b.Property<DateTime?>("ActiveTo")
-                        .HasColumnType("datetime2(2)");
-
-                    b.Property<string>("BackgroundColor")
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<string>("BackgroundImagePath")
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
-
-                    b.Property<int>("BlockType")
-                        .HasColumnType("int");
+                    b.Property<Guid?>("CampaignId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid>("CreatedBy")
                         .HasColumnType("uniqueidentifier");
@@ -3973,25 +3616,11 @@ namespace DAL.Migrations
                         .HasColumnType("datetime2(2)")
                         .HasDefaultValueSql("GETUTCDATE()");
 
-                    b.Property<string>("CssClass")
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<string>("DescriptionAr")
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
-
-                    b.Property<string>("DescriptionEn")
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
-
                     b.Property<int>("DisplayOrder")
                         .HasColumnType("int");
 
-                    b.Property<bool>("IsActive")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(true);
+                    b.Property<int?>("DynamicSource")
+                        .HasColumnType("int");
 
                     b.Property<bool>("IsDeleted")
                         .ValueGeneratedOnAdd()
@@ -4003,17 +3632,22 @@ namespace DAL.Migrations
                         .HasColumnType("bit")
                         .HasDefaultValue(true);
 
-                    b.Property<int?>("MaxItemsToDisplay")
+                    b.Property<int>("Layout")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("PersonalizationSource")
                         .HasColumnType("int");
 
                     b.Property<bool>("ShowViewAllLink")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(true);
+                        .HasColumnType("bit");
 
-                    b.Property<string>("TextColor")
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                    b.Property<string>("SubtitleAr")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("SubtitleEn")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
 
                     b.Property<string>("TitleAr")
                         .IsRequired()
@@ -4025,33 +3659,100 @@ namespace DAL.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
+                    b.Property<int>("Type")
+                        .HasColumnType("int");
+
                     b.Property<Guid?>("UpdatedBy")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime?>("UpdatedDateUtc")
                         .HasColumnType("datetime2(2)");
 
-                    b.Property<string>("ViewAllLinkUrl")
+                    b.Property<string>("ViewAllLinkTitleAr")
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
 
+                    b.Property<string>("ViewAllLinkTitleEn")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<DateTime?>("VisibleFrom")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("VisibleTo")
+                        .HasColumnType("datetime2");
+
                     b.HasKey("Id");
 
-                    b.HasIndex("BlockType");
+                    b.HasIndex("CampaignId");
 
                     b.HasIndex("DisplayOrder");
-
-                    b.HasIndex("IsActive");
 
                     b.HasIndex("IsDeleted");
 
                     b.HasIndex("IsVisible");
 
-                    b.HasIndex("ActiveFrom", "ActiveTo");
-
-                    b.HasIndex("IsActive", "DisplayOrder");
+                    b.HasIndex("IsVisible", "DisplayOrder");
 
                     b.ToTable("TbHomepageBlocks", (string)null);
+                });
+
+            modelBuilder.Entity("Domains.Entities.Merchandising.TbUserItemView", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier")
+                        .HasDefaultValueSql("NEWID()");
+
+                    b.Property<Guid>("CreatedBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedDateUtc")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2(2)")
+                        .HasDefaultValueSql("GETUTCDATE()");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<Guid>("ItemId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("ReferrerUrl")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("SourceBlockType")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<Guid?>("UpdatedBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("UpdatedDateUtc")
+                        .HasColumnType("datetime2(2)");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("ViewDurationSeconds")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("ViewedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("IsDeleted");
+
+                    b.HasIndex("ItemId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("TbUserItemViews");
                 });
 
             modelBuilder.Entity("Domains.Entities.Notification.TbNotification", b =>
@@ -5417,7 +5118,7 @@ namespace DAL.Migrations
                             IsEnabled = true,
                             SystemNameAr = "التسعير القياسي",
                             SystemNameEn = "Standard Pricing",
-                            SystemType = 0
+                            SystemType = 1
                         },
                         new
                         {
@@ -5429,7 +5130,7 @@ namespace DAL.Migrations
                             IsEnabled = true,
                             SystemNameAr = "تسعير بالتركيبات",
                             SystemNameEn = "Combination Pricing",
-                            SystemType = 1
+                            SystemType = 2
                         },
                         new
                         {
@@ -5441,7 +5142,7 @@ namespace DAL.Migrations
                             IsEnabled = true,
                             SystemNameAr = "تسعير حسب الكمية",
                             SystemNameEn = "Quantity Pricing",
-                            SystemType = 2
+                            SystemType = 3
                         },
                         new
                         {
@@ -5453,7 +5154,7 @@ namespace DAL.Migrations
                             IsEnabled = true,
                             SystemNameAr = "التركيبات مع مستويات الكمية",
                             SystemNameEn = "Combination + Quantity",
-                            SystemType = 3
+                            SystemType = 4
                         },
                         new
                         {
@@ -5465,7 +5166,7 @@ namespace DAL.Migrations
                             IsEnabled = true,
                             SystemNameAr = "تسعير حسب شريحة العميل",
                             SystemNameEn = "Customer Segment Pricing",
-                            SystemType = 4
+                            SystemType = 3
                         });
                 });
 
@@ -8054,6 +7755,52 @@ namespace DAL.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("TbBlockCategory", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier")
+                        .HasDefaultValueSql("NEWID()");
+
+                    b.Property<Guid>("CategoryId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("CreatedBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedDateUtc")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2(2)")
+                        .HasDefaultValueSql("GETUTCDATE()");
+
+                    b.Property<int>("DisplayOrder")
+                        .HasColumnType("int");
+
+                    b.Property<Guid>("HomepageBlockId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<Guid?>("UpdatedBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("UpdatedDateUtc")
+                        .HasColumnType("datetime2(2)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CategoryId");
+
+                    b.HasIndex("HomepageBlockId");
+
+                    b.HasIndex("IsDeleted");
+
+                    b.ToTable("TbBlockCategories");
+                });
+
             modelBuilder.Entity("Domains.Entities.BrandManagement.TbAuthorizedDistributor", b =>
                 {
                     b.HasOne("Domains.Entities.Catalog.Brand.TbBrand", "Brand")
@@ -8188,15 +7935,10 @@ namespace DAL.Migrations
                     b.Navigation("Vendor");
                 });
 
-            modelBuilder.Entity("Domains.Entities.Campaign.TbCampaignProduct", b =>
+            modelBuilder.Entity("Domains.Entities.Campaign.TbCampaignItem", b =>
                 {
-                    b.HasOne("Domains.Identity.ApplicationUser", "ApprovedByUser")
-                        .WithMany()
-                        .HasForeignKey("ApprovedByUserId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
                     b.HasOne("Domains.Entities.Campaign.TbCampaign", "Campaign")
-                        .WithMany("CampaignProducts")
+                        .WithMany("CampaignItems")
                         .HasForeignKey("CampaignId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -8207,28 +7949,13 @@ namespace DAL.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("Domains.Entities.ECommerceSystem.Vendor.TbVendor", "Vendor")
-                        .WithMany()
-                        .HasForeignKey("VendorId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("ApprovedByUser");
-
                     b.Navigation("Campaign");
 
                     b.Navigation("Item");
-
-                    b.Navigation("Vendor");
                 });
 
             modelBuilder.Entity("Domains.Entities.Campaign.TbCampaignVendor", b =>
                 {
-                    b.HasOne("Domains.Identity.ApplicationUser", "ApprovedByUser")
-                        .WithMany()
-                        .HasForeignKey("ApprovedByUserId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
                     b.HasOne("Domains.Entities.Campaign.TbCampaign", "Campaign")
                         .WithMany("CampaignVendors")
                         .HasForeignKey("CampaignId")
@@ -8241,36 +7968,7 @@ namespace DAL.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.Navigation("ApprovedByUser");
-
                     b.Navigation("Campaign");
-
-                    b.Navigation("Vendor");
-                });
-
-            modelBuilder.Entity("Domains.Entities.Campaign.TbFlashSaleProduct", b =>
-                {
-                    b.HasOne("Domains.Entities.Campaign.TbFlashSale", "FlashSale")
-                        .WithMany("FlashSaleProducts")
-                        .HasForeignKey("FlashSaleId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Domains.Entities.Catalog.Item.TbItem", "Item")
-                        .WithMany()
-                        .HasForeignKey("ItemId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("Domains.Entities.ECommerceSystem.Vendor.TbVendor", "Vendor")
-                        .WithMany()
-                        .HasForeignKey("VendorId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("FlashSale");
-
-                    b.Navigation("Item");
 
                     b.Navigation("Vendor");
                 });
@@ -8679,7 +8377,7 @@ namespace DAL.Migrations
                     b.Navigation("Review");
                 });
 
-            modelBuilder.Entity("Domains.Entities.Merchandising.TbBlockProduct", b =>
+            modelBuilder.Entity("Domains.Entities.Merchandising.TbBlockItem", b =>
                 {
                     b.HasOne("Domains.Entities.Merchandising.TbHomepageBlock", "HomepageBlock")
                         .WithMany("BlockProducts")
@@ -8696,6 +8394,34 @@ namespace DAL.Migrations
                     b.Navigation("HomepageBlock");
 
                     b.Navigation("Item");
+                });
+
+            modelBuilder.Entity("Domains.Entities.Merchandising.TbHomepageBlock", b =>
+                {
+                    b.HasOne("Domains.Entities.Campaign.TbCampaign", "Campaign")
+                        .WithMany("HomepageBlocks")
+                        .HasForeignKey("CampaignId");
+
+                    b.Navigation("Campaign");
+                });
+
+            modelBuilder.Entity("Domains.Entities.Merchandising.TbUserItemView", b =>
+                {
+                    b.HasOne("Domains.Entities.Catalog.Item.TbItem", "Item")
+                        .WithMany()
+                        .HasForeignKey("ItemId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Domains.Identity.ApplicationUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Item");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Domains.Entities.Notification.TbNotificationPreferences", b =>
@@ -9339,6 +9065,25 @@ namespace DAL.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("TbBlockCategory", b =>
+                {
+                    b.HasOne("Domains.Entities.Catalog.Category.TbCategory", "Category")
+                        .WithMany()
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Domains.Entities.Merchandising.TbHomepageBlock", "HomepageBlock")
+                        .WithMany("BlockCategories")
+                        .HasForeignKey("HomepageBlockId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Category");
+
+                    b.Navigation("HomepageBlock");
+                });
+
             modelBuilder.Entity("Domains.Entities.BrandManagement.TbBrandRegistrationRequest", b =>
                 {
                     b.Navigation("Documents");
@@ -9346,14 +9091,11 @@ namespace DAL.Migrations
 
             modelBuilder.Entity("Domains.Entities.Campaign.TbCampaign", b =>
                 {
-                    b.Navigation("CampaignProducts");
+                    b.Navigation("CampaignItems");
 
                     b.Navigation("CampaignVendors");
-                });
 
-            modelBuilder.Entity("Domains.Entities.Campaign.TbFlashSale", b =>
-                {
-                    b.Navigation("FlashSaleProducts");
+                    b.Navigation("HomepageBlocks");
                 });
 
             modelBuilder.Entity("Domains.Entities.Catalog.Attribute.TbAttribute", b =>
@@ -9463,6 +9205,8 @@ namespace DAL.Migrations
 
             modelBuilder.Entity("Domains.Entities.Merchandising.TbHomepageBlock", b =>
                 {
+                    b.Navigation("BlockCategories");
+
                     b.Navigation("BlockProducts");
                 });
 

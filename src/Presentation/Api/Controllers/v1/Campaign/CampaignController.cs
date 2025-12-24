@@ -1,86 +1,41 @@
+using Api.Controllers.v1.Base;
 using Asp.Versioning;
-using BL.Services.Campaign;
+using BL.Contracts.Service.Merchandising.Campaign;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Shared.DTOs.Campaign;
 using Shared.GeneralModels;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Api.Controllers.v1.Campaign
 {
     /// <summary>
-    /// Controller for Campaign and Flash Sale management
+    /// Campaign and Flash Sale management
     /// </summary>
     [ApiController]
     [ApiVersion("1.0")]
-    [Route("api/v{version:apiVersion}/[controller]")]
-    [Authorize(Roles = "Admin")]
-    public class CampaignController : ControllerBase
+    [Route("api/v{version:apiVersion}/campaigns")]
+    public class CampaignController : BaseController
     {
         private readonly ICampaignService _campaignService;
-        private readonly ILogger<CampaignController> _logger;
 
-        public CampaignController(ICampaignService campaignService, ILogger<CampaignController> logger)
+        public CampaignController(
+            ICampaignService campaignService)
         {
             _campaignService = campaignService;
-            _logger = logger;
         }
 
-        /// <summary>
-        /// Gets all campaigns.
-        /// </summary>
-        /// <remarks>
-        /// API Version: 1.0+
-        /// Requires Admin role.
-        /// </remarks>
-        [HttpGet]
-        public async Task<IActionResult> GetAll()
-        {
-            var campaigns = await _campaignService.GetAllCampaignsAsync();
-            return Ok(new ResponseModel<List<CampaignDto>>
-            {
-                Success = true,
-                Data = campaigns,
-                Message = "Campaigns retrieved successfully"
-            });
-        }
+        #region Campaign Queries
 
         /// <summary>
-        /// Gets a campaign by ID.
+        /// Get active campaigns (public)
         /// </summary>
-        /// <remarks>
-        /// API Version: 1.0+
-        /// Requires Admin role.
-        /// </remarks>
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetById(Guid id)
-        {
-            var campaign = await _campaignService.GetCampaignByIdAsync(id);
-            if (campaign == null)
-                return NotFound(new ResponseModel<object> { Success = false, Message = "Campaign not found" });
-
-            return Ok(new ResponseModel<CampaignDto>
-            {
-                Success = true,
-                Data = campaign,
-                Message = "Campaign retrieved successfully"
-            });
-        }
-
-        /// <summary>
-        /// Gets active campaigns.
-        /// </summary>
-        /// <remarks>
-        /// API Version: 1.0+
-        /// </remarks>
         [HttpGet("active")]
         [AllowAnonymous]
-        public async Task<IActionResult> GetActive()
+        [ProducesResponseType(typeof(ResponseModel<List<CampaignDto>>), 200)]
+        public async Task<IActionResult> GetActiveCampaigns()
         {
             var campaigns = await _campaignService.GetActiveCampaignsAsync();
+
             return Ok(new ResponseModel<List<CampaignDto>>
             {
                 Success = true,
@@ -90,28 +45,82 @@ namespace Api.Controllers.v1.Campaign
         }
 
         /// <summary>
-        /// Creates a new campaign.
+        /// Get active flash sales (public)
         /// </summary>
-        /// <remarks>
-        /// API Version: 1.0+
-        /// Requires Admin role.
-        /// </remarks>
+        [HttpGet("flash-sales/active")]
+        [AllowAnonymous]
+        [ProducesResponseType(typeof(ResponseModel<List<CampaignDto>>), 200)]
+        public async Task<IActionResult> GetActiveFlashSales()
+        {
+            var flashSales = await _campaignService.GetActiveFlashSalesAsync();
+
+            return Ok(new ResponseModel<List<CampaignDto>>
+            {
+                Success = true,
+                Data = flashSales,
+                Message = "Active flash sales retrieved successfully"
+            });
+        }
+
+        /// <summary>
+        /// Get campaign by ID (admin only)
+        /// </summary>
+        [HttpGet("{id:guid}")]
+        [Authorize(Roles = "Admin")]
+        [ProducesResponseType(typeof(ResponseModel<CampaignDto>), 200)]
+        [ProducesResponseType(404)]
+        public async Task<IActionResult> GetCampaignById(Guid id)
+        {
+            var campaign = await _campaignService.GetCampaignByIdAsync(id);
+
+            if (campaign == null)
+            {
+                return NotFound(new ResponseModel<object>
+                {
+                    Success = false,
+                    Message = "Campaign not found"
+                });
+            }
+
+            return Ok(new ResponseModel<CampaignDto>
+            {
+                Success = true,
+                Data = campaign,
+                Message = "Campaign retrieved successfully"
+            });
+        }
+
+        #endregion
+
+        #region Campaign Management (Admin)
+
+        /// <summary>
+        /// Create new campaign (admin only)
+        /// </summary>
         [HttpPost]
-        public async Task<IActionResult> Create([FromBody] CampaignCreateDto dto)
+        [Authorize(Roles = "Admin")]
+        [ProducesResponseType(typeof(ResponseModel<CampaignDto>), 201)]
+        [ProducesResponseType(400)]
+        public async Task<IActionResult> CreateCampaign([FromBody] CreateCampaignDto dto)
         {
             if (!ModelState.IsValid)
             {
-                var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList();
                 return BadRequest(new ResponseModel<object>
                 {
                     Success = false,
                     Message = "Validation failed",
-                    Errors = errors
+                    Errors = ModelState.Values
+                        .SelectMany(v => v.Errors)
+                        .Select(e => e.ErrorMessage)
+                        .ToList()
                 });
             }
 
-            var campaign = await _campaignService.CreateCampaignAsync(dto);
-            return CreatedAtAction(nameof(GetById), new { id = campaign.Id },
+            var campaign = await _campaignService.CreateCampaignAsync(dto, GuidUserId);
+
+            return CreatedAtAction(
+                nameof(GetCampaignById),
+                new { id = campaign.Id },
                 new ResponseModel<CampaignDto>
                 {
                     Success = true,
@@ -121,41 +130,167 @@ namespace Api.Controllers.v1.Campaign
         }
 
         /// <summary>
-        /// Gets all flash sales.
+        /// Update campaign (admin only)
         /// </summary>
-        /// <remarks>
-        /// API Version: 1.0+
-        /// </remarks>
-        [HttpGet("flashsales")]
-        [AllowAnonymous]
-        public async Task<IActionResult> GetAllFlashSales()
+        [HttpPut("{id:guid}")]
+        [Authorize(Roles = "Admin")]
+        [ProducesResponseType(typeof(ResponseModel<CampaignDto>), 200)]
+        [ProducesResponseType(404)]
+        [ProducesResponseType(400)]
+        public async Task<IActionResult> UpdateCampaign(Guid id, [FromBody] UpdateCampaignDto dto)
         {
-            var flashSales = await _campaignService.GetAllFlashSalesAsync();
-            return Ok(new ResponseModel<List<FlashSaleDto>>
+            if (id != dto.Id)
+            {
+                return BadRequest(new ResponseModel<object>
+                {
+                    Success = false,
+                    Message = "Campaign ID mismatch"
+                });
+            }
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(new ResponseModel<object>
+                {
+                    Success = false,
+                    Message = "Validation failed",
+                    Errors = ModelState.Values
+                        .SelectMany(v => v.Errors)
+                        .Select(e => e.ErrorMessage)
+                        .ToList()
+                });
+            }
+
+            var campaign = await _campaignService.UpdateCampaignAsync(dto, GuidUserId);
+
+            return Ok(new ResponseModel<CampaignDto>
             {
                 Success = true,
-                Data = flashSales,
-                Message = "Flash sales retrieved successfully"
+                Data = campaign,
+                Message = "Campaign updated successfully"
             });
         }
 
         /// <summary>
-        /// Gets active flash sales.
+        /// Delete campaign (admin only)
         /// </summary>
-        /// <remarks>
-        /// API Version: 1.0+
-        /// </remarks>
-        [HttpGet("flashsales/active")]
-        [AllowAnonymous]
-        public async Task<IActionResult> GetActiveFlashSales()
+        [HttpDelete("{id:guid}")]
+        [Authorize(Roles = "Admin")]
+        [ProducesResponseType(typeof(ResponseModel<object>), 200)]
+        [ProducesResponseType(404)]
+        public async Task<IActionResult> DeleteCampaign(Guid id)
         {
-            var flashSales = await _campaignService.GetActiveFlashSalesAsync();
-            return Ok(new ResponseModel<List<FlashSaleDto>>
+            var result = await _campaignService.DeleteCampaignAsync(id, GuidUserId);
+
+            if (!result)
+            {
+                return NotFound(new ResponseModel<object>
+                {
+                    Success = false,
+                    Message = "Campaign not found"
+                });
+            }
+
+            return Ok(new ResponseModel<object>
             {
                 Success = true,
-                Data = flashSales,
-                Message = "Active flash sales retrieved successfully"
+                Message = "Campaign deleted successfully"
             });
         }
+
+        #endregion
+
+        #region Campaign Items
+
+        /// <summary>
+        /// Get campaign items (public)
+        /// </summary>
+        [HttpGet("{id:guid}/items")]
+        [AllowAnonymous]
+        [ProducesResponseType(typeof(ResponseModel<List<CampaignItemDto>>), 200)]
+        public async Task<IActionResult> GetCampaignItems(Guid id)
+        {
+            var items = await _campaignService.GetCampaignItemsAsync(id);
+
+            return Ok(new ResponseModel<List<CampaignItemDto>>
+            {
+                Success = true,
+                Data = items,
+                Message = "Campaign items retrieved successfully"
+            });
+        }
+
+        /// <summary>
+        /// Add item to campaign (admin only)
+        /// </summary>
+        [HttpPost("{id:guid}/items")]
+        [Authorize(Roles = "Admin")]
+        [ProducesResponseType(typeof(ResponseModel<CampaignItemDto>), 201)]
+        [ProducesResponseType(400)]
+        public async Task<IActionResult> AddItemToCampaign(Guid id, [FromBody] AddCampaignItemDto dto)
+        {
+            if (id != dto.CampaignId)
+            {
+                return BadRequest(new ResponseModel<object>
+                {
+                    Success = false,
+                    Message = "Campaign ID mismatch"
+                });
+            }
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(new ResponseModel<object>
+                {
+                    Success = false,
+                    Message = "Validation failed",
+                    Errors = ModelState.Values
+                        .SelectMany(v => v.Errors)
+                        .Select(e => e.ErrorMessage)
+                        .ToList()
+                });
+            }
+
+            var item = await _campaignService.AddItemToCampaignAsync(dto, GuidUserId);
+
+            return CreatedAtAction(
+                nameof(GetCampaignItems),
+                new { id = dto.CampaignId },
+                new ResponseModel<CampaignItemDto>
+                {
+                    Success = true,
+                    Data = item,
+                    Message = "Item added to campaign successfully"
+                });
+        }
+
+        /// <summary>
+        /// Remove item from campaign (admin only)
+        /// </summary>
+        [HttpDelete("{campaignId:guid}/items/{itemId:guid}")]
+        [Authorize(Roles = "Admin")]
+        [ProducesResponseType(typeof(ResponseModel<object>), 200)]
+        [ProducesResponseType(404)]
+        public async Task<IActionResult> RemoveItemFromCampaign(Guid campaignId, Guid itemId)
+        {
+            var result = await _campaignService.RemoveItemFromCampaignAsync(itemId, GuidUserId);
+
+            if (!result)
+            {
+                return NotFound(new ResponseModel<object>
+                {
+                    Success = false,
+                    Message = "Campaign item not found"
+                });
+            }
+
+            return Ok(new ResponseModel<object>
+            {
+                Success = true,
+                Message = "Item removed from campaign successfully"
+            });
+        }
+
+        #endregion
     }
 }

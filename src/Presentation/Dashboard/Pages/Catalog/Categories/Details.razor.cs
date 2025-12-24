@@ -7,7 +7,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.JSInterop;
 using Resources;
 using Resources.Enumerations;
-using Shared.DTOs.ECommerce.Category;
+using Shared.DTOs.Catalog.Category;
 using Shared.DTOs.Pricing;
 
 namespace Dashboard.Pages.Catalog.Categories;
@@ -318,7 +318,7 @@ public partial class Details : IDisposable
             // If there are no pricing systems configured, ensure a safe default
             if (PricingSystems == null || PricingSystems.Count == 0)
             {
-                Model.PricingSystemType = Common.Enumerations.Pricing.PricingSystemType.Standard;
+                Model.PricingSystemType = Common.Enumerations.Pricing.PricingStrategyType.Simple;
                 Model.PricingSystemId = Guid.Parse("11111111-1111-1111-1111-111111111111");
             }
             else if (PricingSystems.Count == 1)

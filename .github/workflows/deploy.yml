@@ -259,50 +259,6 @@ jobs:
             Write-Host "⚠️ appsettings.json not found at: $appsettingsPath" -ForegroundColor Yellow
           }
 
-      # 1️⃣8️⃣ Rollback Database on Failure
-      - name: Rollback Database on Failure
-        if: failure() && steps.apply-migrations.outputs.MIGRATION_SUCCESS == 'false' && env.DB_BACKUP_PATH != ''
-        run: |
-          Write-Host "=========================================="
-          Write-Host "⚠️ ROLLING BACK DATABASE..." -ForegroundColor Yellow
-          Write-Host "=========================================="
-          
-          $backupPath = $env:DB_BACKUP_PATH
-          $serverName = $env:DB_SERVER
-          $databaseName = $env:DB_NAME
-          $userId = $env:DB_USER
-          $password = $env:DB_PASSWORD
-          
-          if (Test-Path $backupPath) {
-            try {
-              Write-Host "Restoring database from: $backupPath"
-              Write-Host "Server: $serverName"
-              Write-Host "Database: $databaseName"
-              
-              # تحويل الـ database لـ single user mode
-              Write-Host "Setting database to SINGLE_USER mode..."
-              sqlcmd -S $serverName -U $userId -P $password -Q "ALTER DATABASE [$databaseName] SET SINGLE_USER WITH ROLLBACK IMMEDIATE;"
-              
-              # استعادة الـ database
-              Write-Host "Restoring database..."
-              sqlcmd -S $serverName -U $userId -P $password -Q "RESTORE DATABASE [$databaseName] FROM DISK = N'$backupPath' WITH REPLACE, RECOVERY;"
-              
-              # إرجاع الـ database لـ multi user mode
-              Write-Host "Setting database to MULTI_USER mode..."
-              sqlcmd -S $serverName -U $userId -P $password -Q "ALTER DATABASE [$databaseName] SET MULTI_USER;"
-              
-              if ($LASTEXITCODE -eq 0) {
-                Write-Host "✅ Database rolled back successfully!" -ForegroundColor Green
-              } else {
-                Write-Host "❌ Database rollback failed (Exit code: $LASTEXITCODE)!" -ForegroundColor Red
-              }
-            } catch {
-              Write-Host "❌ Rollback error: $($_.Exception.Message)" -ForegroundColor Red
-            }
-          } else {
-            Write-Host "⚠️ Backup file not found: $backupPath" -ForegroundColor Yellow
-          }
-      
       # 9️⃣ Check for Pending Migrations
       - name: Check Pending Migrations
         id: check-migrations
@@ -501,9 +457,14 @@ jobs:
           Write-Host "BasitApi deployed successfully!" -ForegroundColor Green
           Write-Host "=========================================="
       
-      # 1️⃣3️⃣ Publish Dashboard
+      # 1️⃣3️⃣ Publish Dashboard (FIXED - Remove --no-build flag)
       - name: Publish Dashboard
-        run: dotnet publish "$env:GITHUB_WORKSPACE\src\Presentation\Dashboard\Dashboard.csproj" -c Release -o "$env:TEMP\publish\dashboard" --no-build
+        run: |
+          Write-Host "=========================================="
+          Write-Host "Publishing Dashboard..."
+          Write-Host "=========================================="
+          # Remove --no-build to allow proper trimming and assembly optimization
+          dotnet publish "$env:GITHUB_WORKSPACE\src\Presentation\Dashboard\Dashboard.csproj" -c Release -o "$env:TEMP\publish\dashboard"
       
       # 1️⃣4️⃣ Prepare temp directory
       - name: Prepare temp directory
@@ -673,31 +634,36 @@ jobs:
           Write-Host "=========================================="
           
           $backupPath = $env:DB_BACKUP_PATH
+          $serverName = $env:DB_SERVER
+          $databaseName = $env:DB_NAME
+          $userId = $env:DB_USER
+          $password = $env:DB_PASSWORD
           
           if (Test-Path $backupPath) {
-            $appsettingsPath = "C:\0ALI\WebSites\BasitApi\appsettings.json"
-            $appsettings = Get-Content $appsettingsPath | ConvertFrom-Json
-            $connectionString = $appsettings.ConnectionStrings.DefaultConnection
-            
-            if ($connectionString -match "Server=([^;]+).*Database=([^;]+)") {
-              $serverName = $matches[1]
-              $databaseName = $matches[2]
+            try {
+              Write-Host "Restoring database from: $backupPath"
+              Write-Host "Server: $serverName"
+              Write-Host "Database: $databaseName"
               
-              try {
-                Write-Host "Restoring database from: $backupPath"
-                
-                sqlcmd -S $serverName -Q "ALTER DATABASE [$databaseName] SET SINGLE_USER WITH ROLLBACK IMMEDIATE;" -E
-                sqlcmd -S $serverName -Q "RESTORE DATABASE [$databaseName] FROM DISK = N'$backupPath' WITH REPLACE, RECOVERY;" -E
-                sqlcmd -S $serverName -Q "ALTER DATABASE [$databaseName] SET MULTI_USER;" -E
-                
-                if ($LASTEXITCODE -eq 0) {
-                  Write-Host "✅ Database rolled back successfully!" -ForegroundColor Green
-                } else {
-                  Write-Host "❌ Database rollback failed!" -ForegroundColor Red
-                }
-              } catch {
-                Write-Host "❌ Rollback error: $($_.Exception.Message)" -ForegroundColor Red
+              # تحويل الـ database لـ single user mode
+              Write-Host "Setting database to SINGLE_USER mode..."
+              sqlcmd -S $serverName -U $userId -P $password -Q "ALTER DATABASE [$databaseName] SET SINGLE_USER WITH ROLLBACK IMMEDIATE;"
+              
+              # استعادة الـ database
+              Write-Host "Restoring database..."
+              sqlcmd -S $serverName -U $userId -P $password -Q "RESTORE DATABASE [$databaseName] FROM DISK = N'$backupPath' WITH REPLACE, RECOVERY;"
+              
+              # إرجاع الـ database لـ multi user mode
+              Write-Host "Setting database to MULTI_USER mode..."
+              sqlcmd -S $serverName -U $userId -P $password -Q "ALTER DATABASE [$databaseName] SET MULTI_USER;"
+              
+              if ($LASTEXITCODE -eq 0) {
+                Write-Host "✅ Database rolled back successfully!" -ForegroundColor Green
+              } else {
+                Write-Host "❌ Database rollback failed (Exit code: $LASTEXITCODE)!" -ForegroundColor Red
               }
+            } catch {
+              Write-Host "❌ Rollback error: $($_.Exception.Message)" -ForegroundColor Red
             }
           } else {
             Write-Host "⚠️ Backup file not found: $backupPath" -ForegroundColor Yellow

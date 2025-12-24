@@ -3,7 +3,7 @@ using Dashboard.Constants;
 using Dashboard.Contracts.ECommerce.Category;
 using Microsoft.AspNetCore.Components;
 using Resources;
-using Shared.DTOs.ECommerce.Category;
+using Shared.DTOs.Catalog.Category;
 using Shared.GeneralModels;
 
 namespace Dashboard.Pages.Catalog.Attributes

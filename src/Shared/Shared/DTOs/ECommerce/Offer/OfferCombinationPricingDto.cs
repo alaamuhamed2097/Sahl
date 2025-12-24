@@ -1,6 +1,6 @@
 ﻿using Common.Enumerations.Offer;
 using Shared.DTOs.Base;
-using Shared.DTOs.ECommerce.Item;
+using Shared.DTOs.Catalog.Item;
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;

@@ -1,11 +1,14 @@
 ﻿using BL.Contracts.GeneralService.Location;
 using BL.Contracts.Service.Brand;
+using BL.Contracts.Service.Catalog.Category;
+using BL.Contracts.Service.Catalog.Item;
+using BL.Contracts.Service.Catalog.Pricing;
+using BL.Contracts.Service.Catalog.Unit;
 using BL.Contracts.Service.CouponCode;
 using BL.Contracts.Service.Currency;
 using BL.Contracts.Service.Customer.Wishlist;
-using BL.Contracts.Service.ECommerce.Category;
-using BL.Contracts.Service.ECommerce.Item;
-using BL.Contracts.Service.ECommerce.Unit;
+using BL.Contracts.Service.Merchandising;
+using BL.Contracts.Service.Merchandising.Campaign;
 using BL.Contracts.Service.Order;
 using BL.Contracts.Service.Pricing;
 using BL.Contracts.Service.Review;
@@ -14,16 +17,19 @@ using BL.Contracts.Service.ShippingCompny;
 using BL.Contracts.Service.Vendor;
 using BL.GeneralService.Location;
 using BL.Service.Brand;
+using BL.Service.Catalog.Category;
+using BL.Service.Catalog.Item;
+using BL.Service.Catalog.Pricing;
+using BL.Service.Catalog.Unit;
 using BL.Service.Currency;
 using BL.Service.Customer.Wishlist;
-using BL.Service.ECommerce.Category;
-using BL.Service.ECommerce.Item;
-using BL.Service.ECommerce.Unit;
+using BL.Service.Merchandising;
+using BL.Service.Merchandising.Campaign;
 using BL.Service.Order;
-using BL.Service.Pricing;
 using BL.Service.PromoCode;
 using BL.Service.Review;
 using BL.Service.Setting;
+using BL.Service.Setting.Pricing;
 using BL.Service.ShippingCompany;
 using BL.Service.Vendor;
 
@@ -68,7 +74,7 @@ namespace Api.Extensions
             services.AddScoped<ISettingService, SettingService>();
 
             // Pricing Services
-            services.AddScoped<IPricingService, PricingService>();
+            services.AddScoped<IPricingSettingsService, PricingSettingsService>();
 
             // Order Services
             services.AddScoped<ICartService, CartService>();
@@ -81,6 +87,19 @@ namespace Api.Extensions
             services.AddScoped<IOfferReviewService, OfferReviewService>();
             services.AddScoped<IReviewReportService, ReviewReportService>();
             services.AddScoped<IReviewVoteService, ReviewVoteService>();
+
+            // Merchandising Services
+            services.AddScoped<IHomepageService, HomepageService>();
+            services.AddScoped<ICampaignService, CampaignService>();
+
+            services.AddScoped<IPricingStrategy, SimplePricingStrategy>();
+            services.AddScoped<IPricingStrategy, CombinationBasedPricingStrategy>();
+            services.AddScoped<IPricingStrategy, QuantityBasedPricingStrategy>();
+            services.AddScoped<IPricingStrategy, HybridPricingStrategy>();
+
+            services.AddScoped<IPricingService, PricingService>();
+            services.AddScoped<IHomepageService, HomepageService>();
+            services.AddScoped<IAdminBlockService, AdminBlockService>();
 
             return services;
         }

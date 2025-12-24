@@ -1,6 +1,5 @@
-using Common.Enumerations.Campaign;
+﻿using Domains.Entities.Merchandising;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Domains.Entities.Campaign
 {
@@ -8,76 +7,41 @@ namespace Domains.Entities.Campaign
     {
         [Required]
         [StringLength(200)]
-        public string TitleEn { get; set; } = string.Empty;
+        public string NameEn { get; set; } = string.Empty;
 
         [Required]
         [StringLength(200)]
-        public string TitleAr { get; set; } = string.Empty;
+        public string NameAr { get; set; } = string.Empty;
 
-        public string? DescriptionEn { get; set; }
-
-        public string? DescriptionAr { get; set; }
-
-        [Required]
-        public CampaignType CampaignType { get; set; }
-
+        // Timing
         [Required]
         public DateTime StartDate { get; set; }
 
         [Required]
         public DateTime EndDate { get; set; }
 
-        [Required]
-        [Column(TypeName = "decimal(5,2)")]
-        public decimal MinimumDiscountPercentage { get; set; } = 20m;
-
-        [Required]
-        public CampaignFundingModel FundingModel { get; set; }
-
-        [Column(TypeName = "decimal(5,2)")]
-        public decimal? PlatformFundingPercentage { get; set; }
-
-        [Column(TypeName = "decimal(5,2)")]
-        public decimal? SellerFundingPercentage { get; set; }
-
-        [StringLength(500)]
-        public string? BannerImagePath { get; set; }
-
-        [StringLength(500)]
-        public string? ThumbnailImagePath { get; set; }
-
-        [StringLength(7)]
-        public string? ThemeColor { get; set; }
-
         public bool IsActive { get; set; } = true;
 
-        public bool IsFeatured { get; set; }
+        // Flash Sale
+        public bool IsFlashSale { get; set; } = false;
+        public DateTime? FlashSaleEndTime { get; set; }
+        public int? MaxQuantityPerUser { get; set; }
 
-        public int DisplayOrder { get; set; }
+        // Visual
+        [StringLength(100)]
+        public string? BadgeTextEn { get; set; }
 
         [StringLength(100)]
-        public string? SlugEn { get; set; }
+        public string? BadgeTextAr { get; set; }
 
-        [StringLength(100)]
-        public string? SlugAr { get; set; }
+        [StringLength(50)]
+        public string? BadgeColor { get; set; }
 
-        public int? MaxParticipatingProducts { get; set; }
+        // Relations
+        public ICollection<TbHomepageBlock> HomepageBlocks { get; set; }
+        public ICollection<TbCampaignItem> CampaignItems { get; set; }
 
-        public int? MaxProductsPerVendor { get; set; }
-
-        [Column(TypeName = "decimal(18,2)")]
-        public decimal? MinimumOrderValue { get; set; }
-
-        // New properties used by business logic
-        public CampaignStatus Status { get; set; } = CampaignStatus.Draft;
-
-        [Column(TypeName = "decimal(18,2)")]
-        public decimal? BudgetLimit { get; set; }
-
-        [Column(TypeName = "decimal(18,2)")]
-        public decimal TotalSpent { get; set; } = 0m;
-
-        public virtual ICollection<TbCampaignProduct> CampaignProducts { get; set; } = new HashSet<TbCampaignProduct>();
-        public virtual ICollection<TbCampaignVendor> CampaignVendors { get; set; } = new HashSet<TbCampaignVendor>();
+        // ✅ الربط مع Vendors
+        public ICollection<TbCampaignVendor> CampaignVendors { get; set; }
     }
 }

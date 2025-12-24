@@ -1,12 +1,12 @@
 using Api.Controllers.v1.Base;
 using Asp.Versioning;
-using BL.Contracts.Service.ECommerce.Category;
+using BL.Contracts.Service.Catalog.Category;
 using Common.Enumerations.User;
 using DAL.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Resources;
-using Shared.DTOs.ECommerce.Category;
+using Shared.DTOs.Catalog.Category;
 using Shared.GeneralModels;
 using Shared.GeneralModels.SearchCriteriaModels;
 using Shared.ResultModels;

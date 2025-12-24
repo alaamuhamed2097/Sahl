@@ -2,8 +2,7 @@
 using Domains.Entities.Catalog.Item.ItemAttributes;
 using Domains.Procedures;
 using Domains.Views.Item;
-using Shared.DTOs.ECommerce.Category;
-using Shared.DTOs.ECommerce.Item;
+using Shared.DTOs.Catalog.Item;
 using Shared.GeneralModels.Models;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -186,7 +185,7 @@ namespace BL.Mapper
                     FieldType = attr.FieldType,
                     DisplayOrder = attr.DisplayOrder,
                     Value = attr.Value
-                }).ToList()?? new List<ItemAttributeDefinitionDto>();
+                }).ToList() ?? new List<ItemAttributeDefinitionDto>();
             }
             catch
             {

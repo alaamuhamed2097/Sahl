@@ -1,4 +1,4 @@
-﻿using Shared.DTOs.ECommerce.Item;
+﻿using Shared.DTOs.Catalog.Item;
 using Shared.GeneralModels;
 
 namespace Dashboard.Contracts.ECommerce.Item

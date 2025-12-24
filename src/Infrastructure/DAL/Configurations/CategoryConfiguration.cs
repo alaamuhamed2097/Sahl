@@ -1,7 +1,7 @@
+using Common.Enumerations.Pricing;
 using Domains.Entities.Catalog.Category;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Common.Enumerations.Pricing;
 
 namespace DAL.Configurations
 {
@@ -30,7 +30,7 @@ namespace DAL.Configurations
             entity.Property(e => e.PricingSystemType)
                 .HasConversion<int>()
                 .IsRequired()
-                .HasDefaultValue(PricingSystemType.Standard);
+                .HasDefaultValue(PricingStrategyType.Simple);
             entity.HasOne(e => e.PricingSystemSetting)
                 .WithMany()
                 .HasForeignKey(e => e.PricingSystemId)

@@ -1,8 +1,8 @@
-using Domains.Entities.Catalog.Item;
 using Common.Enumerations.Pricing;
+using Domains.Entities.Catalog.Item;
+using Domains.Entities.Pricing;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Domains.Entities.Pricing;
 
 namespace Domains.Entities.Catalog.Category
 {
@@ -25,7 +25,7 @@ namespace Domains.Entities.Catalog.Category
         public bool IsHomeCategory { get; set; } // Indicates if the category will be displayed on the homepage or not.
 
         [Required]
-		public bool IsRoot { get; set; }
+        public bool IsRoot { get; set; }
 
         public bool IsFeaturedCategory { get; set; } // Indicates if category is featured on the homepage or not.
         [Required]
@@ -40,14 +40,14 @@ namespace Domains.Entities.Catalog.Category
         public string? Icon { get; set; }
         [MaxLength(200)]
         public string? ImageUrl { get; set; }
-        public Guid PricingSystemId { get; set; } 
+        public Guid PricingSystemId { get; set; }
 
         // Pricing system type for this category
         [Required]
-        public PricingSystemType PricingSystemType { get; set; } = PricingSystemType.Standard;
+        public PricingStrategyType PricingSystemType { get; set; } = PricingStrategyType.Simple;
         [ForeignKey("PricingSystemId")]
         public virtual TbPricingSystemSetting PricingSystemSetting { get; set; }
         public virtual ICollection<TbCategoryAttribute> CategoryAttributes { get; set; } = new HashSet<TbCategoryAttribute>();
-        public virtual ICollection<TbItem> Items { get; set; } = new HashSet<TbItem>();	
-	}
+        public virtual ICollection<TbItem> Items { get; set; } = new HashSet<TbItem>();
+    }
 }

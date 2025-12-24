@@ -14,30 +14,16 @@ namespace Domains.Entities.Campaign
         [ForeignKey("Vendor")]
         public Guid VendorId { get; set; }
 
-        public bool IsApproved { get; set; }
-
-        public DateTime? AppliedAt { get; set; }
-
+        // Approval
+        public bool IsApproved { get; set; } = false;
         public DateTime? ApprovedAt { get; set; }
 
-        [ForeignKey("ApprovedByUser")]
-        public string? ApprovedByUserId { get; set; }
-
-        public int TotalProductsSubmitted { get; set; } = 0;
-
-        public int TotalProductsApproved { get; set; } = 0;
-
-        [Column(TypeName = "decimal(18,2)")]
-        public decimal TotalSales { get; set; } = 0m;
-
-        [Column(TypeName = "decimal(18,2)")]
-        public decimal TotalCommissionPaid { get; set; } = 0m;
-
+        // Optional notes (rejection reason, terms, etc.)
         [StringLength(1000)]
         public string? Notes { get; set; }
 
+        // Relations
         public virtual TbCampaign Campaign { get; set; } = null!;
         public virtual TbVendor Vendor { get; set; } = null!;
-        public virtual ApplicationUser? ApprovedByUser { get; set; }
     }
 }

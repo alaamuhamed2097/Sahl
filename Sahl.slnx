@@ -1,4 +1,9 @@
 <Solution>
+  <Folder Name="/.github/">
+    <Folder Name="/workflows/">
+      <File Path=".github/workflows/deploy.yml" />
+    </Folder>
+  </Folder>
   <Folder Name="/api-specs/">
     <File Path="api-specs/README.md" />
   </Folder>

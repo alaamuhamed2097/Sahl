@@ -11,12 +11,10 @@ using Microsoft.Extensions.Options;
 using Microsoft.JSInterop;
 using Resources;
 using Shared.DTOs.Brand;
-using Shared.DTOs.ECommerce.Category;
-using Shared.DTOs.ECommerce.Item;
-using Shared.DTOs.ECommerce.Unit;
+using Shared.DTOs.Catalog.Category;
+using Shared.DTOs.Catalog.Item;
+using Shared.DTOs.Catalog.Unit;
 using Shared.DTOs.Media;
-using System.ComponentModel;
-using System.Threading.Tasks;
 using static Dashboard.Pages.Catalog.Products.Components.AttributeValuesSection;
 
 
@@ -103,7 +101,7 @@ namespace Dashboard.Pages.Catalog.Products
             // REMOVED: Quantity and ThumbnailImage validation - handled elsewhere
             fieldValidation["ThumbnailImage"] = true;
 
-             LoadData();
+            LoadData();
             _initialized = true;
         }
 
@@ -111,7 +109,7 @@ namespace Dashboard.Pages.Catalog.Products
         {
             if (!_initialized)
             {
-                return; 
+                return;
             }
 
             if (Id != Guid.Empty && Id != _lastLoadedId)
@@ -294,7 +292,7 @@ namespace Dashboard.Pages.Catalog.Products
                     // Load category attributes if category is set
                     if (Model.CategoryId != Guid.Empty)
                     {
-                        currentCategory = categories.Where(c=> c.Id == Model.CategoryId).FirstOrDefault() ?? new CategoryDto();
+                        currentCategory = categories.Where(c => c.Id == Model.CategoryId).FirstOrDefault() ?? new CategoryDto();
                         await LoadCategoryAttributes();
                         // IMPORTANT: Load existing attribute values into the component
                         // Give the component time to initialize after attributes are loaded
@@ -356,7 +354,7 @@ namespace Dashboard.Pages.Catalog.Products
             {
                 // Reset attribute values when category changes
                 attributeValues = new Dictionary<Guid, List<string>>();
-                currentCategory = categories.FirstOrDefault(c => c.Id == Model.CategoryId) ?? new CategoryDto();    
+                currentCategory = categories.FirstOrDefault(c => c.Id == Model.CategoryId) ?? new CategoryDto();
                 // Load category attributes
                 await LoadCategoryAttributes();
             }
@@ -595,7 +593,7 @@ namespace Dashboard.Pages.Catalog.Products
                 .Any(ca => ca.combinationAttributeValueDtos
                     .Any(cav => cav.AttributeId == attributeId));
         }
-        
+
         protected async Task Save()
         {
             try
@@ -647,7 +645,7 @@ namespace Dashboard.Pages.Catalog.Products
 
                 isSaving = true;
                 StateHasChanged();
-                
+
                 //if (Model.Id == Guid.Empty)
                 //{
                 //    foreach (var comb in Model.ItemCombinations ?? new())
@@ -743,7 +741,7 @@ namespace Dashboard.Pages.Catalog.Products
                     return !string.IsNullOrEmpty(Model.ThumbnailImage) ||
                            (Model.Images != null && Model.Images.Count > 0);
                 case 4: //Default pricing
-                    if(currentCategory.PricingSystemType == PricingSystemType.Standard)
+                    if (currentCategory.PricingSystemType == PricingStrategyType.Simple)
                         return Model.BasePrice.HasValue &&
                                Model.BasePrice.Value > 0;
                     else

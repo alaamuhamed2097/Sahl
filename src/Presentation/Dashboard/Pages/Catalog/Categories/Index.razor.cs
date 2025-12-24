@@ -5,8 +5,8 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 using Resources;
 using Resources.Enumerations;
+using Shared.DTOs.Catalog.Category;
 using Shared.DTOs.ECommerce;
-using Shared.DTOs.ECommerce.Category;
 using Shared.GeneralModels.SearchCriteriaModels;
 namespace Dashboard.Pages.Catalog.Categories
 {
