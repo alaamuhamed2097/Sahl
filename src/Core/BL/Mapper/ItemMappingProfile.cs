@@ -61,7 +61,7 @@ namespace BL.Mapper
                         : new BrandInfoDto()))
                 .ForMember(dest => dest.GeneralImages, opt => opt.MapFrom(src =>
                     string.IsNullOrWhiteSpace(src.GeneralImagesJson)
-                        ? new List<ItemImageDto>()
+                        ? new List<ImageDto>()
                         : DeserializeGeneralImages(src.GeneralImagesJson)))
                 .ForMember(dest => dest.Attributes, opt => opt.MapFrom(src =>
                     string.IsNullOrWhiteSpace(src.AttributesJson)
@@ -153,7 +153,7 @@ namespace BL.Mapper
             DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
         };
 
-        private static List<ItemImageDto> DeserializeGeneralImages(string json)
+        private static List<ImageDto> DeserializeGeneralImages(string json)
         {
             if (string.IsNullOrWhiteSpace(json))
                 return new();
@@ -161,10 +161,11 @@ namespace BL.Mapper
             try
             {
                 var images = JsonSerializer.Deserialize<List<ItemImage>>(json, JsonOptions);
-                return images?.Select(img => new ItemImageDto
+                return images?.Select(img => new ImageDto
                 {
                     Path = img.ImageUrl,
-                    Order = img.DisplayOrder
+                    Order = img.DisplayOrder,
+                    IsDefault = img.IsDefault,
                 }).ToList() ?? new();
             }
             catch
@@ -225,10 +226,11 @@ namespace BL.Mapper
                         ValueEn = sa.ValueEn,
                         IsSelected = sa.IsSelected
                     }).ToList(),
-                    Images = combo.Images?.Select(img => new ItemImageDto
+                    Images = combo.Images?.Select(img => new ImageDto
                     {
                         Path = img.ImageUrl,
-                        Order = img.DisplayOrder
+                        Order = img.DisplayOrder,
+                        IsDefault = img.IsDefault,
                     }).ToList()
                 };
             }
