@@ -590,8 +590,7 @@ namespace Dashboard.Pages.Catalog.Products
                 return false;
 
             return combination.CombinationAttributes
-                .Any(ca => ca.combinationAttributeValueDtos
-                    .Any(cav => cav.AttributeId == attributeId));
+                .Any(ca => ca.combinationAttributeValue.AttributeId == attributeId);
         }
 
         protected async Task Save()

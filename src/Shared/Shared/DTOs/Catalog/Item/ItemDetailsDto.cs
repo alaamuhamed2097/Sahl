@@ -31,7 +31,7 @@ namespace Shared.DTOs.Catalog.Item
         public List<ItemAttributeDefinitionDto> Attributes { get; set; }
 
         // Default selected combination (matches search result price)
-        public DefaultCombinationDto DefaultCombination { get; set; }
+        public CurrentCombinationDto CurrentCombination { get; set; }
 
         // Pricing for default combination
         public PricingDto Pricing { get; set; }
@@ -69,7 +69,8 @@ namespace Shared.DTOs.Catalog.Item
         public string NameEn { get; set; } = null!;
         public FieldType FieldType { get; set; }
         public int DisplayOrder { get; set; }
-        public string Value { get; set; }
+        public string ValueAr { get; set; }
+        public string ValueEn { get; set; }
     }
 
     public class ItemAttributeOptionDto
@@ -87,13 +88,13 @@ namespace Shared.DTOs.Catalog.Item
         public string ValueEn { get; set; }
     }
 
-    public class DefaultCombinationDto
+    public class CurrentCombinationDto
     {
         public Guid CombinationId { get; set; }
         public string? SKU { get; set; }
         public string? Barcode { get; set; }
         public bool IsDefault { get; set; }
-        public List<SelectedAttributeDto>? SelectedAttributes { get; set; }
-        public List<ItemImageDto>? Images { get; set; }
+        public List<PricingAttributeDto>? PricingAttributes { get; set; }
+        public List<ImageDto>? Images { get; set; }
     }
 }

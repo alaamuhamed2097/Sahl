@@ -72,7 +72,7 @@ namespace BL.Service.Catalog.Item
             };
 
             // Parse JSON fields
-            dto.SelectedAttributes = ParseSelectedAttributes(result.SelectedAttributesJson);
+            dto.PricingAttributes = ParseSelectedAttributes(result.SelectedAttributesJson);
             dto.Images = ParseImages(result.ImagesJson);
             dto.Offers = ParseOffers(result.OffersJson);
             dto.Summary = ParseSummary(result.SummaryJson);
@@ -81,30 +81,32 @@ namespace BL.Service.Catalog.Item
             return dto;
         }
 
-        private List<SelectedAttributeDto> ParseSelectedAttributes(string json)
+        private List<PricingAttributeDto> ParseSelectedAttributes(string json)
         {
             if (string.IsNullOrWhiteSpace(json))
-                return new List<SelectedAttributeDto>();
+                return new List<PricingAttributeDto>();
 
             try
             {
-                var attrs = JsonSerializer.Deserialize<List<SelectedAttribute>>(json, new JsonSerializerOptions
+                var attrs = JsonSerializer.Deserialize<List<PricingAttribute>>(json, new JsonSerializerOptions
                 {
                     PropertyNameCaseInsensitive = true
                 });
 
-                return attrs?.Select(a => new SelectedAttributeDto
+                return attrs?.Select(a => new PricingAttributeDto
                 {
                     AttributeId = a.AttributeId,
                     AttributeNameAr = a.AttributeNameAr,
                     AttributeNameEn = a.AttributeNameEn,
                     CombinationValueId = a.CombinationValueId,
-                    Value = a.Value
-                }).ToList() ?? new List<SelectedAttributeDto>();
+                    ValueAr = a.ValueAr,
+                    ValueEn = a.ValueEn,
+                    IsSelected = a.IsSelected
+                }).ToList() ?? new List<PricingAttributeDto>();
             }
             catch
             {
-                return new List<SelectedAttributeDto>();
+                return new List<PricingAttributeDto>();
             }
         }
 

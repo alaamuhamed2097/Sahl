@@ -45,7 +45,7 @@ namespace Domains.Procedures
         // JSON Columns (to be parsed)
         public string? GeneralImagesJson { get; set; }
         public string? AttributesJson { get; set; }
-        public string? DefaultCombinationJson { get; set; }
+        public string? CurrentCombinationJson { get; set; }
         public string? PricingJson { get; set; }
     }
 
@@ -65,7 +65,8 @@ namespace Domains.Procedures
         public string NameEn { get; set; } = null!;
         public FieldType FieldType { get; set; }
         public int DisplayOrder { get; set; }
-        public string Value { get; set; }
+        public string ValueAr { get; set; }
+        public string ValueEn { get; set; }
     }
 
     public class AttributeOption
@@ -77,26 +78,28 @@ namespace Domains.Procedures
         public bool IsAvailable { get; set; }
     }
 
-    public class DefaultCombination
+    public class CurrentCombination
     {
         public Guid CombinationId { get; set; }
         public string? SKU { get; set; }
         public string? Barcode { get; set; }
         public bool IsDefault { get; set; }
 
-        [JsonPropertyName("SelectedAttributesJson")]
-        public List<SelectedAttribute>? SelectedAttributes { get; set; }
+        [JsonPropertyName("PricingAttributesJson")]
+        public List<PricingAttribute>? PricingAttributes { get; set; }
         [JsonPropertyName("ImagesJson")]
         public List<ItemImage>? Images { get; set; }
     }
 
-    public class SelectedAttribute
+    public class PricingAttribute
     {
         public Guid AttributeId { get; set; }
         public string AttributeNameAr { get; set; } = null!;
         public string AttributeNameEn { get; set; } = null!;
         public Guid CombinationValueId { get; set; }
-        public string Value { get; set; }
+        public string ValueAr { get; set; }
+        public string ValueEn { get; set; }
+        public bool IsSelected { get; set; }
     }
 
     public class PricingInfo

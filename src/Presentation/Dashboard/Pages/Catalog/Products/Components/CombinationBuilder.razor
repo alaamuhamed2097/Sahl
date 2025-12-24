@@ -1,4 +1,4 @@
-﻿@using Common.Enumerations
+﻿@* @using Common.Enumerations
 @using Common.Enumerations.User
 @using Resources
 @using Shared.DTOs.ECommerce
@@ -135,7 +135,7 @@
                         {
                             <div class="mb-3">
                                 <label>@(attribute.Title)</label>
-                                @* USE STANDARD SELECT INSTEAD OF InputSelect *@
+                                <!--  USE STANDARD SELECT INSTEAD OF InputSelect -->
                                 <select class="form-select"
                                         value="@GetSelectedAttributeValue(attribute.AttributeId)"
                                         @onchange="@(e => SetSelectedAttributeValue(attribute.AttributeId, e.Value?.ToString() ?? ""))">
@@ -172,4 +172,4 @@
             </div>
         </div>
     </div>
-</div>
+</div> *@

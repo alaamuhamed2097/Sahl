@@ -40,7 +40,7 @@ namespace Api.Controllers.v1.Catalog
         }
 
         /// <summary>
-        /// Get combination details by selected attributes
+        /// Get combination details by selected attributes values
         /// Returns images, prices, and offers for the specific combination
         /// </summary>
         /// <param name="request">Selected attribute values</param>
@@ -48,7 +48,7 @@ namespace Api.Controllers.v1.Catalog
         /// <response code="200">Returns the combination details</response>
         /// <response code="400">Invalid or incomplete attribute selection</response>
         /// <response code="404">Item not found or combination not available</response>
-        [HttpPost("combination")]
+        [HttpPost("combinations/by-attributes")]
         [ProducesResponseType(typeof(CombinationDetailsDto), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]

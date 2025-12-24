@@ -80,6 +80,7 @@ namespace DAL.ApplicationContext
         public DbSet<TbItemAttribute> TbItemAttributes { get; set; }
         public DbSet<TbItemImage> TbItemImages { get; set; }
         public DbSet<TbItemCombination> TbItemCombinations { get; set; }
+        public DbSet<TbCombinationAttribute> TbCombinationAttributes { get; set; }
         public DbSet<TbItemCombinationImage> TbItemCombinationImages { get; set; }
         public DbSet<TbCombinationAttributesValue> TbCombinationAttributesValues { get; set; }
 
