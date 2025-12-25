@@ -28,6 +28,7 @@ namespace BL.Service.Catalog.Item
                 throw new KeyNotFoundException($"Item CombinationId with ID {itemCombinationId} not found");
             }
 
+
             return _mapper.MapModel<SpGetItemDetails,ItemDetailsDto>(result);
         }
 

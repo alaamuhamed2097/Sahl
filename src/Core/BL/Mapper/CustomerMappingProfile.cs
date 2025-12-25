@@ -9,10 +9,13 @@ namespace BL.Mapper
     {
         private void ConfigureCustomerMappings()
         {
-            
+            // Customer mappings
             CreateMap<TbCustomer, CustomerDto>()
                 .ReverseMap();
 
+            // Customer Item View mappings
+            CreateMap<TbCustomerItemView, CustomerItemViewDto>()
+                .ReverseMap();
         }
     }
 }

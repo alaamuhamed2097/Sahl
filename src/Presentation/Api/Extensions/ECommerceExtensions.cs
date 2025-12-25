@@ -6,6 +6,7 @@ using BL.Contracts.Service.Catalog.Pricing;
 using BL.Contracts.Service.Catalog.Unit;
 using BL.Contracts.Service.CouponCode;
 using BL.Contracts.Service.Currency;
+using BL.Contracts.Service.Customer;
 using BL.Contracts.Service.Customer.Wishlist;
 using BL.Contracts.Service.Merchandising;
 using BL.Contracts.Service.Merchandising.Campaign;
@@ -54,7 +55,10 @@ namespace Api.Extensions
             services.AddScoped<IItemSearchService, ItemSearchService>();
             services.AddScoped<IUnitService, UnitService>();
 
-            // Vendor Items Service
+            // Custom Items Services
+            services.AddScoped<ICustomerItemViewService, CustomerItemViewService>();
+
+            // Vendor Items Services
             services.AddScoped<IVendorItemService, VendorItemService>();
 
             // Register services

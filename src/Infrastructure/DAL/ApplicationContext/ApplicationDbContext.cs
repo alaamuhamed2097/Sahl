@@ -215,7 +215,6 @@ namespace DAL.ApplicationContext
         public DbSet<TbShoppingCartItem> TbShoppingCartItems { get; set; }
         public DbSet<TbOrderShipment> TbOrderShipments { get; set; }
         public DbSet<TbOrderShipmentItem> TbOrderShipmentItems { get; set; }
-        public DbSet<TbCustomerAddress> TbCustomerAddresses { get; set; }
         public DbSet<TbPaymentMethod> TbPaymentMethods { get; set; }
         public DbSet<TbOrderPayment> TbOrderPayments { get; set; }
 
@@ -224,6 +223,10 @@ namespace DAL.ApplicationContext
 
         // E-Commerce System - Customers
         public DbSet<TbCustomer> TbCustomers { get; set; }
+        // Customer Related
+        public DbSet<TbCustomerAddress> TbCustomerAddresses { get; set; }
+        public DbSet<TbCustomerItemView> TbCustomerItemViews { get; set; }
+
 
         #endregion
 
