@@ -29,62 +29,63 @@ namespace DAL.Repositories
             _offerPricing = _dbContext.Set<TbOfferCombinationPricing>();
         }
 
-                /// <summary>
-                /// Get offer with all related data
-                /// </summary>
-                public async Task<VwOffer> GetOfferWithDetailsAsync(Guid offerId, CancellationToken cancellationToken = default)
-                {
-                    try
-                    {
-                        var offer = await _dbContext.Set<VwOffer>()
-                            .FirstOrDefaultAsync(o => o.Id == offerId, cancellationToken);
-                        return offer;
-                    }
-                    catch (Exception ex)
-                    {
-                        _logger.Error(ex, $"Error getting offer details for offer ID: {offerId}");
-                        throw new DataAccessException($"Failed to retrieve offer details", ex, _logger);
-                    }
-                }
+        /// <summary>
+        /// Get offer with all related data
+        /// </summary>
+        public async Task<VwOffer> GetOfferWithDetailsAsync(Guid offerId, CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                var offer = await _dbContext.Set<VwOffer>()
+                    .FirstOrDefaultAsync(o => o.Id == offerId, cancellationToken);
+                return offer;
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex, $"Error getting offer details for offer ID: {offerId}");
+                throw new DataAccessException($"Failed to retrieve offer details", ex, _logger);
+            }
+        } 
 
-                /// <summary>
-                /// Get offers by item ID
-                /// </summary>
-                public async Task<IEnumerable<VwOffer>> GetOffersByItemIdAsync(Guid itemId, CancellationToken cancellationToken = default)
+        /// <summary>
+        /// Get offers by item combination ID
+        /// </summary>
+        public async Task<IEnumerable<VwVendorItem>> GetOffersByItemCombinationIdAsync(Guid itemCombinationId, CancellationToken cancellationToken = default)
                 {
                     try
                     {
-                        var offers = await _dbContext.Set<VwOffer>()
-                            .Where(o => o.ItemId == itemId )
+                        var offers = await _dbContext.Set<VwVendorItem>()
+                            .Where(o => o.ItemCombinationId == itemCombinationId)
+                            .OrderByDescending(o => o.CreatedDateUtc)
                             .ToListAsync(cancellationToken);
 
                 return offers;
             }
             catch (Exception ex)
             {
-                _logger.Error(ex, $"Error getting offers for item ID: {itemId}");
+                _logger.Error(ex, $"Error getting offers for item ID: {itemCombinationId}");
                 throw new DataAccessException($"Failed to retrieve offers for item", ex, _logger);
             }
         }
 
-                /// <summary>
-                /// Get offers by vendor ID
-                /// </summary>
-                public async Task<IEnumerable<VwOffer>> GetOffersByVendorIdAsync(Guid vendorId, CancellationToken cancellationToken = default)
-                {
-                    try
-                    {
-                        var offers = await _dbContext.Set<VwOffer>()
-                            .Where(o => o.VendorId == vendorId)
-                            .ToListAsync(cancellationToken);
-
-                return offers;
-            }
-            catch (Exception ex)
+        /// <summary>
+        /// Get offers by vendor ID
+        /// </summary>
+        public async Task<IEnumerable<VwOffer>> GetOffersByVendorIdAsync(Guid vendorId, CancellationToken cancellationToken = default)
+        {
+            try
             {
-                _logger.Error(ex, $"Error getting offers for vendor ID: {vendorId}");
-                throw new DataAccessException($"Failed to retrieve offers for vendor", ex, _logger);
-            }
+                var offers = await _dbContext.Set<VwOffer>()
+                    .Where(o => o.VendorId == vendorId)
+                    .ToListAsync(cancellationToken);
+
+        return offers;
+        }
+        catch (Exception ex)
+        {
+            _logger.Error(ex, $"Error getting offers for vendor ID: {vendorId}");
+            throw new DataAccessException($"Failed to retrieve offers for vendor", ex, _logger);
+        }
         }
 
         /// <summary>

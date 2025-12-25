@@ -32,6 +32,7 @@ using BL.Service.Setting;
 using BL.Service.Setting.Pricing;
 using BL.Service.ShippingCompany;
 using BL.Service.Vendor;
+using BL.Service.VendorItem;
 
 namespace Api.Extensions
 {
@@ -52,6 +53,9 @@ namespace Api.Extensions
             services.AddScoped<IItemService, ItemService>();
             services.AddScoped<IItemSearchService, ItemSearchService>();
             services.AddScoped<IUnitService, UnitService>();
+
+            // Vendor Items Service
+            services.AddScoped<IVendorItemService, VendorItemService>();
 
             // Register services
             services.AddScoped<IItemDetailsService, ItemDetailsService>();
