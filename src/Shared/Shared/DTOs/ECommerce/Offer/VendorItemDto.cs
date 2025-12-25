@@ -1,4 +1,5 @@
 ﻿using Shared.DTOs.Base;
+using Shared.DTOs.Catalog.Item;
 using Shared.DTOs.ECommerce.Item;
 
 namespace Shared.DTOs.ECommerce.Offer

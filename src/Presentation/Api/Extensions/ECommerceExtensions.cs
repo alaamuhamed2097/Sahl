@@ -32,6 +32,7 @@ using BL.Service.Setting;
 using BL.Service.Setting.Pricing;
 using BL.Service.ShippingCompany;
 using BL.Service.Vendor;
+using BL.Service.VendorItem;
 
 namespace Api.Extensions
 {

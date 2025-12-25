@@ -1,8 +1,7 @@
 using Api.Controllers.v1.Base;
 using Api.Extensions;
 using Asp.Versioning;
-using BL.Contracts.Service.ECommerce.Item;
-using BL.Service.ECommerce.Item;
+using BL.Service.VendorItem;
 using Common.Enumerations.User;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
