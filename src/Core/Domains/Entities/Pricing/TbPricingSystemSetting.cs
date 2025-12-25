@@ -15,7 +15,7 @@ namespace Domains.Entities.Pricing
         public string SystemNameEn { get; set; } = null!;
 
         [Required]
-        public PricingSystemType SystemType { get; set; }
+        public PricingStrategyType SystemType { get; set; }
 
         public bool IsEnabled { get; set; } = true;
 

@@ -1,0 +1,14 @@
+using Shared.DTOs.Base;
+using System.ComponentModel.DataAnnotations;
+
+namespace Shared.DTOs.Catalog.Item
+{
+    public class ItemAttributeDto : BaseDto
+    {
+        public Guid ItemId { get; set; }
+
+        public Guid AttributeId { get; set; }
+
+        public string Value { get; set; } = null!;
+    }
+}

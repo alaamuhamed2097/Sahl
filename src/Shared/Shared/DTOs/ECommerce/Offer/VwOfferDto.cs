@@ -1,4 +1,4 @@
-﻿using Shared.DTOs.ECommerce.Item;
+﻿using Shared.DTOs.Catalog.Item;
 using System;
 using System.Collections.Generic;
 using System.Text;

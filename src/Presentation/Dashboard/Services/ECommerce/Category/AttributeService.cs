@@ -2,7 +2,7 @@ using Dashboard.Constants;
 using Dashboard.Contracts.ECommerce.Category;
 using Dashboard.Contracts.General;
 using Resources;
-using Shared.DTOs.ECommerce.Category;
+using Shared.DTOs.Catalog.Category;
 using Shared.GeneralModels;
 using Shared.ResultModels;
 

@@ -410,7 +410,7 @@
                                     <div class="form-group">
                                         <label>@ECommerceResources.BasePrice
                                             @{
-                                               if(currentCategory.PricingSystemType == PricingSystemType.Standard)
+                                               if(currentCategory.PricingSystemType == PricingSystemType.Simple)
                                                {  
                                                  <span class="text-danger">*</span>
                                                }
@@ -425,7 +425,7 @@
                                         <small class="text-muted">@string.Format(GeneralResources.StartingPrice,"EGY")</small>
                                     </div>
                                 </div>
-                            @if (currentCategory.PricingSystemType == PricingSystemType.Standard)
+                            @if (currentCategory.PricingSystemType == PricingSystemType.Simple)
                             {
 
                                 <div class="col-md-4">
@@ -455,7 +455,7 @@
                                 </div>
                             }
                             </div>
-                            @if (currentCategory.PricingSystemType == PricingSystemType.Standard)
+                            @if (currentCategory.PricingSystemType == PricingSystemType.Simple)
                                 {
                                     <div class="alert alert-info mt-4">
                                         <i class="fas fa-info-circle me-2"></i>

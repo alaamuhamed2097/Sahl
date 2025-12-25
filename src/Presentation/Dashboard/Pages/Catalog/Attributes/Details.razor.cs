@@ -4,7 +4,7 @@ using Dashboard.Contracts.General;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 using Resources;
-using Shared.DTOs.ECommerce.Category;
+using Shared.DTOs.Catalog.Category;
 
 namespace Dashboard.Pages.Catalog.Attributes
 {

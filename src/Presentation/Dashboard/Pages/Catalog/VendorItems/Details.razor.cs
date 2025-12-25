@@ -742,7 +742,7 @@
 //                    return !string.IsNullOrEmpty(Model.ThumbnailImage) ||
 //                           (Model.Images != null && Model.Images.Count > 0);
 //                case 4: //Default pricing
-//                    if(currentCategory.PricingSystemType == PricingSystemType.Standard)
+//                    if(currentCategory.PricingSystemType == PricingSystemType.Simple)
 //                        return Model.BasePrice.HasValue &&
 //                               Model.BasePrice.Value > 0;
 //                    else

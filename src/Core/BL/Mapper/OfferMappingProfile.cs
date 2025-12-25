@@ -1,14 +1,8 @@
-﻿using Domains.Entities.Catalog.Item;
-using Domains.Entities.Catalog.Item.ItemAttributes;
-using Domains.Entities.Offer;
-using Domains.Views.Item;
+﻿using Domains.Entities.Offer;
 using Domains.Views.Offer;
 using Shared.DTOs.ECommerce.Category;
 using Shared.DTOs.ECommerce.Item;
 using Shared.DTOs.ECommerce.Offer;
-using Shared.GeneralModels.Models;
-using System.Text.Json;
-using System.Text.Json.Serialization;
 
 namespace BL.Mapper
 {

@@ -1,6 +1,6 @@
 ﻿using Domains.Entities.Catalog.Unit;
 using Domains.Views.Unit;
-using Shared.DTOs.ECommerce.Unit;
+using Shared.DTOs.Catalog.Unit;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 

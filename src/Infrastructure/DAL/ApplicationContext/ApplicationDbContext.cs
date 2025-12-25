@@ -11,6 +11,7 @@ using Domains.Entities.Catalog.Unit;
 using Domains.Entities.Content;
 using Domains.Entities.CouponCode;
 using Domains.Entities.Currency;
+using Domains.Entities.Customer;
 using Domains.Entities.ECommerceSystem;
 using Domains.Entities.ECommerceSystem.Cart;
 using Domains.Entities.ECommerceSystem.Customer;
@@ -82,6 +83,10 @@ namespace DAL.ApplicationContext
         public DbSet<TbCombinationAttribute> TbCombinationAttributes { get; set; }
         public DbSet<TbItemCombinationImage> TbItemCombinationImages { get; set; }
         public DbSet<TbCombinationAttributesValue> TbCombinationAttributesValues { get; set; }
+
+        // Wishlist Management
+        public DbSet<TbWishlist> TbWishlists { get; set; }
+        public DbSet<TbWishlistItem> TbWishlistItems { get; set; }
 
         // Notification Management
         public DbSet<TbNotification> TbNotifications { get; set; }
@@ -158,13 +163,6 @@ namespace DAL.ApplicationContext
         public DbSet<TbRequestComment> TbRequestComments { get; set; }
         public DbSet<TbRequestDocument> TbRequestDocuments { get; set; }
 
-        // Campaign & Flash Sales
-        public DbSet<TbCampaign> TbCampaigns { get; set; }
-        public DbSet<TbCampaignProduct> TbCampaignProducts { get; set; }
-        public DbSet<TbCampaignVendor> TbCampaignVendors { get; set; }
-        public DbSet<TbFlashSale> TbFlashSales { get; set; }
-        public DbSet<TbFlashSaleProduct> TbFlashSaleProducts { get; set; }
-
 
         // Advanced Pricing
         public DbSet<TbQuantityPricing> TbQuantityPricings { get; set; }
@@ -173,7 +171,14 @@ namespace DAL.ApplicationContext
 
         // Homepage Merchandising
         public DbSet<TbHomepageBlock> TbHomepageBlocks { get; set; }
-        public DbSet<TbBlockProduct> TbBlockProducts { get; set; }
+        public DbSet<TbBlockItem> TbBlockItems { get; set; }
+        public DbSet<TbBlockCategory> TbBlockCategories { get; set; }
+        public DbSet<TbUserItemView> TbUserItemViews { get; set; }
+
+        // Campaign & Flash Sales
+        public DbSet<TbCampaign> TbCampaigns { get; set; }
+        public DbSet<TbCampaignItem> TbCampaignItems { get; set; }
+        public DbSet<TbCampaignVendor> TbCampaignVendors { get; set; }
 
         // Seller Tiers
         public DbSet<TbSellerTier> TbSellerTiers { get; set; }
@@ -280,7 +285,7 @@ namespace DAL.ApplicationContext
                 entity.HasKey(e => e.Id);
 
                 entity.HasOne(e => e.OfferCombinationPricing)
-                      .WithMany(c=>c.OfferPriceHistories)
+                      .WithMany(c => c.OfferPriceHistories)
                       .HasForeignKey(e => e.OfferCombinationPricingId)
                       .OnDelete(DeleteBehavior.Restrict);
             });
@@ -291,7 +296,7 @@ namespace DAL.ApplicationContext
                 entity.HasKey(e => e.Id);
 
                 entity.HasOne(e => e.Offer)
-                      .WithMany(o=>o.OfferStatusHistories)
+                      .WithMany(o => o.OfferStatusHistories)
                       .HasForeignKey(e => e.OfferId)
                       .OnDelete(DeleteBehavior.Restrict);
 
@@ -304,7 +309,7 @@ namespace DAL.ApplicationContext
                 entity.HasKey(e => e.Id);
 
                 entity.HasOne(e => e.ItemCombination)
-                      .WithMany(i=>i.OfferCombinationPricings)
+                      .WithMany(i => i.OfferCombinationPricings)
                       .HasForeignKey(e => e.ItemCombinationId)
                       .OnDelete(DeleteBehavior.Restrict);
 

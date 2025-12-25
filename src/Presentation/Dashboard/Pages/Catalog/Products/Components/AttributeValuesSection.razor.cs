@@ -2,8 +2,8 @@
 using Common.Enumerations.Pricing;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
-using Shared.DTOs.ECommerce.Category;
-using Shared.DTOs.ECommerce.Item;
+using Shared.DTOs.Catalog.Category;
+using Shared.DTOs.Catalog.Item;
 
 namespace Dashboard.Pages.Catalog.Products.Components
 {

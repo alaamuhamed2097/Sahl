@@ -1,6 +1,6 @@
 using Api.Controllers.v1.Base;
 using Asp.Versioning;
-using BL.Contracts.Service.ECommerce.Item;
+using BL.Contracts.Service.Catalog.Item;
 using Common.Filters;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;

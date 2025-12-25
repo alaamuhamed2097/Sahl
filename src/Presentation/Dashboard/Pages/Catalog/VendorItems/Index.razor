@@ -1,13 +1,13 @@
 ﻿@page "/vendor-items"
 
-@inherits BaseListPage<ItemDto>
-
 @using Common.Enumerations
 @using Common.Enumerations.FieldType
 @using Common.Enumerations.User
+@using Shared.DTOs.Catalog.Item
 @using Shared.DTOs.ECommerce
-@using Shared.DTOs.ECommerce.Item
 @using Shared.DTOs.User
+@inherits BaseListPage<ItemDto>
+
 @attribute [Authorize(Roles = nameof(UserRole.Admin))]
 
 <PageTitle>@ECommerceResources.Products</PageTitle>

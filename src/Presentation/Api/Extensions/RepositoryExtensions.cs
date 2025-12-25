@@ -2,11 +2,13 @@ using BL.Contracts.IMapper;
 using BL.Mapper.Base;
 using DAL.Contracts.Repositories;
 using DAL.Contracts.Repositories.Customer;
+using DAL.Contracts.Repositories.Merchandising;
 using DAL.Contracts.Repositories.Review;
 using DAL.Contracts.UnitOfWork;
 using DAL.Repositories;
 using DAL.Repositories.Customer;
 using DAL.Repositories.Item;
+using DAL.Repositories.Merchandising;
 using DAL.Repositories.Review;
 using DAL.UnitOfWork;
 
@@ -41,6 +43,11 @@ namespace Api.Extensions
             services.AddScoped<IReviewReportRepository, ReviewReportRepository>();
             services.AddScoped<IReviewVoteRepository, ReviewVoteRepository>();
 
+            // Marketing & Merchandising repositories
+            services.AddScoped<IHomepageBlockRepository, HomepageBlockRepository>();
+            services.AddScoped<ICampaignRepository, CampaignRepository>();
+
+            services.AddScoped<IItemCombinationRepository, ItemCombinationRepository>();
 
             return services;
         }

@@ -1,5 +1,5 @@
+using Shared.DTOs.Catalog.Category;
 using Shared.DTOs.ECommerce;
-using Shared.DTOs.ECommerce.Category;
 
 namespace Dashboard.Services
 {
