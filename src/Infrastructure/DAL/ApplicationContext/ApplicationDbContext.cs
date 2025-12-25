@@ -232,8 +232,9 @@ namespace DAL.ApplicationContext
         // Item Views
         public DbSet<VwItem> VwItems { get; set; }
 
-        //Offer
+        //Vendor Items
         public DbSet<VwOffer> VwOffers { get; set; }
+        public DbSet<VwVendorItem> VwVendorItems { get; set; }
 
         // Item Search Views (from stored procedure and denormalized view)
         public DbSet<SpSearchItemsMultiVendor> SpSearchItemsMultiVendor { get; set; }
@@ -397,8 +398,9 @@ namespace DAL.ApplicationContext
             // Item Views
             modelBuilder.Entity<VwItem>().HasNoKey().ToView("VwItems");
 
-            // Offer Views
+            // Vendor Item Views
             modelBuilder.Entity<VwOffer>().HasNoKey().ToView("VwOffers");
+            modelBuilder.Entity<VwVendorItem>().HasNoKey().ToView("VwVendorItems");
 
             // Item Search Result View (from stored procedure - no actual view, used for mapping results)
             modelBuilder.Entity<SpSearchItemsMultiVendor>().HasNoKey().ToView("SpSearchItemsMultiVendor");

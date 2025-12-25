@@ -18,7 +18,7 @@ namespace Api.Extensions
 
                             // Production
                             "https://sahl.itlegend.net",
-
+                            "https://sahldashboard.itlegend.net/",
                             // Paymob
                             "https://accept.paymob.com"
                         )
