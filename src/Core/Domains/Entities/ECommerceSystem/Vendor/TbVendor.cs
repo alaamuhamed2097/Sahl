@@ -1,4 +1,5 @@
 ﻿using Common.Enumerations.VendorType;
+using Domains.Entities.ECommerceSystem.Review;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Domains.Entities.ECommerceSystem.Vendor
@@ -29,5 +30,9 @@ namespace Domains.Entities.ECommerceSystem.Vendor
         // Navigation Properties
         [ForeignKey("UserId")]
         public virtual ApplicationUser User { get; set; } = null!;
-    }
+		public virtual ICollection<TbItemReview> ItemReviews { get; set; } = new List<TbItemReview>();
+		public virtual ICollection<TbVendorReview> VendorReviews { get; set; } = new List<TbVendorReview>();
+
+
+	}
 }

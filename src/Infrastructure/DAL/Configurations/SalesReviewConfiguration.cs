@@ -50,14 +50,14 @@ namespace DAL.Configurations
 
             // Indexes
             entity.HasIndex(e => e.IsDeleted);
-            entity.HasIndex(e => e.VendorID);
-            entity.HasIndex(e => e.CustomerID);
-            entity.HasIndex(e => e.OrderItemID);
+            entity.HasIndex(e => e.VendorId);
+            entity.HasIndex(e => e.CustomerId);
+            entity.HasIndex(e => e.OrderItemId);
             entity.HasIndex(e => e.OverallRating);
             entity.HasIndex(e => e.Status);
             entity.HasIndex(e => e.ReviewNumber).IsUnique();
             entity.HasIndex(e => e.ReviewDate);
-            entity.HasIndex(e => new { e.VendorID, e.CustomerID });
+            entity.HasIndex(e => new { e.VendorId, e.CustomerId });
         }
     }
 }

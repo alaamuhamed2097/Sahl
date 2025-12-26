@@ -4,9 +4,9 @@ using System.Text;
 
 namespace Shared.GeneralModels.SearchCriteriaModels
 {
-	public class OfferReviewSearchCriteriaModel : BaseSearchCriteriaModel
+	public class ItemReviewSearchCriteriaModel : BaseSearchCriteriaModel
 	{
-		public Guid? OfferId { get; set; } = null;
+		public Guid? ItemId { get; set; } = null;
 		public Guid? CustomerId { get; set; } = null;
 		public decimal? RatingFrom { get; set; } = null;
 		public decimal? RatingTo { get; set; } = null;

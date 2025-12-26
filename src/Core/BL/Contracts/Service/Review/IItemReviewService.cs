@@ -10,17 +10,17 @@ using System.Text;
 
 namespace BL.Contracts.Service.Review
 {
-	public interface IOfferReviewService : IBaseService<TbOfferReview, OfferReviewDto>
+	public interface IItemReviewService : IBaseService<TbItemReview, ItemReviewDto>
 	{
-		Task<OfferReviewDto?> GetReviewByIdAsync(Guid reviewId, CancellationToken cancellationToken = default);
+		Task<ItemReviewDto?> GetReviewByIdAsync(Guid reviewId, CancellationToken cancellationToken = default);
 
 		/// <summary>
-		/// Submits a new review for a specific offer.
+		/// Submits a new review for a specific Item.
 		/// </summary>
 		/// <param name="reviewDto">The review data to be submitted, including rating and comments.</param>
 		/// <param name="cancellationToken">Token to cancel the operation.</param>
 		/// <returns>The created review data.</returns>
-		Task<OfferReviewDto> SubmitReviewAsync(OfferReviewDto reviewDto, CancellationToken cancellationToken = default);
+		Task<ItemReviewDto> SubmitReviewAsync(ItemReviewDto reviewDto, Guid creatorId, CancellationToken cancellationToken = default);
 
 
 		/// <summary>
@@ -30,7 +30,7 @@ namespace BL.Contracts.Service.Review
 		/// <param name="currentUserId">The ID of the user making the update request. Used to verify ownership.</param>
 		/// <param name="cancellationToken">Token to cancel the operation.</param>
 		/// <returns>The updated review data.</returns>
-		Task<OfferReviewDto> updateReviewAsync(OfferReviewDto reviewDto, Guid currentUserId, CancellationToken cancellationToken = default);
+		Task<ItemReviewDto> updateReviewAsync(ItemReviewDto reviewDto, Guid currentUserId, CancellationToken cancellationToken = default);
 
 
 		/// <summary>
@@ -44,24 +44,24 @@ namespace BL.Contracts.Service.Review
 
 
 		/// <summary>
-		/// Retrieves all approved reviews for a specific offer.
+		/// Retrieves all approved reviews for a specific Item.
 		/// </summary>
-		/// <param name="OfferId">The ID of the offer.</param>
+		/// <param name="ItemId">The ID of the Item.</param>
 		/// <param name="cancellationToken">Token to cancel the operation.</param>
-		/// <returns>A list of reviews belonging to the specified offer.</returns>
-		Task<IEnumerable<OfferReviewDto>> GetReviewsByOfferIdAsync(Guid OfferId, CancellationToken cancellationToken = default);
+		/// <returns>A list of reviews belonging to the specified Item.</returns>
+		Task<IEnumerable<ItemReviewDto>> GetReviewsByItemIdAsync(Guid ItemId, CancellationToken cancellationToken = default);
 
 
 		/// <summary>
-		/// Retrieves a paginated list of offer reviews with optional filtering by offer and review status.
+		/// Retrieves a paginated list of Item reviews with optional filtering by Item and review status.
 		/// </summary>
-		/// <param name="OfferId">Optional: Filter by offer ID.</param>
+		/// <param name="ItemId">Optional: Filter by Item ID.</param>
 		/// <param name="status">Optional: Filter by review status (Pending, Approved, Rejected).</param>
 		/// <param name="pageNumber">Page number (default: 1).</param>
 		/// <param name="pageSize">Number of items per page (default: 10).</param>
 		/// <param name="cancellationToken">Token to cancel the operation.</param>
 		/// <returns>A paginated data model containing filtered reviews.</returns>
-		Task<PagedResult<OfferReviewDto>> GetPaginatedReviewsAsync(OfferReviewSearchCriteriaModel criteriaModel, CancellationToken cancellationToken = default);
+		Task<PagedResult<ItemReviewDto>> GetPaginatedReviewsAsync(ItemReviewSearchCriteriaModel criteriaModel, CancellationToken cancellationToken = default);
 
 
 		/// <summary>
@@ -69,7 +69,7 @@ namespace BL.Contracts.Service.Review
 		/// </summary>
 		/// <param name="cancellationToken">Token to cancel the operation.</param>
 		/// <returns>A list of pending reviews.</returns>
-		Task<IEnumerable<OfferReviewDto>> GetPendingReviewsAsync(CancellationToken cancellationToken = default);
+		Task<IEnumerable<ItemReviewDto>> GetPendingReviewsAsync(CancellationToken cancellationToken = default);
 
 
 		/// <summary>
@@ -93,31 +93,31 @@ namespace BL.Contracts.Service.Review
 
 
 		/// <summary>
-		/// Calculates the average rating for a specific offer.
+		/// Calculates the average rating for a specific Item.
 		/// </summary>
-		/// <param name="OfferId">The ID of the offer.</param>
+		/// <param name="ItemId">The ID of the Item.</param>
 		/// <param name="cancellationToken">Token to cancel the operation.</param>
 		/// <returns>The average rating value.</returns>
-		Task<decimal> GetAverageRatingAsync(Guid OfferId, CancellationToken cancellationToken = default);
+		Task<decimal> GetAverageRatingAsync(Guid ItemId, CancellationToken cancellationToken = default);
 
 
 		/// <summary>
-		/// Counts the total number of approved reviews for a specific offer.
+		/// Counts the total number of approved reviews for a specific Item.
 		/// </summary>
-		/// <param name="OfferId">The ID of the offer.</param>
+		/// <param name="ItemId">The ID of the Item.</param>
 		/// <param name="cancellationToken">Token to cancel the operation.</param>
 		/// <returns>The number of reviews.</returns>
-		Task<int> GetReviewCountAsync(Guid OfferId, CancellationToken cancellationToken = default);
+		Task<int> GetReviewCountAsync(Guid ItemId, CancellationToken cancellationToken = default);
 
 
 		/// <summary>
-		/// Retrieves combined statistics for a specific offer, including average rating and total review count.
+		/// Retrieves combined statistics for a specific Item, including average rating and total review count.
 		/// </summary>
-		/// <param name="offerId">The ID of the offer.</param>
+		/// <param name="ItemId">The ID of the Item.</param>
 		/// <param name="cancellationToken">Token to cancel the operation.</param>
 		/// <returns>An object containing review statistics such as average rating and review count.</returns>
-		Task<OfferReviewStatsDto> GetOfferReviewStatsAsync(
-		   Guid offerId,
+		Task<ItemReviewStatsDto> GetItemReviewStatsAsync(
+		   Guid ItemId,
 		   CancellationToken cancellationToken = default);
 
 	}

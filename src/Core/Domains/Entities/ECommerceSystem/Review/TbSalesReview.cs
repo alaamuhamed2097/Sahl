@@ -3,9 +3,9 @@ namespace Domains.Entities.ECommerceSystem.Review
     public class TbSalesReview : BaseEntity
     {
         public int ReviewNumber { get; set; }
-        public Guid OrderItemID { get; set; }
-        public Guid CustomerID { get; set; }
-        public Guid VendorID { get; set; }
+        public Guid OrderItemId { get; set; }
+        public Guid CustomerId { get; set; }
+        public Guid VendorId { get; set; }
         public decimal? ProductAccuracyRating { get; set; }
         public decimal? ShippingSpeedRating { get; set; }
         public decimal? CommunicationRating { get; set; }

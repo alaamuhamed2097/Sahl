@@ -2,6 +2,7 @@
 using Common.Enumerations.Payment;
 using Domains.Entities.CouponCode;
 using Domains.Entities.ECommerceSystem;
+using Domains.Entities.ECommerceSystem.Review;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -48,6 +49,7 @@ namespace Domains.Entities.Order
         public virtual TbCustomerAddress? CustomerAddress { get; set; }
 
         public virtual ICollection<TbOrderDetail> OrderDetails { get; set; }
-    }
+
+	}
 }
 

@@ -42,7 +42,7 @@ namespace Api.Extensions
             services.AddScoped<IItemDetailsRepository, ItemDetailsRepository>();
 
             // Review repositories
-            services.AddScoped<IOfferReviewRepository, OfferReviewRepository>();
+            services.AddScoped<IItemReviewRepository, ItemReviewRepository>();
             services.AddScoped<IReviewReportRepository, ReviewReportRepository>();
             services.AddScoped<IReviewVoteRepository, ReviewVoteRepository>();
 

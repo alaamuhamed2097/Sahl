@@ -11,27 +11,27 @@ using System.Text;
 
 namespace DAL.Repositories.Review
 {
-	public class OfferReviewRepository : TableRepository<TbOfferReview>, IOfferReviewRepository
+	public class ItemReviewRepository : TableRepository<TbItemReview>, IItemReviewRepository
 	{
-		public OfferReviewRepository(ApplicationDbContext dbContext, ILogger logger)
+		public ItemReviewRepository(ApplicationDbContext dbContext, ILogger logger)
 			: base(dbContext, logger) { }
 
 		/// <summary>
-		/// Retrieves all approved (visible) reviews for a given offer.
-		/// Filters by OfferId, ensures the review is approved and not soft-deleted.
+		/// Retrieves all approved (visible) reviews for a given Item.
+		/// Filters by ItemId, ensures the review is approved and not soft-deleted.
 		/// </summary>
-		/// <param name="OfferId">ID of the offer to retrieve reviews for.</param>
+		/// <param name="ItemId">ID of the Item to retrieve reviews for.</param>
 		/// <param name="cancellationToken">Cancellation token.</param>
 		/// <returns>A list of approved reviews sorted by newest first.</returns>
-		public async Task<IEnumerable<TbOfferReview>> GetReviewsByOfferIdAsync(
-			Guid OfferId,
+		public async Task<IEnumerable<TbItemReview>> GetReviewsByItemIdAsync(
+			Guid ItemId,
 			CancellationToken cancellationToken = default)
 		{
 			try
 			{
-				return await _dbContext.Set<TbOfferReview>()
+				return await _dbContext.Set<TbItemReview>()
 					.AsNoTracking()
-					.Where(r => r.OfferID == OfferId
+					.Where(r => r.ItemId == ItemId
 						&& r.Status == ReviewStatus.Approved
 						&& !r.IsDeleted)
 					.OrderByDescending(r => r.CreatedDateUtc)
@@ -39,9 +39,9 @@ namespace DAL.Repositories.Review
 			}
 			catch (Exception ex)
 			{
-				HandleException(nameof(GetReviewsByOfferIdAsync),
-					$"Error occurred while retrieving reviews for Offer {OfferId}.", ex);
-				return new List<TbOfferReview>();
+				HandleException(nameof(GetReviewsByItemIdAsync),
+					$"Error occurred while retrieving reviews for Item {ItemId}.", ex);
+				return new List<TbItemReview>();
 			}
 		}
 
@@ -52,13 +52,13 @@ namespace DAL.Repositories.Review
 		/// <param name="reviewId">ID of the review.</param>
 		/// <param name="cancellationToken">Cancellation token.</param>
 		/// <returns>The review with related data, or null if not found.</returns>
-		public async Task<TbOfferReview?> GetReviewDetailsAsync(
+		public async Task<TbItemReview?> GetReviewDetailsAsync(
 			Guid reviewId,
 			CancellationToken cancellationToken = default)
 		{
 			try
 			{
-				return await _dbContext.Set<TbOfferReview>()
+				return await _dbContext.Set<TbItemReview>()
 					.AsNoTracking()
 					.Include(r => r.ReviewVotes.Where(v => !v.IsDeleted))
 					.Include(r => r.ReviewReports.Where(rr => !rr.IsDeleted))
@@ -73,51 +73,51 @@ namespace DAL.Repositories.Review
 				return null;
 			}
 		}
+		///// <summary>
+		///// Retrieves a customer's review for a specific order item.
+		///// Useful for preventing duplicate reviews for the same purchased item.
+		///// </summary>
+		///// <param name="orderItemId">Order item ID.</param>
+		///// <param name="customerId">Customer ID.</param>
+		///// <param name="cancellationToken">Cancellation token.</param>
+		///// <returns>The review if found; otherwise null.</returns>
+		//public async Task<TbItemReview?> GetCustomerReviewForOrderItemAsync(
+			
+		//	Guid customerId,
+		//	CancellationToken cancellationToken = default)
+		//{
+		//	try
+		//	{
+		//		return await _dbContext.Set<TbItemReview>()
+		//			.AsNoTracking()
+		//			.FirstOrDefaultAsync(r => 
+		//				 r.CustomerId == customerId
+		//				&& !r.IsDeleted,
+		//				cancellationToken);
+		//	}
+		//	catch (Exception ex)
+		//	{
+		//		HandleException(nameof(GetCustomerReviewForOrderItemAsync),
+		//			$"Error occurred while checking customer review for order item.", ex);
+		//		return null;
+		//	}
+		//}
 		/// <summary>
-		/// Retrieves a customer's review for a specific order item.
-		/// Useful for preventing duplicate reviews for the same purchased item.
-		/// </summary>
-		/// <param name="orderItemId">Order item ID.</param>
-		/// <param name="customerId">Customer ID.</param>
-		/// <param name="cancellationToken">Cancellation token.</param>
-		/// <returns>The review if found; otherwise null.</returns>
-		public async Task<TbOfferReview?> GetCustomerReviewForOrderItemAsync(
-			Guid orderItemId,
-			Guid customerId,
-			CancellationToken cancellationToken = default)
-		{
-			try
-			{
-				return await _dbContext.Set<TbOfferReview>()
-					.AsNoTracking()
-					.FirstOrDefaultAsync(r => r.OrderItemID == orderItemId
-						&& r.CustomerID == customerId
-						&& !r.IsDeleted,
-						cancellationToken);
-			}
-			catch (Exception ex)
-			{
-				HandleException(nameof(GetCustomerReviewForOrderItemAsync),
-					$"Error occurred while checking customer review for order item.", ex);
-				return null;
-			}
-		}
-		/// <summary>
-		/// Calculates the average rating for a specific offer
+		/// Calculates the average rating for a specific Item
 		/// considering only approved, non-deleted reviews.
 		/// </summary>
-		/// <param name="OfferId">Offer ID.</param>
+		/// <param name="ItemId">Item ID.</param>
 		/// <param name="cancellationToken">Cancellation token.</param>
 		/// <returns>The average rating, or 0 if no reviews exist.</returns>
 		public async Task<decimal> GetAverageRatingAsync(
-			Guid OfferId,
+			Guid ItemId,
 			CancellationToken cancellationToken = default)
 		{
 			try
 			{
-				var reviews = await _dbContext.Set<TbOfferReview>()
+				var reviews = await _dbContext.Set<TbItemReview>()
 					.AsNoTracking()
-					.Where(r => r.OfferID == OfferId
+					.Where(r => r.ItemId == ItemId
 						&& r.Status == ReviewStatus.Approved
 						&& !r.IsDeleted)
 					.Select(r => r.Rating)
@@ -128,16 +128,16 @@ namespace DAL.Repositories.Review
 			catch (Exception ex)
 			{
 				HandleException(nameof(GetAverageRatingAsync),
-					$"Error occurred while calculating average rating for Offer {OfferId}.", ex);
+					$"Error occurred while calculating average rating for Item {ItemId}.", ex);
 				return 0;
 			}
 		}
 		
 		/// <summary>
-		/// Retrieves paginated list of reviews with optional filters (OfferId and Status).
+		/// Retrieves paginated list of reviews with optional filters (ItemId and Status).
 		/// Useful for admin panels and customer history views.
 		/// </summary>
-		/// <param name="OfferId">Optional filter by offer.</param>
+		/// <param name="ItemId">Optional filter by Item.</param>
 		/// <param name="status">Optional filter by review status.</param>
 		/// <param name="pageNumber">Page index starting from 1.</param>
 		/// <param name="pageSize">Number of items per page.</param>
@@ -150,12 +150,12 @@ namespace DAL.Repositories.Review
 		/// </summary>
 		/// <param name="cancellationToken">Cancellation token.</param>
 		/// <returns>A list of pending reviews sorted by creation date.</returns>
-		public async Task<IEnumerable<TbOfferReview>> GetPendingReviewsAsync(
+		public async Task<IEnumerable<TbItemReview>> GetPendingReviewsAsync(
 			CancellationToken cancellationToken = default)
 		{
 			try
 			{
-				return await _dbContext.Set<TbOfferReview>()
+				return await _dbContext.Set<TbItemReview>()
 					.AsNoTracking()
 					.Where(r => r.Status == ReviewStatus.Pending
 						&& !r.IsDeleted)
@@ -166,55 +166,55 @@ namespace DAL.Repositories.Review
 			{
 				HandleException(nameof(GetPendingReviewsAsync),
 					$"Error occurred while retrieving pending reviews.", ex);
-				return new List<TbOfferReview>();
+				return new List<TbItemReview>();
 			}
 		}
 
 
 
 		/// <summary>
-		/// Counts the number of approved, non-deleted reviews for a given offer.
+		/// Counts the number of approved, non-deleted reviews for a given Item.
 		/// Used for statistics and rating calculations.
 		/// </summary>
-		/// <param name="OfferId">Offer ID.</param>
+		/// <param name="ItemId">Item ID.</param>
 		/// <param name="cancellationToken">Cancellation token.</param>
 		/// <returns>The count of approved reviews.</returns>
-		public async Task<int> GetReviewCountByOfferIdAsync(
-			Guid OfferId,
+		public async Task<int> GetReviewCountByItemIdAsync(
+			Guid ItemId,
 			CancellationToken cancellationToken = default)
 		{
 			try
 			{
-				return await _dbContext.Set<TbOfferReview>()
+				return await _dbContext.Set<TbItemReview>()
 					.AsNoTracking()
-					.CountAsync(r => r.OfferID == OfferId
+					.CountAsync(r => r.ItemId == ItemId
 						&& r.Status == ReviewStatus.Approved
 						&& !r.IsDeleted,
 						cancellationToken);
 			}
 			catch (Exception ex)
 			{
-				HandleException(nameof(GetReviewCountByOfferIdAsync),
-					$"Error occurred while counting reviews for Offer {OfferId}.", ex);
+				HandleException(nameof(GetReviewCountByItemIdAsync),
+					$"Error occurred while counting reviews for Item {ItemId}.", ex);
 				return 0;
 			}
 		}
 
 
 		/// <summary>
-		/// Returns the distribution of ratings (1-5 stars) for a specific offer.
+		/// Returns the distribution of ratings (1-5 stars) for a specific Item.
 		/// Groups ratings and returns a dictionary: Key = rating, Value = count.
 		/// </summary>
-		/// <param name="OfferId">Offer ID.</param>
+		/// <param name="ItemId">Item ID.</param>
 		/// <param name="cancellationToken">Cancellation token.</param>
 		/// <returns>Dictionary of rating value and count.</returns>
 		public async Task<Dictionary<int, int>> GetRatingDistributionAsync(
-		   Guid OfferId,
+		   Guid ItemId,
 		   CancellationToken cancellationToken = default)
 		{
-			var reviews = await _dbContext.Set<TbOfferReview>()
+			var reviews = await _dbContext.Set<TbItemReview>()
 				.AsNoTracking()
-				.Where(r => r.OfferID == OfferId
+				.Where(r => r.ItemId == ItemId
 					&& r.Status == ReviewStatus.Approved
 					&& !r.IsDeleted)
 				.Select(r => r.Rating)

@@ -128,14 +128,14 @@ namespace DAL.ApplicationContext
         public DbSet<TbSupportTicketMessage> TbSupportTicketMessages { get; set; }
 
         // Review Management
-        public DbSet<TbOfferReview> TbOfferReviews { get; set; }
+        public DbSet<TbItemReview> TbItemReviews { get; set; }
         public DbSet<TbSalesReview> TbSalesReviews { get; set; }
-        public DbSet<TbDeliveryReview> TbDeliveryReviews { get; set; }
         public DbSet<TbReviewVote> TbReviewVotes { get; set; }
         public DbSet<TbReviewReport> TbReviewReports { get; set; }
+        public DbSet<TbVendorReview> TbVendorReviews { get; set; }
 
-        // Warehouse Management
-        public DbSet<TbWarehouse> TbWarehouses { get; set; }
+		// Warehouse Management
+		public DbSet<TbWarehouse> TbWarehouses { get; set; }
 
 
         // Content Management

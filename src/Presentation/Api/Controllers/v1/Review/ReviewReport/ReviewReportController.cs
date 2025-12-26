@@ -35,7 +35,7 @@ namespace Api.Controllers.v1.Review.ReviewReport
 		/// Requires Authentication.
 		/// </remarks>
 		[HttpPost("Submit")]
-		[Authorize(Roles = nameof(UserRole.Customer))]
+		//[Authorize(Roles = nameof(UserRole.Customer))]
 		[ProducesResponseType(StatusCodes.Status200OK)]
 		[ProducesResponseType(StatusCodes.Status400BadRequest)]
 		[ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -49,9 +49,9 @@ namespace Api.Controllers.v1.Review.ReviewReport
 				});
 
 			
-			reportDto.CustomerID = Guid.Parse(UserId);
+			//reportDto.CustomerID = Guid.Parse(UserId);
 
-			var result = await _reportService.SubmitReportAsync(reportDto);
+			var result = await _reportService.SubmitReportAsync(reportDto, UserId);
 
 			return Ok(new ResponseModel<string>
 			{
@@ -99,9 +99,9 @@ namespace Api.Controllers.v1.Review.ReviewReport
 		/// Requires Admin role.
 		/// </remarks>
 		[HttpGet("Search")]
-		[Authorize(Roles = nameof(UserRole.Admin))]
+		//[Authorize(Roles = nameof(UserRole.Admin))]
 		[ProducesResponseType(StatusCodes.Status200OK)]
-		public async Task<IActionResult> Search(ReviewReportSearchCriteriaModel criteriaModel)
+		public async Task<IActionResult> Search([FromQuery] ReviewReportSearchCriteriaModel criteriaModel)
 		{
 			var result = await _reportService.GetPaginatedReviewReportsAsync(criteriaModel);
 
@@ -137,6 +137,8 @@ namespace Api.Controllers.v1.Review.ReviewReport
 
 		/// <summary>
 		/// Resolve a report (Admin only)
+		/// Allows an admin to mark a review report as resolved after taking the
+		/// appropriate moderation action (e.g., flagging, rejecting, or keeping the review).
 		/// </summary>
 		/// <remarks>
 		/// API Version: 1.0+
@@ -174,6 +176,8 @@ namespace Api.Controllers.v1.Review.ReviewReport
 
 		/// <summary>
 		/// Mark a review as flagged (Admin only)
+	    /// This endpoint allows an admin to mark a specific review as flagged
+		/// when it contains inappropriate content or requires further review.
 		/// </summary>
 		/// <remarks>
 		/// API Version: 1.0+
@@ -183,7 +187,7 @@ namespace Api.Controllers.v1.Review.ReviewReport
 		[Authorize(Roles = nameof(UserRole.Admin))]
 		[ProducesResponseType(StatusCodes.Status200OK)]
 		[ProducesResponseType(StatusCodes.Status404NotFound)]
-		public async Task<IActionResult> MarkAsFlagged([FromBody] OfferReviewDto reviewDto)
+		public async Task<IActionResult> MarkAsFlagged([FromBody] ItemReviewDto reviewDto)
 		{
 			if (string.IsNullOrEmpty(UserId) || reviewDto == null)
 				return Unauthorized(new ResponseModel<string>

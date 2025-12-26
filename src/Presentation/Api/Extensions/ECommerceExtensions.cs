@@ -92,7 +92,7 @@ namespace Api.Extensions
             services.AddScoped<IWishlistService, WishlistService>();
 
             // Review Services
-            services.AddScoped<IOfferReviewService, OfferReviewService>();
+            services.AddScoped<IItemReviewService, ItemReviewService>();
             services.AddScoped<IReviewReportService, ReviewReportService>();
             services.AddScoped<IReviewVoteService, ReviewVoteService>();
 

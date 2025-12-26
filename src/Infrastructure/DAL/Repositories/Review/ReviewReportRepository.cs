@@ -70,8 +70,8 @@ namespace DAL.Repositories.Review
 			{
 				return await _dbContext.Set<TbReviewReport>()
 					.AsNoTracking()
-					.AnyAsync(r => r.ReviewID == reviewId
-						&& r.CustomerID == userId
+					.AnyAsync(r => r.ItemReviewId == reviewId
+						&& r.CustomerId == userId
 						&& !r.IsDeleted,
 						cancellationToken);
 			}
@@ -91,7 +91,7 @@ namespace DAL.Repositories.Review
 			{
 				return await _dbContext.Set<TbReviewReport>()
 					.AsNoTracking()
-					.Where(r => r.ReviewID == reviewId
+					.Where(r => r.ItemReviewId == reviewId
 						&& !r.IsDeleted)
 					.OrderByDescending(r => r.CreatedDateUtc)
 					.ToListAsync(cancellationToken);
@@ -112,7 +112,7 @@ namespace DAL.Repositories.Review
 			{
 				return await _dbContext.Set<TbReviewReport>()
 					.AsNoTracking()
-					.Where(r => r.CustomerID == userId
+					.Where(r => r.CustomerId == userId
 						&& !r.IsDeleted)
 					.OrderByDescending(r => r.CreatedDateUtc)
 					.ToListAsync(cancellationToken);

@@ -45,6 +45,6 @@ namespace Domains.Entities.Loyalty
 
         public virtual TbCustomerLoyalty CustomerLoyalty { get; set; } = null!;
         public virtual TbOrder? Order { get; set; }
-        public virtual TbOfferReview? Review { get; set; }
+        public virtual TbItemReview? ItemReview { get; set; }
     }
 }
