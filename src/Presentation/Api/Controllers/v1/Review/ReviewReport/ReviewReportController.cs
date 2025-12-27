@@ -120,12 +120,12 @@ namespace Api.Controllers.v1.Review.ReviewReport
 		/// API Version: 1.0+
 		/// Requires Admin role.
 		/// </remarks>
-		[HttpGet("reports-by-offer/{offerReviewId}")]
+		[HttpGet("reports-by-Item/{ItemReviewId}")]
 		[Authorize(Roles = nameof(UserRole.Admin))]
 		[ProducesResponseType(StatusCodes.Status200OK)]
-		public async Task<IActionResult> GetReportsByReview(Guid offerReviewId)
+		public async Task<IActionResult> GetReportsByReview(Guid ItemReviewId)
 		{
-			var reports = await _reportService.GetReportsByReviewIdAsync(offerReviewId);
+			var reports = await _reportService.GetReportsByReviewIdAsync(ItemReviewId);
 
 			return Ok(new ResponseModel<IEnumerable<ReviewReportDto>>
 			{

@@ -44,6 +44,7 @@ using Domains.Views.Item;
 using Domains.Views.Offer;
 using Domains.Views.Unit;
 using Domains.Views.UserNotification;
+using Domains.Views.Vendor;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -256,10 +257,14 @@ namespace DAL.ApplicationContext
 
         // User Notification Views
         public DbSet<VwUserNotification> VwUserNotifications { get; set; }
+		// Vendor Details Views
+		public DbSet<VwVendorPublicDetails> VwVendorPublicDetails { get; set; }
+		public DbSet<VwVendorOwnerDetails> VwVendorOwnerDetails { get; set; }
+		public DbSet<VwVendorAdminDetails> VwVendorAdminDetails { get; set; }
 
-        #endregion
+		#endregion
 
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
+		protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
 
@@ -436,7 +441,26 @@ namespace DAL.ApplicationContext
                 entity.HasNoKey();
                 entity.ToView("VwUserNotifications");
             });
-        }
+			// Vendor Details Views
+
+			modelBuilder.Entity<VwVendorPublicDetails>(entity =>
+			{
+				entity.HasNoKey();
+				entity.ToView("VwVendorPublicDetails");
+			});
+
+			modelBuilder.Entity<VwVendorOwnerDetails>(entity =>
+			{
+				entity.HasNoKey();
+				entity.ToView("VwVendorOwnerDetails");
+			});
+
+			modelBuilder.Entity<VwVendorAdminDetails>(entity =>
+			{
+				entity.HasNoKey();
+				entity.ToView("VwVendorAdminDetails");
+			});
+		}
 
         /// <summary>
         /// Saves changes with automatic UTC timestamp handling

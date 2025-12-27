@@ -34,9 +34,6 @@ namespace Shared.DTOs.Review
 
 		public bool IsVerifiedPurchase { get; set; }
 
-		// Audit
-		public DateTime CreatedDateUtc { get; set; }
-		public DateTime? UpdatedDateUtc { get; set; }
 	}
 
 }

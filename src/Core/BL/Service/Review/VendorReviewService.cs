@@ -467,6 +467,7 @@ namespace BL.Service.Review
 		/// <returns>The created review DTO with assigned Id and metadata (creation date, status).</returns>
 		public async Task<VendorReviewDto> SubmitReviewAsync(
 			VendorReviewDto reviewDto,
+			Guid customerId,
 			CancellationToken cancellationToken = default)
 		{
 			try
@@ -491,8 +492,7 @@ namespace BL.Service.Review
 				var review = _mapper.MapModel<VendorReviewDto, TbVendorReview>(reviewDto);
 				review.Status = ReviewStatus.Pending;
 				review.IsEdited = false;
-
-				var result = await _reviewRepo.CreateAsync(review, reviewDto.CustomerId, cancellationToken);
+				var result = await _reviewRepo.CreateAsync(review, customerId, cancellationToken);
 
 				if (!result.Success)
 					throw new Exception("Failed to submit review");

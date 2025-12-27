@@ -31,6 +31,7 @@ namespace BL.Contracts.Service.Review
 			/// <returns>The created review DTO.</returns>
 			Task<VendorReviewDto> SubmitReviewAsync(
 				VendorReviewDto reviewDto,
+				Guid customerId,
 				CancellationToken cancellationToken = default);
 
 			/// <summary>

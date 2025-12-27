@@ -95,6 +95,7 @@ namespace Api.Extensions
             services.AddScoped<IItemReviewService, ItemReviewService>();
             services.AddScoped<IReviewReportService, ReviewReportService>();
             services.AddScoped<IReviewVoteService, ReviewVoteService>();
+            services.AddScoped<IVendorReviewService, VendorReviewService>();
 
             // Merchandising Services
             services.AddScoped<IHomepageService, HomepageService>();

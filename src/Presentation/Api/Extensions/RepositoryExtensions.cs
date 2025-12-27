@@ -45,6 +45,7 @@ namespace Api.Extensions
             services.AddScoped<IItemReviewRepository, ItemReviewRepository>();
             services.AddScoped<IReviewReportRepository, ReviewReportRepository>();
             services.AddScoped<IReviewVoteRepository, ReviewVoteRepository>();
+            services.AddScoped<IVendorReviewRepository, VendorReviewRepository>();
 
             // Marketing & Merchandising repositories
             services.AddScoped<IHomepageBlockRepository, HomepageBlockRepository>();
@@ -52,7 +53,7 @@ namespace Api.Extensions
 
             services.AddScoped<IItemCombinationRepository, ItemCombinationRepository>();
 
-            return services;
+			return services;
         }
     }
 }
