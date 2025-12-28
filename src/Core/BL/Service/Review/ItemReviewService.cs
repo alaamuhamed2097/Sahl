@@ -196,6 +196,7 @@ namespace BL.Service.Review
 				throw;
 			}
 		}
+
 		/// <summary>
 		/// Deletes a review permanently or flags it as deleted (soft-delete), after verifying ownership.
 		/// </summary>
@@ -227,6 +228,7 @@ namespace BL.Service.Review
 				throw;
 			}
 		}
+
 		/// <summary>
 		/// Retrieves all approved reviews for a specific Item.
 		/// </summary>

@@ -85,8 +85,8 @@ namespace BL.Service.Vendor
             {
                 string searchTerm = criteriaModel.SearchTerm.Trim().ToLower();
                 filter = x => !x.IsDeleted &&
-                             (x.CompanyName != null && x.CompanyName.ToLower().Contains(searchTerm) ||
-                             x.ContactName != null && x.ContactName.ToLower().Contains(searchTerm));
+                             (x.NameEn != null && x.NameEn.ToLower().Contains(searchTerm) ||
+                             x.NameAr != null && x.NameAr.ToLower().Contains(searchTerm));
             }
 
             // Create ordering function based on SortBy and SortDirection
@@ -101,9 +101,8 @@ namespace BL.Service.Vendor
                 {
                     return sortBy switch
                     {
-                        "companyname" => isDescending ? query.OrderByDescending(x => x.CompanyName) : query.OrderBy(x => x.CompanyName),
-                        "contactname" => isDescending ? query.OrderByDescending(x => x.ContactName) : query.OrderBy(x => x.ContactName),
-                        _ => query.OrderBy(x => x.CompanyName)
+                        "companyname" => isDescending ? query.OrderByDescending(x => x.NameEn) : query.OrderBy(x => x.NameEn),
+                        _ => query.OrderBy(x => x.NameEn)
                     };
                 };
             }
@@ -138,9 +137,8 @@ namespace BL.Service.Vendor
             if (!string.IsNullOrWhiteSpace(searchTerm))
             {
                 filter = filter.And(x =>
-                    x.CompanyName != null && x.CompanyName.ToLower().Contains(searchTerm) ||
-                    x.CommercialRegister != null && x.CommercialRegister.ToLower().Contains(searchTerm) ||
-                    x.ContactName != null && x.ContactName.ToLower().Contains(searchTerm)
+                    x.NameEn != null && x.NameEn.ToLower().Contains(searchTerm) ||
+                    x.CommercialRegister != null && x.CommercialRegister.ToLower().Contains(searchTerm)
                 );
             }
 
@@ -174,8 +172,7 @@ namespace BL.Service.Vendor
             {
                 string searchTerm = criteriaModel.SearchTerm.Trim().ToLower();
                 filter = x => !x.IsDeleted &&
-                         (x.CompanyName != null && x.CompanyName.ToLower().Contains(searchTerm) ||
-                         x.ContactName != null && x.ContactName.ToLower().Contains(searchTerm));
+                         (x.NameEn != null && x.NameEn.ToLower().Contains(searchTerm));
             }
 
             // Create ordering function based on SortBy and SortDirection
@@ -190,9 +187,8 @@ namespace BL.Service.Vendor
                 {
                     return sortBy switch
                     {
-                        "companyname" => isDescending ? query.OrderByDescending(x => x.CompanyName) : query.OrderBy(x => x.CompanyName),
-                        "contactname" => isDescending ? query.OrderByDescending(x => x.ContactName) : query.OrderBy(x => x.ContactName),
-                        _ => query.OrderBy(x => x.CompanyName)
+                        "companyname" => isDescending ? query.OrderByDescending(x => x.NameEn) : query.OrderBy(x => x.NameEn),
+                        _ => query.OrderBy(x => x.NameEn)
                     };
                 };
             }

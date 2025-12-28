@@ -14,9 +14,11 @@ namespace DAL.Configurations
         {
             // Table name
             entity.ToTable("TbCustomerItemViews");
+			// Primary Key
+            entity.HasKey(e => e.Id);
 
-            // Relationships
-            entity.HasOne(e => e.Customer)
+			// Relationships
+			entity.HasOne(e => e.Customer)
                 .WithMany(c=>c.CustomerItemViews)
                 .HasForeignKey(e => e.CustomerId)
                 .OnDelete(DeleteBehavior.Restrict);

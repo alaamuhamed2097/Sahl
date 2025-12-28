@@ -7,9 +7,11 @@ namespace Domains.Entities.ECommerceSystem.Vendor
     public class TbVendor : BaseEntity
     {
         public string UserId { get; set; } = null!;
-        public VendorType VendorType { get; set; }
-        public string? CompanyName { get; set; }
-        public string? ContactName { get; set; }
+
+        public string? NameAr { get; set; }
+        public string? NameEn { get; set; }
+        public string? Discription { get; set; }
+		
         public string? VendorCode { get; set; }
 
         // Contact Information
@@ -25,7 +27,7 @@ namespace Domains.Entities.ECommerceSystem.Vendor
         //
         public string? Notes { get; set; }
         public bool IsActive { get; set; } = true;
-        public decimal? Rating { get; set; }
+        public decimal?AverageRating { get; set; }
 
         // Navigation Properties
         [ForeignKey("UserId")]

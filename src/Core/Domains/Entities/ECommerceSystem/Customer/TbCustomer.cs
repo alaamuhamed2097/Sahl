@@ -20,6 +20,8 @@ namespace Domains.Entities.ECommerceSystem.Customer
 		public virtual ICollection<TbVendorReview> VendorReviews { get; set; } = new List<TbVendorReview>();
 		public virtual ICollection<TbShippingCompanyReview> ShippingCompanyReviews { get; set; } = new List<TbShippingCompanyReview>();
 		public virtual ICollection<TbReviewReport> ReviewReports { get; set; } = new List<TbReviewReport>();
+		public virtual ICollection<TbCustomerItemView> CustomerItemViews { get; set; }
+
 
 	}
 }
