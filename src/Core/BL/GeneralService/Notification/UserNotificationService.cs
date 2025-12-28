@@ -123,7 +123,7 @@ namespace BL.GeneralService.Notification
             }
             catch (Exception ex)
             {
-                _unitOfWork.Rollback();
+                await _unitOfWork.RollbackAsync();
                 _logger.Error(ex, "Error saving notification");
                 throw;
             }
@@ -178,7 +178,7 @@ namespace BL.GeneralService.Notification
             }
             catch (Exception ex)
             {
-                _unitOfWork.Rollback();
+                await _unitOfWork.RollbackAsync();
                 _logger.Error(ex, "Error saving bulk notifications");
                 throw;
             }
@@ -212,7 +212,7 @@ namespace BL.GeneralService.Notification
             }
             catch (Exception ex)
             {
-                _unitOfWork.Rollback();
+                await _unitOfWork.RollbackAsync();
                 _logger.Error(ex, "Error marking notifications as read");
                 throw;
             }
@@ -248,7 +248,7 @@ namespace BL.GeneralService.Notification
             }
             catch (Exception ex)
             {
-                _unitOfWork.Rollback();
+                await _unitOfWork.RollbackAsync();
                 _logger.Error(ex, "Error deleting notification");
                 throw;
             }

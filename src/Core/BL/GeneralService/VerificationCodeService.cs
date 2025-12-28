@@ -15,18 +15,18 @@ public class VerificationCodeService : IVerificationCodeService
     private const int MaxAttempts = 5; // الحد الأقصى للمحاولات
     private const string AttemptsKeySuffix = "_code_attempts";
 
-        private readonly IEmailService _emailService;
+    private readonly IEmailService _emailService;
 
-        public VerificationCodeService(ICacheService memoryCache,
-            ISmsService smsService,
-            IEmailService emailService,
-            Serilog.ILogger logger)
-        {
-            _memoryCache = memoryCache;
-            _smsService = smsService;
-            _emailService = emailService;
-            _logger = logger;
-        }
+    public VerificationCodeService(ICacheService memoryCache,
+        ISmsService smsService,
+        IEmailService emailService,
+        Serilog.ILogger logger)
+    {
+        _memoryCache = memoryCache;
+        _smsService = smsService;
+        _emailService = emailService;
+        _logger = logger;
+    }
 
     /// <summary>
     /// Generates a secure 6-digit verification code.
@@ -44,17 +44,17 @@ public class VerificationCodeService : IVerificationCodeService
         return "123456";
     }
 
-        /// <summary>
-        /// Sends a verification code via SMS and saves it in the cache.
-        /// </summary>
-        /// <summary>
-        /// Sends a verification code via SMS or Email and saves it in the cache.
-        /// </summary>
-        public async Task<bool> SendCodeAsync(string identifier)
-        {
-            var cacheKey = $"{identifier}_code";
-            var cooldownKey = $"{identifier}_cooldown";
-            var attemptsKey = $"{identifier}{AttemptsKeySuffix}";
+    /// <summary>
+    /// Sends a verification code via SMS and saves it in the cache.
+    /// </summary>
+    /// <summary>
+    /// Sends a verification code via SMS or Email and saves it in the cache.
+    /// </summary>
+    public async Task<bool> SendCodeAsync(string identifier)
+    {
+        var cacheKey = $"{identifier}_code";
+        var cooldownKey = $"{identifier}_cooldown";
+        var attemptsKey = $"{identifier}{AttemptsKeySuffix}";
 
         // Check if the user is on cooldown
         if (_memoryCache.Get<string>(cooldownKey) != null)
@@ -74,45 +74,45 @@ public class VerificationCodeService : IVerificationCodeService
         // Save the cooldown state in the cache
         _memoryCache.Set(cooldownKey, "cooldown", TimeSpan.FromSeconds(ResendCooldownInSeconds));
 
-            bool sent = false;
-            // Determine if identifier is email or phone
-            if (identifier.Contains("@"))
-            {
-                 // Send via Email
-                 sent = _emailService.SendEmail(identifier, "Verification Code", $"Your verification code is: {code}");
-            }
-            else
-            {
-                 // Send via SMS
-                 sent = await _smsService.SendSmsAsync(identifier, $"Your verification code is: {code}");
-            }
-
-            if (sent)
-            {
-                return true;
-            }
-            else
-            {
-                _logger.Error($"Failed to send verification code to {identifier}.");
-                // Remove the code and cooldown in case of failure
-                _memoryCache.Remove(cacheKey);
-                _memoryCache.Remove(cooldownKey);
-                _memoryCache.Remove(attemptsKey);
-                return false;
-            }
+        bool sent = false;
+        // Determine if identifier is email or phone
+        if (identifier.Contains("@"))
+        {
+            // Send via Email
+            sent = _emailService.SendEmail(identifier, "Verification Code", $"Your verification code is: {code}");
+        }
+        else
+        {
+            // Send via SMS
+            sent = await _smsService.SendSmsAsync(identifier, $"Your verification code is: {code}");
         }
 
-        /// <summary>
-        /// Verifies if the provided code matches the one in the cache.
-        /// </summary>
-        /// <summary>
-        /// Verifies if the provided code matches the one in the cache.
-        /// </summary>
-        public bool VerifyCode(string identifier, string code)
+        if (sent)
         {
-            var cacheKey = $"{identifier}_code";
-            var attemptsKey = $"{identifier}{AttemptsKeySuffix}";
-            var cachedCode = _memoryCache.Get<string>(cacheKey);
+            return true;
+        }
+        else
+        {
+            _logger.Error($"Failed to send verification code to {identifier}.");
+            // Remove the code and cooldown in case of failure
+            _memoryCache.Remove(cacheKey);
+            _memoryCache.Remove(cooldownKey);
+            _memoryCache.Remove(attemptsKey);
+            return false;
+        }
+    }
+
+    /// <summary>
+    /// Verifies if the provided code matches the one in the cache.
+    /// </summary>
+    /// <summary>
+    /// Verifies if the provided code matches the one in the cache.
+    /// </summary>
+    public bool VerifyCode(string identifier, string code)
+    {
+        var cacheKey = $"{identifier}_code";
+        var attemptsKey = $"{identifier}{AttemptsKeySuffix}";
+        var cachedCode = _memoryCache.Get<string>(cacheKey);
 
         // Get current attempts
         int attempts = _memoryCache.Get<int?>(attemptsKey) ?? 0;
@@ -137,21 +137,20 @@ public class VerificationCodeService : IVerificationCodeService
         return false;
     }
 
-        /// <summary>
-        /// Deletes the verification code after successful use.
-        /// </summary>
-        public void DeleteCode(string identifier)
-        {
-            var cacheKey = $"{identifier}_code";
-            var attemptsKey = $"{identifier}{AttemptsKeySuffix}";
-            _memoryCache.Remove(cacheKey);
-            _memoryCache.Remove(attemptsKey);
-        }
+    /// <summary>
+    /// Deletes the verification code after successful use.
+    /// </summary>
+    public void DeleteCode(string identifier)
+    {
+        var cacheKey = $"{identifier}_code";
+        var attemptsKey = $"{identifier}{AttemptsKeySuffix}";
+        _memoryCache.Remove(cacheKey);
+        _memoryCache.Remove(attemptsKey);
+    }
 
-        public int GetAttempts(string identifier)
-        {
-            var attemptsKey = $"{identifier}{AttemptsKeySuffix}";
-            return _memoryCache.Get<int?>(attemptsKey) ?? 0;
-        }
+    public int GetAttempts(string identifier)
+    {
+        var attemptsKey = $"{identifier}{AttemptsKeySuffix}";
+        return _memoryCache.Get<int?>(attemptsKey) ?? 0;
     }
 }

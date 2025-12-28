@@ -44,11 +44,11 @@ public class UserAuthenticationService : IUserAuthenticationService
         throw new UnauthorizedAccessException("Invalid login credentials.");
     }
 
-        public async Task<Shared.GeneralModels.ResultModels.SignInResult> EmailOrPhoneNumberSignInAsync(string identifier, string password, string clientType)
+    public async Task<Shared.GeneralModels.ResultModels.SignInResult> EmailOrPhoneNumberSignInAsync(string identifier, string password, string clientType)
+    {
+        try
         {
-            try
-            {
-                ApplicationUser? user = null;
+            ApplicationUser? user = null;
 
             // Try to find by email
             user = await _userManager.FindByEmailAsync(identifier);
@@ -59,17 +59,17 @@ public class UserAuthenticationService : IUserAuthenticationService
                 user = await _userManager.FindByNameAsync(identifier);
             }
 
-                // If still not found, try by phone number (new feature)
-                if (user == null && !string.IsNullOrWhiteSpace(identifier))
+            // If still not found, try by phone number (new feature)
+            if (user == null && !string.IsNullOrWhiteSpace(identifier))
+            {
+                var normalizedPhone = PhoneNormalizationHelper.NormalizePhone(identifier);
+                if (!string.IsNullOrWhiteSpace(normalizedPhone))
                 {
-                    var normalizedPhone = PhoneNormalizationHelper.NormalizePhone(identifier);
-                    if (!string.IsNullOrWhiteSpace(normalizedPhone))
-                    {
-                        user = await _userManager.Users
-                            .FirstOrDefaultAsync(u => u.NormalizedPhone != null &&
-                                                     u.NormalizedPhone.Contains(normalizedPhone));
-                    }
+                    user = await _userManager.Users
+                        .FirstOrDefaultAsync(u => u.NormalizedPhone != null &&
+                                                 u.NormalizedPhone.Contains(normalizedPhone));
                 }
+            }
 
             if (user == null)
             {
@@ -231,128 +231,128 @@ public class UserAuthenticationService : IUserAuthenticationService
             response.Message = string.Join(", ", result.Errors.Select(e => e.Description));
         }
 
-            return response;
-        }
-        /// <summary>
-        /// Sends a password reset verification code to the user's mobile or email.
-        /// </summary>
-        public async Task<OperationResult> SendResetCodeAsync(string userId, string identifier)
+        return response;
+    }
+    /// <summary>
+    /// Sends a password reset verification code to the user's mobile or email.
+    /// </summary>
+    public async Task<OperationResult> SendResetCodeAsync(string userId, string identifier)
+    {
+        var user = await _userManager.FindByIdAsync(userId);
+        if (user == null || user.UserState == UserStateType.Deleted)
         {
-            var user = await _userManager.FindByIdAsync(userId);
-            if (user == null || user.UserState == UserStateType.Deleted)
+            return new OperationResult { Success = false, Message = UserResources.UserNotFound };
+        }
+
+        string normalizedIdentifier = identifier;
+        bool isEmail = identifier.Contains("@");
+
+        if (isEmail)
+        {
+            if (!string.Equals(user.Email, identifier, StringComparison.OrdinalIgnoreCase))
             {
-                return new OperationResult { Success = false, Message = UserResources.UserNotFound };
+                return new OperationResult { Success = false, Message = "The provided email does not match the user's records." };
             }
 
-            string normalizedIdentifier = identifier;
-            bool isEmail = identifier.Contains("@");
-
-            if (isEmail)
+            if (!user.EmailConfirmed)
+                return new OperationResult { Success = false, Message = "Email is not verified." };
+        }
+        else
+        {
+            normalizedIdentifier = PhoneNormalizationHelper.NormalizePhone(identifier);
+            // Check if user's phone matches
+            // Note: Since users stores NormalizedPhone, we should compare that
+            if (user.NormalizedPhone == null || !user.NormalizedPhone.Contains(normalizedIdentifier))
             {
-                if (!string.Equals(user.Email, identifier, StringComparison.OrdinalIgnoreCase))
-                {
-                    return new OperationResult { Success = false, Message = "The provided email does not match the user's records." };
-                }
-                
-                if (!user.EmailConfirmed)
-                     return new OperationResult { Success = false, Message = "Email is not verified." };
-            }
-            else
-            {
-                 normalizedIdentifier = PhoneNormalizationHelper.NormalizePhone(identifier);
-                 // Check if user's phone matches
-                 // Note: Since users stores NormalizedPhone, we should compare that
-                 if (user.NormalizedPhone == null || !user.NormalizedPhone.Contains(normalizedIdentifier))
-                 {
-                      return new OperationResult { Success = false, Message = "The provided phone number does not match the user's records." };
-                 }
-
-                 if (!user.PhoneNumberConfirmed)
-                     return new OperationResult { Success = false, Message = "Phone number is not verified." };
+                return new OperationResult { Success = false, Message = "The provided phone number does not match the user's records." };
             }
 
-            // Save the code temporarily (e.g., in cache) with expiration time
-            var codeSaved = await _verificationCodeService.SendCodeAsync(normalizedIdentifier);
+            if (!user.PhoneNumberConfirmed)
+                return new OperationResult { Success = false, Message = "Phone number is not verified." };
+        }
+
+        // Save the code temporarily (e.g., in cache) with expiration time
+        var codeSaved = await _verificationCodeService.SendCodeAsync(normalizedIdentifier);
 
         if (!codeSaved)
         {
             return new OperationResult { Success = false, Message = UserResources.VerificationCodeError };
         }
 
-            return new OperationResult { Success = true, Message = $"Verification code sent to your {(isEmail ? "email" : "phone")}." };
-        }
+        return new OperationResult { Success = true, Message = $"Verification code sent to your {(isEmail ? "email" : "phone")}." };
+    }
 
-        /// <summary>
-        /// Resets the user's password using a verification code.
-        /// </summary>
-        public async Task<OperationResult> ResetPasswordWithCodeAsync(string userId, string identifier, string code, string newPassword)
+    /// <summary>
+    /// Resets the user's password using a verification code.
+    /// </summary>
+    public async Task<OperationResult> ResetPasswordWithCodeAsync(string userId, string identifier, string code, string newPassword)
+    {
+        // Input validation
+        if (string.IsNullOrWhiteSpace(identifier))
         {
-            // Input validation
-            if (string.IsNullOrWhiteSpace(identifier))
-            {
-                return new OperationResult { Success = false, Message = "Identifier is required." };
-            }
+            return new OperationResult { Success = false, Message = "Identifier is required." };
+        }
 
         if (string.IsNullOrWhiteSpace(code))
         {
             return new OperationResult { Success = false, Message = "Verification code is required." };
         }
 
-            if (string.IsNullOrWhiteSpace(newPassword) || newPassword.Length < 6)
+        if (string.IsNullOrWhiteSpace(newPassword) || newPassword.Length < 6)
+        {
+            return new OperationResult { Success = false, Message = "Password must be at least 6 characters long." };
+        }
+
+        string normalizedIdentifier = identifier;
+        bool isEmail = identifier.Contains("@");
+        if (!isEmail)
+        {
+            normalizedIdentifier = PhoneNormalizationHelper.NormalizePhone(identifier);
+        }
+
+        // Verify the code
+        var isCodeValid = _verificationCodeService.VerifyCode(normalizedIdentifier, code);
+
+        var attempts = _verificationCodeService.GetAttempts(normalizedIdentifier);
+        if (attempts >= 5)
+        {
+            return new OperationResult { Success = false, Message = "Too many attempts" };
+        }
+        if (!isCodeValid)
+        {
+            return new OperationResult { Success = false, Message = "Invalid or expired code." };
+        }
+
+        var user = await _userManager.FindByIdAsync(userId);
+
+        if (user == null || user.UserState == UserStateType.Deleted)
+        {
+            return new OperationResult { Success = false, Message = UserResources.UserNotFound };
+        }
+
+        if (isEmail)
+        {
+            if (!string.Equals(user.Email, identifier, StringComparison.OrdinalIgnoreCase))
             {
-                return new OperationResult { Success = false, Message = "Password must be at least 6 characters long." };
+                return new OperationResult { Success = false, Message = "The provided email does not match the user's records." };
             }
 
-            string normalizedIdentifier = identifier;
-            bool isEmail = identifier.Contains("@");
-            if (!isEmail)
+            if (!user.EmailConfirmed)
+                return new OperationResult { Success = false, Message = "Email is not verified." };
+        }
+        else
+        {
+            if (user.NormalizedPhone == null || !user.NormalizedPhone.Contains(normalizedIdentifier))
             {
-                normalizedIdentifier = PhoneNormalizationHelper.NormalizePhone(identifier);
+                return new OperationResult { Success = false, Message = "The provided phone number does not match the user's records." };
             }
 
-            // Verify the code
-            var isCodeValid = _verificationCodeService.VerifyCode(normalizedIdentifier, code);
+            if (!user.PhoneNumberConfirmed)
+                return new OperationResult { Success = false, Message = "Phone number is not verified." };
+        }
 
-            var attempts = _verificationCodeService.GetAttempts(normalizedIdentifier);
-            if (attempts >= 5)
-            {
-                return new OperationResult { Success = false, Message = "Too many attempts" };
-            }
-            if (!isCodeValid)
-            {
-                return new OperationResult { Success = false, Message = "Invalid or expired code." };
-            }
-
-            var user = await _userManager.FindByIdAsync(userId);
-
-            if (user == null || user.UserState == UserStateType.Deleted)
-            {
-                return new OperationResult { Success = false, Message = UserResources.UserNotFound };
-            }
-
-            if (isEmail)
-            {
-                if (!string.Equals(user.Email, identifier, StringComparison.OrdinalIgnoreCase))
-                {
-                    return new OperationResult { Success = false, Message = "The provided email does not match the user's records." };
-                }
-                
-                if (!user.EmailConfirmed)
-                     return new OperationResult { Success = false, Message = "Email is not verified." };
-            }
-            else
-            {
-                if (user.NormalizedPhone == null || !user.NormalizedPhone.Contains(normalizedIdentifier))
-                {
-                    return new OperationResult { Success = false, Message = "The provided phone number does not match the user's records." };
-                }
-
-                if (!user.PhoneNumberConfirmed)
-                     return new OperationResult { Success = false, Message = "Phone number is not verified." };
-            }
-
-            // Generate password reset token
-            var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+        // Generate password reset token
+        var token = await _userManager.GeneratePasswordResetTokenAsync(user);
 
         // Reset password
         var resetResult = await _userManager.ResetPasswordAsync(user, token, newPassword);
@@ -361,8 +361,8 @@ public class UserAuthenticationService : IUserAuthenticationService
             return new OperationResult { Success = false, Message = "Password reset failed.", Errors = resetResult.Errors.Select(e => e.Description).ToList() };
         }
 
-            // Delete the code after successful reset
-            _verificationCodeService.DeleteCode(normalizedIdentifier);
+        // Delete the code after successful reset
+        _verificationCodeService.DeleteCode(normalizedIdentifier);
 
         return new OperationResult { Success = true, Message = "Password reset successful." };
     }
@@ -405,23 +405,22 @@ public class UserAuthenticationService : IUserAuthenticationService
         // Get all client types that might have tokens
         var clientTypes = new[] { "Web", "Mobile", "Desktop" }; // Adjust as needed
 
-            foreach (var clientType in clientTypes)
-            {
-                await _userManager.RemoveAuthenticationTokenAsync(
-                    user, TokenOptions.DefaultProvider, $"RefreshToken_{clientType}");
-                await _userManager.RemoveAuthenticationTokenAsync(
-                    user, TokenOptions.DefaultProvider, $"RefreshTokenExpiration_{clientType}");
-            }
-        }
-
-        public Task<ApplicationUser> GetAuthenticatedUserAsync(ClaimsPrincipal principal)
+        foreach (var clientType in clientTypes)
         {
-            throw new NotImplementedException();
+            await _userManager.RemoveAuthenticationTokenAsync(
+                user, TokenOptions.DefaultProvider, $"RefreshToken_{clientType}");
+            await _userManager.RemoveAuthenticationTokenAsync(
+                user, TokenOptions.DefaultProvider, $"RefreshTokenExpiration_{clientType}");
         }
+    }
 
-        public Task<bool> IsUserAuthorizedAsync(ApplicationUser user, string policy)
-        {
-            throw new NotImplementedException();
-        }
+    public Task<ApplicationUser> GetAuthenticatedUserAsync(ClaimsPrincipal principal)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<bool> IsUserAuthorizedAsync(ApplicationUser user, string policy)
+    {
+        throw new NotImplementedException();
     }
 }
