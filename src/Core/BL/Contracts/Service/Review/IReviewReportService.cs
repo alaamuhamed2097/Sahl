@@ -7,8 +7,8 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace BL.Contracts.Service.Review
-{
+namespace BL.Contracts.Service.Review;
+
 	public interface IReviewReportService
 	{
 		Task<SaveResult> SubmitReportAsync(
@@ -29,4 +29,3 @@ namespace BL.Contracts.Service.Review
 	CancellationToken cancellationToken = default);
 		Task<bool> MarkReviewAsFlaggedAsync(Guid reviewId, string adminId, CancellationToken cancellationToken = default);
 	}
-}

@@ -11,7 +11,7 @@ namespace DAL.Contracts.UnitOfWork
         ITableRepository<TD> TableRepository<TD>() where TD : BaseEntity;
         Task<IDbContextTransaction> BeginTransactionAsync();
         Task<int> CommitAsync();
-        void Rollback();
+        Task RollbackAsync();
         Task DisposeAsync(); // Changed from Task ValueTask to Task for simplicity
         DbContext GetContext(); // Add this method
     }

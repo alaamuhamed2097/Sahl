@@ -5,12 +5,11 @@ using Shared.DTOs.Catalog.Category;
 using Shared.GeneralModels.SearchCriteriaModels;
 using Shared.ResultModels;
 
-namespace BL.Contracts.Service.Catalog.Category
+namespace BL.Contracts.Service.Catalog.Category;
+
+public interface IAttributeService : IBaseService<TbAttribute, AttributeDto>
 {
-    public interface IAttributeService : IBaseService<TbAttribute, AttributeDto>
-    {
-        Task<PagedResult<AttributeDto>> GetPage(BaseSearchCriteriaModel criteriaModel);
-        Task<DeleteResult> DeleteAsync(Guid id, string UserId);
-        Task<IEnumerable<CategoryAttributeDto>> GetByCategoryIdAsync(Guid categoryId);
-    }
+    Task<PagedResult<AttributeDto>> GetPage(BaseSearchCriteriaModel criteriaModel);
+    Task<DeleteResult> DeleteAsync(Guid id, string UserId);
+    Task<IEnumerable<CategoryAttributeDto>> GetByCategoryIdAsync(Guid categoryId);
 }

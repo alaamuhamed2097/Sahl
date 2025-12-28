@@ -6,7 +6,7 @@ using DAL.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Resources;
-using Shared.DTOs.ECommerce.CouponCode;
+using Shared.DTOs.Order.CouponCode;
 using Shared.GeneralModels;
 using Shared.GeneralModels.ResultModels;
 using Shared.GeneralModels.SearchCriteriaModels;

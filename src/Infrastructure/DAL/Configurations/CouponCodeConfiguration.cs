@@ -12,11 +12,11 @@ namespace DAL.Configurations
         public void Configure(EntityTypeBuilder<TbCouponCode> entity)
         {
             // Property configurations
-            entity.Property(p => p.TitleAR)
+            entity.Property(p => p.TitleAr)
                  .IsRequired()
                   .HasMaxLength(100);
 
-            entity.Property(p => p.TitleEN)
+            entity.Property(p => p.TitleEn)
             .IsRequired()
              .HasMaxLength(100);
 
@@ -24,7 +24,7 @@ namespace DAL.Configurations
            .IsRequired()
              .HasMaxLength(100);
 
-            entity.Property(p => p.Value)
+            entity.Property(p => p.DiscountValue)
                 .IsRequired()
               .HasAnnotation("Range", new[] { 0.1, double.MaxValue });
 
@@ -37,11 +37,11 @@ namespace DAL.Configurations
      .HasAnnotation("Range", new[] { 0, int.MaxValue })
      .HasDefaultValue(0);
 
-            entity.Property(p => p.StartDateUTC)
+            entity.Property(p => p.StartDate)
                 .HasDefaultValueSql("GETUTCDATE()")
              .HasColumnType("datetime2(2)");
 
-            entity.Property(p => p.EndDateUTC)
+            entity.Property(p => p.ExpiryDate)
              .HasDefaultValueSql("GETUTCDATE()")
               .HasColumnType("datetime2(2)");
 

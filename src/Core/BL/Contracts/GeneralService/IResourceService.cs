@@ -1,7 +1,6 @@
-﻿namespace BL.Contracts.GeneralService
+﻿namespace BL.Contracts.GeneralService;
+
+public interface IResourceService
 {
-    public interface IResourceService
-    {
-        string GetResource(string resourceKey, string? languageHeader = null);
-    }
+    string GetResource(string resourceKey, string? languageHeader = null);
 }

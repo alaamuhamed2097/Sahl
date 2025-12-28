@@ -4,7 +4,7 @@ using Dashboard.Constants;
 using Dashboard.Contracts.Order;
 using Microsoft.AspNetCore.Components;
 using Resources;
-using Shared.DTOs.Order.Order;
+using Shared.DTOs.Order.OrderProcessing;
 using Shared.GeneralModels;
 
 namespace Dashboard.Pages.Sales.Orders

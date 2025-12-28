@@ -1,8 +1,7 @@
-﻿namespace BL.Contracts.GeneralService
+﻿namespace BL.Contracts.GeneralService;
+
+public interface IApiService
 {
-    public interface IApiService
-    {
-        Task<T> GetAsync<T>(string url, Dictionary<string, string> headers = null);
-        Task<TResponse> PostAsync<TRequest, TResponse>(string url, TRequest request, Dictionary<string, string> headers = null);
-    }
+    Task<T> GetAsync<T>(string url, Dictionary<string, string> headers = null);
+    Task<TResponse> PostAsync<TRequest, TResponse>(string url, TRequest request, Dictionary<string, string> headers = null);
 }

@@ -8,8 +8,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BL.Mapper
-{
+namespace BL.Mapper;
+
 	public partial class MappingProfile
 	{
 		private void ConfigureVendorMappings()
@@ -18,4 +18,3 @@ namespace BL.Mapper
 		}
 	}
 	
-}

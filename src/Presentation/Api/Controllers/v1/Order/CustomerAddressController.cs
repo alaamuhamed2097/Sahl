@@ -1,10 +1,10 @@
 ﻿using Api.Controllers.v1.Base;
 using Asp.Versioning;
-using BL.Contracts.Service.Order;
+using BL.Contracts.Service.Order.Checkout;
 using Common.Enumerations.User;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Shared.DTOs.Order.Address;
+using Shared.DTOs.Order.Checkout.Address;
 using Shared.GeneralModels;
 
 namespace Api.Controllers.v1.Order

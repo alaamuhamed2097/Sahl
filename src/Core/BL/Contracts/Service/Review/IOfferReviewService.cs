@@ -8,8 +8,8 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace BL.Contracts.Service.Review
-{
+namespace BL.Contracts.Service.Review;
+
 	public interface IOfferReviewService : IBaseService<TbOfferReview, OfferReviewDto>
 	{
 		Task<OfferReviewDto?> GetReviewByIdAsync(Guid reviewId, CancellationToken cancellationToken = default);
@@ -121,4 +121,3 @@ namespace BL.Contracts.Service.Review
 		   CancellationToken cancellationToken = default);
 
 	}
-}

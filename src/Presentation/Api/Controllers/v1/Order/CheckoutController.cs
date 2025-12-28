@@ -1,9 +1,9 @@
 using Api.Controllers.v1.Base;
 using Asp.Versioning;
-using BL.Contracts.Service.Order;
+using BL.Contracts.Service.Order.Checkout;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Shared.DTOs.ECommerce.Checkout;
+using Shared.DTOs.Order.Checkout;
 using System.Security.Claims;
 
 namespace Api.Controllers.v1.Order

@@ -1,15 +1,14 @@
 using Domains.Entities.Warehouse;
 using Shared.DTOs.Warehouse;
 
-namespace BL.Mapper
+namespace BL.Mapper;
+
+public partial class MappingProfile
 {
-    public partial class MappingProfile
+    private void ConfigureWarehouseAndInventoryMappings()
     {
-        private void ConfigureWarehouseAndInventoryMappings()
-        {
-            // Warehouse
-            CreateMap<TbWarehouse, WarehouseDto>()
-                .ReverseMap();
-        }
+        // Warehouse
+        CreateMap<TbWarehouse, WarehouseDto>()
+            .ReverseMap();
     }
 }

@@ -21,6 +21,10 @@ namespace Domains.Entities.ECommerceSystem
         [MaxLength(4)]
         public string PhoneCode { get; set; } = null!;
 
+        [Required]
+        [MaxLength(200)]
+        public string Address { get; set; } = null!;
+
         public Guid CityId { get; set; }
 
         public bool IsDefault { get; set; }

@@ -3,29 +3,28 @@ using Domains.Entities.Notification;
 using Shared.DTOs.Content;
 using Shared.DTOs.Notification;
 
-namespace BL.Mapper
+namespace BL.Mapper;
+
+public partial class MappingProfile
 {
-    public partial class MappingProfile
+    private void ConfigureContentAndNotificationChannelMappings()
     {
-        private void ConfigureContentAndNotificationChannelMappings()
-        {
-            // Content Management
-            CreateMap<TbContentArea, ContentAreaDto>()
-                .ReverseMap();
+        // Content Management
+        CreateMap<TbContentArea, ContentAreaDto>()
+            .ReverseMap();
 
-            CreateMap<TbMediaContent, MediaContentDto>()
-                .ReverseMap();
+        CreateMap<TbMediaContent, MediaContentDto>()
+            .ReverseMap();
 
-            // Notification Channels
-            CreateMap<TbNotificationChannel, NotificationChannelDto>()
-                .ReverseMap();
+        // Notification Channels
+        CreateMap<TbNotificationChannel, NotificationChannelDto>()
+            .ReverseMap();
 
-            // Notifications and Preferences
-            CreateMap<TbNotification, NotificationsDto>()
-                .ReverseMap();
+        // Notifications and Preferences
+        CreateMap<TbNotification, NotificationsDto>()
+            .ReverseMap();
 
-            CreateMap<TbNotificationPreferences, NotificationPreferencesDto>()
-                .ReverseMap();
-        }
+        CreateMap<TbNotificationPreferences, NotificationPreferencesDto>()
+            .ReverseMap();
     }
 }

@@ -1,7 +1,6 @@
-﻿namespace BL.Contracts.GeneralService.Notification
+﻿namespace BL.Contracts.GeneralService.Notification;
+
+public interface ISmsService
 {
-    public interface ISmsService
-    {
-        Task<bool> SendSmsAsync(string mobileNumber, string message);
-    }
+    Task<bool> SendSmsAsync(string mobileNumber, string message);
 }

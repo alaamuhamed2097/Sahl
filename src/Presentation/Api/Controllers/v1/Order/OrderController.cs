@@ -1,11 +1,10 @@
 using Api.Controllers.v1.Base;
 using Asp.Versioning;
-using BL.Contracts.Service.Order;
+using BL.Contracts.Service.Order.OrderProcessing;
 using Common.Enumerations.User;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Shared.DTOs.Order;
-using Shared.DTOs.Order.Order;
+using Shared.DTOs.Order.OrderProcessing;
 using Shared.GeneralModels;
 
 namespace Api.Controllers.v1.Order
@@ -16,9 +15,9 @@ namespace Api.Controllers.v1.Order
     [Authorize]
     public class OrderController : BaseController
     {
-        private readonly IOrderService _orderService;
+        private readonly IOrderMangmentService _orderService;
 
-        public OrderController(IOrderService orderService)
+        public OrderController(IOrderMangmentService orderService)
         {
             _orderService = orderService;
         }

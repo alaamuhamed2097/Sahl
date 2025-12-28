@@ -2,6 +2,7 @@
 using Common.Enumerations.Payment;
 using Domains.Entities.CouponCode;
 using Domains.Entities.ECommerceSystem;
+using Domains.Entities.Payment;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -40,14 +41,12 @@ namespace Domains.Entities.Order
 
         public decimal TaxAmount { get; set; } = 0m;
 
-
-        public virtual ApplicationUser User { get; set; }
+        // Navigation Properties
+        public virtual ApplicationUser User { get; set; } = null!;
         public virtual TbCouponCode? Coupon { get; set; }
-
-        // Navigation to the saved customer address used for this order
         public virtual TbCustomerAddress? CustomerAddress { get; set; }
-
-        public virtual ICollection<TbOrderDetail> OrderDetails { get; set; }
+        public virtual ICollection<TbOrderDetail> OrderDetails { get; set; } = new List<TbOrderDetail>();
+        public virtual ICollection<TbOrderPayment> OrderPayments { get; set; } = new List<TbOrderPayment>();
     }
 }
 

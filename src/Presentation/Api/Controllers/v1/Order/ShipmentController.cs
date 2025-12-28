@@ -1,9 +1,9 @@
 using Asp.Versioning;
+using BL.Contracts.Service.Order.Fulfillment;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Shared.DTOs.ECommerce.Shipment;
+using Shared.DTOs.Order.Fulfillment.Shipment;
 using System.Security.Claims;
-using BL.Contracts.Service.Order;
 
 namespace Api.Controllers.v1.Order
 {

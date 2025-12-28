@@ -1,7 +1,7 @@
 using BL.Contracts.GeneralService.UserManagement;
 using BL.Contracts.Service.Location;
 using BL.GeneralService.UserManagement;
-using BL.Service.Location;
+using BL.Services.Location;
 
 namespace Api.Extensions
 {

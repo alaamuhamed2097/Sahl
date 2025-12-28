@@ -1,4 +1,4 @@
-﻿using Shared.DTOs.Order.Order;
+﻿using Shared.DTOs.Order.OrderProcessing;
 using System.ComponentModel.DataAnnotations;
 
 namespace Shared.GeneralModels.Parameters

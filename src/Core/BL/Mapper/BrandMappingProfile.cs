@@ -1,13 +1,12 @@
 using Domains.Entities.Catalog.Brand;
 using Shared.DTOs.Brand;
 
-namespace BL.Mapper
+namespace BL.Mapper;
+
+public partial class MappingProfile
 {
-    public partial class MappingProfile
+    private void ConfigureBrandMapping()
     {
-        private void ConfigureBrandMapping()
-        {
-            CreateMap<TbBrand, BrandDto>().ReverseMap();
-        }
+        CreateMap<TbBrand, BrandDto>().ReverseMap();
     }
 }
