@@ -335,7 +335,7 @@ public class CartService : ICartService
                     ItemId = ci.ItemId,
                     ItemName = ci.Item?.TitleEn ?? "Unknown Item",
                     OfferCombinationPricingId = ci.OfferCombinationPricingId, // ✅ This is OfferCombinationPricingId
-                    SellerName = pricing.Offer?.Vendor?.CompanyName ?? "Unknown Seller",
+                    SellerName = "Unknown Seller",
                     Quantity = ci.Quantity,
                     UnitPrice = currentPrice,
                     SubTotal = currentPrice * ci.Quantity,

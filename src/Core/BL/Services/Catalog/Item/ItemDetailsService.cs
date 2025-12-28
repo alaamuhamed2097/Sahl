@@ -1,247 +1,152 @@
 ﻿using BL.Contracts.IMapper;
 using BL.Contracts.Service.Catalog.Item;
 using DAL.Contracts.Repositories.Catalog.Item;
+using DAL.Contracts.Repositories.Customer;
 using DAL.Models.ItemSearch;
+using DAL.Repositories.Customer;
+using Domains.Entities.ECommerceSystem.Customer;
 using Domains.Procedures;
 using Shared.DTOs.Catalog.Item;
-using System.Text.Json;
 
-namespace BL.Services.Catalog.Item;
-
-public class ItemDetailsService : IItemDetailsService
+namespace BL.Services.Catalog.Item
 {
-    private readonly IItemDetailsRepository _repository;
-    private readonly IBaseMapper _mapper;
-
-    public ItemDetailsService(IItemDetailsRepository repository, IBaseMapper mapper)
+    public class ItemDetailsService : IItemDetailsService
     {
-        _repository = repository ?? throw new ArgumentNullException(nameof(repository));
-        _mapper = mapper;
-    }
+        private readonly IItemDetailsRepository _repository;
+        private readonly ICustomerItemViewRepository _customerItemViewRepository;
+        private readonly ICustomerRepository _customerRepository;
+        private readonly IBaseMapper _mapper;
 
-    public async Task<ItemDetailsDto> GetItemDetailsAsync(Guid itemCombinationId)
-    {
-        var result = await _repository.GetItemDetailsAsync(itemCombinationId);
-
-        if (result == null)
+        public ItemDetailsService(IItemDetailsRepository repository, IBaseMapper mapper, ICustomerItemViewRepository customerItemViewRepository, ICustomerRepository customerRepository)
         {
-            throw new KeyNotFoundException($"Item CombinationId with ID {itemCombinationId} not found");
+            _repository = repository ?? throw new ArgumentNullException(nameof(repository));
+            _mapper = mapper;
+            _customerItemViewRepository = customerItemViewRepository;
+            _customerRepository = customerRepository;
         }
 
-        return _mapper.MapModel<SpGetItemDetails, ItemDetailsDto>(result);
-    }
-
-    public async Task<ItemDetailsDto> GetCombinationByAttributesAsync(CombinationRequest request)
-    {
-        if (request?.SelectedValueIds == null || !request.SelectedValueIds.Any())
+        public async Task<ItemDetailsDto> GetItemDetailsAsync(Guid itemCombinationId, string? viewerId)
         {
-            throw new ArgumentException("Selected attributes are required");
+            // Get item details 
+            var result = await _repository.GetItemDetailsAsync(itemCombinationId);
+            // If not found, throw exception
+            if (result == null)
+            {
+                throw new KeyNotFoundException($"Item CombinationId with ID {itemCombinationId} not found");
+            }
+            // Mapp to DTO
+            var itemDetailsDto = _mapper.MapModel<SpGetItemDetails, ItemDetailsDto>(result);
+
+            // If viewerId is provided, Create customer view
+            if (ShouldRecordView(viewerId, itemDetailsDto))
+            {
+                await RecordCustomerViewAsync(itemCombinationId, viewerId);
+            }
+
+            return itemDetailsDto;
         }
 
-        var selections = request.SelectedValueIds
-            .Select(a => new AttributeSelection
-            {
-                CombinationAttributeValueId = a.CombinationAttributeValueId,
-                IsLastSelected = a.IsLastSelected
-            })
-            .ToList();
-
-        var result = await _repository.GetCombinationByAttributesAsync(selections);
-
-        if (result == null)
+        public async Task<ItemDetailsDto> GetCombinationByAttributesAsync(CombinationRequest request, string? viewerId)
         {
-            throw new KeyNotFoundException($"Could not process combination for this selection!!");
-        }
-
-        return _mapper.MapModel<SpGetItemDetails, ItemDetailsDto>(result);
-    }
-
-    #region Private Mapping Methods
-
-
-
-    private CombinationDetailsDto MapCombinationToDto(SpGetAvailableOptionsForSelection result)
-    {
-        var dto = new CombinationDetailsDto
-        {
-            CombinationId = result.CombinationId,
-            SKU = result.SKU,
-            Barcode = result.Barcode,
-            IsAvailable = result.IsAvailable,
-            Message = result.Message
-        };
-
-        // Parse JSON fields
-        dto.PricingAttributes = ParseSelectedAttributes(result.SelectedAttributesJson);
-        dto.Images = ParseImages(result.ImagesJson);
-        dto.Offers = ParseOffers(result.OffersJson);
-        dto.Summary = ParseSummary(result.SummaryJson);
-        dto.MissingAttributes = ParseMissingAttributes(result.MissingAttributesJson);
-
-        return dto;
-    }
-
-    private List<PricingAttributeDto> ParseSelectedAttributes(string json)
-    {
-        if (string.IsNullOrWhiteSpace(json))
-            return new List<PricingAttributeDto>();
-
-        try
-        {
-            var attrs = JsonSerializer.Deserialize<List<PricingAttribute>>(json, new JsonSerializerOptions
+            // Validate input
+            if (request?.SelectedValueIds == null || !request.SelectedValueIds.Any())
             {
-                PropertyNameCaseInsensitive = true
-            });
-
-            return attrs?.Select(a => new PricingAttributeDto
-            {
-                AttributeId = a.AttributeId,
-                AttributeNameAr = a.AttributeNameAr,
-                AttributeNameEn = a.AttributeNameEn,
-                CombinationValueId = a.CombinationValueId,
-                ValueAr = a.ValueAr,
-                ValueEn = a.ValueEn,
-                IsSelected = a.IsSelected
-            }).ToList() ?? new List<PricingAttributeDto>();
-        }
-        catch
-        {
-            return new List<PricingAttributeDto>();
-        }
-    }
-
-    private List<ItemImageDto> ParseImages(string json)
-    {
-        if (string.IsNullOrWhiteSpace(json))
-            return new List<ItemImageDto>();
-
-        try
-        {
-            var images = JsonSerializer.Deserialize<List<ItemImage>>(json, new JsonSerializerOptions
-            {
-                PropertyNameCaseInsensitive = true
-            });
-
-            return images?.Select(img => new ItemImageDto
-            {
-                Path = img.ImageUrl,
-                Order = img.DisplayOrder
-            }).ToList() ?? new List<ItemImageDto>();
-        }
-        catch
-        {
-            return new List<ItemImageDto>();
-        }
-    }
-
-    private List<VendorOfferDto> ParseOffers(string json)
-    {
-        if (string.IsNullOrWhiteSpace(json))
-            return new List<VendorOfferDto>();
-
-        try
-        {
-            var offers = JsonSerializer.Deserialize<List<VendorOffer>>(json, new JsonSerializerOptions
-            {
-                PropertyNameCaseInsensitive = true
-            });
-
-            return offers?.Select(o => new VendorOfferDto
-            {
-                OfferId = o.OfferId,
-                VendorId = o.VendorId,
-                VendorName = o.VendorName,
-                VendorNameAr = o.VendorNameAr,
-                VendorRating = o.VendorRating,
-                VendorLogoUrl = o.VendorLogoUrl,
-                Price = o.Price,
-                SalesPrice = o.SalesPrice,
-                DiscountPercentage = o.DiscountPercentage,
-                AvailableQuantity = o.AvailableQuantity,
-                StockStatus = o.StockStatus,
-                IsFreeShipping = o.IsFreeShipping,
-                ShippingCost = o.ShippingCost,
-                EstimatedDeliveryDays = o.EstimatedDeliveryDays,
-                IsBuyBoxWinner = o.IsBuyBoxWinner,
-                HasWarranty = o.HasWarranty,
-                ConditionNameAr = o.ConditionNameAr,
-                ConditionNameEn = o.ConditionNameEn,
-                WarrantyTypeAr = o.WarrantyTypeAr,
-                WarrantyTypeEn = o.WarrantyTypeEn,
-                WarrantyPeriodMonths = o.WarrantyPeriodMonths,
-                MinOrderQuantity = o.MinOrderQuantity,
-                MaxOrderQuantity = o.MaxOrderQuantity,
-                OfferRank = o.OfferRank,
-                QuantityTiers = o.QuantityTiers?.Select(qt => new QuantityTierDto
+                throw new ArgumentException("Selected attributes are required");
+            }
+            // Map selections
+            var selections = request.SelectedValueIds
+                .Select(a => new AttributeSelection
                 {
-                    MinQuantity = qt.MinQuantity,
-                    MaxQuantity = qt.MaxQuantity,
-                    UnitPrice = qt.UnitPrice
-                }).ToList()
-            }).ToList() ?? new List<VendorOfferDto>();
-        }
-        catch
-        {
-            return new List<VendorOfferDto>();
-        }
-    }
-
-    private CombinationSummaryDto ParseSummary(string json)
-    {
-        if (string.IsNullOrWhiteSpace(json))
-            return null;
-
-        try
-        {
-            var summary = JsonSerializer.Deserialize<CombinationSummary>(json, new JsonSerializerOptions
+                    CombinationAttributeValueId = a.CombinationAttributeValueId,
+                    IsLastSelected = a.IsLastSelected
+                })
+                .ToList();
+            // Get combination by attributes
+            var result = await _repository.GetCombinationByAttributesAsync(selections);
+            // If not found, throw exception
+            if (result == null)
             {
-                PropertyNameCaseInsensitive = true
-            });
+                throw new KeyNotFoundException($"Could not process combination for this selection!!");
+            }
+            // Map to DTO
+            var itemDetailsDto = _mapper.MapModel<SpGetItemDetails, ItemDetailsDto>(result);
 
-            if (summary == null)
-                return null;
-
-            return new CombinationSummaryDto
+            // If viewerId is provided, Create customer view
+            if (ShouldRecordView(viewerId, itemDetailsDto))
             {
-                TotalVendors = summary.TotalVendors,
-                IsMultiVendor = summary.IsMultiVendor,
-                MinPrice = summary.MinPrice,
-                MaxPrice = summary.MaxPrice,
-                AvgPrice = summary.AvgPrice,
-                TotalStock = summary.TotalStock
+                await RecordCustomerViewAsync(itemDetailsDto.CurrentCombination.CombinationId, viewerId);
+            }
+            return itemDetailsDto;
+        }
+
+        // helper methods
+
+        private static bool ShouldRecordView(string? viewerId, ItemDetailsDto itemDetailsDto)
+        {
+            if (string.IsNullOrEmpty(viewerId))
+            {
+                return false;
+            }
+
+            if (!Guid.TryParse(viewerId, out var viewerGuid))
+            {
+                return false;
+            }
+
+            // Don't record views from the item creator
+            return itemDetailsDto.CurrentCombination?.CreatedBy != viewerGuid;
+        }
+
+        private async Task RecordCustomerViewAsync(Guid itemCombinationId, string? viewerId)
+        {
+            // Validate inputs
+            if (string.IsNullOrEmpty(viewerId) || itemCombinationId == Guid.Empty)
+                return;
+            // Get and validate customer
+            var customer = await GetAndValidateCustomerAsync(viewerId);
+
+            if (await HasRecentViewAsync(customer.Id, itemCombinationId))
+            {
+                return;
+            }
+
+            await CreateCustomerViewAsync(itemCombinationId, customer.Id, viewerId);
+        }
+
+        private async Task<TbCustomer> GetAndValidateCustomerAsync(string viewerId)
+        {
+            var customer = await _customerRepository.GetCustomerByUserIdAsync(viewerId);
+
+            if (customer == null)
+            {
+                throw new KeyNotFoundException("Customer not found");
+            }
+
+            return customer;
+        }
+
+        private async Task<bool> HasRecentViewAsync(Guid customerId, Guid itemCombinationId)
+        {
+            var cutoffTime = DateTime.UtcNow.AddHours(-24);
+            var recentViews = await _customerItemViewRepository.GetAsync(
+                v => v.CustomerId == customerId &&
+                     v.ItemCombinationId == itemCombinationId &&
+                     !v.IsDeleted &&
+                     v.ViewedAt >= cutoffTime);
+
+            return recentViews.Any();
+        }
+
+        private async Task CreateCustomerViewAsync(Guid itemCombinationId, Guid customerId, string viewerId)
+        {
+            var customerItemView = new TbCustomerItemView
+            {
+                ItemCombinationId = itemCombinationId,
+                CustomerId = customerId,
+                ViewedAt = DateTime.UtcNow
             };
-        }
-        catch
-        {
-            return null;
+
+            await _customerItemViewRepository.CreateAsync(customerItemView, Guid.Parse(viewerId));
         }
     }
-
-    private List<MissingAttributeDto> ParseMissingAttributes(string json)
-    {
-        if (string.IsNullOrWhiteSpace(json))
-            return new List<MissingAttributeDto>();
-
-        try
-        {
-            var missing = JsonSerializer.Deserialize<List<MissingAttribute>>(json, new JsonSerializerOptions
-            {
-                PropertyNameCaseInsensitive = true
-            });
-
-            return missing?.Select(m => new MissingAttributeDto
-            {
-                AttributeId = m.AttributeId,
-                NameAr = m.NameAr,
-                NameEn = m.NameEn,
-                Status = m.Status
-            }).ToList() ?? new List<MissingAttributeDto>();
-        }
-        catch
-        {
-            return new List<MissingAttributeDto>();
-        }
-    }
-
-    #endregion
 }

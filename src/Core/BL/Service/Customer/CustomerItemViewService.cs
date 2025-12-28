@@ -1,30 +1,16 @@
 ﻿using BL.Contracts.IMapper;
 using BL.Contracts.Service.Customer;
-using BL.Contracts.Service.Customer.Wishlist;
-using BL.Contracts.Service.Order;
-using Common.Enumerations.Offer;
-using DAL.Contracts.Repositories;
 using DAL.Contracts.Repositories.Customer;
-using DAL.Exceptions;
 using DAL.Models;
-using Domains.Entities.Catalog.Item;
-using Domains.Entities.Catalog.Item.ItemAttributes;
 using Domains.Entities.ECommerceSystem.Customer;
-using Domains.Entities.Merchandising;
-using Domains.Entities.Offer;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Resources;
 using Serilog;
-using Shared.DTOs.Catalog.Item;
 using Shared.DTOs.Customer;
-using Shared.DTOs.Customer.Wishlist;
-using Shared.DTOs.ECommerce.Cart;
 using Shared.GeneralModels.SearchCriteriaModels;
-using System.Globalization;
 using System.Linq.Expressions;
 
-namespace BL.Service.Customer.Wishlist
+namespace BL.Service.Customer
 {
     /// <summary>
     /// Service for managing customer Item Views

@@ -1,7 +1,6 @@
 ﻿using BL.Contracts.GeneralService.CMS;
 using BL.Contracts.IMapper;
 using BL.Extensions;
-using BL.Service.Base;
 using Common.Enumerations.Pricing;
 using Common.Enumerations.Visibility;
 using DAL.Contracts.Repositories;
@@ -11,13 +10,11 @@ using Domains.Entities.Catalog.Category;
 using Domains.Entities.Catalog.Item;
 using Domains.Entities.Catalog.Item.ItemAttributes;
 using Domains.Entities.Offer;
-using Domains.Views.Item;
 using Domains.Views.Offer;
 using Microsoft.EntityFrameworkCore;
 using Resources;
 using Serilog;
 using Shared.DTOs.Catalog.Item;
-using Shared.DTOs.ECommerce.Item;
 using Shared.DTOs.ECommerce.Offer;
 using Shared.GeneralModels.SearchCriteriaModels;
 using System.ComponentModel.DataAnnotations;
@@ -253,7 +250,7 @@ namespace BL.Service.VendorItem
             }
             catch (Exception ex)
             {
-                _unitOfWork.Rollback();
+                await _unitOfWork.RollbackAsync();
                 _logger.Error(ex, "Error saving item {ItemId}", dto.Id);
                 throw;
             }
