@@ -1,4 +1,5 @@
 using BL.Contracts.IMapper;
+using BL.Contracts.Service.Catalog.Item;
 using BL.Contracts.Service.Review;
 using BL.Extensions;
 using BL.Services.Base;
@@ -7,10 +8,12 @@ using DAL.Contracts.Repositories;
 using DAL.Contracts.Repositories.Review;
 using DAL.Exceptions;
 using DAL.Models;
+using Domains.Entities.Catalog.Item;
 using Domains.Entities.ECommerceSystem.Review;
 using Resources;
 using Serilog;
 using Shared.DTOs.Review;
+using Shared.GeneralModels.Models;
 using Shared.GeneralModels.SearchCriteriaModels;
 using System.Linq.Expressions;
 
@@ -22,37 +25,41 @@ namespace BL.Services.Review
     public class ItemReviewService : BaseService<TbItemReview, ItemReviewDto>, IItemReviewService
     {
         private readonly IItemReviewRepository _reviewRepo;
-        private readonly ITableRepository<TbItemReview> _tableRepository;
+        //private readonly IItemService _ItemService;
+		private readonly ITableRepository<TbItemReview> _tableRepository;
+		private readonly ITableRepository<TbItem> _ItrmRepository;
         private readonly IBaseMapper _mapper;
         private readonly ILogger _logger;
-        public ItemReviewService(
-            IBaseMapper mapper,
-            IItemReviewRepository reviewRepo,
-            ILogger logger,
-            ITableRepository<TbItemReview> tableRepository)
-            : base(tableRepository, mapper)
-        {
-            _mapper = mapper;
-            _logger = logger;
-            _reviewRepo = reviewRepo;
-            _tableRepository = tableRepository;
-        }
+		public ItemReviewService(
+			IBaseMapper mapper,
+			IItemReviewRepository reviewRepo,
+			ILogger logger,
+			ITableRepository<TbItemReview> tableRepository,
+			ITableRepository<TbItem> itrmRepository)
+			: base(tableRepository, mapper)
+		{
+			_mapper = mapper;
+			_logger = logger;
+			_reviewRepo = reviewRepo;
+			_tableRepository = tableRepository;
+			_ItrmRepository = itrmRepository;
+		}
 
-        /// <summary>
-        /// Retrieves the details of a specific Item review by its unique identifier.
-        /// </summary>
-        /// <param name="reviewId">The unique identifier of the Item review. Must not be <see cref="Guid.Empty"/>.</param>
-        /// <param name="cancellationToken">Optional cancellation token to cancel the operation.</param>
-        /// <returns>
-        /// An <see cref="ItemReviewDto"/> representing the review details if found; otherwise, <c>null</c>.
-        /// </returns>
-        /// <remarks>
-        /// This method validates the input, fetches the review entity from the repository,
-        /// maps it to a DTO using AutoMapper, and propagates any exceptions to the caller.
-        /// </remarks>
-        /// <exception cref="ArgumentException">Thrown when <paramref name="reviewId"/> is <see cref="Guid.Empty"/>.</exception>
-        /// <exception cref="Exception">Thrown when an unexpected error occurs during retrieval.</exception>
-        public async Task<ItemReviewDto?> GetReviewByIdAsync(
+		/// <summary>
+		/// Retrieves the details of a specific Item review by its unique identifier.
+		/// </summary>
+		/// <param name="reviewId">The unique identifier of the Item review. Must not be <see cref="Guid.Empty"/>.</param>
+		/// <param name="cancellationToken">Optional cancellation token to cancel the operation.</param>
+		/// <returns>
+		/// An <see cref="ItemReviewDto"/> representing the review details if found; otherwise, <c>null</c>.
+		/// </returns>
+		/// <remarks>
+		/// This method validates the input, fetches the review entity from the repository,
+		/// maps it to a DTO using AutoMapper, and propagates any exceptions to the caller.
+		/// </remarks>
+		/// <exception cref="ArgumentException">Thrown when <paramref name="reviewId"/> is <see cref="Guid.Empty"/>.</exception>
+		/// <exception cref="Exception">Thrown when an unexpected error occurs during retrieval.</exception>
+		public async Task<ItemReviewDto?> GetReviewByIdAsync(
             Guid reviewId,
             CancellationToken cancellationToken = default)
         {
@@ -125,9 +132,14 @@ namespace BL.Services.Review
 
                 if (!result.Success)
                     throw new Exception("Failed to submit review");
-
-                review.Id = result.Id;
-                return _mapper.MapModel<TbItemReview, ItemReviewDto>(review);
+				
+				review.Id = result.Id;
+				// Update item average rating if review is auto-approved
+				if (review.Status == ReviewStatus.Approved)
+				{
+					await UpdateItemAverageRatingAsync(review.ItemId, cancellationToken);
+				}
+				return _mapper.MapModel<TbItemReview, ItemReviewDto>(review);
             }
             catch (Exception ex)
             {
@@ -188,7 +200,14 @@ namespace BL.Services.Review
                 if (!result.Success)
                     throw new Exception("Failed to update review");
 
-                return _mapper.MapModel<TbItemReview, ItemReviewDto>(review);
+
+				// Update item average rating if review is approved
+				if (review.Status == ReviewStatus.Approved)
+				{
+					await UpdateItemAverageRatingAsync(review.ItemId, cancellationToken);
+				}
+
+				return _mapper.MapModel<TbItemReview, ItemReviewDto>(review);
             }
             catch (Exception ex)
             {
@@ -197,14 +216,48 @@ namespace BL.Services.Review
             }
         }
 
-        /// <summary>
-        /// Deletes a review permanently or flags it as deleted (soft-delete), after verifying ownership.
-        /// </summary>
-        /// <param name="reviewId">Id of the review to delete.</param>
-        /// <param name="currentUserId">Guid of the user requesting deletion (must match review owner).</param>
-        /// <param name="cancellationToken">Cancellation token.</param>
-        /// <returns>True if deletion was successful; otherwise false (e.g. not found or not authorized).</returns>
-        public async Task<bool> DeleteReviewAsync(
+		/// <summary>
+		/// Recalculates and updates the average rating for an item based on approved reviews.
+		/// </summary>
+		private async Task UpdateItemAverageRatingAsync(Guid itemId, CancellationToken cancellationToken = default)
+		{
+			try
+			{
+				// Get average rating from approved reviews
+				var averageRating = await _reviewRepo.GetAverageRatingAsync(itemId, cancellationToken);
+
+				// Get the item
+				var item = await _ItrmRepository.FindByIdAsync(itemId, cancellationToken);
+
+				if (item == null)
+				{
+					_logger.Warning($"Item with ID {itemId} not found while updating average rating");
+					return;
+				}
+
+				// Update the average rating
+				item.AverageRating = averageRating > 0 ? Math.Round(averageRating, 2) : (decimal?)null;
+
+				// Save the item
+				await _ItrmRepository.UpdateAsync(item, Guid.Empty, cancellationToken);
+
+				_logger.Information($"Updated average rating for item {itemId}: {item.AverageRating}");
+			}
+			catch (Exception ex)
+			{
+				_logger.Error(ex, $"Error updating average rating for item {itemId}");
+				// Don't throw - this is a secondary operation
+			}
+		}
+
+		/// <summary>
+		/// Deletes a review permanently or flags it as deleted (soft-delete), after verifying ownership.
+		/// </summary>
+		/// <param name="reviewId">Id of the review to delete.</param>
+		/// <param name="currentUserId">Guid of the user requesting deletion (must match review owner).</param>
+		/// <param name="cancellationToken">Cancellation token.</param>
+		/// <returns>True if deletion was successful; otherwise false (e.g. not found or not authorized).</returns>
+		public async Task<bool> DeleteReviewAsync(
             Guid reviewId,
             Guid currentUserId,
             CancellationToken cancellationToken = default)
