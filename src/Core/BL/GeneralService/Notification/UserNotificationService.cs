@@ -1,207 +1,265 @@
 ﻿using BL.Contracts.GeneralService.Notification;
 using BL.Contracts.IMapper;
 using DAL.Contracts.UnitOfWork;
-using DAL.Models;
 using Domains.Entities.Notification;
 using Domains.Views.UserNotification;
-using Resources;
 using Serilog;
-using Shared.GeneralModels.Parameters.Notification;
-using Shared.GeneralModels.SearchCriteriaModels;
-using Shared.ResultModels;
-using System.Linq.Expressions;
+using Shared.DTOs.Notification;
 
 namespace BL.GeneralService.Notification
 {
     public class UserNotificationService : IUserNotificationService
     {
-        private readonly IUnitOfWork _userNotificationUnitOfWork;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IBaseMapper _mapper;
         private readonly ILogger _logger;
-        public UserNotificationService(IUnitOfWork userNotificationUnitOfWork, IBaseMapper mapper, ILogger logger)
+
+        public UserNotificationService(
+            IUnitOfWork unitOfWork,
+            IBaseMapper mapper,
+            ILogger logger)
         {
-            _userNotificationUnitOfWork = userNotificationUnitOfWork;
+            _unitOfWork = unitOfWork;
             _mapper = mapper;
             _logger = logger;
         }
-        public async Task<UserNotificationResult<PagedResult<UserNotificationRequest>>> GetPage(BaseSearchCriteriaModel criteriaModel, string userId)
+
+        //public PaginatedDataModel<NotificationDto> GetPage(string userId, int page = 1, int pageSize = 10)
+        //{
+        //    if (string.IsNullOrEmpty(userId))
+        //        throw new ArgumentNullException(nameof(userId));
+
+        //    if (page < 1)
+        //        throw new ArgumentOutOfRangeException(nameof(page), "Page number must be greater than zero.");
+
+        //    var paginatedData = _unitOfWork.Repository<VwUserNotifications>().GetPage(
+        //        page,
+        //        pageSize,
+        //        n => n.UserId == userId,
+        //        orderBy: q => q.OrderByDescending(n => n.CreatedDate));
+
+        //    var unReadCount = GetUnreadNotificationCount(userId);
+        //    var dtoList = _mapper.MapList<VwUserNotifications, NotificationDto>(paginatedData.Data.ToList());
+
+        //    return new PaginatedDataModel<NotificationDto>(dtoList, paginatedData.TotalCount);
+        //}
+
+        public async Task<IEnumerable<NotificationDto>> GetAllAsync(string userId)
         {
-            if (criteriaModel == null)
-                throw new ArgumentNullException(nameof(criteriaModel));
+            if (string.IsNullOrEmpty(userId))
+                throw new ArgumentNullException(nameof(userId));
 
-            if (criteriaModel.PageNumber < 1)
-                throw new ArgumentOutOfRangeException(nameof(criteriaModel.PageNumber), ValidationResources.PageNumberGreaterThanZero);
+            const int maxItems = 10;
+            var userNotifications = (await _unitOfWork.Repository<VwUserNotification>()
+                .GetAsync(n => n.UserId == userId))
+                .OrderByDescending(n => n.CreatedDateUtc)
+                .Take(maxItems)
+                .ToList();
 
-            if (criteriaModel.PageSize < 1 || criteriaModel.PageSize > 100)
-                throw new ArgumentOutOfRangeException(nameof(criteriaModel.PageSize), ValidationResources.PageSizeRange);
+            var unReadCount = GetUnreadNotificationCount(userId);
 
-            // Base filter for active entities
-            Expression<Func<VwUserNotification, bool>> filter = x => x.UserId == userId;
-
-            // Apply search term if provided
-            if (!string.IsNullOrWhiteSpace(criteriaModel.SearchTerm))
-            {
-                string searchTerm = criteriaModel.SearchTerm.Trim().ToLower();
-                filter = x => (x.TitleAr != null && x.TitleAr.ToLower().Contains(searchTerm)) ||
-                             (x.TitleEn != null && x.TitleEn.ToLower().Contains(searchTerm)) ||
-                             (x.DescriptionAr != null && x.DescriptionAr.ToLower().Contains(searchTerm)) ||
-                             (x.DescriptionEn != null && x.DescriptionEn.ToLower().Contains(searchTerm));
-            }
-
-            var entitiesList = await _userNotificationUnitOfWork.Repository<VwUserNotification>().GetPageAsync(
-                criteriaModel.PageNumber,
-                criteriaModel.PageSize,
-                filter, orderBy: q => q.OrderByDescending(n => n.CreatedDateUtc));
-            var userNotifications = await _userNotificationUnitOfWork.TableRepository<TbUserNotification>().GetAsync(n => n.UserId == userId);
-            var unReadCount = userNotifications.Count(n => n.IsRead == false);
-            var totalCount = userNotifications.Count();
-            var dtoList = _mapper.MapList<VwUserNotification, UserNotificationRequest>(entitiesList.Items);
-
-            return new UserNotificationResult<PagedResult<UserNotificationRequest>>()
-            {
-                Value = new PagedResult<UserNotificationRequest>(dtoList, entitiesList.TotalRecords),
-                UnReadCount = unReadCount,
-                TotalCount = totalCount
-            };
+            return _mapper.MapList<VwUserNotification, NotificationDto>(userNotifications);
         }
-        public async Task<UserNotificationResult<IEnumerable<UserNotificationRequest>>> GetAll(string userId)
+
+        public async Task<NotificationDto> FindByIdAsync(Guid id)
         {
-            var allUserNotifications = await _userNotificationUnitOfWork.Repository<VwUserNotification>().GetAsync(n => n.UserId == userId);
-            var userNotifications = allUserNotifications.OrderByDescending(n => n.CreatedDateUtc).Take(10);
-            var unReadCount = allUserNotifications.Count(n => n.IsRead == false);
-            var totalCount = allUserNotifications.Count();
-            return new UserNotificationResult<IEnumerable<UserNotificationRequest>>()
-            {
-                Value = _mapper.MapList<VwUserNotification, UserNotificationRequest>(userNotifications),
-                UnReadCount = unReadCount,
-                TotalCount = totalCount
-            };
+            if (id == Guid.Empty)
+                throw new ArgumentException("Notification ID cannot be empty.", nameof(id));
+
+            var userNotification = await _unitOfWork.Repository<VwUserNotification>()
+                .FindAsync(n => n.Id == id);
+
+            if (userNotification == null)
+                throw new KeyNotFoundException("Notification not found.");
+
+            return _mapper.MapModel<VwUserNotification, NotificationDto>(userNotification);
         }
-        public async Task<UserNotificationRequest> FindById(Guid Id)
+
+        public async Task<bool> Save(NotificationDto dto, Guid userId)
         {
-            var userNotification = await _userNotificationUnitOfWork.Repository<VwUserNotification>().FindAsync(n => n.Id == Id);
-            return _mapper.MapModel<VwUserNotification, UserNotificationRequest>(userNotification);
-        }
-        public async Task<bool> Save(UserNotificationRequest dto, Guid userId)
-        {
-            if (dto == null) throw new ArgumentNullException(nameof(dto));
-            if (userId == Guid.Empty) throw new ArgumentException(UserResources.UserNotFound, nameof(userId));
+            if (dto == null)
+                throw new ArgumentNullException(nameof(dto));
+
+            if (userId == Guid.Empty)
+                throw new ArgumentException("User ID cannot be empty.", nameof(userId));
+
+            await _unitOfWork.BeginTransactionAsync();
 
             try
             {
-                await _userNotificationUnitOfWork.BeginTransactionAsync();
-
                 var notification = new TbNotification
                 {
                     Id = dto.Id,
-                    Message = dto.Message,
                     Title = dto.Title,
+                    //Description = "",
+                    //Url = dto.Url,
+                    //ImagePath = dto.ImagePath,
+                    //SenderType = dto.SenderType
                 };
 
-                // Save or update notification using async API
-                var saveResult = await _userNotificationUnitOfWork.TableRepository<TbNotification>().SaveAsync(notification, userId);
-                if (!saveResult.Success)
-                    throw new Exception(NotifiAndAlertsResources.SaveFailed);
+                var isSaved = await _unitOfWork.TableRepository<TbNotification>()
+                    .SaveAsync(notification, userId);
 
-                var notificationId = saveResult.Id;
+                if (!isSaved.Success)
+                    throw new Exception("Failed to save notification.");
 
-                if (dto.Id != Guid.Empty)
+                // Create new user notification
+                var userNotificationEntity = new TbUserNotification
                 {
-                    var existingUserNotifications = await _userNotificationUnitOfWork.TableRepository<TbUserNotification>()
-                        .GetAsync(un => un.NotificationId == dto.Id && un.UserId == dto.UserId);
-
-                    foreach (var userNotification in existingUserNotifications)
-                    {
-                        var deleted = await _userNotificationUnitOfWork.TableRepository<TbUserNotification>().HardDeleteAsync(userNotification.Id);
-                        if (!deleted)
-                            throw new Exception(NotifiAndAlertsResources.DeleteFailed);
-                    }
-                }
-
-                // Get or create user notification
-                var userNotificationEntity = new TbUserNotification()
-                {
-                    NotificationId = notificationId,
+                    //UserNotificationId = notificationId,
                     UserId = dto.UserId,
                     IsRead = dto.IsRead,
+                    //CurrentState = 1
                 };
-                var createResult = await _userNotificationUnitOfWork.TableRepository<TbUserNotification>().CreateAsync(userNotificationEntity, userId);
-                if (!createResult.Success)
-                    throw new Exception(NotifiAndAlertsResources.SaveFailed);
 
-                await _userNotificationUnitOfWork.CommitAsync();
-                return true;
-            }
-            catch
-            {
-                _userNotificationUnitOfWork.Rollback();
-                throw;
-            }
-        }
-        public async Task<UserNotificationResult<bool>> MarkAsRead(IEnumerable<UserNotificationRequest> userNotificationRequests, string userId)
-        {
-            if (userNotificationRequests == null || !userNotificationRequests.Any()) throw new ArgumentNullException(nameof(userNotificationRequests));
-            if (Guid.Parse(userId) == Guid.Empty) throw new ArgumentException(UserResources.UserNotFound, nameof(userId));
+                isSaved = await _unitOfWork.TableRepository<TbUserNotification>()
+                    .CreateAsync(userNotificationEntity, userId);
 
-            try
-            {
-                await _userNotificationUnitOfWork.BeginTransactionAsync();
+                if (!isSaved.Success)
+                    throw new Exception("Failed to save user notification.");
 
-                // Update user notifications
-                foreach (var userNotificationRequest in userNotificationRequests)
-                {
-                    var userNotification = await _userNotificationUnitOfWork.TableRepository<TbUserNotification>()
-                          .FindAsync(un => un.NotificationId == userNotificationRequest.Id && un.UserId == userId);
-
-                    if (userNotification == null) continue;
-
-                    userNotification.IsRead = true;
-                    var updateResult = await _userNotificationUnitOfWork.TableRepository<TbUserNotification>().UpdateAsync(userNotification, Guid.Parse(userId));
-                    if (!updateResult.Success)
-                        throw new Exception(NotifiAndAlertsResources.SaveFailed);
-                }
-
-                var userNotifications = await _userNotificationUnitOfWork.TableRepository<TbUserNotification>().GetAsync(n => n.UserId == userId);
-                var unReadCount = userNotifications.Count(n => n.IsRead == false);
-                var totalCount = userNotifications.Count();
-                await _userNotificationUnitOfWork.CommitAsync();
-                return new UserNotificationResult<bool>()
-                {
-                    Value = true,
-                    UnReadCount = unReadCount,
-                    TotalCount = totalCount
-                };
-            }
-            catch
-            {
-                _userNotificationUnitOfWork.Rollback();
-                throw;
-            }
-        }
-        public async Task<bool> Delete(Guid id, Guid userId)
-        {
-            try
-            {
-                await _userNotificationUnitOfWork.BeginTransactionAsync();
-                await _userNotificationUnitOfWork.TableRepository<TbNotification>().UpdateCurrentStateAsync(id, userId, true);
-                var userNotifications = await _userNotificationUnitOfWork.TableRepository<TbUserNotification>().GetAsync(x => x.NotificationId == id);
-                if (userNotifications?.Count() > 0)
-                {
-                    foreach (var userNotification in userNotifications)
-                    {
-                        var isUpdatedCurrentState = await _userNotificationUnitOfWork.TableRepository<TbUserNotification>().UpdateCurrentStateAsync(userNotification.Id, userId, true);
-                        if (!isUpdatedCurrentState)
-                            throw new Exception(NotifiAndAlertsResources.DeleteFailed);
-                    }
-                }
-                await _userNotificationUnitOfWork.CommitAsync();
+                await _unitOfWork.CommitAsync();
                 return true;
             }
             catch (Exception ex)
             {
-                _userNotificationUnitOfWork.Rollback();
-                throw new Exception(string.Format(ValidationResources.DeleteEntityError, GeneralResources.Notification), ex);
+                _unitOfWork.Rollback();
+                _logger.Error(ex, "Error saving notification");
+                throw;
             }
+        }
+
+        public async Task<bool> SaveBulk(NotificationDto dto, IEnumerable<string> recipients)
+        {
+            if (dto == null)
+                throw new ArgumentNullException(nameof(dto));
+
+            if (recipients == null || !recipients.Any())
+                throw new ArgumentNullException(nameof(recipients));
+
+            await _unitOfWork.BeginTransactionAsync();
+
+            try
+            {
+                // Create the main notification
+                var notification = new TbNotification
+                {
+                    Title = dto.Title,
+                    //Description = "",
+                    //Url = dto.Url,
+                    //ImagePath = dto.ImagePath,
+                    //SenderType = dto.SenderType
+                };
+
+                var isSaved = await _unitOfWork.TableRepository<TbNotification>()
+                    .SaveAsync(notification, Guid.Empty);
+
+                if (!isSaved.Success)
+                    throw new Exception("Failed to save notification.");
+
+                // Prepare user notifications for bulk creation
+                var userNotifications = recipients.Select(userId => new TbUserNotification
+                {
+                    //Id = notificationId,
+                    //UserId = userId,
+                    //IsRead = false,  // Default to unread
+                    //CurrentState = 1
+                }).ToList();
+
+                // Create user notifications in bulk
+                var bulkResult = await _unitOfWork.TableRepository<TbUserNotification>()
+                    .AddRangeAsync(userNotifications, Guid.Empty);
+
+                if (!bulkResult)
+                    throw new Exception("Failed to save user notifications in bulk.");
+
+                await _unitOfWork.CommitAsync();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                _unitOfWork.Rollback();
+                _logger.Error(ex, "Error saving bulk notifications");
+                throw;
+            }
+        }
+
+        public async Task<bool> MarkAsRead(List<Guid> NotificationIds, string userId)
+        {
+            if (NotificationIds == null || !NotificationIds.Any())
+                throw new ArgumentNullException(nameof(NotificationIds));
+
+            if (!Guid.TryParse(userId, out var parsedUserId) || parsedUserId == Guid.Empty)
+                throw new ArgumentException("Invalid user ID.", nameof(userId));
+
+            await using var transaction = await _unitOfWork.BeginTransactionAsync();
+
+            try
+            {
+                var userNotifications = (await _unitOfWork.TableRepository<TbUserNotification>()
+                    .GetAsync(un => NotificationIds.Contains(un.Id) && un.UserId == userId))
+                    .ToList();
+
+                foreach (var userNotification in userNotifications)
+                {
+                    userNotification.IsRead = true;
+                    await _unitOfWork.TableRepository<TbUserNotification>()
+                        .UpdateAsync(userNotification, parsedUserId);
+                }
+
+                await _unitOfWork.CommitAsync();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                _unitOfWork.Rollback();
+                _logger.Error(ex, "Error marking notifications as read");
+                throw;
+            }
+        }
+
+        public async Task<bool> Delete(Guid id, Guid userId)
+        {
+            if (id == Guid.Empty)
+                throw new ArgumentException("Notification ID cannot be empty.", nameof(id));
+
+            if (userId == Guid.Empty)
+                throw new ArgumentException("User ID cannot be empty.", nameof(userId));
+
+            await using var transaction = await _unitOfWork.BeginTransactionAsync();
+
+            try
+            {
+                // Soft delete the notification
+                await _unitOfWork.TableRepository<TbNotification>().UpdateCurrentStateAsync(id, userId);
+
+                // Soft delete associated user notifications
+                var userNotifications = await _unitOfWork.TableRepository<TbUserNotification>()
+                    .GetAsync(x => x.Id == id);
+
+                foreach (var userNotification in userNotifications)
+                {
+                    await _unitOfWork.TableRepository<TbUserNotification>()
+                        .UpdateCurrentStateAsync(userNotification.Id, userId);
+                }
+
+                await _unitOfWork.CommitAsync();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                _unitOfWork.Rollback();
+                _logger.Error(ex, "Error deleting notification");
+                throw;
+            }
+        }
+
+        private int GetUnreadNotificationCount(string userId)
+        {
+            //return _unitOfWork.TableRepository<TbUserNotification>()
+            //    .Count(n => n.UserId == userId && n.IsRead == false);
+
+            return 0;
         }
     }
 }

@@ -226,7 +226,7 @@ namespace BL.GeneralService.UserManagement
                     ? userDto.Email
                     : username;
 
-                var signInResult = await _userAuthenticationService.EmailOrUserNameSignInAsync(
+                var signInResult = await _userAuthenticationService.EmailOrPhoneNumberSignInAsync(
                     signInIdentifier, userDto.Password, clientType);
 
                 if (!signInResult.Success)

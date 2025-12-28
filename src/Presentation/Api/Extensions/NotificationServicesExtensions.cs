@@ -1,3 +1,4 @@
+using Bl.Contracts.GeneralService.Notification;
 using Bl.GeneralService;
 using Bl.GeneralService.Notification;
 using BL.Contracts.GeneralService;
@@ -17,6 +18,7 @@ namespace Api.Extensions
             services.AddScoped<ISmsService, SmsService>();
             services.AddScoped<ISmsProviderService, SmsProviderService>();
             services.AddScoped<ISignalRProviderService, SignalRProviderService>();
+            services.AddScoped<ISignalRNotificationService, SignalRNotificationService>();
 
             // Notification Services
             services.AddScoped<INotificationService, NotificationService>();

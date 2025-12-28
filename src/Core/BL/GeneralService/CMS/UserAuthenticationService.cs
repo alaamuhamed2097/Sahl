@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using Resources;
 using Shared.DTOs.User;
 using Shared.GeneralModels.ResultModels;
+using System.Security.Claims;
 
 namespace BL.GeneralService.CMS
 {
@@ -43,7 +44,7 @@ namespace BL.GeneralService.CMS
             throw new UnauthorizedAccessException("Invalid login credentials.");
         }
 
-        public async Task<Shared.GeneralModels.ResultModels.SignInResult> EmailOrUserNameSignInAsync(string identifier, string password, string clientType)
+        public async Task<Shared.GeneralModels.ResultModels.SignInResult> EmailOrPhoneNumberSignInAsync(string identifier, string password, string clientType)
         {
             try
             {
@@ -65,7 +66,7 @@ namespace BL.GeneralService.CMS
                     if (!string.IsNullOrWhiteSpace(normalizedPhone))
                     {
                         user = await _userManager.Users
-                            .FirstOrDefaultAsync(u => u.NormalizedPhone != null && 
+                            .FirstOrDefaultAsync(u => u.NormalizedPhone != null &&
                                                      u.NormalizedPhone.Contains(normalizedPhone));
                     }
                 }
@@ -356,6 +357,16 @@ namespace BL.GeneralService.CMS
                 await _userManager.RemoveAuthenticationTokenAsync(
                     user, TokenOptions.DefaultProvider, $"RefreshTokenExpiration_{clientType}");
             }
+        }
+
+        public Task<ApplicationUser> GetAuthenticatedUserAsync(ClaimsPrincipal principal)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<bool> IsUserAuthorizedAsync(ApplicationUser user, string policy)
+        {
+            throw new NotImplementedException();
         }
     }
 }

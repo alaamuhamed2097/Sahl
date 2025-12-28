@@ -1,13 +1,11 @@
-﻿using RestSharp;
-using Shared.GeneralModels;
-using Shared.GeneralModels.Parameters.Notification;
+﻿using Shared.GeneralModels.Parameters.Notification;
+using Shared.GeneralModels.ResultModels;
 
-namespace BL.Contracts.GeneralService.Notification
+namespace Bl.Contracts.GeneralService.Notification
 {
     public interface IEmailProviderService
-
     {
-        ResponseModel<object> Send(EmailRequest request);
-        RestResponse SendEmail(string toEmail, string subject, string emailTemplate);
+        Task<OperationResult> SendAsync(EmailRequest request);
+        //Task<OperationResult> SendAsync(EmailBCCRequest request);
     }
 }
