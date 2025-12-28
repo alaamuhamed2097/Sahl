@@ -2,7 +2,8 @@
 using Dashboard.Contracts.General;
 using Dashboard.Contracts.Order;
 using Resources;
-using Shared.DTOs.Order;
+using Shared.DTOs.Order.Payment.Refund;
+using Shared.DTOs.Order.Refund;
 using Shared.GeneralModels;
 
 namespace Dashboard.Services.Order

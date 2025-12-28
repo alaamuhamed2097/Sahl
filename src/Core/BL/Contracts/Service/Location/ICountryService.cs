@@ -4,10 +4,9 @@ using Domains.Entities.Location;
 using Shared.DTOs.Location;
 using Shared.GeneralModels.SearchCriteriaModels;
 
-namespace BL.Contracts.Service.Location
+namespace BL.Contracts.Service.Location;
+
+public interface ICountryService : IBaseService<TbCountry, CountryDto>
 {
-    public interface ICountryService : IBaseService<TbCountry, CountryDto>
-    {
-        Task<PagedResult<CountryDto>> GetPageAsync(BaseSearchCriteriaModel criteriaModel);
-    }
+    Task<PagedResult<CountryDto>> GetPageAsync(BaseSearchCriteriaModel criteriaModel);
 }

@@ -3,7 +3,7 @@ using Dashboard.Contracts.General;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 using Resources;
-using Shared.DTOs.ECommerce.CouponCode;
+using Shared.DTOs.Order.CouponCode;
 
 namespace Dashboard.Pages.Sales.CouponCode
 {

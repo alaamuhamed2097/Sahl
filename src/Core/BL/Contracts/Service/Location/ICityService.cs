@@ -4,10 +4,9 @@ using Domains.Entities.Location;
 using Shared.DTOs.Location;
 using Shared.GeneralModels.SearchCriteriaModels;
 
-namespace BL.Contracts.Service.Location
+namespace BL.Contracts.Service.Location;
+
+public interface ICityService : IBaseService<TbCity, CityDto>
 {
-    public interface ICityService : IBaseService<TbCity, CityDto>
-    {
-        Task<PagedResult<CityDto>> GetPage(BaseSearchCriteriaModel criteriaModel);
-    }
+    Task<PagedResult<CityDto>> GetPage(BaseSearchCriteriaModel criteriaModel);
 }

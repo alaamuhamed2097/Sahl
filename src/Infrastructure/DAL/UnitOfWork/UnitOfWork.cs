@@ -73,9 +73,9 @@ namespace DAL.UnitOfWork
             return result;
         }
 
-        public void Rollback()
+        public async Task RollbackAsync()
         {
-            _transaction?.Rollback();
+            await _transaction?.RollbackAsync();
             _transaction?.Dispose();
             _transaction = null!;
         }

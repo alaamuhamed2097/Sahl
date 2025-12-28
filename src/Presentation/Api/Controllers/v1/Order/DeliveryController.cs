@@ -1,8 +1,9 @@
 using Asp.Versioning;
-using BL.Contracts.Service.Order;
+using BL.Contracts.Service.Order.Fulfillment;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Shared.DTOs.ECommerce.Shipment;
+using Shared.DTOs.Order.Fulfillment.Shipment;
+using Shared.DTOs.Order.Payment.Refund;
 using System.Security.Claims;
 
 namespace Api.Controllers.v1.Order
@@ -246,16 +247,5 @@ namespace Api.Controllers.v1.Order
                 return BadRequest(new { message = ex.Message });
             }
         }
-    }
-
-    public class InitiateReturnRequest
-    {
-        public string Reason { get; set; } = null!;
-    }
-
-    public class ProcessReturnRequest
-    {
-        public bool Approved { get; set; }
-        public string? AdminNotes { get; set; }
     }
 }

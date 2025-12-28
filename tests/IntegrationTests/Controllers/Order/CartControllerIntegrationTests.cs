@@ -1,10 +1,10 @@
 using Api.Controllers.v1.Order;
-using BL.Contracts.Service.Order;
+using BL.Contracts.Service.Order.Cart;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Moq;
-using Shared.DTOs.ECommerce.Cart;
+using Shared.DTOs.Order.Cart;
 using Shared.GeneralModels;
 using System.Security.Claims;
 

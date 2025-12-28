@@ -1,11 +1,10 @@
 using BL.GeneralService.Location;
 using System.Net;
 
-namespace BL.Contracts.GeneralService.Location
+namespace BL.Contracts.GeneralService.Location;
+
+public interface IIpGeolocationService
 {
-    public interface IIpGeolocationService
-    {
-        Task<IpGeolocationResult> GetLocationFromIpAsync(string ipAddress);
-        Task<IpGeolocationResult> GetLocationFromIpAsync(IPAddress ipAddress);
-    }
+    Task<IpGeolocationResult> GetLocationFromIpAsync(string ipAddress);
+    Task<IpGeolocationResult> GetLocationFromIpAsync(IPAddress ipAddress);
 }

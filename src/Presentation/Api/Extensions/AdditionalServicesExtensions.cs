@@ -1,9 +1,9 @@
 using BL.Contracts.Service.Content;
 using BL.Contracts.Service.Notification;
 using BL.Contracts.Service.Warehouse;
-using BL.Service.Content;
-using BL.Service.Notification;
-using BL.Service.Warehouse;
+using BL.Services.Content;
+using BL.Services.Notification;
+using BL.Services.Warehouse;
 
 namespace Api.Extensions
 {

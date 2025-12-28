@@ -2,8 +2,8 @@
 using System.Net;
 using System.Net.Mail;
 
-namespace Bl.GeneralService
-{
+namespace Bl.GeneralService;
+
 
     public class EmailService : IEmailService
     {

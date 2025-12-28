@@ -1,13 +1,12 @@
 using Domains.Entities.Setting;
 using Shared.DTOs.Setting;
 
-namespace BL.Mapper
+namespace BL.Mapper;
+
+public partial class MappingProfile
 {
-    public partial class MappingProfile
+    private void ConfigureSettingMappings()
     {
-        private void ConfigureSettingMappings()
-        {
-            CreateMap<TbSetting, SettingDto>().ReverseMap();
-        }
+        CreateMap<TbSetting, SettingDto>().ReverseMap();
     }
 }

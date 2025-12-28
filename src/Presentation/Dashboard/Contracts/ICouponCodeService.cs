@@ -1,4 +1,4 @@
-﻿using Shared.DTOs.ECommerce.CouponCode;
+﻿using Shared.DTOs.Order.CouponCode;
 using Shared.GeneralModels;
 
 namespace Dashboard.Contracts

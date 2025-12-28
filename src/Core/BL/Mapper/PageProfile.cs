@@ -2,13 +2,12 @@ using AutoMapper;
 using Domains.Entities.Page;
 using Shared.DTOs.Page;
 
-namespace BL.Mapper
+namespace BL.Mapper;
+
+public class PageProfile : Profile
 {
-    public class PageProfile : Profile
+    public PageProfile()
     {
-        public PageProfile()
-        {
-            CreateMap<TbPage, PageDto>().ReverseMap();
-        }
+        CreateMap<TbPage, PageDto>().ReverseMap();
     }
 }

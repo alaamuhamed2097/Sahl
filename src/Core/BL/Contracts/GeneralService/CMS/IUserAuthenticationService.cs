@@ -17,6 +17,5 @@ namespace BL.Contracts.GeneralService.CMS
         Task<OperationResult> ResetPasswordWithCodeAsync(string userId, string identifier, string code, string newPassword);
         Task<OperationResult> DeleteAccountAsync(string userId);
 
-        Task SignOutAsync();
-    }
+    Task SignOutAsync();
 }

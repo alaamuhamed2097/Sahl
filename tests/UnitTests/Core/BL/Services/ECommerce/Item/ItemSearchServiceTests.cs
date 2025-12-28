@@ -1,4 +1,4 @@
-﻿//using BL.Service.ECommerce.Item;
+﻿//using BL.Services.ECommerce.Item;
 //using Common.Enumerations.Fulfillment;
 //using Common.Filters;
 //using DAL.Contracts.Repositories;

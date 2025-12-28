@@ -1,11 +1,11 @@
 using Api.Controllers.v1.Base;
 using Asp.Versioning;
-using BL.Contracts.Service.Order;
+using BL.Contracts.Service.Order.Cart;
 using Common.Enumerations.User;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Resources;
-using Shared.DTOs.ECommerce.Cart;
+using Shared.DTOs.Order.Cart;
 using Shared.GeneralModels;
 
 namespace Api.Controllers.v1.Order
