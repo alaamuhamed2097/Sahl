@@ -122,7 +122,7 @@ namespace Api.Controllers.v1.Customer.Wishlist
         public async Task<IActionResult> RemoveFromWishlist(Guid itemCombinationId)
         {
             if (itemCombinationId == Guid.Empty)
-            {
+            {     
                 return BadRequest(new ResponseModel<object>
                 {
                     Success = false,
