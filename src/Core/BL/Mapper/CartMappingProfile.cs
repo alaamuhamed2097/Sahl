@@ -25,7 +25,7 @@ namespace BL.Mapper
 
             CreateMap<TbShoppingCartItem, CartItemDto>()
                 .ForMember(dest => dest.ItemName, opt => opt.MapFrom(src => src.Item.TitleEn))
-                .ForMember(dest => dest.SellerName, opt => opt.MapFrom(src => src.OfferCombinationPricing.Offer.Vendor.CompanyName))
+                .ForMember(dest => dest.SellerName, opt => opt.MapFrom(src => src.OfferCombinationPricing.Offer.Vendor.NameEn))
                 .ForMember(dest => dest.SubTotal, opt => opt.Ignore());  // Calculated in service
         }
     }

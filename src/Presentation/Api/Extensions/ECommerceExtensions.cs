@@ -6,6 +6,7 @@ using BL.Contracts.Service.Catalog.Pricing;
 using BL.Contracts.Service.Catalog.Unit;
 using BL.Contracts.Service.CouponCode;
 using BL.Contracts.Service.Currency;
+using BL.Contracts.Service.Customer;
 using BL.Contracts.Service.Customer.Wishlist;
 using BL.Contracts.Service.Merchandising;
 using BL.Contracts.Service.Merchandising.Campaign;
@@ -32,6 +33,7 @@ using BL.Service.Setting;
 using BL.Service.Setting.Pricing;
 using BL.Service.ShippingCompany;
 using BL.Service.Vendor;
+using BL.Service.VendorItem;
 
 namespace Api.Extensions
 {
@@ -52,6 +54,12 @@ namespace Api.Extensions
             services.AddScoped<IItemService, ItemService>();
             services.AddScoped<IItemSearchService, ItemSearchService>();
             services.AddScoped<IUnitService, UnitService>();
+
+            // Custom Items Services
+            services.AddScoped<ICustomerItemViewService, CustomerItemViewService>();
+
+            // Vendor Items Services
+            services.AddScoped<IVendorItemService, VendorItemService>();
 
             // Register services
             services.AddScoped<IItemDetailsService, ItemDetailsService>();
@@ -84,9 +92,10 @@ namespace Api.Extensions
             services.AddScoped<IWishlistService, WishlistService>();
 
             // Review Services
-            services.AddScoped<IOfferReviewService, OfferReviewService>();
+            services.AddScoped<IItemReviewService, ItemReviewService>();
             services.AddScoped<IReviewReportService, ReviewReportService>();
             services.AddScoped<IReviewVoteService, ReviewVoteService>();
+            services.AddScoped<IVendorReviewService, VendorReviewService>();
 
             // Merchandising Services
             services.AddScoped<IHomepageService, HomepageService>();

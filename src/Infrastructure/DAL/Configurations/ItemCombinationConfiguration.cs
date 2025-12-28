@@ -11,7 +11,11 @@ namespace DAL.Configurations
     {
         public void Configure(EntityTypeBuilder<TbItemCombination> entity)
         {
-            entity.Property(e => e.Barcode)
+            entity.ToTable("TbItemCombinations");
+
+			entity.HasKey(e => e.Id);
+
+			entity.Property(e => e.Barcode)
                 .HasMaxLength(200);
 
             entity.Property(e => e.SKU)
@@ -29,6 +33,6 @@ namespace DAL.Configurations
                 .HasForeignKey(ic => ic.ItemId)
                 .HasConstraintName("FK_TbItemCombinations_TbItems_ItemId")
                 .OnDelete(DeleteBehavior.Cascade);
-        }
+		}
     }
 }

@@ -15,7 +15,7 @@ namespace Api.Controllers.v1.Review.ReviewVote
 	[ApiController]
 	[ApiVersion("1.0")]
 	[Route("api/v{version:apiVersion}/reviews-vote/{reviewId}")]
-	[Authorize(Roles = nameof(UserRole.Customer))]
+	//[Authorize(Roles = nameof(UserRole.Customer))]
 	public class ReviewVoteController : BaseController
 	{
 		private readonly IReviewVoteService _voteService;

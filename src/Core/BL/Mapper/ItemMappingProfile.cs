@@ -216,6 +216,7 @@ namespace BL.Mapper
                     SKU = combo.SKU,
                     Barcode = combo.Barcode,
                     IsDefault = combo.IsDefault,
+                    CreatedBy = combo.CreatedBy,
                     PricingAttributes = combo.PricingAttributes?.Select(sa => new PricingAttributeDto
                     {
                         AttributeId = sa.AttributeId,

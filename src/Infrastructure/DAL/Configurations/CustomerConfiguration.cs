@@ -16,7 +16,7 @@ namespace DAL.Configurations
 			builder.HasKey(x => x.Id);
 
 			builder.Property(x => x.UserId)
-				   .HasMaxLength(250);
+				   .HasMaxLength(450);
 		}
 	}
 }

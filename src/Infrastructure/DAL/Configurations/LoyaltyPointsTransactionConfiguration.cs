@@ -51,7 +51,7 @@ namespace DAL.Configurations
                 .HasForeignKey(e => e.OrderId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            entity.HasOne(e => e.Review)
+            entity.HasOne(e => e.ItemReview)
                 .WithMany()
                 .HasForeignKey(e => e.ReviewId)
                 .OnDelete(DeleteBehavior.Restrict);
