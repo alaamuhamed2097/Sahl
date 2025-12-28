@@ -1,5 +1,7 @@
 ﻿using Domains.Entities.ECommerceSystem.Vendor;
 using Domains.Entities.Setting;
+using Domains.Views.Vendor;
+using Shared.DTOs.ECommerce.Item;
 using Shared.DTOs.Setting;
 using Shared.DTOs.Vendor;
 using System;
@@ -15,6 +17,9 @@ namespace BL.Mapper;
 		private void ConfigureVendorMappings()
 		{
 			CreateMap<TbVendor, VendorDto>().ReverseMap();
+			CreateMap<VwVendorPublicDetailsDto, VwVendorPublicDetailsDto>();
+			CreateMap<VwVendorOwnerDetails, VwVendorOwnerDetailsDto>();
+			CreateMap<VwVendorAdminDetails, VwVendorAdminDetailsDto>();
 		}
 	}
 	

@@ -3,6 +3,7 @@ using Domains.Entities.Catalog.Brand;
 using Domains.Entities.Catalog.Category;
 using Domains.Entities.Catalog.Item.ItemAttributes;
 using Domains.Entities.Catalog.Unit;
+using Domains.Entities.ECommerceSystem.Review;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -78,5 +79,7 @@ namespace Domains.Entities.Catalog.Item
         public virtual ICollection<TbItemCombination> ItemCombinations { get; set; }
         public virtual ICollection<TbItemAttribute> ItemAttributes { get; set; }
         public virtual ICollection<TbBuyBoxCalculation> BuyBoxCalculations { get; set; }
-    }
+        public virtual ICollection<TbItemReview> ItemReviews { get; set; } = new List<TbItemReview>();
+
+	}
 }

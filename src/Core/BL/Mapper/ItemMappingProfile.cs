@@ -210,35 +210,36 @@ public partial class MappingProfile
             var combo = JsonSerializer.Deserialize<CurrentCombination>(json, JsonOptions);
             if (combo == null) return null;
 
-            return new CurrentCombinationDto
+                return new CurrentCombinationDto
+                {
+                    CombinationId = combo.CombinationId,
+                    SKU = combo.SKU,
+                    Barcode = combo.Barcode,
+                    IsDefault = combo.IsDefault,
+                    CreatedBy = combo.CreatedBy,
+                    PricingAttributes = combo.PricingAttributes?.Select(sa => new PricingAttributeDto
+                    {
+                        AttributeId = sa.AttributeId,
+                        AttributeNameAr = sa.AttributeNameAr,
+                        AttributeNameEn = sa.AttributeNameEn,
+                        CombinationValueId = sa.CombinationValueId,
+                        ValueAr = sa.ValueAr,
+                        ValueEn = sa.ValueEn,
+                        IsSelected = sa.IsSelected
+                    }).ToList(),
+                    Images = combo.Images?.Select(img => new ImageDto
+                    {
+                        Path = img.ImageUrl,
+                        Order = img.DisplayOrder,
+                        IsDefault = img.IsDefault,
+                    }).ToList()
+                };
+            }
+            catch
             {
-                CombinationId = combo.CombinationId,
-                SKU = combo.SKU,
-                Barcode = combo.Barcode,
-                IsDefault = combo.IsDefault,
-                PricingAttributes = combo.PricingAttributes?.Select(sa => new PricingAttributeDto
-                {
-                    AttributeId = sa.AttributeId,
-                    AttributeNameAr = sa.AttributeNameAr,
-                    AttributeNameEn = sa.AttributeNameEn,
-                    CombinationValueId = sa.CombinationValueId,
-                    ValueAr = sa.ValueAr,
-                    ValueEn = sa.ValueEn,
-                    IsSelected = sa.IsSelected
-                }).ToList(),
-                Images = combo.Images?.Select(img => new ImageDto
-                {
-                    Path = img.ImageUrl,
-                    Order = img.DisplayOrder,
-                    IsDefault = img.IsDefault,
-                }).ToList()
-            };
+                return null;
+            }
         }
-        catch
-        {
-            return null;
-        }
-    }
 
     private static PricingDto DeserializePricing(string json)
     {

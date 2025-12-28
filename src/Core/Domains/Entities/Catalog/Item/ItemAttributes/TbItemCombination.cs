@@ -1,4 +1,5 @@
-﻿using Domains.Entities.Offer;
+﻿using Domains.Entities.ECommerceSystem.Customer;
+using Domains.Entities.Offer;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -27,5 +28,6 @@ namespace Domains.Entities.Catalog.Item.ItemAttributes
         public virtual ICollection<TbCombinationAttribute> CombinationAttributes { get; set; }
         public virtual ICollection<TbOfferCombinationPricing> OfferCombinationPricings { get; set; }
 		public virtual ICollection<TbItemCombinationImage> ItemCombinationImages { get; set; }
+		public virtual ICollection<TbCustomerItemView> CustomerItemViews { get; set; }
 	}
 }

@@ -3,6 +3,7 @@ using Common.Enumerations.Payment;
 using Domains.Entities.CouponCode;
 using Domains.Entities.ECommerceSystem;
 using Domains.Entities.Payment;
+using Domains.Entities.ECommerceSystem.Review;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 

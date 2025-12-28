@@ -1,9 +1,10 @@
 ﻿using Shared.DTOs.Catalog.Item;
 
-namespace BL.Contracts.Service.Catalog.Item;
-
-public interface IItemDetailsService
+namespace BL.Contracts.Service.Catalog.Item
 {
-    Task<ItemDetailsDto> GetItemDetailsAsync(Guid itemCombinationId);
-    Task<ItemDetailsDto> GetCombinationByAttributesAsync(CombinationRequest request);
+    public interface IItemDetailsService
+    {
+        Task<ItemDetailsDto> GetItemDetailsAsync(Guid itemCombinationId, string? viewerId);
+        Task<ItemDetailsDto> GetCombinationByAttributesAsync(CombinationRequest request, string? viewerId);
+    }
 }

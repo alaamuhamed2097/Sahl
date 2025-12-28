@@ -8,8 +8,10 @@ using DAL.Contracts.Repositories.Review;
 using DAL.Models;
 using DAL.Repositories;
 using DAL.ResultModels;
+using Domains.Entities.ECommerceSystem.Customer;
 using Domains.Entities.ECommerceSystem.Review;
 using FirebaseAdmin.Auth;
+using Microsoft.EntityFrameworkCore;
 using Resources;
 using Serilog;
 using Shared.DTOs.Review;
@@ -24,8 +26,9 @@ namespace BL.Services.Review;
 	public class ReviewReportService : BaseService<TbReviewReport, ReviewReportDto>, IReviewReportService
 	{
 		private readonly IReviewReportRepository _reportRepo;
-		private readonly IOfferReviewRepository _reviewRepo;
+		private readonly IItemReviewRepository _reviewRepo;
 		private readonly ITableRepository<TbReviewReport> _tableRepository;
+		private readonly ITableRepository<TbCustomer> _tableCustomerRepository;
 
 
 
@@ -35,19 +38,22 @@ namespace BL.Services.Review;
 		public ReviewReportService(
 			ITableRepository<TbReviewReport> tableRepository,
 			IReviewReportRepository reportRepo,
-			IOfferReviewRepository reviewRepo,
+			IItemReviewRepository reviewRepo,
 			IBaseMapper mapper,
-			ILogger logger) : base(tableRepository, mapper)
+			ILogger logger,
+			ITableRepository<TbCustomer> tableCustomerRepository) : base(tableRepository, mapper)
 		{
 			_reportRepo = reportRepo;
 			_reviewRepo = reviewRepo;
 			_mapper = mapper;
 			_logger = logger;
 			_tableRepository = tableRepository;
+			_tableCustomerRepository = tableCustomerRepository;
 		}
 
 		public async Task<SaveResult> SubmitReportAsync(
 			ReviewReportDto reportDto,
+			string userId,
 			CancellationToken cancellationToken = default)
 		{
 			try
@@ -56,19 +62,24 @@ namespace BL.Services.Review;
 				if (reportDto.Reason == default)
 					throw new ArgumentException("Reason is required");
 
+
+				var currentCustomer = await _tableCustomerRepository
+		   .GetQueryable()
+		   .FirstOrDefaultAsync(c => c.UserId == userId && !c.IsDeleted, cancellationToken);
+
 				// Check if review exists
-				var review = await _reviewRepo.FindByIdAsync(reportDto.ReviewID, cancellationToken);
+				var review = await _reviewRepo.FindByIdAsync(reportDto.ItemReviewId, cancellationToken);
 				if (review == null)
-					throw new KeyNotFoundException($"Review with ID {reportDto.ReviewID} not found");
+					throw new KeyNotFoundException($"Review with ID {reportDto.ItemReviewId} not found");
 
 				// Prevent reporting own review
-				if (review.CustomerID == reportDto.CustomerID)
+				if (review.CustomerId == currentCustomer.Id   )
 					throw new InvalidOperationException("You cannot report your own review");
 
 				// Check if already reported
 				var alreadyReported = await _reportRepo.IsAlreadyReportedAsync(
-					reportDto.ReviewID,
-					reportDto.CustomerID,
+					reportDto.ItemReviewId,
+					reportDto.CustomerId,
 					cancellationToken);
 
 				if (alreadyReported)
@@ -76,8 +87,12 @@ namespace BL.Services.Review;
 
 				// Create report
 				var report = _mapper.MapModel<ReviewReportDto, TbReviewReport>(reportDto);
-
-				var createdReport = await _reportRepo.CreateAsync(report, reportDto.CustomerID, cancellationToken);
+				report.CustomerId = currentCustomer.Id;
+				report.ItemReviewId = reportDto.ItemReviewId;
+				report.Details = reportDto.Details;
+				report.Reason = reportDto.Reason;
+				Guid userGuid = Guid.Parse(userId);
+				var createdReport = await _reportRepo.CreateAsync(report, userGuid, cancellationToken);
 				if(!createdReport.Success)
 					throw new Exception("Failed to submit report");
 
@@ -153,13 +168,13 @@ namespace BL.Services.Review;
 			}
 
 			if (criteriaModel.ReviewId.HasValue)
-				filter = filter.And(x => x.ReviewID == criteriaModel.ReviewId.Value);
+				filter = filter.And(x => x.ItemReviewId == criteriaModel.ReviewId.Value);
 
 			if (criteriaModel.CustomerId.HasValue)
-				filter = filter.And(x => x.Review.CustomerID == criteriaModel.CustomerId.Value);
+				filter = filter.And(x => x.ItemReview.CustomerId == criteriaModel.CustomerId.Value);
 
 			if (criteriaModel.ReportedByCustomerId.HasValue)
-				filter = filter.And(x => x.CustomerID == criteriaModel.ReportedByCustomerId.Value);
+				filter = filter.And(x => x.CustomerId == criteriaModel.ReportedByCustomerId.Value);
 
 			if (criteriaModel.Reason.HasValue)
 				filter = filter.And(x => x.Reason == criteriaModel.Reason.Value);

@@ -6,14 +6,14 @@ namespace Shared.DTOs.Review
 {
 	public class ReviewReportDto : BaseDto
 	{
-		[Required]
-		public Guid ReportID { get; set; }
+		//[Required]
+		//public Guid ReportID { get; set; }
 
 		[Required]
-		public Guid ReviewID { get; set; }
+		public Guid ItemReviewId { get; set; }
 
 		[Required]
-		public Guid CustomerID { get; set; }
+		public Guid CustomerId { get; set; }
 
 		[Required]
 		[EnumDataType(typeof(ReviewReportReason))]

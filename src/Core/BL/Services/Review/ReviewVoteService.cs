@@ -17,10 +17,10 @@ namespace BL.Services.Review;
 public class ReviewVoteService : BaseService<TbReviewVote, ReviewVoteDto>, IReviewVoteService
 {
 		private readonly IReviewVoteRepository _voteRepo;
-		private readonly IOfferReviewRepository _reviewRepo;
+		private readonly IItemReviewRepository _reviewRepo;
 		private readonly IBaseMapper _mapper;
 		private readonly ILogger _logger;
-		public ReviewVoteService(ITableRepository<TbReviewVote> repository, IBaseMapper mapper, ILogger logger, IReviewVoteRepository voteRepo, IOfferReviewRepository reviewRepo)
+		public ReviewVoteService(ITableRepository<TbReviewVote> repository, IBaseMapper mapper, ILogger logger, IReviewVoteRepository voteRepo, IItemReviewRepository reviewRepo)
 			: base(repository, mapper)
 		{
 			_logger = logger;
@@ -115,8 +115,8 @@ public class ReviewVoteService : BaseService<TbReviewVote, ReviewVoteDto>, IRevi
 					// Create new vote
 					var vote = new TbReviewVote
 					{
-						ReviewID = reviewVoteDto.ReviewID,
-						CustomerID = reviewVoteDto.CustomerID,
+						ItemReviewId = reviewVoteDto.ReviewID,
+						CustomerId = reviewVoteDto.CustomerID,
 						VoteType = reviewVoteDto.VoteType
 					};
 					await _voteRepo.CreateAsync(vote,userId, cancellationToken);

@@ -4,11 +4,11 @@ namespace Domains.Entities.ECommerceSystem.Review
 {
     public class TbReviewVote : BaseEntity
     {
-        public Guid ReviewID { get; set; }
-        public Guid CustomerID { get; set; }
+        public Guid ItemReviewId { get; set; }
+        public Guid CustomerId { get; set; }
         public VoteType VoteType { get; set; }
 
         // Navigation Properties
-        public virtual TbOfferReview Review { get; set; } = null!;
+        public virtual TbItemReview ItemReview { get; set; } = null!;
     }
 }

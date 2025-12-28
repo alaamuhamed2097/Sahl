@@ -84,6 +84,7 @@ namespace Domains.Procedures
         public string? SKU { get; set; }
         public string? Barcode { get; set; }
         public bool IsDefault { get; set; }
+        public Guid CreatedBy { get; set; }
 
         [JsonPropertyName("PricingAttributesJson")]
         public List<PricingAttribute>? PricingAttributes { get; set; }

@@ -3,15 +3,19 @@ using Domains.Entities.VideoProvider;
 using Shared.DTOs.Customer;
 using Shared.DTOs.Media;
 
-namespace BL.Mapper;
-
-public partial class MappingProfile
+namespace BL.Mapper
 {
-    private void ConfigureCustomerMappings()
+    public partial class MappingProfile
     {
-        
-        CreateMap<TbCustomer, CustomerDto>()
-            .ReverseMap();
+        private void ConfigureCustomerMappings()
+        {
+            // Customer mappings
+            CreateMap<TbCustomer, CustomerDto>()
+                .ReverseMap();
 
+            // Customer Item View mappings
+            CreateMap<TbCustomerItemView, CustomerItemViewDto>()
+                .ReverseMap();
+        }
     }
 }
