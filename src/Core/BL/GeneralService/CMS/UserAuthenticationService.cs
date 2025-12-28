@@ -234,36 +234,63 @@ namespace BL.GeneralService.CMS
             return response;
         }
         /// <summary>
-        /// Sends a password reset verification code to the user's mobile.
+        /// Sends a password reset verification code to the user's mobile or email.
         /// </summary>
-        public async Task<OperationResult> SendResetCodeAsync(string email)
+        public async Task<OperationResult> SendResetCodeAsync(string userId, string identifier)
         {
-            var user = await _userManager.Users.FirstOrDefaultAsync(u => u.Email == email);
+            var user = await _userManager.FindByIdAsync(userId);
             if (user == null || user.UserState == UserStateType.Deleted)
             {
-                return new OperationResult { Success = false, Message = "User with this Email was not found." };
+                return new OperationResult { Success = false, Message = UserResources.UserNotFound };
+            }
+
+            string normalizedIdentifier = identifier;
+            bool isEmail = identifier.Contains("@");
+
+            if (isEmail)
+            {
+                if (!string.Equals(user.Email, identifier, StringComparison.OrdinalIgnoreCase))
+                {
+                    return new OperationResult { Success = false, Message = "The provided email does not match the user's records." };
+                }
+                
+                if (!user.EmailConfirmed)
+                     return new OperationResult { Success = false, Message = "Email is not verified." };
+            }
+            else
+            {
+                 normalizedIdentifier = PhoneNormalizationHelper.NormalizePhone(identifier);
+                 // Check if user's phone matches
+                 // Note: Since users stores NormalizedPhone, we should compare that
+                 if (user.NormalizedPhone == null || !user.NormalizedPhone.Contains(normalizedIdentifier))
+                 {
+                      return new OperationResult { Success = false, Message = "The provided phone number does not match the user's records." };
+                 }
+
+                 if (!user.PhoneNumberConfirmed)
+                     return new OperationResult { Success = false, Message = "Phone number is not verified." };
             }
 
             // Save the code temporarily (e.g., in cache) with expiration time
-            var codeSaved = await _verificationCodeService.SendCodeAsync(email);
+            var codeSaved = await _verificationCodeService.SendCodeAsync(normalizedIdentifier);
 
             if (!codeSaved)
             {
                 return new OperationResult { Success = false, Message = UserResources.VerificationCodeError };
             }
 
-            return new OperationResult { Success = true, Message = "Verification code sent to your email." };
+            return new OperationResult { Success = true, Message = $"Verification code sent to your {(isEmail ? "email" : "phone")}." };
         }
 
         /// <summary>
         /// Resets the user's password using a verification code.
         /// </summary>
-        public async Task<OperationResult> ResetPasswordWithCodeAsync(string email, string code, string newPassword)
+        public async Task<OperationResult> ResetPasswordWithCodeAsync(string userId, string identifier, string code, string newPassword)
         {
             // Input validation
-            if (string.IsNullOrWhiteSpace(email))
+            if (string.IsNullOrWhiteSpace(identifier))
             {
-                return new OperationResult { Success = false, Message = "Email is required." };
+                return new OperationResult { Success = false, Message = "Identifier is required." };
             }
 
             if (string.IsNullOrWhiteSpace(code))
@@ -273,14 +300,20 @@ namespace BL.GeneralService.CMS
 
             if (string.IsNullOrWhiteSpace(newPassword) || newPassword.Length < 6)
             {
-                return new OperationResult { Success = false, Message = "Password must be at least 8 characters long." };
+                return new OperationResult { Success = false, Message = "Password must be at least 6 characters long." };
+            }
+
+            string normalizedIdentifier = identifier;
+            bool isEmail = identifier.Contains("@");
+            if (!isEmail)
+            {
+                normalizedIdentifier = PhoneNormalizationHelper.NormalizePhone(identifier);
             }
 
             // Verify the code
-            var isCodeValid = _verificationCodeService.VerifyCode(email, code);
+            var isCodeValid = _verificationCodeService.VerifyCode(normalizedIdentifier, code);
 
-            var attemptsKey = $"{email}_code_attempts";
-            int attempts = _verificationCodeService.GetAttempts(email);
+            var attempts = _verificationCodeService.GetAttempts(normalizedIdentifier);
             if (attempts >= 5)
             {
                 return new OperationResult { Success = false, Message = "Too many attempts" };
@@ -290,13 +323,35 @@ namespace BL.GeneralService.CMS
                 return new OperationResult { Success = false, Message = "Invalid or expired code." };
             }
 
-            var user = await _userManager.Users.FirstOrDefaultAsync(u => u.Email == email);
+            var user = await _userManager.FindByIdAsync(userId);
+
             if (user == null || user.UserState == UserStateType.Deleted)
             {
-                return new OperationResult { Success = false, Message = "User with this email was not found." };
+                return new OperationResult { Success = false, Message = UserResources.UserNotFound };
             }
 
-            // Generate password reset token (if your identity system requires it)
+            if (isEmail)
+            {
+                if (!string.Equals(user.Email, identifier, StringComparison.OrdinalIgnoreCase))
+                {
+                    return new OperationResult { Success = false, Message = "The provided email does not match the user's records." };
+                }
+                
+                if (!user.EmailConfirmed)
+                     return new OperationResult { Success = false, Message = "Email is not verified." };
+            }
+            else
+            {
+                if (user.NormalizedPhone == null || !user.NormalizedPhone.Contains(normalizedIdentifier))
+                {
+                    return new OperationResult { Success = false, Message = "The provided phone number does not match the user's records." };
+                }
+
+                if (!user.PhoneNumberConfirmed)
+                     return new OperationResult { Success = false, Message = "Phone number is not verified." };
+            }
+
+            // Generate password reset token
             var token = await _userManager.GeneratePasswordResetTokenAsync(user);
 
             // Reset password
@@ -306,8 +361,8 @@ namespace BL.GeneralService.CMS
                 return new OperationResult { Success = false, Message = "Password reset failed.", Errors = resetResult.Errors.Select(e => e.Description).ToList() };
             }
 
-            // Optionally, delete the code after successful reset
-            _verificationCodeService.DeleteCode(email);
+            // Delete the code after successful reset
+            _verificationCodeService.DeleteCode(normalizedIdentifier);
 
             return new OperationResult { Success = true, Message = "Password reset successful." };
         }

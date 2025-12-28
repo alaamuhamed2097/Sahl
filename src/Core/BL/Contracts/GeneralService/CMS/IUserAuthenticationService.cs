@@ -13,8 +13,8 @@ namespace BL.Contracts.GeneralService.CMS
         Task<OperationResult> ResetPasswordAsync(PasswordResetDto resetDto);
         Task<ApplicationUser> GetAuthenticatedUserAsync(ClaimsPrincipal principal);
         Task<bool> IsUserAuthorizedAsync(ApplicationUser user, string policy);
-        Task<OperationResult> SendResetCodeAsync(string email);
-        Task<OperationResult> ResetPasswordWithCodeAsync(string email, string code, string newPassword);
+        Task<OperationResult> SendResetCodeAsync(string userId, string identifier);
+        Task<OperationResult> ResetPasswordWithCodeAsync(string userId, string identifier, string code, string newPassword);
         Task<OperationResult> DeleteAccountAsync(string userId);
 
         Task SignOutAsync();

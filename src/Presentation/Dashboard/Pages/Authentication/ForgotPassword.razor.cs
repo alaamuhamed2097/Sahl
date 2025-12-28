@@ -53,12 +53,12 @@ namespace Dashboard.Pages.Authentication
 
             try
             {
-                var result = await AuthenticationService.SendResetPasswordCode(_model.Email);
+                var result = await AuthenticationService.SendResetPasswordCode(_model.Identifier);
                 if (result.Success)
                 {
                     _successMessage = result.Message ?? ValidationResources.PasswordResetCodeSent;
                     // Store email in localStorage then redirect
-                    await JSRuntime.InvokeVoidAsync("localStorage.setItem", "resetEmail", _model.Email);
+                    await JSRuntime.InvokeVoidAsync("localStorage.setItem", "resetEmail", _model.Identifier);
                     await Task.Delay(1000); // Optional: short delay to show success message
                     NavigationManager.NavigateTo("/reset-password");
                 }

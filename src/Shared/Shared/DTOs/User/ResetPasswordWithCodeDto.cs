@@ -9,8 +9,7 @@ namespace Shared.DTOs.User
         /// The mobile number associated with the user account.
         /// </summary>
         [Required(ErrorMessageResourceName = "FieldRequired", ErrorMessageResourceType = typeof(ValidationResources))]
-        [EmailAddress(ErrorMessageResourceName = "InvalidEmail", ErrorMessageResourceType = typeof(ValidationResources))]
-        public string Email { get; set; } = null!;
+        public string Identifier { get; set; } = null!;
 
         /// <summary>
         /// The verification code sent to the user’s email address.
