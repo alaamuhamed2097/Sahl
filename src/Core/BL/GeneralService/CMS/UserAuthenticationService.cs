@@ -1,6 +1,7 @@
 ﻿using BL.Contracts.GeneralService;
 using BL.Contracts.GeneralService.CMS;
 using BL.Utils;
+using Common.Enumerations.Notification;
 using Common.Enumerations.User;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -233,6 +234,7 @@ public class UserAuthenticationService : IUserAuthenticationService
 
         return response;
     }
+
     /// <summary>
     /// Sends a password reset verification code to the user's mobile or email.
     /// </summary>
@@ -272,9 +274,8 @@ public class UserAuthenticationService : IUserAuthenticationService
         }
 
         // Save the code temporarily (e.g., in cache) with expiration time
-        var codeSaved = await _verificationCodeService.SendCodeAsync(normalizedIdentifier);
-
-        if (!codeSaved)
+        var codeSaved = await _verificationCodeService.SendCodeAsync(normalizedIdentifier, NotificationChannel.Email, NotificationType.ForgotPassword);
+        if (!codeSaved.Success)
         {
             return new OperationResult { Success = false, Message = UserResources.VerificationCodeError };
         }
@@ -312,12 +313,6 @@ public class UserAuthenticationService : IUserAuthenticationService
 
         // Verify the code
         var isCodeValid = _verificationCodeService.VerifyCode(normalizedIdentifier, code);
-
-        var attempts = _verificationCodeService.GetAttempts(normalizedIdentifier);
-        if (attempts >= 5)
-        {
-            return new OperationResult { Success = false, Message = "Too many attempts" };
-        }
         if (!isCodeValid)
         {
             return new OperationResult { Success = false, Message = "Invalid or expired code." };

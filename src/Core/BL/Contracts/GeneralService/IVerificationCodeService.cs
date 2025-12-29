@@ -1,10 +1,13 @@
-﻿namespace BL.Contracts.GeneralService
+﻿using Common.Enumerations.Notification;
+using Shared.GeneralModels.ResultModels;
+
+namespace BL.Contracts.GeneralService
 {
     public interface IVerificationCodeService
     {
-        Task<bool> SendCodeAsync(string identifier);
-        bool VerifyCode(string identifier, string code);
-        void DeleteCode(string identifier);
-        int GetAttempts(string identifier);
+        Task<OperationResult> SendCodeAsync(string recipient, NotificationChannel channel, NotificationType type = NotificationType.EmailVerification, Dictionary<string, string> parameters = null);
+        bool VerifyCode(string recipient, string code);
+        void DeleteCode(string recipient);
+        Task<OperationResult> ResendCodeAsync(string recipient, NotificationChannel channel, NotificationType type = NotificationType.EmailVerification, Dictionary<string, string> parameters = null);
     }
 }

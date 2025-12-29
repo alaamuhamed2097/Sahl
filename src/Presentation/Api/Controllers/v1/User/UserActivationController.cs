@@ -24,11 +24,8 @@ namespace Api.Controllers.v1.User
         /// <summary>
         /// Verifies the activation code for a user.
         /// </summary>
-        /// <remarks>
-        /// API Version: 1.0+
-        /// </remarks>
         [HttpPost("verify-code")]
-        [AllowAnonymous]
+        [Authorize]
         public async Task<IActionResult> VerifyActivationCode([FromBody] VerifyActivationCodeDto request)
         {
             if (!ModelState.IsValid)
@@ -36,64 +33,66 @@ namespace Api.Controllers.v1.User
                 return Ok(new ResponseModel<string>
                 {
                     Success = false,
+                    //Message = "Invalid input.",
                     Errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList()
                 });
             }
 
-            var result = await _userActivationService.VerifyActivationCodeAsync(request.Mobile, request.ActivationCode);
+            var result = await _userActivationService.VerifyActivationCodeAsync(UserId, request.ActivationCode);
 
             if (result.Success)
             {
                 return Ok(new ResponseModel<object>
                 {
                     Success = true,
-                    Message = result.Message ?? ValidationResources.ActivationCodeVerified
+                    Message = result.Message ?? "Activation code verified successfully."
                 });
             }
 
             return Ok(new ResponseModel<object>
             {
                 Success = false,
-                Message = result.Message ?? UserResources.VerificationCodeError
+                Message = result.Message ?? UserResources.InvalidOrExpiredCode,
+                ErrorCode = result.ErrorCode
             });
+
         }
 
         /// <summary>
         /// Resends the activation code to the user's mobile.
         /// </summary>
-        /// <remarks>
-        /// API Version: 1.0+
-        /// </remarks>
-        [HttpPost("resend-code")]
-        [AllowAnonymous]
-        public async Task<IActionResult> ResendActivationCode([FromBody] ResendActivationCodeDto request)
+        [HttpPost("send-code")]
+        [Authorize]
+        public async Task<IActionResult> sendActivationCode([FromBody] SendActivationCodeDto request)
         {
             if (!ModelState.IsValid)
             {
                 return Ok(new ResponseModel<string>
                 {
                     Success = false,
-                    Message = NotifiAndAlertsResources.InvalidInput,
+                    Message = "Invalid input.",
                     Errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList()
                 });
             }
 
-            var success = await _userActivationService.ResendActivationCodeAsync(request.Mobile);
+            var result = await _userActivationService.SendActivationCodeAsync(UserId, request.Identifire);
 
-            if (success)
+            if (result.Success)
             {
                 return Ok(new ResponseModel<object>
                 {
                     Success = true,
-                    Message = UserResources.ActivationCodeResent
+                    Message = "Activation code has been resent successfully."
                 });
             }
 
             return Ok(new ResponseModel<object>
             {
                 Success = false,
-                Message = UserResources.VerificationCodeError
+                Message = result.Message ?? UserResources.InvalidOrExpiredCode,
+                ErrorCode = result.ErrorCode
             });
+
         }
     }
 }

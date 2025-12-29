@@ -2,61 +2,21 @@
 {
     public enum NotificationType
     {
-        /// <summary>Sent when user achieves their first account type</summary>
-        FirstAccountTypeAchieved,
+        // Purchase & Registration Notifications
+        CoursePurchase,            // Sent immediately after a new course purchase
+        EmailVerification,          // Sent upon user registration for email activation
+        ForgotPassword,            // Sent upon user clicked Forgot Password
+        OldEmailChanged,            // Sent upon user change email for old email
+        NewEmailActivation,         // Sent upon user change email for new email
 
-        /// <summary>Sent when user achieves a new account type</summary>
-        UpgradeAccountType,
+        // Rewards & Certification Notifications
+        CourseCompletion,           // Sent when user completes all lectures of a course
+        CertificateIssued,          // Sent when a certificate is available for download
 
-        /// <summary>Sent when PV (Point Value) points are added to user's account</summary>
-        PvPointsAdded,
+        // User Activity Notifications
+        UserInactivity,              // Sent after 3 days of user inactivity
 
-        /// <summary>Sent when team PV points are added (left/right team)</summary>
-        TeamPvPoints,
-
-        /// <summary>Sent when a new direct marketer registers under the user</summary>
-        NewDirectMarketerRegistered,
-
-        /// <summary>Sent when a new indirect marketer joins the network</summary>
-        NewIndirectMarketerJoined,
-
-        /// <summary>Sent when a marketer's account becomes active</summary>
-        MarketerAccountActivated,
-
-        /// <summary>Sent for direct referral commissions</summary>
-        DirectCommission,
-
-        /// <summary>Sent for recruiter bonuses</summary>
-        RecruitmentCommission,
-
-        /// <summary>Sent for binary tree matching bonuses</summary>
-        BinaryCommission,
-
-        /// <summary>Sent when user achieves a new rank/level</summary>
-        RankPromotion,
-
-        /// <summary>Sent for rank achievement bonuses</summary>
-        RankBonus,
-
-        /// <summary>Sent for level-based commission earnings</summary>
-        LevelCommission,
-
-        /// <summary>Sent with updates about binary commission status</summary>
-        BinaryCommissionStatus,
-
-        /// <summary>Sent with updates about level commission status</summary>
-        LevelCommissionStatus,
-
-        /// <summary>Sent with updates about rank bonus status</summary>
-        RankBonusStatus,
-
-        /// <summary>Sent when a new order is placed in the system</summary>
-        NewOrderCreated,
-
-        /// <summary>Sent when an order's status changes (shipped, completed, etc.)</summary>
-        OrderStatusChanged,
-
-        /// <summary>Sent when system settings are modified by administrators</summary>
-        SystemSettingsUpdated
+        // Send new email
+        sendEmail
     }
 }
