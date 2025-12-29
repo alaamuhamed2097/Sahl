@@ -1,10 +1,9 @@
 ﻿using DAL.Models;
 using Shared.DTOs.Catalog.Item;
-using Shared.DTOs.ECommerce.Item;
 using Shared.DTOs.ECommerce.Offer;
 using Shared.GeneralModels.SearchCriteriaModels;
 
-namespace BL.Service.VendorItem
+namespace BL.Contracts.Service.VendorItem
 {
     public interface IVendorItemService
     {

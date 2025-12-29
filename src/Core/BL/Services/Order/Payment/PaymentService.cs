@@ -3,7 +3,7 @@ using BL.Contracts.Service.Order.Payment;
 using Common.Enumerations.Payment;
 using DAL.Contracts.UnitOfWork;
 using Domains.Entities.Order;
-using Domains.Entities.Payment;
+using Domains.Entities.Order.Payment;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
 using Shared.DTOs.Order.Payment.PaymentProcessing;

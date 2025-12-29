@@ -2,7 +2,7 @@
 using DAL.Contracts.Repositories.Order;
 using DAL.Exceptions;
 using DAL.ResultModels;
-using Domains.Entities.ECommerceSystem.Cart;
+using Domains.Entities.Order.Cart;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
 using System.Linq.Expressions;

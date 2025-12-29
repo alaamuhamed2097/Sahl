@@ -1,6 +1,5 @@
 ﻿using BL.Services.Order.Payment;
 using Shared.DTOs.Order.Payment.Refund;
-using Shared.DTOs.Order.Refund;
 
 namespace BL.Contracts.Service.Order.Payment;
 

@@ -1,7 +1,8 @@
 ﻿using BL.Contracts.Service.Merchandising;
 using Common.Enumerations.Merchandising;
 using DAL.Contracts.Repositories.Merchandising;
-using Domains.Entities.Merchandising;
+using Domains.Entities.Merchandising.HomePage;
+using Domains.Entities.Merchandising.HomePageBlocks;
 
 namespace BL.Services.Merchandising;
 

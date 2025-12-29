@@ -14,6 +14,7 @@ public partial class MappingProfile : Profile
         ConfigureUnitMappings();
         ConfigureItemMappings();
         ConfigureMerchandisingMappings();
+        ConfigureCouponCodeMappings();
         ConfigureOfferMappings();
         ConfigureCurrencyMappings();
         ConfigureBrandMapping();
@@ -30,7 +31,7 @@ public partial class MappingProfile : Profile
         ConfigureCustomerAddressMapping();
         ConfigureHomePageSliderMappingProfile();
 
-		ConfigureCustomerMappings();
+        ConfigureCustomerMappings();
 
     }
 }

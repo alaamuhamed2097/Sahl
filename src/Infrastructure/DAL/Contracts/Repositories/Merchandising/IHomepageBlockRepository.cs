@@ -1,5 +1,6 @@
 ﻿using Common.Enumerations.Merchandising;
-using Domains.Entities.Merchandising;
+using Domains.Entities.Merchandising.HomePage;
+using Domains.Entities.Merchandising.HomePageBlocks;
 
 namespace DAL.Contracts.Repositories.Merchandising
 {

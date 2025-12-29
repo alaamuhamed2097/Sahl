@@ -1,5 +1,5 @@
 using Common.Enumerations.Payment;
-using Domains.Entities.Shipping;
+using Domains.Entities.Order.Shipping;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 

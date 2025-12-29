@@ -2,7 +2,8 @@
 using Asp.Versioning;
 using BL.Contracts.Service.Merchandising;
 using Common.Enumerations.User;
-using Domains.Entities.Merchandising;
+using Domains.Entities.Merchandising.HomePage;
+using Domains.Entities.Merchandising.HomePageBlocks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Shared.GeneralModels;

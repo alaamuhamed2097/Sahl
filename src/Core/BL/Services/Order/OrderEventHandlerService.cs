@@ -4,12 +4,11 @@ using Common.Enumerations.Order;
 using Common.Enumerations.Payment;
 using DAL.Contracts.UnitOfWork;
 using Domains.Entities.Order;
-using Domains.Entities.Payment;
+using Domains.Entities.Order.Payment;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
 using Shared.DTOs.Order.OrderEvents;
 using Shared.DTOs.Order.Payment.PaymentProcessing;
-using Shared.Events.Order;
 
 namespace BL.Services.Order;
 

@@ -3,6 +3,7 @@
 
 @using Common.Enumerations
 @using Common.Enumerations.FieldType
+@using Common.Enumerations.Order
 @using Common.Enumerations.User
 @using Shared.DTOs.ECommerce
 @using Shared.DTOs.User
@@ -27,16 +28,16 @@
                     <div class="row">
                         <div class="col-md-6 mb-3">
                             <label class="form-label">@FormResources.ArabicTitle:</label>
-                            <InputText class="form-control" @bind-Value="Model.TitleAR"
+                            <InputText class="form-control" @bind-Value="Model.TitleAr"
                                        placeholder="@String.Format(FormResources.ArabicTitle)" />
-                            <ValidationMessage For="@(() => Model.TitleAR)" />
+                            <ValidationMessage For="@(() => Model.TitleAr)" />
                         </div>
 
                         <div class="col-md-6 mb-3">
                             <label class="form-label">@FormResources.EnglishTitle:</label>
-                            <InputText class="form-control" @bind-Value="Model.TitleEN"
+                            <InputText class="form-control" @bind-Value="Model.TitleEn"
                                        placeholder="@String.Format(FormResources.EnglishTitle)" />
-                            <ValidationMessage For="@(() => Model.TitleEN)" />
+                            <ValidationMessage For="@(() => Model.TitleEn)" />
                         </div>
                     </div>
 
@@ -50,22 +51,22 @@
 
                         <div class="col-md-6 mb-3">
                             <label class="form-label">@FormResources.PromoCodeType:</label>
-                            <InputSelect class="form-control" @bind-Value="Model.CouponCodeType">
-                                @foreach (var type in Enum.GetValues(typeof(CouponCodeType)))
+                            <InputSelect class="form-control" @bind-Value="Model.DiscountType">
+                                @foreach (var type in Enum.GetValues(typeof(DiscountType)))
                                 {
                                     <option value="@type">@type.ToString()</option>
                                 }
                             </InputSelect>
-                            <ValidationMessage For="@(() => Model.CouponCodeType)" />
+                            <ValidationMessage For="@(() => Model.DiscountType)" />
                         </div>
                     </div>
 
                     <div class="row">
                         <div class="col-md-6 mb-3">
                             <label class="form-label">@FormResources.Value:</label>
-                            <InputNumber class="form-control" @bind-Value="Model.Value"
+                            <InputNumber class="form-control" @bind-Value="Model.DiscountValue"
                                          placeholder="@String.Format(FormResources.Value)" />
-                            <ValidationMessage For="@(() => Model.Value)" />
+                            <ValidationMessage For="@(() => Model.DiscountValue)" />
                         </div>
 
                         <div class="col-md-6 mb-3">
@@ -85,8 +86,8 @@
 
                         <div class="col-md-6 mb-3">
                             <label class="form-label">@FormResources.EndDate:</label>
-                            <InputDate class="form-control" @bind-Value="Model.EndDate" min="@DateTime.Today.ToString("yyyy-MM-dd")" />
-                            <ValidationMessage For="@(() => Model.EndDate)" />
+                            <InputDate class="form-control" @bind-Value="Model.ExpiryDate" min="@DateTime.Today.ToString("yyyy-MM-dd")" />
+                            <ValidationMessage For="@(() => Model.ExpiryDate)" />
                         </div>
                     </div>
                 </EditForm>

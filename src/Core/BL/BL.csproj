@@ -24,6 +24,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <Folder Include="Services\CouponCode\" />
 	  <Folder Include="Tests\UserManagement\" />
 	</ItemGroup>
 
