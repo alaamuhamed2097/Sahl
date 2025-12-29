@@ -226,8 +226,8 @@ public class UserRegistrationService : IUserRegistrationService
                 ? userDto.Email
                 : username;
 
-            var signInResult = await _userAuthenticationService.EmailOrUserNameSignInAsync(
-                signInIdentifier, userDto.Password, clientType);
+                var signInResult = await _userAuthenticationService.EmailOrPhoneNumberSignInAsync(
+                    signInIdentifier, userDto.Password, clientType);
 
             if (!signInResult.Success)
             {

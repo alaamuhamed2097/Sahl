@@ -2,6 +2,7 @@ using BL.Contracts.GeneralService.CMS;
 using BL.Contracts.GeneralService.Location;
 using BL.Contracts.IMapper;
 using BL.Contracts.Service.Setting;
+using BL.Services.Base;
 using DAL.Contracts.Repositories;
 using Domains.Entities.Setting;
 using Microsoft.AspNetCore.Hosting;
@@ -12,7 +13,7 @@ using System.Text.RegularExpressions;
 
 namespace BL.Services.Setting;
 
-public class SettingService : ISettingService
+public class SettingService : BaseService<TbSetting, SettingDto>, ISettingService
 {
     private readonly ITableRepository<TbSetting> _settingRepository;
     private readonly IFileUploadService _fileUploadService;
@@ -27,7 +28,7 @@ public class SettingService : ISettingService
         IImageProcessingService imageProcessingService,
         IWebHostEnvironment webHostEnvironment,
         IBaseMapper mapper,
-        ILocationBasedCurrencyService locationBasedCurrencyService)
+        ILocationBasedCurrencyService locationBasedCurrencyService) : base(settingRepository, mapper)
     {
         _settingRepository = settingRepository;
         _fileUploadService = fileUploadService;

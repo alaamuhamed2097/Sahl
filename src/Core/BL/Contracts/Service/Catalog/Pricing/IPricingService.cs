@@ -1,4 +1,4 @@
-using Domains.Entities.Catalog.Item.ItemAttributes;
+using Common.Enumerations.Pricing;
 using Shared.DTOs.Catalog.Pricing;
 
 namespace BL.Contracts.Service.Catalog.Pricing;
@@ -8,6 +8,7 @@ namespace BL.Contracts.Service.Catalog.Pricing;
 /// </summary>
 public interface IPricingService
 {
-    PricingResult CalculatePrice(PricingContext context);
-    PricingResult GetBestOffer(TbItemCombination combination, int quantity = 1);
+    Task<PricingResult> CalculatePrice(Guid itemCombinationId,
+ PricingStrategyType strategyType,
+ int requestedQuantity);
 }

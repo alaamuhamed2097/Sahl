@@ -5,12 +5,10 @@ namespace Domains.Entities.ECommerceSystem.Review
 {
     public class TbReviewReport : BaseEntity
     {
-        //public Guid ReportId { get; set; }
-
         public Guid ItemReviewId { get; set; }
         public Guid CustomerId { get; set; }
 
-        public ReviewReportReason Reason { get; set; }  
+        public ReviewReportReason Reason { get; set; }
         public string? Details { get; set; }
         public ReviewReportStatus Status { get; set; } = ReviewReportStatus.Pending; // Pending, Reviewed, Resolved
 

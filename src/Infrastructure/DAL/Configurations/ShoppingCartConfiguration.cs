@@ -15,9 +15,6 @@ namespace DAL.Configurations
             builder.Property(x => x.Id)
                 .HasDefaultValueSql("NEWID()");
 
-            builder.Property(x => x.IsActive)
-                .HasDefaultValue(true);
-
             // Indexes
             builder.HasIndex(e => e.UserId);
         }

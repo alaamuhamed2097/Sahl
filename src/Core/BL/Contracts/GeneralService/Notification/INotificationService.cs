@@ -1,10 +1,12 @@
-﻿using Shared.GeneralModels;
+﻿using BL.OperationResults;
 using Shared.GeneralModels.Parameters.Notification;
+using Shared.GeneralModels.ResultModels;
 
-namespace BL.Contracts.GeneralService.Notification;
-
-public interface INotificationService
+namespace Bl.Contracts.GeneralService.Notification
 {
-    Task<ResponseModel<object>> SendBulkNotificationAsync(List<NotificationRequest> requests);
-    Task<ResponseModel<object>> SendNotificationAsync(NotificationRequest request);
+    public interface INotificationService
+    {
+        Task<OperationResult> SendNotificationAsync(NotificationRequest request);
+        Task<BulkOperationResult> SendBulkNotificationAsync(NotificationRequest request, IEnumerable<string> recipients);
+    }
 }

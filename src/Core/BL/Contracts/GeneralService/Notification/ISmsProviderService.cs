@@ -1,9 +1,10 @@
-﻿using Shared.GeneralModels;
-using Shared.GeneralModels.Parameters.Notification;
+﻿using Shared.GeneralModels.Parameters.Notification;
+using Shared.GeneralModels.ResultModels;
 
-namespace BL.Contracts.GeneralService.Notification;
-
-public interface ISmsProviderService
+namespace Bl.Contracts.GeneralService.Notification
 {
-    Task<ResponseModel<object>> SendAsync(SmsRequest request);
+    public interface ISmsProviderService
+    {
+        Task<OperationResult> SendAsync(SmsRequest request);
+    }
 }

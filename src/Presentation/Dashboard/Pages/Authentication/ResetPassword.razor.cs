@@ -30,7 +30,7 @@ namespace Dashboard.Pages.Authentication
 
         [Parameter]
         [SupplyParameterFromQuery]
-        public string? Email { get; set; }
+        public string? Identifier { get; set; }
 
         protected override async Task OnInitializedAsync()
         {
@@ -39,24 +39,24 @@ namespace Dashboard.Pages.Authentication
 
         protected override void OnParametersSet()
         {
-            // If email is present in the query string, populate the model so validation can succeed
-            if (!string.IsNullOrWhiteSpace(Email))
+            // If Identifier is present in the query string, populate the model so validation can succeed
+            if (!string.IsNullOrWhiteSpace(Identifier))
             {
-                _model.Email = Email!;
+                _model.Identifier = Identifier!;
             }
         }
 
         protected override async Task OnAfterRenderAsync(bool firstRender)
         {
-            // On first render, try to pull the email from localStorage so the model is valid before submit
-            if (firstRender && string.IsNullOrEmpty(_model.Email))
+            // On first render, try to pull the Identifier from localStorage so the model is valid before submit
+            if (firstRender && string.IsNullOrEmpty(_model.Identifier))
             {
                 try
                 {
-                    var emailFromCache = await JSRuntime.InvokeAsync<string>("localStorage.getItem", "resetEmail");
-                    if (!string.IsNullOrEmpty(emailFromCache))
+                    var IdentifierFromCache = await JSRuntime.InvokeAsync<string>("localStorage.getItem", "resetIdentifier");
+                    if (!string.IsNullOrEmpty(IdentifierFromCache))
                     {
-                        _model.Email = emailFromCache;
+                        _model.Identifier = IdentifierFromCache;
                         StateHasChanged();
                     }
                 }
@@ -89,8 +89,8 @@ namespace Dashboard.Pages.Authentication
 
             try
             {
-                // Ensure email is present; if not, redirect user to request reset again
-                if (string.IsNullOrEmpty(_model.Email))
+                // Ensure Identifier is present; if not, redirect user to request reset again
+                if (string.IsNullOrEmpty(_model.Identifier))
                 {
                     NavigationManager.NavigateTo("/forget-password");
                     return;
@@ -100,7 +100,7 @@ namespace Dashboard.Pages.Authentication
                 if (result.Success)
                 {
                     _successMessage = result.Message ?? ValidationResources.PasswordResetSuccess;
-                    await JSRuntime.InvokeVoidAsync("localStorage.removeItem", "resetEmail");
+                    await JSRuntime.InvokeVoidAsync("localStorage.removeItem", "resetIdentifier");
                     await Task.Delay(1000);
                     NavigationManager.NavigateTo("/login");
                 }

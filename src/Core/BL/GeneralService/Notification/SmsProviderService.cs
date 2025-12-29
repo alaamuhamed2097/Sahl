@@ -1,40 +1,41 @@
-﻿using BL.Contracts.GeneralService.Notification;
+﻿using Bl.Contracts.GeneralService.Notification;
 using Serilog;
-using Shared.GeneralModels;
 using Shared.GeneralModels.Parameters.Notification;
+using Shared.GeneralModels.ResultModels;
 
-namespace Bl.GeneralService.Notification;
-
-public class SmsProviderService : ISmsProviderService
+namespace Bl.GeneralService.Notification
 {
-    private readonly ILogger _logger;
-
-    public SmsProviderService(ILogger logger)
+    public class SmsProviderService : ISmsProviderService
     {
-        _logger = logger;
-    }
+        private readonly ILogger _logger;
 
-    public async Task<ResponseModel<object>> SendAsync(SmsRequest request)
-    {
-        try
+        public SmsProviderService(ILogger logger)
         {
-            // Implement your SMS provider logic here
-            // Example with Twilio, AWS SNS, or any other SMS service
-
-            return new ResponseModel<object>
-            {
-                Success = true,
-                Message = "SMS sent successfully"
-            };
+            _logger = logger;
         }
-        catch (Exception ex)
+
+        public async Task<OperationResult> SendAsync(SmsRequest request)
         {
-            _logger.Error(ex, $"Failed to send SMS to {request.PhoneNumber}");
-            return new ResponseModel<object>
+            try
             {
-                Success = false,
-                Message = "Failed to send SMS"
-            };
+                // Implement your SMS provider logic here
+                // Example with Twilio, AWS SNS, or any other SMS service
+
+                return new OperationResult
+                {
+                    Success = true,
+                    Message = "SMS sent successfully"
+                };
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex, $"Failed to send SMS to {request.PhoneNumber}");
+                return new OperationResult
+                {
+                    Success = false,
+                    Message = "Failed to send SMS"
+                };
+            }
         }
     }
 }

@@ -6,7 +6,6 @@ namespace Shared.DTOs.User
     public class ForgetPasswordRequestDto
     {
         [Required(ErrorMessageResourceName = "FieldRequired", ErrorMessageResourceType = typeof(ValidationResources))]
-        [EmailAddress]
-        public string Email { get; set; } = null!;
+        public string Identifier { get; set; } = null!;
     }
 }
