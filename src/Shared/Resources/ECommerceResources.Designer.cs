@@ -286,6 +286,15 @@ namespace Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to خاصية &quot;تؤثر على التسعير&quot; متوفرة فقط للسمات من نوع القائمة.
+        /// </summary>
+        public static string AffectsPricingListTypeOnly {
+            get {
+                return ResourceManager.GetString("AffectsPricingListTypeOnly", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to جميع أنواع المعلنين.
         /// </summary>
         public static string AllAdvertiserTypes {

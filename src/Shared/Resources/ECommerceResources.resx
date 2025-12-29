@@ -843,4 +843,7 @@
 	<data name="ConfigureAttributes" xml:space="preserve">
   <value>قم بتكوين الخصائص لهذا المنتج</value>
 </data>
+	<data name="AffectsPricingListTypeOnly" xml:space="preserve">
+  <value>خاصية "تؤثر على التسعير" متوفرة فقط للسمات من نوع القائمة</value>
+</data>
 </root>
