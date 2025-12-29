@@ -8,7 +8,7 @@ namespace DAL.Contracts.Repositories.Review
 {
 	public interface IVendorReviewRepository : ITableRepository<TbVendorReview>
 	{
-		Task<TbVendorReview?> GetReviewByOrderDetailAsync(Guid orderDetailId, CancellationToken cancellationToken = default);
+		//Task<TbVendorReview?> GetReviewByOrderDetailAsync(Guid orderDetailId, CancellationToken cancellationToken = default);
 		
 			/// <summary>
 			/// Retrieves detailed information for a specific review including related entities.
@@ -104,6 +104,12 @@ namespace DAL.Contracts.Repositories.Review
 			Task<Dictionary<int, int>> GetVendorRatingDistributionAsync(
 				Guid vendorId,
 				CancellationToken cancellationToken = default);
+			Task<bool> HasCustomerPurchasedFromVendorAsync(
+			Guid? orderId,
+			Guid vendorId,CancellationToken cancellationToken = default);
+		Task<decimal> GetAverageRatingAsync(
+			Guid ItemId,
+			CancellationToken cancellationToken = default);
 		}
 	}
 

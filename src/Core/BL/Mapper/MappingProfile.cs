@@ -28,7 +28,9 @@ public partial class MappingProfile : Profile
         ConfigurePricingMappings();
         ConfigureCartMappings();
         ConfigureCustomerAddressMapping();
+        ConfigureHomePageSliderMappingProfile();
 
-        ConfigureCustomerMappings();
+		ConfigureCustomerMappings();
+
     }
 }
