@@ -2,6 +2,7 @@
 using DAL.Models;
 using Shared.DTOs.User.Admin;
 using Shared.GeneralModels;
+using Shared.GeneralModels.ResultModels;
 using Shared.GeneralModels.SearchCriteriaModels;
 
 namespace BL.Contracts.GeneralService.UserManagement;
@@ -16,4 +17,6 @@ public interface IUserProfileService
     Task<AdminRegistrationDto> FindAdminDtoByIdAsync(string userId);
     Task<AdminProfileDto> GetAdminProfileAsync(string userId);
     Task<ResponseModel<AdminProfileDto>> UpdateAdminProfileAsync(string userId, AdminProfileUpdateDto userProfileUpdateDto, Guid updatorId);
+
+    Task<OperationResult> ChangeEmailAsync(string userId, string newEmail);
 }

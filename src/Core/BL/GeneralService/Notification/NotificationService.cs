@@ -122,6 +122,7 @@ namespace Bl.GeneralService.Notification
             }
         }
 
+
         private async Task<BulkOperationResult> SendBulkSignalRNotificationAsync(NotificationRequest request, List<string> recipients)
         {
             var template = await _templateService.GetTemplateAsync(
@@ -213,7 +214,6 @@ namespace Bl.GeneralService.Notification
                 IndividualResults = results.ToList()
             };
         }
-
 
 
         private async Task<OperationResult> SendEmailNotificationAsync(NotificationRequest request)

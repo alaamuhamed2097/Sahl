@@ -107,25 +107,8 @@ public class TemplateService : ITemplateService
 
     private string GetSubject(NotificationType type, string language = "ar") => type switch
     {
-        NotificationType.BinaryCommission => language == "ar" ? "المكافأة الثنائية" : "Binary Commission",
-        NotificationType.BinaryCommissionStatus => language == "ar" ? "حالة المكافأة الثنائية" : "Binary Commission Status",
-        NotificationType.DirectCommission => language == "ar" ? "العمولة المباشرة" : "Direct Commission",
-        NotificationType.LevelCommission => language == "ar" ? "العمولة على المستويات" : "Level Commission",
-        NotificationType.LevelCommissionStatus => language == "ar" ? "حالة العمولة على المستويات" : "Level Commission Status",
-        NotificationType.RecruitmentCommission => language == "ar" ? "عمولة التوظيف" : "Recruitment Commission",
-        NotificationType.FirstAccountTypeAchieved => language == "ar" ? "مبروك! تم تفعيل أول حساب في شبكتك" : "Congratulations! First account activated in your network",
-        NotificationType.UpgradeAccountType => language == "ar" ? "مبروك الترقية!" : "Congratulations on Your Upgrade!",
-        NotificationType.MarketerAccountActivated => language == "ar" ? "تم تفعيل حساب المسوق" : "Marketer Account Activated",
-        NotificationType.NewDirectMarketerRegistered => language == "ar" ? "مبروك! مسوق جديد في فريقك المباشر" : "Congratulations! New direct marketer",
-        NotificationType.NewIndirectMarketerJoined => language == "ar" ? "تم توسيع فريقك!" : "Your team expanded!",
-        NotificationType.NewOrderCreated => language == "ar" ? "تم إنشاء طلب جديد" : "New Order Created",
-        NotificationType.OrderStatusChanged => language == "ar" ? "تغير حالة الطلب" : "Order Status Changed",
-        NotificationType.RankBonus => language == "ar" ? "مكافأة الرتبة" : "Rank Bonus",
-        NotificationType.RankBonusStatus => language == "ar" ? "حالة مكافأة الرتبة" : "Rank Bonus Status",
-        NotificationType.RankPromotion => language == "ar" ? "ترقية في الرتبة" : "Rank Promotion",
-        NotificationType.PvPointsAdded => language == "ar" ? "تمت إضافة نقاط PV جديدة" : "New PV points added ",
-        NotificationType.TeamPvPoints => language == "ar" ? "نقاط فريق PV" : "Team PV Points",
-        NotificationType.SystemSettingsUpdated => language == "ar" ? "تم تحديث إعدادات النظام" : "System Settings Updated",
+        //NotificationType.BinaryCommission => language == "ar" ? "المكافأة الثنائية" : "Binary Commission",
+        //NotificationType.SystemSettingsUpdated => language == "ar" ? "تم تحديث إعدادات النظام" : "System Settings Updated",
 
         _ => language == "ar" ? "إشعار عام" : type.ToString().Replace('_', ' ')
     };

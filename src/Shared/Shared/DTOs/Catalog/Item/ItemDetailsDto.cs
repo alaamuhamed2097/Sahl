@@ -28,7 +28,7 @@ namespace Shared.DTOs.Catalog.Item
 
         public decimal AverageRating { get; set; }
 
-        public List<ItemImageDto> GeneralImages { get; set; }
+        public List<ImageDto> GeneralImages { get; set; }
         public List<ItemAttributeDefinitionDto> Attributes { get; set; }
 
         // Default selected combination (matches search result price)

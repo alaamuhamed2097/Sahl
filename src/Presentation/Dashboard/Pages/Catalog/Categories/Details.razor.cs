@@ -187,13 +187,55 @@ public partial class Details : IDisposable
     }
 
     // Handle attribute selection change
+    // ========== Attribute FieldType Helpers ==========
+    private int GetAttributeFieldType(Guid attributeId)
+    {
+        if (attributeId == Guid.Empty)
+            return 0;
+
+        var attribute = availableAttributes.FirstOrDefault(a => a.Id == attributeId);
+        if (attribute == null)
+            return 0;
+
+        return (int) attribute?.FieldType ;
+    }
+
+    // Handle attribute selection change - updated version
     private async Task OnAttributeChanged(ChangeEventArgs e, CategoryAttributeDto categoryAttribute)
     {
         if (Guid.TryParse(e.Value?.ToString(), out var attributeId))
         {
             categoryAttribute.AttributeId = attributeId;
+
+            // Reset AffectsPricing if the new attribute is not a List type
+            var fieldType = GetAttributeFieldType(attributeId);
+            if (fieldType != 6)
+            {
+                categoryAttribute.AffectsPricing = false;
+            }
         }
         StateHasChanged();
+    }
+
+    // Validate attributes before saving
+    private bool ValidateAttributePricing()
+    {
+        if (Model.CategoryAttributes == null || !Model.CategoryAttributes.Any())
+            return true;
+
+        foreach (var attr in Model.CategoryAttributes)
+        {
+            if (attr.AffectsPricing)
+            {
+                var fieldType = GetAttributeFieldType(attr.AttributeId);
+                if (fieldType != 6)
+                {
+                    // Found an invalid affects pricing configuration
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 
     private CategoryDto CreateNewCategory()
@@ -328,9 +370,35 @@ public partial class Details : IDisposable
                 Model.PricingSystemId = PricingSystems.First().Id;
             }
 
+            // Confirm that PricingSystemId matches the selected PricingSystemType
+            var selectedPricingSystem = PricingSystems?.FirstOrDefault(p => p.SystemType == Model.PricingSystemType);
+            Model.PricingSystemId = selectedPricingSystem != null ? selectedPricingSystem.Id : Guid.Parse("11111111-1111-1111-1111-111111111111");
+
+            // Clean up any attributes with empty AttributeId
             if (Model.CategoryAttributes != null && Model.CategoryAttributes.Any())
             {
                 Model.CategoryAttributes.RemoveAll(attribute => attribute.AttributeId == Guid.Empty);
+
+                // Validate that AffectsPricing is only set for List type attributes
+                foreach (var attr in Model.CategoryAttributes)
+                {
+                    var fieldType = GetAttributeFieldType(attr.AttributeId);
+                    if (attr.AffectsPricing && fieldType != 6)
+                    {
+                        // Force disable if not a List type
+                        attr.AffectsPricing = false;
+                    }
+                }
+            }
+
+            // Additional validation check
+            if (!ValidateAttributePricing())
+            {
+                await ShowErrorNotification(
+                    ValidationResources.Failed,
+                    ECommerceResources.AffectsPricingListTypeOnly
+                );
+                return;
             }
 
             // Ensure display order doesn't conflict with existing categories

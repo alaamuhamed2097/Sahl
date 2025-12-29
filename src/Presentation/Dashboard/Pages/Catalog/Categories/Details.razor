@@ -204,13 +204,24 @@
                                         <!-- Affects Pricing Switch -->
                                         <div class="col-md-3" style="min-width:150px;">
                                             <div class="form-check form-switch d-flex justify-content-evenly align-items-center">
-                                                <label class="form-check-label m-0" for="@($"attrIsAffectPrice_{index}")">@ECommerceResources.IsAffectPrice</label>
+                                                <label class="form-check-label m-0"
+                                                       for="@($"attrIsAffectPrice_{index}")"
+                                                       title="@(GetAttributeFieldType(con.AttributeId) != 6 ? ECommerceResources.AffectsPricingListTypeOnly : "")">
+                                                    @ECommerceResources.IsAffectPrice
+                                                </label>
                                                 <InputCheckbox class="form-check-input cursor-pointer"
                                                                type="checkbox"
                                                                id="@($"attrIsAffectPrice_{index}")"
                                                                @bind-Value="con.AffectsPricing"
+                                                               disabled="@(GetAttributeFieldType(con.AttributeId) != 6)"
                                                                style="transform: scale(1.2);" />
                                             </div>
+                                            @if (GetAttributeFieldType(con.AttributeId) != 6 && con.AffectsPricing)
+                                            {
+                                                <small class="text-muted d-block mt-1" style="font-size: 0.75rem;">
+                                                    <i class="feather icon-info me-1"></i>@ECommerceResources.AffectsPricingListTypeOnly
+                                                </small>
+                                            }
                                         </div>
                                         <!-- Delete Button -->
                                         <div class="col-md-2 d-flex justify-content-center align-content-center">

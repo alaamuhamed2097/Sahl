@@ -1,6 +1,9 @@
-﻿using BL.Contracts.GeneralService.CMS;
+﻿using Bl.Contracts.GeneralService.Notification;
+using BL.Contracts.GeneralService;
+using BL.Contracts.GeneralService.CMS;
 using BL.Contracts.GeneralService.UserManagement;
 using BL.Contracts.IMapper;
+using Common.Enumerations.Notification;
 using Common.Enumerations.User;
 using DAL.Contracts.UnitOfWork;
 using DAL.Exceptions;
@@ -9,7 +12,10 @@ using Microsoft.AspNetCore.Identity;
 using Resources;
 using Serilog;
 using Shared.DTOs.User.Admin;
+using Shared.ErrorCodes;
 using Shared.GeneralModels;
+using Shared.GeneralModels.Parameters.Notification;
+using Shared.GeneralModels.ResultModels;
 using Shared.GeneralModels.SearchCriteriaModels;
 using System.ComponentModel.DataAnnotations;
 
@@ -18,6 +24,8 @@ namespace BL.GeneralService.UserManagement;
 public class UserProfileService : IUserProfileService
 {
     private readonly UserManager<ApplicationUser> _userManager;
+    private readonly INotificationService _notificationService;
+    private readonly IVerificationCodeService _verificationCodeService;
     private readonly IUnitOfWork _userProfileUnitOfWork;
     private readonly IFileUploadService _fileUploadService;
     private readonly IImageProcessingService _imageProcessingService;
@@ -26,6 +34,8 @@ public class UserProfileService : IUserProfileService
 
     public UserProfileService(
         UserManager<ApplicationUser> userManager,
+        INotificationService notificationService,
+        IVerificationCodeService verificationCodeService,
         IBaseMapper mapper,
         IUnitOfWork userProfileUnitOfWork,
         IFileUploadService fileUploadService,
@@ -33,7 +43,9 @@ public class UserProfileService : IUserProfileService
         ILogger logger)
     {
         _userManager = userManager;
+        _notificationService = notificationService;
         _userProfileUnitOfWork = userProfileUnitOfWork;
+        _verificationCodeService = verificationCodeService;
         _mapper = mapper;
         _fileUploadService = fileUploadService;
         _imageProcessingService = imageProcessingService;
@@ -186,6 +198,92 @@ public class UserProfileService : IUserProfileService
         // Collect errors from IdentityResult
         var errors = result.Errors.Select(e => e.Description).ToList();
         return new ResponseModel<AdminProfileDto> { Success = false, Message = string.Join(", ", errors) };
+    }
+
+    public async Task<OperationResult> ChangeEmailAsync(string userId, string newEmail)
+    {
+        var user = await _userManager.FindByIdAsync(userId);
+        if (user == null)
+        {
+            return new OperationResult { Success = false, Message = "User not found." };
+        }
+
+        newEmail = newEmail.ToLower();
+
+        // make sure email changed
+        if (user.Email == newEmail)
+        {
+            return new OperationResult { Success = false, Message = "New email must be different from the current email." };
+        }
+
+        var existingUser = await _userManager.FindByEmailAsync(newEmail);
+
+        if (existingUser != null && existingUser.Id != user.Id)
+        {
+            return new OperationResult
+            {
+                Success = false,
+                Message = "This email is already registered to another account",
+                ErrorCode = ErrorCodes.User.EmailExists
+            };
+        }
+
+        //send notification to old email
+        var notificationRequest = new NotificationRequest
+        {
+            Recipient = user.Email,
+            Channel = NotificationChannel.Email,
+            Type = NotificationType.OldEmailChanged,
+            Parameters = new Dictionary<string, string>
+                    {
+                        { "FullName", $"{user.FirstName} {user.LastName}" },
+                        { "OldEmail", user.Email },
+                        { "NewEmail", newEmail },
+                        { "Time", DateTime.UtcNow.ToString("dd-MM-yyyy HH:mm tt") },
+                    }
+        };
+
+        // Send notification to old email
+        var oldEmailNotificationSent = await _notificationService.SendNotificationAsync(notificationRequest);
+
+        if (!oldEmailNotificationSent.Success)
+        {
+            return new OperationResult
+            {
+                Success = false,
+                Message = "Failed to send notification to old email",
+                Errors = oldEmailNotificationSent.Errors
+            };
+        }
+
+        //send activation code
+        var newEmailCodeSent = await _verificationCodeService
+            .SendCodeAsync(
+            newEmail,
+            NotificationChannel.Email,
+            NotificationType.NewEmailActivation,
+            new Dictionary<string, string>
+            {
+                        { "FullName", $"{user.FirstName} {user.LastName}" },
+                        { "NewEmail", newEmail },
+                        { "Time", DateTime.UtcNow.ToString("dd-MM-yyyy HH:mm tt") },
+            });
+
+        if (!newEmailCodeSent.Success)
+        {
+            return new OperationResult
+            {
+                Success = false,
+                Message = "Failed to send activation code to new email",
+                Errors = newEmailCodeSent.Errors
+            };
+        }
+
+        return new OperationResult
+        {
+            Success = true,
+            Message = "Activation code sent to new email successfully"
+        };
     }
 
     private async Task<string> SaveImageSync(string image)
