@@ -10435,6 +10435,10 @@ namespace DAL.Migrations
                 });
 
             modelBuilder.Entity("Domains.Entities.Catalog.Pricing.TbPricingSystemSetting", b =>
+                {
+                    b.Navigation("PricingRules");
+                });
+
             modelBuilder.Entity("Domains.Entities.Catalog.Unit.TbUnit", b =>
                 {
                     b.Navigation("Items");
