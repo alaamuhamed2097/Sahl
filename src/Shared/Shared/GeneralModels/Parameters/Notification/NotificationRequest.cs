@@ -9,6 +9,8 @@ namespace Shared.GeneralModels.Parameters.Notification
         public NotificationType Type { get; set; }
         public string Subject { get; set; } // For email
         public string Title { get; set; } // For Firebase notifications
+        public string? ImagePath { get; set; } // For SignalR notifications
+        public string? CallToActionUrl { get; set; } // For SignalR notifications
         public Dictionary<string, string> Parameters { get; set; } = new Dictionary<string, string>();
         public string CustomTemplate { get; set; } // For custom templates
     }

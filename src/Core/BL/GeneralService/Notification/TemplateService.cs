@@ -1,4 +1,4 @@
-﻿using BL.Contracts.GeneralService.Notification;
+﻿using Bl.Contracts.GeneralService.Notification;
 using Common.Enumerations.Notification;
 using Microsoft.AspNetCore.Hosting;
 using Serilog;

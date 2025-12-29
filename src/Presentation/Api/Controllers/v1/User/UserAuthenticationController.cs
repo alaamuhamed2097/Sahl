@@ -37,16 +37,16 @@ namespace Api.Controllers.v1.User
         [AllowAnonymous]
         public async Task<IActionResult> InitiatePasswordReset([FromBody] ForgetPasswordRequestDto request)
         {
-            if (string.IsNullOrEmpty(request.Email))
+            if (string.IsNullOrEmpty(request.Identifier))
             {
                 return Ok(new ResponseModel<object>
                 {
                     Success = false,
-                    Message = ValidationResources.EmailRequired
+                    Message = ValidationResources.FieldRequired
                 });
             }
 
-            var result = await _userAuthenticationService.SendResetCodeAsync(request.Email);
+            var result = await _userAuthenticationService.SendResetCodeAsync(UserId, request.Identifier);
 
             if (result.Success)
             {
@@ -84,7 +84,7 @@ namespace Api.Controllers.v1.User
                 });
             }
 
-            var result = await _userAuthenticationService.ResetPasswordWithCodeAsync(resetDto.Email, resetDto.VerificationCode, resetDto.NewPassword);
+            var result = await _userAuthenticationService.ResetPasswordWithCodeAsync(UserId, resetDto.Identifier, resetDto.VerificationCode, resetDto.NewPassword);
 
             if (result.Success)
             {

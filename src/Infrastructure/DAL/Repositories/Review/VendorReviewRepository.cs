@@ -1,8 +1,11 @@
-﻿using Common.Enumerations.Review;
+﻿using Common.Enumerations.Order;
+using Common.Enumerations.Review;
 using DAL.ApplicationContext;
+using DAL.Contracts.Repositories;
 using DAL.Contracts.Repositories.Review;
 using DAL.Models;
 using Domains.Entities.ECommerceSystem.Review;
+using Domains.Entities.Order;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
 using System;
@@ -13,6 +16,7 @@ namespace DAL.Repositories.Review
 {
 	public class VendorReviewRepository : TableRepository<TbVendorReview>, IVendorReviewRepository
 	{
+		private readonly ITableRepository<TbOrderDetail> _OrderDetails;
 		public VendorReviewRepository(ApplicationDbContext dbContext, ILogger logger)
 			: base(dbContext, logger) { }
 
@@ -128,6 +132,49 @@ namespace DAL.Repositories.Review
 					&& !r.IsDeleted,
 					cancellationToken);
 		}
+		public async Task<bool> HasCustomerPurchasedFromVendorAsync(
+	Guid? orderId,
+	Guid vendorId,
+
+	CancellationToken cancellationToken = default)
+		{
+			return await _dbContext.TbOrderDetails
+	  .AnyAsync(od =>
+		  od.Order.Id == orderId &&
+		  od.VendorId == vendorId &&
+		  od.Order.OrderStatus == OrderProgressStatus.Delivered,
+		  cancellationToken);
+		}
+		/// <summary>
+		/// Calculates the average rating for a specific Item
+		/// considering only approved, non-deleted reviews.
+		/// </summary>
+		/// <param name="ItemId">Item ID.</param>
+		/// <param name="cancellationToken">Cancellation token.</param>
+		/// <returns>The average rating, or 0 if no reviews exist.</returns>
+		public async Task<decimal> GetAverageRatingAsync(
+			Guid ItemId,
+			CancellationToken cancellationToken = default)
+		{
+			try
+			{
+				var reviews = await _dbContext.Set<TbItemReview>()
+					.AsNoTracking()
+					.Where(r => r.ItemId == ItemId
+						&& r.Status == ReviewStatus.Approved
+						&& !r.IsDeleted)
+					.Select(r => r.Rating)
+					.ToListAsync(cancellationToken);
+
+				return reviews.Any() ? reviews.Average() : 0;
+			}
+			catch (Exception ex)
+			{
+				HandleException(nameof(GetAverageRatingAsync),
+					$"Error occurred while calculating average rating for Item {ItemId}.", ex);
+				return 0;
+			}
+		}
 
 		/// <summary>
 		/// Calculates the average rating for a vendor based on approved reviews only.
@@ -168,31 +215,7 @@ namespace DAL.Repositories.Review
 					cancellationToken);
 		}
 
-		/// <summary>
-		/// Retrieves a review by order detail ID.
-		/// </summary>
-		/// <param name="orderDetailId">ID of the OrderDetail.</param>
-		/// <param name="cancellationToken">Cancellation token.</param>
-		/// <returns>The review if found, null otherwise.</returns>
-		public async Task<TbVendorReview?> GetReviewByOrderDetailAsync(
-			Guid orderDetailId,
-			CancellationToken cancellationToken = default)
-		{
-			try
-			{
-				return await _dbContext.Set<TbVendorReview>()
-					.AsNoTracking()
-					.Include(r => r.Customer)
-					.FirstOrDefaultAsync(r => r.OrderDetailId == orderDetailId && !r.IsDeleted,
-						cancellationToken);
-			}
-			catch (Exception ex)
-			{
-				HandleException(nameof(GetReviewByOrderDetailAsync),
-					$"Error occurred while retrieving review for OrderDetail {orderDetailId}.", ex);
-				return null;
-			}
-		}
+		
 		/// <summary>
 		/// Retrieves the distribution of ratings (1-5 stars) for a vendor.
 		/// </summary>
@@ -236,34 +259,34 @@ namespace DAL.Repositories.Review
 
 			return result;
 		}
-		///// <summary>
-		///// Retrieves all approved (visible) reviews for a given Vendor.
-		///// Filters by VendorId, ensures the review is approved and not soft-deleted.
-		///// </summary>
-		///// <param name="vendorId">ID of the Vendor to retrieve reviews for.</param>
-		///// <param name="cancellationToken">Cancellation token.</param>
-		///// <returns>A list of approved reviews sorted by newest first.</returns>
+		/// <summary>
+		/// Retrieves all approved (visible) reviews for a given Vendor.
+		/// Filters by VendorId, ensures the review is approved and not soft-deleted.
+		/// </summary>
+		/// <param name="vendorId">ID of the Vendor to retrieve reviews for.</param>
+		/// <param name="cancellationToken">Cancellation token.</param>
+		/// <returns>A list of approved reviews sorted by newest first.</returns>
 		//public async Task<IEnumerable<TbVendorReview>> GetReviewsByVendorIdAsync(
-		//    Guid vendorId,
-		//    CancellationToken cancellationToken = default)
+		//	Guid vendorId,
+		//	CancellationToken cancellationToken = default)
 		//{
-		//    try
-		//    {
-		//        return await _dbContext.Set<TbVendorReview>()
-		//            .AsNoTracking()
-		//            .Include(r => r.Customer)
-		//            .Where(r => r.VendorId == vendorId
-		//                && r.Status == ReviewStatus.Approved
-		//                && !r.IsDeleted)
-		//            .OrderByDescending(r => r.CreatedDateUtc)
-		//            .ToListAsync(cancellationToken);
-		//    }
-		//    catch (Exception ex)
-		//    {
-		//        HandleException(nameof(GetReviewsByVendorIdAsync),
-		//            $"Error occurred while retrieving reviews for Vendor {vendorId}.", ex);
-		//        return new List<TbVendorReview>();
-		//    }
+		//	try
+		//	{
+		//		return await _dbContext.Set<TbVendorReview>()
+		//			.AsNoTracking()
+		//			.Include(r => r.Customer)
+		//			.Where(r => r.VendorId == vendorId
+		//				&& r.Status == ReviewStatus.Approved
+		//				&& !r.IsDeleted)
+		//			.OrderByDescending(r => r.CreatedDateUtc)
+		//			.ToListAsync(cancellationToken);
+		//	}
+		//	catch (Exception ex)
+		//	{
+		//		HandleException(nameof(GetReviewsByVendorIdAsync),
+		//			$"Error occurred while retrieving reviews for Vendor {vendorId}.", ex);
+		//		return new List<TbVendorReview>();
+		//	}
 		//}
 
 		///// <summary>
@@ -358,34 +381,34 @@ namespace DAL.Repositories.Review
 		//    }
 		//}
 
-		///// <summary>
-		///// Calculates the average rating for a vendor based on approved reviews.
-		///// </summary>
-		///// <param name="vendorId">ID of the Vendor.</param>
-		///// <param name="cancellationToken">Cancellation token.</param>
-		///// <returns>The average rating or 0 if no reviews exist.</returns>
+		/// <summary>
+		/// Calculates the average rating for a vendor based on approved reviews.
+		/// </summary>
+		/// <param name="vendorId">ID of the Vendor.</param>
+		/// <param name="cancellationToken">Cancellation token.</param>
+		/// <returns>The average rating or 0 if no reviews exist.</returns>
 		//public async Task<decimal> GetVendorAverageRatingAsync(
-		//    Guid vendorId,
-		//    CancellationToken cancellationToken = default)
+		//	Guid vendorId,
+		//	CancellationToken cancellationToken = default)
 		//{
-		//    try
-		//    {
-		//        var reviews = await _dbContext.Set<TbVendorReview>()
-		//            .AsNoTracking()
-		//            .Where(r => r.VendorId == vendorId 
-		//                && r.Status == ReviewStatus.Approved 
-		//                && !r.IsDeleted)
-		//            .Select(r => r.Rating)
-		//            .ToListAsync(cancellationToken);
+		//	try
+		//	{
+		//		var reviews = await _dbContext.Set<TbVendorReview>()
+		//			.AsNoTracking()
+		//			.Where(r => r.VendorId == vendorId
+		//				&& r.Status == ReviewStatus.Approved
+		//				&& !r.IsDeleted)
+		//			.Select(r => r.Rating)
+		//			.ToListAsync(cancellationToken);
 
-		//        return reviews.Any() ? reviews.Average() : 0;
-		//    }
-		//    catch (Exception ex)
-		//    {
-		//        HandleException(nameof(GetVendorAverageRatingAsync),
-		//            $"Error occurred while calculating average rating for Vendor {vendorId}.", ex);
-		//        return 0;
-		//    }
+		//		return reviews.Any() ? reviews.Average() : 0;
+		//	}
+		//	catch (Exception ex)
+		//	{
+		//		HandleException(nameof(GetVendorAverageRatingAsync),
+		//			$"Error occurred while calculating average rating for Vendor {vendorId}.", ex);
+		//		return 0;
+		//	}
 		//}
 
 		///// <summary>
@@ -395,56 +418,56 @@ namespace DAL.Repositories.Review
 		///// <param name="cancellationToken">Cancellation token.</param>
 		///// <returns>The count of approved reviews.</returns>
 		//public async Task<int> GetVendorReviewCountAsync(
-		//    Guid vendorId,
-		//    CancellationToken cancellationToken = default)
+		//	Guid vendorId,
+		//	CancellationToken cancellationToken = default)
 		//{
-		//    try
-		//    {
-		//        return await _dbContext.Set<TbVendorReview>()
-		//            .AsNoTracking()
-		//            .CountAsync(r => r.VendorId == vendorId 
-		//                && r.Status == ReviewStatus.Approved 
-		//                && !r.IsDeleted,
-		//                cancellationToken);
-		//    }
-		//    catch (Exception ex)
-		//    {
-		//        HandleException(nameof(GetVendorReviewCountAsync),
-		//            $"Error occurred while counting reviews for Vendor {vendorId}.", ex);
-		//        return 0;
-		//    }
+		//	try
+		//	{
+		//		return await _dbContext.Set<TbVendorReview>()
+		//			.AsNoTracking()
+		//			.CountAsync(r => r.VendorId == vendorId
+		//				&& r.Status == ReviewStatus.Approved
+		//				&& !r.IsDeleted,
+		//				cancellationToken);
+		//	}
+		//	catch (Exception ex)
+		//	{
+		//		HandleException(nameof(GetVendorReviewCountAsync),
+		//			$"Error occurred while counting reviews for Vendor {vendorId}.", ex);
+		//		return 0;
+		//	}
 		//}
 
-		///// <summary>
-		///// Gets the rating distribution for a vendor (count per rating value).
-		///// </summary>
-		///// <param name="vendorId">ID of the Vendor.</param>
-		///// <param name="cancellationToken">Cancellation token.</param>
-		///// <returns>Dictionary with rating as key and count as value.</returns>
+		/// <summary>
+		/// Gets the rating distribution for a vendor (count per rating value).
+		/// </summary>
+		/// <param name="vendorId">ID of the Vendor.</param>
+		/// <param name="cancellationToken">Cancellation token.</param>
+		/// <returns>Dictionary with rating as key and count as value.</returns>
 		//public async Task<Dictionary<int, int>> GetVendorRatingDistributionAsync(
-		//    Guid vendorId,
-		//    CancellationToken cancellationToken = default)
+		//	Guid vendorId,
+		//	CancellationToken cancellationToken = default)
 		//{
-		//    try
-		//    {
-		//        var reviews = await _dbContext.Set<TbVendorReview>()
-		//            .AsNoTracking()
-		//            .Where(r => r.VendorId == vendorId 
-		//                && r.Status == ReviewStatus.Approved 
-		//                && !r.IsDeleted)
-		//            .Select(r => (int)r.Rating)
-		//            .ToListAsync(cancellationToken);
+		//	try
+		//	{
+		//		var reviews = await _dbContext.Set<TbVendorReview>()
+		//			.AsNoTracking()
+		//			.Where(r => r.VendorId == vendorId
+		//				&& r.Status == ReviewStatus.Approved
+		//				&& !r.IsDeleted)
+		//			.Select(r => (int)r.Rating)
+		//			.ToListAsync(cancellationToken);
 
-		//        return reviews
-		//            .GroupBy(r => r)
-		//            .ToDictionary(g => g.Key, g => g.Count());
-		//    }
-		//    catch (Exception ex)
-		//    {
-		//        HandleException(nameof(GetVendorRatingDistributionAsync),
-		//            $"Error occurred while getting rating distribution for Vendor {vendorId}.", ex);
-		//        return new Dictionary<int, int>();
-		//    }
+		//		return reviews
+		//			.GroupBy(r => r)
+		//			.ToDictionary(g => g.Key, g => g.Count());
+		//	}
+		//	catch (Exception ex)
+		//	{
+		//		HandleException(nameof(GetVendorRatingDistributionAsync),
+		//			$"Error occurred while getting rating distribution for Vendor {vendorId}.", ex);
+		//		return new Dictionary<int, int>();
+		//	}
 		//}
 
 	}

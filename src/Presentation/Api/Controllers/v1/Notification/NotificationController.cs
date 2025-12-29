@@ -1,5 +1,5 @@
 using Asp.Versioning;
-using BL.Contracts.GeneralService.Notification;
+using Bl.Contracts.GeneralService.Notification;
 using BL.GeneralService.Notification;
 using Common.Enumerations.User;
 using Microsoft.AspNetCore.Authorization;

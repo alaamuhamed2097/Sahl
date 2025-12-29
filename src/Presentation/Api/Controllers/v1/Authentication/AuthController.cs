@@ -78,7 +78,7 @@ namespace Api.Controllers.v1.Authentication
 
             // Attempt to sign in the user
             var result = await _authenticationService
-                .EmailOrUserNameSignInAsync(loginDto.Identifier, loginDto.Password, clientType);
+                .EmailOrPhoneNumberSignInAsync(loginDto.Identifier, loginDto.Password, clientType);
 
             if (result.Success)
             {
@@ -164,7 +164,7 @@ namespace Api.Controllers.v1.Authentication
             var authIdentifier = isEmail ? identifier : normalizedPhone;
 
             var result = await _authenticationService
-                .EmailOrUserNameSignInAsync(authIdentifier, loginDto.Password, clientType);
+                .EmailOrPhoneNumberSignInAsync(authIdentifier, loginDto.Password, clientType);
 
             if (result.Success)
             {

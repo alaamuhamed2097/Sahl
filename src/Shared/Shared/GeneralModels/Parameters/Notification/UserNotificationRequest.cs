@@ -24,6 +24,7 @@ namespace Shared.GeneralModels.Parameters.Notification
         public string Description => ResourceManager.CurrentLanguage == Language.Arabic ? DescriptionAr : DescriptionEn;
 
         public bool IsRead { get; set; }
+        public string? Url { get; set; }
 
         public DateTime CreatedDateUtc { get; set; }
         public string TimeAgo { get; set; }

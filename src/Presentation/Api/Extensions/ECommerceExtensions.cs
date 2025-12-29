@@ -8,6 +8,7 @@ using BL.Contracts.Service.CouponCode;
 using BL.Contracts.Service.Currency;
 using BL.Contracts.Service.Customer;
 using BL.Contracts.Service.Customer.Wishlist;
+using BL.Contracts.Service.HomeSlider;
 using BL.Contracts.Service.Merchandising;
 using BL.Contracts.Service.Merchandising.Campaign;
 using BL.Contracts.Service.Order.Cart;
@@ -28,6 +29,7 @@ using BL.Services.Catalog.Pricing;
 using BL.Services.Catalog.Unit;
 using BL.Services.Currency;
 using BL.Services.Customer.Wishlist;
+using BL.Services.HomeSlider;
 using BL.Services.Merchandising;
 using BL.Services.Merchandising.Campaign;
 using BL.Services.Order.Cart;
@@ -118,7 +120,8 @@ namespace Api.Extensions
             services.AddScoped<HybridPricingStrategy>();
 
             services.AddScoped<IHomepageService, HomepageService>();
-            services.AddScoped<IAdminBlockService, AdminBlockService>();
+            services.AddScoped<IHomePageSliderService, HomePageSliderService>();
+			services.AddScoped<IAdminBlockService, AdminBlockService>();
 
             return services;
         }

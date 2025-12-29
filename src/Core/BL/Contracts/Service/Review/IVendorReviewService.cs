@@ -162,6 +162,7 @@ namespace BL.Contracts.Service.Review
 			Task<VendorReviewStatsDto> GetVendorReviewStatsAsync(
 				Guid vendorId,
 				CancellationToken cancellationToken = default);
+
 		}
 	}
 	
