@@ -1,7 +1,6 @@
 ﻿using BL.Contracts.Service.Order.Cart;
 using DAL.Contracts.Repositories;
 using DAL.Contracts.Repositories.Order;
-using DAL.Contracts.UnitOfWork;
 using Domains.Entities.ECommerceSystem.Cart;
 using Domains.Entities.Offer;
 using Serilog;
@@ -9,26 +8,19 @@ using Shared.DTOs.Order.Cart;
 
 namespace BL.Services.Order.Cart;
 
-/// <summary>
-/// Cart Service - COMPLETELY FIXED VERSION
-/// Now correctly stores OfferCombinationPricingId in the cart
-/// </summary>
 public class CartService : ICartService
 {
     private readonly ICartRepository _cartRepository;
-    private readonly IOfferRepository _offerRepository;
-    private readonly IUnitOfWork _unitOfWork;
+    private readonly ITableRepository<TbOfferCombinationPricing> _combinationPricingRepository;
     private readonly ILogger _logger;
 
     public CartService(
         ICartRepository cartRepository,
-        IOfferRepository offerRepository,
-        IUnitOfWork unitOfWork,
+        ITableRepository<TbOfferCombinationPricing> combinationPricingRepository,
         ILogger logger)
     {
         _cartRepository = cartRepository ?? throw new ArgumentNullException(nameof(cartRepository));
-        _offerRepository = offerRepository ?? throw new ArgumentNullException(nameof(offerRepository));
-        _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
+        _combinationPricingRepository = combinationPricingRepository ?? throw new ArgumentNullException(nameof(combinationPricingRepository));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
@@ -55,9 +47,6 @@ public class CartService : ICartService
         }
     }
 
-    /// <summary>
-    /// FIXED: Now finds the exact OfferCombinationPricingId and stores it
-    /// </summary>
     public async Task<CartSummaryDto> AddToCartAsync(string customerId, AddToCartRequest request)
     {
         try
@@ -71,29 +60,20 @@ public class CartService : ICartService
             if (request.OfferCombinationPricingId == Guid.Empty)
                 throw new ArgumentException("Offer combination pricing ID cannot be empty", nameof(request.OfferCombinationPricingId));
             if (request.Quantity <= 0)
-                throw new ArgumentException("Quantity must be greater than zero", nameof(request.Quantity));
+                throw new ArgumentException($"Quantity must be greater than zero", nameof(request.Quantity));
 
-            // ✅ CRITICAL FIX: Find the exact OfferCombinationPricingId
-            var pricingRepo = _unitOfWork.TableRepository<TbOfferCombinationPricing>();
-            var pricing = await pricingRepo.FindByIdAsync(request.OfferCombinationPricingId);
+            var pricing = await _combinationPricingRepository.FindByIdAsync(request.OfferCombinationPricingId);
 
             if (pricing == null)
             {
-                _logger.Warning($"Pricing not found for offer combination pricing {request.OfferCombinationPricingId}");
-                throw new InvalidOperationException("Invalid offer combination pricing");
-            }
-
-            // Validate that the pricing matches the requested item
-            if (pricing.ItemCombinationId == Guid.Empty || pricing.ItemCombinationId == null)
-            {
-                _logger.Warning($"Item combination not found for pricing {request.OfferCombinationPricingId}");
-                throw new InvalidOperationException("Invalid offer combination pricing configuration");
+                _logger.Error($"Pricing not found for offer combination pricing {request.OfferCombinationPricingId}");
+                throw new KeyNotFoundException($"Invalid offer combination pricing {request.OfferCombinationPricingId}");
             }
 
             // Validate stock
             if (pricing.AvailableQuantity < request.Quantity)
             {
-                _logger.Warning($"Insufficient stock. Available: {pricing.AvailableQuantity}, Requested: {request.Quantity}");
+                _logger.Error($"Insufficient stock. Available: {pricing.AvailableQuantity}, Requested: {request.Quantity}");
                 throw new InvalidOperationException($"Insufficient stock. Available: {pricing.AvailableQuantity}");
             }
 
@@ -107,7 +87,7 @@ public class CartService : ICartService
             var result = await _cartRepository.AddItemToCartAsync(
                 customerId,
                 request.ItemId,
-                pricing.Id,  // ✅ ده الـ OfferCombinationPricingId
+                pricing.Id,
                 request.Quantity,
                 unitPrice);
 
@@ -122,6 +102,191 @@ public class CartService : ICartService
         catch (Exception ex)
         {
             _logger.Error(ex, $"Error adding item to cart for user {customerId}");
+            throw;
+        }
+    }
+
+    public async Task<BulkAddToCartResult> AddMultipleToCartAsync(string customerId, BulkAddToCartRequest request)
+    {
+        var result = new BulkAddToCartResult
+        {
+            SuccessfulItems = new List<BulkAddItemResult>(),
+            FailedItems = new List<BulkAddItemFailure>()
+        };
+
+        try
+        {
+            if (string.IsNullOrWhiteSpace(customerId))
+                throw new ArgumentException("User ID cannot be empty", nameof(customerId));
+
+            if (request == null || request.Items == null || !request.Items.Any())
+                throw new ArgumentException("At least one item must be provided", nameof(request));
+
+            // Validate all items first
+            var validationResults = new List<(AddToCartRequest item, TbOfferCombinationPricing pricing, string error)>();
+
+            foreach (var item in request.Items)
+            {
+                try
+                {
+                    // Basic validation
+                    if (item.ItemId == Guid.Empty)
+                    {
+                        result.FailedItems.Add(new BulkAddItemFailure
+                        {
+                            ItemId = item.ItemId,
+                            OfferCombinationPricingId = item.OfferCombinationPricingId,
+                            Quantity = item.Quantity,
+                            ErrorMessage = "Item ID cannot be empty"
+                        });
+                        continue;
+                    }
+
+                    if (item.OfferCombinationPricingId == Guid.Empty)
+                    {
+                        result.FailedItems.Add(new BulkAddItemFailure
+                        {
+                            ItemId = item.ItemId,
+                            OfferCombinationPricingId = item.OfferCombinationPricingId,
+                            Quantity = item.Quantity,
+                            ErrorMessage = "Offer combination pricing ID cannot be empty"
+                        });
+                        continue;
+                    }
+
+                    if (item.Quantity <= 0)
+                    {
+                        result.FailedItems.Add(new BulkAddItemFailure
+                        {
+                            ItemId = item.ItemId,
+                            OfferCombinationPricingId = item.OfferCombinationPricingId,
+                            Quantity = item.Quantity,
+                            ErrorMessage = "Quantity must be greater than zero"
+                        });
+                        continue;
+                    }
+
+                    // Get and validate pricing
+                    var pricing = await _combinationPricingRepository.FindByIdAsync(item.OfferCombinationPricingId);
+
+                    if (pricing == null)
+                    {
+                        result.FailedItems.Add(new BulkAddItemFailure
+                        {
+                            ItemId = item.ItemId,
+                            OfferCombinationPricingId = item.OfferCombinationPricingId,
+                            Quantity = item.Quantity,
+                            ErrorMessage = "Invalid offer combination pricing"
+                        });
+                        continue;
+                    }
+
+                    // Validate stock
+                    if (pricing.AvailableQuantity < item.Quantity)
+                    {
+                        result.FailedItems.Add(new BulkAddItemFailure
+                        {
+                            ItemId = item.ItemId,
+                            OfferCombinationPricingId = item.OfferCombinationPricingId,
+                            Quantity = item.Quantity,
+                            ErrorMessage = $"Insufficient stock. Available: {pricing.AvailableQuantity}"
+                        });
+                        continue;
+                    }
+
+                    // Validate price
+                    if (pricing.SalesPrice <= 0)
+                    {
+                        result.FailedItems.Add(new BulkAddItemFailure
+                        {
+                            ItemId = item.ItemId,
+                            OfferCombinationPricingId = item.OfferCombinationPricingId,
+                            Quantity = item.Quantity,
+                            ErrorMessage = "Invalid price"
+                        });
+                        continue;
+                    }
+
+                    // Item passed validation
+                    validationResults.Add((item, pricing, null));
+                }
+                catch (Exception ex)
+                {
+                    _logger.Error(ex, $"Error validating item {item.ItemId}");
+                    result.FailedItems.Add(new BulkAddItemFailure
+                    {
+                        ItemId = item.ItemId,
+                        OfferCombinationPricingId = item.OfferCombinationPricingId,
+                        Quantity = item.Quantity,
+                        ErrorMessage = $"Validation error: {ex.Message}"
+                    });
+                }
+            }
+
+            // If no items passed validation, return early
+            if (!validationResults.Any())
+            {
+                result.CartSummary = await GetCartSummaryAsync(customerId);
+                return result;
+            }
+
+            // Add validated items to cart
+            foreach (var (item, pricing, _) in validationResults)
+            {
+                try
+                {
+                    var addResult = await _cartRepository.AddItemToCartAsync(
+                        customerId,
+                        item.ItemId,
+                        pricing.Id,
+                        item.Quantity,
+                        pricing.SalesPrice);
+
+                    if (addResult.Success)
+                    {
+                        result.SuccessfulItems.Add(new BulkAddItemResult
+                        {
+                            ItemId = item.ItemId,
+                            OfferCombinationPricingId = item.OfferCombinationPricingId,
+                            Quantity = item.Quantity,
+                            UnitPrice = pricing.SalesPrice,
+                            SubTotal = pricing.SalesPrice * item.Quantity
+                        });
+                    }
+                    else
+                    {
+                        result.FailedItems.Add(new BulkAddItemFailure
+                        {
+                            ItemId = item.ItemId,
+                            OfferCombinationPricingId = item.OfferCombinationPricingId,
+                            Quantity = item.Quantity,
+                            ErrorMessage = "Failed to add item to cart"
+                        });
+                    }
+                }
+                catch (Exception ex)
+                {
+                    _logger.Error(ex, $"Error adding item {item.ItemId} to cart");
+                    result.FailedItems.Add(new BulkAddItemFailure
+                    {
+                        ItemId = item.ItemId,
+                        OfferCombinationPricingId = item.OfferCombinationPricingId,
+                        Quantity = item.Quantity,
+                        ErrorMessage = $"Error: {ex.Message}"
+                    });
+                }
+            }
+
+            // Get updated cart summary
+            result.CartSummary = await GetCartSummaryAsync(customerId);
+            result.TotalItemsAdded = result.SuccessfulItems.Count;
+            result.TotalItemsFailed = result.FailedItems.Count;
+
+            return result;
+        }
+        catch (Exception ex)
+        {
+            _logger.Error(ex, $"Error in bulk add to cart for user {customerId}");
             throw;
         }
     }
@@ -177,9 +342,7 @@ public class CartService : ICartService
                 throw new InvalidOperationException("Cart item not found");
             }
 
-            // ✅ cartItem.OfferId contains OfferCombinationPricingId
-            var pricingRepo = _unitOfWork.TableRepository<TbOfferCombinationPricing>();
-            var pricing = await pricingRepo.FindByIdAsync(cartItem.OfferCombinationPricingId);
+            var pricing = await _combinationPricingRepository.FindByIdAsync(cartItem.OfferCombinationPricingId);
 
             if (pricing == null)
             {
@@ -267,32 +430,6 @@ public class CartService : ICartService
         }
     }
 
-    public async Task<CartSummaryDto> MergeGuestCartAsync(string guestId, string userId)
-    {
-        try
-        {
-            if (string.IsNullOrWhiteSpace(guestId))
-                throw new ArgumentException("Guest ID cannot be empty", nameof(guestId));
-            if (string.IsNullOrWhiteSpace(userId))
-                throw new ArgumentException("User ID cannot be empty", nameof(userId));
-
-            var result = await _cartRepository.MergeCartsAsync(guestId, userId);
-
-            if (!result.Success)
-            {
-                _logger.Error($"Failed to merge carts");
-                throw new InvalidOperationException("Failed to merge carts");
-            }
-
-            return await MapToCartSummaryDtoAsync(result.Cart);
-        }
-        catch (Exception ex)
-        {
-            _logger.Error(ex, $"Error merging carts");
-            throw;
-        }
-    }
-
     /// <summary>
     /// FIXED: Now correctly maps OfferCombinationPricingId from cart items
     /// </summary>
@@ -311,19 +448,17 @@ public class CartService : ICartService
             };
 
         var items = new List<CartItemDto>();
-        var pricingRepo = _unitOfWork.TableRepository<TbOfferCombinationPricing>();
 
         if (cart.Items != null)
         {
             foreach (var ci in cart.Items.Where(i => !i.IsDeleted))
             {
-                // ✅ ci.OfferId contains OfferCombinationPricingId
-                var pricing = await pricingRepo.FindByIdAsync(ci.OfferCombinationPricingId);
+                var pricing = await _combinationPricingRepository.FindByIdAsync(ci.OfferCombinationPricingId);
 
                 if (pricing == null)
                 {
-                    _logger.Warning($"Pricing {ci.OfferCombinationPricingId} not found for cart item {ci.Id}, skipping");
-                    continue;
+                    _logger.Error($"Pricing not found for offer combination pricing ID {ci.OfferCombinationPricingId}");
+                    throw new InvalidOperationException($"Pricing not found for offer combination pricing ID {ci.OfferCombinationPricingId}");
                 }
 
                 var currentPrice = pricing.Price;

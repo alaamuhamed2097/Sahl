@@ -183,16 +183,10 @@ public class HomepageService : IHomepageService
 
             if (defaultCombination != null)
             {
-                // Get original price from pricing service
-                var context = new PricingContext
-                {
-                    ItemCombination = defaultCombination,
-                    RequestedQuantity = 1,
-                    Strategy = defaultCombination.Item.Category.PricingSystemType,
-                    CalculationDate = DateTime.UtcNow
-                };
-
-                var pricingResult = _pricingService.CalculatePrice(context);
+                var pricingResult = await _pricingService.CalculatePrice(
+                    defaultCombination.Id,
+                    defaultCombination.Item.Category.PricingSystemType,
+                    1);
 
                 product.Price = pricingResult.Price;
                 // SalePrice is already set from CampaignPrice by AutoMapper
@@ -273,16 +267,11 @@ public class HomepageService : IHomepageService
             var category = await _categoryRepository.FindByIdAsync(combination.Item.CategoryId);
             if (category == null) throw new ApplicationException($"Category with id={combination.Item.CategoryId} not found");
 
-            // Create PricingContext
-            var context = new PricingContext
-            {
-                ItemCombination = combination,
-                RequestedQuantity = 1,
-                Strategy = category.PricingSystemType,
-                CalculationDate = DateTime.UtcNow
-            };
-
-            var pricingResult = _pricingService.CalculatePrice(context);
+            var pricingResult = await _pricingService.CalculatePrice(
+                combination.Id,
+                category.PricingSystemType,
+                1
+            );
 
             product.Price = pricingResult.Price;
             product.SalePrice = pricingResult.SalesPrice;

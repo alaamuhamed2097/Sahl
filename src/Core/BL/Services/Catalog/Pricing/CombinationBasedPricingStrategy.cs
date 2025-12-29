@@ -1,5 +1,7 @@
 ﻿using BL.Contracts.Service.Catalog.Pricing;
 using Common.Enumerations.Pricing;
+using DAL.Contracts.Repositories;
+using Domains.Entities.Offer;
 using Shared.DTOs.Catalog.Pricing;
 
 namespace BL.Services.Catalog.Pricing;
@@ -12,38 +14,35 @@ namespace BL.Services.Catalog.Pricing;
 /// </summary>
 public class CombinationBasedPricingStrategy : IPricingStrategy
 {
+    private readonly ITableRepository<TbOfferCombinationPricing> _combinationPricingRepository;
+    public CombinationBasedPricingStrategy(ITableRepository<TbOfferCombinationPricing> combinationPricingRepository)
+    {
+        _combinationPricingRepository = combinationPricingRepository;
+    }
+
     public bool CanHandle(PricingStrategyType strategyType)
     {
         return strategyType == PricingStrategyType.CombinationBased;
     }
 
-    public PricingResult CalculatePrice(PricingContext context)
+    public async Task<PricingResult> CalculatePrice(
+        Guid itemCombinationId,
+        PricingStrategyType strategyType,
+        int requestedQuantity)
     {
-        var combination = context.ItemCombination;
-        var now = context.CalculationDate;
+        // Get pricing for the specific combination
+        var pricing = await _combinationPricingRepository
+            .FindAsync(op => !op.IsDeleted && op.ItemCombinationId == itemCombinationId);
 
-        // Get best offer for this specific combination
-        var bestOffer = combination.OfferCombinationPricings
-            ?.Where(op => !op.IsDeleted)
-            .OrderBy(op => op.SalesPrice)
-            .FirstOrDefault();
-
-        if (bestOffer == null)
-        {
-            return new PricingResult
-            {
-                Price = combination.Item.BasePrice ?? 0,
-                SalesPrice = combination.Item.BasePrice ?? 0,
-                IsAvailable = false
-            };
-        }
+        if (pricing == null)
+            throw new KeyNotFoundException("Combination pricing not found for itemCombinationId " + itemCombinationId);
 
         return new PricingResult
         {
-            Price = bestOffer.Price,
-            SalesPrice = bestOffer.SalesPrice,
-            IsAvailable = bestOffer.AvailableQuantity >= context.RequestedQuantity,
-            ActiveOfferId = bestOffer.OfferId
+            Price = pricing.Price,
+            SalesPrice = pricing.SalesPrice,
+            IsAvailable = pricing.AvailableQuantity >= requestedQuantity,
+            ActiveOfferId = pricing.OfferId
         };
     }
 }

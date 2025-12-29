@@ -78,8 +78,6 @@ namespace DAL.Repositories.Order
 
                     _cartItems.Update(existingItem);
                     transactionResult.AffectedItemIds.Add(existingItem.Id);
-
-                    _logger.Information($"Updated existing cart item {existingItem.Id}, new quantity: {existingItem.Quantity}");
                 }
                 else
                 {
@@ -122,8 +120,6 @@ namespace DAL.Repositories.Order
                 transactionResult.Cart = cart;
                 transactionResult.TotalItems = cart.Items?.Sum(i => i.Quantity) ?? 0;
                 transactionResult.CartTotal = CalculateCartTotal(cart);
-
-                _logger.Information($"Successfully added item to cart. Cart ID: {cart.Id}, Total Items: {transactionResult.TotalItems}");
 
                 return transactionResult;
             }
@@ -244,8 +240,6 @@ namespace DAL.Repositories.Order
 
             try
             {
-                _logger.Information($"Starting RemoveItemFromCart transaction for cart item: {cartItemId}, Customer: {customerId}");
-
                 // Step 1: Get cart item with cart validation
                 var cartItem = await _cartItems
                     .Include(ci => ci.ShoppingCart)
@@ -296,8 +290,6 @@ namespace DAL.Repositories.Order
                 transactionResult.TotalItems = cart.Items?.Sum(i => i.Quantity) ?? 0;
                 transactionResult.CartTotal = CalculateCartTotal(cart);
 
-                _logger.Information($"Successfully removed cart item {cartItemId} from cart {cartId}");
-
                 return transactionResult;
             }
             catch (DbUpdateException dbEx)
@@ -330,8 +322,6 @@ namespace DAL.Repositories.Order
 
             try
             {
-                _logger.Information($"Starting ClearCart transaction for customer: {customerId}");
-
                 // Step 1: Get cart with items
                 var cart = await GetCartWithItemsAsync(customerId, cancellationToken);
 
@@ -395,8 +385,6 @@ namespace DAL.Repositories.Order
                 transactionResult.TotalItems = 0;
                 transactionResult.CartTotal = 0m;
 
-                _logger.Information($"Successfully cleared {cartItems.Count} items from cart {cart.Id}");
-
                 return transactionResult;
             }
             catch (DbUpdateException dbEx)
@@ -423,16 +411,16 @@ namespace DAL.Repositories.Order
             try
             {
                 var cart = await _dbContext.Set<TbShoppingCart>()
+                    .Include(c => c.Items.Where(i => !i.IsDeleted))
+                        .ThenInclude(i => i.Item)
+                    .Include(c => c.Items.Where(i => !i.IsDeleted))
+                        .ThenInclude(i => i.OfferCombinationPricing)
+                            .ThenInclude(ocp => ocp.Offer)
+                                .ThenInclude(o => o.Vendor)
+                    .AsSplitQuery()
                     .AsNoTracking()
-                    .Include(c => c.Items.Where(i => !i.IsDeleted))
-                    .ThenInclude(i => i.Item)
-                    .Include(c => c.Items.Where(i => !i.IsDeleted))
-                    .ThenInclude(i => i.OfferCombinationPricing)
-                    .ThenInclude(ocp => ocp.Offer)
-                    .ThenInclude(o => o.Vendor)
                     .FirstOrDefaultAsync(c =>
-                        c.UserId == customerId &&
-                        !c.IsDeleted,
+                        c.UserId == customerId && !c.IsDeleted,
                         cancellationToken);
 
                 return cart ?? new TbShoppingCart { Id = Guid.Empty };
@@ -553,8 +541,6 @@ namespace DAL.Repositories.Order
                 transactionResult.CartTotal = CalculateCartTotal(targetCart);
                 transactionResult.AffectedItemIds = mergedItemIds;
 
-                _logger.Information($"Successfully merged {sourceCart.Items.Count} items from cart {sourceCart.Id} to cart {targetCart.Id}");
-
                 return transactionResult;
             }
             catch (DbUpdateException dbEx)
@@ -598,7 +584,6 @@ namespace DAL.Repositories.Order
                 cart = new TbShoppingCart
                 {
                     UserId = customerId,
-                    IsActive = true,
                     CreatedDateUtc = DateTime.UtcNow,
                     CreatedBy = customerIdGuid,
                     IsDeleted = false

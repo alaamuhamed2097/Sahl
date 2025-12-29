@@ -1,6 +1,5 @@
 using BL.Contracts.Service.Catalog.Pricing;
 using Common.Enumerations.Pricing;
-using Domains.Entities.Catalog.Item.ItemAttributes;
 using Shared.DTOs.Catalog.Pricing;
 
 namespace BL.Services.Catalog.Pricing;
@@ -24,44 +23,21 @@ public class PricingService : IPricingService
         };
     }
 
-    public PricingResult CalculatePrice(PricingContext context)
+    public async Task<PricingResult> CalculatePrice(Guid itemCombinationId,
+        PricingStrategyType strategyType,
+        int requestedQuantity)
     {
-        if (context == null)
+        if (itemCombinationId == Guid.Empty)
         {
-            throw new ArgumentNullException(nameof(context));
+            throw new ArgumentNullException(nameof(itemCombinationId));
         }
 
-        if (!_strategies.TryGetValue(context.Strategy, out var strategy))
+        if (!_strategies.TryGetValue(strategyType, out var strategy))
         {
             throw new InvalidOperationException(
-                $"No pricing strategy found for type {context.Strategy}");
+                $"No pricing strategy found for type {strategyType}");
         }
 
-        return strategy.CalculatePrice(context);
-    }
-
-    public PricingResult GetBestOffer(TbItemCombination combination, int quantity = 1)
-    {
-        if (combination == null)
-        {
-            throw new ArgumentNullException(nameof(combination));
-        }
-
-        if (quantity < 1)
-        {
-            throw new ArgumentException("Quantity must be at least 1", nameof(quantity));
-        }
-
-        var strategyType = combination.Item.Category.PricingSystemType;
-
-        var context = new PricingContext
-        {
-            ItemCombination = combination,
-            RequestedQuantity = quantity,
-            Strategy = strategyType,
-            CalculationDate = DateTime.UtcNow
-        };
-
-        return CalculatePrice(context);
+        return await strategy.CalculatePrice(itemCombinationId, strategyType, requestedQuantity);
     }
 }

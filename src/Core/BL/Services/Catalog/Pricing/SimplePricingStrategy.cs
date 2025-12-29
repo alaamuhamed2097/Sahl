@@ -1,33 +1,42 @@
 ﻿using BL.Contracts.Service.Catalog.Pricing;
 using Common.Enumerations.Pricing;
+using DAL.Contracts.Repositories;
+using Domains.Entities.Offer;
 using Shared.DTOs.Catalog.Pricing;
 
 namespace BL.Services.Catalog.Pricing;
 
 public class SimplePricingStrategy : IPricingStrategy
 {
+    private readonly ITableRepository<TbOfferCombinationPricing> _combinationPricingRepository;
+    public SimplePricingStrategy(ITableRepository<TbOfferCombinationPricing> combinationPricingRepository)
+    {
+        _combinationPricingRepository = combinationPricingRepository;
+    }
+
     public bool CanHandle(PricingStrategyType strategyType)
     {
         return strategyType == PricingStrategyType.Simple;
     }
 
-    public PricingResult CalculatePrice(PricingContext context)
+    public async Task<PricingResult> CalculatePrice(
+        Guid itemCombinationId,
+        PricingStrategyType strategyType,
+        int requestedQuantity)
     {
-        var combination = context.ItemCombination;
+        // Get pricing for the specific combination
+        var pricing = await _combinationPricingRepository
+            .FindAsync(op => !op.IsDeleted && op.ItemCombinationId == itemCombinationId);
 
-        var activeOffer = combination.OfferCombinationPricings
-            ?.FirstOrDefault(op =>
-                !op.IsDeleted);
-
-        if (activeOffer == null)
-            throw new InvalidOperationException("No active offer found for the item combination.");
+        if (pricing == null)
+            throw new KeyNotFoundException("Combination pricing not found for itemCombinationId " + itemCombinationId);
 
         return new PricingResult
         {
-            Price = activeOffer.Price,
-            SalesPrice = activeOffer.SalesPrice,
-            IsAvailable = activeOffer.AvailableQuantity > 0,
-            ActiveOfferId = activeOffer.OfferId
+            Price = pricing.Price,
+            SalesPrice = pricing.SalesPrice,
+            IsAvailable = pricing.AvailableQuantity > 0,
+            ActiveOfferId = pricing.OfferId
         };
     }
 }
