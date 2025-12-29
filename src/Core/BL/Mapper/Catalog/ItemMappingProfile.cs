@@ -162,6 +162,7 @@ public partial class MappingProfile
             var images = JsonSerializer.Deserialize<List<ItemImage>>(json, JsonOptions);
             return images?.Select(img => new ImageDto
             {
+                Id = img.Id,
                 Path = img.ImageUrl,
                 Order = img.DisplayOrder,
                 IsDefault = img.IsDefault,
@@ -228,6 +229,7 @@ public partial class MappingProfile
                     }).ToList(),
                     Images = combo.Images?.Select(img => new ImageDto
                     {
+                        Id = img.Id,
                         Path = img.ImageUrl,
                         Order = img.DisplayOrder,
                         IsDefault = img.IsDefault,

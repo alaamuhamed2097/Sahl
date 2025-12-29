@@ -53,6 +53,7 @@ namespace Domains.Procedures
 
     public class ItemImage
     {
+        public Guid Id { get; set; }
         public string ImageUrl { get; set; }
         public int DisplayOrder { get; set; }
         public bool IsDefault { get; set; }

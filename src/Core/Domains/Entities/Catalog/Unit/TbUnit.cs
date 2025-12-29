@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Domains.Entities.Catalog.Item;
+using System.ComponentModel.DataAnnotations;
 
 namespace Domains.Entities.Catalog.Unit
 {
@@ -11,5 +12,7 @@ namespace Domains.Entities.Catalog.Unit
         [Required]
         [MaxLength(100)]
         public string TitleEn { get; set; } = null!;
+        // Navigation Properties
+        public ICollection<TbItem> Items { get; set; } = new List<TbItem>();
     }
 }
