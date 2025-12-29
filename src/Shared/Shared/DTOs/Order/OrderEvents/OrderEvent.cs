@@ -1,4 +1,4 @@
-﻿namespace Shared.Events.Order
+﻿namespace Shared.DTOs.Order.OrderEvents
 {
     /// <summary>
     /// Base order event

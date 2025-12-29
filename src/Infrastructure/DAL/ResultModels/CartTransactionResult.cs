@@ -1,4 +1,4 @@
-﻿using Domains.Entities.ECommerceSystem.Cart;
+﻿using Domains.Entities.Order.Cart;
 
 namespace DAL.ResultModels
 {

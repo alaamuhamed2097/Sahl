@@ -1,4 +1,4 @@
-namespace Bl.GeneralModels.Payment
+namespace Shared.GeneralModels.Models
 {
     /// <summary>
     /// Country-specific pricing and payment information

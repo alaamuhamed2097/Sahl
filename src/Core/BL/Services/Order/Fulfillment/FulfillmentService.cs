@@ -4,7 +4,7 @@ using Common.Enumerations.Shipping;
 using DAL.Contracts.Repositories.Order;
 using DAL.Contracts.UnitOfWork;
 using Domains.Entities.Offer;
-using Domains.Entities.Shipping;
+using Domains.Entities.Order.Shipping;
 using Domains.Entities.Warehouse;
 using Serilog;
 

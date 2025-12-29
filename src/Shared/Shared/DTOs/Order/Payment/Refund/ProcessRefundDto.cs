@@ -1,4 +1,4 @@
-﻿namespace Shared.DTOs.Order.Refund;
+﻿namespace Shared.DTOs.Order.Payment.Refund;
 
 /// <summary>
 /// DTO for processing a refund request (admin action)

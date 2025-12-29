@@ -5,7 +5,7 @@ using BL.Contracts.Service.Order.OrderProcessing;
 using BL.Contracts.Service.Order.Payment;
 using Common.Enumerations.Payment;
 using DAL.Contracts.UnitOfWork;
-using Domains.Entities.CouponCode;
+using Domains.Entities.Merchandising.CouponCode;
 using Domains.Entities.Order;
 using Serilog;
 using Shared.DTOs.Order.Checkout;

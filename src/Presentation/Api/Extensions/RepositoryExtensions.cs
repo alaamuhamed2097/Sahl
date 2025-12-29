@@ -53,6 +53,7 @@ namespace Api.Extensions
             // Marketing & Merchandising repositories
             services.AddScoped<IHomepageBlockRepository, HomepageBlockRepository>();
             services.AddScoped<ICampaignRepository, CampaignRepository>();
+            services.AddScoped<ICouponCodeRepository, CouponCodeRepository>();
 
             services.AddScoped<IItemCombinationRepository, ItemCombinationRepository>();
 

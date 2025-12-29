@@ -1,6 +1,5 @@
 ﻿using Dashboard.Constants;
 using Dashboard.Contracts;
-using Dashboard.Services;
 using Microsoft.AspNetCore.Components;
 using Resources;
 using Shared.DTOs.Order.CouponCode;
@@ -17,13 +16,13 @@ namespace Dashboard.Pages.Sales.CouponCode
         protected override Dictionary<string, Func<CouponCodeDto, object>> ExportColumns { get; }
         = new Dictionary<string, Func<CouponCodeDto, object>>
         {
-            [FormResources.ArabicTitle] = x => x.TitleAR,
-            [FormResources.EnglishTitle] = x => x.TitleEN,
+            [FormResources.ArabicTitle] = x => x.TitleAr,
+            [FormResources.EnglishTitle] = x => x.TitleEn,
             [FormResources.Code] = x => x.Code,
             [FormResources.StartDate] = x => x.StartDate.ToString("yyyy-MM-dd"),
-            [FormResources.EndDate] = x => x.EndDate.ToString("yyyy-MM-dd"),
-            [FormResources.Type] = x => x.CouponCodeType,
-            [FormResources.Value] = x => x.Value,
+            [FormResources.EndDate] = x => x.ExpiryDate?.ToString("yyyy-MM-dd"),
+            [FormResources.Type] = x => x.DiscountType,
+            [FormResources.Value] = x => x.DiscountValue,
             [FormResources.UsageLimit] = x => x.UsageLimit?.ToString() ?? "∞",
             [FormResources.UsageCount] = x => x.UsageCount
         };

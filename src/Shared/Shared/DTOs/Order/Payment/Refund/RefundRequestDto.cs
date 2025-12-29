@@ -1,6 +1,6 @@
 ﻿using Common.Enumerations.Order;
 
-namespace Shared.DTOs.Order.Refund;
+namespace Shared.DTOs.Order.Payment.Refund;
 
 /// <summary>
 /// DTO for refund request details
