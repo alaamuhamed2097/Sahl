@@ -7,8 +7,6 @@ namespace Domains.Entities.ECommerceSystem.Cart
         [ForeignKey("User")]
         public string UserId { get; set; }
 
-        public bool IsActive { get; set; } = true;
-
         public DateTime? ExpiresAt { get; set; }
 
         public virtual ApplicationUser User { get; set; } = null!;

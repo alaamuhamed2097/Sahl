@@ -391,6 +391,7 @@ using DAL.Contracts.Repositories.Review;
 using DAL.Exceptions;
 using DAL.Models;
 using Domains.Entities.ECommerceSystem.Review;
+using Domains.Entities.ECommerceSystem.Vendor;
 using Resources;
 using Serilog;
 using Shared.DTOs.Review;
@@ -401,39 +402,42 @@ namespace BL.Services.Review
 {
     public class VendorReviewService : BaseService<TbVendorReview, VendorReviewDto>, IVendorReviewService
     {
-        private readonly IVendorReviewRepository _reviewRepo;
+        private readonly IVendorReviewRepository _vendorReviewRepo;
         private readonly ITableRepository<TbVendorReview> _tableRepository;
-        private readonly IBaseMapper _mapper;
+        private readonly ITableRepository<TbVendor> _vendorRepo;
+		private readonly IBaseMapper _mapper;
         private readonly ILogger _logger;
 
-        public VendorReviewService(
-            IBaseMapper mapper,
-            IVendorReviewRepository reviewRepo,
-            ILogger logger,
-            ITableRepository<TbVendorReview> tableRepository)
-            : base(tableRepository, mapper)
-        {
-            _mapper = mapper;
-            _logger = logger;
-            _reviewRepo = reviewRepo;
-            _tableRepository = tableRepository;
-        }
+		public VendorReviewService(
+			IBaseMapper mapper,
+			IVendorReviewRepository reviewRepo,
+			ILogger logger,
+			ITableRepository<TbVendorReview> tableRepository,
+			ITableRepository<TbVendor> vendorRepo)
+			: base(tableRepository, mapper)
+		{
+			_mapper = mapper;
+			_logger = logger;
+			_vendorReviewRepo = reviewRepo;
+			_tableRepository = tableRepository;
+			_vendorRepo = vendorRepo;
+		}
 
-        /// <summary>
-        /// Retrieves the details of a specific Vendor review by its unique identifier.
-        /// </summary>
-        /// <param name="reviewId">The unique identifier of the Vendor review. Must not be <see cref="Guid.Empty"/>.</param>
-        /// <param name="cancellationToken">Optional cancellation token to cancel the operation.</param>
-        /// <returns>
-        /// A <see cref="VendorReviewDto"/> representing the review details if found; otherwise, <c>null</c>.
-        /// </returns>
-        /// <remarks>
-        /// This method validates the input, fetches the review entity from the repository,
-        /// maps it to a DTO using AutoMapper, and propagates any exceptions to the caller.
-        /// </remarks>
-        /// <exception cref="ArgumentException">Thrown when <paramref name="reviewId"/> is <see cref="Guid.Empty"/>.</exception>
-        /// <exception cref="Exception">Thrown when an unexpected error occurs during retrieval.</exception>
-        public async Task<VendorReviewDto?> GetReviewByIdAsync(
+		/// <summary>
+		/// Retrieves the details of a specific Vendor review by its unique identifier.
+		/// </summary>
+		/// <param name="reviewId">The unique identifier of the Vendor review. Must not be <see cref="Guid.Empty"/>.</param>
+		/// <param name="cancellationToken">Optional cancellation token to cancel the operation.</param>
+		/// <returns>
+		/// A <see cref="VendorReviewDto"/> representing the review details if found; otherwise, <c>null</c>.
+		/// </returns>
+		/// <remarks>
+		/// This method validates the input, fetches the review entity from the repository,
+		/// maps it to a DTO using AutoMapper, and propagates any exceptions to the caller.
+		/// </remarks>
+		/// <exception cref="ArgumentException">Thrown when <paramref name="reviewId"/> is <see cref="Guid.Empty"/>.</exception>
+		/// <exception cref="Exception">Thrown when an unexpected error occurs during retrieval.</exception>
+		public async Task<VendorReviewDto?> GetReviewByIdAsync(
             Guid reviewId,
             CancellationToken cancellationToken = default)
         {
@@ -442,7 +446,7 @@ namespace BL.Services.Review
 
             try
             {
-                var review = await _reviewRepo.GetReviewDetailsAsync(reviewId, cancellationToken);
+                var review = await _vendorReviewRepo.GetReviewDetailsAsync(reviewId, cancellationToken);
 
                 if (review == null)
                     return null;
@@ -465,7 +469,7 @@ namespace BL.Services.Review
         /// <returns>The created review DTO with assigned Id and metadata (creation date, status).</returns>
         public async Task<VendorReviewDto> SubmitReviewAsync(
             VendorReviewDto reviewDto,
-            Guid customerId,
+            Guid currntUserId,
             CancellationToken cancellationToken = default)
         {
             try
@@ -477,8 +481,18 @@ namespace BL.Services.Review
                 if (string.IsNullOrWhiteSpace(reviewDto.ReviewText))
                     throw new ArgumentException("Review text is required");
 
-                // Check if customer already reviewed this vendor
-                var hasReviewed = await _reviewRepo.HasCustomerReviewedVendorAsync(
+				// Check if customer has purchased from this vendor
+				var hasPurchased = await _vendorReviewRepo.HasCustomerPurchasedFromVendorAsync(
+					reviewDto.OrderDetailId,
+					reviewDto.VendorId,
+					cancellationToken);
+
+				if (!hasPurchased)
+					throw new InvalidOperationException("You can only review vendors you have purchased from");
+
+
+				// Check if customer already reviewed this vendor
+				var hasReviewed = await _vendorReviewRepo.HasCustomerReviewedVendorAsync(
                     reviewDto.CustomerId,
                     reviewDto.VendorId,
                     cancellationToken);
@@ -486,17 +500,21 @@ namespace BL.Services.Review
                 if (hasReviewed)
                     throw new InvalidOperationException("You have already reviewed this Vendor");
 
-                // Create review
-                var review = _mapper.MapModel<VendorReviewDto, TbVendorReview>(reviewDto);
+				
+				// Create review
+				var review = _mapper.MapModel<VendorReviewDto, TbVendorReview>(reviewDto);
                 review.Status = ReviewStatus.Pending;
                 review.IsEdited = false;
-                var result = await _reviewRepo.CreateAsync(review, customerId, cancellationToken);
+                var result = await _vendorReviewRepo.CreateAsync(review, currntUserId, cancellationToken);
 
                 if (!result.Success)
                     throw new Exception("Failed to submit review");
 
                 review.Id = result.Id;
-                return _mapper.MapModel<TbVendorReview, VendorReviewDto>(review);
+				// Update vendor average rating
+				await UpdateVendorAverageRatingAsync(reviewDto.VendorId, currntUserId, cancellationToken);
+
+				return _mapper.MapModel<TbVendorReview, VendorReviewDto>(review);
             }
             catch (Exception ex)
             {
@@ -505,22 +523,23 @@ namespace BL.Services.Review
             }
         }
 
-        /// <summary>
-        /// Updates an existing review. Verifies that the review belongs to the current user.
-        /// Updates provided fields (e.g. rating, comment), possibly resets status to Pending for re-approval.
-        /// </summary>
-        /// <param name="reviewDto">DTO containing updated review data (must include Id).</param>
-        /// <param name="currentUserId">Guid of the user attempting update (used for ownership verification).</param>
-        /// <param name="cancellationToken">Cancellation token.</param>
-        /// <returns>The updated review DTO.</returns>
-        public async Task<VendorReviewDto> UpdateReviewAsync(
+		/// <summary>
+		/// Updates an existing review. Verifies that the review belongs to the current user.
+		/// Updates provided fields (e.g. rating, comment), possibly resets status to Pending for re-approval.
+		/// </summary>
+		/// <param name="reviewDto">DTO containing updated review data (must include Id).</param>
+		/// <param name="currentUserId">Guid of the user attempting update (used for ownership verification).</param>
+		/// <param name="cancellationToken">Cancellation token.</param>
+		/// <returns>The updated review DTO.</returns>
+		 
+		public async Task<VendorReviewDto> UpdateReviewAsync(
             VendorReviewDto reviewDto,
             Guid currentUserId,
             CancellationToken cancellationToken = default)
         {
             try
             {
-                var review = await _reviewRepo.FindByIdAsync(reviewDto.Id, cancellationToken);
+                var review = await _vendorReviewRepo.FindByIdAsync(reviewDto.Id, cancellationToken);
 
                 if (review == null)
                     throw new NotFoundException($"Review with ID {reviewDto.Id} not found.", _logger);
@@ -545,12 +564,14 @@ namespace BL.Services.Review
                 review.ReviewText = reviewDto.ReviewText;
                 review.IsEdited = true;
 
-                var result = await _reviewRepo.UpdateAsync(review, currentUserId, cancellationToken);
+				// Save the updated review
+				await _vendorReviewRepo.UpdateAsync(review, currentUserId, cancellationToken);
 
-                if (!result.Success)
-                    throw new Exception("Failed to update review");
+				// Update vendor average rating
+				await UpdateVendorAverageRatingAsync(review.VendorId, currentUserId, cancellationToken);
 
-                return _mapper.MapModel<TbVendorReview, VendorReviewDto>(review);
+
+				return _mapper.MapModel<TbVendorReview, VendorReviewDto>(review);
             }
             catch (Exception ex)
             {
@@ -559,21 +580,86 @@ namespace BL.Services.Review
             }
         }
 
-        /// <summary>
-        /// Deletes a review permanently or flags it as deleted (soft-delete), after verifying ownership.
-        /// </summary>
-        /// <param name="reviewId">Id of the review to delete.</param>
-        /// <param name="currentUserId">Guid of the user requesting deletion (must match review owner).</param>
-        /// <param name="cancellationToken">Cancellation token.</param>
-        /// <returns>True if deletion was successful; otherwise false (e.g. not found or not authorized).</returns>
-        public async Task<bool> DeleteReviewAsync(
+
+		//private async Task UpdateVendorAverageRatingAsync(Guid vendorId, CancellationToken cancellationToken = default)
+		//{
+		//	try
+		//	{
+		//		// Get average rating from approved reviews
+		//		var averageRating = await _vendorReviewRepo.GetAverageRatingAsync(vendorId, cancellationToken);
+
+		//		// Get the item
+		//		var item = await _vendorRepo.FindByIdAsync(vendorId, cancellationToken);
+
+		//		if (item == null)
+		//		{
+		//			_logger.Warning($"Item with ID {vendorId} not found while updating average rating");
+		//			return;
+		//		}
+
+		//		// Update the average rating
+		//		item.AverageRating = averageRating > 0 ? Math.Round(averageRating, 2) : (decimal?)null;
+
+		//		// Save the item
+		//		await _vendorRepo.UpdateAsync(item, Guid.Empty, cancellationToken);
+
+		//		_logger.Information($"Updated average rating for item {vendorId}: {item.AverageRating}");
+		//	}
+		//	catch (Exception ex)
+		//	{
+		//		_logger.Error(ex, $"Error updating average rating for item {vendorId}");
+		//		// Don't throw - this is a secondary operation
+		//	}
+		//}
+		/// <summary>
+		/// Updates the average rating for a vendor after a review is submitted or updated.
+		/// </summary>
+		/// <param name="vendorId">Vendor identifier.</param>
+		/// <param name="cancellationToken">Cancellation token.</param>
+		private async Task UpdateVendorAverageRatingAsync(
+			Guid vendorId,
+            Guid currntUserId,
+			CancellationToken cancellationToken = default)
+		{
+			try
+			{
+				// Get the average rating for approved reviews only
+				var averageRating = await _vendorReviewRepo.GetVendorAverageRatingAsync(
+					vendorId,
+					cancellationToken);
+
+				// Get the vendor
+				var vendor = await _vendorRepo.FindByIdAsync(vendorId, cancellationToken);
+				if (vendor == null)
+					throw new NotFoundException($"Vendor with ID {vendorId} not found.", _logger);
+
+				// Update the average rating
+				vendor.AverageRating = averageRating > 0 ? Math.Round(averageRating, 2) : null;
+
+				// Save changes
+				await _vendorRepo.UpdateAsync(vendor, currntUserId, cancellationToken);
+			}
+			catch (Exception ex)
+			{
+				_logger.Error(ex, $"Error updating vendor average rating for vendor {vendorId}");
+				// Don't throw - this shouldn't prevent the review operation from completing
+			}
+		}
+		/// <summary>
+		/// Deletes a review permanently or flags it as deleted (soft-delete), after verifying ownership.
+		/// </summary>
+		/// <param name="reviewId">Id of the review to delete.</param>
+		/// <param name="currentUserId">Guid of the user requesting deletion (must match review owner).</param>
+		/// <param name="cancellationToken">Cancellation token.</param>
+		/// <returns>True if deletion was successful; otherwise false (e.g. not found or not authorized).</returns>
+		public async Task<bool> DeleteReviewAsync(
             Guid reviewId,
             Guid currentUserId,
             CancellationToken cancellationToken = default)
         {
             try
             {
-                var review = await _reviewRepo.FindByIdAsync(reviewId, cancellationToken);
+                var review = await _vendorReviewRepo.FindByIdAsync(reviewId, cancellationToken);
 
                 if (review == null)
                     return false;
@@ -582,7 +668,7 @@ namespace BL.Services.Review
                 if (review.CustomerId != currentUserId)
                     throw new UnauthorizedAccessException("You can only delete your own reviews");
 
-                return await _reviewRepo.SoftDeleteAsync(reviewId, currentUserId, cancellationToken);
+                return await _vendorReviewRepo.SoftDeleteAsync(reviewId, currentUserId, cancellationToken);
             }
             catch (Exception ex)
             {
@@ -603,7 +689,7 @@ namespace BL.Services.Review
         {
             try
             {
-                var reviews = await _reviewRepo.GetReviewsByVendorIdAsync(vendorId, cancellationToken);
+                var reviews = await _vendorReviewRepo.GetReviewsByVendorIdAsync(vendorId, cancellationToken);
                 return _mapper.MapList<TbVendorReview, VendorReviewDto>(reviews);
             }
             catch (Exception ex)
@@ -730,7 +816,7 @@ namespace BL.Services.Review
         {
             try
             {
-                var reviews = await _reviewRepo.GetPendingReviewsAsync(cancellationToken);
+                var reviews = await _vendorReviewRepo.GetPendingReviewsAsync(cancellationToken);
                 return _mapper.MapList<TbVendorReview, VendorReviewDto>(reviews);
             }
             catch (Exception ex)
@@ -754,14 +840,14 @@ namespace BL.Services.Review
         {
             try
             {
-                var review = await _reviewRepo.FindByIdAsync(reviewId, cancellationToken);
+                var review = await _vendorReviewRepo.FindByIdAsync(reviewId, cancellationToken);
 
                 if (review == null)
                     return false;
 
                 review.Status = ReviewStatus.Approved;
 
-                var result = await _reviewRepo.UpdateAsync(review, adminId, cancellationToken);
+                var result = await _vendorReviewRepo.UpdateAsync(review, adminId, cancellationToken);
                 return result.Success;
             }
             catch (Exception ex)
@@ -785,14 +871,14 @@ namespace BL.Services.Review
         {
             try
             {
-                var review = await _reviewRepo.FindByIdAsync(reviewId, cancellationToken);
+                var review = await _vendorReviewRepo.FindByIdAsync(reviewId, cancellationToken);
 
                 if (review == null)
                     return false;
 
                 review.Status = ReviewStatus.Rejected;
 
-                var result = await _reviewRepo.UpdateAsync(review, adminId, cancellationToken);
+                var result = await _vendorReviewRepo.UpdateAsync(review, adminId, cancellationToken);
                 return result.Success;
             }
             catch (Exception ex)
@@ -815,7 +901,7 @@ namespace BL.Services.Review
         {
             try
             {
-                return await _reviewRepo.GetVendorAverageRatingAsync(vendorId, cancellationToken);
+                return await _vendorReviewRepo.GetVendorAverageRatingAsync(vendorId, cancellationToken);
             }
             catch (Exception ex)
             {
@@ -836,7 +922,7 @@ namespace BL.Services.Review
         {
             try
             {
-                return await _reviewRepo.GetVendorReviewCountAsync(vendorId, cancellationToken);
+                return await _vendorReviewRepo.GetVendorReviewCountAsync(vendorId, cancellationToken);
             }
             catch (Exception ex)
             {
@@ -855,9 +941,9 @@ namespace BL.Services.Review
             Guid vendorId,
             CancellationToken cancellationToken = default)
         {
-            var averageRating = await _reviewRepo.GetVendorAverageRatingAsync(vendorId, cancellationToken);
-            var reviewCount = await _reviewRepo.GetVendorReviewCountAsync(vendorId, cancellationToken);
-            var ratingDistribution = await _reviewRepo.GetVendorRatingDistributionAsync(vendorId, cancellationToken);
+            var averageRating = await _vendorReviewRepo.GetVendorAverageRatingAsync(vendorId, cancellationToken);
+            var reviewCount = await _vendorReviewRepo.GetVendorReviewCountAsync(vendorId, cancellationToken);
+            var ratingDistribution = await _vendorReviewRepo.GetVendorRatingDistributionAsync(vendorId, cancellationToken);
 
             var stats = new VendorReviewStatsDto
             {
@@ -897,7 +983,7 @@ namespace BL.Services.Review
         {
             try
             {
-                var reviews = await _reviewRepo.GetVendorReviewsAsync(vendorId, status, cancellationToken);
+                var reviews = await _vendorReviewRepo.GetVendorReviewsAsync(vendorId, status, cancellationToken);
                 return _mapper.MapList<TbVendorReview, VendorReviewDto>(reviews);
             }
             catch (Exception ex)
@@ -919,7 +1005,7 @@ namespace BL.Services.Review
         {
             try
             {
-                var reviews = await _reviewRepo.GetCustomerReviewsAsync(customerId, cancellationToken);
+                var reviews = await _vendorReviewRepo.GetCustomerReviewsAsync(customerId, cancellationToken);
                 return _mapper.MapList<TbVendorReview, VendorReviewDto>(reviews);
             }
             catch (Exception ex)
