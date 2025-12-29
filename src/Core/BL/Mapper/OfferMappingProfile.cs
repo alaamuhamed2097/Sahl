@@ -6,16 +6,16 @@ using Shared.DTOs.ECommerce.Offer;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace BL.Mapper
+namespace BL.Mapper;
+
+// Item mappings partial (MappingProfile.Items.cs)
+public partial class MappingProfile
 {
-    // Item mappings partial (MappingProfile.Items.cs)
-    public partial class MappingProfile
+    private void ConfigureOfferMappings()
     {
-        private void ConfigureOfferMappings()
-        {
-            // Core item mappings
-            CreateMap<TbOffer, OfferDto>()
-                .ReverseMap();
+        // Core item mappings
+        CreateMap<TbOffer, OfferDto>()
+            .ReverseMap();
 
             CreateMap<VwOffer, VwOfferDto>()
             .ForMember(dest => dest.ItemImages, opt => opt.MapFrom(src =>
@@ -77,15 +77,14 @@ namespace BL.Mapper
                     : new List<PricingAttributeDto>()))
                 .ReverseMap();
 
-            // Additional offer mappings
-            CreateMap<TbOfferCombinationPricing, OfferCombinationPricingDto>()
-                .ReverseMap();
-            CreateMap<TbOfferCondition, OfferConditionDto>()
-                .ReverseMap();
-            CreateMap<TbOfferPriceHistory, OfferPriceHistoryDto>()
-                .ReverseMap();
-            CreateMap<TbOfferStatusHistory, OfferStatusHistoryDto>()
-                .ReverseMap();
-        }
+        // Additional offer mappings
+        CreateMap<TbOfferCombinationPricing, OfferCombinationPricingDto>()
+            .ReverseMap();
+        CreateMap<TbOfferCondition, OfferConditionDto>()
+            .ReverseMap();
+        CreateMap<TbOfferPriceHistory, OfferPriceHistoryDto>()
+            .ReverseMap();
+        CreateMap<TbOfferStatusHistory, OfferStatusHistoryDto>()
+            .ReverseMap();
     }
 }

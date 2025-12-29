@@ -29,10 +29,10 @@ namespace DAL.Configurations
 
             // Indexes
             entity.HasIndex(e => e.IsDeleted);
-            entity.HasIndex(e => e.ReviewID);
-            entity.HasIndex(e => e.CustomerID);
+            entity.HasIndex(e => e.ItemReviewId);
+            entity.HasIndex(e => e.CustomerId);
             entity.HasIndex(e => e.VoteType);
-            entity.HasIndex(e => new { e.ReviewID, e.CustomerID, e.VoteType }).IsUnique();
+            entity.HasIndex(e => new { e.ItemReviewId, e.CustomerId, e.VoteType }).IsUnique();
 
             // Relationships are configured in ProductReviewConfiguration
         }

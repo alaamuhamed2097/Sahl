@@ -248,7 +248,7 @@ namespace Dashboard.Services.CMS
 
         public async Task<ResponseModel<object>> SendResetPasswordCode(string email)
         {
-            var request = new ForgetPasswordRequestDto { Email = email };
+            var request = new ForgetPasswordRequestDto { Identifier = email };
             return await _apiService.PostAsync<ForgetPasswordRequestDto, object>(
                 "api/UserAuthentication/forget-password",
                 request);

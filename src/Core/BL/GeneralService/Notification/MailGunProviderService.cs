@@ -1,7 +1,7 @@
-﻿using BL.Contracts.GeneralService.Notification;
+﻿using Bl.Contracts.GeneralService.Notification;
 using RestSharp;
-using Shared.GeneralModels;
 using Shared.GeneralModels.Parameters.Notification;
+using Shared.GeneralModels.ResultModels;
 
 namespace BL.GeneralService.Notification
 {
@@ -96,12 +96,13 @@ namespace BL.GeneralService.Notification
         //        throw new InvalidOperationException($"Failed to send email to {request.To}", ex);
         //    }
         //}
-        public ResponseModel<object> Send(EmailRequest request)
+
+        public RestResponse SendEmail(string toEmail, string subject, string emailTemplate)
         {
             throw new NotImplementedException();
         }
 
-        public RestResponse SendEmail(string toEmail, string subject, string emailTemplate)
+        public Task<OperationResult> SendAsync(EmailRequest request)
         {
             throw new NotImplementedException();
         }

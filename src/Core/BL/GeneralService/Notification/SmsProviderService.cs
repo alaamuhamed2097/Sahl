@@ -1,7 +1,7 @@
-﻿using BL.Contracts.GeneralService.Notification;
+﻿using Bl.Contracts.GeneralService.Notification;
 using Serilog;
-using Shared.GeneralModels;
 using Shared.GeneralModels.Parameters.Notification;
+using Shared.GeneralModels.ResultModels;
 
 namespace Bl.GeneralService.Notification
 {
@@ -14,14 +14,14 @@ namespace Bl.GeneralService.Notification
             _logger = logger;
         }
 
-        public async Task<ResponseModel<object>> SendAsync(SmsRequest request)
+        public async Task<OperationResult> SendAsync(SmsRequest request)
         {
             try
             {
                 // Implement your SMS provider logic here
                 // Example with Twilio, AWS SNS, or any other SMS service
 
-                return new ResponseModel<object>
+                return new OperationResult
                 {
                     Success = true,
                     Message = "SMS sent successfully"
@@ -30,7 +30,7 @@ namespace Bl.GeneralService.Notification
             catch (Exception ex)
             {
                 _logger.Error(ex, $"Failed to send SMS to {request.PhoneNumber}");
-                return new ResponseModel<object>
+                return new OperationResult
                 {
                     Success = false,
                     Message = "Failed to send SMS"

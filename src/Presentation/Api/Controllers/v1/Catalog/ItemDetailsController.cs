@@ -31,7 +31,7 @@ namespace Api.Controllers.v1.Catalog
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetItemDetails([FromRoute] Guid itemCombinationId )
         {
-            var result = await _itemDetailsService.GetItemDetailsAsync(itemCombinationId);
+            var result = await _itemDetailsService.GetItemDetailsAsync(itemCombinationId, UserId);
             if (result == null)
             {
                 return NotFound(new { message = "Item not found" });
@@ -59,7 +59,7 @@ namespace Api.Controllers.v1.Catalog
                 return BadRequest(new { message = "Selected attributes are required" });
             }
 
-            var result = await _itemDetailsService.GetCombinationByAttributesAsync(request);
+            var result = await _itemDetailsService.GetCombinationByAttributesAsync(request, UserId);
 
            if (result == null)
                 return NotFound(new { message = "Item or combination not found" });

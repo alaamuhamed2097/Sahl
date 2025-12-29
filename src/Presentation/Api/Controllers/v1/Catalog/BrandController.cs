@@ -54,7 +54,7 @@ namespace Api.Controllers.v1.Catalog
         /// </remarks>
         /// <param name="id">The ID of the brand.</param>
         [HttpGet("{id}")]
-        [Authorize(Roles = nameof(UserRole.Admin))]
+        //[Authorize(Roles = nameof(UserRole.Admin))]
         public async Task<IActionResult> Get(Guid id)
         {
             if (id == Guid.Empty)

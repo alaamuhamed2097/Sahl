@@ -39,11 +39,13 @@ using Domains.Entities.Wallet;
 using Domains.Entities.Warehouse;
 using Domains.Identity;
 using Domains.Procedures;
+using Domains.Views.Brand;
 using Domains.Views.Category;
 using Domains.Views.Item;
 using Domains.Views.Offer;
 using Domains.Views.Unit;
 using Domains.Views.UserNotification;
+using Domains.Views.Vendor;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -128,14 +130,14 @@ namespace DAL.ApplicationContext
         public DbSet<TbSupportTicketMessage> TbSupportTicketMessages { get; set; }
 
         // Review Management
-        public DbSet<TbOfferReview> TbOfferReviews { get; set; }
+        public DbSet<TbItemReview> TbItemReviews { get; set; }
         public DbSet<TbSalesReview> TbSalesReviews { get; set; }
-        public DbSet<TbDeliveryReview> TbDeliveryReviews { get; set; }
         public DbSet<TbReviewVote> TbReviewVotes { get; set; }
         public DbSet<TbReviewReport> TbReviewReports { get; set; }
+        public DbSet<TbVendorReview> TbVendorReviews { get; set; }
 
-        // Warehouse Management
-        public DbSet<TbWarehouse> TbWarehouses { get; set; }
+		// Warehouse Management
+		public DbSet<TbWarehouse> TbWarehouses { get; set; }
 
 
         // Content Management
@@ -215,7 +217,6 @@ namespace DAL.ApplicationContext
         public DbSet<TbShoppingCartItem> TbShoppingCartItems { get; set; }
         public DbSet<TbOrderShipment> TbOrderShipments { get; set; }
         public DbSet<TbOrderShipmentItem> TbOrderShipmentItems { get; set; }
-        public DbSet<TbCustomerAddress> TbCustomerAddresses { get; set; }
         public DbSet<TbPaymentMethod> TbPaymentMethods { get; set; }
         public DbSet<TbOrderPayment> TbOrderPayments { get; set; }
 
@@ -224,6 +225,10 @@ namespace DAL.ApplicationContext
 
         // E-Commerce System - Customers
         public DbSet<TbCustomer> TbCustomers { get; set; }
+        // Customer Related
+        public DbSet<TbCustomerAddress> TbCustomerAddresses { get; set; }
+        public DbSet<TbCustomerItemView> TbCustomerItemViews { get; set; }
+
 
         #endregion
 
@@ -253,10 +258,23 @@ namespace DAL.ApplicationContext
 
         // User Notification Views
         public DbSet<VwUserNotification> VwUserNotifications { get; set; }
+		// Vendor Details Views
+		public DbSet<VwVendorPublicDetails> VwVendorPublicDetails { get; set; }
+		public DbSet<VwVendorOwnerDetails> VwVendorOwnerDetails { get; set; }
+		public DbSet<VwVendorAdminDetails> VwVendorAdminDetails { get; set; }
 
-        #endregion
+		// Brand Views
+		public DbSet<VwBrandOverview> VwBrandOverview { get; set; }
+		public DbSet<VwBrandProducts> VwBrandProducts { get; set; }
+		public DbSet<VwBrandRegistrationRequests> VwBrandRegistrationRequests { get; set; }
+		public DbSet<VwBrandAuthorizedDistributors> VwBrandAuthorizedDistributors { get; set; }
+		public DbSet<VwBrandSalesAnalysis> VwBrandSalesAnalysis { get; set; }
+		public DbSet<VwBrandCampaigns> VwBrandCampaigns { get; set; }
 
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
+
+		#endregion
+
+		protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
 
@@ -433,12 +451,184 @@ namespace DAL.ApplicationContext
                 entity.HasNoKey();
                 entity.ToView("VwUserNotifications");
             });
-        }
+			// Vendor Details Views
 
-        /// <summary>
-        /// Saves changes with automatic UTC timestamp handling
-        /// </summary>
-        public override int SaveChanges()
+			modelBuilder.Entity<VwVendorPublicDetails>(entity =>
+			{
+				entity.HasNoKey();
+				entity.ToView("VwVendorPublicDetails");
+			});
+
+			modelBuilder.Entity<VwVendorOwnerDetails>(entity =>
+			{
+				entity.HasNoKey();
+				entity.ToView("VwVendorOwnerDetails");
+			});
+
+			modelBuilder.Entity<VwVendorAdminDetails>(entity =>
+			{
+				entity.HasNoKey();
+				entity.ToView("VwVendorAdminDetails");
+			});
+
+			// Brand Views
+
+			//1.Brand Overview
+			modelBuilder.Entity<VwBrandOverview>(entity =>
+			{
+				entity.HasNoKey();
+				entity.ToView("VwBrandOverview");
+
+				// Indexes for performance
+				entity.HasIndex(e => e.BrandId);
+				entity.HasIndex(e => e.IsPopular);
+				entity.HasIndex(e => e.IsDeleted);
+
+				// Decimal precision
+				entity.Property(e => e.AverageRating).HasColumnType("decimal(3,2)");
+				entity.Property(e => e.TotalSales).HasColumnType("decimal(18,2)");
+
+				// String lengths
+				entity.Property(e => e.NameAr).HasMaxLength(50);
+				entity.Property(e => e.NameEn).HasMaxLength(50);
+				entity.Property(e => e.TitleAr).HasMaxLength(100);
+				entity.Property(e => e.TitleEn).HasMaxLength(100);
+				entity.Property(e => e.LogoPath).HasMaxLength(200);
+				entity.Property(e => e.WebsiteUrl).HasMaxLength(200);
+			});
+			//2.Brand Products
+			modelBuilder.Entity<VwBrandProducts>(entity =>
+			{
+				entity.HasNoKey();
+				entity.ToView("VwBrandProducts");
+
+				// Indexes
+				entity.HasIndex(e => e.BrandId);
+				entity.HasIndex(e => e.ItemId);
+				entity.HasIndex(e => e.IsActive);
+				entity.HasIndex(e => new { e.BrandId, e.IsActive });
+
+				// Decimal precision
+				entity.Property(e => e.BasePrice).HasColumnType("decimal(18,2)");
+				entity.Property(e => e.MinimumPrice).HasColumnType("decimal(18,2)");
+				entity.Property(e => e.MaximumPrice).HasColumnType("decimal(18,2)");
+				entity.Property(e => e.MinOfferPrice).HasColumnType("decimal(18,2)");
+				entity.Property(e => e.MaxOfferPrice).HasColumnType("decimal(18,2)");
+				entity.Property(e => e.ItemAverageRating).HasColumnType("decimal(3,2)");
+				entity.Property(e => e.TotalRevenue).HasColumnType("decimal(18,2)");
+
+				// String lengths
+				entity.Property(e => e.SKU).HasMaxLength(200);
+				entity.Property(e => e.Barcode).HasMaxLength(200);
+				entity.Property(e => e.ThumbnailImage).HasMaxLength(200);
+			});
+			//3. Brand Registration Requests
+			modelBuilder.Entity<VwBrandRegistrationRequests>(entity =>
+			{
+				entity.HasNoKey();
+				entity.ToView("VwBrandRegistrationRequests");
+
+				// Indexes
+				entity.HasIndex(e => e.RequestId);
+				entity.HasIndex(e => e.VendorId);
+				entity.HasIndex(e => e.Status);
+				entity.HasIndex(e => e.SubmittedAt);
+
+				// Enum conversions
+				entity.Property(e => e.BrandType).HasConversion<int>();
+				entity.Property(e => e.Status).HasConversion<int>();
+
+				// String lengths
+				entity.Property(e => e.BrandNameAr).HasMaxLength(200);
+				entity.Property(e => e.BrandNameEn).HasMaxLength(200);
+				entity.Property(e => e.TrademarkNumber).HasMaxLength(100);
+				entity.Property(e => e.CommercialRegistrationNumber).HasMaxLength(100);
+			});
+			//4. Brand Authorized Distributors
+			modelBuilder.Entity<VwBrandAuthorizedDistributors>(entity =>
+			{
+				entity.HasNoKey();
+				entity.ToView("VwBrandAuthorizedDistributors");
+
+				// Indexes
+				entity.HasIndex(e => e.DistributorId);
+				entity.HasIndex(e => e.BrandId);
+				entity.HasIndex(e => e.VendorId);
+				entity.HasIndex(e => e.IsActive);
+				entity.HasIndex(e => new { e.BrandId, e.IsActive });
+
+				// Decimal precision
+				entity.Property(e => e.VendorRating).HasColumnType("decimal(3,2)");
+
+				// String lengths
+				entity.Property(e => e.AuthorizationNumber).HasMaxLength(100);
+				entity.Property(e => e.AuthorizationStatus).HasMaxLength(20);
+			});
+			//5. Brand Sales Analysis
+			modelBuilder.Entity<VwBrandSalesAnalysis>(entity =>
+			{
+				entity.HasNoKey();
+				entity.ToView("VwBrandSalesAnalysis");
+
+				// Indexes
+				entity.HasIndex(e => e.BrandId);
+				entity.HasIndex(e => e.OrderYear);
+				entity.HasIndex(e => e.OrderMonth);
+				entity.HasIndex(e => new { e.BrandId, e.OrderYear, e.OrderMonth });
+
+				// Decimal precision
+				entity.Property(e => e.TotalRevenue).HasColumnType("decimal(18,2)");
+				entity.Property(e => e.AverageUnitPrice).HasColumnType("decimal(18,2)");
+
+				// String lengths
+				entity.Property(e => e.MonthName).HasMaxLength(20);
+				entity.Property(e => e.TopSellingProduct).HasMaxLength(100);
+			});
+			//6. Brand Campaigns
+			modelBuilder.Entity<VwBrandCampaigns>(entity =>
+			{
+				entity.HasNoKey();
+				entity.ToView("VwBrandCampaigns");
+
+				// Indexes (Logical for query optimization)
+				entity.HasIndex(e => e.BrandId);
+				entity.HasIndex(e => e.CampaignId);
+				entity.HasIndex(e => e.CampaignIsActive);
+				entity.HasIndex(e => new { e.CampaignStartDate, e.CampaignEndDate });
+
+				// Decimal precision
+				entity.Property(e => e.AverageCampaignPrice)
+					  .HasColumnType("decimal(18,2)");
+
+				entity.Property(e => e.AverageRegularPrice)
+					  .HasColumnType("decimal(18,2)");
+
+				entity.Property(e => e.AverageDiscountPercentage)
+					  .HasColumnType("decimal(5,2)");
+
+				// String lengths
+				entity.Property(e => e.CampaignStatus)
+					  .HasMaxLength(20);
+
+				entity.Property(e => e.CampaignTitleAr)
+					  .HasMaxLength(200);
+
+				entity.Property(e => e.CampaignTitleEn)
+					  .HasMaxLength(200);
+
+				entity.Property(e => e.BrandNameAr)
+					  .HasMaxLength(200);
+
+				entity.Property(e => e.BrandNameEn)
+					  .HasMaxLength(200);
+			});
+
+		}
+
+		/// <summary>
+		/// Saves changes with automatic UTC timestamp handling
+		/// </summary>
+		public override int SaveChanges()
         {
             UpdateTimestamps();
             return base.SaveChanges();

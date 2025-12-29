@@ -28,4 +28,10 @@
 	  <ProjectReference Include="..\..\Shared\Common\Common.csproj" />
 	</ItemGroup>
 
+	<ItemGroup>
+	  <Folder Include="wwwroot\NotificationTemplates\Email\" />
+	  <Folder Include="wwwroot\NotificationTemplates\SignalR\" />
+	  <Folder Include="wwwroot\NotificationTemplates\Sms\" />
+	</ItemGroup>
+
 </Project>

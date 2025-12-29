@@ -1,11 +1,11 @@
 using Api.Controllers.v1.Base;
 using Asp.Versioning;
-using BL.Contracts.Service.Order;
+using BL.Contracts.Service.Order.Cart;
 using Common.Enumerations.User;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Resources;
-using Shared.DTOs.ECommerce.Cart;
+using Shared.DTOs.Order.Cart;
 using Shared.GeneralModels;
 
 namespace Api.Controllers.v1.Order
@@ -54,6 +54,53 @@ namespace Api.Controllers.v1.Order
                 Data = cartSummary
             });
         }
+
+        /// <summary>
+        /// NEW: Add multiple items to cart in a single operation
+        /// </summary>
+        /// <remarks>
+        /// This endpoint allows adding multiple items to the cart at once.
+        /// It validates all items first, then adds them individually.
+        /// Returns details about successful and failed additions.
+        /// </remarks>
+        [HttpPost("items/bulk")]
+        [ProducesResponseType(typeof(BulkAddToCartResult), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> AddMultipleToCart([FromBody] BulkAddToCartRequest request)
+        {
+            if (request?.Items == null || !request.Items.Any())
+            {
+                return BadRequest(new { message = "At least one item must be provided" });
+            }
+
+            var result = await _cartService.AddMultipleToCartAsync(UserId, request);
+
+            // Return different status based on result
+            if (result.IsCompleteFailure)
+            {
+                return BadRequest(new
+                {
+                    message = "Failed to add any items to cart",
+                    result
+                });
+            }
+
+            if (result.IsPartialSuccess)
+            {
+                return Ok(new
+                {
+                    message = $"Successfully added {result.TotalItemsAdded} items, {result.TotalItemsFailed} failed",
+                    result
+                });
+            }
+
+            return Ok(new
+            {
+                message = $"Successfully added all {result.TotalItemsAdded} items",
+                result
+            });
+        }
+
 
         /// <summary>
         /// Get Cart Summary

@@ -2,18 +2,17 @@
 using Domains.Entities.Order;
 using Domains.Entities.Shipping;
 using Shared.DTOs.ECommerce;
-using Shared.DTOs.ECommerce.CouponCode;
-using Shared.DTOs.Order.Order;
+using Shared.DTOs.Order.CouponCode;
+using Shared.DTOs.Order.OrderProcessing;
 
-namespace BL.Mapper
+namespace BL.Mapper;
+
+public partial class MappingProfile
 {
-    public partial class MappingProfile
+    private void ConfigureOrderMappings()
     {
-        private void ConfigureOrderMappings()
-        {
-            CreateMap<TbOrder, OrderDto>().ReverseMap();
-            CreateMap<TbShippingCompany, ShippingCompanyDto>().ReverseMap();
-            CreateMap<TbCouponCode, CouponCodeDto>().ReverseMap();
-        }
+        CreateMap<TbOrder, OrderDto>().ReverseMap();
+        CreateMap<TbShippingCompany, ShippingCompanyDto>().ReverseMap();
+        CreateMap<TbCouponCode, CouponCodeDto>().ReverseMap();
     }
 }

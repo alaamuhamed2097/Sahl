@@ -2,13 +2,12 @@ using BL.Mapper;
 using Domains.Entities.Pricing;
 using Shared.DTOs.Pricing;
 
-namespace BL.Mapper
+namespace BL.Mapper;
+
+public partial class MappingProfile
 {
-    public partial class MappingProfile
+    private void ConfigurePricingMappings()
     {
-        private void ConfigurePricingMappings()
-        {
-            CreateMap<TbPricingSystemSetting, PricingSystemSettingDto>().ReverseMap();
-        }
+        CreateMap<TbPricingSystemSetting, PricingSystemSettingDto>().ReverseMap();
     }
 }

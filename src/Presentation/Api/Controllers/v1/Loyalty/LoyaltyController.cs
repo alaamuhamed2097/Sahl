@@ -1,14 +1,10 @@
 using Asp.Versioning;
-using BL.Services.Loyalty;
+using BL.Service.Loyalty;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Shared.DTOs.Loyalty;
 using Shared.GeneralModels;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Security.Claims;
-using System.Threading.Tasks;
 
 namespace Api.Controllers.v1.Loyalty
 {

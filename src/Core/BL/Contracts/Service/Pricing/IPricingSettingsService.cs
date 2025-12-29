@@ -1,9 +1,8 @@
 using Shared.DTOs.Pricing;
 
-namespace BL.Contracts.Service.Pricing
+namespace BL.Contracts.Service.Pricing;
+
+public interface IPricingSettingsService
 {
-    public interface IPricingSettingsService
-    {
-        Task<IEnumerable<PricingSystemSettingDto>> GetAllSystemsAsync();
-    }
+    Task<IEnumerable<PricingSystemSettingDto>> GetAllSystemsAsync();
 }

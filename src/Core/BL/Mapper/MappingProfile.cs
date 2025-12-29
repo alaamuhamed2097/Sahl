@@ -1,35 +1,36 @@
 ﻿using AutoMapper;
 
-namespace BL.Mapper
-{
-    // Main mapping profile file (MappingProfile.cs)
-    public partial class MappingProfile : Profile
-    {
-        public MappingProfile()
-        {
-            ConfigureUserMappings();
-            ConfigureNotificationMappings();
-            ConfigureCategoryMappings();
-            ConfigureAttributeMappings();
-            ConfigureUnitMappings();
-            ConfigureItemMappings();
-            ConfigureMerchandisingMappings();
-            ConfigureOfferMappings();
-            ConfigureCurrencyMappings();
-            ConfigureBrandMapping();
-            ConfigureMediaMappings();
-            ConfigureOrderMappings();
-            ConfigureSettingMappings();
-            ConfigureVendorMappings();
-            ConfigureSupportMappings();
-            ConfigureReviewMappings();
-            ConfigureWarehouseAndInventoryMappings();
-            ConfigureContentAndNotificationChannelMappings();
-            ConfigurePricingMappings();
-            ConfigureCartMappings();
-            ConfigureCustomerAddressMapping();
+namespace BL.Mapper;
 
-            ConfigureCustomerMappings();
-        }
+// Main mapping profile file (MappingProfile.cs)
+public partial class MappingProfile : Profile
+{
+    public MappingProfile()
+    {
+        ConfigureUserMappings();
+        ConfigureNotificationMappings();
+        ConfigureCategoryMappings();
+        ConfigureAttributeMappings();
+        ConfigureUnitMappings();
+        ConfigureItemMappings();
+        ConfigureMerchandisingMappings();
+        ConfigureOfferMappings();
+        ConfigureCurrencyMappings();
+        ConfigureBrandMapping();
+        ConfigureMediaMappings();
+        ConfigureOrderMappings();
+        ConfigureSettingMappings();
+        ConfigureVendorMappings();
+        ConfigureSupportMappings();
+        ConfigureReviewMappings();
+        ConfigureWarehouseAndInventoryMappings();
+        ConfigureContentAndNotificationChannelMappings();
+        ConfigurePricingMappings();
+        ConfigureCartMappings();
+        ConfigureCustomerAddressMapping();
+        ConfigureHomePageSliderMappingProfile();
+
+		ConfigureCustomerMappings();
+
     }
 }

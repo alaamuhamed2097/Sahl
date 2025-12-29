@@ -25,8 +25,8 @@ namespace DAL.Repositories.Review
 			{
 				return await _dbContext.Set<TbReviewVote>()
 					.AsNoTracking()
-					.AnyAsync(v => v.ReviewID == reviewId
-						&& v.CustomerID == customerId
+					.AnyAsync(v => v.ItemReviewId == reviewId
+						&& v.CustomerId == customerId
 						&& !v.IsDeleted,
 						cancellationToken);
 			}
@@ -46,8 +46,8 @@ namespace DAL.Repositories.Review
 			try
 			{
 				return await _dbContext.Set<TbReviewVote>()
-					.FirstOrDefaultAsync(v => v.ReviewID == reviewId
-						&& v.CustomerID == customerId
+					.FirstOrDefaultAsync(v => v.ItemReviewId == reviewId
+						&& v.CustomerId == customerId
 						&& !v.IsDeleted,
 						cancellationToken);
 			}
@@ -114,7 +114,7 @@ namespace DAL.Repositories.Review
 		{
 			try
 			{
-				var review = await _dbContext.Set<TbOfferReview>()
+				var review = await _dbContext.Set<TbItemReview>()
 					.FirstOrDefaultAsync(r => r.Id == reviewId, cancellationToken);
 
 				if (review == null) return;
@@ -125,7 +125,7 @@ namespace DAL.Repositories.Review
 				review.NotHelpfulCount = counts.notHelpful;
 				review.UpdatedDateUtc = DateTime.UtcNow;
 
-				_dbContext.Set<TbOfferReview>().Update(review);
+				_dbContext.Set<TbItemReview>().Update(review);
 				await _dbContext.SaveChangesAsync(cancellationToken);
 			}
 			catch (Exception ex)
@@ -143,7 +143,7 @@ namespace DAL.Repositories.Review
 			{
 				var votes = await _dbContext.Set<TbReviewVote>()
 					.AsNoTracking()
-					.Where(v => v.ReviewID == reviewId
+					.Where(v => v.ItemReviewId == reviewId
 						&& !v.IsDeleted)
 					.ToListAsync(cancellationToken);
 

@@ -36,6 +36,11 @@ namespace DAL.Configurations
                 .HasMaxLength(4)
                 .IsUnicode(false); // Format: +20, 20, etc.
 
+            entity.Property(e => e.Address)
+                .IsRequired()
+                .HasMaxLength(200)
+                .IsUnicode(true); // Support international characters
+
             entity.Property(e => e.CityId)
                 .IsRequired();
 

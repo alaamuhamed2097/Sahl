@@ -3,8 +3,8 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace BL.Contracts.Service.Review
-{
+namespace BL.Contracts.Service.Review;
+
 	public interface IReviewVoteService
 	{
 		Task<bool> AddHelpfulVoteAsync(
@@ -17,4 +17,3 @@ namespace BL.Contracts.Service.Review
 		   Guid userId,
 		   CancellationToken cancellationToken = default);
 	}
-}

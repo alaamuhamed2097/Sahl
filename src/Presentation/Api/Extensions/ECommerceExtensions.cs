@@ -6,33 +6,41 @@ using BL.Contracts.Service.Catalog.Pricing;
 using BL.Contracts.Service.Catalog.Unit;
 using BL.Contracts.Service.CouponCode;
 using BL.Contracts.Service.Currency;
+using BL.Contracts.Service.Customer;
 using BL.Contracts.Service.Customer.Wishlist;
+using BL.Contracts.Service.HomeSlider;
 using BL.Contracts.Service.Merchandising;
 using BL.Contracts.Service.Merchandising.Campaign;
-using BL.Contracts.Service.Order;
+using BL.Contracts.Service.Order.Cart;
+using BL.Contracts.Service.Order.Checkout;
+using BL.Contracts.Service.Order.OrderProcessing;
 using BL.Contracts.Service.Pricing;
 using BL.Contracts.Service.Review;
 using BL.Contracts.Service.Setting;
 using BL.Contracts.Service.ShippingCompny;
 using BL.Contracts.Service.Vendor;
 using BL.GeneralService.Location;
-using BL.Service.Brand;
-using BL.Service.Catalog.Category;
-using BL.Service.Catalog.Item;
-using BL.Service.Catalog.Pricing;
-using BL.Service.Catalog.Unit;
-using BL.Service.Currency;
-using BL.Service.Customer.Wishlist;
-using BL.Service.Merchandising;
-using BL.Service.Merchandising.Campaign;
-using BL.Service.Order;
-using BL.Service.PromoCode;
-using BL.Service.Review;
-using BL.Service.Setting;
-using BL.Service.Setting.Pricing;
-using BL.Service.ShippingCompany;
-using BL.Service.Vendor;
+using BL.Service.Customer;
 using BL.Service.VendorItem;
+using BL.Services.Brand;
+using BL.Services.Catalog.Category;
+using BL.Services.Catalog.Item;
+using BL.Services.Catalog.Pricing;
+using BL.Services.Catalog.Unit;
+using BL.Services.Currency;
+using BL.Services.Customer.Wishlist;
+using BL.Services.HomeSlider;
+using BL.Services.Merchandising;
+using BL.Services.Merchandising.Campaign;
+using BL.Services.Order.Cart;
+using BL.Services.Order.Checkout;
+using BL.Services.Order.OrderProcessing;
+using BL.Services.PromoCode;
+using BL.Services.Review;
+using BL.Services.Setting;
+using BL.Services.Setting.Pricing;
+using BL.Services.ShippingCompany;
+using BL.Services.Vendor;
 
 namespace Api.Extensions
 {
@@ -54,7 +62,10 @@ namespace Api.Extensions
             services.AddScoped<IItemSearchService, ItemSearchService>();
             services.AddScoped<IUnitService, UnitService>();
 
-            // Vendor Items Service
+            // Custom Items Services
+            services.AddScoped<ICustomerItemViewService, CustomerItemViewService>();
+
+            // Vendor Items Services
             services.AddScoped<IVendorItemService, VendorItemService>();
 
             // Register services
@@ -82,15 +93,16 @@ namespace Api.Extensions
 
             // Order Services
             services.AddScoped<ICartService, CartService>();
-            services.AddScoped<IOrderService, OrderService>();
+            services.AddScoped<IOrderMangmentService, OrderMangmentService>();
             services.AddScoped<ICustomerAddressService, CustomerAddressService>();
 
             services.AddScoped<IWishlistService, WishlistService>();
 
             // Review Services
-            services.AddScoped<IOfferReviewService, OfferReviewService>();
+            services.AddScoped<IItemReviewService, ItemReviewService>();
             services.AddScoped<IReviewReportService, ReviewReportService>();
             services.AddScoped<IReviewVoteService, ReviewVoteService>();
+            services.AddScoped<IVendorReviewService, VendorReviewService>();
 
             // Merchandising Services
             services.AddScoped<IHomepageService, HomepageService>();
@@ -108,7 +120,8 @@ namespace Api.Extensions
             services.AddScoped<HybridPricingStrategy>();
 
             services.AddScoped<IHomepageService, HomepageService>();
-            services.AddScoped<IAdminBlockService, AdminBlockService>();
+            services.AddScoped<IHomePageSliderService, HomePageSliderService>();
+			services.AddScoped<IAdminBlockService, AdminBlockService>();
 
             return services;
         }

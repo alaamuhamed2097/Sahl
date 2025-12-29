@@ -9,251 +9,250 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 
-namespace BL.GeneralService.CMS
+namespace BL.GeneralService.CMS;
+
+public class UserTokenService : IUserTokenService
 {
-    public class UserTokenService : IUserTokenService
+    private readonly IConfiguration _configuration;
+    private readonly UserManager<ApplicationUser> _userManager;
+
+    public UserTokenService(IConfiguration configuration, UserManager<ApplicationUser> userManager)
     {
-        private readonly IConfiguration _configuration;
-        private readonly UserManager<ApplicationUser> _userManager;
+        _configuration = configuration;
+        _userManager = userManager;
+    }
 
-        public UserTokenService(IConfiguration configuration, UserManager<ApplicationUser> userManager)
+    public async Task<GenerateTokenResult> GenerateJwtTokenAsync(string userId, IList<string> roles)
+    {
+        var response = new GenerateTokenResult();
+
+        if (string.IsNullOrEmpty(userId))
         {
-            _configuration = configuration;
-            _userManager = userManager;
-        }
-
-        public async Task<GenerateTokenResult> GenerateJwtTokenAsync(string userId, IList<string> roles)
-        {
-            var response = new GenerateTokenResult();
-
-            if (string.IsNullOrEmpty(userId))
-            {
-                response.Success = false;
-                response.Message = "User ID cannot be null or empty.";
-                return response;
-            }
-
-            // Retrieve the user by ID
-            var user = await _userManager.FindByIdAsync(userId);
-            if (user == null)
-            {
-                response.Success = false;
-                response.Message = "User not found.";
-                return response;
-            }
-
-            var jwtKey = _configuration["JWT:Key"];
-            var jwtIssuer = _configuration["JWT:Issuer"];
-            var jwtAudience = _configuration["JWT:Audience"];
-            var tokenExpirationHours = _configuration["JWT:TokenExpirationHours"];
-
-            if (string.IsNullOrEmpty(jwtKey) || string.IsNullOrEmpty(jwtIssuer) || string.IsNullOrEmpty(jwtAudience) || string.IsNullOrEmpty(tokenExpirationHours))
-            {
-                response.Success = false;
-                response.Message = "JWT configuration is missing or invalid.";
-                return response;
-            }
-
-            var authClaims = CreateClaims(user, roles);
-            var authSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey));
-
-            // Use DateTime.UtcNow instead of DateTime.Now to avoid timezone issues
-            var tokenExpiration = DateTime.UtcNow.AddHours(Convert.ToDouble(tokenExpirationHours));
-
-            var token = new JwtSecurityToken(
-                issuer: jwtIssuer,
-                audience: jwtAudience,
-                expires: tokenExpiration,
-                claims: authClaims,
-                signingCredentials: new SigningCredentials(authSigningKey, SecurityAlgorithms.HmacSha256)
-            );
-
-            var tokenString = new JwtSecurityTokenHandler().WriteToken(token);
-
-            response.Success = true;
-            response.Token = tokenString;
-            response.Message = "Token generated successfully.";
-
+            response.Success = false;
+            response.Message = "User ID cannot be null or empty.";
             return response;
         }
 
-        private IEnumerable<Claim> CreateClaims(ApplicationUser user, IList<string> roles)
+        // Retrieve the user by ID
+        var user = await _userManager.FindByIdAsync(userId);
+        if (user == null)
         {
-            if (user == null)
-                throw new ArgumentNullException(nameof(user));
-
-            if (roles == null)
-                throw new ArgumentNullException(nameof(roles));
-
-            var claims = new List<Claim>
-            {
-                // Standard claims
-                new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
-                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                new Claim(JwtRegisteredClaimNames.Iat, DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString(), ClaimValueTypes.Integer64),
-        
-                // Identity claims
-                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-                new Claim(ClaimTypes.Name, user.UserName),
-        
-                // Additional useful claims
-                new Claim("fullName", $"{user.FirstName} {user.LastName}".Trim()),
-                new Claim("userName", user.UserName ?? string.Empty),
-                new Claim("userImage", user.ProfileImagePath ?? string.Empty),
-                new Claim("email", user.Email ?? string.Empty),
-                new Claim("userState", user.UserState.ToString())
-            };
-
-            // Add roles as multiple claims (better for policy-based auth)
-            claims.AddRange(roles.Select(role => new Claim(ClaimTypes.Role, role)));
-
-            return claims;
+            response.Success = false;
+            response.Message = "User not found.";
+            return response;
         }
 
-        public ClaimsPrincipal? ValidateJwtToken(string token)
+        var jwtKey = _configuration["JWT:Key"];
+        var jwtIssuer = _configuration["JWT:Issuer"];
+        var jwtAudience = _configuration["JWT:Audience"];
+        var tokenExpirationHours = _configuration["JWT:TokenExpirationHours"];
+
+        if (string.IsNullOrEmpty(jwtKey) || string.IsNullOrEmpty(jwtIssuer) || string.IsNullOrEmpty(jwtAudience) || string.IsNullOrEmpty(tokenExpirationHours))
         {
-            var tokenHandler = new JwtSecurityTokenHandler();
-            var key = Encoding.UTF8.GetBytes(_configuration["JWT:Key"]);
-
-            try
-            {
-                var principal = tokenHandler.ValidateToken(token, new TokenValidationParameters
-                {
-                    ValidateIssuerSigningKey = true,
-                    IssuerSigningKey = new SymmetricSecurityKey(key),
-                    ValidateIssuer = true,
-                    ValidIssuer = _configuration["JWT:Issuer"],
-                    ValidateAudience = true,
-                    ValidAudience = _configuration["JWT:Audience"],
-                    ValidateLifetime = true, // Ensure lifetime validation is enabled
-                    ClockSkew = TimeSpan.Zero // Remove clock skew tolerance
-                }, out SecurityToken validatedToken);
-
-                return principal;
-            }
-            catch (SecurityTokenExpiredException)
-            {
-                // Token has expired
-                return null;
-            }
-            catch (SecurityTokenException)
-            {
-                // Token is invalid
-                return null;
-            }
-            catch (Exception)
-            {
-                // Log the exception (e.g., using Serilog, NLog, etc.)
-                return null;
-            }
+            response.Success = false;
+            response.Message = "JWT configuration is missing or invalid.";
+            return response;
         }
 
-        public async Task<string> CreateRefreshTokenAsync(ApplicationUser user, string clientType)
+        var authClaims = CreateClaims(user, roles);
+        var authSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey));
+
+        // Use DateTime.UtcNow instead of DateTime.Now to avoid timezone issues
+        var tokenExpiration = DateTime.UtcNow.AddHours(Convert.ToDouble(tokenExpirationHours));
+
+        var token = new JwtSecurityToken(
+            issuer: jwtIssuer,
+            audience: jwtAudience,
+            expires: tokenExpiration,
+            claims: authClaims,
+            signingCredentials: new SigningCredentials(authSigningKey, SecurityAlgorithms.HmacSha256)
+        );
+
+        var tokenString = new JwtSecurityTokenHandler().WriteToken(token);
+
+        response.Success = true;
+        response.Token = tokenString;
+        response.Message = "Token generated successfully.";
+
+        return response;
+    }
+
+    private IEnumerable<Claim> CreateClaims(ApplicationUser user, IList<string> roles)
+    {
+        if (user == null)
+            throw new ArgumentNullException(nameof(user));
+
+        if (roles == null)
+            throw new ArgumentNullException(nameof(roles));
+
+        var claims = new List<Claim>
         {
-            // Generate a refresh token
-            var refreshToken = await _userManager.GenerateUserTokenAsync(user, TokenOptions.DefaultProvider, $"RefreshToken_{clientType}");
+            // Standard claims
+            new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
+            new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+            new Claim(JwtRegisteredClaimNames.Iat, DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString(), ClaimValueTypes.Integer64),
+    
+            // Identity claims
+            new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+            new Claim(ClaimTypes.Name, user.UserName),
+    
+            // Additional useful claims
+            new Claim("fullName", $"{user.FirstName} {user.LastName}".Trim()),
+            new Claim("userName", user.UserName ?? string.Empty),
+            new Claim("userImage", user.ProfileImagePath ?? string.Empty),
+            new Claim("email", user.Email ?? string.Empty),
+            new Claim("userState", user.UserState.ToString())
+        };
 
-            // Store the refresh token and its expiration time in the database
-            var refreshTokenExpiration = DateTime.UtcNow.AddDays(7); // 1 week expiration
+        // Add roles as multiple claims (better for policy-based auth)
+        claims.AddRange(roles.Select(role => new Claim(ClaimTypes.Role, role)));
 
-            // Store the refresh token in the database
-            await _userManager.SetAuthenticationTokenAsync(user, TokenOptions.DefaultProvider, $"RefreshToken_{clientType}", refreshToken);
-            await _userManager.SetAuthenticationTokenAsync(user, TokenOptions.DefaultProvider, $"RefreshTokenExpiration_{clientType}", refreshTokenExpiration.ToString("O")); // ISO 8601 format
+        return claims;
+    }
 
-            return refreshToken;
+    public ClaimsPrincipal? ValidateJwtToken(string token)
+    {
+        var tokenHandler = new JwtSecurityTokenHandler();
+        var key = Encoding.UTF8.GetBytes(_configuration["JWT:Key"]);
+
+        try
+        {
+            var principal = tokenHandler.ValidateToken(token, new TokenValidationParameters
+            {
+                ValidateIssuerSigningKey = true,
+                IssuerSigningKey = new SymmetricSecurityKey(key),
+                ValidateIssuer = true,
+                ValidIssuer = _configuration["JWT:Issuer"],
+                ValidateAudience = true,
+                ValidAudience = _configuration["JWT:Audience"],
+                ValidateLifetime = true, // Ensure lifetime validation is enabled
+                ClockSkew = TimeSpan.Zero // Remove clock skew tolerance
+            }, out SecurityToken validatedToken);
+
+            return principal;
         }
-
-        public async Task<ValidateRefreshTokenResult> ValidateRefreshTokenAsync(RefreshTokenDto refreshTokenDto, string clientType)
+        catch (SecurityTokenExpiredException)
         {
-            // Retrieve the user based on their email
-            var user = await _userManager.FindByEmailAsync(refreshTokenDto.Email);
-            if (user == null)
-            {
-                return new ValidateRefreshTokenResult
-                {
-                    Success = false,
-                    Message = "User not found."
-                };
-            }
+            // Token has expired
+            return null;
+        }
+        catch (SecurityTokenException)
+        {
+            // Token is invalid
+            return null;
+        }
+        catch (Exception)
+        {
+            // Log the exception (e.g., using Serilog, NLog, etc.)
+            return null;
+        }
+    }
 
-            /// Retrieve the stored refresh token and its expiration time based on the client type
-            var storedRefreshToken = await _userManager.GetAuthenticationTokenAsync(user, TokenOptions.DefaultProvider, $"RefreshToken_{clientType}");
-            var storedRefreshTokenExpiration = await _userManager.GetAuthenticationTokenAsync(user, TokenOptions.DefaultProvider, $"RefreshTokenExpiration_{clientType}");
+    public async Task<string> CreateRefreshTokenAsync(ApplicationUser user, string clientType)
+    {
+        // Generate a refresh token
+        var refreshToken = await _userManager.GenerateUserTokenAsync(user, TokenOptions.DefaultProvider, $"RefreshToken_{clientType}");
 
-            if (storedRefreshToken == null || storedRefreshToken != refreshTokenDto.RefreshToken)
-            {
-                return new ValidateRefreshTokenResult
-                {
-                    Success = false,
-                    Message = "Invalid or expired refresh token."
-                };
-            }
+        // Store the refresh token and its expiration time in the database
+        var refreshTokenExpiration = DateTime.UtcNow.AddDays(7); // 1 week expiration
 
-            // Check if the refresh token has expired
-            if ((DateTime.TryParse(storedRefreshTokenExpiration, out var expirationDate) && expirationDate < DateTime.UtcNow) || user.LastLoginDate < DateTime.UtcNow.AddMonths(-1))
-            {
-                return new ValidateRefreshTokenResult
-                {
-                    Success = false,
-                    Message = "Refresh token has expired. Please log in again."
-                };
-            }
+        // Store the refresh token in the database
+        await _userManager.SetAuthenticationTokenAsync(user, TokenOptions.DefaultProvider, $"RefreshToken_{clientType}", refreshToken);
+        await _userManager.SetAuthenticationTokenAsync(user, TokenOptions.DefaultProvider, $"RefreshTokenExpiration_{clientType}", refreshTokenExpiration.ToString("O")); // ISO 8601 format
 
-            // If the refresh token is valid, retrieve the user's roles
-            var userRoles = await _userManager.GetRolesAsync(user);
+        return refreshToken;
+    }
 
-            // If the token matches, return success and the user ID
+    public async Task<ValidateRefreshTokenResult> ValidateRefreshTokenAsync(RefreshTokenDto refreshTokenDto, string clientType)
+    {
+        // Retrieve the user based on their email
+        var user = await _userManager.FindByEmailAsync(refreshTokenDto.Email);
+        if (user == null)
+        {
             return new ValidateRefreshTokenResult
             {
-                Success = true,
-                UserId = user.Id.ToString(),
-                UserRoles = userRoles.ToList(),
+                Success = false,
+                Message = "User not found."
             };
         }
 
-        // Regenerate Refresh Token (using the old one)
-        public async Task<RegenerateRefreshTokenResult> RegenerateRefreshTokenAsync(RefreshTokenDto refreshTokenDto, string clientType)
+        /// Retrieve the stored refresh token and its expiration time based on the client type
+        var storedRefreshToken = await _userManager.GetAuthenticationTokenAsync(user, TokenOptions.DefaultProvider, $"RefreshToken_{clientType}");
+        var storedRefreshTokenExpiration = await _userManager.GetAuthenticationTokenAsync(user, TokenOptions.DefaultProvider, $"RefreshTokenExpiration_{clientType}");
+
+        if (storedRefreshToken == null || storedRefreshToken != refreshTokenDto.RefreshToken)
         {
-            // Validate the old refresh token
-            var validationResult = await ValidateRefreshTokenAsync(refreshTokenDto, clientType);
-            if (!validationResult.Success)
+            return new ValidateRefreshTokenResult
             {
-                return new RegenerateRefreshTokenResult
-                {
-                    Success = false,
-                    Message = validationResult.Message
-                };
-            }
+                Success = false,
+                Message = "Invalid or expired refresh token."
+            };
+        }
 
-            // Retrieve the user
-            var user = await _userManager.FindByIdAsync(validationResult.UserId);
-            if (user == null)
+        // Check if the refresh token has expired
+        if ((DateTime.TryParse(storedRefreshTokenExpiration, out var expirationDate) && expirationDate < DateTime.UtcNow) || user.LastLoginDate < DateTime.UtcNow.AddMonths(-1))
+        {
+            return new ValidateRefreshTokenResult
             {
-                return new RegenerateRefreshTokenResult
-                {
-                    Success = false,
-                    Message = "User not found."
-                };
-            }
+                Success = false,
+                Message = "Refresh token has expired. Please log in again."
+            };
+        }
 
-            // Generate a new refresh token for the specified client type
-            var newRefreshToken = await CreateRefreshTokenAsync(user, clientType);
+        // If the refresh token is valid, retrieve the user's roles
+        var userRoles = await _userManager.GetRolesAsync(user);
 
+        // If the token matches, return success and the user ID
+        return new ValidateRefreshTokenResult
+        {
+            Success = true,
+            UserId = user.Id.ToString(),
+            UserRoles = userRoles.ToList(),
+        };
+    }
+
+    // Regenerate Refresh Token (using the old one)
+    public async Task<RegenerateRefreshTokenResult> RegenerateRefreshTokenAsync(RefreshTokenDto refreshTokenDto, string clientType)
+    {
+        // Validate the old refresh token
+        var validationResult = await ValidateRefreshTokenAsync(refreshTokenDto, clientType);
+        if (!validationResult.Success)
+        {
             return new RegenerateRefreshTokenResult
             {
-                Success = true,
-                RefreshToken = newRefreshToken,
-                Message = "Refresh token regenerated successfully."
+                Success = false,
+                Message = validationResult.Message
             };
         }
 
-        public async Task<UserStateType> GetUserStateAsync(string userId)
+        // Retrieve the user
+        var user = await _userManager.FindByIdAsync(validationResult.UserId);
+        if (user == null)
         {
-            var user = await _userManager.FindByIdAsync(userId);
-            if (user == null)
-                throw new Exception("User not found");
-
-            return user.UserState;
+            return new RegenerateRefreshTokenResult
+            {
+                Success = false,
+                Message = "User not found."
+            };
         }
+
+        // Generate a new refresh token for the specified client type
+        var newRefreshToken = await CreateRefreshTokenAsync(user, clientType);
+
+        return new RegenerateRefreshTokenResult
+        {
+            Success = true,
+            RefreshToken = newRefreshToken,
+            Message = "Refresh token regenerated successfully."
+        };
+    }
+
+    public async Task<UserStateType> GetUserStateAsync(string userId)
+    {
+        var user = await _userManager.FindByIdAsync(userId);
+        if (user == null)
+            throw new Exception("User not found");
+
+        return user.UserState;
     }
 }
