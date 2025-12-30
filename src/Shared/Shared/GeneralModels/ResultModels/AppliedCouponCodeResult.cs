@@ -1,4 +1,4 @@
-﻿using Common.Enumerations;
+﻿using Common.Enumerations.Order;
 
 namespace Shared.GeneralModels.ResultModels
 {
@@ -11,6 +11,6 @@ namespace Shared.GeneralModels.ResultModels
         public Guid CouponCodeId { get; set; }
         public string Code { get; set; }
 
-        public CouponCodeType DiscountType { get; set; }
+        public DiscountType DiscountType { get; set; }
     }
 }

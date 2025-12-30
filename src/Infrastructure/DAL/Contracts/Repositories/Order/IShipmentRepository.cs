@@ -1,6 +1,6 @@
 ﻿using DAL.Contracts.Repositories;
 using DAL.Models;
-using Domains.Entities.Shipping;
+using Domains.Entities.Order.Shipping;
 
 namespace DAL.Contracts.Repositories.Order
 {

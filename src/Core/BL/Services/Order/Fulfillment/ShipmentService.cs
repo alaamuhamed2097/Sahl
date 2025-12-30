@@ -5,7 +5,7 @@ using Common.Enumerations.Shipping;
 using DAL.Contracts.Repositories.Order;
 using DAL.Contracts.UnitOfWork;
 using Domains.Entities.Order;
-using Domains.Entities.Shipping;
+using Domains.Entities.Order.Shipping;
 using Serilog;
 using Shared.DTOs.Order.Checkout.Address;
 using Shared.DTOs.Order.Fulfillment.Shipment;
@@ -435,7 +435,7 @@ public class ShipmentService : IShipmentService
     {
         try
         {
-            var shippingDetailRepo = _unitOfWork.TableRepository<Domains.Entities.Shipping.TbShippingDetail>();
+            var shippingDetailRepo = _unitOfWork.TableRepository<TbShippingDetail>();
             var shippingDetail = await shippingDetailRepo.FindAsync(sd =>
                 sd.Offer.VendorId == vendorId &&
                 sd.CityId == cityId

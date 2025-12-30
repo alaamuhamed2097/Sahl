@@ -843,4 +843,7 @@
 	<data name="ConfigureAttributes" xml:space="preserve">
   <value>Configure attributes for this product</value>
 </data>
+	<data name="AffectsPricingListTypeOnly" xml:space="preserve">
+  <value>Affects Pricing is only available for List type attributes</value>
+</data>
 </root>

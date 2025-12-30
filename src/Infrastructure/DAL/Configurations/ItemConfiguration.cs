@@ -119,17 +119,17 @@ namespace DAL.Configurations
             // ============================================================================
 
             entity.HasOne(e => e.Category)
-                .WithMany()
+                .WithMany(i=>i.Items)
                 .HasForeignKey(e => e.CategoryId)
                 .OnDelete(DeleteBehavior.Restrict);
 
             entity.HasOne(e => e.Brand)
-                .WithMany()
+                .WithMany(i=>i.Items)
                 .HasForeignKey(e => e.BrandId)
                 .OnDelete(DeleteBehavior.Restrict);
 
             entity.HasOne(e => e.Unit)
-                .WithMany()
+                .WithMany(i=>i.Items)
                 .HasForeignKey(e => e.UnitId)
                 .OnDelete(DeleteBehavior.Restrict);
         }

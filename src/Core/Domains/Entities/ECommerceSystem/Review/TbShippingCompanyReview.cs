@@ -1,7 +1,7 @@
 ﻿using Domains.Entities.Catalog.Item;
 using Domains.Entities.ECommerceSystem.Customer;
 using Domains.Entities.ECommerceSystem.Vendor;
-using Domains.Entities.Shipping;
+using Domains.Entities.Order.Shipping;
 using System;
 using System.Collections.Generic;
 using System.Text;

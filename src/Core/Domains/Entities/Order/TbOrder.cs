@@ -1,9 +1,9 @@
 ﻿using Common.Enumerations.Order;
 using Common.Enumerations.Payment;
-using Domains.Entities.CouponCode;
 using Domains.Entities.ECommerceSystem;
-using Domains.Entities.Payment;
-using Domains.Entities.ECommerceSystem.Review;
+using Domains.Entities.Merchandising.CouponCode;
+using Domains.Entities.Order.Payment;
+using Domains.Entities.Order.Shipping;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -48,6 +48,7 @@ namespace Domains.Entities.Order
         public virtual TbCustomerAddress? CustomerAddress { get; set; }
         public virtual ICollection<TbOrderDetail> OrderDetails { get; set; } = new List<TbOrderDetail>();
         public virtual ICollection<TbOrderPayment> OrderPayments { get; set; } = new List<TbOrderPayment>();
+        public virtual ICollection<TbOrderShipment> TbOrderShipments { get; set; } = new List<TbOrderShipment>();
     }
 }
 

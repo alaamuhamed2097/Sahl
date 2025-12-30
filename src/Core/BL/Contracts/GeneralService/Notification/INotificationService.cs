@@ -1,5 +1,4 @@
-﻿using BL.OperationResults;
-using Shared.GeneralModels.Parameters.Notification;
+﻿using Shared.GeneralModels.Parameters.Notification;
 using Shared.GeneralModels.ResultModels;
 
 namespace Bl.Contracts.GeneralService.Notification

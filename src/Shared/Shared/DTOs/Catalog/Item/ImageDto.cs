@@ -1,6 +1,6 @@
 using Shared.DTOs.Base;
 
-namespace Shared.DTOs.ECommerce.Item
+namespace Shared.DTOs.Catalog.Item
 {
     public class ImageDto : BaseDto
     {

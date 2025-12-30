@@ -1,8 +1,8 @@
 ﻿using BL.Contracts.Service.Order.Cart;
 using DAL.Contracts.Repositories;
 using DAL.Contracts.Repositories.Order;
-using Domains.Entities.ECommerceSystem.Cart;
 using Domains.Entities.Offer;
+using Domains.Entities.Order.Cart;
 using Serilog;
 using Shared.DTOs.Order.Cart;
 

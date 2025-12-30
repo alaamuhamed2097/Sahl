@@ -1,62 +1,44 @@
-﻿using Common.Enumerations;
-using Resources;
-using Resources.Enumerations;
-using Shared.DTOs.Base;
-using System.ComponentModel.DataAnnotations;
-using System.Text.Json.Serialization;
+﻿using Common.Enumerations.Order;
 
 namespace Shared.DTOs.Order.CouponCode
 {
-    public class CouponCodeDto : BaseDto
+    /// <summary>
+    /// Main DTO for CouponCode CRUD operations
+    /// </summary>
+    public class CouponCodeDto
     {
-        [Required(ErrorMessageResourceType = typeof(ValidationResources), ErrorMessageResourceName = "FieldRequired")]
-        [StringLength(100, ErrorMessageResourceType = typeof(ValidationResources), ErrorMessageResourceName = "FieldLength100")]
-        public string TitleAR { get; set; } = null!;
+        public Guid Id { get; set; }
+        public string Code { get; set; } = string.Empty;
+        public string TitleAr { get; set; } = string.Empty;
+        public string TitleEn { get; set; } = string.Empty;
+        public string? DescriptionAr { get; set; }
+        public string? DescriptionEn { get; set; }
 
-        [Required(ErrorMessageResourceType = typeof(ValidationResources), ErrorMessageResourceName = "FieldRequired")]
-        [StringLength(100, ErrorMessageResourceType = typeof(ValidationResources), ErrorMessageResourceName = "FieldLength100")]
-        public string TitleEN { get; set; } = null!;
+        public CouponCodeType PromoType { get; set; }
+        public DiscountType DiscountType { get; set; }
+        public decimal DiscountValue { get; set; }
+        public decimal? MaxDiscountAmount { get; set; }
+        public decimal? MinimumOrderAmount { get; set; }
+        public decimal? MinimumProductPrice { get; set; }
 
-        public string Title => ResourceManager.CurrentLanguage == Language.English ? TitleEN : TitleAR;
+        public Guid? VendorId { get; set; }
+        public string? VendorName { get; set; }
 
-        [Required(ErrorMessageResourceType = typeof(ValidationResources), ErrorMessageResourceName = "FieldRequired")]
-        [StringLength(100, ErrorMessageResourceType = typeof(ValidationResources), ErrorMessageResourceName = "FieldLength50")]
-        public string Code { get; set; } = null!;
+        public decimal? PlatformSharePercentage { get; set; }
 
-        [Required(ErrorMessageResourceType = typeof(ValidationResources), ErrorMessageResourceName = "FieldRequired")]
-        public DateTime StartDate
-        {
-            get => StartDateUTC.ToLocalTime();
-            set => StartDateUTC = value.ToUniversalTime();
-        }
+        public DateTime StartDate { get; set; }
+        public DateTime? ExpiryDate { get; set; }
 
-        [Required(ErrorMessageResourceType = typeof(ValidationResources), ErrorMessageResourceName = "FieldRequired")]
-        public DateTime EndDate
-        {
-            get => EndDateUTC.ToLocalTime();
-            set => EndDateUTC = value.ToUniversalTime();
-        }
-
-        [Required(ErrorMessageResourceType = typeof(ValidationResources), ErrorMessageResourceName = "FieldRequired")]
-        public CouponCodeType CouponCodeType { get; set; }
-
-        [Required(ErrorMessageResourceType = typeof(ValidationResources), ErrorMessageResourceName = "FieldRequired")]
-        [Range(0.01, double.MaxValue, ErrorMessageResourceType = typeof(ValidationResources), ErrorMessageResourceName = "FieldRange")]
-        public decimal Value { get; set; }
-
-        [Range(1, int.MaxValue, ErrorMessageResourceType = typeof(ValidationResources), ErrorMessageResourceName = "FieldRange")]
         public int? UsageLimit { get; set; }
+        public int UsageCount { get; set; }
+        public int? UsageLimitPerUser { get; set; }
 
-        [Required(ErrorMessageResourceType = typeof(ValidationResources), ErrorMessageResourceName = "FieldRequired")]
-        [Range(0, int.MaxValue, ErrorMessageResourceType = typeof(ValidationResources), ErrorMessageResourceName = "FieldRange")]
-        public int UsageCount { get; set; } = 0;
+        public bool IsActive { get; set; } = true;
+        public bool IsFirstOrderOnly { get; set; }
 
-        public bool IsActive { get; set; }
+        // Scopes (Categories or Items)
+        public List<CouponScopeDto>? ScopeItems { get; set; }
 
-        [JsonIgnore]
-        public DateTime StartDateUTC { get; set; }
-
-        [JsonIgnore]
-        public DateTime EndDateUTC { get; set; }
+        public DateTime CreatedDateUtc { get; set; }
     }
 }

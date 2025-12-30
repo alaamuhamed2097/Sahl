@@ -1,7 +1,7 @@
 ﻿using DAL.ApplicationContext;
 using DAL.Contracts.Repositories.Order;
 using DAL.Models;
-using Domains.Entities.Shipping;
+using Domains.Entities.Order.Shipping;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
 

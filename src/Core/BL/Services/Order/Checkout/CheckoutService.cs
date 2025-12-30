@@ -1,9 +1,10 @@
 ﻿using AutoMapper;
 using BL.Contracts.Service.Order.Cart;
 using BL.Contracts.Service.Order.Checkout;
+using Common.Enumerations.Order;
 using DAL.Contracts.UnitOfWork;
-using Domains.Entities.CouponCode;
-using Domains.Entities.Shipping;
+using Domains.Entities.Merchandising.CouponCode;
+using Domains.Entities.Order.Shipping;
 using Serilog;
 using Shared.DTOs.Order.Checkout;
 using Shared.DTOs.Order.CouponCode;
@@ -377,7 +378,7 @@ public class CheckoutService : ICheckoutService
             string discountTypeName = string.Empty;
 
             // ✅ Use enum value comparison instead of DiscountType.Percentage
-            if (coupon.DiscountType == 1) // Percentage discount
+            if (coupon.DiscountType == DiscountType.Percentage) // Percentage discount
             {
                 discountPercentage = coupon.DiscountValue;
                 discountAmount = (orderSubtotal * coupon.DiscountValue) / 100;
@@ -389,7 +390,7 @@ public class CheckoutService : ICheckoutService
                     discountAmount = coupon.MaxDiscountAmount.Value;
                 }
             }
-            else if (coupon.DiscountType == 2) // Fixed amount discount
+            else if (coupon.DiscountType == DiscountType.FixedAmount) // Fixed amount discount
             {
                 discountAmount = coupon.DiscountValue;
                 discountPercentage = (discountAmount / orderSubtotal) * 100;

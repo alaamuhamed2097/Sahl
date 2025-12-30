@@ -369,8 +369,7 @@ namespace Dashboard.Pages.Catalog.Categories
         {
             treeNodes.Clear();
             var categoriesList = TreeCategories.ToList();
-            var rootCategories = categoriesList.Where(c =>
-                c.IsFinal && (c.ParentId == Guid.Empty || c.ParentId == null)).ToList();
+            var rootCategories = categoriesList.Where(c => (c.ParentId == Guid.Empty || c.ParentId == null)).ToList();
             foreach (var rootCategory in rootCategories.OrderBy(x => GetSerialForSorting(x.TreeViewSerial)))
             {
                 var treeNode = new CategoryTreeNode
