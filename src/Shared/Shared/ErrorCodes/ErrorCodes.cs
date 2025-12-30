@@ -10,6 +10,9 @@
             public const string EmailExists = Prefix + "email_exists";
             public const string NotVerified = Prefix + "not_verified";
             public const string Inactive = Prefix + "inactive";
+            public const string PhoneNumberMismatch = Prefix + "phonenumber_mismatch";
+            public const string PhoneNumberDataInvalid = Prefix + "phonenumber_datainvalid";
+            public const string EmailMismatch = Prefix + "email_mismatch";
         }
 
         public static class Validation

@@ -115,10 +115,13 @@ public class VerificationCodeService : IVerificationCodeService
     {
         try
         {
-            var cacheKey = $"{recipient}_code";
-            var cachedCode = _memoryCache.Get<string>(cacheKey);
+            ////var cacheKey = $"{recipient}_code";
+            ////var cachedCode = _memoryCache.Get<string>(cacheKey);
 
-            return cachedCode != null && cachedCode == code;
+            ////return cachedCode != null && cachedCode == code;
+
+            // For testing purposes only, change this when implementing notification service
+            return code == "123456";
         }
         catch (Exception ex)
         {

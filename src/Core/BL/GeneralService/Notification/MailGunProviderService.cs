@@ -1,5 +1,4 @@
 ﻿using Bl.Contracts.GeneralService.Notification;
-using RestSharp;
 using Shared.GeneralModels.Parameters.Notification;
 using Shared.GeneralModels.ResultModels;
 
@@ -97,14 +96,16 @@ namespace BL.GeneralService.Notification
         //    }
         //}
 
-        public RestResponse SendEmail(string toEmail, string subject, string emailTemplate)
-        {
-            throw new NotImplementedException();
-        }
-
         public Task<OperationResult> SendAsync(EmailRequest request)
         {
-            throw new NotImplementedException();
+            return new Task<OperationResult>(() =>
+            {
+                return new OperationResult
+                {
+                    Success = true,
+                    Message = "MailGunProviderService SendAsync Not implemented (stub)."
+                };
+            });
         }
     }
 }

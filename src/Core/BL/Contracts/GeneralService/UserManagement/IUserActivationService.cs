@@ -4,8 +4,12 @@ namespace BL.Contracts.GeneralService.UserManagement;
 
 public interface IUserActivationService
 {
-    Task<OperationResult> SendActivationCodeAsync(string userId, string identifire);
-    Task<OperationResult> VerifyActivationCodeAsync(string userId, string code);
-    Task<OperationResult> VerifyNewEmailActivationCodeAsync(string userId, string newEmail, string code);
-    Task<OperationResult> VerifyNewPhoneNumberActivationCodeAsync(string userId, string newPhoneNumber, string code);
+    Task<OperationResult> SendPhoneNumberActivationCodeAsync(string userId, string phoneCode, string phoneNumber);
+    Task<OperationResult> VerifyPhoneNumberActivationCodeAsync(string userId, string code);
+
+    Task<OperationResult> SendChangePhoneNumberCodeAsync(string userId, string phoneCode, string phoneNumber);
+    Task<OperationResult> VerifyChangePhoneNumberCodeAsync(string userId, string phoneCode, string phoneNumber, string code);
+
+    Task<OperationResult> SendEmailActivationCodeAsync(string userId, string email);
+    Task<OperationResult> VerifyEmailActivationCodeAsync(string userId, string newEmail, string code);
 }

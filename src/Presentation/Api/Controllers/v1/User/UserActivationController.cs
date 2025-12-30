@@ -38,7 +38,7 @@ namespace Api.Controllers.v1.User
                 });
             }
 
-            var result = await _userActivationService.VerifyActivationCodeAsync(UserId, request.ActivationCode);
+            var result = await _userActivationService.VerifyPhoneNumberActivationCodeAsync(UserId, request.ActivationCode);
 
             if (result.Success)
             {
@@ -75,7 +75,7 @@ namespace Api.Controllers.v1.User
                 });
             }
 
-            var result = await _userActivationService.SendActivationCodeAsync(UserId, request.Identifire);
+            var result = await _userActivationService.SendPhoneNumberActivationCodeAsync(UserId, request.PhoneCode, request.PhoneNumber);
 
             if (result.Success)
             {
@@ -93,6 +93,80 @@ namespace Api.Controllers.v1.User
                 ErrorCode = result.ErrorCode
             });
 
+        }
+
+        /// <summary>
+        /// Sends verification code for changing phone number.
+        /// </summary>
+        [HttpPost("change-phone-send-code")]
+        [Authorize]
+        public async Task<IActionResult> SendChangePhoneCode([FromBody] ChangePhoneRequestDto request)
+        {
+            if (!ModelState.IsValid)
+            {
+                return Ok(new ResponseModel<string>
+                {
+                    Success = false,
+                    Message = "Invalid input.",
+                    Errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList()
+                });
+            }
+
+            var result = await _userActivationService.SendChangePhoneNumberCodeAsync(UserId, request.PhoneCode, request.PhoneNumber);
+
+            if (result.Success)
+            {
+                return Ok(new ResponseModel<object>
+                {
+                    Success = true,
+                    Message = result.Message ?? "Verification code sent successfully."
+                });
+            }
+
+            return Ok(new ResponseModel<object>
+            {
+                Success = false,
+                Message = result.Message ?? "Failed to send verification code.",
+                ErrorCode = result.ErrorCode,
+                Errors = result.Errors
+            });
+        }
+
+        /// <summary>
+        /// Verifies the code and changes the phone number.
+        /// </summary>
+        [HttpPost("change-phone-verify-code")]
+        [Authorize]
+        public async Task<IActionResult> VerifyChangePhoneCode([FromBody] VerifyChangePhoneDto request)
+        {
+            if (!ModelState.IsValid)
+            {
+                return Ok(new ResponseModel<string>
+                {
+                    Success = false,
+                    Message = "Invalid input.",
+                    Errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList()
+                });
+            }
+
+            var result = await _userActivationService.VerifyChangePhoneNumberCodeAsync(UserId, request.PhoneCode, request.PhoneNumber, request.Code);
+
+            if (result.Success)
+            {
+                return Ok(new ResponseModel<object>
+                {
+                    Success = true,
+                    Message = result.Message ?? "Phone number changed successfully."
+                });
+            }
+
+            return Ok(new ResponseModel<object>
+            {
+                Success = false,
+                Message = result.Message ?? UserResources.InvalidOrExpiredCode,
+                ErrorCode = result.ErrorCode,
+                Errors = result.Errors
+            });
         }
     }
 }
