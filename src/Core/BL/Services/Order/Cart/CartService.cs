@@ -1,10 +1,11 @@
 ﻿using BL.Contracts.Service.Order.Cart;
 using DAL.Contracts.Repositories;
 using DAL.Contracts.Repositories.Order;
-using Domains.Entities.ECommerceSystem.Cart;
 using Domains.Entities.Offer;
+using Domains.Entities.Order.Cart;
 using Serilog;
 using Shared.DTOs.Order.Cart;
+using Shared.GeneralModels.Models;
 
 namespace BL.Services.Order.Cart;
 
@@ -469,13 +470,18 @@ public class CartService : ICartService
                     Id = ci.Id,
                     ItemId = ci.ItemId,
                     ItemName = ci.Item?.TitleEn ?? "Unknown Item",
-                    OfferCombinationPricingId = ci.OfferCombinationPricingId, // ✅ This is OfferCombinationPricingId
-                    SellerName = "Unknown Seller",
-                    Quantity = ci.Quantity,
+                    OfferCombinationPricingId = ci.OfferCombinationPricingId, 
+					SellerName = ci.OfferCombinationPricing?.Offer?.Vendor?.User?.FullName
+						 ?? "Unknown Seller",
+					Quantity = ci.Quantity,
                     UnitPrice = currentPrice,
                     SubTotal = currentPrice * ci.Quantity,
-                    IsAvailable = isAvailable
-                });
+                    IsAvailable = isAvailable,
+					ImageUrl = ci.Item?.ItemImages != null && ci.Item.ItemImages.Any()
+					? ci.Item.ItemImages
+						.FirstOrDefault()?.ToString()
+					: null
+				});
             }
         }
 

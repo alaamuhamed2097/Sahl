@@ -1,7 +1,7 @@
 ﻿using BL.Contracts.Service.Order;
 using BL.Contracts.Service.Order.OrderProcessing;
 using Common.Enumerations.Order;
-using Shared.Events.Order;
+using Shared.DTOs.Order.OrderEvents;
 
 namespace BL.Services.Order.OrderProcessing;
 

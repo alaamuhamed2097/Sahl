@@ -12,8 +12,8 @@ using Domains.Entities.ECommerceSystem;
 using Domains.Entities.ECommerceSystem.Vendor;
 using Domains.Entities.Offer;
 using Domains.Entities.Order;
-using Domains.Entities.Payment;
-using Domains.Entities.Shipping;
+using Domains.Entities.Order.Payment;
+using Domains.Entities.Order.Shipping;
 using Domains.Entities.Warehouse;
 using Serilog;
 using Shared.DTOs.Order.Cart;
@@ -105,6 +105,7 @@ public class OrderMangmentService : IOrderMangmentService
                 // Step 6: Clear cart (after transaction commit to avoid partial clears on rollback)
                 await transaction.CommitAsync();
 
+                /// check if payment on delivery
                 await _cartService.ClearCartAsync(customerId);
 
                 return new OrderCreatedResponseDto

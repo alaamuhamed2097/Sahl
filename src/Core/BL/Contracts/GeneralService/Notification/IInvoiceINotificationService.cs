@@ -1,4 +1,4 @@
-﻿using Bl.GeneralModels.Payment;
+﻿using Shared.GeneralModels.Models;
 
 namespace Bl.Contracts.GeneralService.Notification
 {

@@ -1,6 +1,5 @@
 ﻿using Bl.Contracts.GeneralService.Notification;
 using BL.Contracts.GeneralService.Notification;
-using BL.OperationResults;
 using Common.Enumerations.Notification;
 using Serilog;
 using Shared.DTOs.Notification;

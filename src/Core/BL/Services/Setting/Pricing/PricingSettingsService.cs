@@ -1,7 +1,7 @@
 using BL.Contracts.IMapper;
 using BL.Contracts.Service.Pricing;
 using DAL.Contracts.Repositories;
-using Domains.Entities.Pricing;
+using Domains.Entities.Catalog.Pricing;
 using Shared.DTOs.Pricing;
 
 namespace BL.Services.Setting.Pricing;

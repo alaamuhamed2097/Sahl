@@ -1,6 +1,6 @@
 ﻿using BL.Contracts.Service.Base;
 using DAL.Models;
-using Domains.Entities.Shipping;
+using Domains.Entities.Order.Shipping;
 using Shared.DTOs.ECommerce;
 using Shared.GeneralModels.SearchCriteriaModels;
 

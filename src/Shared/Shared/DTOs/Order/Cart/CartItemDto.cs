@@ -12,8 +12,8 @@
         public string SellerName { get; set; } = string.Empty;
 
         // ✅ ADDED: Required for checkout shipment grouping
-        public Guid VendorId { get; set; }
-        public Guid? WarehouseId { get; set; }
+       // public Guid VendorId { get; set; }
+        //public Guid? WarehouseId { get; set; }
 
         public int Quantity { get; set; }
         public decimal UnitPrice { get; set; }

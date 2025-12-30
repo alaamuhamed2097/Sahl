@@ -6,6 +6,11 @@ namespace Shared.DTOs.User
     public class SendActivationCodeDto
     {
         [Required(ErrorMessageResourceName = "FieldRequired", ErrorMessageResourceType = typeof(ValidationResources))]
-        public string Identifire { get; set; } = null!;
+        [RegularExpression(@"^\+\d{1,4}$", ErrorMessageResourceName = "InvalidFormat", ErrorMessageResourceType = typeof(ValidationResources))]
+        public string PhoneCode { get; set; } = null!;
+
+        [Required(ErrorMessageResourceName = "FieldRequired", ErrorMessageResourceType = typeof(ValidationResources))]
+        [Phone(ErrorMessageResourceName = "InvalidFormat", ErrorMessageResourceType = typeof(ValidationResources))]
+        public string PhoneNumber { get; set; } = null!;
     }
 }

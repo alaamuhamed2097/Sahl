@@ -1,4 +1,4 @@
-using Domains.Entities.Merchandising;
+using Domains.Entities.Merchandising.HomePageBlocks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 

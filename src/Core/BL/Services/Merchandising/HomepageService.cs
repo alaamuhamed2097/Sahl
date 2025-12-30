@@ -8,7 +8,8 @@ using DAL.Contracts.Repositories.Merchandising;
 using Domains.Entities.Campaign;
 using Domains.Entities.Catalog.Category;
 using Domains.Entities.Catalog.Item.ItemAttributes;
-using Domains.Entities.Merchandising;
+using Domains.Entities.Merchandising.HomePage;
+using Domains.Entities.Merchandising.HomePageBlocks;
 using Shared.DTOs.Merchandising.Homepage;
 
 namespace BL.Services.Merchandising;
@@ -138,7 +139,7 @@ public class HomepageService : IHomepageService
     /// Get manually selected products
     /// </summary>
     private async Task<List<ItemCardDto>> GetManualProductsAsync(
-        Domains.Entities.Merchandising.TbHomepageBlock block)
+        TbHomepageBlock block)
     {
         if (block.BlockProducts == null || !block.BlockProducts.Any())
             return new List<ItemCardDto>();
@@ -156,7 +157,7 @@ public class HomepageService : IHomepageService
     /// Get campaign products
     /// </summary>
     private async Task<List<ItemCardDto>> GetCampaignProductsAsync(
-        Domains.Entities.Merchandising.TbHomepageBlock block)
+        TbHomepageBlock block)
     {
         if (!block.CampaignId.HasValue)
             return new List<ItemCardDto>();
@@ -207,7 +208,7 @@ public class HomepageService : IHomepageService
     /// Get dynamic products (Best Sellers, New Arrivals, etc.)
     /// </summary>
     private async Task<List<ItemCardDto>> GetDynamicProductsAsync(
-        Domains.Entities.Merchandising.TbHomepageBlock block)
+        TbHomepageBlock block)
     {
         if (!block.DynamicSource.HasValue)
             return new List<ItemCardDto>();

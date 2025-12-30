@@ -5,7 +5,7 @@ using BL.Contracts.Service.Order.OrderProcessing;
 using BL.Contracts.Service.Order.Payment;
 using Common.Enumerations.Payment;
 using DAL.Contracts.UnitOfWork;
-using Domains.Entities.CouponCode;
+using Domains.Entities.Merchandising.CouponCode;
 using Domains.Entities.Order;
 using Serilog;
 using Shared.DTOs.Order.Checkout;
@@ -182,8 +182,8 @@ public class OrderPurchaseService : IOrderPurchaseService
                     OrderId = order.Id,
                     ItemId = cartItem.ItemId,
                     OfferCombinationPricingId = cartItem.OfferCombinationPricingId,
-                    VendorId = cartItem.VendorId,
-                    WarehouseId = cartItem.WarehouseId ?? Guid.Empty,
+                    //VendorId = cartItem.VendorId,
+                    //WarehouseId = cartItem.WarehouseId ?? Guid.Empty,
                     Quantity = cartItem.Quantity,
                     UnitPrice = cartItem.UnitPrice,
                     SubTotal = cartItem.SubTotal,

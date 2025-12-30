@@ -22,17 +22,17 @@ namespace Bl.GeneralService.Notification
         {
             try
             {
-                _logger.Information($"Sending notification to user: {request.UserId}");
+                //_logger.Information($"Sending notification to user: {request.UserId}");
 
-                await _hubContext.Clients.User(request.UserId)
-                    .SendAsync("ReceiveNotification", new
-                    {
-                        Title = request.Title,
-                        Message = request.Message,
-                        Timestamp = DateTime.Now
-                    });
+                //await _hubContext.Clients.User(request.UserId)
+                //    .SendAsync("ReceiveNotification", new
+                //    {
+                //        Title = request.Title,
+                //        Message = request.Message,
+                //        Timestamp = DateTime.Now
+                //    });
 
-                _logger.Information($"Notification sent successfully to user: {request.UserId}");
+                //_logger.Information($"Notification sent successfully to user: {request.UserId}");
 
                 return new OperationResult
                 {
@@ -55,32 +55,32 @@ namespace Bl.GeneralService.Notification
         {
             try
             {
-                if (request.UserIds == null || !request.UserIds.Any())
-                {
-                    _logger.Warning("No user IDs provided for bulk notification");
-                    return new OperationResult
-                    {
-                        Success = false,
-                        Message = "No recipients specified"
-                    };
-                }
+                //if (request.UserIds == null || !request.UserIds.Any())
+                //{
+                //    _logger.Warning("No user IDs provided for bulk notification");
+                //    return new OperationResult
+                //    {
+                //        Success = false,
+                //        Message = "No recipients specified"
+                //    };
+                //}
 
-                _logger.Information($"Sending bulk notification to {request.UserIds.Count} users");
+                //_logger.Information($"Sending bulk notification to {request.UserIds.Count} users");
 
-                var messagePayload = new
-                {
-                    Title = request.Title,
-                    Message = request.Message,
-                    Timestamp = DateTime.Now
-                };
+                //var messagePayload = new
+                //{
+                //    Title = request.Title,
+                //    Message = request.Message,
+                //    Timestamp = DateTime.Now
+                //};
 
-                // Send to each user individually (more reliable than groups)
-                var tasks = request.UserIds.Select(userId =>
-                    _hubContext.Clients.User(userId).SendAsync("ReceiveNotification", messagePayload));
+                //// Send to each user individually (more reliable than groups)
+                //var tasks = request.UserIds.Select(userId =>
+                //    _hubContext.Clients.User(userId).SendAsync("ReceiveNotification", messagePayload));
 
-                await Task.WhenAll(tasks);
+                //await Task.WhenAll(tasks);
 
-                _logger.Information($"Successfully sent bulk notification to {request.UserIds.Count} users");
+                //_logger.Information($"Successfully sent bulk notification to {request.UserIds.Count} users");
 
                 return new OperationResult
                 {
@@ -103,15 +103,15 @@ namespace Bl.GeneralService.Notification
         {
             try
             {
-                _logger.Information("Sending notification to all connected users");
+                //_logger.Information("Sending notification to all connected users");
 
-                await _hubContext.Clients.All
-                    .SendAsync("ReceiveNotification", new
-                    {
-                        Title = request.Title,
-                        Message = request.Message,
-                        Timestamp = DateTime.Now
-                    });
+                //await _hubContext.Clients.All
+                //    .SendAsync("ReceiveNotification", new
+                //    {
+                //        Title = request.Title,
+                //        Message = request.Message,
+                //        Timestamp = DateTime.Now
+                //    });
 
                 return new OperationResult
                 {
@@ -134,20 +134,20 @@ namespace Bl.GeneralService.Notification
         {
             try
             {
-                if (string.IsNullOrWhiteSpace(groupName))
-                {
-                    throw new ArgumentException("Group name cannot be empty", nameof(groupName));
-                }
+                //if (string.IsNullOrWhiteSpace(groupName))
+                //{
+                //    throw new ArgumentException("Group name cannot be empty", nameof(groupName));
+                //}
 
-                _logger.Information($"Sending notification to group: {groupName}");
+                //_logger.Information($"Sending notification to group: {groupName}");
 
-                await _hubContext.Clients.Group(groupName)
-                    .SendAsync("ReceiveNotification", new
-                    {
-                        Title = request.Title,
-                        Message = request.Message,
-                        Timestamp = DateTime.Now
-                    });
+                //await _hubContext.Clients.Group(groupName)
+                //    .SendAsync("ReceiveNotification", new
+                //    {
+                //        Title = request.Title,
+                //        Message = request.Message,
+                //        Timestamp = DateTime.Now
+                //    });
 
                 return new OperationResult
                 {

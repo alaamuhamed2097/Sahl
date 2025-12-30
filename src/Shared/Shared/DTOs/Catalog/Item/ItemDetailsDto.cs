@@ -1,6 +1,5 @@
 ﻿using Common.Enumerations.FieldType;
 using Common.Enumerations.Pricing;
-using Shared.DTOs.ECommerce.Item;
 
 namespace Shared.DTOs.Catalog.Item
 {

@@ -1,4 +1,4 @@
-using Domains.Entities.Pricing;
+using Domains.Entities.Catalog.Pricing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 

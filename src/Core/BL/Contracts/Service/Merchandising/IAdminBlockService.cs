@@ -1,4 +1,5 @@
-﻿using Domains.Entities.Merchandising;
+﻿using Domains.Entities.Merchandising.HomePage;
+using Domains.Entities.Merchandising.HomePageBlocks;
 
 namespace BL.Contracts.Service.Merchandising;
 

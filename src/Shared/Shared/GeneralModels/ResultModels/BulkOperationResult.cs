@@ -1,6 +1,4 @@
-﻿using Shared.GeneralModels.ResultModels;
-
-namespace BL.OperationResults
+﻿namespace Shared.GeneralModels.ResultModels
 {
     public class BulkOperationResult : OperationResult
     {

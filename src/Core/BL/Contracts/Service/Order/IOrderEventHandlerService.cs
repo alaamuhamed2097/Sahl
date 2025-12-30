@@ -1,6 +1,5 @@
 ﻿using Shared.DTOs.Order.OrderEvents;
 using Shared.DTOs.Order.Payment.PaymentProcessing;
-using Shared.Events.Order;
 
 namespace BL.Contracts.Service.Order;
 

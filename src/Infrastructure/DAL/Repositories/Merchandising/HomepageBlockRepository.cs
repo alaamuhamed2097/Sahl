@@ -1,7 +1,8 @@
 ﻿using Common.Enumerations.Merchandising;
 using DAL.ApplicationContext;
 using DAL.Contracts.Repositories.Merchandising;
-using Domains.Entities.Merchandising;
+using Domains.Entities.Merchandising.HomePage;
+using Domains.Entities.Merchandising.HomePageBlocks;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
 

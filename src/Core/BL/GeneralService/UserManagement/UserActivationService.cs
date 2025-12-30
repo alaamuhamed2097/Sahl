@@ -37,14 +37,14 @@ public class UserActivationService : IUserActivationService
         _whatsAppNumber = (_settingsService.GetAllAsync().Result).FirstOrDefault()?.WhatsAppNumber ?? string.Empty;
     }
 
-    public async Task<OperationResult> SendActivationCodeAsync(string userId, string email)
+    public async Task<OperationResult> SendPhoneNumberActivationCodeAsync(string userId, string phoneCode, string phoneNumber)
     {
-        if (string.IsNullOrWhiteSpace(userId) || string.IsNullOrWhiteSpace(email))
+        if (string.IsNullOrWhiteSpace(userId) || string.IsNullOrWhiteSpace(phoneCode) || string.IsNullOrWhiteSpace(phoneNumber))
         {
             return new OperationResult
             {
                 Success = false,
-                Message = "User ID and email are required",
+                Message = "User ID and phone number are required",
                 ErrorCode = ErrorCodes.Validation.MissingFields
             };
         }
@@ -60,84 +60,20 @@ public class UserActivationService : IUserActivationService
             };
         }
 
-        if (email != user.Email)
+        if (phoneNumber != user.PhoneNumber && phoneCode != user.PhoneCode)
         {
-            if (!new EmailAddressAttribute().IsValid(email))
-            {
-                return new OperationResult
-                {
-                    Success = false,
-                    Message = "Invalid email format",
-                    ErrorCode = ErrorCodes.Validation.InvalidEmail
-                };
-            }
-
-            var existingUser = await _userManager.FindByEmailAsync(email);
-            if (existingUser != null && existingUser.Id != user.Id)
-            {
-                return new OperationResult
-                {
-                    Success = false,
-                    Message = "This email is already registered",
-                    ErrorCode = ErrorCodes.User.EmailExists
-                };
-            }
-
-            var oldEmail = user.Email;
-            var changeEmailResult = await ChangeUserEmailAsync(user, email);
-
-            if (!changeEmailResult.Success)
-            {
-                return new OperationResult
-                {
-                    Success = false,
-                    Message = changeEmailResult.Message ?? "Failed to update user email",
-                    Errors = changeEmailResult.Errors,
-                    ErrorCode = changeEmailResult.ErrorCode
-                };
-            }
-
-            _logger.Information("User {UserId} changed email from {OldEmail} to {NewEmail}", userId, oldEmail, email);
-
-            // Send notification to old email
-            var oldEmailNotification = new NotificationRequest
-            {
-                Recipient = oldEmail,
-                Channel = NotificationChannel.Email,
-                Type = NotificationType.OldEmailChanged,
-                Parameters = CreateNotificationParameters(user, oldEmail, email)
-            };
-            await _notificationService.SendNotificationAsync(oldEmailNotification);
-
-            // Send activation code to new email
-            var newEmailCodeSent = await _verificationCodeService.SendCodeAsync(
-                email,
-                NotificationChannel.Email,
-                NotificationType.NewEmailActivation,
-                CreateNotificationParameters(user, email, email));
-
-            if (!newEmailCodeSent.Success)
-            {
-                return new OperationResult
-                {
-                    Success = false,
-                    Message = "Failed to send activation code to new email",
-                    Errors = newEmailCodeSent.Errors,
-                    ErrorCode = ErrorCodes.System.UnexpectedError
-                };
-            }
-
             return new OperationResult
             {
-                Success = true,
-                Message = "Activation code sent to new email successfully"
+                Success = false,
+                Message = "Phone number does not match user's registered phone number",
+                ErrorCode = ErrorCodes.User.PhoneNumberMismatch
             };
         }
 
         var result = await _verificationCodeService.SendCodeAsync(
-            email,
-            NotificationChannel.Email,
-            NotificationType.EmailVerification,
+            phoneCode + phoneNumber,
+            NotificationChannel.Sms,
+            NotificationType.PhoneNumberVerification,
             new Dictionary<string, string> { { "WhatsApp", _whatsAppNumber } });
 
         return new OperationResult
@@ -149,7 +85,7 @@ public class UserActivationService : IUserActivationService
         };
     }
 
-    public async Task<OperationResult> VerifyActivationCodeAsync(string userId, string code)
+    public async Task<OperationResult> VerifyPhoneNumberActivationCodeAsync(string userId, string code)
     {
         try
         {
@@ -184,7 +120,7 @@ public class UserActivationService : IUserActivationService
                 };
             }
 
-            if (!_verificationCodeService.VerifyCode(user.Email, code))
+            if (!_verificationCodeService.VerifyCode(user.PhoneCode + user.PhoneNumber, code))
             {
                 return new OperationResult
                 {
@@ -220,11 +156,194 @@ public class UserActivationService : IUserActivationService
         }
     }
 
-    public async Task<OperationResult> VerifyNewEmailActivationCodeAsync(string userId, string newEmail, string code)
+    public async Task<OperationResult> SendChangePhoneNumberCodeAsync(string userId, string phoneCode, string phoneNumber)
+    {
+        if (string.IsNullOrWhiteSpace(userId) || string.IsNullOrWhiteSpace(phoneCode) || string.IsNullOrWhiteSpace(phoneNumber))
+        {
+            return new OperationResult
+            {
+                Success = false,
+                Message = "User ID and phone number are required",
+                ErrorCode = ErrorCodes.Validation.MissingFields
+            };
+        }
+
+        var user = await _userManager.FindByIdAsync(userId);
+        if (user == null)
+        {
+            return new OperationResult
+            {
+                Success = false,
+                Message = "User not found",
+                ErrorCode = ErrorCodes.User.NotFound
+            };
+        }
+
+        // Check if the new phone number is different from the current one
+        if (phoneNumber == user.PhoneNumber && phoneCode == user.PhoneCode)
+        {
+            return new OperationResult
+            {
+                Success = false,
+                Message = "New phone number must be different from the current one",
+                ErrorCode = ErrorCodes.User.PhoneNumberDataInvalid
+            };
+        }
+
+        // Check availability (basic)
+        // Ideally checking against normalized phone is better, but simple check against all users might be heavy.
+        // Assuming Identity UpdateAsync will handle conflict if enforced.
+
+        var result = await _verificationCodeService.SendCodeAsync(
+            phoneCode + phoneNumber,
+            NotificationChannel.Sms,
+            NotificationType.PhoneNumberVerification,
+            new Dictionary<string, string> { { "WhatsApp", _whatsAppNumber } });
+
+        return new OperationResult
+        {
+            Success = result.Success,
+            Message = result.Success ? "Verification code sent to new phone number" : "Failed to send verification code",
+            Errors = result.Errors,
+            ErrorCode = result.Success ? null : ErrorCodes.System.UnexpectedError
+        };
+    }
+
+    public async Task<OperationResult> VerifyChangePhoneNumberCodeAsync(string userId, string phoneCode, string phoneNumber, string code)
     {
         try
         {
-            if (string.IsNullOrWhiteSpace(userId) || string.IsNullOrWhiteSpace(newEmail) || string.IsNullOrWhiteSpace(code))
+            if (string.IsNullOrWhiteSpace(userId) || string.IsNullOrWhiteSpace(phoneCode) || string.IsNullOrWhiteSpace(phoneNumber) || string.IsNullOrWhiteSpace(code))
+            {
+                return new OperationResult
+                {
+                    Success = false,
+                    Message = "User ID, phone number, and code are required",
+                    ErrorCode = ErrorCodes.Validation.MissingFields
+                };
+            }
+
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null || user.UserState == UserStateType.Deleted)
+            {
+                return new OperationResult
+                {
+                    Success = false,
+                    Message = "User not found",
+                    ErrorCode = ErrorCodes.User.NotFound
+                };
+            }
+
+            if (!_verificationCodeService.VerifyCode(phoneCode + phoneNumber, code))
+            {
+                return new OperationResult
+                {
+                    Success = false,
+                    Message = "Invalid or expired verification code",
+                    ErrorCode = ErrorCodes.Auth.InvalidVerificationCode
+                };
+            }
+
+            // Update Phone Number
+            user.PhoneCode = phoneCode;
+            user.PhoneNumber = phoneNumber;
+            user.PhoneNumberConfirmed = true;
+
+            var result = await _userManager.UpdateAsync(user);
+            if (!result.Succeeded)
+            {
+                return new OperationResult
+                {
+                    Success = false,
+                    Message = "Failed to update phone number",
+                    Errors = result.Errors.Select(e => e.Description).ToList(),
+                    ErrorCode = ErrorCodes.System.UnexpectedError
+                };
+            }
+
+            _verificationCodeService.DeleteCode(phoneCode + phoneNumber);
+
+            return new OperationResult
+            {
+                Success = true,
+                Message = "Phone number changed successfully"
+            };
+        }
+        catch (Exception ex)
+        {
+            _logger.Error(ex, "Error changing phone number for {UserId}", userId);
+            return new OperationResult
+            {
+                Success = false,
+                Message = "An error occurred during phone number change",
+                ErrorCode = ErrorCodes.System.UnexpectedError
+            };
+        }
+    }
+
+    public async Task<OperationResult> SendEmailActivationCodeAsync(string userId, string email)
+    {
+        if (string.IsNullOrWhiteSpace(userId) || string.IsNullOrWhiteSpace(email))
+        {
+            return new OperationResult
+            {
+                Success = false,
+                Message = "User ID and email are required",
+                ErrorCode = ErrorCodes.Validation.MissingFields
+            };
+        }
+
+        var user = await _userManager.FindByIdAsync(userId);
+        if (user == null)
+        {
+            return new OperationResult
+            {
+                Success = false,
+                Message = "User not found",
+                ErrorCode = ErrorCodes.User.NotFound
+            };
+        }
+
+        if (email != user.Email)
+        {
+            if (!new EmailAddressAttribute().IsValid(email))
+            {
+                return new OperationResult
+                {
+                    Success = false,
+                    Message = "Invalid email format",
+                    ErrorCode = ErrorCodes.Validation.InvalidEmail
+                };
+            }
+
+            return new OperationResult
+            {
+                Success = false,
+                Message = "Email does not match user's registered email",
+                ErrorCode = ErrorCodes.User.EmailMismatch
+            };
+        }
+
+        var result = await _verificationCodeService.SendCodeAsync(
+            email,
+            NotificationChannel.Email,
+            NotificationType.EmailVerification,
+            new Dictionary<string, string> { { "WhatsApp", _whatsAppNumber } });
+
+        return new OperationResult
+        {
+            Success = result.Success,
+            Message = result.Success ? "Verification code sent successfully" : "Failed to send verification code",
+            Errors = result.Errors,
+            ErrorCode = result.Success ? null : ErrorCodes.System.UnexpectedError
+        };
+    }
+
+    public async Task<OperationResult> VerifyEmailActivationCodeAsync(string userId, string email, string code)
+    {
+        try
+        {
+            if (string.IsNullOrWhiteSpace(userId) || string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(code))
             {
                 return new OperationResult
                 {
@@ -245,7 +364,7 @@ public class UserActivationService : IUserActivationService
                 };
             }
 
-            if (!_verificationCodeService.VerifyCode(newEmail.ToLower(), code))
+            if (!_verificationCodeService.VerifyCode(email.ToLower(), code))
             {
                 return new OperationResult
                 {
@@ -255,7 +374,7 @@ public class UserActivationService : IUserActivationService
                 };
             }
 
-            if (!new EmailAddressAttribute().IsValid(newEmail))
+            if (!new EmailAddressAttribute().IsValid(email))
             {
                 return new OperationResult
                 {
@@ -266,7 +385,7 @@ public class UserActivationService : IUserActivationService
             }
 
             var oldEmail = user.Email;
-            var changeEmailResult = await ChangeUserEmailAsync(user, newEmail);
+            var changeEmailResult = await ChangeUserEmailAsync(user, email);
             if (!changeEmailResult.Success)
             {
                 return changeEmailResult;
@@ -280,7 +399,7 @@ public class UserActivationService : IUserActivationService
                 Recipient = oldEmail,
                 Channel = NotificationChannel.Email,
                 Type = NotificationType.OldEmailChanged,
-                Parameters = CreateNotificationParameters(user, oldEmail, newEmail)
+                Parameters = CreateNotificationParameters(user, oldEmail, email)
             };
             await _notificationService.SendNotificationAsync(oldEmailNotification);
 
@@ -320,6 +439,7 @@ public class UserActivationService : IUserActivationService
         }
     }
 
+    #region Helpers Function
     private Dictionary<string, string> CreateNotificationParameters(ApplicationUser user, string oldEmail, string newEmail)
     {
         return new Dictionary<string, string>
@@ -334,7 +454,8 @@ public class UserActivationService : IUserActivationService
 
     private async Task<OperationResult> ActivateUserAsync(ApplicationUser user)
     {
-        user.EmailConfirmed = true;
+        user.PhoneNumberConfirmed = true;
+        user.UserState = UserStateType.Active;
 
         var updateResult = await _userManager.UpdateAsync(user);
         if (!updateResult.Succeeded)
@@ -368,6 +489,7 @@ public class UserActivationService : IUserActivationService
 
         user.Email = newEmail;
         user.UserName = newEmail;
+        user.EmailConfirmed = true;
 
         var updateResult = await _userManager.UpdateAsync(user);
         if (!updateResult.Succeeded)
@@ -383,9 +505,5 @@ public class UserActivationService : IUserActivationService
 
         return new OperationResult { Success = true };
     }
-
-    public Task<OperationResult> VerifyNewPhoneNumberActivationCodeAsync(string userId, string newPhoneNumber, string code)
-    {
-        throw new NotImplementedException();
-    }
+    #endregion
 }

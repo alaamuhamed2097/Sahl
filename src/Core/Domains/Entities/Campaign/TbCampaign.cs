@@ -1,4 +1,4 @@
-﻿using Domains.Entities.Merchandising;
+﻿using Domains.Entities.Merchandising.HomePageBlocks;
 using System.ComponentModel.DataAnnotations;
 
 namespace Domains.Entities.Campaign

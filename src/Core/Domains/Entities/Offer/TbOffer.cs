@@ -5,7 +5,7 @@ using Domains.Entities.Catalog.Item;
 using Domains.Entities.ECommerceSystem.Vendor;
 using Domains.Entities.Offer.Rating;
 using Domains.Entities.Offer.Warranty;
-using Domains.Entities.Shipping;
+using Domains.Entities.Order.Shipping;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Domains.Entities.Offer

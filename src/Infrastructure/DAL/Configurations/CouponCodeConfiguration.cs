@@ -1,53 +1,101 @@
-using Domains.Entities.CouponCode;
+using Domains.Entities.Merchandising.CouponCode;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace DAL.Configurations
 {
     /// <summary>
-    /// Entity configuration for TbCouponCode
+    /// Entity configuration for TbCouponCode - CORRECTED VERSION
     /// </summary>
     public class CouponCodeConfiguration : IEntityTypeConfiguration<TbCouponCode>
     {
         public void Configure(EntityTypeBuilder<TbCouponCode> entity)
         {
-            // Property configurations
-            entity.Property(p => p.TitleAr)
-                 .IsRequired()
-                  .HasMaxLength(100);
+            // Table name
+            entity.ToTable("TbCouponCodes");
 
-            entity.Property(p => p.TitleEn)
-            .IsRequired()
-             .HasMaxLength(100);
+            // Primary key
+            entity.HasKey(e => e.Id);
 
-            entity.Property(p => p.Code)
-           .IsRequired()
-             .HasMaxLength(100);
-
-            entity.Property(p => p.DiscountValue)
+            // Properties
+            entity.Property(e => e.Code)
                 .IsRequired()
-              .HasAnnotation("Range", new[] { 0.1, double.MaxValue });
+                .HasMaxLength(50);
 
-            entity.Property(p => p.UsageLimit)
-            .IsRequired(false)
-          .HasAnnotation("Range", new[] { 1, int.MaxValue });
+            entity.Property(e => e.TitleAr)
+                .IsRequired()
+                .HasMaxLength(200);
 
-            entity.Property(p => p.UsageCount)
-   .IsRequired()
-     .HasAnnotation("Range", new[] { 0, int.MaxValue })
-     .HasDefaultValue(0);
+            entity.Property(e => e.TitleEn)
+                .IsRequired()
+                .HasMaxLength(200);
 
-            entity.Property(p => p.StartDate)
-                .HasDefaultValueSql("GETUTCDATE()")
-             .HasColumnType("datetime2(2)");
+            entity.Property(e => e.PromoType)
+                .IsRequired();
 
-            entity.Property(p => p.ExpiryDate)
-             .HasDefaultValueSql("GETUTCDATE()")
-              .HasColumnType("datetime2(2)");
+            entity.Property(e => e.DiscountType)
+                .IsRequired();
+
+            entity.Property(e => e.DiscountValue)
+                .IsRequired()
+                .HasColumnType("decimal(18,2)");
+
+            entity.Property(e => e.MaxDiscountAmount)
+                .HasColumnType("decimal(18,2)");
+
+            entity.Property(e => e.MinimumOrderAmount)
+                .HasColumnType("decimal(18,2)");
+
+            entity.Property(e => e.MinimumProductPrice)
+                .HasColumnType("decimal(18,2)");
+
+            entity.Property(e => e.PlatformSharePercentage)
+                .HasColumnType("decimal(5,2)");
+
+            entity.Property(e => e.UsageCount)
+                .IsRequired()
+                .HasDefaultValue(0);
+
+            entity.Property(e => e.IsActive)
+                .IsRequired()
+                .HasDefaultValue(true);
+
+            entity.Property(e => e.IsFirstOrderOnly)
+                .IsRequired()
+                .HasDefaultValue(false);
+
+            // Relationships
+            entity.HasOne(e => e.Vendor)
+                .WithMany()
+                .HasForeignKey(e => e.VendorId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            entity.HasMany(e => e.CouponScopes)
+                .WithOne(s => s.CouponCode)
+                .HasForeignKey(s => s.CouponCodeId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasMany(e => e.Orders)
+                .WithOne()
+                .HasForeignKey(o => o.CouponId)
+                .OnDelete(DeleteBehavior.Restrict);
 
             // Indexes
             entity.HasIndex(e => e.Code)
-               .IsUnique(true);
+                .IsUnique()
+                .HasDatabaseName("IX_TbCouponCodes_Code");
+
+            entity.HasIndex(e => e.VendorId)
+                .HasDatabaseName("IX_TbCouponCodes_VendorId");
+
+            entity.HasIndex(e => new { e.IsActive, e.StartDate, e.ExpiryDate })
+                .HasDatabaseName("IX_TbCouponCodes_Active_Dates");
+
+            entity.HasIndex(e => e.IsDeleted)
+                .HasDatabaseName("IX_TbCouponCodes_IsDeleted");
+
+            // Query filters for soft delete
+            entity.HasQueryFilter(e => !e.IsDeleted);
         }
     }
 }

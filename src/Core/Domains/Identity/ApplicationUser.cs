@@ -1,7 +1,7 @@
 ﻿using Common.Enumerations.User;
 using Domains.Entities.ECommerceSystem;
-using Domains.Entities.ECommerceSystem.Cart;
 using Domains.Entities.Loyalty;
+using Domains.Entities.Order.Cart;
 using Domains.Entities.Wallet;
 using Microsoft.AspNetCore.Identity;
 

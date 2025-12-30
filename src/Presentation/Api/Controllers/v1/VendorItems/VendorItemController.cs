@@ -1,16 +1,14 @@
 using Api.Controllers.v1.Base;
-using Api.Extensions;
 using Asp.Versioning;
-using BL.Service.VendorItem;
+using BL.Contracts.Service.VendorItem;
 using Common.Enumerations.User;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Resources;
-using Shared.DTOs.ECommerce.Item;
 using Shared.GeneralModels;
 using Shared.GeneralModels.SearchCriteriaModels;
 
-namespace Api.Controllers.v1.Catalog
+namespace Api.Controllers.v1.VendorItems
 {
     [ApiController]
     [ApiVersion("1.0")]

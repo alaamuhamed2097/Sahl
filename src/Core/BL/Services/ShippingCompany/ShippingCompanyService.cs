@@ -4,7 +4,7 @@ using BL.Contracts.Service.ShippingCompny;
 using BL.Services.Base;
 using DAL.Contracts.Repositories;
 using DAL.Models;
-using Domains.Entities.Shipping;
+using Domains.Entities.Order.Shipping;
 using Microsoft.AspNetCore.Hosting;
 using Resources;
 using Serilog;

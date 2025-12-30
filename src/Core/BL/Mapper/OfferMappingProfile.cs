@@ -1,7 +1,6 @@
 ﻿using Domains.Entities.Offer;
 using Domains.Views.Offer;
 using Shared.DTOs.Catalog.Item;
-using Shared.DTOs.ECommerce.Item;
 using Shared.DTOs.ECommerce.Offer;
 using System.Text.Json;
 using System.Text.Json.Serialization;

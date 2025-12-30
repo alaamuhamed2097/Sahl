@@ -1,6 +1,6 @@
 using Common.Enumerations.Pricing;
 using Domains.Entities.Catalog.Item;
-using Domains.Entities.Pricing;
+using Domains.Entities.Catalog.Pricing;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
