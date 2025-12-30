@@ -20,7 +20,6 @@ namespace Shared.DTOs.Catalog.Item
         public CategoryInfoDto Category { get; set; }
         public BrandInfoDto Brand { get; set; }
 
-        public bool HasCombinations { get; set; }
         public bool IsMultiVendor { get; set; }
         public PricingStrategyType PricingSystemType { get; set; }
         public string PricingSystemName { get; set; }

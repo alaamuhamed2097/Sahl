@@ -36,7 +36,6 @@ namespace Domains.Procedures
         public string? BrandLogoUrl { get; set; }
 
         // Flags
-        public bool HasCombinations { get; set; }
         public bool IsMultiVendor { get; set; }
 
         // Reviews

@@ -3,6 +3,7 @@ using BL.Contracts.IMapper;
 using BL.Contracts.Service.Catalog.Item;
 using BL.Extensions;
 using BL.Services.Base;
+using Common.Enumerations.Fulfillment;
 using Common.Enumerations.Pricing;
 using Common.Enumerations.Visibility;
 using DAL.Contracts.Repositories;
@@ -11,6 +12,7 @@ using DAL.Models;
 using Domains.Entities.Catalog.Category;
 using Domains.Entities.Catalog.Item;
 using Domains.Entities.Catalog.Item.ItemAttributes;
+using Domains.Entities.Offer;
 using Domains.Views.Item;
 using Microsoft.EntityFrameworkCore;
 using Resources;
@@ -169,6 +171,19 @@ public class ItemService : BaseService<TbItem, ItemDto>, IItemService
                 }
             }
 
+            // Prepare default combination and offer
+            var defaultItemCombination = new TbItemCombination() 
+            {
+              Barcode = dto.Barcode ?? "DEFAULT",
+              SKU = dto.SKU ?? "DEFAULT",
+              IsDefault = true
+            };
+            //var defaultOffer = new TbOffer()
+            //{
+            //   FulfillmentType = FulfillmentType.Marketplace,
+
+            //};
+
             // Update deletion handling
             if (dto.Id != Guid.Empty)
             {
@@ -185,7 +200,21 @@ public class ItemService : BaseService<TbItem, ItemDto>, IItemService
                 foreach (var attr in existingAttributes)
                     await _unitOfWork.TableRepository<TbItemAttribute>().HardDeleteAsync(attr.Id);
 
-                // Delete old combinations (unchanged logic)
+                // If PricingSystemType is not combination-based 
+                if(category.PricingSystemType != PricingStrategyType.CombinationBased || category.PricingSystemType != PricingStrategyType.Hybrid)
+                {
+                    // Delete existing item combinations
+                    var existingCombination = (await _unitOfWork.TableRepository<TbItemCombination>().GetAsync(c => c.ItemId == dto.Id)).FirstOrDefault();
+                    if (existingCombination != null)
+                    { 
+                       defaultItemCombination.Id = existingCombination.Id;
+                       defaultItemCombination.Barcode = existingCombination.Barcode;
+                       defaultItemCombination.SKU = existingCombination.SKU;
+                       defaultItemCombination.IsDefault = existingCombination.IsDefault;
+                    }
+                }
+
+                // Delete old combinations 
                 //if (category.PricingSystemType == PricingSystemType.CombinationWithQuantity ||
                 //    category.PricingSystemType == PricingSystemType.Combination)
                 //{
@@ -198,12 +227,6 @@ public class ItemService : BaseService<TbItem, ItemDto>, IItemService
                 //        var comboValuesIds = (await _unitOfWork.TableRepository<TbCombinationAttributesValue>()
                 //                                .GetAsync(v => comboAttrIds.Contains(v.CombinationAttributeId)))
                 //                                .Select(v => v.Id);
-
-                //        var priceModifierIds = (await _unitOfWork.TableRepository<TbAttributeValuePriceModifier>()
-                //                                .GetAsync(v => comboValuesIds.Contains(v.CombinationAttributeValueId)))
-                //                                .Select(v => v.Id);
-
-                //        await _unitOfWork.TableRepository<TbAttributeValuePriceModifier>().BulkHardDeleteByIdsAsync(priceModifierIds);
                 //        await _unitOfWork.TableRepository<TbCombinationAttributesValue>().BulkHardDeleteByIdsAsync(comboValuesIds);
                 //        await _unitOfWork.TableRepository<TbCombinationAttribute>().BulkHardDeleteByIdsAsync(comboAttrIds);
                 //    }
@@ -236,6 +259,10 @@ public class ItemService : BaseService<TbItem, ItemDto>, IItemService
             var attributesSaved = await SaveItemAttributesAsync(itemId, dto.ItemAttributes ?? new List<ItemAttributeDto>(), categoryAttributes.ToList(), userId);
 
             // Save item combinations
+            if (category.PricingSystemType != PricingStrategyType.CombinationBased || category.PricingSystemType != PricingStrategyType.Hybrid)
+            {
+                var combinationsSaved = await _unitOfWork.TableRepository<TbItemCombination>().SaveAsync(defaultItemCombination, userId);
+            }
             //var combinationsSaved = await ProcessItemCombinationsAsync(itemId, dto.ItemCombinations ?? new List<ItemCombinationDto>(), category, categoryAttributes.ToList(), userId);
 
             await _unitOfWork.CommitAsync();
@@ -243,7 +270,7 @@ public class ItemService : BaseService<TbItem, ItemDto>, IItemService
         }
         catch (Exception ex)
         {
-            _unitOfWork.RollbackAsync();
+            await _unitOfWork.RollbackAsync();
             _logger.Error(ex, "Error saving item {ItemId}", dto.Id);
             throw;
         }

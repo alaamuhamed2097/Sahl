@@ -21,7 +21,7 @@ using Shared.GeneralModels.SearchCriteriaModels;
 using System.ComponentModel.DataAnnotations;
 using System.Linq.Expressions;
 
-namespace BL.Service.VendorItem
+namespace BL.Services.VendorItem
 {
     public class VendorItemService : IVendorItemService
     {

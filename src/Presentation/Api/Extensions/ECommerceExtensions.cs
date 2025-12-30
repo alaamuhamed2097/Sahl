@@ -21,14 +21,13 @@ using BL.Contracts.Service.ShippingCompny;
 using BL.Contracts.Service.Vendor;
 using BL.Contracts.Service.VendorItem;
 using BL.GeneralService.Location;
-using BL.Service.Customer;
-using BL.Service.VendorItem;
 using BL.Services.Brand;
 using BL.Services.Catalog.Category;
 using BL.Services.Catalog.Item;
 using BL.Services.Catalog.Pricing;
 using BL.Services.Catalog.Unit;
 using BL.Services.Currency;
+using BL.Services.Customer;
 using BL.Services.Customer.Wishlist;
 using BL.Services.HomeSlider;
 using BL.Services.Merchandising;
@@ -42,6 +41,7 @@ using BL.Services.Setting;
 using BL.Services.Setting.Pricing;
 using BL.Services.ShippingCompany;
 using BL.Services.Vendor;
+using BL.Services.VendorItem;
 
 namespace Api.Extensions
 {

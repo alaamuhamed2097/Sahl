@@ -65,43 +65,43 @@ public class CheckoutService : ICheckoutService
             }
 
             // 3. Group items by vendor/warehouse for shipment calculation
-            var shipmentGroups = cart.Items
-                .GroupBy(i => new
-                {
-                    VendorId = i.VendorId,
-                    WarehouseId = i.WarehouseId ?? Guid.Empty
-                })
-                .ToList();
+            //var shipmentGroups = cart.Items
+            //    .GroupBy(i => new
+            //    {
+            //        VendorId = i.VendorId,
+            //        WarehouseId = i.WarehouseId ?? Guid.Empty
+            //    })
+            //    .ToList();
 
             // 4. Calculate shipping for each group
             var shipmentPreviews = new List<ShipmentPreviewDto>();
             decimal totalShipping = 0;
 
-            foreach (var group in shipmentGroups)
-            {
-                var shippingCost = await CalculateShippingCostAsync(
-                    group.Key.VendorId,
-                    address.CityId,
-                    group.Sum(i => i.Quantity)
-                );
+            //foreach (var group in shipmentGroups)
+            //{
+            //    var shippingCost = await CalculateShippingCostAsync(
+            //        group.Key.VendorId,
+            //        address.CityId,
+            //        group.Sum(i => i.Quantity)
+            //    );
 
-                totalShipping += shippingCost;
+            //    totalShipping += shippingCost;
 
-                var estimatedDays = await GetEstimatedDeliveryDaysAsync(
-                    group.Key.VendorId,
-                    address.CityId
-                );
+            //    var estimatedDays = await GetEstimatedDeliveryDaysAsync(
+            //        group.Key.VendorId,
+            //        address.CityId
+            //    );
 
-                shipmentPreviews.Add(new ShipmentPreviewDto
-                {
-                    VendorName = group.First().SellerName,
-                    ItemCount = group.Sum(i => i.Quantity),
-                    ItemsList = group.Select(i => i.ItemName).ToList(),
-                    SubTotal = group.Sum(i => i.SubTotal),
-                    ShippingCost = shippingCost,
-                    EstimatedDeliveryDays = estimatedDays
-                });
-            }
+            //    shipmentPreviews.Add(new ShipmentPreviewDto
+            //    {
+            //        VendorName = group.First().SellerName,
+            //        ItemCount = group.Sum(i => i.Quantity),
+            //        ItemsList = group.Select(i => i.ItemName).ToList(),
+            //        SubTotal = group.Sum(i => i.SubTotal),
+            //        ShippingCost = shippingCost,
+            //        EstimatedDeliveryDays = estimatedDays
+            //    });
+            //}
 
             // 5. Calculate tax (14% VAT for Egypt)
             const decimal taxRate = 0.14m;

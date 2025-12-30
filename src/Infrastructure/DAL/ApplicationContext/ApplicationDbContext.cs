@@ -170,7 +170,7 @@ namespace DAL.ApplicationContext
 
 
         // Advanced Pricing
-        public DbSet<TbQuantityPricing> TbQuantityPricings { get; set; }
+        public DbSet<TbQuantityTierPricing> TbQuantityTierPricings { get; set; }
         public DbSet<TbCustomerSegmentPricing> TbCustomerSegmentPricings { get; set; }
         public DbSet<TbPriceHistory> TbPriceHistories { get; set; }
 

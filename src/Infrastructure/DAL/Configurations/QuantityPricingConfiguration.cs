@@ -7,48 +7,45 @@ namespace DAL.Configurations
     /// <summary>
     /// Entity configuration for TbQuantityPricing
     /// </summary>
-    public class QuantityPricingConfiguration : IEntityTypeConfiguration<TbQuantityPricing>
+    public class QuantityPricingConfiguration : IEntityTypeConfiguration<TbQuantityTierPricing>
     {
-        public void Configure(EntityTypeBuilder<TbQuantityPricing> entity)
+        public void Configure(EntityTypeBuilder<TbQuantityTierPricing> entity)
         {
             // Table name
-            entity.ToTable("TbQuantityPricings");
+            entity.ToTable("TbQuantityTierPricings");
 
             // Property configurations
-            entity.Property(e => e.MinimumQuantity)
+            entity.Property(e => e.MinQuantity)
                 .IsRequired();
 
-            entity.Property(e => e.UnitPrice)
+            entity.Property(e => e.PricePerUnit)
+                .IsRequired()
+                .HasColumnType("decimal(18,2)");
+
+            entity.Property(e => e.SalesPricePerUnit)
                 .IsRequired()
                 .HasColumnType("decimal(18,2)");
 
             entity.Property(e => e.DiscountPercentage)
                 .HasColumnType("decimal(5,2)");
 
-            entity.Property(e => e.IsActive)
-                .HasDefaultValue(true);
-
-            entity.Property(e => e.DisplayOrder)
-                .HasDefaultValue(0);
-
             // Relationships
-            entity.HasOne(e => e.Offer)
-                .WithMany()
-                .HasForeignKey(e => e.OfferId)
+            entity.HasOne(e => e.OfferCombinationPricing)
+                .WithMany(oc=>oc.QuantityTierPricings)
+                .HasForeignKey(e => e.OfferCombinationPricingId)
                 .OnDelete(DeleteBehavior.Cascade);
 
             // Indexes
-            entity.HasIndex(e => e.OfferId);
+            entity.HasIndex(e => e.OfferCombinationPricingId);
 
-            entity.HasIndex(e => e.MinimumQuantity);
+            entity.HasIndex(e => e.MinQuantity);
+            entity.HasIndex(e => e.MaxQuantity);
 
-            entity.HasIndex(e => e.IsActive);
-
-            entity.HasIndex(e => new { e.OfferId, e.MinimumQuantity })
-                .IsUnique();
+            entity.HasIndex(e => new { e.OfferCombinationPricingId, e.MinQuantity, e.MaxQuantity})
+                .IsUnique(true);
 
             // Check constraint
-            entity.HasCheckConstraint("CK_QuantityPricing_Quantities", "[MaximumQuantity] IS NULL OR [MaximumQuantity] > [MinimumQuantity]");
+            entity.HasCheckConstraint("CK_QuantityPricing_Quantities", "[MaxQuantity] IS NULL OR [MaxQuantity] > [MinQuantity]");
         }
     }
 }
