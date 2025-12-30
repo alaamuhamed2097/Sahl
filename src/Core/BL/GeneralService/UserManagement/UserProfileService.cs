@@ -11,6 +11,7 @@ using DAL.Models;
 using Microsoft.AspNetCore.Identity;
 using Resources;
 using Serilog;
+using Shared.DTOs.User;
 using Shared.DTOs.User.Admin;
 using Shared.ErrorCodes;
 using Shared.GeneralModels;
@@ -284,6 +285,87 @@ public class UserProfileService : IUserProfileService
             Success = true,
             Message = "Activation code sent to new email successfully"
         };
+    }
+
+    public async Task<UserProfileDto> GetUserProfileAsync(string userId)
+    {
+        if (string.IsNullOrWhiteSpace(userId))
+            throw new ArgumentException(UserResources.UserNotFound, nameof(userId));
+
+        var user = await _userManager.FindByIdAsync(userId);
+        if (user == null || user.UserState == UserStateType.Deleted)
+            throw new NotFoundException(UserResources.UserNotFound, _logger);
+
+        // Manual mapping or use mapper if configured. Manual is safer here to ensure fields.
+        return new UserProfileDto
+        {
+            UserId = user.Id.ToString(),
+            FirstName = user.FirstName,
+            LastName = user.LastName,
+            FullName = $"{user.FirstName} {user.LastName}",
+            Email = user.Email,
+            Phone = user.PhoneNumber,
+            ProfileImagePath = user.ProfileImagePath ?? "uploads/Images/ProfileImages/Marketers/default.png" // Default logic from login
+        };
+    }
+
+    public async Task<ResponseModel<UserProfileDto>> UpdateUserProfileAsync(string userId, UserProfileUpdateDto profileUpdateDto)
+    {
+        var user = await _userManager.FindByIdAsync(userId);
+        if (user == null || user.UserState == UserStateType.Deleted)
+        {
+            return new ResponseModel<UserProfileDto>
+            {
+                Success = false,
+                Message = "User not found.",
+                Errors = new List<string> { UserResources.UserNotFound }
+            };
+        }
+
+        user.FirstName = profileUpdateDto.FirstName;
+        user.LastName = profileUpdateDto.LastName;
+
+        if (!string.IsNullOrEmpty(profileUpdateDto.ProfileImage))
+        {
+            try
+            {
+                user.ProfileImagePath = await SaveImageSync(profileUpdateDto.ProfileImage);
+            }
+            catch (ValidationException ex)
+            {
+                return new ResponseModel<UserProfileDto>
+                {
+                    Success = false,
+                    Message = ex.Message
+                };
+            }
+            catch (Exception)
+            {
+                return new ResponseModel<UserProfileDto>
+                {
+                    Success = false,
+                    Message = ValidationResources.ErrorProcessingImage
+                };
+            }
+        }
+
+        user.UpdatedBy = Guid.Parse(userId);
+        user.UpdatedDateUtc = DateTime.UtcNow;
+
+        var result = await _userManager.UpdateAsync(user);
+
+        if (result.Succeeded)
+        {
+            return new ResponseModel<UserProfileDto>
+            {
+                Success = true,
+                Message = NotifiAndAlertsResources.ProfileUpdated,
+                Data = await GetUserProfileAsync(userId)
+            };
+        }
+
+        var errors = result.Errors.Select(e => e.Description).ToList();
+        return new ResponseModel<UserProfileDto> { Success = false, Message = string.Join(", ", errors), Errors = errors };
     }
 
     private async Task<string> SaveImageSync(string image)

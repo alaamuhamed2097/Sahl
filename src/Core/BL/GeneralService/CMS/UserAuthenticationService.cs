@@ -235,9 +235,6 @@ public class UserAuthenticationService : IUserAuthenticationService
         return response;
     }
 
-    /// <summary>
-    /// Sends a password reset verification code to the user's mobile or email.
-    /// </summary>
     public async Task<OperationResult> SendResetCodeAsync(string userId, string identifier)
     {
         var user = await _userManager.FindByIdAsync(userId);
@@ -248,6 +245,7 @@ public class UserAuthenticationService : IUserAuthenticationService
 
         string normalizedIdentifier = identifier;
         bool isEmail = identifier.Contains("@");
+        OperationResult codeSaved;
 
         if (isEmail)
         {
@@ -258,6 +256,8 @@ public class UserAuthenticationService : IUserAuthenticationService
 
             if (!user.EmailConfirmed)
                 return new OperationResult { Success = false, Message = "Email is not verified." };
+
+            codeSaved = await _verificationCodeService.SendCodeAsync(normalizedIdentifier, NotificationChannel.Email, NotificationType.ForgotPasswordByEmail);
         }
         else
         {
@@ -271,10 +271,11 @@ public class UserAuthenticationService : IUserAuthenticationService
 
             if (!user.PhoneNumberConfirmed)
                 return new OperationResult { Success = false, Message = "Phone number is not verified." };
+
+            codeSaved = await _verificationCodeService.SendCodeAsync(normalizedIdentifier, NotificationChannel.Sms, NotificationType.ForgotPasswordByPhone);
         }
 
         // Save the code temporarily (e.g., in cache) with expiration time
-        var codeSaved = await _verificationCodeService.SendCodeAsync(normalizedIdentifier, NotificationChannel.Email, NotificationType.ForgotPassword);
         if (!codeSaved.Success)
         {
             return new OperationResult { Success = false, Message = UserResources.VerificationCodeError };
@@ -283,9 +284,6 @@ public class UserAuthenticationService : IUserAuthenticationService
         return new OperationResult { Success = true, Message = $"Verification code sent to your {(isEmail ? "email" : "phone")}." };
     }
 
-    /// <summary>
-    /// Resets the user's password using a verification code.
-    /// </summary>
     public async Task<OperationResult> ResetPasswordWithCodeAsync(string userId, string identifier, string code, string newPassword)
     {
         // Input validation
@@ -392,6 +390,8 @@ public class UserAuthenticationService : IUserAuthenticationService
         return new OperationResult { Success = false, Message = "Failed to update user status.", Errors = errors };
     }
 
+    #region Helper Methods
+
     private async Task InvalidateAllRefreshTokens(string userId)
     {
         var user = await _userManager.FindByIdAsync(userId);
@@ -418,4 +418,5 @@ public class UserAuthenticationService : IUserAuthenticationService
     {
         throw new NotImplementedException();
     }
+    #endregion
 }

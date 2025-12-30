@@ -103,6 +103,45 @@ namespace Api.Controllers.v1.User
         }
 
         /// <summary>
+        /// Changes the user's password.
+        /// </summary>
+        /// <remarks>
+        /// API Version: 1.0+
+        /// Requires Authentication.
+        /// </remarks>
+        [HttpPost("change-password")]
+        [Authorize]
+        public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordDto model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return Ok(new ResponseModel<string>
+                {
+                    Success = false,
+                    Message = NotifiAndAlertsResources.InvalidInput,
+                    Errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList()
+                });
+            }
+
+            var result = await _userAuthenticationService.ChangePasswordAsync(UserId, model.CurrentPassword, model.NewPassword);
+
+            if (result.Success)
+            {
+                return Ok(new ResponseModel<object>
+                {
+                    Success = true,
+                    Message = result.Message ?? "Password changed successfully."
+                });
+            }
+
+            return Ok(new ResponseModel<object>
+            {
+                Success = false,
+                Message = result.Message ?? "Failed to change password."
+            });
+        }
+
+        /// <summary>
         /// Deletes the authenticated user's account.
         /// </summary>
         /// <remarks>
