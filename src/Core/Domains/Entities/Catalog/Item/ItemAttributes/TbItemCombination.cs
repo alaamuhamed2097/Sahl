@@ -18,8 +18,8 @@ namespace Domains.Entities.Catalog.Item.ItemAttributes
 
         [StringLength(200)]
         public string SKU { get; set; }
-
-		public bool IsDefault { get; set; } = false;
+       
+        public bool IsDefault { get; set; } = false;
 
         // Navigation Properties
         [ForeignKey("ItemId")]

@@ -7,6 +7,7 @@ using Domains.Entities.Catalog.Brand;
 using Domains.Entities.Catalog.Category;
 using Domains.Entities.Catalog.Item;
 using Domains.Entities.Catalog.Item.ItemAttributes;
+using Domains.Entities.Catalog.Pricing;
 using Domains.Entities.Catalog.Unit;
 using Domains.Entities.Content;
 using Domains.Entities.CouponCode;
@@ -167,7 +168,7 @@ namespace DAL.ApplicationContext
 
 
         // Advanced Pricing
-        public DbSet<TbQuantityPricing> TbQuantityPricings { get; set; }
+        public DbSet<TbQuantityTierPricing> TbQuantityTierPricings { get; set; }
         public DbSet<TbCustomerSegmentPricing> TbCustomerSegmentPricings { get; set; }
         public DbSet<TbPriceHistory> TbPriceHistories { get; set; }
 

@@ -10,7 +10,7 @@ using Shared.DTOs.Customer;
 using Shared.GeneralModels.SearchCriteriaModels;
 using System.Linq.Expressions;
 
-namespace BL.Service.Customer
+namespace BL.Services.Customer
 {
     /// <summary>
     /// Service for managing customer Item Views

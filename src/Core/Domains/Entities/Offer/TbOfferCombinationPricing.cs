@@ -1,6 +1,7 @@
 ﻿ using Common.Enumerations.Offer;
 using Domains.Entities.BuyBox;
 using Domains.Entities.Catalog.Item.ItemAttributes;
+using Domains.Entities.Catalog.Pricing;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -61,6 +62,7 @@ namespace Domains.Entities.Offer
         public virtual TbOffer Offer { get; set; }
 
         public virtual ICollection<TbOfferPriceHistory> OfferPriceHistories { get; set; }
+        public virtual ICollection<TbQuantityTierPricing> QuantityTierPricings { get; set; }
         public virtual ICollection<TbBuyBoxCalculation> BuyBoxCalculations { get; set; }
     }
 }

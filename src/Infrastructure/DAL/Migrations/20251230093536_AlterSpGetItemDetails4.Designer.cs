@@ -4,6 +4,7 @@ using DAL.ApplicationContext;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DAL.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251230093536_AlterSpGetItemDetails4")]
+    partial class AlterSpGetItemDetails4
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1608,70 +1611,6 @@ namespace DAL.Migrations
                     b.HasIndex("Order");
 
                     b.ToTable("TbItemImages");
-                });
-
-            modelBuilder.Entity("Domains.Entities.Catalog.Pricing.TbQuantityTierPricing", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier")
-                        .HasDefaultValueSql("NEWID()");
-
-                    b.Property<Guid>("CreatedBy")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("CreatedDateUtc")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2(2)")
-                        .HasDefaultValueSql("GETUTCDATE()");
-
-                    b.Property<decimal?>("DiscountPercentage")
-                        .HasColumnType("decimal(5,2)");
-
-                    b.Property<bool>("IsDeleted")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(false);
-
-                    b.Property<int?>("MaxQuantity")
-                        .HasColumnType("int");
-
-                    b.Property<int>("MinQuantity")
-                        .HasColumnType("int");
-
-                    b.Property<Guid>("OfferCombinationPricingId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<decimal>("PricePerUnit")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<decimal>("SalesPricePerUnit")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<Guid?>("UpdatedBy")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime?>("UpdatedDateUtc")
-                        .HasColumnType("datetime2(2)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("IsDeleted");
-
-                    b.HasIndex("MaxQuantity");
-
-                    b.HasIndex("MinQuantity");
-
-                    b.HasIndex("OfferCombinationPricingId");
-
-                    b.HasIndex("OfferCombinationPricingId", "MinQuantity", "MaxQuantity")
-                        .IsUnique()
-                        .HasFilter("[MaxQuantity] IS NOT NULL");
-
-                    b.ToTable("TbQuantityTierPricings", null, t =>
-                        {
-                            t.HasCheckConstraint("CK_QuantityPricing_Quantities", "[MaxQuantity] IS NULL OR [MaxQuantity] > [MinQuantity]");
-                        });
                 });
 
             modelBuilder.Entity("Domains.Entities.Catalog.Unit.TbUnit", b =>
@@ -5535,6 +5474,76 @@ namespace DAL.Migrations
                         });
                 });
 
+            modelBuilder.Entity("Domains.Entities.Pricing.TbQuantityPricing", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier")
+                        .HasDefaultValueSql("NEWID()");
+
+                    b.Property<Guid>("CreatedBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedDateUtc")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2(2)")
+                        .HasDefaultValueSql("GETUTCDATE()");
+
+                    b.Property<decimal>("DiscountPercentage")
+                        .HasColumnType("decimal(5,2)");
+
+                    b.Property<int>("DisplayOrder")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0);
+
+                    b.Property<bool>("IsActive")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(true);
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<int?>("MaximumQuantity")
+                        .HasColumnType("int");
+
+                    b.Property<int>("MinimumQuantity")
+                        .HasColumnType("int");
+
+                    b.Property<Guid>("OfferId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<decimal>("UnitPrice")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<Guid?>("UpdatedBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("UpdatedDateUtc")
+                        .HasColumnType("datetime2(2)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("IsActive");
+
+                    b.HasIndex("IsDeleted");
+
+                    b.HasIndex("MinimumQuantity");
+
+                    b.HasIndex("OfferId");
+
+                    b.HasIndex("OfferId", "MinimumQuantity")
+                        .IsUnique();
+
+                    b.ToTable("TbQuantityPricings", null, t =>
+                        {
+                            t.HasCheckConstraint("CK_QuantityPricing_Quantities", "[MaximumQuantity] IS NULL OR [MaximumQuantity] > [MinimumQuantity]");
+                        });
+                });
+
             modelBuilder.Entity("Domains.Entities.SellerRequest.TbRequestComment", b =>
                 {
                     b.Property<Guid>("Id")
@@ -8516,6 +8525,10 @@ namespace DAL.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("VendorCompanyName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("VendorFullName")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -9193,17 +9206,6 @@ namespace DAL.Migrations
                         .HasConstraintName("FK_TbItemImages_TbItems_ItemId");
 
                     b.Navigation("Item");
-                });
-
-            modelBuilder.Entity("Domains.Entities.Catalog.Pricing.TbQuantityTierPricing", b =>
-                {
-                    b.HasOne("Domains.Entities.Offer.TbOfferCombinationPricing", "OfferCombinationPricing")
-                        .WithMany("QuantityTierPricings")
-                        .HasForeignKey("OfferCombinationPricingId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("OfferCombinationPricing");
                 });
 
             modelBuilder.Entity("Domains.Entities.Catalog.Unit.TbUnitConversion", b =>
@@ -9912,6 +9914,17 @@ namespace DAL.Migrations
                     b.Navigation("Offer");
                 });
 
+            modelBuilder.Entity("Domains.Entities.Pricing.TbQuantityPricing", b =>
+                {
+                    b.HasOne("Domains.Entities.Offer.TbOffer", "Offer")
+                        .WithMany()
+                        .HasForeignKey("OfferId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Offer");
+                });
+
             modelBuilder.Entity("Domains.Entities.SellerRequest.TbRequestComment", b =>
                 {
                     b.HasOne("Domains.Entities.SellerRequest.TbSellerRequest", "SellerRequest")
@@ -10454,8 +10467,6 @@ namespace DAL.Migrations
                     b.Navigation("BuyBoxCalculations");
 
                     b.Navigation("OfferPriceHistories");
-
-                    b.Navigation("QuantityTierPricings");
                 });
 
             modelBuilder.Entity("Domains.Entities.Offer.TbOfferCondition", b =>

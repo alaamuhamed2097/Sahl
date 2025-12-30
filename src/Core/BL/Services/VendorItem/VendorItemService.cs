@@ -1,6 +1,7 @@
 ﻿using BL.Contracts.GeneralService.CMS;
 using BL.Contracts.IMapper;
 using BL.Extensions;
+using BL.Service.VendorItem;
 using Common.Enumerations.Pricing;
 using Common.Enumerations.Visibility;
 using DAL.Contracts.Repositories;
@@ -20,7 +21,7 @@ using Shared.GeneralModels.SearchCriteriaModels;
 using System.ComponentModel.DataAnnotations;
 using System.Linq.Expressions;
 
-namespace BL.Service.VendorItem
+namespace BL.Services.VendorItem
 {
     public class VendorItemService : IVendorItemService
     {
