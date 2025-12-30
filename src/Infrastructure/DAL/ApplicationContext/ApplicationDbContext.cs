@@ -9,7 +9,6 @@ using Domains.Entities.Catalog.Item;
 using Domains.Entities.Catalog.Item.ItemAttributes;
 using Domains.Entities.Catalog.Pricing;
 using Domains.Entities.Catalog.Unit;
-using Domains.Entities.Content;
 using Domains.Entities.Currency;
 using Domains.Entities.Customer;
 using Domains.Entities.ECommerceSystem;
@@ -141,11 +140,6 @@ namespace DAL.ApplicationContext
 
         // Warehouse Management
         public DbSet<TbWarehouse> TbWarehouses { get; set; }
-
-
-        // Content Management
-        public DbSet<TbContentArea> TbContentAreas { get; set; }
-        public DbSet<TbMediaContent> TbMediaContents { get; set; }
 
         // Loyalty System
         public DbSet<TbLoyaltyTier> TbLoyaltyTiers { get; set; }
