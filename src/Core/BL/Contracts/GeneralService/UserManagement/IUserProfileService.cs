@@ -1,5 +1,6 @@
 ﻿using Common.Enumerations.User;
 using DAL.Models;
+using Shared.DTOs.User;
 using Shared.DTOs.User.Admin;
 using Shared.GeneralModels;
 using Shared.GeneralModels.ResultModels;
@@ -19,4 +20,7 @@ public interface IUserProfileService
     Task<ResponseModel<AdminProfileDto>> UpdateAdminProfileAsync(string userId, AdminProfileUpdateDto userProfileUpdateDto, Guid updatorId);
 
     Task<OperationResult> ChangeEmailAsync(string userId, string newEmail);
+
+    Task<UserProfileDto> GetUserProfileAsync(string userId);
+    Task<ResponseModel<UserProfileDto>> UpdateUserProfileAsync(string userId, UserProfileUpdateDto profileUpdateDto);
 }

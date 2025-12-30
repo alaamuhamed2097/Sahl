@@ -226,8 +226,8 @@ public class UserRegistrationService : IUserRegistrationService
                 ? userDto.Email
                 : username;
 
-                var signInResult = await _userAuthenticationService.EmailOrPhoneNumberSignInAsync(
-                    signInIdentifier, userDto.Password, clientType);
+            var signInResult = await _userAuthenticationService.EmailOrPhoneNumberSignInAsync(
+                signInIdentifier, userDto.Password, clientType);
 
             if (!signInResult.Success)
             {
@@ -271,7 +271,6 @@ public class UserRegistrationService : IUserRegistrationService
     }
 
     #region Helper functions
-
     private async Task<string> SaveImage(string image)
     {
         // Check if the file is null or empty
