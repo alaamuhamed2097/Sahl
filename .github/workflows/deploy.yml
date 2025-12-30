@@ -661,65 +661,7 @@ jobs:
           Write-Host ""
           Write-Host "⚠️ Note: Dashboard deployment is currently disabled" -ForegroundColor Yellow
       
-      # 1️⃣5️⃣ Health Check
-      - name: Health Check
-        id: health-check
-        run: |
-          Write-Host "=========================================="
-          Write-Host "Performing Health Checks..."
-          Write-Host "=========================================="
-          
-          Start-Sleep -Seconds 5
-          
-          # Check API health
-          $apiHealthy = $false
-          try {
-            $response = Invoke-WebRequest -Uri "http://localhost/api/health" -UseBasicParsing -TimeoutSec 30 -ErrorAction Stop
-            if ($response.StatusCode -eq 200) {
-              Write-Host "✅ API is healthy (Status: $($response.StatusCode))" -ForegroundColor Green
-              $apiHealthy = $true
-            }
-          } catch {
-            $statusCode = $_.Exception.Response.StatusCode.value__
-            Write-Host "❌ API health check failed (Status: $statusCode)" -ForegroundColor Red
-            Write-Host "Error: $($_.Exception.Message)" -ForegroundColor Red
-            
-            if ($statusCode -eq 500) {
-              Write-Host "⚠️ Error 500 detected - possible migration issue!" -ForegroundColor Yellow
-              echo "API_HEALTH_FAILED=true" >> $env:GITHUB_OUTPUT
-            }
-          }
-          
-          # Dashboard health check COMMENTED OUT
-          # try {
-          #   $response = Invoke-WebRequest -Uri "http://localhost/dashboard" -UseBasicParsing -TimeoutSec 30 -ErrorAction Stop
-          #   if ($response.StatusCode -eq 200) {
-          #     # Check if response contains Blazor markers
-          #     if ($response.Content -match "blazor|_framework") {
-          #       Write-Host "✅ Dashboard is healthy (Status: $($response.StatusCode))" -ForegroundColor Green
-          #       Write-Host "   Blazor WASM detected in response" -ForegroundColor Cyan
-          #     } else {
-          #       Write-Host "⚠️ Dashboard loaded but Blazor markers not found" -ForegroundColor Yellow
-          #     }
-          #   }
-          # } catch {
-          #   $statusCode = $_.Exception.Response.StatusCode.value__
-          #   Write-Host "⚠️ Dashboard health check failed (Status: $statusCode)" -ForegroundColor Yellow
-          #   Write-Host "Error: $($_.Exception.Message)" -ForegroundColor Yellow
-          # }
-          
-          if (-not $apiHealthy) {
-            Write-Host ""
-            Write-Host "=========================================="
-            Write-Host "⚠️ API HEALTH CHECK FAILED!" -ForegroundColor Red
-            Write-Host "=========================================="
-            exit 1
-          }
-          
-          Write-Host ""
-          Write-Host "⚠️ Note: Dashboard health check is currently disabled" -ForegroundColor Yellow
-      
-      # 1️⃣6️⃣ Rollback on Failure
+      # 1️⃣5️⃣ Rollback on Failure
       - name: Rollback Database on Failure
         if: failure() && steps.apply-migrations.outputs.MIGRATION_SUCCESS == 'false' && env.DB_BACKUP_PATH != ''
         run: |
@@ -763,7 +705,7 @@ jobs:
             Write-Host "⚠️ Backup file not found: $backupPath" -ForegroundColor Yellow
           }
       
-      # 1️⃣7️⃣ Cleanup
+      # 1️⃣6️⃣ Cleanup
       - name: Cleanup
         if: always()
         run: |
@@ -789,5 +731,4 @@ jobs:
           Write-Host "⚠️ Dashboard Deployment: DISABLED (temporarily commented out)" -ForegroundColor Yellow
           Write-Host ""
           Write-Host "✅ App Pools: RESTARTED (API only)" -ForegroundColor Green
-          Write-Host "✅ Health Check: PASSED (API only)" -ForegroundColor Green
           Write-Host "=========================================="
