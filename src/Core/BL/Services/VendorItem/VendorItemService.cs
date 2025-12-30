@@ -2,7 +2,6 @@
 using BL.Contracts.IMapper;
 using BL.Contracts.Service.VendorItem;
 using BL.Extensions;
-using BL.Service.VendorItem;
 using Common.Enumerations.Pricing;
 using Common.Enumerations.Visibility;
 using DAL.Contracts.Repositories;

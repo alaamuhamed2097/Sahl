@@ -21,7 +21,6 @@ using BL.Contracts.Service.ShippingCompny;
 using BL.Contracts.Service.Vendor;
 using BL.Contracts.Service.VendorItem;
 using BL.GeneralService.Location;
-using BL.Service.VendorItem;
 using BL.Services.Brand;
 using BL.Services.Catalog.Category;
 using BL.Services.Catalog.Item;
