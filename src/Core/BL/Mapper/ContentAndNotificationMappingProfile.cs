@@ -1,6 +1,4 @@
-using Domains.Entities.Content;
 using Domains.Entities.Notification;
-using Shared.DTOs.Content;
 using Shared.DTOs.Notification;
 
 namespace BL.Mapper;
@@ -9,13 +7,6 @@ public partial class MappingProfile
 {
     private void ConfigureContentAndNotificationChannelMappings()
     {
-        // Content Management
-        CreateMap<TbContentArea, ContentAreaDto>()
-            .ReverseMap();
-
-        CreateMap<TbMediaContent, MediaContentDto>()
-            .ReverseMap();
-
         // Notification Channels
         CreateMap<TbNotificationChannel, NotificationChannelDto>()
             .ReverseMap();
