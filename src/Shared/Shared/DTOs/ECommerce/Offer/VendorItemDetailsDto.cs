@@ -29,7 +29,6 @@ namespace Shared.DTOs.ECommerce.Offer
         // Vendor info
         public Guid VendorId { get; set; }
         public string VendorFullName { get; set; } = string.Empty;
-        public string VendorCompanyName { get; set; } = string.Empty;
 
         // Item combination details
         public Guid ItemCombinationId { get; set; }
