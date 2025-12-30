@@ -165,7 +165,7 @@ jobs:
             Write-Host "✅ wasm-tools workload already installed"
           }
       
-      # 1️⃣1️⃣ Publish Dashboard (بدون build تاني!)
+      # 1️⃣1️⃣ Publish Dashboard (بيعمل build للـ shared projects عشان الـ trimming)
       - name: Publish Dashboard
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         run: |
@@ -173,10 +173,10 @@ jobs:
           Write-Host "Publishing Blazor WASM Dashboard..."
           Write-Host "=========================================="
           
+          # Blazor WASM يحتاج build عشان الـ trimming للـ shared projects
           dotnet publish "$env:GITHUB_WORKSPACE\src\Presentation\Dashboard\Dashboard.csproj" `
             -c Release `
             -o "$env:TEMP\publish\dashboard" `
-            --no-build `
             --no-restore
           
           if ($LASTEXITCODE -ne 0) {
