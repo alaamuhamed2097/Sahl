@@ -101,7 +101,6 @@ namespace Api.Controllers.v1.Order
             });
         }
 
-
         /// <summary>
         /// Get Cart Summary
         /// </summary>
