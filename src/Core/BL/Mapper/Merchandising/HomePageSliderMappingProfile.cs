@@ -1,4 +1,4 @@
-﻿using Domains.Entities.HomeSlider;
+﻿using Domains.Entities.Merchandising.HomePage;
 using Domains.Entities.VideoProvider;
 using Shared.DTOs.HomeSlider;
 using Shared.DTOs.Media;

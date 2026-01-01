@@ -1,6 +1,4 @@
-﻿using Domains.Entities.ECommerceSystem;
-
-namespace Domains.Entities.Location
+﻿namespace Domains.Entities.Location
 {
     public class TbCity : BaseEntity
     {

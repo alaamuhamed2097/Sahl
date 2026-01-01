@@ -8,7 +8,6 @@ using Common.Enumerations.Shipping;
 using DAL.Contracts.UnitOfWork;
 using DAL.Exceptions;
 using Domains.Entities.Currency;
-using Domains.Entities.ECommerceSystem;
 using Domains.Entities.ECommerceSystem.Vendor;
 using Domains.Entities.Offer;
 using Domains.Entities.Order;
