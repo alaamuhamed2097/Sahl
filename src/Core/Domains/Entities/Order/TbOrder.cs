@@ -1,6 +1,5 @@
 ﻿using Common.Enumerations.Order;
 using Common.Enumerations.Payment;
-using Domains.Entities.ECommerceSystem;
 using Domains.Entities.Merchandising.CouponCode;
 using Domains.Entities.Order.Payment;
 using Domains.Entities.Order.Shipping;
