@@ -8,7 +8,7 @@ namespace Domains.Entities.ECommerceSystem.Review
 {
     public class TbItemReview : BaseEntity
     {
-        public int ReviewNumber { get; set; }
+        public string ReviewNumber { get; set; }
         public Guid ItemId { get; set; }
         public Guid CustomerId { get; set; }
      

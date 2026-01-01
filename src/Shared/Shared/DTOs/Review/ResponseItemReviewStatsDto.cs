@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Shared.DTOs.Review
 {
-	public class ItemReviewStatsDto
+	public class ResponseItemReviewStatsDto
 	{
 		public decimal AverageRating { get; set; }
 		public int ReviewCount { get; set; }
