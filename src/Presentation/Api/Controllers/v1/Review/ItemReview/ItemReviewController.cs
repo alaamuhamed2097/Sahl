@@ -87,7 +87,7 @@ namespace Api.Controllers.v1.Review.ItemReview
 			//reviewDto.CustomerID = Guid.Parse(UserId);
 			var result = await _reviewService.SubmitReviewAsync(reviewDto, GuidUserId);
 
-			return Ok(new ResponseModel<ItemReviewDto>
+			return Ok(new ResponseModel<ResponseItemReviewDto>
 			{
 				Success = true,
 				Message = NotifiAndAlertsResources.DataRetrieved,
@@ -118,7 +118,7 @@ namespace Api.Controllers.v1.Review.ItemReview
 
 			var result = await _reviewService.updateReviewAsync( reviewDto, GuidUserId);
 
-			return Ok(new ResponseModel<ItemReviewDto>
+			return Ok(new ResponseModel<ResponseItemReviewDto>
 			{
 				Success = true,
 				Message = NotifiAndAlertsResources.DataRetrieved,
@@ -174,7 +174,7 @@ namespace Api.Controllers.v1.Review.ItemReview
 		{
 			var reviews = await _reviewService.GetReviewsByItemIdAsync(ItemId);
 
-			return Ok(new ResponseModel<IEnumerable<ItemReviewDto>>
+			return Ok(new ResponseModel<IEnumerable<ResponseItemReviewDto>>
 			{
 				Success = true,
 				Message = NotifiAndAlertsResources.DataRetrieved,
@@ -194,7 +194,7 @@ namespace Api.Controllers.v1.Review.ItemReview
 		{
 			var result = await _reviewService.GetPaginatedReviewsAsync(criteria);
 
-			return Ok(new ResponseModel<PagedResult<ItemReviewDto>>
+			return Ok(new ResponseModel<PagedResult<ResponseItemReviewDto>>
 			{
 				Success = true,
 				Message = NotifiAndAlertsResources.DataRetrieved,
@@ -213,7 +213,7 @@ namespace Api.Controllers.v1.Review.ItemReview
 		{
 			var stats = await _reviewService.GetItemReviewStatsAsync(ItemId);
 
-			return Ok(new ResponseModel<ItemReviewStatsDto>
+			return Ok(new ResponseModel<ResponseItemReviewStatsDto>
 			{
 				Success = true,
 				Message = NotifiAndAlertsResources.DataRetrieved,
@@ -235,7 +235,7 @@ namespace Api.Controllers.v1.Review.ItemReview
 		{
 			var reviews = await _reviewService.GetPendingReviewsAsync();
 
-			return Ok(new ResponseModel<IEnumerable<ItemReviewDto>>
+			return Ok(new ResponseModel<IEnumerable<ResponseItemReviewDto>>
 			{
 				Success = true,
 				Message = NotifiAndAlertsResources.DataRetrieved,

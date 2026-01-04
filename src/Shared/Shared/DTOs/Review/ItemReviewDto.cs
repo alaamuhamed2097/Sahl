@@ -7,8 +7,8 @@ namespace Shared.DTOs.Review
 {
     public class ItemReviewDto : BaseDto
     {
-		[Required]
-		public int ReviewNumber { get; set; }
+		//[Required]
+		//public int ReviewNumber { get; set; }
 
 		[Required(ErrorMessageResourceName = "FieldRequired", ErrorMessageResourceType = typeof(ValidationResources))]
 		public Guid ItemID { get; set; }
@@ -31,15 +31,15 @@ namespace Shared.DTOs.Review
 
 		//public bool IsVerifiedPurchase { get; set; } = false;
 
-		[Range(0, int.MaxValue, ErrorMessageResourceName = "FieldRequired", ErrorMessageResourceType = typeof(ValidationResources))]
-		public int HelpfulCount { get; set; } = 0;
+		//[Range(0, int.MaxValue, ErrorMessageResourceName = "FieldRequired", ErrorMessageResourceType = typeof(ValidationResources))]
+		//public int HelpfulCount { get; set; } = 0;
 
-		[Range(0, int.MaxValue, ErrorMessageResourceName = "FieldRequired", ErrorMessageResourceType = typeof(ValidationResources))]
-		public int NotHelpfulCount { get; set; } = 0;
+		//[Range(0, int.MaxValue, ErrorMessageResourceName = "FieldRequired", ErrorMessageResourceType = typeof(ValidationResources))]
+		//public int NotHelpfulCount { get; set; } = 0;
 
-		[Required]
-		public ReviewStatus Status { get; set; } = ReviewStatus.Pending;
+		//[Required]
+		//public ReviewStatus Status { get; set; } = ReviewStatus.Pending;
 
-		public bool IsEdited { get; set; } = false;
+		//public bool IsEdited { get; set; } = false;
 	}
 }
