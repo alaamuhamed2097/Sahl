@@ -101,7 +101,58 @@ namespace BL.Services.VendorItem
             return new PagedResult<OfferDto>(itemsDto, items.TotalRecords);
         }
 
-        public async Task<IEnumerable<VendorItemDetailsDto>> FindByItemCombinationIdAsync(Guid itemCombinationId, CancellationToken token = default)
+		//public async Task<PagedResult<VendorItemDetailsDto>> GetPageVendor(ItemstatusSearchCriteriaModel criteriaModel)
+		//{
+		//	if (criteriaModel == null)
+		//		throw new ArgumentNullException(nameof(criteriaModel));
+
+		//	if (criteriaModel.PageNumber < 1)
+		//		throw new ArgumentOutOfRangeException(nameof(criteriaModel.PageNumber), ValidationResources.PageNumberGreaterThanZero);
+
+		//	if (criteriaModel.PageSize < 1 || criteriaModel.PageSize > 100)
+		//		throw new ArgumentOutOfRangeException(nameof(criteriaModel.PageSize), ValidationResources.PageSizeRange);
+
+		//	// Base filter
+		//	Expression<Func<VwVendorItem, bool>> filter ;
+
+		//	// Combine expressions manually
+		//	var searchTerm = criteriaModel.SearchTerm?.Trim().ToLower();
+
+  //          if (!string.IsNullOrWhiteSpace(searchTerm))
+  //          {
+  //              filter = filter.And(x =>
+  //                  (x. != null && x.TitleAr.ToLower().Contains(searchTerm)) ||
+  //                  (x.TitleEn != null && x.TitleEn.ToLower().Contains(searchTerm)) ||
+  //                  (x.ShortDescriptionAr != null && x.ShortDescriptionAr.ToLower().Contains(searchTerm)) ||
+  //                  (x.ShortDescriptionEn != null && x.ShortDescriptionEn.ToLower().Contains(searchTerm))
+  //              );
+  //          }
+
+  //          //if (criteriaModel.CategoryIds?.Any() == true)
+  //          //{
+  //          //    filter = filter.And(x => criteriaModel.CategoryIds.Contains(x.CategoryId));
+  //          //}
+
+  //          // New Item Flags Filters
+  //          if (criteriaModel.IsNewArrival.HasValue)
+		//	{
+		//		filter = filter.And(x => x.CreatedDateUtc.Date >= DateTime.UtcNow.AddDays(-3).Date);
+		//	}
+
+		//	// Get paginated data from repository
+		//	var items = await _vendorItemRepository.GetPageAsync(
+		//		criteriaModel.PageNumber,
+		//		criteriaModel.PageSize,
+		//		filter,
+		//		orderBy: q => q.OrderByDescending(x => x.CreatedDateUtc)
+		//	);
+
+		//	var itemsDto = _mapper.MapList<TbOffer, OfferDto>(items.Items);
+
+		//	return new PagedResult<OfferDto>(itemsDto, items.TotalRecords);
+		//}
+
+		public async Task<IEnumerable<VendorItemDetailsDto>> FindByItemCombinationIdAsync(Guid itemCombinationId, CancellationToken token = default)
         {
             if (itemCombinationId == Guid.Empty)
                 throw new ArgumentNullException(nameof(itemCombinationId));
