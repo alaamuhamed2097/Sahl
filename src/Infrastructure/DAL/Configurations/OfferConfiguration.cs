@@ -35,7 +35,7 @@ namespace DAL.Configurations
                 .IncludeProperties(e => new
                 {
                     e.VendorId,
-                    e.HandlingTimeInDays,
+                    e.EstimatedDeliveryDays,
                     e.FulfillmentType
                 });
 

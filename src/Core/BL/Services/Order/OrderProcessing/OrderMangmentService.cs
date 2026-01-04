@@ -566,7 +566,7 @@ Guid userId)
             {
                 if (offerDict.TryGetValue(offerId, out var offer))
                 {
-                    int totalEstimatedDays = offer.HandlingTimeInDays;
+                    int totalEstimatedDays = offer.EstimatedDeliveryDays;
 
                     if (shippingDetailDict.TryGetValue(offerId, out var shippingDetail) &&
                         shippingDetail != null)

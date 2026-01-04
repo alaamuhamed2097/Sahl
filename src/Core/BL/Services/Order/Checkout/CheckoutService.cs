@@ -44,8 +44,6 @@ public class CheckoutService : ICheckoutService
     {
         try
         {
-            _logger.Information("Preparing checkout for customer {CustomerId}", customerId);
-
             // 1. Get cart summary
             var cart = await _cartService.GetCartSummaryAsync(customerId);
             if (!cart.Items.Any())
@@ -159,7 +157,7 @@ public class CheckoutService : ICheckoutService
                     SubTotal = i.SubTotal,
                     IsAvailable = i.IsAvailable
                 }).ToList(),
-                ShipmentPreviews = shipmentPreviews,
+                //ShipmentPreviews = shipmentPreviews,
                 DeliveryAddress = address,
                 PriceBreakdown = new PriceBreakdownDto
                 {
