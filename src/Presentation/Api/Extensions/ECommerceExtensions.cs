@@ -13,6 +13,7 @@ using BL.Contracts.Service.Merchandising.Campaign;
 using BL.Contracts.Service.Merchandising.CouponCode;
 using BL.Contracts.Service.Order.Cart;
 using BL.Contracts.Service.Order.Checkout;
+using BL.Contracts.Service.Order.Fulfillment;
 using BL.Contracts.Service.Order.OrderProcessing;
 using BL.Contracts.Service.Pricing;
 using BL.Contracts.Service.Review;
@@ -35,6 +36,7 @@ using BL.Services.Merchandising.Campaign;
 using BL.Services.Merchandising.CouponCode;
 using BL.Services.Order.Cart;
 using BL.Services.Order.Checkout;
+using BL.Services.Order.Fulfillment;
 using BL.Services.Order.OrderProcessing;
 using BL.Services.Review;
 using BL.Services.Setting;
@@ -81,6 +83,7 @@ namespace Api.Extensions
             services.AddScoped<ILocationBasedCurrencyService, LocationBasedCurrencyService>();
 
             // shipping company
+            services.AddScoped<IShippingCalculationService, ShippingCalculationService>();
             services.AddScoped<IShippingCompanyService, ShippingCompanyService>();
 
             // Promo code
@@ -124,6 +127,9 @@ namespace Api.Extensions
             services.AddScoped<IHomePageSliderService, HomePageSliderService>();
             services.AddScoped<IAdminBlockService, AdminBlockService>();
 
+            services.AddScoped<ISystemSettingsService, SystemSettingsService>();
+
+            services.AddScoped<ICheckoutService, CheckoutService>();
             return services;
         }
     }

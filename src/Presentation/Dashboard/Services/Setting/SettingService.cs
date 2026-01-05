@@ -18,16 +18,16 @@ namespace Dashboard.Services.Setting
         /// <summary>
         /// Get application settings.
         /// </summary>
-        public async Task<ResponseModel<SettingDto>> GetSettingsAsync()
+        public async Task<ResponseModel<GeneralSettingsDto>> GetSettingsAsync()
         {
             try
             {
-                return await _apiService.GetAsync<SettingDto>(ApiEndpoints.Setting.Get);
+                return await _apiService.GetAsync<GeneralSettingsDto>(ApiEndpoints.Setting.Get);
             }
             catch (Exception ex)
             {
                 // Log error here
-                return new ResponseModel<SettingDto>
+                return new ResponseModel<GeneralSettingsDto>
                 {
                     Success = false,
                     Message = ex.Message
@@ -55,13 +55,13 @@ namespace Dashboard.Services.Setting
         /// <summary>
         /// Update application settings.
         /// </summary>
-        public async Task<ResponseModel<string>> UpdateSettingsAsync(SettingDto dto)
+        public async Task<ResponseModel<string>> UpdateSettingsAsync(GeneralSettingsDto dto)
         {
             if (dto == null) throw new ArgumentNullException(nameof(dto));
 
             try
             {
-                return await _apiService.PostAsync<SettingDto, string>(ApiEndpoints.Setting.Update, dto);
+                return await _apiService.PostAsync<GeneralSettingsDto, string>(ApiEndpoints.Setting.Update, dto);
             }
             catch (Exception ex)
             {

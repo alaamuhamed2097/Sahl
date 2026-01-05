@@ -7,7 +7,6 @@ using Domains.Entities.Offer;
 using Domains.Views.Offer;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
-using System;
 using System.Linq.Expressions;
 
 namespace DAL.Repositories
@@ -45,19 +44,19 @@ namespace DAL.Repositories
                 _logger.Error(ex, $"Error getting offer details for offer ID: {offerId}");
                 throw new DataAccessException($"Failed to retrieve offer details", ex, _logger);
             }
-        } 
+        }
 
         /// <summary>
         /// Get offers by item combination ID
         /// </summary>
         public async Task<IEnumerable<VwVendorItem>> GetOffersByItemCombinationIdAsync(Guid itemCombinationId, CancellationToken cancellationToken = default)
-                {
-                    try
-                    {
-                        var offers = await _dbContext.Set<VwVendorItem>()
-                            .Where(o => o.ItemCombinationId == itemCombinationId)
-                            .OrderByDescending(o => o.CreatedDateUtc)
-                            .ToListAsync(cancellationToken);
+        {
+            try
+            {
+                var offers = await _dbContext.Set<VwVendorItem>()
+                    .Where(o => o.ItemCombinationId == itemCombinationId)
+                    .OrderByDescending(o => o.CreatedDateUtc)
+                    .ToListAsync(cancellationToken);
 
                 return offers;
             }
@@ -79,13 +78,13 @@ namespace DAL.Repositories
                     .Where(o => o.VendorId == vendorId)
                     .ToListAsync(cancellationToken);
 
-        return offers;
-        }
-        catch (Exception ex)
-        {
-            _logger.Error(ex, $"Error getting offers for vendor ID: {vendorId}");
-            throw new DataAccessException($"Failed to retrieve offers for vendor", ex, _logger);
-        }
+                return offers;
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex, $"Error getting offers for vendor ID: {vendorId}");
+                throw new DataAccessException($"Failed to retrieve offers for vendor", ex, _logger);
+            }
         }
 
         /// <summary>
@@ -168,197 +167,195 @@ namespace DAL.Repositories
             }
         }
 
-                /// <summary>
-                /// Update offer pricing with transaction support
-                /// </summary>
-                public async Task<OfferTransactionResult> UpdateOfferPricingAsync(
-                     Guid pricingId,
-                     decimal? newPrice,
-                     decimal? newSalesPrice,
-                     string? changeNote,
-                     int? availableQty,
-                     int? reservedQty,
-                     int? refundedQty,
-                     int? damagedQty,
-                     int? inTransitQty,
-                     int? returnedQty,
-                     int? lockedQty,
-                     string updatedBy,
-                     CancellationToken cancellationToken = default)
+        /// <summary>
+        /// Update offer pricing with transaction support
+        /// </summary>
+        public async Task<OfferTransactionResult> UpdateOfferPricingAsync(
+             Guid pricingId,
+             decimal? newPrice,
+             decimal? newSalesPrice,
+             string? changeNote,
+             int? availableQty,
+             int? reservedQty,
+             int? refundedQty,
+             int? damagedQty,
+             int? inTransitQty,
+             int? returnedQty,
+             int? lockedQty,
+             string updatedBy,
+             CancellationToken cancellationToken = default)
+        {
+            var result = new OfferTransactionResult();
+            var updatedByGuid = Guid.TryParse(updatedBy, out var parsedId) ? parsedId : Guid.Empty;
+
+            await using var transaction = await _dbContext.Database.BeginTransactionAsync(
+                System.Data.IsolationLevel.ReadCommitted, cancellationToken);
+
+            try
+            {
+                // Load Pricing
+                var pricing = await _offerPricing
+                    .FirstOrDefaultAsync(p => p.Id == pricingId && !p.IsDeleted, cancellationToken);
+
+                if (pricing == null)
                 {
-                    var result = new OfferTransactionResult();
-                    var updatedByGuid = Guid.TryParse(updatedBy, out var parsedId) ? parsedId : Guid.Empty;
+                    await transaction.RollbackAsync(cancellationToken);
+                    result.Success = false;
+                    return result;
+                }
 
-                    await using var transaction = await _dbContext.Database.BeginTransactionAsync(
-                        System.Data.IsolationLevel.ReadCommitted, cancellationToken);
+                var oldPrice = pricing.Price;
+                var oldSalesPrice = pricing.SalesPrice;
+                var oldAvailableQty = pricing.AvailableQuantity;
+                var oldStockStatus = pricing.StockStatus;
 
-                    try
+                changeNote ??= "";
+                bool changesMade = false;
+                bool salesPriceChanged = false;
+
+                // ---- Price ----
+                if (newPrice.HasValue && newPrice.Value != pricing.Price)
+                {
+                    pricing.Price = newPrice.Value;
+                    changesMade = true;
+                }
+
+                // ---- Sales Price ----
+                if (newSalesPrice.HasValue && newSalesPrice.Value != pricing.SalesPrice)
+                {
+                    pricing.SalesPrice = newSalesPrice.Value;
+                    changesMade = true;
+                    salesPriceChanged = true;
+                    changeNote += $"SalesPrice: {oldSalesPrice} → {newSalesPrice.Value}. ";
+                }
+
+                // ---- Available Quantity + Stock Status Handling ----
+                if (availableQty.HasValue && availableQty.Value != pricing.AvailableQuantity)
+                {
+                    pricing.AvailableQuantity = availableQty.Value;
+                    changesMade = true;
+
+                    // --- Auto Stock Status Update ---
+                    var newStatus =
+                        availableQty > pricing.LowStockThreshold ? StockStatus.InStock :
+                        availableQty == 0 ? StockStatus.OutOfStock : StockStatus.LimitedStock;
+                    if (newStatus != oldStockStatus)
                     {
-                        // Load Pricing
-                        var pricing = await _offerPricing
-                            .FirstOrDefaultAsync(p => p.Id == pricingId && !p.IsDeleted, cancellationToken);
-
-                        if (pricing == null)
-                        {
-                            await transaction.RollbackAsync(cancellationToken);
-                            result.Success = false;
-                            return result;
-                        }
-
-                        var oldPrice = pricing.Price;
-                        var oldSalesPrice = pricing.SalesPrice;
-                        var oldAvailableQty = pricing.AvailableQuantity;
-                        var oldStockStatus = pricing.StockStatus;
-
-                        changeNote ??= "";
-                        bool changesMade = false;
-                        bool salesPriceChanged = false;
-                        bool stockStatusChanged = false;
-
-                        // ---- Price ----
-                        if (newPrice.HasValue && newPrice.Value != pricing.Price)
-                        {
-                            pricing.Price = newPrice.Value;
-                            changesMade = true;
-                        }
-
-                        // ---- Sales Price ----
-                        if (newSalesPrice.HasValue && newSalesPrice.Value != pricing.SalesPrice)
-                        {
-                            pricing.SalesPrice = newSalesPrice.Value;
-                            changesMade = true;
-                            salesPriceChanged = true;
-                            changeNote += $"SalesPrice: {oldSalesPrice} → {newSalesPrice.Value}. ";
-                        }
-
-                        // ---- Available Quantity + Stock Status Handling ----
-                        if (availableQty.HasValue && availableQty.Value != pricing.AvailableQuantity)
-                        {
-                            pricing.AvailableQuantity = availableQty.Value;
-                            changesMade = true;
-
-                            // --- Auto Stock Status Update ---
-                            var newStatus =
-                                availableQty > pricing.LowStockThreshold ? StockStatus.InStock :
-                                availableQty == 0 ? StockStatus.OutOfStock : StockStatus.LimitedStock;
-                            if (newStatus != oldStockStatus)
-                            {
-                                pricing.StockStatus = newStatus;
-                                stockStatusChanged = true;
-                            }
-                        }
-
-                        // ---- Other Quantities ----
-                        if (reservedQty.HasValue && reservedQty.Value != pricing.ReservedQuantity)
-                        {
-                            pricing.ReservedQuantity = reservedQty.Value;
-                            changesMade = true;
-                        }
-
-                        if (refundedQty.HasValue && refundedQty.Value != pricing.RefundedQuantity)
-                        {
-                            pricing.RefundedQuantity = refundedQty.Value;
-                            changesMade = true;
-                        }
-
-                        if (damagedQty.HasValue && damagedQty.Value != pricing.DamagedQuantity)
-                        {
-                            pricing.DamagedQuantity = damagedQty.Value;
-                            changesMade = true;
-                        }
-
-                        if (inTransitQty.HasValue && inTransitQty.Value != pricing.InTransitQuantity)
-                        {
-                            pricing.InTransitQuantity = inTransitQty.Value;
-                            changesMade = true;
-                        }
-
-                        if (returnedQty.HasValue && returnedQty.Value != pricing.ReturnedQuantity)
-                        {
-                            pricing.ReturnedQuantity = returnedQty.Value;
-                            changesMade = true;
-                        }
-
-                        if (lockedQty.HasValue && lockedQty.Value != pricing.LockedQuantity)
-                        {
-                            pricing.LockedQuantity = lockedQty.Value;
-                            changesMade = true;
-                        }
-
-                        // No changes → rollback
-                        if (!changesMade)
-                        {
-                            await transaction.RollbackAsync(cancellationToken);
-                            result.Success = false;
-                            return result;
-                        }
-
-                        // Metadata
-                        pricing.UpdatedDateUtc = DateTime.UtcNow;
-                        pricing.UpdatedBy = updatedByGuid;
-
-                _offerPricing.Update(pricing);
-
-                        // ---- Write history ONLY when SalesPrice changed ----
-                        if (salesPriceChanged)
-                        {
-                            var history = new TbOfferPriceHistory
-                            {
-                                Id = Guid.NewGuid(),
-                                OfferCombinationPricingId = pricing.Id,
-                                OldPrice = oldSalesPrice,
-                                NewPrice = pricing.SalesPrice,
-                                ChangeNote = changeNote.Trim(),
-                                CreatedBy = updatedByGuid,
-                                CreatedDateUtc = DateTime.UtcNow
-                            };
-
-                            await _dbContext.TbOfferPriceHistories.AddAsync(history, cancellationToken);
-                        }
-
-                        var saveResult = await _dbContext.SaveChangesAsync(cancellationToken) > 0;
-
-                        if (!saveResult)
-                        {
-                            await transaction.RollbackAsync(cancellationToken);
-                            result.Success = false;
-                            return result;
-                        }
-
-                        await transaction.CommitAsync(cancellationToken);
-
-                        result.Success = true;
-                        result.PricingId = pricing.Id;
-                        result.OfferId = pricing.OfferId;
-                        result.NewPrice = pricing.Price;
-                        result.NewQuantity = pricing.AvailableQuantity;
-
-                        return result;
-                    }
-                    catch (Exception ex)
-                    {
-                        await transaction.RollbackAsync(cancellationToken);
-                        _logger.Error(ex, $"Error updating pricing {pricingId}");
-                        throw;
+                        pricing.StockStatus = newStatus;
                     }
                 }
 
-
-
-                /// <summary>
-                /// Check if an offer has sufficient stock
-                /// </summary>
-                public async Task<bool> CheckOfferStockAsync(Guid offerId, Guid itemCombinationId, int quantity, CancellationToken cancellationToken = default)
+                // ---- Other Quantities ----
+                if (reservedQty.HasValue && reservedQty.Value != pricing.ReservedQuantity)
                 {
-                    try
+                    pricing.ReservedQuantity = reservedQty.Value;
+                    changesMade = true;
+                }
+
+                if (refundedQty.HasValue && refundedQty.Value != pricing.RefundedQuantity)
+                {
+                    pricing.RefundedQuantity = refundedQty.Value;
+                    changesMade = true;
+                }
+
+                if (damagedQty.HasValue && damagedQty.Value != pricing.DamagedQuantity)
+                {
+                    pricing.DamagedQuantity = damagedQty.Value;
+                    changesMade = true;
+                }
+
+                if (inTransitQty.HasValue && inTransitQty.Value != pricing.InTransitQuantity)
+                {
+                    pricing.InTransitQuantity = inTransitQty.Value;
+                    changesMade = true;
+                }
+
+                if (returnedQty.HasValue && returnedQty.Value != pricing.ReturnedQuantity)
+                {
+                    pricing.ReturnedQuantity = returnedQty.Value;
+                    changesMade = true;
+                }
+
+                if (lockedQty.HasValue && lockedQty.Value != pricing.LockedQuantity)
+                {
+                    pricing.LockedQuantity = lockedQty.Value;
+                    changesMade = true;
+                }
+
+                // No changes → rollback
+                if (!changesMade)
+                {
+                    await transaction.RollbackAsync(cancellationToken);
+                    result.Success = false;
+                    return result;
+                }
+
+                // Metadata
+                pricing.UpdatedDateUtc = DateTime.UtcNow;
+                pricing.UpdatedBy = updatedByGuid;
+
+                _offerPricing.Update(pricing);
+
+                // ---- Write history ONLY when SalesPrice changed ----
+                if (salesPriceChanged)
+                {
+                    var history = new TbOfferPriceHistory
                     {
-                        var pricing = await _offerPricing
-                            .AsNoTracking()
-                            .FirstOrDefaultAsync(p =>
-                                p.OfferId == offerId &&
-                                p.ItemCombinationId == itemCombinationId &&
-                                !p.IsDeleted,
-                                cancellationToken);
+                        Id = Guid.NewGuid(),
+                        OfferCombinationPricingId = pricing.Id,
+                        OldPrice = oldSalesPrice,
+                        NewPrice = pricing.SalesPrice,
+                        ChangeNote = changeNote.Trim(),
+                        CreatedBy = updatedByGuid,
+                        CreatedDateUtc = DateTime.UtcNow
+                    };
+
+                    await _dbContext.TbOfferPriceHistories.AddAsync(history, cancellationToken);
+                }
+
+                var saveResult = await _dbContext.SaveChangesAsync(cancellationToken) > 0;
+
+                if (!saveResult)
+                {
+                    await transaction.RollbackAsync(cancellationToken);
+                    result.Success = false;
+                    return result;
+                }
+
+                await transaction.CommitAsync(cancellationToken);
+
+                result.Success = true;
+                result.PricingId = pricing.Id;
+                result.OfferId = pricing.OfferId;
+                result.NewPrice = pricing.Price;
+                result.NewQuantity = pricing.AvailableQuantity;
+
+                return result;
+            }
+            catch (Exception ex)
+            {
+                await transaction.RollbackAsync(cancellationToken);
+                _logger.Error(ex, $"Error updating pricing {pricingId}");
+                throw;
+            }
+        }
+
+
+
+        /// <summary>
+        /// Check if an offer has sufficient stock
+        /// </summary>
+        public async Task<bool> CheckOfferStockAsync(Guid offerId, Guid itemCombinationId, int quantity, CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                var pricing = await _offerPricing
+                    .AsNoTracking()
+                    .FirstOrDefaultAsync(p =>
+                        p.OfferId == offerId &&
+                        p.ItemCombinationId == itemCombinationId &&
+                        !p.IsDeleted,
+                        cancellationToken);
 
                 if (pricing == null)
                 {
@@ -573,150 +570,161 @@ namespace DAL.Repositories
 
                 query = query.Where(e => !e.IsDeleted);
 
-                        return await query.ToListAsync(cancellationToken);
-                    }
-                    catch (Exception ex)
-                    {
-                        HandleException(nameof(GetAsync), "Error occurred while filtering active offer entities", ex);
-                        return Enumerable.Empty<TbOffer>();
-                    }
-                }
-                public async Task<OfferTransactionResult> CreateOfferAsync(
-        TbOffer offer,
-        IEnumerable<TbOfferCombinationPricing> pricingList,
-        string createdBy,
-        CancellationToken cancellationToken = default)
+                return await query.ToListAsync(cancellationToken);
+            }
+            catch (Exception ex)
+            {
+                HandleException(nameof(GetAsync), "Error occurred while filtering active offer entities", ex);
+                return Enumerable.Empty<TbOffer>();
+            }
+        }
+        public async Task<OfferTransactionResult> CreateOfferAsync(
+TbOffer offer,
+IEnumerable<TbOfferCombinationPricing> pricingList,
+string createdBy,
+CancellationToken cancellationToken = default)
+        {
+            var result = new OfferTransactionResult();
+            var createdByGuid = Guid.TryParse(createdBy, out var parsedId) ? parsedId : Guid.Empty;
+
+            await using var transaction = await _dbContext.Database.BeginTransactionAsync(
+                System.Data.IsolationLevel.Serializable,
+                cancellationToken);
+
+            try
+            {
+                // Insert Offer
+                offer.Id = Guid.NewGuid();
+                offer.CreatedDateUtc = DateTime.UtcNow;
+                offer.CreatedBy = createdByGuid;
+
+                await _dbContext.Set<TbOffer>().AddAsync(offer, cancellationToken);
+                await _dbContext.SaveChangesAsync(cancellationToken);
+
+                // Insert Pricing Records
+                foreach (var p in pricingList)
                 {
-                    var result = new OfferTransactionResult();
-                    var createdByGuid = Guid.TryParse(createdBy, out var parsedId) ? parsedId : Guid.Empty;
+                    p.Id = Guid.NewGuid();
+                    p.OfferId = offer.Id;
+                    p.CreatedDateUtc = DateTime.UtcNow;
+                    p.CreatedBy = createdByGuid;
 
-                    await using var transaction = await _dbContext.Database.BeginTransactionAsync(
-                        System.Data.IsolationLevel.Serializable,
-                        cancellationToken);
+                    // Calculate stock status
+                    p.StockStatus =
+                        p.AvailableQuantity > p.LowStockThreshold ? StockStatus.InStock :
+                        p.AvailableQuantity == 0 ? StockStatus.OutOfStock : StockStatus.LimitedStock;
 
-                    try
+                    await _offerPricing.AddAsync(p, cancellationToken);
+                }
+
+                await _dbContext.SaveChangesAsync(cancellationToken);
+                await transaction.CommitAsync(cancellationToken);
+
+                result.Success = true;
+                result.OfferId = offer.Id;
+
+                return result;
+            }
+            catch (Exception ex)
+            {
+                await transaction.RollbackAsync(cancellationToken);
+                _logger.Error(ex, "Error creating new offer");
+                throw new DataAccessException("Failed to create offer", ex, _logger);
+            }
+        }
+        public async Task<OfferTransactionResult> UpdateOfferAsync(
+TbOffer offer,
+IEnumerable<TbOfferCombinationPricing> pricingList,
+string updatedBy,
+CancellationToken cancellationToken = default)
+        {
+            var result = new OfferTransactionResult();
+            var updatedByGuid = Guid.TryParse(updatedBy, out var parsedId) ? parsedId : Guid.Empty;
+
+            await using var transaction = await _dbContext.Database.BeginTransactionAsync(
+                System.Data.IsolationLevel.Serializable,
+                cancellationToken);
+
+            try
+            {
+                // Update Offer
+                offer.UpdatedDateUtc = DateTime.UtcNow;
+                offer.UpdatedBy = updatedByGuid;
+
+                _dbContext.Set<TbOffer>().Update(offer);
+                await _dbContext.SaveChangesAsync(cancellationToken);
+
+                // Update Pricing List
+                foreach (var p in pricingList)
+                {
+                    var existing = await _offerPricing
+                        .FirstOrDefaultAsync(x => x.Id == p.Id && !x.IsDeleted, cancellationToken);
+
+                    if (existing == null)
                     {
-                        // Insert Offer
-                        offer.Id = Guid.NewGuid();
-                        offer.CreatedDateUtc = DateTime.UtcNow;
-                        offer.CreatedBy = createdByGuid;
-
-                        await _dbContext.Set<TbOffer>().AddAsync(offer, cancellationToken);
-                        await _dbContext.SaveChangesAsync(cancellationToken);
-
-                        // Insert Pricing Records
-                        foreach (var p in pricingList)
+                        // New Pricing
+                        p.Id = Guid.NewGuid();
+                        p.OfferId = offer.Id;
+                        p.CreatedDateUtc = DateTime.UtcNow;
+                        p.CreatedBy = updatedByGuid;
+                        await _offerPricing.AddAsync(p, cancellationToken);
+                    }
+                    else
+                    {
+                        // Price History
+                        if (existing.SalesPrice != p.SalesPrice)
                         {
-                            p.Id = Guid.NewGuid();
-                            p.OfferId = offer.Id;
-                            p.CreatedDateUtc = DateTime.UtcNow;
-                            p.CreatedBy = createdByGuid;
-
-                            // Calculate stock status
-                            p.StockStatus =
-                                p.AvailableQuantity > p.LowStockThreshold ? StockStatus.InStock :
-                                p.AvailableQuantity == 0 ? StockStatus.OutOfStock : StockStatus.LimitedStock;
-
-                            await _offerPricing.AddAsync(p, cancellationToken);
+                            await _dbContext.AddAsync(new TbOfferPriceHistory
+                            {
+                                Id = Guid.NewGuid(),
+                                OfferCombinationPricingId = existing.Id,
+                                OldPrice = existing.SalesPrice,
+                                NewPrice = p.SalesPrice,
+                                CreatedDateUtc = DateTime.UtcNow,
+                                CreatedBy = updatedByGuid
+                            }, cancellationToken);
                         }
 
-                        await _dbContext.SaveChangesAsync(cancellationToken);
-                        await transaction.CommitAsync(cancellationToken);
+                        // Update Existing
+                        existing.Price = p.Price;
+                        existing.SalesPrice = p.SalesPrice;
+                        existing.AvailableQuantity = p.AvailableQuantity;
+                        existing.LowStockThreshold = p.LowStockThreshold;
+                        existing.StockStatus =
+                            p.AvailableQuantity > p.LowStockThreshold ? StockStatus.InStock :
+                            p.AvailableQuantity == 0 ? StockStatus.OutOfStock : StockStatus.LimitedStock;
 
-                        result.Success = true;
-                        result.OfferId = offer.Id;
+                        existing.UpdatedDateUtc = DateTime.UtcNow;
+                        existing.UpdatedBy = updatedByGuid;
 
-                        return result;
-                    }
-                    catch (Exception ex)
-                    {
-                        await transaction.RollbackAsync(cancellationToken);
-                        _logger.Error(ex, "Error creating new offer");
-                        throw new DataAccessException("Failed to create offer", ex, _logger);
-                    }
-                }
-                public async Task<OfferTransactionResult> UpdateOfferAsync(
-        TbOffer offer,
-        IEnumerable<TbOfferCombinationPricing> pricingList,
-        string updatedBy,
-        CancellationToken cancellationToken = default)
-                {
-                    var result = new OfferTransactionResult();
-                    var updatedByGuid = Guid.TryParse(updatedBy, out var parsedId) ? parsedId : Guid.Empty;
-
-                    await using var transaction = await _dbContext.Database.BeginTransactionAsync(
-                        System.Data.IsolationLevel.Serializable,
-                        cancellationToken);
-
-                    try
-                    {
-                        // Update Offer
-                        offer.UpdatedDateUtc = DateTime.UtcNow;
-                        offer.UpdatedBy = updatedByGuid;
-
-                        _dbContext.Set<TbOffer>().Update(offer);
-                        await _dbContext.SaveChangesAsync(cancellationToken);
-
-                        // Update Pricing List
-                        foreach (var p in pricingList)
-                        {
-                            var existing = await _offerPricing
-                                .FirstOrDefaultAsync(x => x.Id == p.Id && !x.IsDeleted, cancellationToken);
-
-                            if (existing == null)
-                            {
-                                // New Pricing
-                                p.Id = Guid.NewGuid();
-                                p.OfferId = offer.Id;
-                                p.CreatedDateUtc = DateTime.UtcNow;
-                                p.CreatedBy = updatedByGuid;
-                                await _offerPricing.AddAsync(p, cancellationToken);
-                            }
-                            else
-                            {
-                                // Price History
-                                if (existing.SalesPrice != p.SalesPrice)
-                                {
-                                    await _dbContext.AddAsync(new TbOfferPriceHistory
-                                    {
-                                        Id = Guid.NewGuid(),
-                                        OfferCombinationPricingId = existing.Id,
-                                        OldPrice = existing.SalesPrice,
-                                        NewPrice = p.SalesPrice,
-                                        CreatedDateUtc = DateTime.UtcNow,
-                                        CreatedBy = updatedByGuid
-                                    }, cancellationToken);
-                                }
-
-                                // Update Existing
-                                existing.Price = p.Price;
-                                existing.SalesPrice = p.SalesPrice;
-                                existing.AvailableQuantity = p.AvailableQuantity;
-                                existing.LowStockThreshold = p.LowStockThreshold;
-                                existing.StockStatus =
-                                    p.AvailableQuantity > p.LowStockThreshold ? StockStatus.InStock :
-                                    p.AvailableQuantity == 0 ? StockStatus.OutOfStock : StockStatus.LimitedStock;
-
-                                existing.UpdatedDateUtc = DateTime.UtcNow;
-                                existing.UpdatedBy = updatedByGuid;
-
-                                _offerPricing.Update(existing);
-                            }
-                        }
-
-                        await _dbContext.SaveChangesAsync(cancellationToken);
-                        await transaction.CommitAsync(cancellationToken);
-
-                        result.Success = true;
-                        result.OfferId = offer.Id;
-                        return result;
-                    }
-                    catch (Exception ex)
-                    {
-                        await transaction.RollbackAsync(cancellationToken);
-                        _logger.Error(ex, "Error updating offer");
-                        throw new DataAccessException("Failed to update offer", ex, _logger);
+                        _offerPricing.Update(existing);
                     }
                 }
+
+                await _dbContext.SaveChangesAsync(cancellationToken);
+                await transaction.CommitAsync(cancellationToken);
+
+                result.Success = true;
+                result.OfferId = offer.Id;
+                return result;
+            }
+            catch (Exception ex)
+            {
+                await transaction.RollbackAsync(cancellationToken);
+                _logger.Error(ex, "Error updating offer");
+                throw new DataAccessException("Failed to update offer", ex, _logger);
+            }
+        }
+
+        public async Task<IEnumerable<TbOffer>> GetOffersByCombinationPricingIdsAsync(IEnumerable<Guid> pricingIds, CancellationToken cancellationToken = default)
+        {
+            var offers = _dbContext.Set<TbOfferCombinationPricing>()
+                .AsNoTracking()
+                .Where(p => pricingIds.Contains(p.Id) && !p.IsDeleted)
+                .Select(p => p.Offer)
+                .Where(o => !o.IsDeleted);
+
+            return await offers.ToListAsync();
+        }
     }
 }

@@ -123,4 +123,16 @@ public interface IOfferRepository : ITableRepository<TbOffer>
     IEnumerable<TbOfferCombinationPricing> pricingList,
     string updatedBy,
     CancellationToken cancellationToken = default);
+
+
+    /// <summary>
+    /// Asynchronously retrieves a collection of offers that are associated with the specified combination pricing
+    /// identifiers.
+    /// </summary>
+    /// <param name="pricingIds">A collection of combination pricing identifiers used to filter the offers. Cannot be null or contain duplicate
+    /// values.</param>
+    /// <param name="cancellationToken">A cancellation token that can be used to cancel the asynchronous operation.</param>
+    /// <returns>A task that represents the asynchronous operation. The task result contains an enumerable collection of offers
+    /// matching the specified combination pricing identifiers. The collection is empty if no matching offers are found.</returns>
+    Task<IEnumerable<TbOffer>> GetOffersByCombinationPricingIdsAsync(IEnumerable<Guid> pricingIds, CancellationToken cancellationToken = default);
 }

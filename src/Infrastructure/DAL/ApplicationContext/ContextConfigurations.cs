@@ -190,18 +190,17 @@ namespace DAL.ApplicationContext
                 Console.WriteLine("[SeedSettingAsync] Starting...");
 
                 // Check if settings already exist
-                if (await context.Set<TbSetting>().AnyAsync())
+                if (await context.Set<TbGeneralSettings>().AnyAsync())
                 {
                     Console.WriteLine("[SeedSettingAsync] Settings already exist, skipping...");
                     return; // Settings already seeded
                 }
 
-                var defaultSetting = new TbSetting
+                var defaultSetting = new TbGeneralSettings
                 {
                     // Contact Information
                     Email = "info@yourcompany.com",
                     Phone = "1234567890",
-                    PhoneCode = "+20",
                     Address = "123 Main Street, Cairo, Egypt",
 
                     // Social Media Links
@@ -212,15 +211,6 @@ namespace DAL.ApplicationContext
 
                     // WhatsApp
                     WhatsAppNumber = "1234567890",
-                    WhatsAppCode = "+20",
-
-                    // Banner
-                    MainBannerPath = null,
-
-                    // Pricing & Tax Settings
-                    ShippingAmount = 0m,
-                    OrderTaxPercentage = 14m,
-                    OrderExtraCost = 0m,
 
                     // SEO Fields (من BaseSeo)
                     SEOTitle = "Your Company - Online Store",
@@ -232,7 +222,7 @@ namespace DAL.ApplicationContext
                     CreatedDateUtc = DateTime.UtcNow,
                 };
 
-                await context.Set<TbSetting>().AddAsync(defaultSetting);
+                await context.Set<TbGeneralSettings>().AddAsync(defaultSetting);
                 await context.SaveChangesAsync();
 
                 Console.WriteLine("[SeedSettingAsync] Completed");
