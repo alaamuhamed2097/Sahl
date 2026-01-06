@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using BL.Contracts.Service.Order.Checkout;
 using DAL.Contracts.UnitOfWork;
-using Domains.Entities.ECommerceSystem;
+using Domains.Entities.Order;
 using Serilog;
 using Shared.DTOs.Order.Checkout.Address;
 

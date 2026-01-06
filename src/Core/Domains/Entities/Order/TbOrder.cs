@@ -1,8 +1,9 @@
 ﻿using Common.Enumerations.Order;
 using Common.Enumerations.Payment;
-using Domains.Entities.ECommerceSystem;
 using Domains.Entities.Merchandising.CouponCode;
 using Domains.Entities.Order.Payment;
+using Domains.Entities.Order.Refund;
+using Domains.Entities.Order.Returns;
 using Domains.Entities.Order.Shipping;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -41,6 +42,7 @@ namespace Domains.Entities.Order
         public decimal ShippingAmount { get; set; } = 0m;
 
         public decimal TaxAmount { get; set; } = 0m;
+        public decimal TaxPrecentage { get; set; } = 0m;
 
         // Navigation Properties
         public virtual ApplicationUser User { get; set; } = null!;

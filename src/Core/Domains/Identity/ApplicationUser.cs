@@ -1,7 +1,9 @@
 ﻿using Common.Enumerations.User;
-using Domains.Entities.ECommerceSystem;
 using Domains.Entities.Loyalty;
 using Domains.Entities.Order.Cart;
+using Domains.Entities.Order.Refund;
+using Domains.Entities.Order.Returns;
+using Domains.Entities.Wallet;
 using Domains.Entities.Wallet.Customer;
 using Microsoft.AspNetCore.Identity;
 
@@ -32,5 +34,7 @@ namespace Domains.Identity
         public virtual ICollection<TbShoppingCart> ShoppingCarts { get; set; }
         public virtual ICollection<TbCustomerLoyalty> CustomerLoyalties { get; set; }
         public virtual ICollection<TbCustomerWallet> CustomerWallets { get; set; }
+        public virtual ICollection<TbOrder> Orders { get; set; } = new List<TbOrder>();
+        public virtual ICollection<TbRefund> Refunds { get; set; } = new List<TbRefund>();
     }
 }

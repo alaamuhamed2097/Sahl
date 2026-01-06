@@ -90,7 +90,7 @@ namespace BL.Services.Review
         /// <param name="cancellationToken">Cancellation token to cancel operation.</param>
         /// <returns>The created review DTO with assigned Id and metadata (creation date, status).</returns>
 
-        public async Task<ItemReviewDto> SubmitReviewAsync(
+        public async Task<ResponseItemReviewDto> SubmitReviewAsync(
             ItemReviewDto reviewDto,
             Guid creatorId,
             CancellationToken cancellationToken = default)
@@ -122,8 +122,9 @@ namespace BL.Services.Review
                 //}
 
                 // Create review
-                var review = _mapper.MapModel<ItemReviewDto, TbItemReview>(reviewDto);
-                review.HelpfulCount = 0;
+				var review = _mapper.MapModel<ItemReviewDto, TbItemReview>(reviewDto);
+                review.ReviewNumber = Guid.NewGuid().ToString("N").Substring(0, 12).ToUpper();
+				review.HelpfulCount = 0;
                 review.NotHelpfulCount = 0;
                 review.Status = ReviewStatus.Pending;
                 review.IsEdited = false;
@@ -139,8 +140,23 @@ namespace BL.Services.Review
 				{
 					await UpdateItemAverageRatingAsync(review.ItemId, cancellationToken);
 				}
-				return _mapper.MapModel<TbItemReview, ItemReviewDto>(review);
-            }
+
+
+                var data = _mapper.MapModel<TbItemReview, ItemReviewDto>(review);
+
+                var response = new ResponseItemReviewDto
+                {
+                    Id = data.Id,
+                    ReviewNumber = review.ReviewNumber,
+					ItemID = data.ItemID,
+                    CustomerID = data.CustomerID,
+                    Rating = data.Rating,
+                    ReviewTitle = data.ReviewTitle,
+                    ReviewText = data.ReviewText
+                };
+				return response;
+
+			}
             catch (Exception ex)
             {
                 _logger.Error(ex, $"Error in {nameof(SubmitReviewAsync)}");
@@ -157,7 +173,7 @@ namespace BL.Services.Review
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>The updated review DTO.</returns>
 
-        public async Task<ItemReviewDto> updateReviewAsync(
+        public async Task<ResponseItemReviewDto> updateReviewAsync(
 
             ItemReviewDto reviewDto,
             Guid currentUserId,
@@ -207,8 +223,20 @@ namespace BL.Services.Review
 					await UpdateItemAverageRatingAsync(review.ItemId, cancellationToken);
 				}
 
-				return _mapper.MapModel<TbItemReview, ItemReviewDto>(review);
-            }
+				var data = _mapper.MapModel<TbItemReview, ItemReviewDto>(review);
+
+				var response = new ResponseItemReviewDto
+				{
+					Id = data.Id,
+					ReviewNumber = review.ReviewNumber,
+					ItemID = data.ItemID,
+					CustomerID = data.CustomerID,
+					Rating = data.Rating,
+					ReviewTitle = data.ReviewTitle,
+					ReviewText = data.ReviewText
+				};
+                return response;
+			}
             catch (Exception ex)
             {
                 _logger.Error(ex, $"Error in {nameof(updateReviewAsync)}");
@@ -288,15 +316,42 @@ namespace BL.Services.Review
         /// <param name="ItemId">Item identifier.</param>
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>Enumerable of ItemReviewDto representing approved reviews for the Item.</returns>
-        public async Task<IEnumerable<ItemReviewDto>> GetReviewsByItemIdAsync(
+        public async Task<IEnumerable<ResponseItemReviewDto>> GetReviewsByItemIdAsync(
             Guid ItemId,
             CancellationToken cancellationToken = default)
         {
             try
             {
                 var reviews = await _reviewRepo.GetReviewsByItemIdAsync(ItemId, cancellationToken);
-                return _mapper.MapList<TbItemReview, ItemReviewDto>(reviews);
-            }
+
+				var data = _mapper.MapList<TbItemReview, ItemReviewDto>(reviews);
+
+
+				if (reviews == null || !reviews.Any())
+					return Enumerable.Empty<ResponseItemReviewDto>();
+
+				var responseList = new List<ResponseItemReviewDto>();
+
+				foreach (var review in reviews)
+				{
+					var responseItem = new ResponseItemReviewDto
+					{
+						Id = review.Id,
+						ReviewNumber = review.ReviewNumber,
+						ItemID = review.ItemId,
+						CustomerID = review.CustomerId,
+						Rating = review.Rating,
+						ReviewTitle = review.ReviewTitle,
+						ReviewText = review.ReviewText,
+						
+					};
+
+					responseList.Add(responseItem);
+				}
+
+				return responseList;
+				//return _mapper.MapList<TbItemReview, ItemReviewDto>(reviews);
+			}
             catch (Exception ex)
             {
                 _logger.Error(ex, $"Error in {nameof(GetReviewsByItemIdAsync)}");
@@ -328,182 +383,299 @@ namespace BL.Services.Review
         /// A <see cref="PagedResult{ItemReviewDto}"/> containing the list of matching reviews 
         /// and the total record count.
         /// </returns>
-        public async Task<PagedResult<ItemReviewDto>> GetPaginatedReviewsAsync(ItemReviewSearchCriteriaModel criteriaModel, CancellationToken cancellationToken = default)
-        {
-            if (criteriaModel == null)
-                throw new ArgumentNullException(nameof(criteriaModel));
-
-            if (criteriaModel.PageNumber < 1)
-                throw new ArgumentOutOfRangeException(nameof(criteriaModel.PageNumber), ValidationResources.PageNumberGreaterThanZero);
-
-            if (criteriaModel.PageSize < 1 || criteriaModel.PageSize > 100)
-                throw new ArgumentOutOfRangeException(nameof(criteriaModel.PageSize), ValidationResources.PageSizeRange);
-
-            Expression<Func<TbItemReview, bool>> filter = x => !x.IsDeleted;
-
-            var searchTerm = criteriaModel.SearchTerm?.Trim().ToLower();
-            if (!string.IsNullOrWhiteSpace(searchTerm))
-            {
-                filter = filter.And(x =>
-                    (x.ReviewTitle != null && x.ReviewTitle.ToLower().Contains(searchTerm)) ||
-                    (x.ReviewText != null && x.ReviewText.ToLower().Contains(searchTerm))
-                );
-            }
-
-            if (criteriaModel.ItemId.HasValue)
-            {
-                filter = filter.And(x => x.ItemId == criteriaModel.ItemId.Value);
-            }
-
-            if (criteriaModel.CustomerId.HasValue)
-            {
-                filter = filter.And(x => x.CustomerId == criteriaModel.CustomerId.Value);
-            }
-
-            if (criteriaModel.RatingFrom.HasValue)
-            {
-                filter = filter.And(x => x.Rating >= criteriaModel.RatingFrom.Value);
-            }
-
-            if (criteriaModel.RatingTo.HasValue)
-            {
-                filter = filter.And(x => x.Rating <= criteriaModel.RatingTo.Value);
-            }
-
-            //if (criteriaModel.IsVerifiedPurchase.HasValue)
-            //{
-            //	filter = filter.And(x => x.IsVerifiedPurchase == criteriaModel.IsVerifiedPurchase.Value);
-            //}
-
-            if (criteriaModel.Statuses != null && criteriaModel.Statuses.Any())
-            {
-                filter = filter.And(x => criteriaModel.Statuses.Contains(x.Status));
-            }
-
-            Func<IQueryable<TbItemReview>, IOrderedQueryable<TbItemReview>> orderByExpression = null;
-
-            if (!string.IsNullOrWhiteSpace(criteriaModel.SortBy))
-            {
-                switch (criteriaModel.SortBy.ToLowerInvariant())
-                {
-                    case "rating":
-                        orderByExpression = criteriaModel.SortDirection.ToLowerInvariant() == "desc"
-                            ? q => q.OrderByDescending(x => x.Rating)
-                            : q => q.OrderBy(x => x.Rating);
-                        break;
-                    case "helpfulcount":
-                        orderByExpression = criteriaModel.SortDirection.ToLowerInvariant() == "desc"
-                            ? q => q.OrderByDescending(x => x.HelpfulCount)
-                            : q => q.OrderBy(x => x.HelpfulCount);
-                        break;
-                    case "createddateutc":
-                    default:
-                        orderByExpression = criteriaModel.SortDirection.ToLowerInvariant() == "desc"
-                            ? q => q.OrderByDescending(x => x.CreatedDateUtc)
-                            : q => q.OrderBy(x => x.CreatedDateUtc);
-                        break;
-                }
-            }
-            else
-            {
-                orderByExpression = q => q.OrderByDescending(x => x.CreatedDateUtc);
-            }
-
-            var items = await _tableRepository.GetPageAsync(
-            criteriaModel.PageNumber,
-            criteriaModel.PageSize,
-            filter,
-            orderBy: orderByExpression
-        );
-
-            var itemsDto = _mapper.MapList<TbItemReview, ItemReviewDto>(items.Items);
-
-            return new PagedResult<ItemReviewDto>(itemsDto, items.TotalRecords);
-        }
-
-
-
-        //public async Task<PaginatedDataModel<ItemReviewDto>> GetPaginatedReviewsAsync(ItemReviewSearchCriteriaModel criteriaModel, CancellationToken cancellationToken = default)
+        //public async Task<PagedResult<ItemReviewDto>> GetPaginatedReviewsAsync(ItemReviewSearchCriteriaModel criteriaModel, CancellationToken cancellationToken = default)
         //{
-        //	if (criteriaModel == null)
-        //		throw new ArgumentNullException(nameof(criteriaModel));
+        //    if (criteriaModel == null)
+        //        throw new ArgumentNullException(nameof(criteriaModel));
 
-        //	if (criteriaModel.PageNumber < 1)
-        //		throw new ArgumentOutOfRangeException(nameof(criteriaModel.PageNumber), ValidationResources.PageNumberGreaterThanZero);
+        //    if (criteriaModel.PageNumber < 1)
+        //        throw new ArgumentOutOfRangeException(nameof(criteriaModel.PageNumber), ValidationResources.PageNumberGreaterThanZero);
 
-        //	if (criteriaModel.PageSize < 1 || criteriaModel.PageSize > 100)
-        //		throw new ArgumentOutOfRangeException(nameof(criteriaModel.PageSize), ValidationResources.PageSizeRange);
+        //    if (criteriaModel.PageSize < 1 || criteriaModel.PageSize > 100)
+        //        throw new ArgumentOutOfRangeException(nameof(criteriaModel.PageSize), ValidationResources.PageSizeRange);
 
-        //	// Base filter
-        //	Expression<Func<TbItemReview, bool>> filter = x => !x.IsDeleted;
+        //    Expression<Func<TbItemReview, bool>> filter = x => !x.IsDeleted;
 
-        //	// Combine expressions manually
-        //	var searchTerm = criteriaModel.SearchTerm?.Trim().ToLower();
-        //	if (!string.IsNullOrWhiteSpace(searchTerm))
-        //	{
-        //		filter = filter.And(x =>
-        //			(x.TitleAr != null && x.TitleAr.ToLower().Contains(searchTerm)) ||
-        //			(x.TitleEn != null && x.TitleEn.ToLower().Contains(searchTerm)) ||
-        //			(x.ShortDescriptionAr != null && x.ShortDescriptionAr.ToLower().Contains(searchTerm)) ||
-        //			(x.ShortDescriptionEn != null && x.ShortDescriptionEn.ToLower().Contains(searchTerm))
-        //		);
-        //	}
+        //    var searchTerm = criteriaModel.SearchTerm?.Trim().ToLower();
+        //    if (!string.IsNullOrWhiteSpace(searchTerm))
+        //    {
+        //        filter = filter.And(x =>
+        //            (x.ReviewTitle != null && x.ReviewTitle.ToLower().Contains(searchTerm)) ||
+        //            (x.ReviewText != null && x.ReviewText.ToLower().Contains(searchTerm))
+        //        );
+        //    }
 
-        //	if (criteriaModel.CategoryIds?.Any() == true)
-        //	{
-        //		filter = filter.And(x => criteriaModel.CategoryIds.Contains(x.CategoryId));
-        //	}
+        //    if (criteriaModel.ItemId.HasValue)
+        //    {
+        //        filter = filter.And(x => x.ItemId == criteriaModel.ItemId.Value);
+        //    }
 
-        //	// New Item Flags Filters
-        //	if (criteriaModel.IsNewArrival.HasValue)
-        //	{
-        //		filter = filter.And(x => x.CreatedDateUtc.Date >= DateTime.UtcNow.AddDays(-3).Date);
-        //	}
+        //    if (criteriaModel.CustomerId.HasValue)
+        //    {
+        //        filter = filter.And(x => x.CustomerId == criteriaModel.CustomerId.Value);
+        //    }
 
-        //	// Get paginated data from repository
-        //	var items = await _tableRepository.GetPageAsync(
-        //		criteriaModel.PageNumber,
-        //		criteriaModel.PageSize,
-        //		filter,
-        //		orderBy: q => q.OrderByDescending(x => x.CreatedDateUtc)
-        //	);
+        //    if (criteriaModel.RatingFrom.HasValue)
+        //    {
+        //        filter = filter.And(x => x.Rating >= criteriaModel.RatingFrom.Value);
+        //    }
 
-        //	var itemsDto = _mapper.MapList<TbItemReview, ItemReviewDto>(items.Items);
+        //    if (criteriaModel.RatingTo.HasValue)
+        //    {
+        //        filter = filter.And(x => x.Rating <= criteriaModel.RatingTo.Value);
+        //    }
 
-        //	return new PaginatedDataModel<ItemReviewDto>(itemsDto, items.TotalRecords);
+        //    //if (criteriaModel.IsVerifiedPurchase.HasValue)
+        //    //{
+        //    //	filter = filter.And(x => x.IsVerifiedPurchase == criteriaModel.IsVerifiedPurchase.Value);
+        //    //}
+
+        //    if (criteriaModel.Statuses != null && criteriaModel.Statuses.Any())
+        //    {
+        //        filter = filter.And(x => criteriaModel.Statuses.Contains(x.Status));
+        //    }
+
+        //    Func<IQueryable<TbItemReview>, IOrderedQueryable<TbItemReview>> orderByExpression = null;
+
+        //    if (!string.IsNullOrWhiteSpace(criteriaModel.SortBy))
+        //    {
+        //        switch (criteriaModel.SortBy.ToLowerInvariant())
+        //        {
+        //            case "rating":
+        //                orderByExpression = criteriaModel.SortDirection.ToLowerInvariant() == "desc"
+        //                    ? q => q.OrderByDescending(x => x.Rating)
+        //                    : q => q.OrderBy(x => x.Rating);
+        //                break;
+        //            case "helpfulcount":
+        //                orderByExpression = criteriaModel.SortDirection.ToLowerInvariant() == "desc"
+        //                    ? q => q.OrderByDescending(x => x.HelpfulCount)
+        //                    : q => q.OrderBy(x => x.HelpfulCount);
+        //                break;
+        //            case "createddateutc":
+        //            default:
+        //                orderByExpression = criteriaModel.SortDirection.ToLowerInvariant() == "desc"
+        //                    ? q => q.OrderByDescending(x => x.CreatedDateUtc)
+        //                    : q => q.OrderBy(x => x.CreatedDateUtc);
+        //                break;
+        //        }
+        //    }
+        //    else
+        //    {
+        //        orderByExpression = q => q.OrderByDescending(x => x.CreatedDateUtc);
+        //    }
+
+        //    var items = await _tableRepository.GetPageAsync(
+        //    criteriaModel.PageNumber,
+        //    criteriaModel.PageSize,
+        //    filter,
+        //    orderBy: orderByExpression
+        //);
+
+        //    var itemsDto = _mapper.MapList<TbItemReview, ItemReviewDto>(items.Items);
+
+        //    return new PagedResult<ItemReviewDto>(itemsDto, items.TotalRecords);
         //}
 
+		public async Task<PagedResult<ResponseItemReviewDto>> GetPaginatedReviewsAsync(
+		ItemReviewSearchCriteriaModel criteriaModel,
+		CancellationToken cancellationToken = default)
+		{
+			if (criteriaModel == null)
+				throw new ArgumentNullException(nameof(criteriaModel));
+			if (criteriaModel.PageNumber < 1)
+				throw new ArgumentOutOfRangeException(nameof(criteriaModel.PageNumber), ValidationResources.PageNumberGreaterThanZero);
+			if (criteriaModel.PageSize < 1 || criteriaModel.PageSize > 100)
+				throw new ArgumentOutOfRangeException(nameof(criteriaModel.PageSize), ValidationResources.PageSizeRange);
+
+			Expression<Func<TbItemReview, bool>> filter = x => !x.IsDeleted;
+			var searchTerm = criteriaModel.SearchTerm?.Trim().ToLower();
+
+			if (!string.IsNullOrWhiteSpace(searchTerm))
+			{
+				filter = filter.And(x =>
+					(x.ReviewTitle != null && x.ReviewTitle.ToLower().Contains(searchTerm)) ||
+					(x.ReviewText != null && x.ReviewText.ToLower().Contains(searchTerm))
+				);
+			}
+
+			if (criteriaModel.ItemId.HasValue)
+			{
+				filter = filter.And(x => x.ItemId == criteriaModel.ItemId.Value);
+			}
+
+			if (criteriaModel.CustomerId.HasValue)
+			{
+				filter = filter.And(x => x.CustomerId == criteriaModel.CustomerId.Value);
+			}
+
+			if (criteriaModel.RatingFrom.HasValue)
+			{
+				filter = filter.And(x => x.Rating >= criteriaModel.RatingFrom.Value);
+			}
+
+			if (criteriaModel.RatingTo.HasValue)
+			{
+				filter = filter.And(x => x.Rating <= criteriaModel.RatingTo.Value);
+			}
+
+			if (criteriaModel.Statuses != null && criteriaModel.Statuses.Any())
+			{
+				filter = filter.And(x => criteriaModel.Statuses.Contains(x.Status));
+			}
+
+			Func<IQueryable<TbItemReview>, IOrderedQueryable<TbItemReview>> orderByExpression = null;
+
+			if (!string.IsNullOrWhiteSpace(criteriaModel.SortBy))
+			{
+				switch (criteriaModel.SortBy.ToLowerInvariant())
+				{
+					case "rating":
+						orderByExpression = criteriaModel.SortDirection.ToLowerInvariant() == "desc"
+							? q => q.OrderByDescending(x => x.Rating)
+							: q => q.OrderBy(x => x.Rating);
+						break;
+					case "helpfulcount":
+						orderByExpression = criteriaModel.SortDirection.ToLowerInvariant() == "desc"
+							? q => q.OrderByDescending(x => x.HelpfulCount)
+							: q => q.OrderBy(x => x.HelpfulCount);
+						break;
+					case "createddateutc":
+					default:
+						orderByExpression = criteriaModel.SortDirection.ToLowerInvariant() == "desc"
+							? q => q.OrderByDescending(x => x.CreatedDateUtc)
+							: q => q.OrderBy(x => x.CreatedDateUtc);
+						break;
+				}
+			}
+			else
+			{
+				orderByExpression = q => q.OrderByDescending(x => x.CreatedDateUtc);
+			}
+
+			var items = await _tableRepository.GetPageAsync(
+				criteriaModel.PageNumber,
+				criteriaModel.PageSize,
+				filter,
+				orderBy: orderByExpression
+			);
+
+
+			var responseItems = items.Items.Select(review => new ResponseItemReviewDto
+			{
+				Id = review.Id,
+				ReviewNumber = review.ReviewNumber,
+				ItemID = review.ItemId,
+				CustomerID = review.CustomerId,
+				Rating = review.Rating,
+				ReviewTitle = review.ReviewTitle,
+				ReviewText = review.ReviewText
+			}).ToList();
+
+			return new PagedResult<ResponseItemReviewDto>(responseItems, items.TotalRecords);
+		}
+
+
+		//public async Task<PaginatedDataModel<ItemReviewDto>> GetPaginatedReviewsAsync(ItemReviewSearchCriteriaModel criteriaModel, CancellationToken cancellationToken = default)
+		//{
+		//	if (criteriaModel == null)
+		//		throw new ArgumentNullException(nameof(criteriaModel));
+
+		//	if (criteriaModel.PageNumber < 1)
+		//		throw new ArgumentOutOfRangeException(nameof(criteriaModel.PageNumber), ValidationResources.PageNumberGreaterThanZero);
+
+		//	if (criteriaModel.PageSize < 1 || criteriaModel.PageSize > 100)
+		//		throw new ArgumentOutOfRangeException(nameof(criteriaModel.PageSize), ValidationResources.PageSizeRange);
+
+		//	// Base filter
+		//	Expression<Func<TbItemReview, bool>> filter = x => !x.IsDeleted;
+
+		//	// Combine expressions manually
+		//	var searchTerm = criteriaModel.SearchTerm?.Trim().ToLower();
+		//	if (!string.IsNullOrWhiteSpace(searchTerm))
+		//	{
+		//		filter = filter.And(x =>
+		//			(x.TitleAr != null && x.TitleAr.ToLower().Contains(searchTerm)) ||
+		//			(x.TitleEn != null && x.TitleEn.ToLower().Contains(searchTerm)) ||
+		//			(x.ShortDescriptionAr != null && x.ShortDescriptionAr.ToLower().Contains(searchTerm)) ||
+		//			(x.ShortDescriptionEn != null && x.ShortDescriptionEn.ToLower().Contains(searchTerm))
+		//		);
+		//	}
+
+		//	if (criteriaModel.CategoryIds?.Any() == true)
+		//	{
+		//		filter = filter.And(x => criteriaModel.CategoryIds.Contains(x.CategoryId));
+		//	}
+
+		//	// New Item Flags Filters
+		//	if (criteriaModel.IsNewArrival.HasValue)
+		//	{
+		//		filter = filter.And(x => x.CreatedDateUtc.Date >= DateTime.UtcNow.AddDays(-3).Date);
+		//	}
+
+		//	// Get paginated data from repository
+		//	var items = await _tableRepository.GetPageAsync(
+		//		criteriaModel.PageNumber,
+		//		criteriaModel.PageSize,
+		//		filter,
+		//		orderBy: q => q.OrderByDescending(x => x.CreatedDateUtc)
+		//	);
+
+		//	var itemsDto = _mapper.MapList<TbItemReview, ItemReviewDto>(items.Items);
+
+		//	return new PaginatedDataModel<ItemReviewDto>(itemsDto, items.TotalRecords);
+		//}
 
 
 
 
-        /// <summary>
-        /// Retrieves reviews currently pending approval.
-        /// </summary>
-        /// <param name="cancellationToken">Cancellation token.</param>
-        /// <returns>Enumerable of pending ItemReviewDto.</returns>
-        public async Task<IEnumerable<ItemReviewDto>> GetPendingReviewsAsync(
+
+		/// <summary>
+		/// Retrieves reviews currently pending approval.
+		/// </summary>
+		/// <param name="cancellationToken">Cancellation token.</param>
+		/// <returns>Enumerable of pending ItemReviewDto.</returns>
+		public async Task<IEnumerable<ResponseItemReviewDto>> GetPendingReviewsAsync(
                 CancellationToken cancellationToken = default)
         {
             try
             {
                 var reviews = await _reviewRepo.GetPendingReviewsAsync(cancellationToken);
-                return _mapper.MapList<TbItemReview, ItemReviewDto>(reviews);
-            }
+				//return _mapper.MapList<TbItemReview, ItemReviewDto>(reviews);
+				if (reviews == null || !reviews.Any())
+					return Enumerable.Empty<ResponseItemReviewDto>();
+
+				
+				var response = reviews.Select(review => new ResponseItemReviewDto
+				{
+					Id = review.Id,
+					ReviewNumber = review.ReviewNumber,
+					ItemID = review.ItemId,
+					CustomerID = review.CustomerId,
+					Rating = review.Rating,
+					ReviewTitle = review.ReviewTitle,
+					ReviewText = review.ReviewText
+				}).ToList();
+
+				return response;
+			}
             catch (Exception ex)
             {
                 _logger.Error(ex, $"Error in {nameof(GetPendingReviewsAsync)}");
                 throw;
             }
         }
-        /// <summary>
-        /// Approves the review with given Id, marking it as visible/approved.
-        /// </summary>
-        /// <param name="reviewId">Id of the review to approve.</param>
-        /// <param name="adminId">Id of the admin performing approval (for audit logging).</param>
-        /// <param name="cancellationToken">Cancellation token.</param>
-        /// <returns>True if review was successfully approved; otherwise false.</returns>
-        public async Task<bool> ApproveReviewAsync(
+		
+        
+
+
+		/// <summary>
+		/// Approves the review with given Id, marking it as visible/approved.
+		/// </summary>
+		/// <param name="reviewId">Id of the review to approve.</param>
+		/// <param name="adminId">Id of the admin performing approval (for audit logging).</param>
+		/// <param name="cancellationToken">Cancellation token.</param>
+		/// <returns>True if review was successfully approved; otherwise false.</returns>
+		public async Task<bool> ApproveReviewAsync(
             Guid reviewId,
             Guid adminId,
             CancellationToken cancellationToken = default)
@@ -603,7 +775,7 @@ namespace BL.Services.Review
         /// <param name="ItemId">Item identifier.</param>
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>ItemReviewStatsDto containing metrics like average rating, total reviews.</returns>
-        public async Task<ItemReviewStatsDto> GetItemReviewStatsAsync(
+        public async Task<ResponseItemReviewStatsDto> GetItemReviewStatsAsync(
            Guid ItemId,
            CancellationToken cancellationToken = default)
         {
@@ -611,8 +783,8 @@ namespace BL.Services.Review
             var reviewCount = await _reviewRepo.GetReviewCountByItemIdAsync(ItemId, cancellationToken);
             var ratingDistribution = await _reviewRepo.GetRatingDistributionAsync(ItemId, cancellationToken);
 
-            var stats = new ItemReviewStatsDto
-            {
+            var stats = new ResponseItemReviewStatsDto
+			{
                 AverageRating = averageRating,
                 ReviewCount = reviewCount,
                 FiveStarCount = ratingDistribution.GetValueOrDefault(5, 0),

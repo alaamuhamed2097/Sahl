@@ -1355,6 +1355,10 @@ namespace DAL.Migrations
                     b.HasIndex("SKU")
                         .IsUnique();
 
+                    b.HasIndex("ItemId", "IsDefault")
+                        .IsUnique()
+                        .HasFilter("[IsDeleted] = 0 AND [IsDefault] = 1");
+
                     b.ToTable("TbItemCombinations", (string)null);
                 });
 
@@ -2342,8 +2346,9 @@ namespace DAL.Migrations
                     b.Property<decimal>("Rating")
                         .HasColumnType("decimal(2,1)");
 
-                    b.Property<int>("ReviewNumber")
-                        .HasColumnType("int");
+                    b.Property<string>("ReviewNumber")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("ReviewText")
                         .IsRequired()
@@ -3082,103 +3087,6 @@ namespace DAL.Migrations
                     b.ToTable("TbSupportTicketMessages");
                 });
 
-            modelBuilder.Entity("Domains.Entities.ECommerceSystem.TbCustomerAddress", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier")
-                        .HasDefaultValueSql("NEWID()");
-
-                    b.Property<string>("Address")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .IsUnicode(true)
-                        .HasColumnType("nvarchar(200)");
-
-                    b.Property<string>("ApplicationUserId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<Guid>("CityId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("CreatedBy")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("CreatedDateUtc")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2(2)")
-                        .HasDefaultValueSql("GETUTCDATE()");
-
-                    b.Property<bool>("IsDefault")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(false);
-
-                    b.Property<bool>("IsDeleted")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(false);
-
-                    b.Property<string>("PhoneCode")
-                        .IsRequired()
-                        .HasMaxLength(4)
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(4)");
-
-                    b.Property<string>("PhoneNumber")
-                        .IsRequired()
-                        .HasMaxLength(15)
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(15)");
-
-                    b.Property<string>("RecipientName")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .IsUnicode(true)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<Guid?>("TbCityId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid?>("UpdatedBy")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime?>("UpdatedDateUtc")
-                        .HasColumnType("datetime2(2)");
-
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasMaxLength(450)
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ApplicationUserId");
-
-                    b.HasIndex("CityId")
-                        .HasDatabaseName("IX_CustomerAddress_CityId");
-
-                    b.HasIndex("IsDeleted")
-                        .HasDatabaseName("IX_CustomerAddress_IsDeleted");
-
-                    b.HasIndex("TbCityId");
-
-                    b.HasIndex("UserId", "IsDeleted")
-                        .HasDatabaseName("IX_CustomerAddress_UserId_IsDeleted")
-                        .HasFilter("[IsDeleted] = 0");
-
-                    b.HasIndex("UserId", "IsDefault", "IsDeleted")
-                        .HasDatabaseName("IX_CustomerAddress_UserId_IsDefault_IsDeleted")
-                        .HasFilter("[IsDefault] = 1 AND [IsDeleted] = 0");
-
-                    b.ToTable("TbCustomerAddresses", null, t =>
-                        {
-                            t.HasCheckConstraint("CK_CustomerAddress_PhoneCode_Format", "[PhoneCode] LIKE '+[0-9]%' OR [PhoneCode] NOT LIKE '%[^0-9]%'");
-
-                            t.HasCheckConstraint("CK_CustomerAddress_PhoneNumber_Format", "[PhoneNumber] NOT LIKE '%[^0-9]%'");
-                        });
-                });
-
             modelBuilder.Entity("Domains.Entities.ECommerceSystem.Vendor.TbVendor", b =>
                 {
                     b.Property<Guid>("Id")
@@ -3252,70 +3160,6 @@ namespace DAL.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("TbVendors");
-                });
-
-            modelBuilder.Entity("Domains.Entities.HomeSlider.TbHomePageSlider", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier")
-                        .HasDefaultValueSql("NEWID()");
-
-                    b.Property<Guid>("CreatedBy")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("CreatedDateUtc")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2(2)")
-                        .HasDefaultValueSql("GETUTCDATE()");
-
-                    b.Property<int>("DisplayOrder")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("EndDate")
-                        .HasColumnType("datetime");
-
-                    b.Property<string>("ImageUrl")
-                        .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
-
-                    b.Property<bool>("IsDeleted")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(false);
-
-                    b.Property<DateTime>("StartDate")
-                        .HasColumnType("datetime");
-
-                    b.Property<string>("TitleAr")
-                        .HasMaxLength(200)
-                        .IsUnicode(true)
-                        .HasColumnType("nvarchar(200)");
-
-                    b.Property<string>("TitleEn")
-                        .HasMaxLength(200)
-                        .IsUnicode(true)
-                        .HasColumnType("nvarchar(200)");
-
-                    b.Property<Guid?>("UpdatedBy")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime?>("UpdatedDateUtc")
-                        .HasColumnType("datetime2(2)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("DisplayOrder")
-                        .HasDatabaseName("IX_HomePageSlider_DisplayOrder");
-
-                    b.HasIndex("IsDeleted")
-                        .HasDatabaseName("IX_HomePageSlider_IsDeleted");
-
-                    b.HasIndex("StartDate", "EndDate")
-                        .HasDatabaseName("IX_HomePageSlider_DateRange");
-
-                    b.ToTable("TbHomePageSlider", (string)null);
                 });
 
             modelBuilder.Entity("Domains.Entities.Location.TbCity", b =>
@@ -3938,6 +3782,61 @@ namespace DAL.Migrations
                     b.ToTable("TbBlockCategories");
                 });
 
+            modelBuilder.Entity("Domains.Entities.Merchandising.HomePage.TbHomePageSlider", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier")
+                        .HasDefaultValueSql("NEWID()");
+
+                    b.Property<Guid>("CreatedBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedDateUtc")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2(2)")
+                        .HasDefaultValueSql("GETUTCDATE()");
+
+                    b.Property<int>("DisplayOrder")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ImageUrl")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<string>("TitleAr")
+                        .HasMaxLength(200)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("TitleEn")
+                        .HasMaxLength(200)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<Guid?>("UpdatedBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("UpdatedDateUtc")
+                        .HasColumnType("datetime2(2)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DisplayOrder")
+                        .HasDatabaseName("IX_HomePageSlider_DisplayOrder");
+
+                    b.HasIndex("IsDeleted")
+                        .HasDatabaseName("IX_HomePageSlider_IsDeleted");
+
+                    b.ToTable("TbHomePageSlider", (string)null);
+                });
+
             modelBuilder.Entity("Domains.Entities.Merchandising.HomePageBlocks.TbBlockItem", b =>
                 {
                     b.Property<Guid>("Id")
@@ -4492,10 +4391,10 @@ namespace DAL.Migrations
                         .HasColumnType("datetime2(2)")
                         .HasDefaultValueSql("GETUTCDATE()");
 
-                    b.Property<int>("FulfillmentType")
+                    b.Property<int>("EstimatedDeliveryDays")
                         .HasColumnType("int");
 
-                    b.Property<int>("HandlingTimeInDays")
+                    b.Property<int>("FulfillmentType")
                         .HasColumnType("int");
 
                     b.Property<bool>("IsDeleted")
@@ -4520,6 +4419,9 @@ namespace DAL.Migrations
 
                     b.Property<int>("VisibilityScope")
                         .HasColumnType("int");
+
+                    b.Property<Guid>("WarehouseId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid?>("WarrantyId")
                         .HasColumnType("uniqueidentifier");
@@ -4546,7 +4448,7 @@ namespace DAL.Migrations
                     b.HasIndex("ItemId", "VisibilityScope", "IsDeleted")
                         .HasDatabaseName("IX_TbOffers_ItemId_Visibility_Deleted_Covering_NC");
 
-                    SqlServerIndexBuilderExtensions.IncludeProperties(b.HasIndex("ItemId", "VisibilityScope", "IsDeleted"), new[] { "VendorId", "HandlingTimeInDays", "FulfillmentType" });
+                    SqlServerIndexBuilderExtensions.IncludeProperties(b.HasIndex("ItemId", "VisibilityScope", "IsDeleted"), new[] { "VendorId", "EstimatedDeliveryDays", "FulfillmentType" });
 
                     b.ToTable("TbOffers", (string)null);
                 });
@@ -5102,6 +5004,235 @@ namespace DAL.Migrations
                     b.ToTable("TbPaymentMethods", (string)null);
                 });
 
+            modelBuilder.Entity("Domains.Entities.Order.Refund.TbRefund", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier")
+                        .HasDefaultValueSql("NEWID()");
+
+                    b.Property<string>("AdminNotes")
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<string>("AdminUserId")
+                        .HasMaxLength(450)
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTime?>("ApprovedDateUTC")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("ApprovedItemsCount")
+                        .HasColumnType("int");
+
+                    b.Property<Guid>("CreatedBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedDateUtc")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2(2)")
+                        .HasDefaultValueSql("GETUTCDATE()");
+
+                    b.Property<Guid>("CustomerId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("DeliveryAddressId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<string>("Number")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<Guid>("OrderDetailId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<decimal>("RefundAmount")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("decimal(18,2)")
+                        .HasDefaultValue(0m);
+
+                    b.Property<int>("RefundReason")
+                        .HasColumnType("int");
+
+                    b.Property<string>("RefundReasonDetails")
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<int>("RefundStatus")
+                        .HasColumnType("int");
+
+                    b.Property<string>("RefundTransactionId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("RefundedDateUTC")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("RejectionReason")
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<DateTime>("RequestDateUTC")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("RequestedItemsCount")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("ReturnShippingCost")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("decimal(18,2)")
+                        .HasDefaultValue(0m);
+
+                    b.Property<string>("ReturnTrackingNumber")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("ReturnedDateUTC")
+                        .HasColumnType("datetime2");
+
+                    b.Property<byte[]>("RowVersion")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("rowversion");
+
+                    b.Property<Guid?>("UpdatedBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("UpdatedDateUtc")
+                        .HasColumnType("datetime2(2)");
+
+                    b.Property<Guid>("VendorId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AdminUserId");
+
+                    b.HasIndex("CustomerId");
+
+                    b.HasIndex("DeliveryAddressId");
+
+                    b.HasIndex("IsDeleted");
+
+                    b.HasIndex("Number")
+                        .IsUnique();
+
+                    b.HasIndex("OrderDetailId");
+
+                    b.HasIndex("RequestDateUTC");
+
+                    b.HasIndex("VendorId");
+
+                    b.HasIndex("CustomerId", "RefundStatus");
+
+                    b.HasIndex("VendorId", "RefundStatus");
+
+                    b.ToTable("TbRefunds", null, t =>
+                        {
+                            t.HasCheckConstraint("CK_Refund_Amounts", "[RefundAmount] >= 0 AND [ReturnShippingCost] >= 0");
+
+                            t.HasCheckConstraint("CK_Refund_ItemsCount", "[ApprovedItemsCount] <= [RequestedItemsCount]");
+                        });
+                });
+
+            modelBuilder.Entity("Domains.Entities.Order.Returns.TbRefundItemVideo", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier")
+                        .HasDefaultValueSql("NEWID()");
+
+                    b.Property<Guid>("CreatedBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedDateUtc")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2(2)")
+                        .HasDefaultValueSql("GETUTCDATE()");
+
+                    b.Property<int>("DisplayOrder")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<Guid>("RefundId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("UpdatedBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("UpdatedDateUtc")
+                        .HasColumnType("datetime2(2)");
+
+                    b.Property<string>("VideoUrl")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("IsDeleted");
+
+                    b.HasIndex("RefundId");
+
+                    b.ToTable("TbRefundItemVideos");
+                });
+
+            modelBuilder.Entity("Domains.Entities.Order.Returns.TbRefundStatusHistory", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier")
+                        .HasDefaultValueSql("NEWID()");
+
+                    b.Property<Guid>("CreatedBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedDateUtc")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2(2)")
+                        .HasDefaultValueSql("GETUTCDATE()");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<int>("NewStatus")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Notes")
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<int>("OldStatus")
+                        .HasColumnType("int");
+
+                    b.Property<Guid>("RefundId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("UpdatedBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("UpdatedDateUtc")
+                        .HasColumnType("datetime2(2)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("IsDeleted");
+
+                    b.HasIndex("RefundId");
+
+                    b.ToTable("TbRefundStatusHistories");
+                });
+
             modelBuilder.Entity("Domains.Entities.Order.Shipping.TbOrderShipment", b =>
                 {
                     b.Property<Guid>("Id")
@@ -5369,6 +5500,103 @@ namespace DAL.Migrations
                     b.ToTable("TbShippingDetails");
                 });
 
+            modelBuilder.Entity("Domains.Entities.Order.TbCustomerAddress", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier")
+                        .HasDefaultValueSql("NEWID()");
+
+                    b.Property<string>("Address")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("ApplicationUserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<Guid>("CityId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("CreatedBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedDateUtc")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2(2)")
+                        .HasDefaultValueSql("GETUTCDATE()");
+
+                    b.Property<bool>("IsDefault")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<string>("PhoneCode")
+                        .IsRequired()
+                        .HasMaxLength(4)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(4)");
+
+                    b.Property<string>("PhoneNumber")
+                        .IsRequired()
+                        .HasMaxLength(15)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(15)");
+
+                    b.Property<string>("RecipientName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<Guid?>("TbCityId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("UpdatedBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("UpdatedDateUtc")
+                        .HasColumnType("datetime2(2)");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasMaxLength(450)
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ApplicationUserId");
+
+                    b.HasIndex("CityId")
+                        .HasDatabaseName("IX_CustomerAddress_CityId");
+
+                    b.HasIndex("IsDeleted")
+                        .HasDatabaseName("IX_CustomerAddress_IsDeleted");
+
+                    b.HasIndex("TbCityId");
+
+                    b.HasIndex("UserId", "IsDeleted")
+                        .HasDatabaseName("IX_CustomerAddress_UserId_IsDeleted")
+                        .HasFilter("[IsDeleted] = 0");
+
+                    b.HasIndex("UserId", "IsDefault", "IsDeleted")
+                        .HasDatabaseName("IX_CustomerAddress_UserId_IsDefault_IsDeleted")
+                        .HasFilter("[IsDefault] = 1 AND [IsDeleted] = 0");
+
+                    b.ToTable("TbCustomerAddresses", null, t =>
+                        {
+                            t.HasCheckConstraint("CK_CustomerAddress_PhoneCode_Format", "[PhoneCode] LIKE '+[0-9]%' OR [PhoneCode] NOT LIKE '%[^0-9]%'");
+
+                            t.HasCheckConstraint("CK_CustomerAddress_PhoneNumber_Format", "[PhoneNumber] NOT LIKE '%[^0-9]%'");
+                        });
+                });
+
             modelBuilder.Entity("Domains.Entities.Order.TbOrder", b =>
                 {
                     b.Property<Guid>("Id")
@@ -5424,8 +5652,8 @@ namespace DAL.Migrations
                     b.Property<decimal>("TaxAmount")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<Guid?>("TbCouponCodeId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<decimal>("TaxPrecentage")
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<Guid?>("TbShippingCompanyId")
                         .HasColumnType("uniqueidentifier");
@@ -5456,8 +5684,6 @@ namespace DAL.Migrations
 
                     b.HasIndex("OrderStatus")
                         .HasDatabaseName("IX_Orders_Status");
-
-                    b.HasIndex("TbCouponCodeId");
 
                     b.HasIndex("TbShippingCompanyId");
 
@@ -5543,93 +5769,6 @@ namespace DAL.Migrations
                         .HasDatabaseName("IX_OrderDetails_WarehouseId");
 
                     b.ToTable("TbOrderDetails", (string)null);
-                });
-
-            modelBuilder.Entity("Domains.Entities.Order.TbRefundRequest", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier")
-                        .HasDefaultValueSql("NEWID()");
-
-                    b.Property<string>("AdminNotes")
-                        .HasMaxLength(1000)
-                        .HasColumnType("nvarchar(1000)");
-
-                    b.Property<string>("AdminUserId")
-                        .HasMaxLength(450)
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<Guid>("CreatedBy")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("CreatedDateUtc")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2(2)")
-                        .HasDefaultValueSql("GETUTCDATE()");
-
-                    b.Property<string>("CustomerNotes")
-                        .HasMaxLength(1000)
-                        .HasColumnType("nvarchar(1000)");
-
-                    b.Property<bool>("IsDeleted")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(false);
-
-                    b.Property<Guid>("OrderId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime?>("ProcessedDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<decimal>("RefundAmount")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<DateTime?>("RefundCompletedDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("RefundFailureReason")
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
-
-                    b.Property<string>("RefundReason")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
-
-                    b.Property<string>("RefundReasonDetails")
-                        .HasMaxLength(1000)
-                        .HasColumnType("nvarchar(1000)");
-
-                    b.Property<int>("RefundStatus")
-                        .HasColumnType("int");
-
-                    b.Property<string>("RefundTransactionId")
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
-
-                    b.Property<decimal>("RequestedAmount")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<Guid?>("UpdatedBy")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime?>("UpdatedDateUtc")
-                        .HasColumnType("datetime2(2)");
-
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasMaxLength(450)
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("IsDeleted");
-
-                    b.HasIndex("OrderId");
-
-                    b.ToTable("TbRefundRequests");
                 });
 
             modelBuilder.Entity("Domains.Entities.Page.TbPage", b =>
@@ -6188,7 +6327,7 @@ namespace DAL.Migrations
                     b.ToTable("TbVendorTierHistories", (string)null);
                 });
 
-            modelBuilder.Entity("Domains.Entities.Setting.TbSetting", b =>
+            modelBuilder.Entity("Domains.Entities.Setting.TbGeneralSettings", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -6230,24 +6369,10 @@ namespace DAL.Migrations
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
 
-                    b.Property<string>("MainBannerPath")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<decimal>("OrderExtraCost")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<decimal>("OrderTaxPercentage")
-                        .HasColumnType("decimal(18,2)");
-
                     b.Property<string>("Phone")
                         .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
-
-                    b.Property<string>("PhoneCode")
-                        .IsRequired()
-                        .HasMaxLength(4)
-                        .HasColumnType("nvarchar(4)");
+                        .HasMaxLength(15)
+                        .HasColumnType("nvarchar(15)");
 
                     b.Property<string>("SEODescription")
                         .IsRequired()
@@ -6264,9 +6389,6 @@ namespace DAL.Migrations
                         .HasMaxLength(250)
                         .HasColumnType("nvarchar(250)");
 
-                    b.Property<decimal>("ShippingAmount")
-                        .HasColumnType("decimal(18,2)");
-
                     b.Property<string>("TwitterUrl")
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
@@ -6277,20 +6399,68 @@ namespace DAL.Migrations
                     b.Property<DateTime?>("UpdatedDateUtc")
                         .HasColumnType("datetime2(2)");
 
-                    b.Property<string>("WhatsAppCode")
-                        .HasMaxLength(4)
-                        .HasColumnType("nvarchar(4)");
-
                     b.Property<string>("WhatsAppNumber")
+                        .HasMaxLength(15)
+                        .HasColumnType("nvarchar(15)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Email")
+                        .IsUnique();
+
+                    b.HasIndex("IsDeleted");
+
+                    b.ToTable("TbGeneralSettings", (string)null);
+                });
+
+            modelBuilder.Entity("Domains.Entities.Setting.TbSystemSettings", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier")
+                        .HasDefaultValueSql("NEWID()");
+
+                    b.Property<int>("Category")
+                        .HasColumnType("int");
+
+                    b.Property<Guid>("CreatedBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedDateUtc")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2(2)")
+                        .HasDefaultValueSql("GETUTCDATE()");
+
+                    b.Property<int>("DataType")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<int>("SettingKey")
+                        .HasColumnType("int");
+
+                    b.Property<string>("SettingValue")
                         .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<Guid?>("UpdatedBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("UpdatedDateUtc")
+                        .HasColumnType("datetime2(2)");
 
                     b.HasKey("Id");
 
                     b.HasIndex("IsDeleted");
 
-                    b.ToTable("TbSettings");
+                    b.HasIndex("Category", "SettingKey")
+                        .IsUnique();
+
+                    b.ToTable("TbSystemSettings", (string)null);
                 });
 
             modelBuilder.Entity("Domains.Entities.VideoProvider.TbVideoProvider", b =>
@@ -8135,10 +8305,10 @@ namespace DAL.Migrations
                     b.Property<DateTime>("CreatedDateUtc")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("FulfillmentType")
+                    b.Property<int>("EstimatedDeliveryDays")
                         .HasColumnType("int");
 
-                    b.Property<int>("HandlingTimeInDays")
+                    b.Property<int>("FulfillmentType")
                         .HasColumnType("int");
 
                     b.Property<Guid>("Id")
@@ -8265,10 +8435,10 @@ namespace DAL.Migrations
                     b.Property<DateTime>("CreatedDateUtc")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("FulfillmentType")
+                    b.Property<int>("EstimatedDeliveryDays")
                         .HasColumnType("int");
 
-                    b.Property<int>("HandlingTimeInDays")
+                    b.Property<int>("FulfillmentType")
                         .HasColumnType("int");
 
                     b.Property<bool>("IsBuyBoxWinner")
@@ -9250,33 +9420,6 @@ namespace DAL.Migrations
                     b.Navigation("SupportTicket");
                 });
 
-            modelBuilder.Entity("Domains.Entities.ECommerceSystem.TbCustomerAddress", b =>
-                {
-                    b.HasOne("Domains.Identity.ApplicationUser", null)
-                        .WithMany("CustomerAddresses")
-                        .HasForeignKey("ApplicationUserId");
-
-                    b.HasOne("Domains.Entities.Location.TbCity", "City")
-                        .WithMany()
-                        .HasForeignKey("CityId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("Domains.Entities.Location.TbCity", null)
-                        .WithMany("CustomerAddresses")
-                        .HasForeignKey("TbCityId");
-
-                    b.HasOne("Domains.Identity.ApplicationUser", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("City");
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("Domains.Entities.ECommerceSystem.Vendor.TbVendor", b =>
                 {
                     b.HasOne("Domains.Identity.ApplicationUser", "User")
@@ -9639,6 +9782,70 @@ namespace DAL.Migrations
                     b.Navigation("PaymentMethod");
                 });
 
+            modelBuilder.Entity("Domains.Entities.Order.Refund.TbRefund", b =>
+                {
+                    b.HasOne("Domains.Identity.ApplicationUser", "AdminUser")
+                        .WithMany("Refunds")
+                        .HasForeignKey("AdminUserId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.HasOne("Domains.Entities.ECommerceSystem.Customer.TbCustomer", "Customer")
+                        .WithMany("Refunds")
+                        .HasForeignKey("CustomerId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Domains.Entities.Order.TbCustomerAddress", "CustomerAddress")
+                        .WithMany("Refunds")
+                        .HasForeignKey("DeliveryAddressId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Domains.Entities.Order.TbOrderDetail", "OrderDetail")
+                        .WithMany("Refunds")
+                        .HasForeignKey("OrderDetailId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Domains.Entities.ECommerceSystem.Vendor.TbVendor", "Vendor")
+                        .WithMany("Refunds")
+                        .HasForeignKey("VendorId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("AdminUser");
+
+                    b.Navigation("Customer");
+
+                    b.Navigation("CustomerAddress");
+
+                    b.Navigation("OrderDetail");
+
+                    b.Navigation("Vendor");
+                });
+
+            modelBuilder.Entity("Domains.Entities.Order.Returns.TbRefundItemVideo", b =>
+                {
+                    b.HasOne("Domains.Entities.Order.Refund.TbRefund", "Refund")
+                        .WithMany("RefundItemVideos")
+                        .HasForeignKey("RefundId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Refund");
+                });
+
+            modelBuilder.Entity("Domains.Entities.Order.Returns.TbRefundStatusHistory", b =>
+                {
+                    b.HasOne("Domains.Entities.Order.Refund.TbRefund", "Refund")
+                        .WithMany("RefundStatusHistories")
+                        .HasForeignKey("RefundId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Refund");
+                });
+
             modelBuilder.Entity("Domains.Entities.Order.Shipping.TbOrderShipment", b =>
                 {
                     b.HasOne("Domains.Entities.Order.TbOrder", "Order")
@@ -9718,31 +9925,54 @@ namespace DAL.Migrations
                     b.Navigation("Offer");
                 });
 
+            modelBuilder.Entity("Domains.Entities.Order.TbCustomerAddress", b =>
+                {
+                    b.HasOne("Domains.Identity.ApplicationUser", null)
+                        .WithMany("CustomerAddresses")
+                        .HasForeignKey("ApplicationUserId");
+
+                    b.HasOne("Domains.Entities.Location.TbCity", "City")
+                        .WithMany()
+                        .HasForeignKey("CityId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Domains.Entities.Location.TbCity", null)
+                        .WithMany("CustomerAddresses")
+                        .HasForeignKey("TbCityId");
+
+                    b.HasOne("Domains.Identity.ApplicationUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("City");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("Domains.Entities.Order.TbOrder", b =>
                 {
                     b.HasOne("Domains.Entities.Merchandising.CouponCode.TbCouponCode", "Coupon")
-                        .WithMany()
+                        .WithMany("Orders")
                         .HasForeignKey("CouponId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .HasConstraintName("FK_TbOrders_TbCouponCodes_CouponId");
 
-                    b.HasOne("Domains.Entities.ECommerceSystem.TbCustomerAddress", "CustomerAddress")
-                        .WithMany()
+                    b.HasOne("Domains.Entities.Order.TbCustomerAddress", "CustomerAddress")
+                        .WithMany("Orders")
                         .HasForeignKey("DeliveryAddressId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired()
                         .HasConstraintName("FK_TbOrders_TbCustomerAddresses_DeliveryAddressId");
-
-                    b.HasOne("Domains.Entities.Merchandising.CouponCode.TbCouponCode", null)
-                        .WithMany("Orders")
-                        .HasForeignKey("TbCouponCodeId");
 
                     b.HasOne("Domains.Entities.Order.Shipping.TbShippingCompany", null)
                         .WithMany("Orders")
                         .HasForeignKey("TbShippingCompanyId");
 
                     b.HasOne("Domains.Identity.ApplicationUser", "User")
-                        .WithMany()
+                        .WithMany("Orders")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
@@ -9788,17 +10018,6 @@ namespace DAL.Migrations
                     b.Navigation("Order");
 
                     b.Navigation("Vendor");
-                });
-
-            modelBuilder.Entity("Domains.Entities.Order.TbRefundRequest", b =>
-                {
-                    b.HasOne("Domains.Entities.Order.TbOrder", "Order")
-                        .WithMany()
-                        .HasForeignKey("OrderId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Order");
                 });
 
             modelBuilder.Entity("Domains.Entities.SellerRequest.TbRequestComment", b =>
@@ -10118,6 +10337,8 @@ namespace DAL.Migrations
 
                     b.Navigation("ItemReviews");
 
+                    b.Navigation("Refunds");
+
                     b.Navigation("ReviewReports");
 
                     b.Navigation("ShippingCompanyReviews");
@@ -10145,6 +10366,8 @@ namespace DAL.Migrations
             modelBuilder.Entity("Domains.Entities.ECommerceSystem.Vendor.TbVendor", b =>
                 {
                     b.Navigation("ItemReviews");
+
+                    b.Navigation("Refunds");
 
                     b.Navigation("VendorReviews");
                 });
@@ -10228,6 +10451,13 @@ namespace DAL.Migrations
                     b.Navigation("Items");
                 });
 
+            modelBuilder.Entity("Domains.Entities.Order.Refund.TbRefund", b =>
+                {
+                    b.Navigation("RefundItemVideos");
+
+                    b.Navigation("RefundStatusHistories");
+                });
+
             modelBuilder.Entity("Domains.Entities.Order.Shipping.TbOrderShipment", b =>
                 {
                     b.Navigation("Items");
@@ -10238,6 +10468,13 @@ namespace DAL.Migrations
                     b.Navigation("Orders");
 
                     b.Navigation("ShippingCompanyReviews");
+                });
+
+            modelBuilder.Entity("Domains.Entities.Order.TbCustomerAddress", b =>
+                {
+                    b.Navigation("Orders");
+
+                    b.Navigation("Refunds");
                 });
 
             modelBuilder.Entity("Domains.Entities.Order.TbOrder", b =>
@@ -10254,6 +10491,8 @@ namespace DAL.Migrations
                     b.Navigation("ItemReviews");
 
                     b.Navigation("OrderShipmentItem");
+
+                    b.Navigation("Refunds");
                 });
 
             modelBuilder.Entity("Domains.Entities.SellerRequest.TbSellerRequest", b =>
@@ -10287,6 +10526,10 @@ namespace DAL.Migrations
                     b.Navigation("CustomerLoyalties");
 
                     b.Navigation("CustomerWallets");
+
+                    b.Navigation("Orders");
+
+                    b.Navigation("Refunds");
 
                     b.Navigation("ShoppingCarts");
                 });

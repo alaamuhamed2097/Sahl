@@ -11,7 +11,7 @@ namespace Shared.DTOs.Order.Payment.Refund
         [Required(ErrorMessageResourceName = "FieldRequired", ErrorMessageResourceType = typeof(ValidationResources))]
         public decimal RefundAmount { get; set; }
 
-        public RefundStatus CurrentState { get; set; } = RefundStatus.Pending;
+        public RefundStatus CurrentState { get; set; } = RefundStatus.Open;
 
         public string? AdminComments { get; set; }
     }

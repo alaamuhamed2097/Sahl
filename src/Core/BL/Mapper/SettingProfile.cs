@@ -7,6 +7,6 @@ public partial class MappingProfile
 {
     private void ConfigureSettingMappings()
     {
-        CreateMap<TbSetting, SettingDto>().ReverseMap();
+        CreateMap<TbGeneralSettings, GeneralSettingsDto>().ReverseMap();
     }
 }

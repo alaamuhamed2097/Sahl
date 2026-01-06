@@ -30,7 +30,7 @@ public partial class MappingProfile : Profile
         ConfigureCartMappings();
         ConfigureCustomerAddressMapping();
         ConfigureHomePageSliderMappingProfile();
-
+        ConfigureRefundMappings();
         ConfigureCustomerMappings();
 
     }

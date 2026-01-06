@@ -16,7 +16,7 @@ namespace BL.Contracts.Service.Review
         /// <param name="reviewDto">The review data to be submitted, including rating and comments.</param>
         /// <param name="cancellationToken">Token to cancel the operation.</param>
         /// <returns>The created review data.</returns>
-        Task<ItemReviewDto> SubmitReviewAsync(ItemReviewDto reviewDto, Guid creatorId, CancellationToken cancellationToken = default);
+        Task<ResponseItemReviewDto> SubmitReviewAsync(ItemReviewDto reviewDto, Guid creatorId, CancellationToken cancellationToken = default);
 
 
         /// <summary>
@@ -26,7 +26,7 @@ namespace BL.Contracts.Service.Review
         /// <param name="currentUserId">The ID of the user making the update request. Used to verify ownership.</param>
         /// <param name="cancellationToken">Token to cancel the operation.</param>
         /// <returns>The updated review data.</returns>
-        Task<ItemReviewDto> updateReviewAsync(ItemReviewDto reviewDto, Guid currentUserId, CancellationToken cancellationToken = default);
+        Task<ResponseItemReviewDto> updateReviewAsync(ItemReviewDto reviewDto, Guid currentUserId, CancellationToken cancellationToken = default);
 
 
         /// <summary>
@@ -45,7 +45,7 @@ namespace BL.Contracts.Service.Review
         /// <param name="ItemId">The ID of the Item.</param>
         /// <param name="cancellationToken">Token to cancel the operation.</param>
         /// <returns>A list of reviews belonging to the specified Item.</returns>
-        Task<IEnumerable<ItemReviewDto>> GetReviewsByItemIdAsync(Guid ItemId, CancellationToken cancellationToken = default);
+        Task<IEnumerable<ResponseItemReviewDto>> GetReviewsByItemIdAsync(Guid ItemId, CancellationToken cancellationToken = default);
 
 
         /// <summary>
@@ -57,7 +57,7 @@ namespace BL.Contracts.Service.Review
         /// <param name="pageSize">Number of items per page (default: 10).</param>
         /// <param name="cancellationToken">Token to cancel the operation.</param>
         /// <returns>A paginated data model containing filtered reviews.</returns>
-        Task<PagedResult<ItemReviewDto>> GetPaginatedReviewsAsync(ItemReviewSearchCriteriaModel criteriaModel, CancellationToken cancellationToken = default);
+        Task<PagedResult<ResponseItemReviewDto>> GetPaginatedReviewsAsync(ItemReviewSearchCriteriaModel criteriaModel, CancellationToken cancellationToken = default);
 
 
         /// <summary>
@@ -65,7 +65,7 @@ namespace BL.Contracts.Service.Review
         /// </summary>
         /// <param name="cancellationToken">Token to cancel the operation.</param>
         /// <returns>A list of pending reviews.</returns>
-        Task<IEnumerable<ItemReviewDto>> GetPendingReviewsAsync(CancellationToken cancellationToken = default);
+        Task<IEnumerable<ResponseItemReviewDto>> GetPendingReviewsAsync(CancellationToken cancellationToken = default);
 
 
         /// <summary>
@@ -112,7 +112,7 @@ namespace BL.Contracts.Service.Review
         /// <param name="ItemId">The ID of the Item.</param>
         /// <param name="cancellationToken">Token to cancel the operation.</param>
         /// <returns>An object containing review statistics such as average rating and review count.</returns>
-        Task<ItemReviewStatsDto> GetItemReviewStatsAsync(
+        Task<ResponseItemReviewStatsDto> GetItemReviewStatsAsync(
            Guid ItemId,
            CancellationToken cancellationToken = default);
 

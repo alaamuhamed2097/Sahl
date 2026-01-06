@@ -1,5 +1,7 @@
 ﻿using Common.Enumerations.VendorType;
 using Domains.Entities.ECommerceSystem.Review;
+using Domains.Entities.Order.Refund;
+using Domains.Entities.Order.Returns;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Domains.Entities.ECommerceSystem.Vendor
@@ -34,7 +36,6 @@ namespace Domains.Entities.ECommerceSystem.Vendor
         public virtual ApplicationUser User { get; set; } = null!;
 		public virtual ICollection<TbItemReview> ItemReviews { get; set; } = new List<TbItemReview>();
 		public virtual ICollection<TbVendorReview> VendorReviews { get; set; } = new List<TbVendorReview>();
-
-
-	}
+        public virtual ICollection<TbRefund> Refunds { get; set; } = new List<TbRefund>();
+    }
 }

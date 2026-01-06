@@ -11,7 +11,6 @@ using Domains.Entities.Catalog.Pricing;
 using Domains.Entities.Catalog.Unit;
 using Domains.Entities.Currency;
 using Domains.Entities.Customer;
-using Domains.Entities.ECommerceSystem;
 using Domains.Entities.ECommerceSystem.Customer;
 using Domains.Entities.ECommerceSystem.Review;
 using Domains.Entities.ECommerceSystem.Support;
@@ -29,6 +28,8 @@ using Domains.Entities.Offer.Warranty;
 using Domains.Entities.Order;
 using Domains.Entities.Order.Cart;
 using Domains.Entities.Order.Payment;
+using Domains.Entities.Order.Refund;
+using Domains.Entities.Order.Returns;
 using Domains.Entities.Order.Shipping;
 using Domains.Entities.Page;
 using Domains.Entities.SellerRequest;
@@ -105,7 +106,8 @@ namespace DAL.ApplicationContext
         public DbSet<TbCouponCodeScope> CouponCodeScopes { get; set; }
 
         // Settings
-        public DbSet<TbSetting> TbSettings { get; set; }
+        public DbSet<TbGeneralSettings> TbGeneralSettings { get; set; }
+        public DbSet<TbSystemSettings> TbSystemSettings { get; set; }
 
         // Shipping Management
         public DbSet<TbShippingCompany> TbShippingCompanies { get; set; }
@@ -206,7 +208,9 @@ namespace DAL.ApplicationContext
         // Order Management
         public DbSet<TbOrder> TbOrders { get; set; }
         public DbSet<TbOrderDetail> TbOrderDetails { get; set; }
-        public DbSet<TbRefundRequest> TbRefundRequests { get; set; }
+        public DbSet<TbRefund> TbRefunds { get; set; }
+        public DbSet<TbRefundStatusHistory> TbRefundStatusHistories  { get; set; }
+        public DbSet<TbRefundItemVideo> TbRefundItemVideos { get; set; }
         public DbSet<TbShippingDetail> TbShippingDetails { get; set; }
 
         // New E-commerce tables: Shopping Cart, Shipments, Payments, Customer Addresses

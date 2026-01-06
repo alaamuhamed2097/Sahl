@@ -5,8 +5,8 @@ namespace Dashboard.Contracts.Setting
 {
     public interface ISettingService
     {
-        Task<ResponseModel<SettingDto>> GetSettingsAsync();
+        Task<ResponseModel<GeneralSettingsDto>> GetSettingsAsync();
         Task<ResponseModel<string>> GetMainBannerPathAsync();
-        Task<ResponseModel<string>> UpdateSettingsAsync(SettingDto dto);
+        Task<ResponseModel<string>> UpdateSettingsAsync(GeneralSettingsDto dto);
     }
 }

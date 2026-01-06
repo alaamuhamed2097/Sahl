@@ -1,7 +1,6 @@
 ﻿using Common.Enumerations.Fulfillment;
 using Common.Enumerations.Offer;
 using Shared.DTOs.Base;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Shared.DTOs.ECommerce.Offer
 {
@@ -10,6 +9,7 @@ namespace Shared.DTOs.ECommerce.Offer
         // Required properties
         public Guid ItemId { get; set; }
         public Guid VendorId { get; set; }
+        public Guid WarehouseId { get; set; }
 
         // Filtering and search optimization
         public int HandlingTimeInDays { get; set; }
