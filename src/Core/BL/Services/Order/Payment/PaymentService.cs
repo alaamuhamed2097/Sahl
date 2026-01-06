@@ -34,8 +34,22 @@ namespace BL.Services.Order.Payment
         /// <summary>
         /// Process payment for an order
         /// </summary>
-        public async Task<PaymentResultDto> ProcessPaymentAsync(PaymentProcessRequest request)
+        public async Task<PaymentResultDto> ProcessPaymentAsync(IPaymentProcessRequest request)
         {
+            // check if request is OrderPaymentProcessRequest or WalletPaymentProcessRequest
+            if (request is OrderPaymentProcessRequest orderPaymentRequest)
+            {
+                return await ProcessOrder(orderPaymentRequest);
+            }
+            else
+            {
+                throw new NotImplementedException("Only OrderPaymentProcessRequest is implemented.");
+            }
+        }
+
+        public async Task<PaymentResultDto> ProcessOrder(OrderPaymentProcessRequest request)
+        {
+
             try
             {
                 _logger.Information(
@@ -464,7 +478,7 @@ namespace BL.Services.Order.Payment
         private async Task<PaymentResultDto> ProcessPaymentByMethodAsync(
             TbOrderPayment payment,
             TbPaymentMethod paymentMethod,
-            PaymentProcessRequest request)
+            IPaymentProcessRequest request)
         {
             switch (paymentMethod.MethodType)
             {
@@ -495,7 +509,7 @@ namespace BL.Services.Order.Payment
         /// </summary>
         private async Task<PaymentResultDto> ProcessCreditCardPaymentAsync(
             TbOrderPayment payment,
-            PaymentProcessRequest request)
+            IPaymentProcessRequest request)
         {
             // TODO: Integrate with actual payment gateway (Stripe, PayPal, etc.)
             // For now, return mock redirect URL
@@ -534,7 +548,7 @@ namespace BL.Services.Order.Payment
         /// </summary>
         private async Task<PaymentResultDto> ProcessWalletPaymentAsync(
             TbOrderPayment payment,
-            PaymentProcessRequest request)
+            IPaymentProcessRequest request)
         {
             // TODO: Integrate with wallet service
             // Check balance, deduct amount, etc.

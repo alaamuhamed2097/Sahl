@@ -3,6 +3,7 @@ using BL.Contracts.Service.Order.Payment;
 using Common.Enumerations.Order;
 using Common.Enumerations.Payment;
 using DAL.Contracts.UnitOfWork;
+using DAL.Models;
 using Domains.Entities.Order;
 using Domains.Entities.Order.Payment;
 using Microsoft.EntityFrameworkCore;
@@ -458,16 +459,4 @@ public class RefundProcessResult
 
     public static RefundProcessResult Fail(string errorMessage) =>
         new RefundProcessResult { IsSuccess = false, ErrorMessage = errorMessage };
-}
-
-public class PagedResult<T>
-{
-    public List<T> Items { get; set; }
-    public int TotalCount { get; set; }
-
-    public PagedResult(List<T> items, int totalCount)
-    {
-        Items = items;
-        TotalCount = totalCount;
-    }
 }

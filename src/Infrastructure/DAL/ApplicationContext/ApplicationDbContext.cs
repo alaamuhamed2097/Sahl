@@ -36,7 +36,7 @@ using Domains.Entities.SellerTier;
 using Domains.Entities.Setting;
 using Domains.Entities.VideoProvider;
 using Domains.Entities.Visibility;
-using Domains.Entities.Wallet;
+using Domains.Entities.Wallet.Customer;
 using Domains.Entities.Warehouse;
 using Domains.Identity;
 using Domains.Procedures;
@@ -146,11 +146,11 @@ namespace DAL.ApplicationContext
         public DbSet<TbCustomerLoyalty> TbCustomerLoyalties { get; set; }
         public DbSet<TbLoyaltyPointsTransaction> TbLoyaltyPointsTransactions { get; set; }
 
-        // Wallet System
+        // Customer Wallet System
         public DbSet<TbCustomerWallet> TbCustomerWallets { get; set; }
-        public DbSet<TbVendorWallet> TbVendorWallets { get; set; }
-        public DbSet<TbWalletTransaction> TbWalletTransactions { get; set; }
-        public DbSet<TbPlatformTreasury> TbPlatformTreasuries { get; set; }
+        public DbSet<TbWalletChargingRequest> TbWalletChargingRequests { get; set; }
+        public DbSet<TbCustomerWalletTransaction> TbWalletTransactions { get; set; }
+        public DbSet<TbWalletSetting> TbWalletSettings { get; set; }
 
         // Buy Box System
         public DbSet<TbBuyBoxCalculation> TbBuyBoxCalculations { get; set; }

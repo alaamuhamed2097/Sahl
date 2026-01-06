@@ -78,7 +78,7 @@ public class OrderPurchaseService : IOrderPurchaseService
             );
 
             // FIXED: Use correct IPaymentService signature
-            var paymentRequest = new PaymentProcessRequest
+            var paymentRequest = new OrderPaymentProcessRequest
             {
                 OrderId = order.Id,
                 Amount = checkoutSummary.PriceBreakdown.GrandTotal,

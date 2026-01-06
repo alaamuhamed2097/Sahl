@@ -25,6 +25,9 @@
 
   <ItemGroup>
     <Folder Include="Entities\Support\" />
+    <Folder Include="Entities\Wallet\Vendor\" />
+    <Folder Include="Procedures\Wallet\Vendor\" />
+    <Folder Include="Views\Wallet\Vendor\" />
   </ItemGroup>
 
 </Project>

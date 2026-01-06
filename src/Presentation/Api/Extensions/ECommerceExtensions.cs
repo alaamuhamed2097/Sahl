@@ -14,12 +14,14 @@ using BL.Contracts.Service.Merchandising.CouponCode;
 using BL.Contracts.Service.Order.Cart;
 using BL.Contracts.Service.Order.Checkout;
 using BL.Contracts.Service.Order.OrderProcessing;
+using BL.Contracts.Service.Order.Payment;
 using BL.Contracts.Service.Pricing;
 using BL.Contracts.Service.Review;
 using BL.Contracts.Service.Setting;
 using BL.Contracts.Service.ShippingCompny;
 using BL.Contracts.Service.Vendor;
 using BL.Contracts.Service.VendorItem;
+using BL.Contracts.Service.Wallet.Customer;
 using BL.GeneralService.Location;
 using BL.Services.Brand;
 using BL.Services.Catalog.Category;
@@ -36,12 +38,14 @@ using BL.Services.Merchandising.CouponCode;
 using BL.Services.Order.Cart;
 using BL.Services.Order.Checkout;
 using BL.Services.Order.OrderProcessing;
+using BL.Services.Order.Payment;
 using BL.Services.Review;
 using BL.Services.Setting;
 using BL.Services.Setting.Pricing;
 using BL.Services.ShippingCompany;
 using BL.Services.Vendor;
 using BL.Services.VendorItem;
+using BL.Services.Wallet.Customer;
 
 namespace Api.Extensions
 {
@@ -50,6 +54,9 @@ namespace Api.Extensions
         public static IServiceCollection AddECommerceConfiguration(this IServiceCollection services, IConfiguration configuration)
         {
             // General Application Services
+
+            // Payment Services
+            services.AddScoped<IPaymentService, PaymentService>();
 
             // Vendor Service
             services.AddScoped<IVendorService, VendorService>();
@@ -123,6 +130,11 @@ namespace Api.Extensions
             services.AddScoped<IHomepageService, HomepageService>();
             services.AddScoped<IHomePageSliderService, HomePageSliderService>();
             services.AddScoped<IAdminBlockService, AdminBlockService>();
+
+            // Wallet Services
+            services.AddScoped<ICustomerWalletService, CustomerWalletService>();
+            services.AddScoped<ICustomerWalletTransactionService, CustomerWalletTransactionService>();
+            services.AddScoped<IWalletSettingService, WalletSettingService>();
 
             return services;
         }

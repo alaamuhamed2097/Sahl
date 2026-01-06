@@ -2,7 +2,7 @@
 using Domains.Entities.ECommerceSystem;
 using Domains.Entities.Loyalty;
 using Domains.Entities.Order.Cart;
-using Domains.Entities.Wallet;
+using Domains.Entities.Wallet.Customer;
 using Microsoft.AspNetCore.Identity;
 
 namespace Domains.Identity

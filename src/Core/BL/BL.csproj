@@ -25,7 +25,10 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <Folder Include="Contracts\Service\Wallet\Vendor\" />
+	  <Folder Include="Mapper\Wallet\Vendor\" />
 	  <Folder Include="Services\CouponCode\" />
+	  <Folder Include="Services\Wallet\Vendor\" />
 	  <Folder Include="Tests\UserManagement\" />
 	</ItemGroup>
 
