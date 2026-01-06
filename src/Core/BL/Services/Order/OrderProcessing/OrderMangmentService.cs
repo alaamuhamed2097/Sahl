@@ -583,7 +583,7 @@ public class OrderMangmentService : IOrderMangmentService
             if (pricing.AvailableQuantity < item.Quantity)
             {
                 throw new InvalidOperationException(
-                    $"Insufficient stock for {item.ItemName}. " +
+                    $"Insufficient stock for {item.ItemNameEn}. " +
                     $"Available: {pricing.AvailableQuantity}, Requested: {item.Quantity}");
             }
 

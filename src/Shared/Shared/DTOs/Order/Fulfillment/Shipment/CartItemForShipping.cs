@@ -8,7 +8,8 @@ namespace Shared.DTOs.Order.Fulfillment.Shipment
     public class CartItemForShipping
     {
         public Guid ItemId { get; set; }
-        public string ItemName { get; set; } = string.Empty;
+        public required string ItemNameAr { get; set; } = string.Empty;
+        public required string ItemNameEn { get; set; } = string.Empty;
         public string SellerName { get; set; } = string.Empty;
         public OfferDto Offer { get; set; }
         public int Quantity { get; set; }

@@ -73,36 +73,78 @@ public class CheckoutService : ICheckoutService
             throw new InvalidOperationException("Invalid delivery address");
         }
 
-        // Step 3: Get all offers for cart items
+        // Step 3: Get all offer combination pricings for cart items
         var offerCombinationPricingIds = cart.Items
             .Select(i => i.OfferCombinationPricingId)
             .Distinct()
             .ToList();
 
+        _logger.Information("Preparing checkout with {PricingCount} unique offer combination pricing IDs for customer {CustomerId}", 
+            offerCombinationPricingIds.Count, customerId);
+
+        // Build a mapping from combination pricing ID to offer by querying the offers
+        // and their combination pricings
         var offersEntities = await _offerRepository
             .GetOffersByCombinationPricingIdsAsync(offerCombinationPricingIds);
 
         if (!offersEntities.Any())
         {
-            throw new InvalidOperationException("No offers found for the given combination pricing IDs");
+            _logger.Error("No offers found for any of the {PricingCount} combination pricing IDs: {PricingIds}", 
+                offerCombinationPricingIds.Count, string.Join(", ", offerCombinationPricingIds));
+            throw new InvalidOperationException("No offers found for the given combination pricing IDs. The offers may have been deleted or are no longer active.");
         }
+
+        _logger.Information("Found {OfferCount} offers for checkout", offersEntities.Count());
 
         // Map offers to DTOs for easier access
         var offerDtos = _mapper.MapList<TbOffer, OfferDto>(offersEntities);
-        var offerDictionary = offerDtos.ToDictionary(o => o.Id);
+
+        // Create a mapping from OfferCombinationPricingId to OfferDto
+        // Since we need to match cart items to offers by their combination pricing ID,
+        // we need to find which offer each combination pricing belongs to
+        var pricingIdToOfferDictionary = new Dictionary<Guid, OfferDto>();
+        foreach (var offer in offerDtos)
+        {
+            // Check if OfferCombinationPricings is null or empty
+            if (offer.OfferCombinationPricings == null || !offer.OfferCombinationPricings.Any())
+            {
+                _logger.Warning("Offer {OfferId} has no combination pricings loaded", offer.Id);
+                continue;
+            }
+
+            _logger.Debug("Offer {OfferId} has {PricingCount} combination pricings", 
+                offer.Id, offer.OfferCombinationPricings.Count);
+
+            foreach (var pricing in offer.OfferCombinationPricings)
+            {
+                pricingIdToOfferDictionary[pricing.Id] = offer;
+            }
+        }
+
+        // Validate that all cart items have corresponding offers
+        var missingPricingIds = offerCombinationPricingIds
+            .Where(id => !pricingIdToOfferDictionary.ContainsKey(id))
+            .ToList();
+
+        if (missingPricingIds.Any())
+        {
+            _logger.Error("Could not find {MissingCount} offers. Missing pricing IDs: {MissingIds}. Found {FoundCount} mappings from {OfferCount} offers", 
+                missingPricingIds.Count, string.Join(", ", missingPricingIds), pricingIdToOfferDictionary.Count, offerDtos.Count());
+            throw new InvalidOperationException(
+                $"Offers not found for combination pricing IDs: {string.Join(", ", missingPricingIds)}"
+            );
+        }
 
         // Step 4: Calculate shipping costs using dedicated shipping service
         var cartItemsForShipping = cart.Items.Select(i =>
         {
-            // Find the matching offer for this cart item
-            var offer = offerDictionary.TryGetValue(i.OfferCombinationPricingId, out var foundOffer)
-                ? foundOffer
-                : throw new InvalidOperationException($"Offer not found for cart item {i.ItemId}");
+            var offer = pricingIdToOfferDictionary[i.OfferCombinationPricingId];
 
             return new CartItemForShipping
             {
                 ItemId = i.ItemId,
-                ItemName = i.ItemName,
+                ItemNameAr = i.ItemNameAr,
+                ItemNameEn = i.ItemNameEn,
                 SellerName = i.SellerName,
                 Offer = offer,
                 Quantity = i.Quantity,
@@ -166,7 +208,7 @@ public class CheckoutService : ICheckoutService
             Items = cart.Items.Select(i => new CheckoutItemDto
             {
                 ItemId = i.ItemId,
-                ItemName = i.ItemName,
+                ItemName = i.ItemNameEn,
                 SellerName = i.SellerName,
                 Quantity = i.Quantity,
                 UnitPrice = i.UnitPrice,
@@ -230,7 +272,7 @@ public class CheckoutService : ICheckoutService
 
         if (unavailableItems.Any())
         {
-            var itemNames = string.Join(", ", unavailableItems.Select(i => i.ItemName));
+            var itemNames = string.Join(", ", unavailableItems.Select(i => i.ItemNameEn));
             throw new InvalidOperationException(
                 $"The following items are no longer available: {itemNames}"
             );
