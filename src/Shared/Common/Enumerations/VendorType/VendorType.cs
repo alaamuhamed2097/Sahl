@@ -1,14 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Common.Enumerations.VendorType
+﻿namespace Common.Enumerations.VendorType
 {
-	public enum VendorType
-	{
-		Individual = 1,
-		Company = 2
-	}
+    public enum VendorType
+    {
+        Individual = 1,
+        Company = 2,
+        PublicJointStock = 3,
+        NonProfitOrganization = 4,
+        Freelancer = 5
+    }
 }

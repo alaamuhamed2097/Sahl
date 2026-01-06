@@ -8,6 +8,7 @@ using Resources;
 using Shared.DTOs.User;
 using Shared.DTOs.User.Customer;
 using Shared.DTOs.User.OAuth;
+using Shared.DTOs.Vendor;
 using Shared.GeneralModels;
 using SignInResult = Shared.GeneralModels.ResultModels.SignInResult;
 
@@ -253,6 +254,70 @@ namespace Api.Controllers.v1.Authentication
             {
                 _logger.Error(ex, "Customer registration error");
                 return Ok(new ResponseModel<CustomerRegistrationResponseDto>
+                {
+                    Success = false,
+                    Message = NotifiAndAlertsResources.SomethingWentWrong
+                });
+            }
+        }
+
+        /// <summary>
+        /// Registers a new vendor account.
+        /// </summary>
+        [HttpPost("register-vendor")]
+        [ProducesResponseType(typeof(ResponseModel<VendorRegistrationResponseDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ResponseModel<string>), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ResponseModel<object>), StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> RegisterVendor([FromBody] RegisterVendorRequestDto registerDto)
+        {
+            // Validate model state
+            if (!ModelState.IsValid)
+            {
+                var errors = ModelState.Values
+                    .SelectMany(v => v.Errors)
+                    .Select(e => e.ErrorMessage)
+                    .ToList();
+
+                return Ok(new ResponseModel<VendorRegistrationResponseDto>
+                {
+                    Success = false,
+                    Errors = errors,
+                    Message = ValidationResources.PleaseFixValidationErrors
+                });
+            }
+
+            var clientType = Request.Headers.ContainsKey("X-Platform")
+                ? Request.Headers["X-Platform"].ToString().ToLower()
+                : "website";
+
+            try
+            {
+                var result = await _registrationService.RegisterVendorAsync(registerDto, clientType);
+
+                if (result.Success && result.Data != null)
+                {
+                    // Set HTTP-only cookies
+                    SetAuthCookies(result.Data.Token, result.Data.RefreshToken);
+
+                    var response = new ResponseModel<VendorRegistrationResponseDto>
+                    {
+                        Data = result.Data
+                    };
+                    response.SetSuccessMessage(NotifiAndAlertsResources.RegistrationSuccessful);
+                    return Ok(response);
+                }
+
+                return Ok(new ResponseModel<VendorRegistrationResponseDto>
+                {
+                    Success = false,
+                    Message = result.Message ?? NotifiAndAlertsResources.RegistrationFailed,
+                    Errors = result.Errors
+                });
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex, "Vendor registration error");
+                return Ok(new ResponseModel<VendorRegistrationResponseDto>
                 {
                     Success = false,
                     Message = NotifiAndAlertsResources.SomethingWentWrong
