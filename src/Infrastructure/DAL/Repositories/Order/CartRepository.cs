@@ -80,10 +80,14 @@ namespace DAL.Repositories.Order
                 }
                 else
                 {
-                    var item = await _dbContext.Set<TbOfferCombinationPricing>()
+                    var offerCombinationPricing = await _dbContext.Set<TbOfferCombinationPricing>()
+                        .Include(ocp => ocp.ItemCombination)
+                        .ThenInclude(ic => ic.Item)
+                        .AsSplitQuery()
                         .AsNoTracking()
                         .FirstOrDefaultAsync(ocp => ocp.Id == OfferCombinationPricingId, cancellationToken);
 
+                    var item = offerCombinationPricing?.ItemCombination?.Item;
                     if (item == null)
                         throw new DataAccessException($"OfferCombinationPricing with ID {OfferCombinationPricingId} not found.", null, _logger);
 
@@ -210,8 +214,6 @@ namespace DAL.Repositories.Order
                 transactionResult.Cart = cart;
                 transactionResult.TotalItems = cart.Items?.Sum(i => i.Quantity) ?? 0;
                 transactionResult.CartTotal = CalculateCartTotal(cart);
-
-                _logger.Information($"Successfully updated cart item {cartItemId}. New quantity: {newQuantity}");
 
                 return transactionResult;
             }
@@ -453,8 +455,6 @@ namespace DAL.Repositories.Order
 
             try
             {
-                _logger.Information($"Starting MergeCarts transaction from {sourceCustomerId} to {targetCustomerId}");
-
                 // Step 1: Get source cart
                 var sourceCart = await GetCartWithItemsAsync(sourceCustomerId, cancellationToken);
                 if (sourceCart.Id == Guid.Empty || sourceCart.Items?.Any() != true)
@@ -497,12 +497,17 @@ namespace DAL.Repositories.Order
                     }
                     else
                     {
-                        var item = await _dbContext.Set<TbOfferCombinationPricing>()
+
+                        var offerCombinationPricing = await _dbContext.Set<TbOfferCombinationPricing>()
+                            .Include(ocp => ocp.ItemCombination)
+                            .ThenInclude(ic => ic.Item)
+                            .AsSplitQuery()
                             .AsNoTracking()
                             .FirstOrDefaultAsync(ocp => ocp.Id == sourceItem.OfferCombinationPricingId, cancellationToken);
 
+                        var item = offerCombinationPricing?.ItemCombination?.Item;
                         if (item == null)
-                            throw new DataAccessException($"OfferCombinationPricing with ID {sourceItem.OfferCombinationPricingId} not found during cart merge.", null, _logger);
+                            throw new DataAccessException($"OfferCombinationPricing with ID {sourceItem.OfferCombinationPricingId} not found.", null, _logger);
 
                         // Create new item in target cart
                         var newCartItem = new TbShoppingCartItem
