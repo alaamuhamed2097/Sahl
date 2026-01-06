@@ -2,11 +2,11 @@
 using DAL.Contracts.Repositories.Order;
 using DAL.Exceptions;
 using DAL.ResultModels;
+using Domains.Entities.Offer;
 using Domains.Entities.Order.Cart;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
 using System.Linq.Expressions;
-using System.Threading;
 
 namespace DAL.Repositories.Order
 {
@@ -32,8 +32,7 @@ namespace DAL.Repositories.Order
         /// </summary>
         public async Task<CartTransactionResult> AddItemToCartAsync(
             string customerId,
-            Guid itemId,
-            Guid offerId,
+            Guid OfferCombinationPricingId,
             int quantity,
             decimal unitPrice,
             CancellationToken cancellationToken = default)
@@ -63,8 +62,7 @@ namespace DAL.Repositories.Order
                     .AsNoTracking()
                     .FirstOrDefaultAsync(ci =>
                         ci.ShoppingCartId == cart.Id &&
-                        ci.ItemId == itemId &&
-                        ci.OfferCombinationPricingId == offerId &&
+                        ci.OfferCombinationPricingId == OfferCombinationPricingId &&
                         !ci.IsDeleted,
                         cancellationToken);
 
@@ -82,12 +80,19 @@ namespace DAL.Repositories.Order
                 }
                 else
                 {
+                    var item = await _dbContext.Set<TbOfferCombinationPricing>()
+                        .AsNoTracking()
+                        .FirstOrDefaultAsync(ocp => ocp.Id == OfferCombinationPricingId, cancellationToken);
+
+                    if (item == null)
+                        throw new DataAccessException($"OfferCombinationPricing with ID {OfferCombinationPricingId} not found.", null, _logger);
+
                     // Create new cart item
                     var newCartItem = new TbShoppingCartItem
                     {
                         ShoppingCartId = cart.Id,
-                        ItemId = itemId,
-                        OfferCombinationPricingId = offerId,
+                        ItemId = item.Id,
+                        OfferCombinationPricingId = OfferCombinationPricingId,
                         Quantity = quantity,
                         UnitPrice = unitPrice,
                         CreatedDateUtc = DateTime.UtcNow,
@@ -413,8 +418,6 @@ namespace DAL.Repositories.Order
             {
                 var cart = await _dbContext.Set<TbShoppingCart>()
                     .Include(c => c.Items.Where(i => !i.IsDeleted))
-                        .ThenInclude(i => i.Item)
-                    .Include(c => c.Items.Where(i => !i.IsDeleted))
                         .ThenInclude(i => i.OfferCombinationPricing)
                             .ThenInclude(ocp => ocp.Offer)
                                 .ThenInclude(o => o.Vendor)
@@ -479,7 +482,6 @@ namespace DAL.Repositories.Order
                     var existingTargetItem = await _cartItems
                         .FirstOrDefaultAsync(ci =>
                             ci.ShoppingCartId == targetCart.Id &&
-                            ci.ItemId == sourceItem.ItemId &&
                             ci.OfferCombinationPricingId == sourceItem.OfferCombinationPricingId &&
                             !ci.IsDeleted,
                             cancellationToken);
@@ -495,12 +497,19 @@ namespace DAL.Repositories.Order
                     }
                     else
                     {
+                        var item = await _dbContext.Set<TbOfferCombinationPricing>()
+                            .AsNoTracking()
+                            .FirstOrDefaultAsync(ocp => ocp.Id == sourceItem.OfferCombinationPricingId, cancellationToken);
+
+                        if (item == null)
+                            throw new DataAccessException($"OfferCombinationPricing with ID {sourceItem.OfferCombinationPricingId} not found during cart merge.", null, _logger);
+
                         // Create new item in target cart
                         var newCartItem = new TbShoppingCartItem
                         {
                             ShoppingCartId = targetCart.Id,
-                            ItemId = sourceItem.ItemId,
                             OfferCombinationPricingId = sourceItem.OfferCombinationPricingId,
+                            ItemId = item.Id,
                             Quantity = sourceItem.Quantity,
                             UnitPrice = sourceItem.UnitPrice,
                             CreatedDateUtc = DateTime.UtcNow,
@@ -609,75 +618,72 @@ namespace DAL.Repositories.Order
             }
         }
 
-		/// <summary>
-		/// Get cart by ID with all items
-		/// </summary>
-		private async Task<TbShoppingCart> GetCartWithItemsAsync(
-			Guid cartId,
-			CancellationToken cancellationToken)
-		{
-			return await _dbContext.Set<TbShoppingCart>()
-				               .AsNoTracking()
-				.Include(c => c.Items.Where(i => !i.IsDeleted))
-					.ThenInclude(i => i.Item)
-						.ThenInclude(item => item.ItemImages) 
-				.Include(c => c.Items)
-					.ThenInclude(i => i.OfferCombinationPricing)
-						.ThenInclude(ocp => ocp.Offer)
-							.ThenInclude(o => o.Vendor)
-								.ThenInclude(v => v.User)  
-				.FirstOrDefaultAsync(c => c.Id == cartId && !c.IsDeleted, cancellationToken);
-		}
-		//   private async Task<TbShoppingCart> GetCartWithItemsAsync(
-		//       Guid cartId,
-		//       CancellationToken cancellationToken)
-		//   {
-		//       try
-		//       {
-		//           var cart = await _dbContext.Set<TbShoppingCart>()
-		//               .AsNoTracking()
-		//               .Include(c => c.Items.Where(i => !i.IsDeleted))
-		//                   .ThenInclude(i => i.Item)
-		//        .ThenInclude(item => item.ItemImages)
-		//.Include(c => c.Items.Where(i => !i.IsDeleted))
-		//                   .ThenInclude(i => i.OfferCombinationPricing)
-		//                       .ThenInclude(ocp => ocp.Offer)
-		//               .ThenInclude(o => o.Vendor)
-		//               .FirstOrDefaultAsync(c => c.Id == cartId, cancellationToken);
+        /// <summary>
+        /// Get cart by ID with all items
+        /// </summary>
+        private async Task<TbShoppingCart> GetCartWithItemsAsync(
+            Guid cartId,
+            CancellationToken cancellationToken)
+        {
+            return await _dbContext.Set<TbShoppingCart>()
+                               .AsNoTracking()
+                .Include(c => c.Items.Where(i => !i.IsDeleted))
+                    .ThenInclude(i => i.OfferCombinationPricing)
+                        .ThenInclude(ocp => ocp.Offer)
+                            .ThenInclude(o => o.Vendor)
+                                .ThenInclude(v => v.User)
+                .FirstOrDefaultAsync(c => c.Id == cartId && !c.IsDeleted, cancellationToken);
+        }
+        //   private async Task<TbShoppingCart> GetCartWithItemsAsync(
+        //       Guid cartId,
+        //       CancellationToken cancellationToken)
+        //   {
+        //       try
+        //       {
+        //           var cart = await _dbContext.Set<TbShoppingCart>()
+        //               .AsNoTracking()
+        //               .Include(c => c.Items.Where(i => !i.IsDeleted))
+        //                   .ThenInclude(i => i.Item)
+        //        .ThenInclude(item => item.ItemImages)
+        //.Include(c => c.Items.Where(i => !i.IsDeleted))
+        //                   .ThenInclude(i => i.OfferCombinationPricing)
+        //                       .ThenInclude(ocp => ocp.Offer)
+        //               .ThenInclude(o => o.Vendor)
+        //               .FirstOrDefaultAsync(c => c.Id == cartId, cancellationToken);
 
-		//           return cart ?? new TbShoppingCart { Id = Guid.Empty };
-		//       }
-		//       catch (Exception ex)
-		//       {
-		//           _logger.Error(ex, $"Error getting cart {cartId} with items");
-		//           return new TbShoppingCart { Id = Guid.Empty };
-		//       }
-		//   }
-		//	private async Task<TbShoppingCart> GetCartWithItemsAsync(
-		//Guid cartId,
-		//CancellationToken cancellationToken)
-		//	{
-		//		return await _dbContext.Set<TbShoppingCart>()
+        //           return cart ?? new TbShoppingCart { Id = Guid.Empty };
+        //       }
+        //       catch (Exception ex)
+        //       {
+        //           _logger.Error(ex, $"Error getting cart {cartId} with items");
+        //           return new TbShoppingCart { Id = Guid.Empty };
+        //       }
+        //   }
+        //	private async Task<TbShoppingCart> GetCartWithItemsAsync(
+        //Guid cartId,
+        //CancellationToken cancellationToken)
+        //	{
+        //		return await _dbContext.Set<TbShoppingCart>()
 
-		//			.Include(c => c.Items.Where(i => !i.IsDeleted))
-		//				.ThenInclude(i => i.Item)  // جلب بيانات المنتج
-		//					.ThenInclude(item => item.ItemImages)  // جلب الصور
-		//			.Include(c => c.Items)
-		//				.ThenInclude(i => i.OfferCombinationPricing)  // جلب بيانات العرض
-		//					.ThenInclude(ocp => ocp.Offer)  // جلب العرض الأساسي
-		//						.ThenInclude(o => o.Vendor)  // جلب بيانات البائع
-		//							.ThenInclude(v => v.User)  // جلب بيانات المستخدم للبائع
-		//			.Include(c => c.Items)
-		//				.ThenInclude(i => i.OfferCombinationPricing)
-		//					.ThenInclude(ocp => ocp.Offer)
-		//						.AsNoTracking()
-		//			.FirstOrDefaultAsync(c => c.Id == cartId && !c.IsDeleted, cancellationToken);
-		//	}
+        //			.Include(c => c.Items.Where(i => !i.IsDeleted))
+        //				.ThenInclude(i => i.Item)  // جلب بيانات المنتج
+        //					.ThenInclude(item => item.ItemImages)  // جلب الصور
+        //			.Include(c => c.Items)
+        //				.ThenInclude(i => i.OfferCombinationPricing)  // جلب بيانات العرض
+        //					.ThenInclude(ocp => ocp.Offer)  // جلب العرض الأساسي
+        //						.ThenInclude(o => o.Vendor)  // جلب بيانات البائع
+        //							.ThenInclude(v => v.User)  // جلب بيانات المستخدم للبائع
+        //			.Include(c => c.Items)
+        //				.ThenInclude(i => i.OfferCombinationPricing)
+        //					.ThenInclude(ocp => ocp.Offer)
+        //						.AsNoTracking()
+        //			.FirstOrDefaultAsync(c => c.Id == cartId && !c.IsDeleted, cancellationToken);
+        //	}
 
-		/// <summary>
-		/// Calculate cart total from items
-		/// </summary>
-		private decimal CalculateCartTotal(TbShoppingCart cart)
+        /// <summary>
+        /// Calculate cart total from items
+        /// </summary>
+        private decimal CalculateCartTotal(TbShoppingCart cart)
         {
             if (cart?.Items?.Any() != true)
                 return 0m;
