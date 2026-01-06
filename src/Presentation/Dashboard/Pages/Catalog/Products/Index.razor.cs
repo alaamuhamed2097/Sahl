@@ -10,12 +10,15 @@ namespace Dashboard.Pages.Catalog.Products
 {
     public partial class Index : BaseListPage<ItemDto>
     {
+
         protected override string EntityName { get; } = ECommerceResources.Products;
         protected override string AddRoute { get; } = $"/product";
         protected override string EditRouteTemplate { get; } = "/product/{id}";
         protected override string SearchEndpoint { get; } = ApiEndpoints.Item.Search;
+		[Inject] protected NavigationManager NavigationManager { get; set; } = null!;
 
-        protected override Dictionary<string, Func<ItemDto, object>> ExportColumns { get; }
+
+		protected override Dictionary<string, Func<ItemDto, object>> ExportColumns { get; }
         = new Dictionary<string, Func<ItemDto, object>>
         {
             [FormResources.Image] = x => $"{baseUrl}/{x.ThumbnailImage}",
@@ -26,7 +29,11 @@ namespace Dashboard.Pages.Catalog.Products
         [Inject] protected IItemService ItemService { get; set; } = null!;
         [Inject] protected NavigationManager Navigation { get; set; } = null!;
 
-        protected override async Task<ResponseModel<IEnumerable<ItemDto>>> GetAllItemsAsync()
+		private void GoToItemReviews(Guid itemId)
+		{
+			NavigationManager.NavigateTo($"/ManageReviews/{itemId}");
+		}
+		protected override async Task<ResponseModel<IEnumerable<ItemDto>>> GetAllItemsAsync()
         {
             var result = await ItemService.GetAllAsync();
             return result;

@@ -1,4 +1,6 @@
-﻿namespace Domains.Views.Offer
+﻿using Common.Enumerations.Offer;
+
+namespace Domains.Views.Offer
 {
     public class VwVendorItem
     {
@@ -6,6 +8,8 @@
         public Guid VendorItemId { get; set; }
         public DateTime CreatedDateUtc { get; set; }
         public int EstimatedDeliveryDays { get; set; }
+        public OfferVisibilityScope VisibilityScope { get; set; }
+
         public int FulfillmentType { get; set; }
         public bool IsBuyBoxWinner { get; set; }
         public string StockStatus { get; set; }

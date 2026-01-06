@@ -357,9 +357,34 @@
             public const string Products = "api/v1/Campaign/{0}/products";
             public const string AddProduct = "api/v1/Campaign/products";
         }
+		public static class ItemReview
+		{
+			private const string Base = "api/v1/ItemReview";
 
-        // Wallet endpoints
-        public static class Wallet
+			public const string Update = $"{Base}/update";
+			public const string Get = Base;
+			public const string Delete = $"{Base}/delete";
+			public const string GetByItemId = $"{Base}/reviews-by-Item";
+			public const string Search = $"{Base}/search";
+			public const string GetStats = $"{Base}/Item-review-stats";
+			public const string GetPending = $"{Base}/pending";
+			public const string Approve = $"{Base}/approve"; 
+			public const string Reject = $"{Base}/reject"; 
+
+		}
+
+		public static class ReviewReport
+		{
+			private const string Base = "api/v1/ReviewReport";
+			public const string Submit = $"{Base}/Submit";
+			public const string Get = Base;
+			public const string Search = $"{Base}/Search";
+			public const string GetByItemReviewId = $"{Base}/reports-by-Item";
+			public const string Resolve = $"{Base}/resolve";
+			public const string MarkAsFlagged = $"{Base}/MarkAsFlagged";
+		}
+		// Wallet endpoints
+		public static class Wallet
         {
             public static class Customer
             {
@@ -385,8 +410,9 @@
                 public const string Approve = "api/v1/Wallet/transactions/{0}/approve";
                 public const string Reject = "api/v1/Wallet/transactions/{0}/reject";
             }
+			
 
-            public const string Deposit = "api/v1/Wallet/deposit";
+			public const string Deposit = "api/v1/Wallet/deposit";
             public const string Withdrawal = "api/v1/Wallet/withdrawal";
             public const string Treasury = "api/v1/Wallet/treasury";
             public const string TreasuryUpdate = "api/v1/Wallet/treasury/update";

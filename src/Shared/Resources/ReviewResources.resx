@@ -1,0 +1,319 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+	<xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+		<xsd:element name="root" msdata:IsDataSet="true">
+			<xsd:complexType>
+				<xsd:choice maxOccurs="unbounded">
+					<xsd:element name="data">
+						<xsd:complexType>
+							<xsd:sequence>
+								<xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+								<xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+							</xsd:sequence>
+							<xsd:attribute name="name" type="xsd:string" msdata:Ordinal="1" />
+							<xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+							<xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+						</xsd:complexType>
+					</xsd:element>
+					<xsd:element name="resheader">
+						<xsd:complexType>
+							<xsd:sequence>
+								<xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+							</xsd:sequence>
+							<xsd:attribute name="name" type="xsd:string" use="required" />
+						</xsd:complexType>
+					</xsd:element>
+				</xsd:choice>
+			</xsd:complexType>
+		</xsd:element>
+	</xsd:schema>
+	<resheader name="resmimetype">
+		<value>text/microsoft-resx</value>
+	</resheader>
+	<resheader name="version">
+		<value>1.3</value>
+	</resheader>
+	<resheader name="reader">
+		<value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.3500.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+	</resheader>
+	<resheader name="writer">
+		<value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.3500.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+	</resheader>
+
+	<!-- Item Reviews -->
+	<data name="ItemReviews">
+		<value>مراجعات المنتجات</value>
+	</data>
+	<data name="ReviewDetails">
+		<value>تفاصيل المراجعة</value>
+	</data>
+	<data name="CustomerName">
+		<value>اسم العميل</value>
+	</data>
+	<data name="Rating">
+		<value>التقييم</value>
+	</data>
+	<data name="ReviewComment">
+		<value>نص المراجعة</value>
+	</data>
+	<data name="ReviewImages">
+		<value>صور المراجعة</value>
+	</data>
+
+	<!-- Status -->
+	<data name="Pending">
+		<value>قيد الانتظار</value>
+	</data>
+	<data name="Approved">
+		<value>موافق عليها</value>
+	</data>
+	<data name="Rejected">
+		<value>مرفوضة</value>
+	</data>
+
+	<!-- Actions -->
+	<data name="Approve">
+		<value>الموافقة</value>
+	</data>
+	<data name="Reject">
+		<value>الرفض</value>
+	</data>
+	<data name="ConfirmApproveReview">
+		<value>هل أنت متأكد من الموافقة على هذه المراجعة؟</value>
+	</data>
+	<data name="ConfirmRejectReview">
+		<value>هل أنت متأكد من رفض هذه المراجعة؟</value>
+	</data>
+	<data name="ReviewApprovedSuccessfully">
+		<value>تمت الموافقة على المراجعة بنجاح</value>
+	</data>
+	<data name="ReviewRejectedSuccessfully">
+		<value>تم رفض المراجعة بنجاح</value>
+	</data>
+
+	<!-- Information -->
+	<data name="CustomerInformation">
+		<value>معلومات العميل</value>
+	</data>
+	<data name="ItemInformation">
+		<value>معلومات المنتج</value>
+	</data>
+
+	<!-- Reply -->
+	<data name="AdminReply">
+		<value>رد الإدارة</value>
+	</data>
+	<data name="AddReply">
+		<value>إضافة رد</value>
+	</data>
+	<data name="EnterYourReply">
+		<value>أدخل ردك...</value>
+	</data>
+	<data name="ReplyAddedSuccessfully">
+		<value>تمت إضافة الرد بنجاح</value>
+	</data>
+
+	<!-- Statistics -->
+	<data name="TotalReviews">
+		<value>إجمالي المراجعات</value>
+	</data>
+	<data name="AverageRating">
+		<value>متوسط التقييم</value>
+	</data>
+	<data name="PendingReviews">
+		<value>المراجعات قيد الانتظار</value>
+	</data>
+	<data name="ApprovedReviews">
+		<value>المراجعات الموافق عليها</value>
+	</data>
+	<data name="RejectedReviews">
+		<value>المراجعات المرفوضة</value>
+	</data>
+
+	<!-- Filter -->
+	<data name="FilterByStatus">
+		<value>تصفية حسب الحالة</value>
+	</data>
+	<data name="FilterByRating">
+		<value>تصفية حسب التقييم</value>
+	</data>
+	<data name="AllReviews">
+		<value>جميع المراجعات</value>
+	</data>
+
+	<!-- Messages -->
+	<data name="NoReviewsFound">
+		<value>لا توجد مراجعات</value>
+	</data>
+	<data name="ReviewDeletedSuccessfully">
+		<value>تم حذف المراجعة بنجاح</value>
+	</data>
+	<data name="ErrorLoadingReviews">
+		<value>حدث خطأ أثناء تحميل المراجعات</value>
+	</data>
+
+	<!-- Additional -->
+	<data name="ViewAllReviews">
+		<value>عرض جميع المراجعات</value>
+	</data>
+	<data name="ManageReviews">
+		<value>إدارة المراجعات</value>
+	</data>
+	<data name="ReviewManagement">
+		<value>إدارة المراجعات</value>
+	</data>
+	<data name="Stars">
+		<value>نجوم</value>
+	</data>
+	<data name="NoCommentProvided">
+		<value>لم يتم تقديم تعليق</value>
+	</data>
+	<data name="VerifiedPurchase">
+		<value>عملية شراء موثقة</value>
+	</data>
+	<data name="ReviewTitle">
+		<value>عنوان المراجعة</value>
+	</data>
+	<data name="CustomerEmail">
+		<value>بريد العميل الإلكتروني</value>
+	</data>
+	<data name="ReviewNumber">
+		<value>رقم المراجعة</value>
+	</data>
+	<data name="HelpfulVotes">
+		<value>التصويتات المفيدة</value>
+	</data>
+	<data name="ReviewText">
+		<value>نص المراجعة</value>
+	</data>
+	<!-- Review Reports -->
+	<data name="ReviewReports">
+		<value>تقارير المراجعات</value>
+	</data>
+	<data name="ReviewReportDetails">
+		<value>تفاصيل تقرير المراجعة</value>
+	</data>
+	<data name="ReportID">
+		<value>رقم التقرير</value>
+	</data>
+	<data name="ReviewID">
+		<value>رقم المراجعة</value>
+	</data>
+	<data name="ReporterID">
+		<value>رقم المبلغ</value>
+	</data>
+	<data name="ReportReason">
+		<value>سبب التبليغ</value>
+	</data>
+	<data name="ReportDetails">
+		<value>تفاصيل التقرير</value>
+	</data>
+	<data name="ReportStatus">
+		<value>حالة التقرير</value>
+	</data>
+	<data name="RelatedReports">
+		<value>التقارير المرتبطة</value>
+	</data>
+
+	<!-- Report Reasons -->
+	<data name="Spam">
+		<value>رسائل مزعجة</value>
+	</data>
+	<data name="OffensiveLanguage">
+		<value>لغة مسيئة</value>
+	</data>
+	<data name="HateSpeech">
+		<value>خطاب كراهية</value>
+	</data>
+	<data name="FakeReview">
+		<value>مراجعة مزيفة</value>
+	</data>
+	<data name="IrrelevantContent">
+		<value>محتوى غير ذي صلة</value>
+	</data>
+	<data name="Duplicate">
+		<value>مكرر</value>
+	</data>
+	<data name="Other">
+		<value>أخرى</value>
+	</data>
+
+	<!-- Report Status -->
+	<data name="Reviewed">
+		<value>تمت المراجعة</value>
+	</data>
+	<data name="Resolved">
+		<value>تم الحل</value>
+	</data>
+
+	<!-- Report Actions -->
+	<data name="ResolveReport">
+		<value>حل التقرير</value>
+	</data>
+	<data name="MarkAsFlagged">
+		<value>وضع علامة كمخالف</value>
+	</data>
+	<data name="ViewReport">
+		<value>عرض التقرير</value>
+	</data>
+	<data name="ConfirmResolveReport">
+		<value>هل أنت متأكد من حل هذا التقرير؟</value>
+	</data>
+	<data name="ConfirmMarkAsFlagged">
+		<value>هل أنت متأكد من وضع علامة على هذه المراجعة كمخالفة؟</value>
+	</data>
+	<data name="ReportResolvedSuccessfully">
+		<value>تم حل التقرير بنجاح</value>
+	</data>
+	<data name="ReviewFlaggedSuccessfully">
+		<value>تم وضع علامة على المراجعة بنجاح</value>
+	</data>
+
+	<!-- Filter -->
+	<data name="FilterByReportStatus">
+		<value>تصفية حسب حالة التقرير</value>
+	</data>
+	<data name="AllReports">
+		<value>جميع التقارير</value>
+	</data>
+	<data name="PendingReports">
+		<value>التقارير قيد الانتظار</value>
+	</data>
+	<data name="ReviewedReports">
+		<value>التقارير المراجعة</value>
+	</data>
+	<data name="ResolvedReports">
+		<value>التقارير المحلولة</value>
+	</data>
+
+	<!-- Messages -->
+	<data name="NoReportsFound">
+		<value>لا توجد تقارير</value>
+	</data>
+	<data name="ErrorLoadingReports">
+		<value>حدث خطأ أثناء تحميل التقارير</value>
+	</data>
+	<data name="ReportDeletedSuccessfully">
+		<value>تم حذف التقرير بنجاح</value>
+	</data>
+
+	<!-- Additional -->
+	<data name="ManageReports">
+		<value>إدارة التقارير</value>
+	</data>
+	<data name="ReportManagement">
+		<value>إدارة التقارير</value>
+	</data>
+	<data name="TotalReports">
+		<value>إجمالي التقارير</value>
+	</data>
+	<data name="ReportedBy">
+		<value>تم الإبلاغ بواسطة</value>
+	</data>
+	<data name="ReportedOn">
+		<value>تم الإبلاغ في</value>
+	</data>
+	<data name="Flagged">
+		<value>مخالف</value>
+	</data>
+</root>

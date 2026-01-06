@@ -15,6 +15,9 @@ namespace Shared.DTOs.Review
 		public Guid ItemID { get; set; }
 
 		public Guid CustomerID { get; set; }
+		public string CustomerEmail { get; set; } = string.Empty;
+
+		public int HelpfulVotesCount { get; set; }
 
 		//public Guid? OrderItemID { get; set; }
 
@@ -23,6 +26,8 @@ namespace Shared.DTOs.Review
 		public string ReviewTitle { get; set; } = null!;
 
 		public string ReviewText { get; set; } = null!;
+
+		public int CountReport { get; set; } = 0;
 
 		//public bool IsVerifiedPurchase { get; set; } = false;
 
