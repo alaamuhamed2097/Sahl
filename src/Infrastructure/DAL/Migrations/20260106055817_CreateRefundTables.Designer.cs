@@ -4,6 +4,7 @@ using DAL.ApplicationContext;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DAL.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260106055817_CreateRefundTables")]
+    partial class CreateRefundTables
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -5016,7 +5019,7 @@ namespace DAL.Migrations
                         .HasMaxLength(450)
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<DateTime?>("ApprovedDateUTC")
+                    b.Property<DateTime?>("ApprovedDate")
                         .HasColumnType("datetime2");
 
                     b.Property<int>("ApprovedItemsCount")
@@ -5067,14 +5070,14 @@ namespace DAL.Migrations
                     b.Property<string>("RefundTransactionId")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime?>("RefundedDateUTC")
+                    b.Property<DateTime?>("RefundedDate")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("RejectionReason")
                         .HasMaxLength(1000)
                         .HasColumnType("nvarchar(1000)");
 
-                    b.Property<DateTime>("RequestDateUTC")
+                    b.Property<DateTime>("RequestDate")
                         .HasColumnType("datetime2");
 
                     b.Property<int>("RequestedItemsCount")
@@ -5088,7 +5091,7 @@ namespace DAL.Migrations
                     b.Property<string>("ReturnTrackingNumber")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime?>("ReturnedDateUTC")
+                    b.Property<DateTime?>("ReturnedDate")
                         .HasColumnType("datetime2");
 
                     b.Property<byte[]>("RowVersion")
@@ -5120,7 +5123,7 @@ namespace DAL.Migrations
 
                     b.HasIndex("OrderDetailId");
 
-                    b.HasIndex("RequestDateUTC");
+                    b.HasIndex("RequestDate");
 
                     b.HasIndex("VendorId");
 
@@ -5652,6 +5655,12 @@ namespace DAL.Migrations
                     b.Property<decimal>("TaxPrecentage")
                         .HasColumnType("decimal(18,2)");
 
+                    b.Property<Guid?>("TbCouponCodeId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("TbCustomerAddressId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<Guid?>("TbShippingCompanyId")
                         .HasColumnType("uniqueidentifier");
 
@@ -5681,6 +5690,10 @@ namespace DAL.Migrations
 
                     b.HasIndex("OrderStatus")
                         .HasDatabaseName("IX_Orders_Status");
+
+                    b.HasIndex("TbCouponCodeId");
+
+                    b.HasIndex("TbCustomerAddressId");
 
                     b.HasIndex("TbShippingCompanyId");
 
@@ -10014,24 +10027,32 @@ namespace DAL.Migrations
             modelBuilder.Entity("Domains.Entities.Order.TbOrder", b =>
                 {
                     b.HasOne("Domains.Entities.Merchandising.CouponCode.TbCouponCode", "Coupon")
-                        .WithMany("Orders")
+                        .WithMany()
                         .HasForeignKey("CouponId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .HasConstraintName("FK_TbOrders_TbCouponCodes_CouponId");
 
                     b.HasOne("Domains.Entities.Order.TbCustomerAddress", "CustomerAddress")
-                        .WithMany("Orders")
+                        .WithMany()
                         .HasForeignKey("DeliveryAddressId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired()
                         .HasConstraintName("FK_TbOrders_TbCustomerAddresses_DeliveryAddressId");
+
+                    b.HasOne("Domains.Entities.Merchandising.CouponCode.TbCouponCode", null)
+                        .WithMany("Orders")
+                        .HasForeignKey("TbCouponCodeId");
+
+                    b.HasOne("Domains.Entities.Order.TbCustomerAddress", null)
+                        .WithMany("Orders")
+                        .HasForeignKey("TbCustomerAddressId");
 
                     b.HasOne("Domains.Entities.Order.Shipping.TbShippingCompany", null)
                         .WithMany("Orders")
                         .HasForeignKey("TbShippingCompanyId");
 
                     b.HasOne("Domains.Identity.ApplicationUser", "User")
-                        .WithMany("Orders")
+                        .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
@@ -10644,8 +10665,6 @@ namespace DAL.Migrations
                     b.Navigation("CustomerLoyalties");
 
                     b.Navigation("CustomerWallets");
-
-                    b.Navigation("Orders");
 
                     b.Navigation("Refunds");
 

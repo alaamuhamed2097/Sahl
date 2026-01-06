@@ -29,6 +29,8 @@ using Domains.Entities.Offer.Warranty;
 using Domains.Entities.Order;
 using Domains.Entities.Order.Cart;
 using Domains.Entities.Order.Payment;
+using Domains.Entities.Order.Refund;
+using Domains.Entities.Order.Returns;
 using Domains.Entities.Order.Shipping;
 using Domains.Entities.Page;
 using Domains.Entities.SellerRequest;
@@ -206,7 +208,9 @@ namespace DAL.ApplicationContext
         // Order Management
         public DbSet<TbOrder> TbOrders { get; set; }
         public DbSet<TbOrderDetail> TbOrderDetails { get; set; }
-        public DbSet<TbRefundRequest> TbRefundRequests { get; set; }
+        public DbSet<TbRefund> TbRefunds { get; set; }
+        public DbSet<TbRefundStatusHistory> TbRefundStatusHistories  { get; set; }
+        public DbSet<TbRefundItemVideo> TbRefundItemVideos { get; set; }
         public DbSet<TbShippingDetail> TbShippingDetails { get; set; }
 
         // New E-commerce tables: Shopping Cart, Shipments, Payments, Customer Addresses

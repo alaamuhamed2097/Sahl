@@ -16,12 +16,16 @@ public interface IRefundService
         string customerId);
 
     /// <summary>
-    /// Processes refund request (approve/reject and execute refund)
+    /// Updates the status of a refund
     /// </summary>
-    Task<RefundProcessResult> ProcessRefundAsync(
-        Guid refundRequestId,
-        ProcessRefundDto processDto,
-        string adminUserId);
+    /// <param name="refundId"></param>
+    /// <param name="statusDto"></param>
+    /// <param name="userId"></param>
+    /// <returns></returns>
+    Task<RefundStatusUpdateResult> UpdateRefundStatusAsync(
+        Guid refundId,
+        UpdateRefundStatusDto statusDto,
+        string userId);
 
     /// <summary>
     /// Gets refund request by ID
@@ -31,7 +35,7 @@ public interface IRefundService
     /// <summary>
     /// Gets refund request by order ID
     /// </summary>
-    Task<RefundRequestDto?> GetRefundRequestByOrderIdAsync(Guid orderId);
+    Task<RefundRequestDto?> GetRefundRequestByOrderDetailIdAsync(Guid orderId);
 
     /// <summary>
     /// Gets all refund requests with pagination and filtering

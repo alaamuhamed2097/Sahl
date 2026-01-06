@@ -1,4 +1,5 @@
 using Domains.Entities.Location;
+using Domains.Entities.Order.Refund;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -31,5 +32,8 @@ namespace Domains.Entities.Order
 
         public virtual ApplicationUser User { get; set; } = null!;
         public virtual TbCity City { get; set; } = null!;
+
+        public virtual ICollection<TbOrder> Orders { get; set; } = new HashSet<TbOrder>();
+        public virtual ICollection<TbRefund> Refunds { get; set; } = new HashSet<TbRefund>();
     }
 }

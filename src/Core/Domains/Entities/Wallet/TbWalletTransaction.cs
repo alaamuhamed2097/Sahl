@@ -1,4 +1,5 @@
 using Common.Enumerations.Wallet;
+using Domains.Entities.Order.Refund;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -56,7 +57,7 @@ namespace Domains.Entities.Wallet
         public virtual TbCustomerWallet? CustomerWallet { get; set; }
         public virtual TbVendorWallet? VendorWallet { get; set; }
         public virtual TbOrder? Order { get; set; }
-        public virtual TbRefundRequest? Refund { get; set; }
+        public virtual TbRefund? Refund { get; set; }
         public virtual ApplicationUser? ProcessedByUser { get; set; }
     }
 }
