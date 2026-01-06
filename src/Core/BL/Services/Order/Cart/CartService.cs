@@ -5,7 +5,6 @@ using Domains.Entities.Offer;
 using Domains.Entities.Order.Cart;
 using Serilog;
 using Shared.DTOs.Order.Cart;
-using Shared.GeneralModels.Models;
 
 namespace BL.Services.Order.Cart;
 
@@ -56,8 +55,6 @@ public class CartService : ICartService
                 throw new ArgumentException("User ID cannot be empty", nameof(customerId));
             if (request == null)
                 throw new ArgumentNullException(nameof(request));
-            if (request.ItemId == Guid.Empty)
-                throw new ArgumentException("Item ID cannot be empty", nameof(request.ItemId));
             if (request.OfferCombinationPricingId == Guid.Empty)
                 throw new ArgumentException("Offer combination pricing ID cannot be empty", nameof(request.OfferCombinationPricingId));
             if (request.Quantity <= 0)
@@ -87,7 +84,6 @@ public class CartService : ICartService
             // ✅ Store OfferCombinationPricingId in the OfferId field
             var result = await _cartRepository.AddItemToCartAsync(
                 customerId,
-                request.ItemId,
                 pricing.Id,
                 request.Quantity,
                 unitPrice);
@@ -131,11 +127,10 @@ public class CartService : ICartService
                 try
                 {
                     // Basic validation
-                    if (item.ItemId == Guid.Empty)
+                    if (item.OfferCombinationPricingId == Guid.Empty)
                     {
                         result.FailedItems.Add(new BulkAddItemFailure
                         {
-                            ItemId = item.ItemId,
                             OfferCombinationPricingId = item.OfferCombinationPricingId,
                             Quantity = item.Quantity,
                             ErrorMessage = "Item ID cannot be empty"
@@ -147,7 +142,6 @@ public class CartService : ICartService
                     {
                         result.FailedItems.Add(new BulkAddItemFailure
                         {
-                            ItemId = item.ItemId,
                             OfferCombinationPricingId = item.OfferCombinationPricingId,
                             Quantity = item.Quantity,
                             ErrorMessage = "Offer combination pricing ID cannot be empty"
@@ -159,7 +153,6 @@ public class CartService : ICartService
                     {
                         result.FailedItems.Add(new BulkAddItemFailure
                         {
-                            ItemId = item.ItemId,
                             OfferCombinationPricingId = item.OfferCombinationPricingId,
                             Quantity = item.Quantity,
                             ErrorMessage = "Quantity must be greater than zero"
@@ -174,7 +167,6 @@ public class CartService : ICartService
                     {
                         result.FailedItems.Add(new BulkAddItemFailure
                         {
-                            ItemId = item.ItemId,
                             OfferCombinationPricingId = item.OfferCombinationPricingId,
                             Quantity = item.Quantity,
                             ErrorMessage = "Invalid offer combination pricing"
@@ -187,7 +179,6 @@ public class CartService : ICartService
                     {
                         result.FailedItems.Add(new BulkAddItemFailure
                         {
-                            ItemId = item.ItemId,
                             OfferCombinationPricingId = item.OfferCombinationPricingId,
                             Quantity = item.Quantity,
                             ErrorMessage = $"Insufficient stock. Available: {pricing.AvailableQuantity}"
@@ -200,7 +191,6 @@ public class CartService : ICartService
                     {
                         result.FailedItems.Add(new BulkAddItemFailure
                         {
-                            ItemId = item.ItemId,
                             OfferCombinationPricingId = item.OfferCombinationPricingId,
                             Quantity = item.Quantity,
                             ErrorMessage = "Invalid price"
@@ -213,10 +203,9 @@ public class CartService : ICartService
                 }
                 catch (Exception ex)
                 {
-                    _logger.Error(ex, $"Error validating item {item.ItemId}");
+                    _logger.Error(ex, $"Error validating item OfferCombinationPricingId = {item.OfferCombinationPricingId}");
                     result.FailedItems.Add(new BulkAddItemFailure
                     {
-                        ItemId = item.ItemId,
                         OfferCombinationPricingId = item.OfferCombinationPricingId,
                         Quantity = item.Quantity,
                         ErrorMessage = $"Validation error: {ex.Message}"
@@ -238,7 +227,6 @@ public class CartService : ICartService
                 {
                     var addResult = await _cartRepository.AddItemToCartAsync(
                         customerId,
-                        item.ItemId,
                         pricing.Id,
                         item.Quantity,
                         pricing.SalesPrice);
@@ -247,7 +235,6 @@ public class CartService : ICartService
                     {
                         result.SuccessfulItems.Add(new BulkAddItemResult
                         {
-                            ItemId = item.ItemId,
                             OfferCombinationPricingId = item.OfferCombinationPricingId,
                             Quantity = item.Quantity,
                             UnitPrice = pricing.SalesPrice,
@@ -258,7 +245,6 @@ public class CartService : ICartService
                     {
                         result.FailedItems.Add(new BulkAddItemFailure
                         {
-                            ItemId = item.ItemId,
                             OfferCombinationPricingId = item.OfferCombinationPricingId,
                             Quantity = item.Quantity,
                             ErrorMessage = "Failed to add item to cart"
@@ -267,10 +253,9 @@ public class CartService : ICartService
                 }
                 catch (Exception ex)
                 {
-                    _logger.Error(ex, $"Error adding item {item.ItemId} to cart");
+                    _logger.Error(ex, $"Error adding item OfferCombinationPricingId = {item.OfferCombinationPricingId} to cart");
                     result.FailedItems.Add(new BulkAddItemFailure
                     {
-                        ItemId = item.ItemId,
                         OfferCombinationPricingId = item.OfferCombinationPricingId,
                         Quantity = item.Quantity,
                         ErrorMessage = $"Error: {ex.Message}"
@@ -470,18 +455,18 @@ public class CartService : ICartService
                     Id = ci.Id,
                     ItemId = ci.ItemId,
                     ItemName = ci.Item?.TitleEn ?? "Unknown Item",
-                    OfferCombinationPricingId = ci.OfferCombinationPricingId, 
-					SellerName = ci.OfferCombinationPricing?.Offer?.Vendor?.User?.FullName
-						 ?? "Unknown Seller",
-					Quantity = ci.Quantity,
+                    OfferCombinationPricingId = ci.OfferCombinationPricingId,
+                    SellerName = ci.OfferCombinationPricing?.Offer?.Vendor?.User?.FullName
+                         ?? "Unknown Seller",
+                    Quantity = ci.Quantity,
                     UnitPrice = currentPrice,
                     SubTotal = currentPrice * ci.Quantity,
                     IsAvailable = isAvailable,
-					ImageUrl = ci.Item?.ItemImages != null && ci.Item.ItemImages.Any()
-					? ci.Item.ItemImages
-						.FirstOrDefault()?.ToString()
-					: null
-				});
+                    ImageUrl = ci.Item?.ItemImages != null && ci.Item.ItemImages.Any()
+                    ? ci.Item.ItemImages
+                        .FirstOrDefault()?.ToString()
+                    : null
+                });
             }
         }
 

@@ -25,6 +25,8 @@ namespace Shared.DTOs.Review
 		[Required]
 		[EnumDataType(typeof(ReviewReportStatus))]
 		public ReviewReportStatus Status { get; set; }
+
+
 	}
 
 }

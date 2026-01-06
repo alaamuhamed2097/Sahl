@@ -5,6 +5,7 @@ namespace Shared.DTOs.Catalog.Item
     public class BestPriceOfferDto
     {
         public Guid OfferId { get; set; }
+        public Guid OfferPricingId { get; set; }
         public Guid VendorId { get; set; }
         public string? VendorName { get; set; }
         public decimal? VendorRating { get; set; }

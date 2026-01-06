@@ -35,11 +35,11 @@ namespace Domains.Procedures
         public string? BrandNameEn { get; set; }
         public string? BrandLogoUrl { get; set; }
 
-        // Flags
-        public bool IsMultiVendor { get; set; }
-
         // Reviews
         public decimal AverageRating { get; set; }
+
+        // Flags
+        public bool IsMultiVendor { get; set; }
 
         // JSON Columns (to be parsed)
         public string? GeneralImagesJson { get; set; }
@@ -88,6 +88,7 @@ namespace Domains.Procedures
 
         [JsonPropertyName("PricingAttributesJson")]
         public List<PricingAttribute>? PricingAttributes { get; set; }
+
         [JsonPropertyName("ImagesJson")]
         public List<ItemImage>? Images { get; set; }
     }
@@ -108,8 +109,9 @@ namespace Domains.Procedures
         public int VendorCount { get; set; }
         public decimal MinPrice { get; set; }
         public decimal MaxPrice { get; set; }
+
         [JsonPropertyName("BestOfferJson")]
-        public string? BestOffer { get; set; }
+        public BestOffer? BestOffer { get; set; }
     }
 
     public class BestOffer
@@ -118,6 +120,9 @@ namespace Domains.Procedures
         public Guid VendorId { get; set; }
         public string? VendorName { get; set; }
         public decimal? VendorRating { get; set; }
+
+        public Guid OfferPricingId { get; set; }
+
         public decimal Price { get; set; }
         public decimal SalesPrice { get; set; }
         public decimal DiscountPercentage { get; set; }
@@ -128,6 +133,7 @@ namespace Domains.Procedures
         public bool IsBuyBoxWinner { get; set; }
         public int MinOrderQuantity { get; set; }
         public int MaxOrderQuantity { get; set; }
+
         [JsonPropertyName("QuantityTiersJson")]
         public List<QuantityTier>? QuantityTiers { get; set; }
     }

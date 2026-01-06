@@ -1,0 +1,280 @@
+﻿@page "/itemsReviews/details/{Id:guid}"
+
+@using Common.Enumerations.Review
+@using Common.Enumerations.User
+@using Shared.DTOs.Review
+@attribute [Authorize(Roles = nameof(UserRole.Admin))]
+
+<PageTitle>@ReviewResources.ReviewDetails</PageTitle>
+
+<style>
+    .info-card {
+        border-left: 4px solid #007bff;
+        background: #f8f9fa;
+    }
+
+    .status-badge {
+        padding: 8px 16px;
+        border-radius: 20px;
+        font-weight: 600;
+    }
+
+    .rating-stars {
+        color: #ffc107;
+        font-size: 1.2rem;
+    }
+</style>
+
+<div class="container-fluid p-0">
+    @if (isLoading)
+    {
+        <div class="d-flex justify-content-center align-items-center" style="height: 400px;">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+        </div>
+    }
+    else if (reviewItem == null)
+    {
+        <div class="alert alert-warning">
+            <i class="fas fa-exclamation-triangle me-2"></i>
+            @NotifiAndAlertsResources.NoDataFound
+        </div>
+    }
+    else
+    {
+        <!-- Header Card -->
+        <div class="card shadow-sm border-0 mb-3">
+            <div class="card-header bg-primary text-white py-3 d-flex justify-content-between align-items-center">
+                <h5 class="mb-0 fw-semibold text-white">
+                    <i class="fas fa-star me-2"></i>@ReviewResources.ReviewDetails
+                </h5>
+                <button class="btn btn-light btn-sm" @onclick="GoBack">
+                    <i class="fas fa-arrow-left me-1"></i>@ActionsResources.Back
+                </button>
+            </div>
+            <div class="card-body">
+                <!-- Status Badge & Rating -->
+                <div class="mb-4 d-flex justify-content-between align-items-center flex-wrap gap-3">
+                    @* <span class="status-badge @GetReviewStatusClass(reviewItem.Status)">
+                        @GetReviewStatusText(reviewItem)
+                    </span> *@
+                    <!-- Helpful Votes -->
+                    @* <div class="col-md-6">
+                        <div class="info-card p-3 rounded">
+                            <label class="text-muted small mb-1">@ReviewResources.HelpfulVotes</label>
+                           
+                        </div>
+                    </div> *@
+                    <div class="rating-stars">
+                    <div class="fw-bold">
+                        <i class="fas fa-thumbs-up text-success me-1"></i>
+                        @reviewItem.HelpfulVotesCount
+                    </div>
+                        @for (int i = 1; i <= 5; i++)
+                        {
+                            <i class="@(i <= reviewItem.Rating ? "fas" : "far") fa-star"></i>
+                        }
+                        <span class="ms-2 text-dark fw-bold">@reviewItem.Rating.ToString("0.0")</span>
+                    </div>
+                </div>
+
+                <!-- Review Information -->
+                <div class="row g-3">
+                    <!-- Review Number -->
+                    <div class="col-md-6">
+                        <div class="info-card p-3 rounded">
+                            <label class="text-muted small mb-1">@ReviewResources.ReviewNumber</label>
+                            <div class="fw-bold">@reviewItem.ReviewNumber</div>
+                        </div>
+                    </div>
+
+                    <!-- Customer Email -->
+                    <div class="col-md-6">
+                        <div class="info-card p-3 rounded">
+                            <label class="text-muted small mb-1">@ReviewResources.CustomerEmail</label>
+                            <div class="fw-bold">@reviewItem.CustomerEmail</div>
+                        </div>
+                    </div>
+
+                    <!-- Review Title -->
+                    @* @if (!string.IsNullOrWhiteSpace(@reviewItem.ReviewTitle))
+                    {
+                        <div class="col-12">
+                            <div class="info-card p-3 rounded">
+                                <label class="text-muted small mb-1">@ReviewResources.ReviewTitle</label>
+                                <div class="fw-bold fs-5">@reviewItem.ReviewTitle</div>
+                            </div>
+                        </div>
+                    } *@
+
+                    <!-- Review Text -->
+                    @if (!string.IsNullOrWhiteSpace(reviewItem.ReviewText))
+                    {
+                        <div class="col-12">
+                            <div class="info-card p-3 rounded">
+                                <label class="text-muted small mb-1">@ReviewResources.ReviewText</label>
+                                <div class="fw-bold">@reviewItem.ReviewText</div>
+                            </div>
+                        </div>
+                    }
+
+                    <!-- Helpful Votes -->
+                    @* <div class="col-md-6">
+                    </div>
+                        <div class="info-card p-3 rounded">
+                            <label class="text-muted small mb-1">@ReviewResources.HelpfulVotes</label>
+                        </div>
+                            <div class="fw-bold">
+                                <i class="fas fa-thumbs-up text-success me-1"></i>
+                                @reviewItem.HelpfulVotesCount
+                            </div> *@
+
+                    <!-- Created Date -->
+                    <div class="col-md-6">
+                        <div class="info-card p-3 rounded">
+                            <label class="text-muted small mb-1">@FormResources.Date</label>
+                            <div class="fw-bold">reviewItem.ToString("yyyy-MM-dd HH:mm")</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="mt-4 d-flex gap-2 flex-wrap">
+                    @* @if (reviewReport.Status == ReviewStatus.Pending)
+                    { *@
+                        @* <button class="btn btn-success" @onclick="ApproveReview">
+                            <i class="fas fa-check me-2"></i>@ReviewResources.Approve
+                        </button> *@
+                        <button class="btn btn-danger" @onclick="RejectReview">
+                            <i class="fas fa-times me-2"></i>@ReviewResources.Reject
+                        </button>
+                    @* }
+                    @if (reviewItem.Status != ReviewStatus.Flagged)
+                    { *@
+                        <button class="btn btn-warning" @onclick="MarkReviewAsFlagged">
+                            <i class="fas fa-flag me-2"></i>@ReviewResources.MarkAsFlagged
+                        </button>
+                    @* } *@
+                </div>
+            </div>
+        </div>
+
+        <!-- Reports Section -->
+        @if (reports != null && reports.Any())
+        {
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-danger text-white py-3">
+                    <h6 class="mb-0 fw-semibold">
+                        <i class="fas fa-flag me-2"></i>@ReviewResources.ReviewReports (@reports.Count())
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <!-- Desktop View -->
+                    <div class="d-none d-md-block">
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead class="bg-light">
+                                    <tr>
+                                        <th>@ReviewResources.ReportReason</th>
+                                        <th>@ReviewResources.ReportStatus</th>
+                                        <th>CreatedDate</th>
+                                        
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var r in reports)
+                                    {
+                                        <tr>
+                                            
+                                            <td>@GetReasonText(r.Reason)</td>
+                                            <td>
+                                                <span class="badge @GetStatusClass(r.Status)">
+                                                    @GetStatusText(r.Status)
+                                                </span>
+                                            </td>
+                                            <td>@r..ToString("yyyy-MM-dd HH:mm")</td>
+                                            <td>
+                                                <div class="d-flex gap-2">
+                                                    @* <button class="btn btn-sm btn-primary" @onclick="() => ViewReportDetails(r.Id)">
+                                                        <i class="fas fa-eye me-1"></i>@ActionsResources.View
+                                                    </button> *@
+                                                    @if (r.Status == ReviewReportStatus.Pending)
+                                                    {
+                                                        <button class="btn btn-sm btn-success" @onclick="() => ResolveReport(r.Id)">
+                                                            <i class="fas fa-check me-1"></i>@ReviewResources.Reviewed
+                                                        </button>
+                                                    }else if (r.Status == ReviewReportStatus.Reviewed){
+                                                        <button class="btn btn-sm btn-success" @onclick="() => ResolveReport(r.Id)">
+                                                            <i class="fas fa-check me-1"></i>@ReviewResources.Resolved
+                                                        </button>
+                                                    }
+                                                    
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Mobile View -->
+                    <div class="d-md-none">
+                        @foreach (var r in reports)
+                        {
+                            <div class="card border-0 shadow-sm rounded-3 mb-3">
+                                <div class="card-body p-3">
+                                    <!-- Status Badge -->
+                                    <div class="mb-2">
+                                        <span class="badge @GetStatusClass(r.Status)">
+                                            @GetStatusText(r.Status)
+                                        </span>
+                                    </div>
+
+                                    <!-- Reason -->
+                                    <h6 class="fw-bold text-primary mb-1">@GetReasonText(r.Reason)</h6>
+
+                                    <!-- Details -->
+                                    @if (!string.IsNullOrWhiteSpace(r.Details))
+                                    {
+                                        <p class="text-muted small mb-2">@r.Details</p>
+                                    }
+
+                                    <!-- Date -->
+                                    <p class="text-muted small mb-3">
+                                        <i class="fas fa-clock me-1"></i>
+                                        CreatedDateUtc.ToString("yyyy-MM-dd HH:mm")
+                                    </p>
+
+                                    <!-- Actions -->
+                                    <div class="d-flex gap-2">
+                                        <button class="btn btn-sm btn-primary" @onclick="() => ViewReportDetails(r.Id)">
+                                            <i class="fas fa-eye me-1"></i>@ActionsResources.View
+                                        </button>
+                                        @if (r.Status == ReviewReportStatus.Pending)
+                                        {
+                                            <button class="btn btn-sm btn-success" @onclick="() => ResolveReport(r.Id)">
+                                                <i class="fas fa-check"></i>
+                                            </button>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="card shadow-sm border-0">
+                <div class="card-body text-center py-5">
+                    <i class="fas fa-info-circle text-muted" style="font-size: 60px;"></i>
+                    <p class="text-muted mt-3">@ReviewResources.NoReportsFound</p>
+                </div>
+            </div>
+        }
+    }
+</div>

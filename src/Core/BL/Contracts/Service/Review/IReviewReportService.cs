@@ -28,5 +28,8 @@ namespace BL.Contracts.Service.Review;
 		Guid reportId,
 		Guid adminId,
 		CancellationToken cancellationToken = default);
+	Task<int> CountReportAsReviewAsync(
+			Guid reviewId,
+			CancellationToken cancellationToken = default);
 		Task<bool> MarkReviewAsFlaggedAsync(Guid reviewId, string adminId, CancellationToken cancellationToken = default);
 	}

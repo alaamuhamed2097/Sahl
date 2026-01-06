@@ -8,7 +8,7 @@ namespace BL.Contracts.Service.Review
 {
     public interface IItemReviewService : IBaseService<TbItemReview, ItemReviewDto>
     {
-        Task<ItemReviewDto?> GetReviewByIdAsync(Guid reviewId, CancellationToken cancellationToken = default);
+        Task<ResponseItemReviewDto?> GetReviewByIdAsync(Guid reviewId, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Submits a new review for a specific Item.

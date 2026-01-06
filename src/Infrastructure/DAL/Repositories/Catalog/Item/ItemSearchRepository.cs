@@ -71,49 +71,10 @@ namespace DAL.Repositories.Catalog.Item
                 new SqlParameter("@PageSize", filter.PageSize)
             };
 
-            var results = new List<SpSearchItemsMultiVendor>();
-            int totalRecords = 0;
+            var results = (await ExecuteStoredProcedureAsync<SpSearchItemsMultiVendor>("SpSearchItemsMultiVendor", default, parameters))
+                            .ToList();
 
-            // Execute stored procedure
-            var connection = _context.Database.GetDbConnection();
-
-            try
-            {
-                await connection.OpenAsync();
-
-                using var command = connection.CreateCommand();
-                command.CommandText = "SpSearchItemsMultiVendor";
-                command.CommandType = CommandType.StoredProcedure;
-                command.CommandTimeout = 30;
-
-                // Add parameters
-                foreach (var parameter in parameters)
-                {
-                    command.Parameters.Add(parameter);
-                }
-
-                using var reader = await command.ExecuteReaderAsync();
-
-                // Read the result set (search results with TotalRecords in each row)
-                while (await reader.ReadAsync())
-                {
-                    var result = MapToSearchEntity(reader);
-                    results.Add(result);
-
-                    // Get total records from first row (it's in every row)
-                    if (totalRecords == 0)
-                    {
-                        totalRecords = reader.GetInt32(reader.GetOrdinal("TotalRecords"));
-                    }
-                }
-            }
-            finally
-            {
-                if (connection.State == ConnectionState.Open)
-                {
-                    await connection.CloseAsync();
-                }
-            }
+            int totalRecords = results.Any() ? results[0].TotalRecords : 0;
 
             // Return using the same pattern as the original code
             return new AdvancedPagedResult<SpSearchItemsMultiVendor>
@@ -195,47 +156,6 @@ namespace DAL.Repositories.Catalog.Item
                 _logger.Error(ex, "Error getting best prices for items");
                 throw new DataAccessException("Failed to retrieve best prices", ex, _logger);
             }
-        }
-
-        /// <summary>
-        /// Maps DataReader result to SpSearchItemsMultiVendor domain entity
-        /// Matches exact stored procedure output columns
-        /// </summary>
-        private SpSearchItemsMultiVendor MapToSearchEntity(IDataReader reader)
-        {
-            return new SpSearchItemsMultiVendor
-            {
-                ItemId = reader.GetGuid(reader.GetOrdinal("ItemId")),
-                ItemCombinationId = reader.GetGuid(reader.GetOrdinal("ItemCombinationId")),
-                TitleAr = reader.GetString(reader.GetOrdinal("TitleAr")),
-                TitleEn = reader.GetString(reader.GetOrdinal("TitleEn")),
-                ShortDescriptionAr = reader.IsDBNull(reader.GetOrdinal("ShortDescriptionAr"))
-                    ? null
-                    : reader.GetString(reader.GetOrdinal("ShortDescriptionAr")),
-                ShortDescriptionEn = reader.IsDBNull(reader.GetOrdinal("ShortDescriptionEn"))
-                    ? null
-                    : reader.GetString(reader.GetOrdinal("ShortDescriptionEn")),
-                CategoryId = reader.GetGuid(reader.GetOrdinal("CategoryId")),
-                BrandId = reader.IsDBNull(reader.GetOrdinal("BrandId"))
-                    ? null
-                    : reader.GetGuid(reader.GetOrdinal("BrandId")),
-                BrandNameAr = reader.IsDBNull(reader.GetOrdinal("BrandNameAr"))
-                    ? null
-                    : reader.GetString(reader.GetOrdinal("BrandNameAr")),
-                BrandNameEn = reader.IsDBNull(reader.GetOrdinal("BrandNameEn"))
-                    ? null
-                    : reader.GetString(reader.GetOrdinal("BrandNameEn")),
-                ThumbnailImage = reader.GetString(reader.GetOrdinal("ThumbnailImage")),
-                CreatedDateUtc = reader.GetDateTime(reader.GetOrdinal("CreatedDateUtc")),
-                ItemRating = reader.IsDBNull(reader.GetOrdinal("AverageRating"))
-                    ? null
-                    : reader.GetDecimal(reader.GetOrdinal("AverageRating")),
-                Price = reader.GetDecimal(reader.GetOrdinal("Price")),
-                SalesPrice = reader.GetDecimal(reader.GetOrdinal("SalesPrice")),
-                AvailableQuantity = reader.GetInt32(reader.GetOrdinal("AvailableQuantity")),
-                StockStatus = reader.GetString(reader.GetOrdinal("StockStatus")),
-                IsFreeShipping = reader.GetBoolean(reader.GetOrdinal("IsFreeShipping"))
-            };
         }
 
         /// <summary>

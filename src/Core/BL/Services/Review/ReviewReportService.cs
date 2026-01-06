@@ -284,8 +284,28 @@ namespace BL.Services.Review;
 			}
 		}
 
+	public async Task<int> CountReportAsReviewAsync(
+			Guid reviewId,
+			CancellationToken cancellationToken = default)
+	{
+		try
+		{
+			var reports = await _reportRepo.GetReportsByReviewIdAsync(reviewId, cancellationToken);
 
-		public async Task<bool> MarkReviewAsFlaggedAsync(
+			if (reports == null)
+				return 0;
+
+			
+
+			return reports.Count();
+		}
+		catch (Exception ex)
+		{
+			_logger.Error(ex, $"Error in {nameof(MarkReviewAsFlaggedAsync)}");
+			throw;
+		}
+	}
+	public async Task<bool> MarkReviewAsFlaggedAsync(
 			Guid reviewId,
 			string adminId,
 			CancellationToken cancellationToken = default)

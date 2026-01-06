@@ -10,7 +10,7 @@ namespace Domains.Entities.Order.Cart
         public Guid ShoppingCartId { get; set; }
 
         [ForeignKey("Item")]
-        public Guid ItemId { get; set; }
+        public required Guid ItemId { get; set; }
 
         /// <summary>
         /// Stores the OfferCombinationPricingId - this is the exact pricing ID for a specific offer + item combination

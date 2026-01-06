@@ -7388,6 +7388,9 @@ namespace DAL.Migrations
                     b.Property<int>("AvailableQuantity")
                         .HasColumnType("int");
 
+                    b.Property<decimal?>("AverageRating")
+                        .HasColumnType("decimal(18,2)");
+
                     b.Property<Guid?>("BrandId")
                         .HasColumnType("uniqueidentifier");
 
@@ -7414,8 +7417,8 @@ namespace DAL.Migrations
                     b.Property<Guid>("ItemId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<decimal?>("ItemRating")
-                        .HasColumnType("decimal(18,2)");
+                    b.Property<Guid>("OfferCombinationPricingId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<decimal>("Price")
                         .HasColumnType("decimal(18,2)");
@@ -7446,6 +7449,9 @@ namespace DAL.Migrations
                     b.Property<string>("TitleEn")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("TotalRecords")
+                        .HasColumnType("int");
 
                     b.ToTable((string)null);
 
@@ -8529,6 +8535,10 @@ namespace DAL.Migrations
 
                     b.Property<Guid>("VendorItemId")
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("VisibilityScope")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<Guid?>("WarrantyId")
                         .HasColumnType("uniqueidentifier");

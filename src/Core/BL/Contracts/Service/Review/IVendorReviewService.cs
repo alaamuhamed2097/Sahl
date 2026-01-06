@@ -162,6 +162,10 @@ namespace BL.Contracts.Service.Review
 			Task<VendorReviewStatsDto> GetVendorReviewStatsAsync(
 				Guid vendorId,
 				CancellationToken cancellationToken = default);
+		Task<IEnumerable<VendorReviewDto>> GetVendorReviewsByVerificationAsync(
+			Guid vendorId,
+			bool? isVerifiedPurchase = null,
+			CancellationToken cancellationToken = default);
 
 		}
 	}

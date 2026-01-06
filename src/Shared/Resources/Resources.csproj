@@ -40,6 +40,11 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>NotifiAndAlertsResources.resx</DependentUpon>
     </Compile>
+    <Compile Update="ReviewResources.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>ReviewResources.resx</DependentUpon>
+    </Compile>
     <Compile Update="UserResources.Designer.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
@@ -85,6 +90,10 @@
     <EmbeddedResource Update="NotifiAndAlertsResources.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>NotifiAndAlertsResources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="ReviewResources.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>ReviewResources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <EmbeddedResource Update="UserResources.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>

@@ -299,7 +299,6 @@ public class WishlistService : IWishlistService
             // 4. Add to cart using ICartService
             var addToCartRequest = new AddToCartRequest
             {
-                ItemId = combination.ItemId,
                 OfferCombinationPricingId = buyBoxOffer.OfferPricingId,
                 Quantity = request.Quantity
             };

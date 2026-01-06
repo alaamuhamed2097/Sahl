@@ -119,7 +119,11 @@ namespace Dashboard.Layout
             if (StartsWithAny(relativePath, new[] { "content/pages" }))
                 _openSubmenus.Add("content");
 
-            if (StartsWithAny(relativePath, new[] { "settings", "currencies" }))
+
+			if (StartsWithAny(relativePath, new[] { "ReviewManagement" }))
+				_openSubmenus.Add("ReviewManagement");
+
+			if (StartsWithAny(relativePath, new[] { "settings", "currencies" }))
                 _openSubmenus.Add("settings");
 
 

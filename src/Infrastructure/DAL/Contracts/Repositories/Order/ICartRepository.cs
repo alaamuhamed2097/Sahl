@@ -14,8 +14,7 @@ public interface ICartRepository : ITableRepository<TbShoppingCart>
     /// </summary>
     Task<CartTransactionResult> AddItemToCartAsync(
         string customerId,
-        Guid itemId,
-        Guid offerId,
+        Guid OfferCombinationPricingId,
         int quantity,
         decimal unitPrice,
         CancellationToken cancellationToken = default);

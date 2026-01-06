@@ -55,9 +55,6 @@ public partial class MappingProfile
             // Main Image URL - using ThumbnailImage (null-safe)
             .ForMember(dest => dest.MainImageUrl, opt => opt.MapFrom(src =>
                 src.Item != null ? src.Item.ThumbnailImage : null))
-            .ForMember(dest => dest.Price, opt => opt.Ignore()) // Will be set by pricing service
-            .ForMember(dest => dest.SalePrice, opt => opt.Ignore()) // Will be set by pricing service
-            .ForMember(dest => dest.DiscountPercentage, opt => opt.Ignore()) // Will be set by pricing service
             .ForMember(dest => dest.CampaignBadgeAr, opt => opt.Ignore())
             .ForMember(dest => dest.CampaignBadgeEn, opt => opt.Ignore());
 
@@ -75,9 +72,6 @@ public partial class MappingProfile
                 src.Item != null ? src.Item.TitleEn : null))
             .ForMember(dest => dest.Rating, opt => opt.MapFrom(src =>
                 src.Item != null ? src.Item.AverageRating : 0))
-            .ForMember(dest => dest.Price, opt => opt.Ignore()) // Will be calculated from combination pricing
-            .ForMember(dest => dest.SalePrice, opt => opt.MapFrom(src => src.CampaignPrice))
-            .ForMember(dest => dest.DiscountPercentage, opt => opt.Ignore()) // Will be calculated in service
             .ForMember(dest => dest.IsAvailable, opt => opt.MapFrom(src =>
                 !src.StockLimit.HasValue || (src.StockLimit.Value - src.SoldCount) > 0))
             .ForMember(dest => dest.InStock, opt => opt.MapFrom(src =>
