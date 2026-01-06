@@ -5,7 +5,6 @@ namespace Shared.DTOs.Order.Checkout
     /// </summary>
     public class ShipmentPreviewDto
     {
-        public string VendorName { get; set; } = string.Empty;
         public int ItemCount { get; set; }
         public List<string> ItemsList { get; set; } = new();
         public decimal SubTotal { get; set; }

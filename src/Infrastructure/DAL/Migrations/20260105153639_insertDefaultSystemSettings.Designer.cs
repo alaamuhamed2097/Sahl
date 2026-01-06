@@ -4,6 +4,7 @@ using DAL.ApplicationContext;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DAL.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260105153639_insertDefaultSystemSettings")]
+    partial class insertDefaultSystemSettings
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -5004,235 +5007,6 @@ namespace DAL.Migrations
                     b.ToTable("TbPaymentMethods", (string)null);
                 });
 
-            modelBuilder.Entity("Domains.Entities.Order.Refund.TbRefund", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier")
-                        .HasDefaultValueSql("NEWID()");
-
-                    b.Property<string>("AdminNotes")
-                        .HasMaxLength(1000)
-                        .HasColumnType("nvarchar(1000)");
-
-                    b.Property<string>("AdminUserId")
-                        .HasMaxLength(450)
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<DateTime?>("ApprovedDateUTC")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("ApprovedItemsCount")
-                        .HasColumnType("int");
-
-                    b.Property<Guid>("CreatedBy")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("CreatedDateUtc")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2(2)")
-                        .HasDefaultValueSql("GETUTCDATE()");
-
-                    b.Property<Guid>("CustomerId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("DeliveryAddressId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<bool>("IsDeleted")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(false);
-
-                    b.Property<string>("Number")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<Guid>("OrderDetailId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<decimal>("RefundAmount")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("decimal(18,2)")
-                        .HasDefaultValue(0m);
-
-                    b.Property<int>("RefundReason")
-                        .HasColumnType("int");
-
-                    b.Property<string>("RefundReasonDetails")
-                        .HasMaxLength(1000)
-                        .HasColumnType("nvarchar(1000)");
-
-                    b.Property<int>("RefundStatus")
-                        .HasColumnType("int");
-
-                    b.Property<string>("RefundTransactionId")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("RefundedDateUTC")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("RejectionReason")
-                        .HasMaxLength(1000)
-                        .HasColumnType("nvarchar(1000)");
-
-                    b.Property<DateTime>("RequestDateUTC")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("RequestedItemsCount")
-                        .HasColumnType("int");
-
-                    b.Property<decimal>("ReturnShippingCost")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("decimal(18,2)")
-                        .HasDefaultValue(0m);
-
-                    b.Property<string>("ReturnTrackingNumber")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("ReturnedDateUTC")
-                        .HasColumnType("datetime2");
-
-                    b.Property<byte[]>("RowVersion")
-                        .IsConcurrencyToken()
-                        .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("rowversion");
-
-                    b.Property<Guid?>("UpdatedBy")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime?>("UpdatedDateUtc")
-                        .HasColumnType("datetime2(2)");
-
-                    b.Property<Guid>("VendorId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("AdminUserId");
-
-                    b.HasIndex("CustomerId");
-
-                    b.HasIndex("DeliveryAddressId");
-
-                    b.HasIndex("IsDeleted");
-
-                    b.HasIndex("Number")
-                        .IsUnique();
-
-                    b.HasIndex("OrderDetailId");
-
-                    b.HasIndex("RequestDateUTC");
-
-                    b.HasIndex("VendorId");
-
-                    b.HasIndex("CustomerId", "RefundStatus");
-
-                    b.HasIndex("VendorId", "RefundStatus");
-
-                    b.ToTable("TbRefunds", null, t =>
-                        {
-                            t.HasCheckConstraint("CK_Refund_Amounts", "[RefundAmount] >= 0 AND [ReturnShippingCost] >= 0");
-
-                            t.HasCheckConstraint("CK_Refund_ItemsCount", "[ApprovedItemsCount] <= [RequestedItemsCount]");
-                        });
-                });
-
-            modelBuilder.Entity("Domains.Entities.Order.Returns.TbRefundItemVideo", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier")
-                        .HasDefaultValueSql("NEWID()");
-
-                    b.Property<Guid>("CreatedBy")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("CreatedDateUtc")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2(2)")
-                        .HasDefaultValueSql("GETUTCDATE()");
-
-                    b.Property<int>("DisplayOrder")
-                        .HasColumnType("int");
-
-                    b.Property<bool>("IsDeleted")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(false);
-
-                    b.Property<Guid>("RefundId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid?>("UpdatedBy")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime?>("UpdatedDateUtc")
-                        .HasColumnType("datetime2(2)");
-
-                    b.Property<string>("VideoUrl")
-                        .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("IsDeleted");
-
-                    b.HasIndex("RefundId");
-
-                    b.ToTable("TbRefundItemVideos");
-                });
-
-            modelBuilder.Entity("Domains.Entities.Order.Returns.TbRefundStatusHistory", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier")
-                        .HasDefaultValueSql("NEWID()");
-
-                    b.Property<Guid>("CreatedBy")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("CreatedDateUtc")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2(2)")
-                        .HasDefaultValueSql("GETUTCDATE()");
-
-                    b.Property<bool>("IsDeleted")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(false);
-
-                    b.Property<int>("NewStatus")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Notes")
-                        .HasMaxLength(1000)
-                        .HasColumnType("nvarchar(1000)");
-
-                    b.Property<int>("OldStatus")
-                        .HasColumnType("int");
-
-                    b.Property<Guid>("RefundId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid?>("UpdatedBy")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime?>("UpdatedDateUtc")
-                        .HasColumnType("datetime2(2)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("IsDeleted");
-
-                    b.HasIndex("RefundId");
-
-                    b.ToTable("TbRefundStatusHistories");
-                });
-
             modelBuilder.Entity("Domains.Entities.Order.Shipping.TbOrderShipment", b =>
                 {
                     b.Property<Guid>("Id")
@@ -5652,8 +5426,8 @@ namespace DAL.Migrations
                     b.Property<decimal>("TaxAmount")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<decimal>("TaxPrecentage")
-                        .HasColumnType("decimal(18,2)");
+                    b.Property<Guid?>("TbCouponCodeId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid?>("TbShippingCompanyId")
                         .HasColumnType("uniqueidentifier");
@@ -5684,6 +5458,8 @@ namespace DAL.Migrations
 
                     b.HasIndex("OrderStatus")
                         .HasDatabaseName("IX_Orders_Status");
+
+                    b.HasIndex("TbCouponCodeId");
 
                     b.HasIndex("TbShippingCompanyId");
 
@@ -5769,6 +5545,93 @@ namespace DAL.Migrations
                         .HasDatabaseName("IX_OrderDetails_WarehouseId");
 
                     b.ToTable("TbOrderDetails", (string)null);
+                });
+
+            modelBuilder.Entity("Domains.Entities.Order.TbRefundRequest", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier")
+                        .HasDefaultValueSql("NEWID()");
+
+                    b.Property<string>("AdminNotes")
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<string>("AdminUserId")
+                        .HasMaxLength(450)
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<Guid>("CreatedBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedDateUtc")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2(2)")
+                        .HasDefaultValueSql("GETUTCDATE()");
+
+                    b.Property<string>("CustomerNotes")
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<Guid>("OrderId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("ProcessedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<decimal>("RefundAmount")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<DateTime?>("RefundCompletedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("RefundFailureReason")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("RefundReason")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("RefundReasonDetails")
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<int>("RefundStatus")
+                        .HasColumnType("int");
+
+                    b.Property<string>("RefundTransactionId")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<decimal>("RequestedAmount")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<Guid?>("UpdatedBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("UpdatedDateUtc")
+                        .HasColumnType("datetime2(2)");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasMaxLength(450)
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("IsDeleted");
+
+                    b.HasIndex("OrderId");
+
+                    b.ToTable("TbRefundRequests");
                 });
 
             modelBuilder.Entity("Domains.Entities.Page.TbPage", b =>
@@ -9875,70 +9738,6 @@ namespace DAL.Migrations
                     b.Navigation("PaymentMethod");
                 });
 
-            modelBuilder.Entity("Domains.Entities.Order.Refund.TbRefund", b =>
-                {
-                    b.HasOne("Domains.Identity.ApplicationUser", "AdminUser")
-                        .WithMany("Refunds")
-                        .HasForeignKey("AdminUserId")
-                        .OnDelete(DeleteBehavior.SetNull);
-
-                    b.HasOne("Domains.Entities.ECommerceSystem.Customer.TbCustomer", "Customer")
-                        .WithMany("Refunds")
-                        .HasForeignKey("CustomerId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("Domains.Entities.Order.TbCustomerAddress", "CustomerAddress")
-                        .WithMany("Refunds")
-                        .HasForeignKey("DeliveryAddressId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("Domains.Entities.Order.TbOrderDetail", "OrderDetail")
-                        .WithMany("Refunds")
-                        .HasForeignKey("OrderDetailId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("Domains.Entities.ECommerceSystem.Vendor.TbVendor", "Vendor")
-                        .WithMany("Refunds")
-                        .HasForeignKey("VendorId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("AdminUser");
-
-                    b.Navigation("Customer");
-
-                    b.Navigation("CustomerAddress");
-
-                    b.Navigation("OrderDetail");
-
-                    b.Navigation("Vendor");
-                });
-
-            modelBuilder.Entity("Domains.Entities.Order.Returns.TbRefundItemVideo", b =>
-                {
-                    b.HasOne("Domains.Entities.Order.Refund.TbRefund", "Refund")
-                        .WithMany("RefundItemVideos")
-                        .HasForeignKey("RefundId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Refund");
-                });
-
-            modelBuilder.Entity("Domains.Entities.Order.Returns.TbRefundStatusHistory", b =>
-                {
-                    b.HasOne("Domains.Entities.Order.Refund.TbRefund", "Refund")
-                        .WithMany("RefundStatusHistories")
-                        .HasForeignKey("RefundId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Refund");
-                });
-
             modelBuilder.Entity("Domains.Entities.Order.Shipping.TbOrderShipment", b =>
                 {
                     b.HasOne("Domains.Entities.Order.TbOrder", "Order")
@@ -10048,24 +9847,28 @@ namespace DAL.Migrations
             modelBuilder.Entity("Domains.Entities.Order.TbOrder", b =>
                 {
                     b.HasOne("Domains.Entities.Merchandising.CouponCode.TbCouponCode", "Coupon")
-                        .WithMany("Orders")
+                        .WithMany()
                         .HasForeignKey("CouponId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .HasConstraintName("FK_TbOrders_TbCouponCodes_CouponId");
 
                     b.HasOne("Domains.Entities.Order.TbCustomerAddress", "CustomerAddress")
-                        .WithMany("Orders")
+                        .WithMany()
                         .HasForeignKey("DeliveryAddressId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired()
                         .HasConstraintName("FK_TbOrders_TbCustomerAddresses_DeliveryAddressId");
+
+                    b.HasOne("Domains.Entities.Merchandising.CouponCode.TbCouponCode", null)
+                        .WithMany("Orders")
+                        .HasForeignKey("TbCouponCodeId");
 
                     b.HasOne("Domains.Entities.Order.Shipping.TbShippingCompany", null)
                         .WithMany("Orders")
                         .HasForeignKey("TbShippingCompanyId");
 
                     b.HasOne("Domains.Identity.ApplicationUser", "User")
-                        .WithMany("Orders")
+                        .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
@@ -10111,6 +9914,17 @@ namespace DAL.Migrations
                     b.Navigation("Order");
 
                     b.Navigation("Vendor");
+                });
+
+            modelBuilder.Entity("Domains.Entities.Order.TbRefundRequest", b =>
+                {
+                    b.HasOne("Domains.Entities.Order.TbOrder", "Order")
+                        .WithMany()
+                        .HasForeignKey("OrderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Order");
                 });
 
             modelBuilder.Entity("Domains.Entities.SellerRequest.TbRequestComment", b =>
@@ -10315,7 +10129,7 @@ namespace DAL.Migrations
                         .HasForeignKey("ProcessedByUserId")
                         .OnDelete(DeleteBehavior.Restrict);
 
-                    b.HasOne("Domains.Entities.Order.Refund.TbRefund", "Refund")
+                    b.HasOne("Domains.Entities.Order.TbRefundRequest", "Refund")
                         .WithMany()
                         .HasForeignKey("RefundId")
                         .OnDelete(DeleteBehavior.Restrict);
@@ -10484,8 +10298,6 @@ namespace DAL.Migrations
 
                     b.Navigation("ItemReviews");
 
-                    b.Navigation("Refunds");
-
                     b.Navigation("ReviewReports");
 
                     b.Navigation("ShippingCompanyReviews");
@@ -10513,8 +10325,6 @@ namespace DAL.Migrations
             modelBuilder.Entity("Domains.Entities.ECommerceSystem.Vendor.TbVendor", b =>
                 {
                     b.Navigation("ItemReviews");
-
-                    b.Navigation("Refunds");
 
                     b.Navigation("VendorReviews");
                 });
@@ -10598,13 +10408,6 @@ namespace DAL.Migrations
                     b.Navigation("Items");
                 });
 
-            modelBuilder.Entity("Domains.Entities.Order.Refund.TbRefund", b =>
-                {
-                    b.Navigation("RefundItemVideos");
-
-                    b.Navigation("RefundStatusHistories");
-                });
-
             modelBuilder.Entity("Domains.Entities.Order.Shipping.TbOrderShipment", b =>
                 {
                     b.Navigation("Items");
@@ -10615,13 +10418,6 @@ namespace DAL.Migrations
                     b.Navigation("Orders");
 
                     b.Navigation("ShippingCompanyReviews");
-                });
-
-            modelBuilder.Entity("Domains.Entities.Order.TbCustomerAddress", b =>
-                {
-                    b.Navigation("Orders");
-
-                    b.Navigation("Refunds");
                 });
 
             modelBuilder.Entity("Domains.Entities.Order.TbOrder", b =>
@@ -10638,8 +10434,6 @@ namespace DAL.Migrations
                     b.Navigation("ItemReviews");
 
                     b.Navigation("OrderShipmentItem");
-
-                    b.Navigation("Refunds");
                 });
 
             modelBuilder.Entity("Domains.Entities.SellerRequest.TbSellerRequest", b =>
@@ -10678,10 +10472,6 @@ namespace DAL.Migrations
                     b.Navigation("CustomerLoyalties");
 
                     b.Navigation("CustomerWallets");
-
-                    b.Navigation("Orders");
-
-                    b.Navigation("Refunds");
 
                     b.Navigation("ShoppingCarts");
                 });

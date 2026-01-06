@@ -14,6 +14,7 @@ namespace Domains.Entities.Offer
         // Required properties
         public Guid ItemId { get; set; }
         public Guid VendorId { get; set; }
+        public Guid WarehouseId { get; set; }
 
         // Filtering and search optimization
         public int EstimatedDeliveryDays { get; set; }

@@ -2,6 +2,7 @@ using BL.Contracts.IMapper;
 using BL.Mapper.Base;
 using DAL.Contracts.Repositories;
 using DAL.Contracts.Repositories.Catalog.Item;
+using DAL.Contracts.Repositories.Configuration;
 using DAL.Contracts.Repositories.Customer;
 using DAL.Contracts.Repositories.Merchandising;
 using DAL.Contracts.Repositories.Order;
@@ -9,6 +10,7 @@ using DAL.Contracts.Repositories.Review;
 using DAL.Contracts.UnitOfWork;
 using DAL.Repositories;
 using DAL.Repositories.Catalog.Item;
+using DAL.Repositories.Configuration;
 using DAL.Repositories.Customer;
 using DAL.Repositories.Merchandising;
 using DAL.Repositories.Order;
@@ -59,6 +61,8 @@ namespace Api.Extensions
 
             services.AddScoped<IOrderRepository, OrderRepository>();
             services.AddScoped<IShipmentRepository, ShipmentRepository>();
+
+            services.AddScoped<ISystemSettingsRepository, SystemSettingsRepository>();
 
             return services;
         }

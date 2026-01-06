@@ -11,7 +11,6 @@ using Domains.Entities.Catalog.Pricing;
 using Domains.Entities.Catalog.Unit;
 using Domains.Entities.Currency;
 using Domains.Entities.Customer;
-using Domains.Entities.ECommerceSystem;
 using Domains.Entities.ECommerceSystem.Customer;
 using Domains.Entities.ECommerceSystem.Review;
 using Domains.Entities.ECommerceSystem.Support;
@@ -107,7 +106,8 @@ namespace DAL.ApplicationContext
         public DbSet<TbCouponCodeScope> CouponCodeScopes { get; set; }
 
         // Settings
-        public DbSet<TbSetting> TbSettings { get; set; }
+        public DbSet<TbGeneralSettings> TbGeneralSettings { get; set; }
+        public DbSet<TbSystemSettings> TbSystemSettings { get; set; }
 
         // Shipping Management
         public DbSet<TbShippingCompany> TbShippingCompanies { get; set; }
