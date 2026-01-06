@@ -2,6 +2,8 @@
 using Domains.Entities.ECommerceSystem.Review;
 using Domains.Entities.ECommerceSystem.Vendor;
 using Domains.Entities.Offer;
+using Domains.Entities.Order.Refund;
+using Domains.Entities.Order.Returns;
 using Domains.Entities.Order.Shipping;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -37,8 +39,8 @@ namespace Domains.Entities.Order
         public virtual TbItem Item { get; set; } = null!;
         public virtual TbOfferCombinationPricing OfferCombinationPricing { get; set; } = null!;
         public virtual TbVendor Vendor { get; set; } = null!;
-        public virtual ICollection<TbVendorReview> ItemReviews { get; set; } = new List<TbVendorReview>();
         public virtual TbOrderShipmentItem? OrderShipmentItem { get; set; }
-
+        public virtual ICollection<TbVendorReview> ItemReviews { get; set; } = new List<TbVendorReview>();
+        public virtual ICollection<TbRefund> Refunds { get; set; } = new List<TbRefund>();
     }
 }

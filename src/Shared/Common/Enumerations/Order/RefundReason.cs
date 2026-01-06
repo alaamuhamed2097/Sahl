@@ -1,17 +1,17 @@
 ﻿namespace Common.Enumerations.Order
 {
-    /// <summary>
-    /// Refund reason enum
-    /// </summary>
     public enum RefundReason
     {
         DefectiveProduct = 1,
-        WrongItemReceived = 2,
+        WrongItemShipped = 2,
         ItemNotAsDescribed = 3,
-        ChangedMind = 4,
-        OrderCancellation = 5,
-        LateDelivery = 6,
-        DamagedInShipping = 7,
+        DamagedDuringShipping = 4,
+        ChangedMind = 5,
+        OrderedByMistake = 6,
+        BetterPriceFound = 7,
+        LateDelivery = 8,
+        MissingParts = 9,
+        QualityNotSatisfactory = 10,
         Other = 99
     }
 }

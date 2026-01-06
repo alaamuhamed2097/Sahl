@@ -245,7 +245,7 @@
                                     <h5>@ECommerceResources.RefundStatus</h5>
                                 </div>
                                 <div class="card-body">
-                                    @switch (RefundModel.CurrentState)
+                                    @switch (RefundModel.RefundStatus)
                                     {
                                         case RefundStatus.Approved:
                                             <div class="d-flex justify-content-center">
@@ -257,7 +257,7 @@
                                                 <span class="badge bg-danger px-3 py-2 fs-6">@ECommerceResources.Rejected</span>
                                             </div>
                                             break;
-                                        case RefundStatus.Pending:
+                                        case RefundStatus.Open:
                                             <div class="row justify-content-center">
                                                 <div class="col-12 col-sm-10 col-md-8 col-lg-6 col-xl-4">
                                                     <div class="mb-3">

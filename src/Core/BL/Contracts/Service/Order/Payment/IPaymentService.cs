@@ -10,7 +10,7 @@ namespace BL.Contracts.Service.Order.Payment
         /// <summary>
         /// Process payment for an order
         /// </summary>
-        Task<PaymentResultDto> ProcessPaymentAsync(PaymentProcessRequest request);
+        Task<PaymentResultDto> ProcessPaymentAsync(IPaymentProcessRequest request);
 
         /// <summary>
         /// Get payment status for an order

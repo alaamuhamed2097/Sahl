@@ -35,7 +35,7 @@ namespace Api.Controllers.v1.Order
         [ProducesResponseType(typeof(PaymentResultDto), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<PaymentResultDto>> ProcessPayment(
-            [FromBody] PaymentProcessRequest request)
+            [FromBody] OrderPaymentProcessRequest request)
         {
             try
             {

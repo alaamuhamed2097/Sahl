@@ -28,6 +28,8 @@ using Domains.Entities.Offer.Warranty;
 using Domains.Entities.Order;
 using Domains.Entities.Order.Cart;
 using Domains.Entities.Order.Payment;
+using Domains.Entities.Order.Refund;
+using Domains.Entities.Order.Returns;
 using Domains.Entities.Order.Shipping;
 using Domains.Entities.Page;
 using Domains.Entities.SellerRequest;
@@ -35,7 +37,7 @@ using Domains.Entities.SellerTier;
 using Domains.Entities.Setting;
 using Domains.Entities.VideoProvider;
 using Domains.Entities.Visibility;
-using Domains.Entities.Wallet;
+using Domains.Entities.Wallet.Customer;
 using Domains.Entities.Warehouse;
 using Domains.Identity;
 using Domains.Procedures;
@@ -146,11 +148,11 @@ namespace DAL.ApplicationContext
         public DbSet<TbCustomerLoyalty> TbCustomerLoyalties { get; set; }
         public DbSet<TbLoyaltyPointsTransaction> TbLoyaltyPointsTransactions { get; set; }
 
-        // Wallet System
+        // Customer Wallet System
         public DbSet<TbCustomerWallet> TbCustomerWallets { get; set; }
-        public DbSet<TbVendorWallet> TbVendorWallets { get; set; }
-        public DbSet<TbWalletTransaction> TbWalletTransactions { get; set; }
-        public DbSet<TbPlatformTreasury> TbPlatformTreasuries { get; set; }
+        public DbSet<TbWalletChargingRequest> TbWalletChargingRequests { get; set; }
+        public DbSet<TbCustomerWalletTransaction> TbWalletTransactions { get; set; }
+        public DbSet<TbWalletSetting> TbWalletSettings { get; set; }
 
         // Buy Box System
         public DbSet<TbBuyBoxCalculation> TbBuyBoxCalculations { get; set; }
@@ -206,7 +208,9 @@ namespace DAL.ApplicationContext
         // Order Management
         public DbSet<TbOrder> TbOrders { get; set; }
         public DbSet<TbOrderDetail> TbOrderDetails { get; set; }
-        public DbSet<TbRefundRequest> TbRefundRequests { get; set; }
+        public DbSet<TbRefund> TbRefunds { get; set; }
+        public DbSet<TbRefundStatusHistory> TbRefundStatusHistories  { get; set; }
+        public DbSet<TbRefundItemVideo> TbRefundItemVideos { get; set; }
         public DbSet<TbShippingDetail> TbShippingDetails { get; set; }
 
         // New E-commerce tables: Shopping Cart, Shipments, Payments, Customer Addresses
