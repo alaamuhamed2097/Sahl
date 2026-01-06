@@ -1,4 +1,6 @@
 ﻿using Domains.Entities.ECommerceSystem.Review;
+using Domains.Entities.Order.Refund;
+using Domains.Entities.Order.Returns;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -15,13 +17,11 @@ namespace Domains.Entities.ECommerceSystem.Customer
 		[ForeignKey("UserId")]
 		public virtual ApplicationUser User { get; set; } = null!;
 
-
 		public virtual ICollection<TbItemReview> ItemReviews { get; set; } = new List<TbItemReview>();
 		public virtual ICollection<TbVendorReview> VendorReviews { get; set; } = new List<TbVendorReview>();
 		public virtual ICollection<TbShippingCompanyReview> ShippingCompanyReviews { get; set; } = new List<TbShippingCompanyReview>();
 		public virtual ICollection<TbReviewReport> ReviewReports { get; set; } = new List<TbReviewReport>();
-		public virtual ICollection<TbCustomerItemView> CustomerItemViews { get; set; }
-
-
-	}
+		public virtual ICollection<TbCustomerItemView> CustomerItemViews { get; set; } = new List<TbCustomerItemView>();
+        public virtual ICollection<TbRefund> Refunds { get; set; } = new List<TbRefund>();
+    }
 }

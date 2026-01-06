@@ -4,10 +4,8 @@ using Shared.DTOs.Setting;
 
 namespace BL.Contracts.Service.Setting;
 
-public interface ISettingService : IBaseService<TbSetting, SettingDto>
+public interface ISettingService : IBaseService<TbGeneralSettings, GeneralSettingsDto>
 {
-    Task<SettingDto> GetSettingsAsync(string clientIp = "0", bool applyConversion = true);
-    Task<string> GetMainBannerPathAsync();
-    Task<decimal> GetShippingAmountAsync(string clientIp = "0", bool applyConversion = true);
-    Task<bool> UpdateSettingsAsync(SettingDto dto, Guid userId);
+    Task<GeneralSettingsDto> GetSettingsAsync();
+    Task<bool> UpdateSettingsAsync(GeneralSettingsDto dto, Guid userId);
 }

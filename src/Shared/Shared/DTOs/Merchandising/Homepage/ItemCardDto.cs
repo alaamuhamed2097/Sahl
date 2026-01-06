@@ -13,9 +13,6 @@
         public string NameAr { get; set; } = string.Empty;
         public string NameEn { get; set; } = string.Empty;
 
-        public decimal Price { get; set; }
-        public decimal? SalePrice { get; set; }
-        public int? DiscountPercentage { get; set; }
         public string? MainImageUrl { get; set; }
         public decimal? Rating { get; set; }
         public bool IsAvailable { get; set; }

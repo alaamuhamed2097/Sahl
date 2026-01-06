@@ -1,4 +1,4 @@
-using Domains.Entities.Wallet;
+using Domains.Entities.Wallet.Customer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -15,7 +15,7 @@ namespace DAL.Configurations
             entity.ToTable("TbCustomerWallets");
 
             // Property configurations
-            entity.Property(e => e.AvailableBalance)
+            entity.Property(e => e.Balance)
                 .IsRequired()
                 .HasColumnType("decimal(18,2)")
                 .HasDefaultValue(0m);
@@ -25,12 +25,7 @@ namespace DAL.Configurations
                 .HasColumnType("decimal(18,2)")
                 .HasDefaultValue(0m);
 
-            entity.Property(e => e.TotalEarned)
-                .IsRequired()
-                .HasColumnType("decimal(18,2)")
-                .HasDefaultValue(0m);
-
-            entity.Property(e => e.TotalSpent)
+            entity.Property(e => e.LockedBalance)
                 .IsRequired()
                 .HasColumnType("decimal(18,2)")
                 .HasDefaultValue(0m);
@@ -44,18 +39,12 @@ namespace DAL.Configurations
                 .HasForeignKey(e => e.UserId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            entity.HasOne(e => e.Currency)
-                .WithMany()
-                .HasForeignKey(e => e.CurrencyId)
-                .OnDelete(DeleteBehavior.Restrict);
-
             // Indexes
             entity.HasIndex(e => e.UserId)
                 .IsUnique();
 
-            entity.HasIndex(e => e.CurrencyId);
-
-            entity.HasIndex(e => e.AvailableBalance);
+            entity.HasIndex(e => e.Balance);
+            entity.HasIndex(e => e.LockedBalance);
         }
     }
 }

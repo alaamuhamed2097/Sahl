@@ -1,4 +1,5 @@
-﻿using BL.Contracts.Service.Catalog.Item;
+﻿using BL.Contracts.IMapper;
+using BL.Contracts.Service.Catalog.Item;
 using Common.Filters;
 using DAL.Contracts.Repositories.Catalog.Item;
 using Domains.Procedures;
@@ -14,13 +15,16 @@ namespace BL.Services.Catalog.Item;
 public class ItemSearchService : IItemSearchService
 {
     private readonly IItemSearchRepository _searchRepository;
+    private readonly IBaseMapper _mapper;
     private readonly ILogger _logger;
 
     public ItemSearchService(
         IItemSearchRepository searchRepository,
+        IBaseMapper mapper,
         ILogger logger)
     {
         _searchRepository = searchRepository ?? throw new ArgumentNullException(nameof(searchRepository));
+        _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
@@ -37,7 +41,7 @@ public class ItemSearchService : IItemSearchService
 
             var result = await _searchRepository.SearchItemsAsync(filter);
 
-            var dtos = result.Items.Select(entity => MapEntityToDto(entity)).ToList();
+            var dtos = result.Items.Select(entity => _mapper.MapModel<SpSearchItemsMultiVendor, SearchItemDto>(entity)).ToList();
 
             EnrichResultsWithBadges(dtos);
 
@@ -160,46 +164,6 @@ public class ItemSearchService : IItemSearchService
         }
     }
 
-    /// <summary>
-    /// Map SpSearchItemsMultiVendor entity to SearchItemDto
-    /// Now includes brand names
-    /// </summary>
-    private SearchItemDto MapEntityToDto(SpSearchItemsMultiVendor entity)
-    {
-        var dto = new SearchItemDto
-        {
-            ItemId = entity.ItemId,
-            ItemCombinationId = entity.ItemCombinationId,
-            TitleAr = entity.TitleAr,
-            TitleEn = entity.TitleEn,
-            ShortDescriptionAr = entity.ShortDescriptionAr,
-            ShortDescriptionEn = entity.ShortDescriptionEn,
-            CategoryId = entity.CategoryId,
-            BrandId = entity.BrandId,
-            BrandNameAr = entity.BrandNameAr,
-            BrandNameEn = entity.BrandNameEn,
-            ThumbnailImage = entity.ThumbnailImage,
-            CreatedDateUtc = entity.CreatedDateUtc,
-            ItemRating = entity.ItemRating,
-            Price = entity.Price,
-            SalesPrice = entity.SalesPrice,
-            AvailableQuantity = entity.AvailableQuantity,
-            StockStatus = entity.StockStatus,
-            IsFreeShipping = entity.IsFreeShipping
-        };
-
-        //// Calculate discount percentage
-        //if (entity.Price > entity.SalesPrice && entity.Price > 0)
-        //{
-        //    dto.DiscountPercentage = Math.Round(
-        //        ((entity.Price - entity.SalesPrice) / entity.Price) * 100, 2);
-        //}
-
-        //// Check if new (created within last 30 days)
-        //dto.IsNew = (DateTime.UtcNow - entity.CreatedDateUtc).TotalDays <= 30;
-
-        return dto;
-    }
 
     private void ValidateAndSanitizeFilter(ItemFilterQuery filter)
     {
@@ -323,12 +287,12 @@ public class ItemSearchService : IItemSearchService
             }
 
             // Rating badge (for high ratings)
-            if (item.ItemRating.HasValue && item.ItemRating >= 4.5m)
+            if (item.AverageRating.HasValue && item.AverageRating >= 4.5m)
             {
                 item.Badges.Add(new BadgeDto
                 {
-                    TextAr = $"⭐ {item.ItemRating:F1}",
-                    TextEn = $"⭐ {item.ItemRating:F1}",
+                    TextAr = $"⭐ {item.AverageRating:F1}",
+                    TextEn = $"⭐ {item.AverageRating:F1}",
                     Type = "rating",
                     Variant = "warning"
                 });

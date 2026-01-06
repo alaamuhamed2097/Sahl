@@ -13,7 +13,7 @@ namespace Api.Controllers.v1.Merchandising
     /// </summary>
     [ApiController]
     [ApiVersion("1.0")]
-    [Route("api/v{version:apiVersion}/homepage")]
+    [Route("api/v{version:apiVersion}/Homepage")]
     public class HomepageController : BaseController
     {
         private readonly IHomepageService _homepageService;

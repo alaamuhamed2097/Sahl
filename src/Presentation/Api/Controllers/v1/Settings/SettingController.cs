@@ -35,47 +35,11 @@ namespace Api.Controllers.v1.Settings
         {
             var clientIp = HttpContext.GetClientIpAddress();
             var shouldApplyConversion = ShouldApplyCurrencyConversion();
-            var setting = await _settingService.GetSettingsAsync(clientIp, shouldApplyConversion);
+            var setting = await _settingService.GetSettingsAsync();
             if (setting == null)
             {
                 return NotFound(CreateErrorResponse(NotifiAndAlertsResources.NoDataFound));
             }
-
-            return Ok(CreateSuccessResponse(setting, NotifiAndAlertsResources.DataRetrieved));
-        }
-
-        /// <summary>
-        /// Get main banner path.
-        /// </summary>
-        /// <remarks>
-        /// API Version: 1.0+
-        /// </remarks>
-        [HttpGet("mainBanner")]
-        [AllowAnonymous]
-        public async Task<IActionResult> GetMainBanner()
-        {
-            var setting = await _settingService.GetMainBannerPathAsync();
-            if (setting == null)
-            {
-                return NotFound(CreateErrorResponse(NotifiAndAlertsResources.NoDataFound));
-            }
-
-            return Ok(CreateSuccessResponse(setting, NotifiAndAlertsResources.DataRetrieved));
-        }
-
-        /// <summary>
-        /// Get shipping amount.
-        /// </summary>
-        /// <remarks>
-        /// API Version: 1.0+
-        /// </remarks>
-        [HttpGet("shippingAmount")]
-        [AllowAnonymous]
-        public async Task<IActionResult> GetShippingAmount()
-        {
-            var clientIp = HttpContext.GetClientIpAddress();
-            var shouldApplyConversion = ShouldApplyCurrencyConversion();
-            var setting = await _settingService.GetShippingAmountAsync(clientIp, shouldApplyConversion);
 
             return Ok(CreateSuccessResponse(setting, NotifiAndAlertsResources.DataRetrieved));
         }
@@ -89,7 +53,7 @@ namespace Api.Controllers.v1.Settings
         /// </remarks>
         [HttpPost("update")]
         [Authorize(Roles = nameof(UserRole.Admin))]
-        public async Task<IActionResult> Update([FromBody] SettingDto dto)
+        public async Task<IActionResult> Update([FromBody] GeneralSettingsDto dto)
         {
             if (!ModelState.IsValid)
             {

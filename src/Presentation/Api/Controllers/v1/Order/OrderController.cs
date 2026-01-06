@@ -5,6 +5,7 @@ using Common.Enumerations.User;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Shared.DTOs.Order.OrderProcessing;
+using Shared.DTOs.Order.ResponseOrderDetail;
 using Shared.GeneralModels;
 
 namespace Api.Controllers.v1.Order
@@ -117,14 +118,95 @@ namespace Api.Controllers.v1.Order
             });
         }
 
-        /// <summary>
-        /// Get Order by Order Number
-        /// </summary>
-        /// <remarks>
-        /// API Version: 1.0+<br/>
-        /// Requires Customer, Admin, or Vendor role.
-        /// </remarks>
-        [HttpGet("number/{orderNumber}")]
+		/// <summary>
+		/// Get Order by ID
+		/// </summary>
+		/// <remarks>
+		/// API Version: 1.0+<br/>
+		/// Requires Customer, Admin, or Vendor role.
+		/// </remarks>
+		[HttpGet("list-order-details/{orderId}")]
+		[Authorize(Roles = nameof(UserRole.Customer) + "," + nameof(UserRole.Admin) + "," + nameof(UserRole.Vendor))]
+		[ProducesResponseType(StatusCodes.Status200OK)]
+		[ProducesResponseType(StatusCodes.Status404NotFound)]
+		[ProducesResponseType(StatusCodes.Status403Forbidden)]
+		public async Task<IActionResult> GetListByOrdersId([FromRoute] Guid orderId)
+		{
+			var order = await _orderService.GetListByOrderIdAsync(orderId);
+			if (order == null)
+			{
+				return NotFound(new ResponseModel<string>
+				{
+					Success = false,
+					Message = "Order not found."
+				});
+			}
+
+			//// Only customers are restricted to their own orders
+			//if (RoleName == nameof(UserRole.Customer) && order.UserId != UserId)
+			//{
+			//	return StatusCode(StatusCodes.Status403Forbidden, new ResponseModel<string>
+			//	{
+			//		Success = false,
+			//		Message = "You do not have permission to access this order."
+			//	});
+			//}
+
+			return Ok(new ResponseModel<List<ResponseOrderItemDetailsDto>>
+			{
+				Success = true,
+				Message = "Data retrieved successfully.",
+				Data = order
+			});
+		}
+
+		/// <summary>
+		/// Get Order Details by ID
+		/// </summary>
+		/// <remarks>
+		/// API Version: 1.0+<br/>
+		/// Requires Customer, Admin, or Vendor role.<br/>
+		/// Customers can only view their own orders.
+		/// </remarks>
+		[HttpGet("{orderId}/details")]
+		[Authorize(Roles = nameof(UserRole.Customer) + "," + nameof(UserRole.Admin) + "," + nameof(UserRole.Vendor))]
+		[ProducesResponseType(typeof(ResponseModel<ResponseOrderDetailsDto>), StatusCodes.Status200OK)]
+		[ProducesResponseType(typeof(ResponseModel<string>), StatusCodes.Status404NotFound)]
+		[ProducesResponseType(typeof(ResponseModel<string>), StatusCodes.Status403Forbidden)]
+		public async Task<IActionResult> GetOrderDetailsById(Guid orderId)
+		{
+			// Only customers need userId check, admins and vendors can view all
+			string? userId = RoleName == nameof(UserRole.Customer) ? UserId : null;
+
+			var orderDetails = await _orderService.GetOrderDetailsByIdAsync(
+				orderId,
+				userId ?? string.Empty);
+
+			if (orderDetails == null)
+			{
+				return NotFound(new ResponseModel<string>
+				{
+					Success = false,
+					Message = "Order not found."
+				});
+			}
+
+			return Ok(new ResponseModel<ResponseOrderDetailsDto>
+			{
+				Success = true,
+				Message = "Data retrieved successfully.",
+				Data = orderDetails
+			});
+		}
+
+		/// <summary>
+		/// Get Order by Order Number
+		/// </summary>
+		/// <remarks>
+		/// API Version: 1.0+<br/>
+		/// Requires Customer, Admin, or Vendor role.
+		/// </remarks>
+		[HttpGet("number/{orderNumber}")]
         [Authorize(Roles = nameof(UserRole.Customer) + "," + nameof(UserRole.Admin) + "," + nameof(UserRole.Vendor))]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]

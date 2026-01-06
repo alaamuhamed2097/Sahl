@@ -210,83 +210,89 @@ public partial class MappingProfile
             var combo = JsonSerializer.Deserialize<CurrentCombination>(json, JsonOptions);
             if (combo == null) return null;
 
-                return new CurrentCombinationDto
-                {
-                    CombinationId = combo.CombinationId,
-                    SKU = combo.SKU,
-                    Barcode = combo.Barcode,
-                    IsDefault = combo.IsDefault,
-                    CreatedBy = combo.CreatedBy,
-                    PricingAttributes = combo.PricingAttributes?.Select(sa => new PricingAttributeDto
-                    {
-                        AttributeId = sa.AttributeId,
-                        AttributeNameAr = sa.AttributeNameAr,
-                        AttributeNameEn = sa.AttributeNameEn,
-                        CombinationValueId = sa.CombinationValueId,
-                        ValueAr = sa.ValueAr,
-                        ValueEn = sa.ValueEn,
-                        IsSelected = sa.IsSelected
-                    }).ToList(),
-                    Images = combo.Images?.Select(img => new ImageDto
-                    {
-                        Id = img.Id,
-                        Path = img.ImageUrl,
-                        Order = img.DisplayOrder,
-                        IsDefault = img.IsDefault,
-                    }).ToList()
-                };
-            }
-            catch
+            return new CurrentCombinationDto
             {
-                return null;
-            }
+                CombinationId = combo.CombinationId,
+                SKU = combo.SKU,
+                Barcode = combo.Barcode,
+                IsDefault = combo.IsDefault,
+                CreatedBy = combo.CreatedBy,
+                PricingAttributes = combo.PricingAttributes?.Select(sa => new PricingAttributeDto
+                {
+                    AttributeId = sa.AttributeId,
+                    AttributeNameAr = sa.AttributeNameAr,
+                    AttributeNameEn = sa.AttributeNameEn,
+                    CombinationValueId = sa.CombinationValueId,
+                    ValueAr = sa.ValueAr,
+                    ValueEn = sa.ValueEn,
+                    IsSelected = sa.IsSelected
+                }).ToList(),
+                Images = combo.Images?.Select(img => new ImageDto
+                {
+                    Id = img.Id,
+                    Path = img.ImageUrl,
+                    Order = img.DisplayOrder,
+                    IsDefault = img.IsDefault,
+                }).ToList()
+            };
         }
+        catch
+        {
+            return null;
+        }
+    }
 
+    // ✅ FIXED: Removed double deserialization - BestOffer is now directly a BestOffer object
     private static PricingDto DeserializePricing(string json)
     {
         if (string.IsNullOrWhiteSpace(json))
             return null;
 
-        var pricing = JsonSerializer.Deserialize<PricingInfo>(json, JsonOptions);
-        if (pricing == null)
-            return null;
-
-        BestOffer? bestOffer = null;
-
-        if (!string.IsNullOrWhiteSpace(pricing.BestOffer))
+        try
         {
-            bestOffer = JsonSerializer.Deserialize<BestOffer>(
-                pricing.BestOffer,
-                JsonOptions
-            );
+            var pricing = JsonSerializer.Deserialize<PricingInfo>(json, JsonOptions);
+            if (pricing == null)
+                return null;
+
+            return new PricingDto
+            {
+                VendorCount = pricing.VendorCount,
+                MinPrice = pricing.MinPrice,
+                MaxPrice = pricing.MaxPrice,
+                BestOffer = pricing.BestOffer == null
+                    ? new BestPriceOfferDto()
+                    : new BestPriceOfferDto
+                    {
+                        OfferId = pricing.BestOffer.OfferId,
+                        OfferPricingId = pricing.BestOffer.OfferPricingId,
+                        VendorId = pricing.BestOffer.VendorId,
+                        VendorName = pricing.BestOffer.VendorName,
+                        VendorRating = pricing.BestOffer.VendorRating ?? 0.0m,
+                        Price = pricing.BestOffer.Price,
+                        SalesPrice = pricing.BestOffer.SalesPrice,
+                        DiscountPercentage = pricing.BestOffer.DiscountPercentage,
+                        AvailableQuantity = pricing.BestOffer.AvailableQuantity,
+                        StockStatus = pricing.BestOffer.StockStatus,
+                        IsFreeShipping = pricing.BestOffer.IsFreeShipping,
+                        EstimatedDeliveryDays = pricing.BestOffer.EstimatedDeliveryDays,
+                        IsBuyBoxWinner = pricing.BestOffer.IsBuyBoxWinner,
+                        MinOrderQuantity = pricing.BestOffer.MinOrderQuantity,
+                        MaxOrderQuantity = pricing.BestOffer.MaxOrderQuantity,
+                        QuantityTiers = pricing.BestOffer.QuantityTiers?.Select(qt => new QuantityTierDto
+                        {
+                            MinQuantity = qt.MinQuantity,
+                            MaxQuantity = qt.MaxQuantity,
+                            PricePerUnit = qt.PricePerUnit,
+                            SalesPricePerUnit = qt.SalesPricePerUnit
+                        }).ToList()
+                    }
+            };
         }
-
-        return new PricingDto
+        catch (JsonException)
         {
-            VendorCount = pricing.VendorCount,
-            MinPrice = pricing.MinPrice,
-            MaxPrice = pricing.MaxPrice,
-            BestOffer = bestOffer == null
-                ? new BestPriceOfferDto()
-                : new BestPriceOfferDto
-                {
-                    OfferId = bestOffer.OfferId,
-                    VendorId = bestOffer.VendorId,
-                    VendorName = bestOffer.VendorName,
-                    VendorRating = bestOffer.VendorRating ?? 0.0m,
-                    Price = bestOffer.Price,
-                    SalesPrice = bestOffer.SalesPrice,
-                    DiscountPercentage = bestOffer.DiscountPercentage,
-                    AvailableQuantity = bestOffer.AvailableQuantity,
-                    StockStatus = bestOffer.StockStatus,
-                    IsFreeShipping = bestOffer.IsFreeShipping,
-                    EstimatedDeliveryDays = bestOffer.EstimatedDeliveryDays,
-                    IsBuyBoxWinner = bestOffer.IsBuyBoxWinner,
-                    MinOrderQuantity = bestOffer.MinOrderQuantity,
-                    MaxOrderQuantity = bestOffer.MaxOrderQuantity
-                }
-        };
+            // Log the exception if you have a logger available
+            // _logger.Error(ex, "Failed to deserialize pricing JSON");
+            return null;
+        }
     }
-
-
 }

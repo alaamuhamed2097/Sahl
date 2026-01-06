@@ -29,19 +29,19 @@ namespace DAL.Configurations
 
             // Foreign Keys - تعديل العلاقات لتجنب CASCADE DELETE المتعدد
             builder.HasOne(o => o.User)
-                .WithMany()
+                .WithMany(u=> u.Orders)
                 .HasForeignKey(o => o.UserId)
                 .OnDelete(DeleteBehavior.Cascade)
                 .HasConstraintName("FK_TbOrders_AspNetUsers_UserId");
 
             builder.HasOne(o => o.CustomerAddress)
-                .WithMany()
+                .WithMany(c=> c.Orders)
                 .HasForeignKey(o => o.DeliveryAddressId)
                 .OnDelete(DeleteBehavior.NoAction) // تغيير هنا
                 .HasConstraintName("FK_TbOrders_TbCustomerAddresses_DeliveryAddressId");
 
             builder.HasOne(o => o.Coupon)
-                .WithMany()
+                .WithMany(c=>c.Orders)
                 .HasForeignKey(o => o.CouponId)
                 .OnDelete(DeleteBehavior.NoAction) // تغيير هنا
                 .HasConstraintName("FK_TbOrders_TbCouponCodes_CouponId");

@@ -188,16 +188,6 @@ public class HomepageService : IHomepageService
                     defaultCombination.Id,
                     defaultCombination.Item.Category.PricingSystemType,
                     1);
-
-                product.Price = pricingResult.Price;
-                // SalePrice is already set from CampaignPrice by AutoMapper
-
-                // Calculate discount percentage
-                if (pricingResult.Price > 0 && campaignItem.CampaignPrice < pricingResult.Price)
-                {
-                    var discount = ((pricingResult.Price - campaignItem.CampaignPrice) / pricingResult.Price) * 100;
-                    product.DiscountPercentage = (int)discount;
-                }
             }
         }
 
@@ -267,25 +257,9 @@ public class HomepageService : IHomepageService
 
             var category = await _categoryRepository.FindByIdAsync(combination.Item.CategoryId);
             if (category == null) throw new ApplicationException($"Category with id={combination.Item.CategoryId} not found");
-
-            var pricingResult = await _pricingService.CalculatePrice(
-                combination.Id,
-                category.PricingSystemType,
-                1
-            );
-
-            product.Price = pricingResult.Price;
-            product.SalePrice = pricingResult.SalesPrice;
-
-            // Calculate discount percentage
-            if (pricingResult.Price > 0)
-            {
-                var discount = ((pricingResult.Price - pricingResult.SalesPrice) / pricingResult.Price) * 100;
-                product.DiscountPercentage = (int)discount;
-            }
         }
 
-        return products.Where(p => p.IsAvailable).ToList();
+        return products.ToList();
     }
 
     #endregion

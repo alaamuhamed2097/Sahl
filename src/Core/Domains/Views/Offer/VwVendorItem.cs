@@ -5,7 +5,7 @@
         // Offer basic fields
         public Guid VendorItemId { get; set; }
         public DateTime CreatedDateUtc { get; set; }
-        public int HandlingTimeInDays { get; set; }
+        public int EstimatedDeliveryDays { get; set; }
         public int FulfillmentType { get; set; }
         public bool IsBuyBoxWinner { get; set; }
         public string StockStatus { get; set; }
@@ -16,22 +16,22 @@
         public decimal Price { get; set; }
         public decimal SalesPrice { get; set; }
         public int AvailableQuantity { get; set; }
-       
+
         // Warranty
         public Guid? WarrantyId { get; set; }
         public int? WarrantyType { get; set; }
         public int? WarrantyPeriodMonths { get; set; }
         public string? WarrantyPolicy { get; set; }
-        
+
         // Vendor info
         public Guid VendorId { get; set; }
         public string VendorFullName { get; set; } = string.Empty;
-       
+
         // Item combination details
         public Guid ItemCombinationId { get; set; }
-        public string? Barcode { get; set; } 
-        public string? SKU { get; set; } 
-        public bool IsDefault { get; set; } 
+        public string? Barcode { get; set; }
+        public string? SKU { get; set; }
+        public bool IsDefault { get; set; }
 
         // Item fields
         public Guid ItemId { get; set; }

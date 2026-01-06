@@ -1,13 +1,16 @@
-﻿namespace Shared.DTOs.Order.Payment.Refund;
+﻿using Common.Enumerations.Order;
+
+namespace Shared.DTOs.Order.Payment.Refund;
 
 /// <summary>
 /// DTO for creating a refund request
 /// </summary>
 public class CreateRefundRequestDto
 {
-    public Guid OrderId { get; set; }
-    public string Reason { get; set; } = string.Empty;
+    public Guid OrderDetailId { get; set; }
+    public int RequestedItemsCount { get; set; }
+    public RefundReason Reason { get; set; } 
     public string? ReasonDetails { get; set; }
-    public string? CustomerNotes { get; set; }
 }
+
 

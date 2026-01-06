@@ -64,27 +64,16 @@ namespace Api.Controllers.v1.Catalog
             if (filter == null)
                 return BadRequest(CreateErrorResponse(NotifiAndAlertsResources.InvalidInputAlert));
 
-            try
-            {
-                // Validate and normalize filter parameters
-                ValidateAndNormalizeItemFilter(filter);
+            // Validate and normalize filter parameters
+            ValidateAndNormalizeItemFilter(filter);
 
-                // Execute stored procedure search
-                var result = await _itemSearchService.SearchItemsAsync(filter);
+            // Execute stored procedure search
+            var result = await _itemSearchService.SearchItemsAsync(filter);
 
-                if (result?.Items?.Any() != true)
-                    return Ok(CreateSuccessResponse(result, NotifiAndAlertsResources.NoDataFound));
+            if (result?.Items?.Any() != true)
+                return Ok(CreateSuccessResponse(result, NotifiAndAlertsResources.NoDataFound));
 
-                return Ok(CreateSuccessResponse(result, NotifiAndAlertsResources.DataRetrieved));
-            }
-            catch (ArgumentException ex)
-            {
-                return BadRequest(CreateErrorResponse(ex.Message));
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, CreateErrorResponse($"Error performing search: {ex.Message}"));
-            }
+            return Ok(CreateSuccessResponse(result, NotifiAndAlertsResources.DataRetrieved));
         }
 
         /// <summary>
