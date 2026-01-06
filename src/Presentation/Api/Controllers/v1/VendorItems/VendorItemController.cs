@@ -96,21 +96,21 @@ namespace Api.Controllers.v1.VendorItems
         /// API Version: 1.0+
         /// </remarks>
         /// <param name="criteria">Search criteria including pagination parameters.</param>
-        //[HttpGet("search")]
-        //[AllowAnonymous]
-        //public async Task<IActionResult> Search([FromQuery] ItemSearchCriteriaModel criteria)
-        //{
-        //    ValidateAndNormalizePagination(criteria);
+        [HttpGet("search")]
+        [AllowAnonymous]
+        public async Task<IActionResult> Search([FromQuery] ItemstatusSearchCriteriaModel criteria)
+        {
+            ValidateAndNormalizePagination(criteria);
 
-        //    var clientIp = HttpContext.GetClientIpAddress();
-        //    var shouldApplyConversion = ShouldApplyCurrencyConversion();
-        //    var result = await _vendorItemService.GetPage(criteria);
+            //var clientIp = HttpContext.GetClientIpAddress();
+            var shouldApplyConversion = ShouldApplyCurrencyConversion();
+            var result = await _vendorItemService.GetPageVendor(criteria);
 
-        //    if (result?.Items?.Any() != true)
-        //        return Ok(CreateSuccessResponse(result, NotifiAndAlertsResources.NoDataFound));
+            if (result?.Items?.Any() != true)
+                return Ok(CreateSuccessResponse(result, NotifiAndAlertsResources.NoDataFound));
 
-        //    return Ok(CreateSuccessResponse(result, NotifiAndAlertsResources.DataRetrieved));
-        //}
+            return Ok(CreateSuccessResponse(result, NotifiAndAlertsResources.DataRetrieved));
+        }
 
 
         ///// <summary>
@@ -216,7 +216,7 @@ namespace Api.Controllers.v1.VendorItems
         /// <summary>
         /// Validates and normalizes pagination parameters
         /// </summary>
-        private static void ValidateAndNormalizePagination(ItemSearchCriteriaModel criteria)
+        private static void ValidateAndNormalizePagination(ItemstatusSearchCriteriaModel criteria)
         {
             criteria.PageNumber = Math.Max(criteria.PageNumber, 1);
             criteria.PageSize = Math.Clamp(criteria.PageSize, 1, 100);

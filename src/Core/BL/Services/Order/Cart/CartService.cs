@@ -439,7 +439,7 @@ public class CartService : ICartService
         {
             foreach (var ci in cart.Items.Where(i => !i.IsDeleted))
             {
-                var pricing = await _combinationPricingRepository.FindByIdAsync(ci.OfferCombinationPricingId);
+                var pricing = ci.OfferCombinationPricing; //await _combinationPricingRepository.FindByIdAsync(ci.OfferCombinationPricingId);
 
                 if (pricing == null)
                 {
@@ -454,18 +454,16 @@ public class CartService : ICartService
                 {
                     Id = ci.Id,
                     ItemId = ci.ItemId,
-                    ItemName = ci.Item?.TitleEn ?? "Unknown Item",
+                    ItemNameAr = ci.Item?.TitleAr,
+                    ItemNameEn = ci.Item?.TitleEn,
                     OfferCombinationPricingId = ci.OfferCombinationPricingId,
-                    SellerName = ci.OfferCombinationPricing?.Offer?.Vendor?.User?.FullName
-                         ?? "Unknown Seller",
+                    SellerName = ci.OfferCombinationPricing?.Offer?.Vendor?.StoreName,
                     Quantity = ci.Quantity,
                     UnitPrice = currentPrice,
                     SubTotal = currentPrice * ci.Quantity,
                     IsAvailable = isAvailable,
-                    ImageUrl = ci.Item?.ItemImages != null && ci.Item.ItemImages.Any()
-                    ? ci.Item.ItemImages
-                        .FirstOrDefault()?.ToString()
-                    : null
+                    ImageUrl = ci.Item?.ThumbnailImage
+
                 });
             }
         }

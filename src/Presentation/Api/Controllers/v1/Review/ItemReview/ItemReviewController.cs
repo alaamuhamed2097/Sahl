@@ -23,46 +23,19 @@ namespace Api.Controllers.v1.Review.ItemReview
 	[ApiController]
 	[ApiVersion("1.0")]
 	[Route("api/v{version:apiVersion}/[controller]")]
-	//[Authorize(Roles = nameof(UserRole.Customer))]
+	[Authorize]
 	//[Authorize(Roles = $"{nameof(UserRole.Customer)},{nameof(UserRole.Admin)}")]
 
 	public class ItemReviewController : BaseController
 	{
-		private readonly IItemReviewService _reviewService;
+		private readonly IItemReviewService _reviewItemService;
+		
 		public ItemReviewController(IItemReviewService reviewService, ILogger<CartController> logger)
 		{
-			_reviewService = reviewService;
+			_reviewItemService = reviewService;
 		}
 
-		/// <summary>
-		/// Get review by ID with full details
-		/// </summary>
-		/// <remarks>
-		/// API Version: 1.0+
-		/// </remarks>
-		[HttpGet("{reviewId}")]
-		[Authorize(Roles = nameof(UserRole.Customer))]
-		[ProducesResponseType(StatusCodes.Status200OK)]
-		[ProducesResponseType(StatusCodes.Status404NotFound)]
-		public async Task<IActionResult> GetReviewById(Guid reviewId)
-		{
-			var review = await _reviewService.GetReviewByIdAsync(reviewId);
-
-			if (review == null)
-				return NotFound(new ResponseModel<string>
-				{
-					Success = false,
-					Message = NotifiAndAlertsResources.NoDataFound
-				});
-
-			return Ok(new ResponseModel<ItemReviewDto>
-			{
-				Success = true,
-				Message = NotifiAndAlertsResources.DataRetrieved,
-				Data = review
-			});
-		}
-
+		
 		/// <summary>
 		/// Submit a new review for a Item
 		/// </summary>
@@ -71,7 +44,7 @@ namespace Api.Controllers.v1.Review.ItemReview
 		/// Requires Authentication.
 		/// </remarks>
 		[HttpPost("submit")]
-		//[Authorize(Roles = nameof(UserRole.Customer))]
+		[Authorize(Roles = nameof(UserRole.Customer))]
 		[ProducesResponseType(StatusCodes.Status200OK)]
 		[ProducesResponseType(StatusCodes.Status400BadRequest)]
 		[ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -85,7 +58,7 @@ namespace Api.Controllers.v1.Review.ItemReview
 			//	});
 
 			//reviewDto.CustomerID = Guid.Parse(UserId);
-			var result = await _reviewService.SubmitReviewAsync(reviewDto, GuidUserId);
+			var result = await _reviewItemService.SubmitReviewAsync(reviewDto, GuidUserId);
 
 			return Ok(new ResponseModel<ResponseItemReviewDto>
 			{
@@ -103,7 +76,7 @@ namespace Api.Controllers.v1.Review.ItemReview
 		/// Requires Authentication.
 		/// </remarks>
 		[HttpPost("update")]
-		//[Authorize(Roles = nameof(UserRole.Customer))]
+		[Authorize(Roles = $"{nameof(UserRole.Customer)}")]
 		[ProducesResponseType(StatusCodes.Status200OK)]
 		[ProducesResponseType(StatusCodes.Status404NotFound)]
 		[ProducesResponseType(StatusCodes.Status403Forbidden)]
@@ -116,7 +89,7 @@ namespace Api.Controllers.v1.Review.ItemReview
 					Message = NotifiAndAlertsResources.UnauthorizedAccess
 				});
 
-			var result = await _reviewService.updateReviewAsync( reviewDto, GuidUserId);
+			var result = await _reviewItemService.updateReviewAsync( reviewDto, GuidUserId);
 
 			return Ok(new ResponseModel<ResponseItemReviewDto>
 			{
@@ -125,6 +98,38 @@ namespace Api.Controllers.v1.Review.ItemReview
 				Data = result
 			});
 		}
+
+		/// <summary>
+		/// Get review by ID with full details
+		/// </summary>
+		/// <remarks>
+		/// API Version: 1.0+
+		/// </remarks>
+		[HttpGet("{reviewId}")]
+		[Authorize(Roles = $"{nameof(UserRole.Customer)},{nameof(UserRole.Admin)}")]
+		[ProducesResponseType(StatusCodes.Status200OK)]
+		[ProducesResponseType(StatusCodes.Status404NotFound)]
+		public async Task<IActionResult> GetReviewById(Guid reviewId)
+		{
+			var review = await _reviewItemService.GetReviewByIdAsync(reviewId);
+			
+
+			if (review == null)
+				return NotFound(new ResponseModel<string>
+				{
+					Success = false,
+					Message = NotifiAndAlertsResources.NoDataFound
+				});
+
+			return Ok(new ResponseModel<ResponseItemReviewDto>
+			{
+				Success = true,
+				Message = NotifiAndAlertsResources.DataRetrieved,
+				Data = review
+			});
+		}
+
+
 		/// <summary>
 		/// Delete a review
 		/// </summary>
@@ -133,7 +138,7 @@ namespace Api.Controllers.v1.Review.ItemReview
 		/// Requires Authentication.
 		/// </remarks>
 		[HttpPost("delete")]
-		//[Authorize(Roles = nameof(UserRole.Customer))]
+		[Authorize(Roles = $"{nameof(UserRole.Customer)}")]
 		[ProducesResponseType(StatusCodes.Status200OK)]
 		[ProducesResponseType(StatusCodes.Status404NotFound)]
 		public async Task<IActionResult> DeleteReview([FromBody] ItemReviewDto reviewDto)
@@ -145,7 +150,7 @@ namespace Api.Controllers.v1.Review.ItemReview
 					Message = NotifiAndAlertsResources.UnauthorizedAccess
 				});
 
-			var result = await _reviewService.DeleteReviewAsync(reviewDto.Id, GuidUserId);
+			var result = await _reviewItemService.DeleteReviewAsync(reviewDto.Id, GuidUserId);
 
 			if (!result)
 				return NotFound(new ResponseModel<string>
@@ -169,10 +174,12 @@ namespace Api.Controllers.v1.Review.ItemReview
 		/// API Version: 1.0+
 		/// </remarks>
 		[HttpGet("reviews-by-Item/{ItemId}")]
+		[Authorize(Roles = $"{nameof(UserRole.Admin)}")]
+
 		[ProducesResponseType(StatusCodes.Status200OK)]
 		public async Task<IActionResult> GetReviewsByItem(Guid ItemId)
 		{
-			var reviews = await _reviewService.GetReviewsByItemIdAsync(ItemId);
+			var reviews = await _reviewItemService.GetReviewsByItemIdAsync(ItemId);
 
 			return Ok(new ResponseModel<IEnumerable<ResponseItemReviewDto>>
 			{
@@ -189,10 +196,12 @@ namespace Api.Controllers.v1.Review.ItemReview
 		/// API Version: 1.0+
 		/// </remarks>
 		[HttpGet("search")]
+		[Authorize(Roles = $"{nameof(UserRole.Admin)}")]
+
 		[ProducesResponseType(StatusCodes.Status200OK)]
 		public async Task<IActionResult> Search([FromQuery] ItemReviewSearchCriteriaModel criteria)
 		{
-			var result = await _reviewService.GetPaginatedReviewsAsync(criteria);
+			var result = await _reviewItemService.GetPaginatedReviewsAsync(criteria);
 
 			return Ok(new ResponseModel<PagedResult<ResponseItemReviewDto>>
 			{
@@ -208,10 +217,12 @@ namespace Api.Controllers.v1.Review.ItemReview
 		/// API Version: 1.0+
 		/// </remarks>
 		[HttpGet("Item-review-stats/{ItemId}")]
+		[Authorize(Roles = nameof(UserRole.Admin))]
 		[ProducesResponseType(StatusCodes.Status200OK)]
+		[ProducesResponseType(StatusCodes.Status404NotFound)]
 		public async Task<IActionResult> GetItemReviewStats(Guid ItemId)
 		{
-			var stats = await _reviewService.GetItemReviewStatsAsync(ItemId);
+			var stats = await _reviewItemService.GetItemReviewStatsAsync(ItemId);
 
 			return Ok(new ResponseModel<ResponseItemReviewStatsDto>
 			{
@@ -229,11 +240,12 @@ namespace Api.Controllers.v1.Review.ItemReview
 		/// Requires Admin role.
 		/// </remarks>
 		[HttpGet("pending")]
-		//[Authorize(Roles = nameof(UserRole.Admin))]
+		[Authorize(Roles = nameof(UserRole.Admin))]
 		[ProducesResponseType(StatusCodes.Status200OK)]
+		[ProducesResponseType(StatusCodes.Status404NotFound)]
 		public async Task<IActionResult> GetPendingReviews()
 		{
-			var reviews = await _reviewService.GetPendingReviewsAsync();
+			var reviews = await _reviewItemService.GetPendingReviewsAsync();
 
 			return Ok(new ResponseModel<IEnumerable<ResponseItemReviewDto>>
 			{
@@ -252,7 +264,7 @@ namespace Api.Controllers.v1.Review.ItemReview
 		/// Requires Admin role.
 		/// </remarks>
 		[HttpPost("approve")]
-		//[Authorize(Roles = nameof(UserRole.Admin))]
+		[Authorize(Roles = nameof(UserRole.Admin))]
 		[ProducesResponseType(StatusCodes.Status200OK)]
 		[ProducesResponseType(StatusCodes.Status404NotFound)]
 		public async Task<IActionResult> ApproveReview([FromBody] ItemReviewDto reviewDto)
@@ -264,7 +276,7 @@ namespace Api.Controllers.v1.Review.ItemReview
 					Message = NotifiAndAlertsResources.UnauthorizedAccess
 				});
 
-			var result = await _reviewService.ApproveReviewAsync(reviewDto.Id, GuidUserId);
+			var result = await _reviewItemService.ApproveReviewAsync(reviewDto.Id, GuidUserId);
 
 			if (!result)
 				return NotFound(new ResponseModel<string>
@@ -301,7 +313,7 @@ namespace Api.Controllers.v1.Review.ItemReview
 					Message = NotifiAndAlertsResources.UnauthorizedAccess
 				});
 
-			var result = await _reviewService.RejectReviewAsync(reviewDto.Id, GuidUserId);
+			var result = await _reviewItemService.RejectReviewAsync(reviewDto.Id, GuidUserId);
 
 			if (!result)
 				return NotFound(new ResponseModel<string>

@@ -85,8 +85,8 @@ public class VendorService : BaseService<TbVendor, VendorDto>, IVendorService
         {
             string searchTerm = criteriaModel.SearchTerm.Trim().ToLower();
             filter = x => !x.IsDeleted &&
-                         (x.NameEn != null && x.NameEn.ToLower().Contains(searchTerm) ||
-                         x.NameAr != null && x.NameAr.ToLower().Contains(searchTerm));
+                         (x.StoreName != null && x.StoreName.ToLower().Contains(searchTerm) ||
+                         x.StoreName != null && x.StoreName.ToLower().Contains(searchTerm));
         }
 
         // Create ordering function based on SortBy and SortDirection
@@ -101,8 +101,8 @@ public class VendorService : BaseService<TbVendor, VendorDto>, IVendorService
             {
                 return sortBy switch
                 {
-                    "companyname" => isDescending ? query.OrderByDescending(x => x.NameEn) : query.OrderBy(x => x.NameEn),
-                    _ => query.OrderBy(x => x.NameEn)
+                    "companyname" => isDescending ? query.OrderByDescending(x => x.StoreName) : query.OrderBy(x => x.StoreName),
+                    _ => query.OrderBy(x => x.StoreName)
                 };
             };
         }
@@ -137,8 +137,7 @@ public class VendorService : BaseService<TbVendor, VendorDto>, IVendorService
         if (!string.IsNullOrWhiteSpace(searchTerm))
         {
             filter = filter.And(x =>
-                x.NameEn != null && x.NameEn.ToLower().Contains(searchTerm) ||
-                x.CommercialRegister != null && x.CommercialRegister.ToLower().Contains(searchTerm)
+                x.StoreName != null && x.StoreName.ToLower().Contains(searchTerm)
             );
         }
 
@@ -172,7 +171,7 @@ public class VendorService : BaseService<TbVendor, VendorDto>, IVendorService
         {
             string searchTerm = criteriaModel.SearchTerm.Trim().ToLower();
             filter = x => !x.IsDeleted &&
-                     (x.NameEn != null && x.NameEn.ToLower().Contains(searchTerm));
+                     (x.StoreName != null && x.StoreName.ToLower().Contains(searchTerm));
         }
 
         // Create ordering function based on SortBy and SortDirection
@@ -187,8 +186,8 @@ public class VendorService : BaseService<TbVendor, VendorDto>, IVendorService
             {
                 return sortBy switch
                 {
-                    "companyname" => isDescending ? query.OrderByDescending(x => x.NameEn) : query.OrderBy(x => x.NameEn),
-                    _ => query.OrderBy(x => x.NameEn)
+                    "companyname" => isDescending ? query.OrderByDescending(x => x.StoreName) : query.OrderBy(x => x.StoreName),
+                    _ => query.OrderBy(x => x.StoreName)
                 };
             };
         }

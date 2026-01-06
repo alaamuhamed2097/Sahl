@@ -118,6 +118,11 @@
 										</td>
 										<td class="d-flex gap-1 justify-content-center align-items-center">
 											<div class="d-flex justify-content-center gap-2 my-2 pt-2">
+												<!-- زر إدارة المراجعات -->
+												<button class="btn btn-primary" @onclick="() => GoToItemReviews(item.Id)">
+													<i class="fas fa-star mx-1 ms-2"></i>
+													@ReviewResources.ManageReviews
+												</button>
 												<button class="btn btn-primary" @onclick="() => Edit(item)">
 													<i class="fas fa-pencil-alt mx-1 ms-2"></i>
 													@ActionsResources.Edit

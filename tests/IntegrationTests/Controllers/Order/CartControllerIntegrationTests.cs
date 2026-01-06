@@ -134,7 +134,8 @@ namespace IntegrationTests.Controllers.Order
                     {
                         Id = Guid.NewGuid(),
                         ItemId = Guid.NewGuid(),
-                        ItemName = "Test Item",
+                        ItemNameAr = "?????? ????",
+                        ItemNameEn = "Test Item",
                         Quantity = 2,
                         UnitPrice = 50m,
                         SubTotal = 100m
