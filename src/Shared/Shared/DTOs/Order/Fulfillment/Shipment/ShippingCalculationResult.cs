@@ -8,6 +8,6 @@ namespace Shared.DTOs.Order.Fulfillment.Shipment
     public class ShippingCalculationResult
     {
         public List<ShipmentPreviewDto> ShipmentPreviews { get; set; } = new();
-        public decimal TotalShippingCost { get; set; }
+        public decimal? TotalShippingCost { get; set; }
     }
 }

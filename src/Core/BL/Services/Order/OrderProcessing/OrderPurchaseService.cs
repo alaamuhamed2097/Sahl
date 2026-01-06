@@ -161,7 +161,7 @@ public class OrderPurchaseService : IOrderPurchaseService
                 UserId = customerId,
                 DeliveryAddressId = purchaseDto.DeliveryAddressId,
                 Price = checkoutSummary.PriceBreakdown.GrandTotal,
-                ShippingAmount = checkoutSummary.PriceBreakdown.ShippingCost,
+                ShippingAmount = checkoutSummary.PriceBreakdown.ShippingCost ?? 0m,
                 TaxAmount = checkoutSummary.PriceBreakdown.TaxAmount,
                 CouponId = checkoutSummary.CouponId,
                 PaymentStatus = PaymentStatus.Pending,
