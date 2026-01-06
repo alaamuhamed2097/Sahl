@@ -5,7 +5,6 @@ namespace Shared.DTOs.Order.Cart
     /// </summary>
     public class AddToCartRequest
     {
-        public Guid ItemId { get; set; }
         public Guid OfferCombinationPricingId { get; set; }
         public int Quantity { get; set; }
     }

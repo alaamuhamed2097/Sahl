@@ -242,7 +242,7 @@ public partial class MappingProfile
         }
     }
 
-    // ✅ FIXED: Removed double deserialization - BestOffer is now directly a BestOffer object
+    // ✅ FIXED: Handle both string and object types for BestOffer (backward compatible)
     private static PricingDto DeserializePricing(string json)
     {
         if (string.IsNullOrWhiteSpace(json))
@@ -250,35 +250,61 @@ public partial class MappingProfile
 
         try
         {
-            var pricing = JsonSerializer.Deserialize<PricingInfo>(json, JsonOptions);
-            if (pricing == null)
-                return null;
+            // First, deserialize to a dynamic structure to check BestOfferJson type
+            using var doc = JsonDocument.Parse(json);
+            var root = doc.RootElement;
+
+            var vendorCount = root.GetProperty("VendorCount").GetInt32();
+            var minPrice = root.GetProperty("MinPrice").GetDecimal();
+            var maxPrice = root.GetProperty("MaxPrice").GetDecimal();
+
+            BestOffer? bestOffer = null;
+
+            if (root.TryGetProperty("BestOfferJson", out var bestOfferElement))
+            {
+                // Check if BestOfferJson is a string or object
+                if (bestOfferElement.ValueKind == JsonValueKind.String)
+                {
+                    // ✅ Handle string case (double serialization from SQL)
+                    var bestOfferJson = bestOfferElement.GetString();
+                    if (!string.IsNullOrWhiteSpace(bestOfferJson))
+                    {
+                        bestOffer = JsonSerializer.Deserialize<BestOffer>(bestOfferJson, JsonOptions);
+                    }
+                }
+                else if (bestOfferElement.ValueKind == JsonValueKind.Object)
+                {
+                    // ✅ Handle object case (direct deserialization)
+                    var bestOfferJson = bestOfferElement.GetRawText();
+                    bestOffer = JsonSerializer.Deserialize<BestOffer>(bestOfferJson, JsonOptions);
+                }
+            }
 
             return new PricingDto
             {
-                VendorCount = pricing.VendorCount,
-                MinPrice = pricing.MinPrice,
-                MaxPrice = pricing.MaxPrice,
-                BestOffer = pricing.BestOffer == null
+                VendorCount = vendorCount,
+                MinPrice = minPrice,
+                MaxPrice = maxPrice,
+                BestOffer = bestOffer == null
                     ? new BestPriceOfferDto()
                     : new BestPriceOfferDto
                     {
-                        OfferId = pricing.BestOffer.OfferId,
-                        OfferPricingId = pricing.BestOffer.OfferPricingId,
-                        VendorId = pricing.BestOffer.VendorId,
-                        VendorName = pricing.BestOffer.VendorName,
-                        VendorRating = pricing.BestOffer.VendorRating ?? 0.0m,
-                        Price = pricing.BestOffer.Price,
-                        SalesPrice = pricing.BestOffer.SalesPrice,
-                        DiscountPercentage = pricing.BestOffer.DiscountPercentage,
-                        AvailableQuantity = pricing.BestOffer.AvailableQuantity,
-                        StockStatus = pricing.BestOffer.StockStatus,
-                        IsFreeShipping = pricing.BestOffer.IsFreeShipping,
-                        EstimatedDeliveryDays = pricing.BestOffer.EstimatedDeliveryDays,
-                        IsBuyBoxWinner = pricing.BestOffer.IsBuyBoxWinner,
-                        MinOrderQuantity = pricing.BestOffer.MinOrderQuantity,
-                        MaxOrderQuantity = pricing.BestOffer.MaxOrderQuantity,
-                        QuantityTiers = pricing.BestOffer.QuantityTiers?.Select(qt => new QuantityTierDto
+                        OfferId = bestOffer.OfferId,
+                        OfferPricingId = bestOffer.OfferPricingId,
+                        VendorId = bestOffer.VendorId,
+                        VendorName = bestOffer.VendorName,
+                        VendorRating = bestOffer.VendorRating ?? 0.0m,
+                        Price = bestOffer.Price,
+                        SalesPrice = bestOffer.SalesPrice,
+                        DiscountPercentage = bestOffer.DiscountPercentage,
+                        AvailableQuantity = bestOffer.AvailableQuantity,
+                        StockStatus = bestOffer.StockStatus,
+                        IsFreeShipping = bestOffer.IsFreeShipping,
+                        EstimatedDeliveryDays = bestOffer.EstimatedDeliveryDays,
+                        IsBuyBoxWinner = bestOffer.IsBuyBoxWinner,
+                        MinOrderQuantity = bestOffer.MinOrderQuantity,
+                        MaxOrderQuantity = bestOffer.MaxOrderQuantity,
+                        QuantityTiers = bestOffer.QuantityTiers?.Select(qt => new QuantityTierDto
                         {
                             MinQuantity = qt.MinQuantity,
                             MaxQuantity = qt.MaxQuantity,
@@ -288,10 +314,10 @@ public partial class MappingProfile
                     }
             };
         }
-        catch (JsonException)
+        catch (JsonException ex)
         {
             // Log the exception if you have a logger available
-            // _logger.Error(ex, "Failed to deserialize pricing JSON");
+            Console.WriteLine(ex.Message);
             return null;
         }
     }
