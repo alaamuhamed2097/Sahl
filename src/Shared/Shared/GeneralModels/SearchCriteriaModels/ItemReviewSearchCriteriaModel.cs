@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Common.Enumerations.Review;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -11,7 +12,7 @@ namespace Shared.GeneralModels.SearchCriteriaModels
 		public decimal? RatingFrom { get; set; } = null;
 		public decimal? RatingTo { get; set; } = null;
 		public bool? IsVerifiedPurchase { get; set; } = null;
-		public List<Common.Enumerations.Review.ReviewStatus>? Statuses { get; set; } = null;
+		public ReviewStatus? Statuses { get; set; } = null;
 
-	}
+    }
 }

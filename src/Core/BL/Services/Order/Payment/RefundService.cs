@@ -1,4 +1,3 @@
-using AutoMapper;
 using BL.Contracts.IMapper;
 using BL.Contracts.Service.Order.Payment;
 using Common.Enumerations.Order;
@@ -236,7 +235,7 @@ public class RefundService : IRefundService
         {
             var refundRepo = _unitOfWork.TableRepository<TbRefund>();
             var refundRequest = await refundRepo.FindByIdAsync(refundRequestId);
-            return refundRequest == null ? null : _mapper.MapModel<TbRefund,RefundRequestDto>(refundRequest);
+            return refundRequest == null ? null : _mapper.MapModel<TbRefund, RefundRequestDto>(refundRequest);
         }
         catch (Exception ex)
         {
@@ -252,7 +251,7 @@ public class RefundService : IRefundService
             var refundRepo = _unitOfWork.TableRepository<TbRefund>();
             var refundRequest = await refundRepo.GetQueryable()
                 .FirstOrDefaultAsync(r => r.OrderDetailId == orderDetailId && !r.IsDeleted);
-            return refundRequest == null ? null : _mapper.MapModel<TbRefund,RefundRequestDto>(refundRequest);
+            return refundRequest == null ? null : _mapper.MapModel<TbRefund, RefundRequestDto>(refundRequest);
         }
         catch (Exception ex)
         {
@@ -288,7 +287,7 @@ public class RefundService : IRefundService
                 .Take(criteria.PageSize)
                 .ToListAsync();
 
-            var dtos = _mapper.MapList<TbRefund,RefundRequestDto>(items);
+            var dtos = _mapper.MapList<TbRefund, RefundRequestDto>(items);
             return new PagedResult<RefundRequestDto>(dtos.ToList(), totalCount);
         }
         catch (Exception ex)
@@ -604,7 +603,6 @@ public class RefundStatusUpdateResult
     public static RefundStatusUpdateResult Fail(string errorMessage) =>
         new RefundStatusUpdateResult { IsSuccess = false, ErrorMessage = errorMessage };
 }
-
 
 public class UpdateRefundStatusDto
 {

@@ -7,7 +7,8 @@
     {
         public Guid Id { get; set; }
         public Guid ItemId { get; set; }
-        public string ItemName { get; set; } = string.Empty;
+        public required string ItemNameAr { get; set; } = string.Empty;
+        public required string ItemNameEn { get; set; } = string.Empty;
         public Guid OfferCombinationPricingId { get; set; }
         public string SellerName { get; set; } = string.Empty;
 

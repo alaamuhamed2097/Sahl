@@ -3095,13 +3095,17 @@ namespace DAL.Migrations
                         .HasDefaultValueSql("NEWID()");
 
                     b.Property<string>("Address")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<decimal?>("AverageRating")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<string>("CommercialRegister")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<DateTime>("BirthDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("CityId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid>("CreatedBy")
                         .HasColumnType("uniqueidentifier");
@@ -3111,30 +3115,61 @@ namespace DAL.Migrations
                         .HasColumnType("datetime2(2)")
                         .HasDefaultValueSql("GETUTCDATE()");
 
-                    b.Property<string>("Discription")
+                    b.Property<string>("FirstName")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
+                    b.Property<string>("IdentificationImageBackPath")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("IdentificationImageFrontPath")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("IdentificationNumber")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("IdentificationType")
+                        .HasColumnType("int");
 
                     b.Property<bool>("IsDeleted")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bit")
                         .HasDefaultValue(false);
 
-                    b.Property<string>("NameAr")
+                    b.Property<bool>("IsRealEstateRegistered")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("LastName")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("NameEn")
+                    b.Property<string>("MiddleName")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Notes")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("PostalCode")
+                    b.Property<string>("PhoneCode")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("TaxNumber")
+                    b.Property<string>("PhoneNumber")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PostalCode")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<string>("StoreName")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<Guid?>("UpdatedBy")
@@ -3147,13 +3182,12 @@ namespace DAL.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<bool>("VATRegistered")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("VendorCode")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("VendorType")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("CityId");
 
                     b.HasIndex("IsDeleted");
 
@@ -6716,7 +6750,7 @@ namespace DAL.Migrations
                     b.ToTable("TbVisibilityLogs", (string)null);
                 });
 
-            modelBuilder.Entity("Domains.Entities.Wallet.TbCustomerWallet", b =>
+            modelBuilder.Entity("Domains.Entities.Wallet.Customer.TbCustomerWallet", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -6726,7 +6760,7 @@ namespace DAL.Migrations
                     b.Property<string>("ApplicationUserId")
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<decimal>("AvailableBalance")
+                    b.Property<decimal>("Balance")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("decimal(18,2)")
                         .HasDefaultValue(0m);
@@ -6739,9 +6773,6 @@ namespace DAL.Migrations
                         .HasColumnType("datetime2(2)")
                         .HasDefaultValueSql("GETUTCDATE()");
 
-                    b.Property<Guid>("CurrencyId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<bool>("IsDeleted")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bit")
@@ -6750,17 +6781,12 @@ namespace DAL.Migrations
                     b.Property<DateTime?>("LastTransactionDate")
                         .HasColumnType("datetime2(2)");
 
+                    b.Property<decimal>("LockedBalance")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("decimal(18,2)")
+                        .HasDefaultValue(0m);
+
                     b.Property<decimal>("PendingBalance")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("decimal(18,2)")
-                        .HasDefaultValue(0m);
-
-                    b.Property<decimal>("TotalEarned")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("decimal(18,2)")
-                        .HasDefaultValue(0m);
-
-                    b.Property<decimal>("TotalSpent")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("decimal(18,2)")
                         .HasDefaultValue(0m);
@@ -6779,11 +6805,11 @@ namespace DAL.Migrations
 
                     b.HasIndex("ApplicationUserId");
 
-                    b.HasIndex("AvailableBalance");
-
-                    b.HasIndex("CurrencyId");
+                    b.HasIndex("Balance");
 
                     b.HasIndex("IsDeleted");
+
+                    b.HasIndex("LockedBalance");
 
                     b.HasIndex("UserId")
                         .IsUnique();
@@ -6791,186 +6817,7 @@ namespace DAL.Migrations
                     b.ToTable("TbCustomerWallets", (string)null);
                 });
 
-            modelBuilder.Entity("Domains.Entities.Wallet.TbPlatformTreasury", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier")
-                        .HasDefaultValueSql("NEWID()");
-
-                    b.Property<decimal>("CollectedCommissions")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("decimal(18,2)")
-                        .HasDefaultValue(0m);
-
-                    b.Property<Guid>("CreatedBy")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("CreatedDateUtc")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2(2)")
-                        .HasDefaultValueSql("GETUTCDATE()");
-
-                    b.Property<Guid>("CurrencyId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<decimal>("CustomerWalletsTotal")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("decimal(18,2)")
-                        .HasDefaultValue(0m);
-
-                    b.Property<bool>("IsDeleted")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(false);
-
-                    b.Property<DateTime?>("LastReconciliationDate")
-                        .HasColumnType("datetime2(2)");
-
-                    b.Property<DateTime>("LastUpdatedUtc")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Notes")
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
-
-                    b.Property<decimal>("PendingCommissions")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("decimal(18,2)")
-                        .HasDefaultValue(0m);
-
-                    b.Property<decimal>("PendingPayouts")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("decimal(18,2)")
-                        .HasDefaultValue(0m);
-
-                    b.Property<decimal>("ProcessedPayouts")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("decimal(18,2)")
-                        .HasDefaultValue(0m);
-
-                    b.Property<decimal>("TotalBalance")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("decimal(18,2)")
-                        .HasDefaultValue(0m);
-
-                    b.Property<decimal>("TotalCommissions")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<decimal>("TotalPayouts")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<decimal>("TotalRefunds")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<decimal>("TotalRevenue")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<Guid?>("UpdatedBy")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime?>("UpdatedDateUtc")
-                        .HasColumnType("datetime2(2)");
-
-                    b.Property<decimal>("VendorWalletsTotal")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("decimal(18,2)")
-                        .HasDefaultValue(0m);
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CurrencyId");
-
-                    b.HasIndex("IsDeleted");
-
-                    b.HasIndex("LastReconciliationDate");
-
-                    b.ToTable("TbPlatformTreasuries", (string)null);
-                });
-
-            modelBuilder.Entity("Domains.Entities.Wallet.TbVendorWallet", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier")
-                        .HasDefaultValueSql("NEWID()");
-
-                    b.Property<decimal>("AvailableBalance")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("decimal(18,2)")
-                        .HasDefaultValue(0m);
-
-                    b.Property<Guid>("CreatedBy")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("CreatedDateUtc")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2(2)")
-                        .HasDefaultValueSql("GETUTCDATE()");
-
-                    b.Property<Guid>("CurrencyId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<bool>("IsDeleted")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(false);
-
-                    b.Property<DateTime?>("LastTransactionDate")
-                        .HasColumnType("datetime2(2)");
-
-                    b.Property<DateTime?>("LastWithdrawalDate")
-                        .HasColumnType("datetime2(2)");
-
-                    b.Property<decimal>("PendingBalance")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("decimal(18,2)")
-                        .HasDefaultValue(0m);
-
-                    b.Property<decimal>("TotalCommissionPaid")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("decimal(18,2)")
-                        .HasDefaultValue(0m);
-
-                    b.Property<decimal>("TotalEarned")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("decimal(18,2)")
-                        .HasDefaultValue(0m);
-
-                    b.Property<decimal>("TotalWithdrawn")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("decimal(18,2)")
-                        .HasDefaultValue(0m);
-
-                    b.Property<Guid?>("UpdatedBy")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime?>("UpdatedDateUtc")
-                        .HasColumnType("datetime2(2)");
-
-                    b.Property<Guid>("VendorId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<decimal>("WithdrawalFeePercentage")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("decimal(5,2)")
-                        .HasDefaultValue(2.5m);
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("AvailableBalance");
-
-                    b.HasIndex("CurrencyId");
-
-                    b.HasIndex("IsDeleted");
-
-                    b.HasIndex("VendorId")
-                        .IsUnique();
-
-                    b.ToTable("TbVendorWallets", (string)null);
-                });
-
-            modelBuilder.Entity("Domains.Entities.Wallet.TbWalletTransaction", b =>
+            modelBuilder.Entity("Domains.Entities.Wallet.Customer.TbCustomerWalletTransaction", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -6980,12 +6827,6 @@ namespace DAL.Migrations
                     b.Property<decimal>("Amount")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<decimal?>("BalanceAfter")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<decimal?>("BalanceBefore")
-                        .HasColumnType("decimal(18,2)");
-
                     b.Property<Guid>("CreatedBy")
                         .HasColumnType("uniqueidentifier");
 
@@ -6994,45 +6835,28 @@ namespace DAL.Migrations
                         .HasColumnType("datetime2(2)")
                         .HasDefaultValueSql("GETUTCDATE()");
 
-                    b.Property<Guid?>("CustomerWalletId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<int>("Direction")
+                        .HasColumnType("int");
 
-                    b.Property<string>("DescriptionAr")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
-
-                    b.Property<string>("DescriptionEn")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
+                    b.Property<decimal>("FeeAmount")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("decimal(18,2)")
+                        .HasDefaultValue(0m);
 
                     b.Property<bool>("IsDeleted")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bit")
                         .HasDefaultValue(false);
 
-                    b.Property<string>("Notes")
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
-
-                    b.Property<Guid?>("OrderId")
+                    b.Property<Guid>("ReferenceId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("ProcessedByUserId")
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<string>("ReferenceType")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
-                    b.Property<DateTime?>("ProcessedDate")
-                        .HasColumnType("datetime2(2)");
-
-                    b.Property<string>("ReferenceNumber")
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<Guid?>("RefundId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<int>("Status")
+                    b.Property<int>("TransactionStatus")
                         .HasColumnType("int");
 
                     b.Property<int>("TransactionType")
@@ -7044,38 +6868,155 @@ namespace DAL.Migrations
                     b.Property<DateTime?>("UpdatedDateUtc")
                         .HasColumnType("datetime2(2)");
 
-                    b.Property<Guid?>("VendorWalletId")
+                    b.Property<Guid>("WalletId")
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CreatedDateUtc");
-
-                    b.HasIndex("CustomerWalletId");
-
                     b.HasIndex("IsDeleted");
 
-                    b.HasIndex("OrderId");
+                    b.HasIndex("ReferenceId");
 
-                    b.HasIndex("ProcessedByUserId");
-
-                    b.HasIndex("ReferenceNumber")
-                        .IsUnique()
-                        .HasFilter("[ReferenceNumber] IS NOT NULL");
-
-                    b.HasIndex("RefundId");
-
-                    b.HasIndex("Status");
+                    b.HasIndex("TransactionStatus");
 
                     b.HasIndex("TransactionType");
 
-                    b.HasIndex("VendorWalletId");
-
-                    b.HasIndex("CustomerWalletId", "Status");
-
-                    b.HasIndex("VendorWalletId", "Status");
+                    b.HasIndex("WalletId");
 
                     b.ToTable("TbWalletTransactions", (string)null);
+                });
+
+            modelBuilder.Entity("Domains.Entities.Wallet.Customer.TbWalletChargingRequest", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier")
+                        .HasDefaultValueSql("NEWID()");
+
+                    b.Property<decimal>("Amount")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<Guid>("CreatedBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedDateUtc")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2(2)")
+                        .HasDefaultValueSql("GETUTCDATE()");
+
+                    b.Property<string>("FailureReason")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("GatewayTransactionId")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<Guid?>("PaymentMethodId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<Guid?>("UpdatedBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("UpdatedDateUtc")
+                        .HasColumnType("datetime2(2)");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("IsDeleted");
+
+                    b.HasIndex("PaymentMethodId");
+
+                    b.HasIndex("Status");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("TbWalletChargingRequests", (string)null);
+                });
+
+            modelBuilder.Entity("Domains.Entities.Wallet.Customer.TbWalletSetting", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier")
+                        .HasDefaultValueSql("NEWID()");
+
+                    b.Property<decimal>("ChargingFeeFixed")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("decimal(18,2)")
+                        .HasDefaultValue(0m);
+
+                    b.Property<decimal>("ChargingFeePercentage")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("decimal(18,2)")
+                        .HasDefaultValue(0m);
+
+                    b.Property<Guid>("CreatedBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedDateUtc")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2(2)")
+                        .HasDefaultValueSql("GETUTCDATE()");
+
+                    b.Property<bool>("IsChargingEnabled")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(true);
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<bool>("IsPaymentEnabled")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(true);
+
+                    b.Property<bool>("IsTransferEnabled")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(true);
+
+                    b.Property<decimal>("MaxChargingAmount")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("decimal(18,2)")
+                        .HasDefaultValue(10000m);
+
+                    b.Property<decimal>("MaxDailyChargingLimit")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("decimal(18,2)")
+                        .HasDefaultValue(50000m);
+
+                    b.Property<decimal>("MinChargingAmount")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("decimal(18,2)")
+                        .HasDefaultValue(10m);
+
+                    b.Property<Guid?>("UpdatedBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("UpdatedDateUtc")
+                        .HasColumnType("datetime2(2)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("IsDeleted");
+
+                    b.ToTable("TbWalletSettings", (string)null);
                 });
 
             modelBuilder.Entity("Domains.Entities.Warehouse.TbWarehouse", b =>
@@ -7447,6 +7388,9 @@ namespace DAL.Migrations
                     b.Property<int>("AvailableQuantity")
                         .HasColumnType("int");
 
+                    b.Property<decimal?>("AverageRating")
+                        .HasColumnType("decimal(18,2)");
+
                     b.Property<Guid?>("BrandId")
                         .HasColumnType("uniqueidentifier");
 
@@ -7473,8 +7417,8 @@ namespace DAL.Migrations
                     b.Property<Guid>("ItemId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<decimal?>("ItemRating")
-                        .HasColumnType("decimal(18,2)");
+                    b.Property<Guid>("OfferCombinationPricingId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<decimal>("Price")
                         .HasColumnType("decimal(18,2)");
@@ -7505,6 +7449,9 @@ namespace DAL.Migrations
                     b.Property<string>("TitleEn")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("TotalRecords")
+                        .HasColumnType("int");
 
                     b.ToTable((string)null);
 
@@ -8589,6 +8536,10 @@ namespace DAL.Migrations
                     b.Property<Guid>("VendorItemId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<string>("VisibilityScope")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<Guid?>("WarrantyId")
                         .HasColumnType("uniqueidentifier");
 
@@ -9515,11 +9466,19 @@ namespace DAL.Migrations
 
             modelBuilder.Entity("Domains.Entities.ECommerceSystem.Vendor.TbVendor", b =>
                 {
+                    b.HasOne("Domains.Entities.Location.TbCity", "City")
+                        .WithMany()
+                        .HasForeignKey("CityId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("Domains.Identity.ApplicationUser", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("City");
 
                     b.Navigation("User");
                 });
@@ -10245,17 +10204,11 @@ namespace DAL.Migrations
                     b.Navigation("Item");
                 });
 
-            modelBuilder.Entity("Domains.Entities.Wallet.TbCustomerWallet", b =>
+            modelBuilder.Entity("Domains.Entities.Wallet.Customer.TbCustomerWallet", b =>
                 {
                     b.HasOne("Domains.Identity.ApplicationUser", null)
                         .WithMany("CustomerWallets")
                         .HasForeignKey("ApplicationUserId");
-
-                    b.HasOne("Domains.Entities.Currency.TbCurrency", "Currency")
-                        .WithMany()
-                        .HasForeignKey("CurrencyId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
 
                     b.HasOne("Domains.Identity.ApplicationUser", "User")
                         .WithMany()
@@ -10263,77 +10216,29 @@ namespace DAL.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Currency");
-
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("Domains.Entities.Wallet.TbPlatformTreasury", b =>
+            modelBuilder.Entity("Domains.Entities.Wallet.Customer.TbCustomerWalletTransaction", b =>
                 {
-                    b.HasOne("Domains.Entities.Currency.TbCurrency", "Currency")
-                        .WithMany()
-                        .HasForeignKey("CurrencyId")
+                    b.HasOne("Domains.Entities.Wallet.Customer.TbCustomerWallet", "Wallet")
+                        .WithMany("Transactions")
+                        .HasForeignKey("WalletId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.Navigation("Currency");
+                    b.Navigation("Wallet");
                 });
 
-            modelBuilder.Entity("Domains.Entities.Wallet.TbVendorWallet", b =>
+            modelBuilder.Entity("Domains.Entities.Wallet.Customer.TbWalletChargingRequest", b =>
                 {
-                    b.HasOne("Domains.Entities.Currency.TbCurrency", "Currency")
+                    b.HasOne("Domains.Identity.ApplicationUser", "User")
                         .WithMany()
-                        .HasForeignKey("CurrencyId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("Domains.Entities.ECommerceSystem.Vendor.TbVendor", "Vendor")
-                        .WithMany()
-                        .HasForeignKey("VendorId")
+                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Currency");
-
-                    b.Navigation("Vendor");
-                });
-
-            modelBuilder.Entity("Domains.Entities.Wallet.TbWalletTransaction", b =>
-                {
-                    b.HasOne("Domains.Entities.Wallet.TbCustomerWallet", "CustomerWallet")
-                        .WithMany("Transactions")
-                        .HasForeignKey("CustomerWalletId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("Domains.Entities.Order.TbOrder", "Order")
-                        .WithMany()
-                        .HasForeignKey("OrderId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("Domains.Identity.ApplicationUser", "ProcessedByUser")
-                        .WithMany()
-                        .HasForeignKey("ProcessedByUserId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("Domains.Entities.Order.Refund.TbRefund", "Refund")
-                        .WithMany()
-                        .HasForeignKey("RefundId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("Domains.Entities.Wallet.TbVendorWallet", "VendorWallet")
-                        .WithMany("Transactions")
-                        .HasForeignKey("VendorWalletId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.Navigation("CustomerWallet");
-
-                    b.Navigation("Order");
-
-                    b.Navigation("ProcessedByUser");
-
-                    b.Navigation("Refund");
-
-                    b.Navigation("VendorWallet");
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Domains.Entities.Warehouse.TbWarehouse", b =>
@@ -10661,12 +10566,7 @@ namespace DAL.Migrations
                     b.Navigation("SuppressionReasons");
                 });
 
-            modelBuilder.Entity("Domains.Entities.Wallet.TbCustomerWallet", b =>
-                {
-                    b.Navigation("Transactions");
-                });
-
-            modelBuilder.Entity("Domains.Entities.Wallet.TbVendorWallet", b =>
+            modelBuilder.Entity("Domains.Entities.Wallet.Customer.TbCustomerWallet", b =>
                 {
                     b.Navigation("Transactions");
                 });

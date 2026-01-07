@@ -4,6 +4,7 @@ using Domains.Entities.Order.Cart;
 using Domains.Entities.Order.Refund;
 using Domains.Entities.Order.Returns;
 using Domains.Entities.Wallet;
+using Domains.Entities.Wallet.Customer;
 using Microsoft.AspNetCore.Identity;
 
 namespace Domains.Identity

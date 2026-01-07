@@ -6,6 +6,7 @@ using DAL.Models.ItemSearch;
 using DAL.Repositories.Customer;
 using Domains.Entities.ECommerceSystem.Customer;
 using Domains.Procedures;
+using Serilog;
 using Shared.DTOs.Catalog.Item;
 
 namespace BL.Services.Catalog.Item
@@ -16,43 +17,78 @@ namespace BL.Services.Catalog.Item
         private readonly ICustomerItemViewRepository _customerItemViewRepository;
         private readonly ICustomerRepository _customerRepository;
         private readonly IBaseMapper _mapper;
+        private readonly ILogger _logger;
 
-        public ItemDetailsService(IItemDetailsRepository repository, IBaseMapper mapper, ICustomerItemViewRepository customerItemViewRepository, ICustomerRepository customerRepository)
+        public ItemDetailsService(
+            IItemDetailsRepository repository,
+            IBaseMapper mapper,
+            ICustomerItemViewRepository customerItemViewRepository,
+            ICustomerRepository customerRepository,
+            ILogger logger)
         {
             _repository = repository ?? throw new ArgumentNullException(nameof(repository));
-            _mapper = mapper;
-            _customerItemViewRepository = customerItemViewRepository;
-            _customerRepository = customerRepository;
+            _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+            _customerItemViewRepository = customerItemViewRepository ?? throw new ArgumentNullException(nameof(customerItemViewRepository));
+            _customerRepository = customerRepository ?? throw new ArgumentNullException(nameof(customerRepository));
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
-        public async Task<ItemDetailsDto> GetItemDetailsAsync(Guid itemCombinationId, string? viewerId)
+
+        public async Task<ItemDetailsDto> GetItemDetailsAsync(
+            Guid itemCombinationId,
+            string? viewerId,
+            CancellationToken cancellationToken = default)
         {
-            // Get item details 
-            var result = await _repository.GetItemDetailsAsync(itemCombinationId);
-            // If not found, throw exception
-            if (result == null)
+
+            if (itemCombinationId == Guid.Empty)
             {
-                throw new KeyNotFoundException($"Item CombinationId with ID {itemCombinationId} not found");
+                throw new ArgumentException("ItemCombinationId cannot be empty", nameof(itemCombinationId));
             }
-            // Mapp to DTO
+
+            // Get item details with cancellation token
+            var result = await _repository.GetItemDetailsAsync(itemCombinationId, cancellationToken);
+
+            // Map to DTO
             var itemDetailsDto = _mapper.MapModel<SpGetItemDetails, ItemDetailsDto>(result);
 
-            // If viewerId is provided, Create customer view
+            if (itemDetailsDto == null)
+            {
+                throw new InvalidOperationException("Failed to map item details");
+            }
+
+            // If viewerId is provided, record customer view
             if (ShouldRecordView(viewerId, itemDetailsDto))
             {
-                await RecordCustomerViewAsync(itemCombinationId, viewerId);
+                // Don't let view recording failure break the request
+                try
+                {
+                    await RecordCustomerViewAsync(itemCombinationId, viewerId, cancellationToken);
+                }
+                catch (Exception ex)
+                {
+                    // Log the error but don't fail the request
+                    _logger.Warning(ex, "Failed to record customer view for {ItemCombinationId}", itemCombinationId);
+                }
             }
 
             return itemDetailsDto;
         }
 
-        public async Task<ItemDetailsDto> GetCombinationByAttributesAsync(CombinationRequest request, string? viewerId)
+        public async Task<ItemDetailsDto> GetCombinationByAttributesAsync(
+            CombinationRequest request,
+            string? viewerId,
+            CancellationToken cancellationToken = default)
         {
-            // Validate input
-            if (request?.SelectedValueIds == null || !request.SelectedValueIds.Any())
+            if (request == null)
             {
-                throw new ArgumentException("Selected attributes are required");
+                throw new ArgumentNullException(nameof(request));
             }
+
+            if (request.SelectedValueIds == null || !request.SelectedValueIds.Any())
+            {
+                throw new ArgumentException("At least one attribute must be selected", nameof(request));
+            }
+
             // Map selections
             var selections = request.SelectedValueIds
                 .Select(a => new AttributeSelection
@@ -61,29 +97,46 @@ namespace BL.Services.Catalog.Item
                     IsLastSelected = a.IsLastSelected
                 })
                 .ToList();
-            // Get combination by attributes
-            var result = await _repository.GetCombinationByAttributesAsync(selections);
-            // If not found, throw exception
-            if (result == null)
-            {
-                throw new KeyNotFoundException($"Could not process combination for this selection!!");
-            }
+
+            // Get combination by attributes with cancellation token
+            var result = await _repository.GetCombinationByAttributesAsync(selections, cancellationToken);
+
             // Map to DTO
             var itemDetailsDto = _mapper.MapModel<SpGetItemDetails, ItemDetailsDto>(result);
 
-            // If viewerId is provided, Create customer view
+            if (itemDetailsDto == null)
+            {
+                throw new InvalidOperationException("Failed to map combination details");
+            }
+
+            // If viewerId is provided, record customer view
             if (ShouldRecordView(viewerId, itemDetailsDto))
             {
-                await RecordCustomerViewAsync(itemDetailsDto.CurrentCombination.CombinationId, viewerId);
+                try
+                {
+                    var combinationId = itemDetailsDto.CurrentCombination?.CombinationId ?? Guid.Empty;
+                    if (combinationId != Guid.Empty)
+                    {
+                        await RecordCustomerViewAsync(combinationId, viewerId, cancellationToken);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    // Log error but don't fail the request
+                    _logger.Warning(ex, "Failed to record customer view");
+                }
             }
+
             return itemDetailsDto;
         }
 
-        // helper methods
+        // ============================================
+        // Helper Methods
+        // ============================================
 
         private static bool ShouldRecordView(string? viewerId, ItemDetailsDto itemDetailsDto)
         {
-            if (string.IsNullOrEmpty(viewerId))
+            if (string.IsNullOrWhiteSpace(viewerId))
             {
                 return false;
             }
@@ -93,60 +146,107 @@ namespace BL.Services.Catalog.Item
                 return false;
             }
 
+            if (itemDetailsDto?.CurrentCombination == null)
+            {
+                return false;
+            }
+
             // Don't record views from the item creator
-            return itemDetailsDto.CurrentCombination?.CreatedBy != viewerGuid;
+            return itemDetailsDto.CurrentCombination.CreatedBy != viewerGuid;
         }
 
-        private async Task RecordCustomerViewAsync(Guid itemCombinationId, string? viewerId)
+        private async Task RecordCustomerViewAsync(
+            Guid itemCombinationId,
+            string? viewerId,
+            CancellationToken cancellationToken = default)
         {
             // Validate inputs
-            if (string.IsNullOrEmpty(viewerId) || itemCombinationId == Guid.Empty)
-                return;
-            // Get and validate customer
-            var customer = await GetAndValidateCustomerAsync(viewerId);
-
-            if (await HasRecentViewAsync(customer.Id, itemCombinationId))
+            if (string.IsNullOrWhiteSpace(viewerId) || itemCombinationId == Guid.Empty)
             {
                 return;
             }
 
-            await CreateCustomerViewAsync(itemCombinationId, customer.Id, viewerId);
-        }
-
-        private async Task<TbCustomer> GetAndValidateCustomerAsync(string viewerId)
-        {
-            var customer = await _customerRepository.GetCustomerByUserIdAsync(viewerId);
-
+            // Get and validate customer
+            var customer = await GetAndValidateCustomerAsync(viewerId, cancellationToken);
             if (customer == null)
             {
-                throw new KeyNotFoundException("Customer not found");
+                return; // Customer not found, skip view recording
             }
 
-            return customer;
-        }
-
-        private async Task<bool> HasRecentViewAsync(Guid customerId, Guid itemCombinationId)
-        {
-            var cutoffTime = DateTime.UtcNow.AddHours(-24);
-            var recentViews = await _customerItemViewRepository.GetAsync(
-                v => v.CustomerId == customerId &&
-                     v.ItemCombinationId == itemCombinationId &&
-                     !v.IsDeleted &&
-                     v.ViewedAt >= cutoffTime);
-
-            return recentViews.Any();
-        }
-
-        private async Task CreateCustomerViewAsync(Guid itemCombinationId, Guid customerId, string viewerId)
-        {
-            var customerItemView = new TbCustomerItemView
+            // Check if already viewed recently
+            if (await HasRecentViewAsync(customer.Id, itemCombinationId, cancellationToken))
             {
-                ItemCombinationId = itemCombinationId,
-                CustomerId = customerId,
-                ViewedAt = DateTime.UtcNow
-            };
+                return;
+            }
 
-            await _customerItemViewRepository.CreateAsync(customerItemView, Guid.Parse(viewerId));
+            // Create the view record
+            await CreateCustomerViewAsync(itemCombinationId, customer.Id, viewerId, cancellationToken);
+        }
+
+        private async Task<TbCustomer?> GetAndValidateCustomerAsync(
+            string viewerId,
+            CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                var customer = await _customerRepository.GetCustomerByUserIdAsync(viewerId);
+                return customer;
+            }
+            catch (Exception)
+            {
+                // If customer not found, return null
+                // Don't throw - view recording is not critical
+                return null;
+            }
+        }
+
+        private async Task<bool> HasRecentViewAsync(
+            Guid customerId,
+            Guid itemCombinationId,
+            CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                // ✅ Consider making this configurable
+                const int ViewWindowHours = 24;
+                var cutoffTime = DateTime.UtcNow.AddHours(-ViewWindowHours);
+
+                var recentViews = await _customerItemViewRepository.GetAsync(
+                    v => v.CustomerId == customerId &&
+                         v.ItemCombinationId == itemCombinationId &&
+                         !v.IsDeleted &&
+                         v.ViewedAt >= cutoffTime);
+
+                return recentViews.Any();
+            }
+            catch (Exception)
+            {
+                // If check fails, assume no recent view to allow recording
+                return false;
+            }
+        }
+
+        private async Task CreateCustomerViewAsync(
+            Guid itemCombinationId,
+            Guid customerId,
+            string viewerId,
+            CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                var customerItemView = new TbCustomerItemView
+                {
+                    ItemCombinationId = itemCombinationId,
+                    CustomerId = customerId,
+                    ViewedAt = DateTime.UtcNow
+                };
+
+                await _customerItemViewRepository.CreateAsync(customerItemView, Guid.Parse(viewerId));
+            }
+            catch (Exception ex)
+            {
+                _logger.Warning(ex, "Failed to record customer view for {ItemCombinationId}", itemCombinationId);
+            }
         }
     }
 }

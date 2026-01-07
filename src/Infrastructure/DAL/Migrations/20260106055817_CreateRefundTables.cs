@@ -1,5 +1,4 @@
-﻿using System;
-using Microsoft.EntityFrameworkCore.Migrations;
+﻿using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
@@ -11,9 +10,9 @@ namespace DAL.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropForeignKey(
-                name: "FK_TbWalletTransactions_TbRefundRequests_RefundId",
-                table: "TbWalletTransactions");
+            //migrationBuilder.DropForeignKey(
+            //    name: "FK_TbWalletTransactions_TbRefundRequests_RefundId",
+            //    table: "TbWalletTransactions");
 
             migrationBuilder.DropTable(
                 name: "TbRefundRequests");
@@ -225,13 +224,13 @@ namespace DAL.Migrations
                 table: "TbRefundStatusHistories",
                 column: "RefundId");
 
-            migrationBuilder.AddForeignKey(
-                name: "FK_TbWalletTransactions_TbRefunds_RefundId",
-                table: "TbWalletTransactions",
-                column: "RefundId",
-                principalTable: "TbRefunds",
-                principalColumn: "Id",
-                onDelete: ReferentialAction.Restrict);
+            //migrationBuilder.AddForeignKey(
+            //    name: "FK_TbWalletTransactions_TbRefunds_RefundId",
+            //    table: "TbWalletTransactions",
+            //    column: "RefundId",
+            //    principalTable: "TbRefunds",
+            //    principalColumn: "Id",
+            //    onDelete: ReferentialAction.Restrict);
         }
 
         /// <inheritdoc />
@@ -241,9 +240,9 @@ namespace DAL.Migrations
                 name: "FK_TbOrders_TbCustomerAddresses_TbCustomerAddressId",
                 table: "TbOrders");
 
-            migrationBuilder.DropForeignKey(
-                name: "FK_TbWalletTransactions_TbRefunds_RefundId",
-                table: "TbWalletTransactions");
+            //migrationBuilder.DropForeignKey(
+            //    name: "FK_TbWalletTransactions_TbRefunds_RefundId",
+            //    table: "TbWalletTransactions");
 
             migrationBuilder.DropTable(
                 name: "TbRefundItemVideos");
@@ -320,13 +319,13 @@ namespace DAL.Migrations
                 table: "TbRefundRequests",
                 column: "OrderId");
 
-            migrationBuilder.AddForeignKey(
-                name: "FK_TbWalletTransactions_TbRefundRequests_RefundId",
-                table: "TbWalletTransactions",
-                column: "RefundId",
-                principalTable: "TbRefundRequests",
-                principalColumn: "Id",
-                onDelete: ReferentialAction.Restrict);
+            //migrationBuilder.AddForeignKey(
+            //    name: "FK_TbWalletTransactions_TbRefundRequests_RefundId",
+            //    table: "TbWalletTransactions",
+            //    column: "RefundId",
+            //    principalTable: "TbRefundRequests",
+            //    principalColumn: "Id",
+            //    onDelete: ReferentialAction.Restrict);
         }
     }
 }

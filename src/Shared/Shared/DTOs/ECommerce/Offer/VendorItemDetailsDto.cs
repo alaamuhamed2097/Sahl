@@ -1,4 +1,5 @@
-﻿using Shared.DTOs.Base;
+﻿using Common.Enumerations.Offer;
+using Shared.DTOs.Base;
 using Shared.DTOs.Catalog.Item;
 
 namespace Shared.DTOs.ECommerce.Offer
@@ -8,9 +9,11 @@ namespace Shared.DTOs.ECommerce.Offer
         // Offer basic fields
         public Guid VendorItemId { get; set; }
         public DateTime CreatedDateUtc { get; set; }
-        public int HandlingTimeInDays { get; set; }
+        public int EstimatedDeliveryDays { get; set; }
         public int FulfillmentType { get; set; }
-        public bool IsBuyBoxWinner { get; set; }
+		public OfferVisibilityScope VisibilityScope { get; set; }
+
+		public bool IsBuyBoxWinner { get; set; }
         public string StockStatus { get; set; }
         public Guid OfferConditionId { get; set; }
         public string ConditionNameAr { get; set; }

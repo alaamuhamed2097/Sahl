@@ -17,5 +17,5 @@ public interface ICheckoutService
         string customerId,
         PrepareCheckoutRequest request);
     Task<CheckoutSummaryDto> PreviewShipmentsAsync(string customerId);
-    Task ValidateCheckoutAsync(string customerId, Guid deliveryAddressId);
+    Task ValidateCheckoutAsync(string customerId, Guid? deliveryAddressId);
 }

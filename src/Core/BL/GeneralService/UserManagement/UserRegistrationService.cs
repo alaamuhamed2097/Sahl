@@ -3,11 +3,15 @@ using BL.Contracts.GeneralService.UserManagement;
 using BL.Contracts.IMapper;
 using BL.Utils;
 using Common.Enumerations.User;
+using Common.Enumerations.VendorStatus;
+using DAL.Contracts.Repositories;
+using Domains.Entities.ECommerceSystem.Vendor;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Resources;
 using Shared.DTOs.User.Admin;
 using Shared.DTOs.User.Customer;
+using Shared.DTOs.Vendor;
 using Shared.GeneralModels.ResultModels;
 using SixLabors.ImageSharp;
 using System.ComponentModel.DataAnnotations;
@@ -22,13 +26,15 @@ public class UserRegistrationService : IUserRegistrationService
     private readonly IUserAuthenticationService _userAuthenticationService;
     private readonly IBaseMapper _mapper;
     private readonly Serilog.ILogger _logger;
+    private readonly IVendorRepository _vendorRepository;
 
     public UserRegistrationService(UserManager<ApplicationUser> userManager,
         IFileUploadService fileUploadService,
         IUserAuthenticationService userAuthenticationService,
         IImageProcessingService imageProcessingService,
         IBaseMapper mapper,
-        Serilog.ILogger logger)
+        Serilog.ILogger logger,
+        IVendorRepository vendorRepository)
     {
         _userManager = userManager;
         _fileUploadService = fileUploadService;
@@ -36,6 +42,7 @@ public class UserRegistrationService : IUserRegistrationService
         _imageProcessingService = imageProcessingService;
         _mapper = mapper;
         _logger = logger;
+        _vendorRepository = vendorRepository;
     }
 
     public async Task<OperationResult> RegisterAdminAsync(AdminRegistrationDto userDto, Guid CreatorId)
@@ -322,4 +329,158 @@ public class UserRegistrationService : IUserRegistrationService
         };
     }
     #endregion
+
+    public async Task<ServiceResult<VendorRegistrationResponseDto>> RegisterVendorAsync(
+        RegisterVendorRequestDto request, string clientType)
+    {
+        try
+        {
+            // Validate phone uniqueness
+            var normalizedPhone = PhoneNormalizationHelper.CreateNormalizedPhone(
+                request.PhoneCode, request.PhoneNumber);
+
+            var existingUserByPhone = await _userManager.Users
+                .FirstOrDefaultAsync(u => u.NormalizedPhone == normalizedPhone);
+
+            if (existingUserByPhone != null)
+            {
+                return new ServiceResult<VendorRegistrationResponseDto>
+                {
+                    Success = false,
+                    Message = "This phone number is already registered",
+                    Errors = new List<string> { "Phone number already in use" }
+                };
+            }
+
+            // Check email uniqueness if email is provided
+            if (!string.IsNullOrWhiteSpace(request.Email))
+            {
+                var existingUserByEmail = await _userManager.Users
+                    .FirstOrDefaultAsync(u => u.Email == request.Email);
+
+                if (existingUserByEmail != null)
+                {
+                    return new ServiceResult<VendorRegistrationResponseDto>
+                    {
+                        Success = false,
+                        Message = string.Format(UserResources.Email_Duplicate, request.Email),
+                        Errors = new List<string> { string.Format(UserResources.Email_Duplicate, request.Email) }
+                    };
+                }
+            }
+
+            // Auto-generate username from phone number
+            var username = request.PhoneNumber;
+            var existingUserByUsername = await _userManager.Users
+                .FirstOrDefaultAsync(u => u.UserName == username);
+
+            if (existingUserByUsername != null)
+            {
+                return new ServiceResult<VendorRegistrationResponseDto>
+                {
+                    Success = false,
+                    Message = string.Format(UserResources.UserName_Duplicate, username),
+                    Errors = new List<string> { string.Format(UserResources.UserName_Duplicate, username) }
+                };
+            }
+
+            // Create ApplicationUser
+            var applicationUser = new ApplicationUser
+            {
+                Id = Guid.NewGuid().ToString(),
+                Email = request.Email,
+                UserName = username,
+                FirstName = request.FirstName,
+                LastName = request.LastName,
+                PhoneNumber = request.PhoneNumber,
+                PhoneCode = request.PhoneCode,
+                NormalizedPhone = normalizedPhone,
+                ProfileImagePath = "uploads/Images/ProfileImages/Vendors/default.png",
+                CreatedBy = Guid.Empty,
+                CreatedDateUtc = DateTime.UtcNow,
+                UserState = UserStateType.Active,
+                EmailConfirmed = !string.IsNullOrWhiteSpace(request.Email),
+                PhoneNumberConfirmed = true
+            };
+
+             // Create Vendor Profile using AutoMapper
+            var vendor = _mapper.MapModel<RegisterVendorRequestDto, TbVendor>(request);
+            
+            // Handle Image Uploads
+            vendor.IdentificationImageFrontPath = await SaveImage(request.IdentificationImageFront);
+            vendor.IdentificationImageBackPath = await SaveImage(request.IdentificationImageBack);
+
+            vendor.Id = Guid.NewGuid();
+            vendor.Status = VendorStatus.Pending; 
+            vendor.CreatedDateUtc = DateTime.UtcNow;
+            // UserId and CreatedBy will be properly linked in the repository method
+
+            // Call Repository Method to execute in transaction
+            var registrationResult = await _vendorRepository.RegisterVendorWithUserAsync(applicationUser, request.Password, vendor);
+
+            if (!registrationResult.Success)
+            {
+                 var friendlyErrors = registrationResult.Errors
+                    .Select(e => GetUserFriendlyErrorMessage(e))
+                    .ToList();
+
+                return new ServiceResult<VendorRegistrationResponseDto>
+                {
+                    Success = false,
+                    Message = NotifiAndAlertsResources.RegistrationFailed,
+                    Errors = friendlyErrors
+                };
+            }
+
+            // Sign in the user automatically
+            var signInIdentifier = !string.IsNullOrWhiteSpace(request.Email)
+                ? request.Email
+                : username;
+
+            var signInResult = await _userAuthenticationService.EmailOrPhoneNumberSignInAsync(
+                signInIdentifier, request.Password, clientType);
+
+            if (!signInResult.Success)
+            {
+                return new ServiceResult<VendorRegistrationResponseDto>
+                {
+                    Success = false,
+                    Message = "Registration successful but automatic login failed"
+                };
+            }
+
+            return new ServiceResult<VendorRegistrationResponseDto>
+            {
+                Success = true,
+                Message = NotifiAndAlertsResources.RegistrationSuccessful,
+                Data = new VendorRegistrationResponseDto
+                {
+                    UserId = applicationUser.Id,
+                    VendorId = vendor.Id,
+                    FirstName = applicationUser.FirstName,
+                    MiddleName = request.MiddleName,
+                    LastName = applicationUser.LastName,
+                    Email = applicationUser.Email,
+                    UserName = applicationUser.UserName,
+                    PhoneNumber = applicationUser.PhoneNumber,
+                    PhoneCode = applicationUser.PhoneCode,
+                    ProfileImagePath = applicationUser.ProfileImagePath,
+                    Token = signInResult.Token,
+                    RefreshToken = signInResult.RefreshToken,
+                    RegisteredDate = DateTime.UtcNow,
+                    StoreName = request.StoreName
+                }
+            };
+        }
+        catch (Exception ex)
+        {
+            _logger.Error(ex, "Error registering vendor");
+            return new ServiceResult<VendorRegistrationResponseDto>
+            {
+                Success = false,
+                Message = NotifiAndAlertsResources.SomethingWentWrong,
+                Errors = new List<string> { ex.Message }
+            };
+        }
+    }
 }

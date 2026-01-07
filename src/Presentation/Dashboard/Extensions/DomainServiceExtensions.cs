@@ -8,6 +8,7 @@ using Dashboard.Contracts.ECommerce.Item;
 using Dashboard.Contracts.General;
 using Dashboard.Contracts.Location;
 using Dashboard.Contracts.Order;
+using Dashboard.Contracts.Review;
 using Dashboard.Contracts.User;
 using Dashboard.Contracts.Vendor;
 using Dashboard.Contracts.Warehouse;
@@ -21,6 +22,7 @@ using Dashboard.Services.ECommerce.Item;
 using Dashboard.Services.General;
 using Dashboard.Services.Location;
 using Dashboard.Services.Order;
+using Dashboard.Services.Review;
 using Dashboard.Services.User;
 using Dashboard.Services.Vendor;
 using Dashboard.Services.Warehouse;
@@ -56,8 +58,11 @@ namespace Dashboard.Extensions
             services.AddScoped<IContentAreaService, ContentAreaService>();
             services.AddScoped<IMediaContentService, MediaContentService>();
 
-            // Excel Template Service
-            services.AddScoped<ExcelTemplateService>();
+			services.AddScoped<IItemReviewService, ItemReviewService>();
+			services.AddScoped<IReportReviewService, ReportReviewService>();
+
+			// Excel Template Service
+			services.AddScoped<ExcelTemplateService>();
 
             return services;
         }

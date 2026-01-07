@@ -27,4 +27,9 @@
 	  <ProjectReference Include="..\..\Shared\Common\Common.csproj" />
 	</ItemGroup>
 
+	<ItemGroup>
+	  <Folder Include="Contracts\Repositories\Wallet\Customer\" />
+	  <Folder Include="Contracts\Repositories\Wallet\Vendor\" />
+	</ItemGroup>
+
 </Project>

@@ -78,7 +78,7 @@ public class OrderPurchaseService : IOrderPurchaseService
             );
 
             // FIXED: Use correct IPaymentService signature
-            var paymentRequest = new PaymentProcessRequest
+            var paymentRequest = new OrderPaymentProcessRequest
             {
                 OrderId = order.Id,
                 Amount = checkoutSummary.PriceBreakdown.GrandTotal,
@@ -161,7 +161,7 @@ public class OrderPurchaseService : IOrderPurchaseService
                 UserId = customerId,
                 DeliveryAddressId = purchaseDto.DeliveryAddressId,
                 Price = checkoutSummary.PriceBreakdown.GrandTotal,
-                ShippingAmount = checkoutSummary.PriceBreakdown.ShippingCost,
+                ShippingAmount = checkoutSummary.PriceBreakdown.ShippingCost ?? 0m,
                 TaxAmount = checkoutSummary.PriceBreakdown.TaxAmount,
                 CouponId = checkoutSummary.CouponId,
                 PaymentStatus = PaymentStatus.Pending,

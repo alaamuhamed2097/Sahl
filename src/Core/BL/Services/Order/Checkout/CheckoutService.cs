@@ -10,6 +10,7 @@ using Domains.Entities.Offer;
 using Serilog;
 using Shared.DTOs.ECommerce.Offer;
 using Shared.DTOs.Order.Checkout;
+using Shared.DTOs.Order.Checkout.Address;
 using Shared.DTOs.Order.CouponCode;
 using Shared.DTOs.Order.Fulfillment.Shipment;
 
@@ -62,64 +63,107 @@ public class CheckoutService : ICheckoutService
             throw new InvalidOperationException("Cart is empty");
         }
 
-        // Step 2: Validate and retrieve delivery address
-        var address = await _addressService.GetAddressForOrderAsync(
-            request.DeliveryAddressId,
-            customerId
-        );
-
-        if (address == null)
+        // Step 2: Validate and retrieve delivery address (optional)
+        AddressSelectionDto? address = null;
+        if (request.DeliveryAddressId.HasValue)
         {
-            throw new InvalidOperationException("Invalid delivery address");
+            address = await _addressService.GetAddressForOrderAsync(
+                request.DeliveryAddressId.Value,
+                customerId
+            );
+
+            if (address == null)
+            {
+                throw new InvalidOperationException("Invalid delivery address");
+            }
         }
 
-        // Step 3: Get all offers for cart items
+        // Step 3: Get all offer combination pricings for cart items
         var offerCombinationPricingIds = cart.Items
             .Select(i => i.OfferCombinationPricingId)
             .Distinct()
             .ToList();
 
+        // Build a mapping from combination pricing ID to offer by querying the offers
+        // and their combination pricings
         var offersEntities = await _offerRepository
             .GetOffersByCombinationPricingIdsAsync(offerCombinationPricingIds);
 
         if (!offersEntities.Any())
         {
-            throw new InvalidOperationException("No offers found for the given combination pricing IDs");
+            _logger.Error("No offers found for any of the {PricingCount} combination pricing IDs: {PricingIds}", 
+                offerCombinationPricingIds.Count, string.Join(", ", offerCombinationPricingIds));
+            throw new InvalidOperationException("No offers found for the given combination pricing IDs. The offers may have been deleted or are no longer active.");
         }
 
         // Map offers to DTOs for easier access
         var offerDtos = _mapper.MapList<TbOffer, OfferDto>(offersEntities);
-        var offerDictionary = offerDtos.ToDictionary(o => o.Id);
 
-        // Step 4: Calculate shipping costs using dedicated shipping service
-        var cartItemsForShipping = cart.Items.Select(i =>
+        // Create a mapping from OfferCombinationPricingId to OfferDto
+        // Since we need to match cart items to offers by their combination pricing ID,
+        // we need to find which offer each combination pricing belongs to
+        var pricingIdToOfferDictionary = new Dictionary<Guid, OfferDto>();
+        foreach (var offer in offerDtos)
         {
-            // Find the matching offer for this cart item
-            var offer = offerDictionary.TryGetValue(i.OfferCombinationPricingId, out var foundOffer)
-                ? foundOffer
-                : throw new InvalidOperationException($"Offer not found for cart item {i.ItemId}");
-
-            return new CartItemForShipping
+            // Check if OfferCombinationPricings is null or empty
+            if (offer.OfferCombinationPricings == null || !offer.OfferCombinationPricings.Any())
             {
-                ItemId = i.ItemId,
-                ItemName = i.ItemName,
-                SellerName = i.SellerName,
-                Offer = offer,
-                Quantity = i.Quantity,
-                SubTotal = i.SubTotal
-            };
-        }).ToList();
+                _logger.Warning("Offer {OfferId} has no combination pricings loaded", offer.Id);
+                continue;
+            }
 
-        var shippingResult = await _shippingService.CalculateShippingAsync(
-            cartItemsForShipping,
-            request.DeliveryAddressId,
-            address.CityId
-        );
+            foreach (var pricing in offer.OfferCombinationPricings)
+            {
+                pricingIdToOfferDictionary[pricing.Id] = offer;
+            }
+        }
+
+        // Validate that all cart items have corresponding offers
+        var missingPricingIds = offerCombinationPricingIds
+            .Where(id => !pricingIdToOfferDictionary.ContainsKey(id))
+            .ToList();
+
+        if (missingPricingIds.Any())
+        {
+            _logger.Error("Could not find {MissingCount} offers. Missing pricing IDs: {MissingIds}. Found {FoundCount} mappings from {OfferCount} offers", 
+                missingPricingIds.Count, string.Join(", ", missingPricingIds), pricingIdToOfferDictionary.Count, offerDtos.Count());
+            throw new InvalidOperationException(
+                $"Offers not found for combination pricing IDs: {string.Join(", ", missingPricingIds)}"
+            );
+        }
+
+        // Step 4: Calculate shipping costs using dedicated shipping service (only if address is provided)
+        ShippingCalculationResult shippingResult = new();
+
+        if (address != null)
+        {
+            var cartItemsForShipping = cart.Items.Select(i =>
+            {
+                var offer = pricingIdToOfferDictionary[i.OfferCombinationPricingId];
+
+                return new CartItemForShipping
+                {
+                    ItemId = i.ItemId,
+                    ItemNameAr = i.ItemNameAr,
+                    ItemNameEn = i.ItemNameEn,
+                    SellerName = i.SellerName,
+                    Offer = offer,
+                    Quantity = i.Quantity,
+                    SubTotal = i.SubTotal
+                };
+            }).ToList();
+
+            shippingResult = await _shippingService.CalculateShippingAsync(
+                cartItemsForShipping,
+                address.AddressId,
+                address.CityId
+            );
+        }
 
         // Step 5: Calculate tax from system settings
         var subtotal = cart.SubTotal;
         var taxRate = await _systemSettings.GetTaxRateAsync();
-        var taxAmount = (subtotal + shippingResult.TotalShippingCost) * (taxRate / 100);
+        var taxAmount = (subtotal) * (taxRate / 100);
 
         // Step 6: Apply coupon discount if provided
         decimal discountAmount = 0;
@@ -158,7 +202,7 @@ public class CheckoutService : ICheckoutService
         }
 
         // Step 7: Calculate final grand total
-        var grandTotal = subtotal + shippingResult.TotalShippingCost + taxAmount - discountAmount;
+        var grandTotal = subtotal + (shippingResult.TotalShippingCost ?? 0) + taxAmount - discountAmount;
 
         // Step 8: Build checkout summary response
         var summary = new CheckoutSummaryDto
@@ -166,7 +210,7 @@ public class CheckoutService : ICheckoutService
             Items = cart.Items.Select(i => new CheckoutItemDto
             {
                 ItemId = i.ItemId,
-                ItemName = i.ItemName,
+                ItemName = i.ItemNameEn,
                 SellerName = i.SellerName,
                 Quantity = i.Quantity,
                 UnitPrice = i.UnitPrice,
@@ -208,7 +252,7 @@ public class CheckoutService : ICheckoutService
         return await PrepareCheckoutAsync(customerId, request);
     }
 
-    public async Task ValidateCheckoutAsync(string customerId, Guid deliveryAddressId)
+    public async Task ValidateCheckoutAsync(string customerId, Guid? deliveryAddressId)
     {
         // Validation 1: Ensure cart is not empty
         var itemCount = await _cartService.GetCartItemCountAsync(customerId);
@@ -217,11 +261,14 @@ public class CheckoutService : ICheckoutService
             throw new InvalidOperationException("Cart is empty");
         }
 
-        // Validation 2: Verify customer owns the delivery address
-        var address = await _addressService.GetAddressByIdAsync(deliveryAddressId, customerId);
-        if (address == null)
+        // Validation 2: Verify customer owns the delivery address (if provided)
+        if (deliveryAddressId.HasValue)
         {
-            throw new UnauthorizedAccessException("Invalid delivery address");
+            var address = await _addressService.GetAddressByIdAsync(deliveryAddressId.Value, customerId);
+            if (address == null)
+            {
+                throw new UnauthorizedAccessException("Invalid delivery address");
+            }
         }
 
         // Validation 3: Check all cart items are still available for purchase
@@ -230,7 +277,7 @@ public class CheckoutService : ICheckoutService
 
         if (unavailableItems.Any())
         {
-            var itemNames = string.Join(", ", unavailableItems.Select(i => i.ItemName));
+            var itemNames = string.Join(", ", unavailableItems.Select(i => i.ItemNameEn));
             throw new InvalidOperationException(
                 $"The following items are no longer available: {itemNames}"
             );

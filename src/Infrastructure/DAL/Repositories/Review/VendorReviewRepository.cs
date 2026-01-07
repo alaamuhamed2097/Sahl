@@ -132,6 +132,39 @@ namespace DAL.Repositories.Review
 					&& !r.IsDeleted,
 					cancellationToken);
 		}
+		public async Task<bool> IsVerifiedPurchaseAsync(
+string customerId,
+Guid? orderDetailId,
+CancellationToken cancellationToken = default)
+		{
+			if (!orderDetailId.HasValue)
+				return false;
+
+			var orderDetail = await _dbContext.TbOrderDetails
+				.Include(od => od.Order)
+				.Include(od => od.Item)
+				.FirstOrDefaultAsync(od =>
+					od.Id == orderDetailId.Value &&
+					!od.IsDeleted,
+					cancellationToken);
+
+			if (orderDetail == null)
+				return false;
+
+
+			if (orderDetail.Order.UserId != customerId)
+				return false;
+
+
+			var completedStatuses = new[]
+			{
+		OrderProgressStatus.Delivered,
+		OrderProgressStatus.Completed
+	};
+
+			return completedStatuses.Contains(orderDetail.Order.OrderStatus);
+		}
+
 		public async Task<bool> HasCustomerPurchasedFromVendorAsync(
 	Guid? orderId,
 	Guid vendorId,
@@ -259,6 +292,31 @@ namespace DAL.Repositories.Review
 
 			return result;
 		}
+
+		public async Task<IEnumerable<TbVendorReview>> GetVendorReviewsByVerificationAsync(
+		Guid vendorId,
+		bool? isVerifiedPurchase = null,
+		CancellationToken cancellationToken = default)
+		{
+			var query = _dbContext.TbVendorReviews
+				.Include(r => r.Customer)
+				.Include(r => r.OrderDetail)
+				.Where(r => r.VendorId == vendorId && !r.IsDeleted && r.Status == ReviewStatus.Approved);
+
+			if (isVerifiedPurchase.HasValue)
+			{
+				query = query.Where(r => r.IsVerifiedPurchase == isVerifiedPurchase.Value);
+			}
+
+			return await query
+				.OrderByDescending(r => r.CreatedDateUtc)
+				.ToListAsync(cancellationToken);
+		}
+
+
+
+
+
 		/// <summary>
 		/// Retrieves all approved (visible) reviews for a given Vendor.
 		/// Filters by VendorId, ensures the review is approved and not soft-deleted.

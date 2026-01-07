@@ -34,7 +34,6 @@ namespace DAL.Repositories.Merchandising
                     .Include(b => b.Campaign)
                     .Include(b => b.BlockProducts.Where(p => !p.IsDeleted))
                         .ThenInclude(p => p.Item)
-                            .ThenInclude(i => i.ItemImages)
                     .Include(b => b.BlockCategories.Where(c => !c.IsDeleted))
                         .ThenInclude(c => c.Category)
                     .Where(b => b.IsVisible && !b.IsDeleted)

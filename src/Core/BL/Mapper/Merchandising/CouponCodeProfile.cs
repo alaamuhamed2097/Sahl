@@ -13,7 +13,7 @@ public partial class MappingProfile
         // TbCouponCode <-> CouponCodeDto
         CreateMap<TbCouponCode, CouponCodeDto>()
             .ForMember(dest => dest.VendorName,
-                opt => opt.MapFrom(src => src.Vendor != null ? src.Vendor.NameAr : null))
+                opt => opt.MapFrom(src => src.Vendor != null ? src.Vendor.StoreName : null))
             .ForMember(dest => dest.ScopeItems,
                 opt => opt.MapFrom(src => src.CouponScopes));
 
