@@ -232,22 +232,22 @@
 						</li>
 			
 						
-			@* <li data-username="ManageReviews" class="nav-item pcoded-hasmenu @(IsSubmenuOpen("ManageReviews") ? "pcoded-trigger" : "")">
-				<a href="javascript:void(0)" class="nav-link" @onclick="@(() => ToggleSubmenu("ManageReviews"))">
+			<li data-username="ManageReviews" class="nav-item pcoded-hasmenu @(IsSubmenuOpen("HomePageSlider") ? "pcoded-trigger" : "")">
+				<a href="javascript:void(0)" class="nav-link" @onclick="@(() => ToggleSubmenu("HomePageSlider"))">
 					<span class="pcoded-micon"><i class="fas fa-file-alt"></i></span>
-					<span class="pcoded-mtext">@ReviewResources.ReviewManagement</span>
+					<span class="pcoded-mtext">Manage Slider</span>
 					<span class="pcoded-mcaret"></span>
 				</a>
-				<ul class="pcoded-submenu" style="display: @(IsSubmenuOpen("ManageReviews") ? "block" : "none")">
+				<ul class="pcoded-submenu" style="display: @(IsSubmenuOpen("HomePageSlider") ? "block" : "none")">
 					<li class="nav-item">
-						<NavLink href="/ManageReviews" class="nav-link" Match="NavLinkMatch.Prefix" onclick="closeNavMenu()">
+						<NavLink href="/HomepageSlider" class="nav-link" Match="NavLinkMatch.Prefix" onclick="closeNavMenu()">
 							<span class="pcoded-micon"><i class="fas fa-file-alt"></i></span>
-							<span class="pcoded-mtext">@ReviewResources.ViewAllReviews</span>
+							<span class="pcoded-mtext">Slider</span>
 						</NavLink>
 					</li>
 					
 				</ul>
-			</li> *@
+			</li>
 
 						<!-- ⚙️ System Settings -->
 						<li data-username="settings" class="nav-item pcoded-hasmenu @(IsSubmenuOpen("settings") ? "pcoded-trigger" : "")">

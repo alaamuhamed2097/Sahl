@@ -84,7 +84,7 @@ public abstract partial class BaseListPage<TDto> : ComponentBase, IDisposable
 
     protected virtual void Add()
     {
-        Navigation.NavigateTo(AddRoute, true);
+        Navigation.NavigateTo("HomePageSlider/Add");
     }
 
     protected virtual async Task Edit(TDto item)

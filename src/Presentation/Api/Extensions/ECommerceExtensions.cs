@@ -7,7 +7,7 @@ using BL.Contracts.Service.Catalog.Unit;
 using BL.Contracts.Service.Currency;
 using BL.Contracts.Service.Customer;
 using BL.Contracts.Service.Customer.Wishlist;
-using BL.Contracts.Service.HomeSlider;
+using BL.Contracts.Service.HomePageSlider;
 using BL.Contracts.Service.Merchandising;
 using BL.Contracts.Service.Merchandising.Campaign;
 using BL.Contracts.Service.Merchandising.CouponCode;

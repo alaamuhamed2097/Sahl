@@ -27,15 +27,15 @@ namespace Shared.DTOs.HomeSlider
 		[Required(ErrorMessageResourceName = "FieldRequired", ErrorMessageResourceType = typeof(ValidationResources))]
 		public int DisplayOrder { get; set; }
 
-		[Required(ErrorMessageResourceName = "FieldRequired", ErrorMessageResourceType = typeof(ValidationResources))]
+		//[Required(ErrorMessageResourceName = "FieldRequired", ErrorMessageResourceType = typeof(ValidationResources))]
 
 		
-		[Display(Name = "Start Date")]
-		public DateTime StartDate { get; set; } = DateTime.UtcNow.Date;
+		//[Display(Name = "Start Date")]
+		//public DateTime StartDate { get; set; } = DateTime.UtcNow.Date;
 
-		[Required(ErrorMessageResourceName = "FieldRequired", ErrorMessageResourceType = typeof(ValidationResources))]
+		//[Required(ErrorMessageResourceName = "FieldRequired", ErrorMessageResourceType = typeof(ValidationResources))]
 		
-		[Display(Name = "End Date")]
-		public DateTime EndDate { get; set; } = DateTime.UtcNow.Date.AddDays(30);
+		//[Display(Name = "End Date")]
+		//public DateTime EndDate { get; set; } = DateTime.UtcNow.Date.AddDays(30);
 	}
 }

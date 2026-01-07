@@ -372,7 +372,25 @@
 			public const string Reject = $"{Base}/reject"; 
 
 		}
+		public static class HomePageSlider
+		{
+			private const string Base = "api/v1/HomePageSlider";
 
+			// Single Operations
+			public const string Get = Base;
+			public const string GetById = $"{Base}";
+			public const string GetAll = $"{Base}/all";
+			public const string Create = $"{Base}/create";
+			public const string Update = $"{Base}/update";
+			public const string Delete = $"{Base}";
+
+			// Batch Operations
+			//public const string BatchGet = $"{Base}/batch/get";
+			//public const string BatchActivate = $"{Base}/batch/activate";
+			//public const string BatchDeactivate = $"{Base}/batch/deactivate";
+			//public const string BatchDelete = $"{Base}/batch/delete";
+			//public const string BatchReorder = $"{Base}/batch/reorder";
+		}
 		public static class ReviewReport
 		{
 			private const string Base = "api/v1/ReviewReport";

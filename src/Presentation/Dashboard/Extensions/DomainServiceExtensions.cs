@@ -6,6 +6,7 @@ using Dashboard.Contracts.Customer;
 using Dashboard.Contracts.ECommerce.Category;
 using Dashboard.Contracts.ECommerce.Item;
 using Dashboard.Contracts.General;
+using Dashboard.Contracts.HomePageSlider;
 using Dashboard.Contracts.Location;
 using Dashboard.Contracts.Order;
 using Dashboard.Contracts.Review;
@@ -20,6 +21,7 @@ using Dashboard.Services.Customer;
 using Dashboard.Services.ECommerce.Category;
 using Dashboard.Services.ECommerce.Item;
 using Dashboard.Services.General;
+using Dashboard.Services.HomePageSlider;
 using Dashboard.Services.Location;
 using Dashboard.Services.Order;
 using Dashboard.Services.Review;
@@ -60,6 +62,7 @@ namespace Dashboard.Extensions
 
 			services.AddScoped<IItemReviewService, ItemReviewService>();
 			services.AddScoped<IReportReviewService, ReportReviewService>();
+			services.AddScoped<IHomePageSliderService, HomePageSliderService>();
 
 			// Excel Template Service
 			services.AddScoped<ExcelTemplateService>();
