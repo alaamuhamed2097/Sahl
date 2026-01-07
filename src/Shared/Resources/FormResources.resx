@@ -705,4 +705,41 @@
   <data name="Values" xml:space="preserve">
     <value>القيم</value>
   </data>
+
+	<data name="ArabicTitle">
+		<value>العنوان بالعربي</value>
+	</data>
+	<data name="EnglishTitle">
+		<value>العنوان بالإنجليزي</value>
+	</data>
+	<data name="Title">
+		<value>العنوان</value>
+	</data>
+	<data name="StartDate">
+		<value>تاريخ البداية</value>
+	</data>
+	<data name="EndDate">
+		<value>تاريخ النهاية</value>
+	</data>
+	<data name="DisplayOrder">
+		<value>ترتيب العرض</value>
+	</data>
+	<data name="DisplayOrderHint">
+		<value>حدد الترتيب الذي سيظهر به هذا العنصر (1 = الأول)</value>
+	</data>
+	<data name="DisplayOrderStatus">
+		<value>الموقع الحالي: {0} من {1}</value>
+	</data>
+	<data name="NewEntityOrderInfo">
+		<value>سيتم إضافة {1} في الموقع {0}</value>
+	</data>
+	<data name="Image">
+		<value>الصورة</value>
+	</data>
+	<data name="Select">
+		<value>اختر</value>
+	</data>
+	<data name="Placeholder">
+		<value>أدخل {0}</value>
+	</data>
 </root>

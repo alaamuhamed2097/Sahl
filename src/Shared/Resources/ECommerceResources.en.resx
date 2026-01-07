@@ -846,4 +846,43 @@
 	<data name="AffectsPricingListTypeOnly" xml:space="preserve">
   <value>Affects Pricing is only available for List type attributes</value>
 </data>
+	<data name="MainBanners">
+		<value>Main Banners</value>
+	</data>
+	<data name="HomePageSlider">
+		<value>Home Page Slider</value>
+	</data>
+	<data name="DisplayOrder">
+		<value>Display Order</value>
+	</data>
+	<data name="SliderImage">
+		<value>Slider Image</value>
+	</data>
+	<data name="SliderTitle">
+		<value>Slider Title</value>
+	</data>
+	<data name="MainBanners">
+		<value>Main Banners</value>
+	</data>
+	<data name="HomePageSlider">
+		<value>Home Page Slider</value>
+	</data>
+	<data name="DisplayOrder">
+		<value>Display Order</value>
+	</data>
+	<data name="SliderImage">
+		<value>Slider Image</value>
+	</data>
+	<data name="SliderTitle">
+		<value>Slider Title</value>
+	</data>
+	<data name="BannerDuration">
+		<value>Banner Duration</value>
+	</data>
+	<data name="CurrentPosition">
+		<value>Current Position</value>
+	</data>
+	<data name="MainBanner">
+		<value>Main Banner</value>
+	</data>
 </root>

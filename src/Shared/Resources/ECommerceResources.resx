@@ -846,4 +846,43 @@
 	<data name="AffectsPricingListTypeOnly" xml:space="preserve">
   <value>خاصية "تؤثر على التسعير" متوفرة فقط للسمات من نوع القائمة</value>
 </data>
+	<data name="MainBanners">
+	<value>البانرات الرئيسية</value>
+</data>
+<data name="HomePageSlider">
+	<value>سلايدر الصفحة الرئيسية</value>
+</data>
+<data name="DisplayOrder">
+	<value>ترتيب العرض</value>
+</data>
+<data name="SliderImage">
+	<value>صورة السلايدر</value>
+</data>
+<data name="SliderTitle">
+	<value>عنوان السلايدر</value>
+</data>
+	<data name="MainBanners">
+		<value>البانرات الرئيسية</value>
+	</data>
+	<data name="HomePageSlider">
+		<value>سلايدر الصفحة الرئيسية</value>
+	</data>
+	<data name="DisplayOrder">
+		<value>ترتيب العرض</value>
+	</data>
+	<data name="SliderImage">
+		<value>صورة السلايدر</value>
+	</data>
+	<data name="SliderTitle">
+		<value>عنوان السلايدر</value>
+	</data>
+	<data name="BannerDuration">
+		<value>مدة البانر</value>
+	</data>
+	<data name="CurrentPosition">
+		<value>الموقع الحالي</value>
+	</data>
+	<data name="MainBanner">
+		<value>البانر الرئيسي</value>
+	</data>
 </root>
