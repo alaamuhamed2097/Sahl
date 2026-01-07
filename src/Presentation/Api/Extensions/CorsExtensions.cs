@@ -19,7 +19,7 @@ namespace Api.Extensions
                             // Production
                             "https://sahl.itlegend.net",
                             "https://sahldashboard.itlegend.net",
-                            "https://3lwa-ecommerce.vercel.app",
+                            "https://basit-demo.vercel.app",
                             // Paymob
                             "https://accept.paymob.com"
                         )
