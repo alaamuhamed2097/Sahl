@@ -1,4 +1,5 @@
 ﻿using BL.Contracts.Service.Base;
+using Common.Filters;
 using DAL.Models;
 using Domains.Entities.Merchandising.HomePage;
 using Shared.DTOs.HomeSlider;

@@ -3,6 +3,7 @@ using Asp.Versioning;
 using BL.Contracts.Service.HomePageSlider;
 
 using Common.Enumerations.User;
+using Common.Filters;
 using DAL.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;

@@ -3,6 +3,7 @@ using BL.Contracts.IMapper;
 using BL.Contracts.Service.HomePageSlider;
 using BL.Extensions;
 using BL.Services.Base;
+using Common.Filters;
 using DAL.Contracts.Repositories;
 using DAL.Models;
 using Domains.Entities.Merchandising.HomePage;
