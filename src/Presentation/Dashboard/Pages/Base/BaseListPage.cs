@@ -1,4 +1,5 @@
-﻿using Dashboard.Configuration;
+﻿using Common.Filters;
+using Dashboard.Configuration;
 using Dashboard.Contracts.General;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
@@ -7,7 +8,6 @@ using Microsoft.JSInterop;
 using Resources;
 using Resources.Enumerations;
 using Shared.GeneralModels;
-using Shared.GeneralModels.SearchCriteriaModels;
 using System.Text;
 
 public abstract partial class BaseListPage<TDto> : ComponentBase, IDisposable

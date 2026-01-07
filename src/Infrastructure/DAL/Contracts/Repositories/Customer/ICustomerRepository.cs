@@ -1,7 +1,7 @@
 ﻿using DAL.Contracts.Repositories;
 using Domains.Entities.ECommerceSystem.Customer;
 
-namespace DAL.Repositories.Customer
+namespace DAL.Contracts.Repositories.Customer
 {
     public interface ICustomerRepository : ITableRepository<TbCustomer>
     {

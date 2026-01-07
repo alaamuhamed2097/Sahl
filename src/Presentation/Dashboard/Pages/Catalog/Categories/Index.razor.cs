@@ -1,3 +1,4 @@
+using Common.Filters;
 using Dashboard.Constants;
 using Dashboard.Contracts.ECommerce.Category;
 using Dashboard.Contracts.General;
@@ -7,7 +8,6 @@ using Resources;
 using Resources.Enumerations;
 using Shared.DTOs.Catalog.Category;
 using Shared.DTOs.ECommerce;
-using Shared.GeneralModels.SearchCriteriaModels;
 namespace Dashboard.Pages.Catalog.Categories
 {
     public partial class Index

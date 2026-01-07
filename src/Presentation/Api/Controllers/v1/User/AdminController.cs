@@ -2,13 +2,13 @@ using Api.Controllers.v1.Base;
 using Asp.Versioning;
 using BL.Contracts.GeneralService.UserManagement;
 using Common.Enumerations.User;
+using Common.Filters;
 using DAL.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Resources;
 using Shared.DTOs.User.Admin;
 using Shared.GeneralModels;
-using Shared.GeneralModels.SearchCriteriaModels;
 
 namespace Api.Controllers.v1.User
 {

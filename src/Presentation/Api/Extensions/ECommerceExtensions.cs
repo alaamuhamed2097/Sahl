@@ -74,6 +74,7 @@ namespace Api.Extensions
 
             // Custom Items Services
             services.AddScoped<ICustomerItemViewService, CustomerItemViewService>();
+            services.AddScoped<ICustomerRecommendedItemsService, CustomerRecommendedItemsService>();
 
             // Vendor Items Services
             services.AddScoped<IVendorItemService, VendorItemService>();

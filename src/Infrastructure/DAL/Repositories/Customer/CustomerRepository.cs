@@ -28,7 +28,7 @@ namespace DAL.Repositories.Customer
         public async Task<TbCustomer> GetCustomerByUserIdAsync(string userId)
         {
             // Validate input
-            if (!string.IsNullOrEmpty(userId))
+            if (string.IsNullOrEmpty(userId))
                 throw new ArgumentException("User ID is required.", nameof(userId));
 
             // Get customer by user id

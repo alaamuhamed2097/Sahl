@@ -1,4 +1,5 @@
 ﻿using Common.Enumerations.Offer;
+using Common.Filters;
 
 namespace Shared.GeneralModels.SearchCriteriaModels
 {

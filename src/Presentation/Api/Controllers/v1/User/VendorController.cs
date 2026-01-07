@@ -1,12 +1,12 @@
 using Api.Controllers.v1.Base;
 using Asp.Versioning;
 using BL.Contracts.Service.Vendor;
+using Common.Filters;
 using DAL.Models;
 using Microsoft.AspNetCore.Mvc;
 using Resources;
 using Shared.DTOs.Vendor;
 using Shared.GeneralModels;
-using Shared.GeneralModels.SearchCriteriaModels;
 
 namespace Api.Controllers.v1.User
 {

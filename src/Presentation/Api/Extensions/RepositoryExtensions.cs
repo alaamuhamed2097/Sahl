@@ -41,6 +41,7 @@ namespace Api.Extensions
             // Customer repositories
             services.AddScoped<ICustomerRepository, CustomerRepository>();
             services.AddScoped<ICustomerItemViewRepository, CustomerItemViewRepository>();
+            services.AddScoped<ICustomerRecommendedItemsRepository, CustomerRecommendedItemsRepository>();
             services.AddScoped<IWishlistRepository, WishlistRepository>();
 
             // Register repositories

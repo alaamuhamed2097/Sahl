@@ -1,7 +1,7 @@
-﻿using DAL.Models;
+﻿using Common.Filters;
+using DAL.Models;
 using Shared.DTOs.Merchandising.CouponCode;
 using Shared.DTOs.Order.CouponCode;
-using Shared.GeneralModels.SearchCriteriaModels;
 
 namespace BL.Contracts.Service.Merchandising.CouponCode;
 

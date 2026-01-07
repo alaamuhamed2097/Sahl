@@ -3,13 +3,13 @@ using BL.Contracts.Service.Notification;
 using BL.Extensions;
 using BL.Services.Base;
 using Common.Enumerations.Notification;
+using Common.Filters;
 using DAL.Contracts.Repositories;
 using DAL.Models;
 using Domains.Entities.Notification;
 using Resources;
 using Serilog;
 using Shared.DTOs.Notification;
-using Shared.GeneralModels.SearchCriteriaModels;
 using System.Linq.Expressions;
 
 namespace BL.Services.Notification;

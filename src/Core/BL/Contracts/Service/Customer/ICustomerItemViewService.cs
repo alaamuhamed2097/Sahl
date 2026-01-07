@@ -1,6 +1,6 @@
-﻿using DAL.Models;
+﻿using Common.Filters;
+using DAL.Models;
 using Shared.DTOs.Customer;
-using Shared.GeneralModels.SearchCriteriaModels;
 
 namespace BL.Contracts.Service.Customer
 {

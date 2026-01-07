@@ -1,10 +1,6 @@
 namespace Domains.Procedures
 {
-    /// <summary>
-    /// Domain entity representing a single search result from SpSearchItemsMultiVendor stored procedure
-    /// Maps directly to database stored procedure output
-    /// </summary>
-    public class SpSearchItemsMultiVendor
+    public class SpGetCustomerRecommendedItems
     {
         public Guid ItemId { get; set; }
         public Guid ItemCombinationId { get; set; }
