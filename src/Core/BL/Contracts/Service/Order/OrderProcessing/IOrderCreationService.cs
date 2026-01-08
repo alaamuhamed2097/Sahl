@@ -11,7 +11,6 @@ public interface IOrderCreationService
     /// Creates an order from the current cart with payment processing
     /// </summary>
     Task<CreateOrderResult> CreateOrderAsync(
-        string customerId,
         CreateOrderRequest request,
         CancellationToken cancellationToken = default);
 }

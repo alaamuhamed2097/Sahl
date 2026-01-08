@@ -41,7 +41,6 @@ namespace Domains.Entities.Campaign
         public ICollection<TbHomepageBlock> HomepageBlocks { get; set; }
         public ICollection<TbCampaignItem> CampaignItems { get; set; }
 
-        // ✅ الربط مع Vendors
         public ICollection<TbCampaignVendor> CampaignVendors { get; set; }
     }
 }

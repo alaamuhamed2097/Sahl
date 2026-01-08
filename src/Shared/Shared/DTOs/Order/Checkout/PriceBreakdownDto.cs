@@ -8,7 +8,7 @@
         public decimal Subtotal { get; set; }
         public decimal? ShippingCost { get; set; }
         public decimal TaxAmount { get; set; }
-        public decimal TaxPercentage { get; set; }  // ✅ Added
+        public decimal TaxPercentage { get; set; }
         public decimal DiscountAmount { get; set; }
         public decimal GrandTotal { get; set; }
     }

@@ -1,22 +1,20 @@
-﻿using DAL.Models;
-using Domains.Entities.Order;
+﻿using Domains.Entities.Order;
 
 namespace DAL.Contracts.Repositories.Order;
 
 /// <summary>
-/// Repository interface for order operations
+/// Repository interface for Order operations
+/// Inherits all CRUD operations from ITableRepository<TbOrder>
+/// Adds order-specific query methods
 /// </summary>
 public interface IOrderRepository : ITableRepository<TbOrder>
 {
-    /// <summary>
-    /// Get order by ID
-    /// </summary>
-    Task<TbOrder?> GetByIdAsync(
-        Guid orderId,
-        CancellationToken cancellationToken = default);
+    // ============================================
+    // ORDER-SPECIFIC READ OPERATIONS
+    // ============================================
 
     /// <summary>
-    /// Get order with full details (items, address, payments)
+    /// Get order with full details (includes OrderDetails, Shipments, Payments, etc.)
     /// </summary>
     Task<TbOrder?> GetOrderWithDetailsAsync(
         Guid orderId,
@@ -30,6 +28,13 @@ public interface IOrderRepository : ITableRepository<TbOrder>
         CancellationToken cancellationToken = default);
 
     /// <summary>
+    /// Get order by order number
+    /// </summary>
+    Task<TbOrder?> GetByOrderNumberAsync(
+        string orderNumber,
+        CancellationToken cancellationToken = default);
+
+    /// <summary>
     /// Get order by invoice ID
     /// </summary>
     Task<TbOrder?> GetByInvoiceIdAsync(
@@ -37,30 +42,23 @@ public interface IOrderRepository : ITableRepository<TbOrder>
         CancellationToken cancellationToken = default);
 
     /// <summary>
-    /// Get customer orders with pagination
+    /// Get orders by customer ID (all orders)
     /// </summary>
-    Task<PagedResult<TbOrder>> GetCustomerOrdersPagedAsync(
+    Task<List<TbOrder>> GetByCustomerIdAsync(
+        string customerId,
+        CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Get orders by customer ID with pagination
+    /// </summary>
+    Task<List<TbOrder>> GetByCustomerIdAsync(
         string customerId,
         int pageNumber,
         int pageSize,
         CancellationToken cancellationToken = default);
 
     /// <summary>
-    /// Create new order
-    /// </summary>
-    Task<TbOrder> CreateAsync(
-        TbOrder order,
-        CancellationToken cancellationToken = default);
-
-    /// <summary>
-    /// Update existing order
-    /// </summary>
-    Task UpdateAsync(
-        TbOrder order,
-        CancellationToken cancellationToken = default);
-
-    /// <summary>
-    /// Get orders by status
+    /// Get orders by order status
     /// </summary>
     Task<List<TbOrder>> GetOrdersByStatusAsync(
         Common.Enumerations.Order.OrderProgressStatus status,
@@ -74,7 +72,7 @@ public interface IOrderRepository : ITableRepository<TbOrder>
         CancellationToken cancellationToken = default);
 
     /// <summary>
-    /// Count today's orders for order number generation
+    /// Count orders created today for order number generation
     /// </summary>
     Task<int> CountTodayOrdersAsync(
         DateTime date,

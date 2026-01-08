@@ -101,7 +101,9 @@
 
         public static class PaymentMethod
         {
-            public const string Get = "api/v1/PaymentMethod";
+            public const string GetAll = "api/v1/PaymentMethod/all";
+            public const string GetActive = "api/v1/PaymentMethod";
+            public const string GetById = "api/v1/PaymentMethod/{0}";
             public const string Save = "api/v1/PaymentMethod/save";
             public const string Delete = "api/v1/PaymentMethod/delete";
             public const string Search = "api/v1/PaymentMethod/search";

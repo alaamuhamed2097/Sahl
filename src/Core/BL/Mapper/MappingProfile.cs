@@ -32,6 +32,6 @@ public partial class MappingProfile : Profile
         ConfigureHomePageSliderMappingProfile();
         ConfigureRefundMappings();
         ConfigureCustomerMappings();
-
+        ConfigurePaymentMethodMappings();
     }
 }

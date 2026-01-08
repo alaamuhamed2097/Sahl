@@ -81,12 +81,21 @@ public class OrderEventHandlerService : IOrderEventHandlerService
 
             await _orderRepository.UpdateAsync(order);
 
+            // Update payment record
+            var payment = await _paymentRepository.GetOrderPaymentAsync(order.Id, cancellationToken);
+            if (payment != null)
+            {
+                payment.PaymentStatus = PaymentStatus.Completed;
+                payment.PaidAt = DateTime.UtcNow;
+                payment.UpdatedDateUtc = DateTime.UtcNow;
+                await _paymentRepository.UpdateAsync(payment);
+            }
+
             // Send payment confirmation notification
             await _notificationService.NotifyOrderPaidAsync(order.Id, cancellationToken);
 
             // Create shipments from order
-            var shipments = await _shipmentService.SplitOrderIntoShipmentsAsync(
-                order.Id);
+            var shipments = await _shipmentService.SplitOrderIntoShipmentsAsync(order.Id);
 
             // Process fulfillment for each shipment
             foreach (var shipment in shipments)
@@ -135,7 +144,7 @@ public class OrderEventHandlerService : IOrderEventHandlerService
     {
         try
         {
-            var order = await _orderRepository.GetByIdAsync(orderEvent.OrderId, cancellationToken);
+            var order = await _orderRepository.FindByIdAsync(orderEvent.OrderId, cancellationToken);
 
             if (order == null)
             {
@@ -176,7 +185,7 @@ public class OrderEventHandlerService : IOrderEventHandlerService
     {
         try
         {
-            var order = await _orderRepository.GetByIdAsync(orderEvent.OrderId, cancellationToken);
+            var order = await _orderRepository.FindByIdAsync(orderEvent.OrderId, cancellationToken);
 
             if (order == null)
             {
@@ -240,7 +249,7 @@ public class OrderEventHandlerService : IOrderEventHandlerService
     {
         try
         {
-            var order = await _orderRepository.GetByIdAsync(orderEvent.OrderId, cancellationToken);
+            var order = await _orderRepository.FindByIdAsync(orderEvent.OrderId, cancellationToken);
 
             if (order == null)
             {
@@ -288,7 +297,7 @@ public class OrderEventHandlerService : IOrderEventHandlerService
         if (result)
         {
             // Send payment reminder if order is pending payment
-            var order = await _orderRepository.GetByIdAsync(orderEvent.OrderId, cancellationToken);
+            var order = await _orderRepository.FindByIdAsync(orderEvent.OrderId, cancellationToken);
             if (order?.PaymentStatus == PaymentStatus.Pending)
             {
                 await _notificationService.NotifyPaymentReminderAsync(order.Id, cancellationToken);
@@ -410,7 +419,7 @@ public class OrderEventHandlerService : IOrderEventHandlerService
     {
         if (orderId.HasValue && orderId != Guid.Empty)
         {
-            return await _orderRepository.GetByIdAsync(orderId.Value, cancellationToken);
+            return await _orderRepository.FindByIdAsync(orderId.Value, cancellationToken);
         }
 
         if (!string.IsNullOrEmpty(invoiceId))
@@ -519,11 +528,15 @@ public class OrderEventHandlerService : IOrderEventHandlerService
                 else if (payment.PaymentMethodType == PaymentMethodType.Card)
                 {
                     payment.PaymentStatus = PaymentStatus.Refunded;
+                    payment.RefundedAt = DateTime.UtcNow;
+                    payment.RefundAmount = payment.Amount;
                     payment.UpdatedDateUtc = DateTime.UtcNow;
                     await _paymentRepository.UpdateAsync(payment);
                 }
 
                 payment.PaymentStatus = PaymentStatus.Refunded;
+                payment.RefundedAt = DateTime.UtcNow;
+                payment.RefundAmount = payment.Amount;
                 payment.UpdatedDateUtc = DateTime.UtcNow;
                 await _paymentRepository.UpdateAsync(payment);
             }
@@ -564,6 +577,11 @@ public class OrderEventHandlerService : IOrderEventHandlerService
         }
     }
 
+    /// <summary>
+    /// Marks order as payment failed
+    /// Updates both TbOrder and TbOrderPayment with failure information
+    /// UPDATED: Now updates payment record with FailureReason
+    /// </summary>
     private async Task MarkOrderAsPaymentFailed(
         Guid orderId,
         string failureReason,
@@ -571,13 +589,32 @@ public class OrderEventHandlerService : IOrderEventHandlerService
     {
         try
         {
-            var order = await _orderRepository.GetByIdAsync(orderId, cancellationToken);
+            // 1. Update Order status
+            var order = await _orderRepository.FindByIdAsync(orderId, cancellationToken);
 
             if (order != null)
             {
                 order.OrderStatus = OrderProgressStatus.PaymentFailed;
+                order.PaymentStatus = PaymentStatus.Failed;
                 order.UpdatedDateUtc = DateTime.UtcNow;
                 await _orderRepository.UpdateAsync(order);
+            }
+
+            // 2. Update Payment record with failure information
+            var payment = await _paymentRepository.GetOrderPaymentAsync(orderId, cancellationToken);
+
+            if (payment != null)
+            {
+                payment.PaymentStatus = PaymentStatus.Failed;
+
+                // Respect MaxLength(500) constraint on FailureReason
+                payment.FailureReason = failureReason?.Length > 500
+                    ? failureReason.Substring(0, 500)
+                    : failureReason;
+
+                payment.UpdatedDateUtc = DateTime.UtcNow;
+
+                await _paymentRepository.UpdateAsync(payment);
             }
         }
         catch (Exception ex)
@@ -593,7 +630,7 @@ public class OrderEventHandlerService : IOrderEventHandlerService
     {
         try
         {
-            var order = await _orderRepository.GetByIdAsync(orderId, cancellationToken);
+            var order = await _orderRepository.FindByIdAsync(orderId, cancellationToken);
 
             if (order == null)
             {

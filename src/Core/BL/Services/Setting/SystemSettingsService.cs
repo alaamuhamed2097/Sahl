@@ -25,24 +25,12 @@ public class SystemSettingsService : ISystemSettingsService
     {
         var value = await _repository.GetDecimalSettingAsync(key);
 
-        _logger.Information(
-            "Retrieved decimal setting {SettingKey}: {Value}",
-            key.GetDescription(),
-            value
-        );
-
         return value;
     }
 
     public async Task<int> GetIntSettingAsync(SystemSettingKey key)
     {
         var value = await _repository.GetIntSettingAsync(key);
-
-        _logger.Information(
-            "Retrieved int setting {SettingKey}: {Value}",
-            key.GetDescription(),
-            value
-        );
 
         return value;
     }
@@ -51,24 +39,12 @@ public class SystemSettingsService : ISystemSettingsService
     {
         var value = await _repository.GetBoolSettingAsync(key);
 
-        _logger.Information(
-            "Retrieved bool setting {SettingKey}: {Value}",
-            key.GetDescription(),
-            value
-        );
-
         return value;
     }
 
     public async Task<string?> GetStringSettingAsync(SystemSettingKey key)
     {
         var value = await _repository.GetSettingValueAsync(key);
-
-        _logger.Information(
-            "Retrieved string setting {SettingKey}: {Value}",
-            key.GetDescription(),
-            value
-        );
 
         return value;
     }
@@ -77,24 +53,11 @@ public class SystemSettingsService : ISystemSettingsService
     {
         var value = await _repository.GetDateTimeSettingAsync(key);
 
-        _logger.Information(
-            "Retrieved datetime setting {SettingKey}: {Value}",
-            key.GetDescription(),
-            value
-        );
-
         return value;
     }
 
     public async Task<bool> UpdateSettingAsync(SystemSettingKey key, string value, Guid updatedBy)
     {
-        _logger.Information(
-            "Updating setting {SettingKey} to {Value} by user {UpdatedBy}",
-            key.GetDescription(),
-            value,
-            updatedBy
-        );
-
         var result = await _repository.UpdateSettingAsync(key, value, updatedBy);
 
         if (result)
