@@ -28,6 +28,7 @@ namespace Api.Extensions.Services
             services.AddMerchandisingServices(configuration);
             services.AddReviewServices(configuration);
             services.AddWalletServices(configuration);
+            services.AddWithdrawalMethodServices(configuration);
             services.AddSettingServices(configuration);
 
             return services;
