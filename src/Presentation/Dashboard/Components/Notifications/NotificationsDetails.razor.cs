@@ -1,9 +1,9 @@
+using Common.Filters;
 using Dashboard.Contracts.Notification;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 using Resources;
 using Shared.GeneralModels.Parameters.Notification;
-using Shared.GeneralModels.SearchCriteriaModels;
 
 namespace Dashboard.Components.Notifications
 {

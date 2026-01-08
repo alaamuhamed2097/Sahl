@@ -32,9 +32,9 @@ namespace Api.Controllers.v1.Order
         /// </summary>
         [HttpPost("process")]
         [Authorize(Roles = "Customer")]
-        [ProducesResponseType(typeof(PaymentResultDto), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(PaymentResult), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult<PaymentResultDto>> ProcessPayment(
+        public async Task<ActionResult<PaymentResult>> ProcessPayment(
             [FromBody] OrderPaymentProcessRequest request)
         {
             try
@@ -42,7 +42,7 @@ namespace Api.Controllers.v1.Order
                 var customerId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
                 if (string.IsNullOrEmpty(customerId))
                 {
-                    return Unauthorized(new PaymentResultDto
+                    return Unauthorized(new PaymentResult
                     {
                         Success = false,
                         Message = "Customer not authenticated",
@@ -68,7 +68,7 @@ namespace Api.Controllers.v1.Order
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error processing payment");
-                return BadRequest(new PaymentResultDto
+                return BadRequest(new PaymentResult
                 {
                     Success = false,
                     Message = "Payment processing failed",

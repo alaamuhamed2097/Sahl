@@ -36,7 +36,7 @@ namespace Dashboard.Pages.Sales.Orders
          },
          [ECommerceResources.PaymentStatus] = x => x.PaymentStatus switch
          {
-             PaymentStatus.Paid => ECommerceResources.Paid,
+             PaymentStatus.Completed => ECommerceResources.Paid,
              PaymentStatus.Pending => ECommerceResources.Pending,
              // PaymentStatus.Failed => ECommerceResources.Failed,
              _ => x.PaymentStatus.ToString()

@@ -123,6 +123,9 @@ namespace Dashboard.Layout
 			if (StartsWithAny(relativePath, new[] { "ReviewManagement" }))
 				_openSubmenus.Add("ReviewManagement");
 
+			if (StartsWithAny(relativePath, new[] { "HomePageSlider" }))
+				_openSubmenus.Add("HomePageSlider");
+
 			if (StartsWithAny(relativePath, new[] { "settings", "currencies" }))
                 _openSubmenus.Add("settings");
 

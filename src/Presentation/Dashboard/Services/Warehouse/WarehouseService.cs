@@ -1,3 +1,4 @@
+using Common.Filters;
 using Dashboard.Constants;
 using Dashboard.Contracts.General;
 using Dashboard.Contracts.Warehouse;
@@ -5,7 +6,6 @@ using Dashboard.Models.pagintion;
 using Resources;
 using Shared.DTOs.Warehouse;
 using Shared.GeneralModels;
-using Shared.GeneralModels.SearchCriteriaModels;
 
 namespace Dashboard.Services.Warehouse
 {

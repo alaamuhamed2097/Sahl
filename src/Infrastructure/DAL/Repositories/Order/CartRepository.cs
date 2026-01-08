@@ -1,4 +1,5 @@
-﻿using DAL.ApplicationContext;
+﻿using BL.Contracts.GeneralService;
+using DAL.ApplicationContext;
 using DAL.Contracts.Repositories.Order;
 using DAL.Exceptions;
 using DAL.ResultModels;
@@ -19,8 +20,8 @@ namespace DAL.Repositories.Order
         private readonly ILogger _logger;
         private readonly DbSet<TbShoppingCartItem> _cartItems;
 
-        public CartRepository(ApplicationDbContext dbContext, ILogger logger)
-            : base(dbContext, logger)
+        public CartRepository(ApplicationDbContext dbContext, ICurrentUserService currentUserService, ILogger logger)
+            : base(dbContext, currentUserService, logger)
         {
             _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
@@ -420,6 +421,8 @@ namespace DAL.Repositories.Order
             {
                 var cart = await _dbContext.Set<TbShoppingCart>()
                     .Include(c => c.Items.Where(i => !i.IsDeleted))
+                        .ThenInclude(i => i.Item)
+                    .Include(c => c.Items.Where(i => !i.IsDeleted))
                         .ThenInclude(i => i.OfferCombinationPricing)
                             .ThenInclude(ocp => ocp.Offer)
                                 .ThenInclude(o => o.Vendor)
@@ -633,57 +636,14 @@ namespace DAL.Repositories.Order
             return await _dbContext.Set<TbShoppingCart>()
                                .AsNoTracking()
                 .Include(c => c.Items.Where(i => !i.IsDeleted))
+                    .ThenInclude(i => i.Item)
+                .Include(c => c.Items.Where(i => !i.IsDeleted))
                     .ThenInclude(i => i.OfferCombinationPricing)
                         .ThenInclude(ocp => ocp.Offer)
                             .ThenInclude(o => o.Vendor)
                                 .ThenInclude(v => v.User)
                 .FirstOrDefaultAsync(c => c.Id == cartId && !c.IsDeleted, cancellationToken);
         }
-        //   private async Task<TbShoppingCart> GetCartWithItemsAsync(
-        //       Guid cartId,
-        //       CancellationToken cancellationToken)
-        //   {
-        //       try
-        //       {
-        //           var cart = await _dbContext.Set<TbShoppingCart>()
-        //               .AsNoTracking()
-        //               .Include(c => c.Items.Where(i => !i.IsDeleted))
-        //                   .ThenInclude(i => i.Item)
-        //        .ThenInclude(item => item.ItemImages)
-        //.Include(c => c.Items.Where(i => !i.IsDeleted))
-        //                   .ThenInclude(i => i.OfferCombinationPricing)
-        //                       .ThenInclude(ocp => ocp.Offer)
-        //               .ThenInclude(o => o.Vendor)
-        //               .FirstOrDefaultAsync(c => c.Id == cartId, cancellationToken);
-
-        //           return cart ?? new TbShoppingCart { Id = Guid.Empty };
-        //       }
-        //       catch (Exception ex)
-        //       {
-        //           _logger.Error(ex, $"Error getting cart {cartId} with items");
-        //           return new TbShoppingCart { Id = Guid.Empty };
-        //       }
-        //   }
-        //	private async Task<TbShoppingCart> GetCartWithItemsAsync(
-        //Guid cartId,
-        //CancellationToken cancellationToken)
-        //	{
-        //		return await _dbContext.Set<TbShoppingCart>()
-
-        //			.Include(c => c.Items.Where(i => !i.IsDeleted))
-        //				.ThenInclude(i => i.Item)  // جلب بيانات المنتج
-        //					.ThenInclude(item => item.ItemImages)  // جلب الصور
-        //			.Include(c => c.Items)
-        //				.ThenInclude(i => i.OfferCombinationPricing)  // جلب بيانات العرض
-        //					.ThenInclude(ocp => ocp.Offer)  // جلب العرض الأساسي
-        //						.ThenInclude(o => o.Vendor)  // جلب بيانات البائع
-        //							.ThenInclude(v => v.User)  // جلب بيانات المستخدم للبائع
-        //			.Include(c => c.Items)
-        //				.ThenInclude(i => i.OfferCombinationPricing)
-        //					.ThenInclude(ocp => ocp.Offer)
-        //						.AsNoTracking()
-        //			.FirstOrDefaultAsync(c => c.Id == cartId && !c.IsDeleted, cancellationToken);
-        //	}
 
         /// <summary>
         /// Calculate cart total from items

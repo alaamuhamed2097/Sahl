@@ -1313,6 +1313,9 @@ namespace DAL.Migrations
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
 
+                    b.Property<decimal>("BasePrice")
+                        .HasColumnType("decimal(18,2)");
+
                     b.Property<Guid>("CreatedBy")
                         .HasColumnType("uniqueidentifier");
 
@@ -4917,13 +4920,22 @@ namespace DAL.Migrations
                     b.Property<Guid>("CurrencyId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<string>("FailureReason")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("GatewayTransactionId")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
                     b.Property<bool>("IsDeleted")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bit")
                         .HasDefaultValue(false);
 
                     b.Property<string>("Notes")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
 
                     b.Property<Guid>("OrderId")
                         .HasColumnType("uniqueidentifier");
@@ -4936,6 +4948,9 @@ namespace DAL.Migrations
 
                     b.Property<Guid>("PaymentMethodId")
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("PaymentMethodType")
+                        .HasColumnType("int");
 
                     b.Property<int>("PaymentStatus")
                         .HasColumnType("int");
@@ -4950,7 +4965,8 @@ namespace DAL.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("TransactionId")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<Guid?>("UpdatedBy")
                         .HasColumnType("uniqueidentifier");
@@ -5297,14 +5313,16 @@ namespace DAL.Migrations
                         .HasDefaultValue(false);
 
                     b.Property<string>("Notes")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<string>("Number")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<Guid>("OrderId")
                         .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("ShipmentNumber")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
 
                     b.Property<int>("ShipmentStatus")
                         .HasColumnType("int");
@@ -5322,7 +5340,8 @@ namespace DAL.Migrations
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<string>("TrackingNumber")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<Guid?>("UpdatedBy")
                         .HasColumnType("uniqueidentifier");
@@ -5340,11 +5359,11 @@ namespace DAL.Migrations
 
                     b.HasIndex("IsDeleted");
 
+                    b.HasIndex("Number")
+                        .HasDatabaseName("IX_OrderShipments_Number");
+
                     b.HasIndex("OrderId")
                         .HasDatabaseName("IX_OrderShipments_OrderId");
-
-                    b.HasIndex("ShipmentNumber")
-                        .HasDatabaseName("IX_OrderShipments_Number");
 
                     b.HasIndex("ShipmentStatus")
                         .HasDatabaseName("IX_OrderShipments_Status");
@@ -5418,6 +5437,58 @@ namespace DAL.Migrations
                     b.HasIndex("ShipmentId");
 
                     b.ToTable("TbOrderShipmentItems");
+                });
+
+            modelBuilder.Entity("Domains.Entities.Order.Shipping.TbShipmentStatusHistory", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier")
+                        .HasDefaultValueSql("NEWID()");
+
+                    b.Property<Guid>("CreatedBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedDateUtc")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2(2)")
+                        .HasDefaultValueSql("GETUTCDATE()");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<string>("Location")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("Notes")
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<Guid>("ShipmentId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("StatusDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("UpdatedBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("UpdatedDateUtc")
+                        .HasColumnType("datetime2(2)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("IsDeleted");
+
+                    b.HasIndex("ShipmentId");
+
+                    b.ToTable("TbShipmentStatusHistory");
                 });
 
             modelBuilder.Entity("Domains.Entities.Order.Shipping.TbShippingCompany", b =>
@@ -5652,6 +5723,9 @@ namespace DAL.Migrations
                     b.Property<Guid>("DeliveryAddressId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<decimal>("DiscountAmount")
+                        .HasColumnType("decimal(18,2)");
+
                     b.Property<string>("InvoiceId")
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
@@ -5661,9 +5735,14 @@ namespace DAL.Migrations
                         .HasColumnType("bit")
                         .HasDefaultValue(false);
 
+                    b.Property<string>("Notes")
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
                     b.Property<string>("Number")
                         .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<DateTime?>("OrderDeliveryDate")
                         .HasColumnType("datetime2");
@@ -5671,7 +5750,7 @@ namespace DAL.Migrations
                     b.Property<int>("OrderStatus")
                         .HasColumnType("int");
 
-                    b.Property<DateTime?>("PaymentDate")
+                    b.Property<DateTime?>("PaidAt")
                         .HasColumnType("datetime2");
 
                     b.Property<int>("PaymentStatus")
@@ -5683,11 +5762,14 @@ namespace DAL.Migrations
                     b.Property<decimal>("ShippingAmount")
                         .HasColumnType("decimal(18,2)");
 
+                    b.Property<decimal>("SubTotal")
+                        .HasColumnType("decimal(18,2)");
+
                     b.Property<decimal>("TaxAmount")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<decimal>("TaxPrecentage")
-                        .HasColumnType("decimal(18,2)");
+                    b.Property<decimal>("TaxPercentage")
+                        .HasColumnType("decimal(5,2)");
 
                     b.Property<Guid?>("TbShippingCompanyId")
                         .HasColumnType("uniqueidentifier");
@@ -10200,6 +10282,17 @@ namespace DAL.Migrations
                     b.Navigation("Shipment");
                 });
 
+            modelBuilder.Entity("Domains.Entities.Order.Shipping.TbShipmentStatusHistory", b =>
+                {
+                    b.HasOne("Domains.Entities.Order.Shipping.TbOrderShipment", "Shipment")
+                        .WithMany("StatusHistory")
+                        .HasForeignKey("ShipmentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Shipment");
+                });
+
             modelBuilder.Entity("Domains.Entities.Order.Shipping.TbShippingDetail", b =>
                 {
                     b.HasOne("Domains.Entities.Location.TbCity", "City")
@@ -10807,6 +10900,8 @@ namespace DAL.Migrations
             modelBuilder.Entity("Domains.Entities.Order.Shipping.TbOrderShipment", b =>
                 {
                     b.Navigation("Items");
+
+                    b.Navigation("StatusHistory");
                 });
 
             modelBuilder.Entity("Domains.Entities.Order.Shipping.TbShippingCompany", b =>

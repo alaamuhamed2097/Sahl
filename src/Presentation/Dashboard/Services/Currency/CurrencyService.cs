@@ -1,10 +1,10 @@
+using Common.Filters;
 using Dashboard.Constants;
 using Dashboard.Contracts.Currency;
 using Dashboard.Contracts.General;
 using Dashboard.Models.pagintion;
 using Shared.DTOs.Currency;
 using Shared.GeneralModels;
-using Shared.GeneralModels.SearchCriteriaModels;
 
 namespace Dashboard.Services.Currency
 {

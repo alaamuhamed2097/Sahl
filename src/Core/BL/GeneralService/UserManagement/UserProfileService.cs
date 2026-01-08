@@ -5,6 +5,7 @@ using BL.Contracts.GeneralService.UserManagement;
 using BL.Contracts.IMapper;
 using Common.Enumerations.Notification;
 using Common.Enumerations.User;
+using Common.Filters;
 using DAL.Contracts.UnitOfWork;
 using DAL.Exceptions;
 using DAL.Models;
@@ -17,7 +18,6 @@ using Shared.ErrorCodes;
 using Shared.GeneralModels;
 using Shared.GeneralModels.Parameters.Notification;
 using Shared.GeneralModels.ResultModels;
-using Shared.GeneralModels.SearchCriteriaModels;
 using System.ComponentModel.DataAnnotations;
 
 namespace BL.GeneralService.UserManagement;

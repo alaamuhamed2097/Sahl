@@ -1,4 +1,6 @@
 ﻿using BL.Contracts.Service.Order.Fulfillment;
+using BL.Contracts.Service.Setting;
+using Common.Enumerations.Settings;
 using DAL.Contracts.Repositories;
 using Serilog;
 using Shared.DTOs.Order.Checkout;
@@ -17,13 +19,16 @@ namespace BL.Services.Order.Fulfillment;
 public class ShippingCalculationService : IShippingCalculationService
 {
     private readonly IOfferRepository _offerRepository;
+    private readonly ISystemSettingsService _systemSettings;
     private readonly ILogger _logger;
 
     public ShippingCalculationService(
         IOfferRepository offerRepository,
+        ISystemSettingsService systemSettings,
         ILogger logger)
     {
         _offerRepository = offerRepository ?? throw new ArgumentNullException(nameof(offerRepository));
+        _systemSettings = systemSettings ?? throw new ArgumentNullException(nameof(systemSettings));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
@@ -44,8 +49,7 @@ public class ShippingCalculationService : IShippingCalculationService
         {
             var warehouseId = group.Key;
 
-            // TODO: Calculate shipping cost based on shipping company integration
-            // For now, returning zero until shipping integration is ready
+            // Calculate shipping cost based on system settings
             var shippingCost = await CalculateShippingCostAsync(
                 warehouseId,
                 deliveryCityId,
@@ -64,7 +68,7 @@ public class ShippingCalculationService : IShippingCalculationService
             shipmentPreviews.Add(new ShipmentPreviewDto
             {
                 ItemCount = group.Sum(i => i.Quantity),
-                ItemsList = group.Select(i => i.ItemName).ToList(),
+                ItemsList = group.Select(i => i.ItemNameEn).ToList(),
                 SubTotal = group.Sum(i => i.SubTotal),
                 ShippingCost = shippingCost,
                 EstimatedDeliveryDays = estimatedDays
@@ -88,14 +92,26 @@ public class ShippingCalculationService : IShippingCalculationService
             throw new ArgumentException("Total items must be greater than zero", nameof(totalItems));
         }
 
-        // TODO: Implement actual shipping cost calculation when shipping company integration is ready
-        // Will integrate with shipping companies APIs to get real-time rates based on:
-        // - Vendor location/warehouse
-        // - Destination city
-        // - Total weight/volume of items
-        // - Shipping method (standard/express)
+        try
+        {
+            // Get base shipping amount from system settings
+            var baseShippingAmount = await _systemSettings.GetDecimalSettingAsync(SystemSettingKey.ShippingAmount);
 
-        return 0m; // Placeholder until shipping integration
+            _logger.Information(
+                "Calculated shipping cost - Warehouse: {WarehouseId}, City: {CityId}, Items: {ItemCount}, BaseCost: {BaseCost}",
+                warehouseId, cityId, totalItems, baseShippingAmount);
+
+            return baseShippingAmount;
+        }
+        catch (Exception ex)
+        {
+            _logger.Error(ex, "Error calculating shipping cost for warehouse {WarehouseId}", warehouseId);
+
+            // Fallback to default shipping cost if settings retrieval fails
+            const decimal defaultShippingCost = 50m;
+            _logger.Warning("Using default shipping cost: {DefaultCost}", defaultShippingCost);
+            return defaultShippingCost;
+        }
     }
 
     public async Task<int> GetEstimatedDeliveryDaysAsync(Guid vendorId, Guid cityId)
@@ -172,12 +188,6 @@ public class ShippingCalculationService : IShippingCalculationService
         {
             // Return the maximum delivery time to ensure all items arrive together
             var maxDays = deliveryTimes.Max();
-
-            _logger.Information(
-                "Estimated delivery for shipment with {OfferCount} offers: {Days} days (max)",
-                offerIds.Count,
-                maxDays
-            );
 
             return maxDays;
         }

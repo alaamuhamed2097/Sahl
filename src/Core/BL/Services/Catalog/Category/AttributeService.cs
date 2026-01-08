@@ -1,6 +1,7 @@
 using BL.Contracts.IMapper;
 using BL.Contracts.Service.Catalog.Category;
 using BL.Services.Base;
+using Common.Filters;
 using DAL.Contracts.UnitOfWork;
 using DAL.Models;
 using DAL.ResultModels;
@@ -12,7 +13,6 @@ using Domains.Views.Category;
 using Resources;
 using Shared.DTOs.Catalog.Category;
 using Shared.DTOs.Catalog.Item;
-using Shared.GeneralModels.SearchCriteriaModels;
 using Shared.ResultModels;
 using System.Linq.Expressions;
 

@@ -3,7 +3,6 @@ using BL.Contracts.Service.Catalog.Item;
 using DAL.Contracts.Repositories.Catalog.Item;
 using DAL.Contracts.Repositories.Customer;
 using DAL.Models.ItemSearch;
-using DAL.Repositories.Customer;
 using Domains.Entities.ECommerceSystem.Customer;
 using Domains.Procedures;
 using Serilog;

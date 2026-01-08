@@ -1,4 +1,5 @@
-﻿using Common.Enumerations.Merchandising;
+﻿using BL.Contracts.GeneralService;
+using Common.Enumerations.Merchandising;
 using DAL.ApplicationContext;
 using DAL.Contracts.Repositories.Merchandising;
 using Domains.Entities.Merchandising.HomePage;
@@ -13,8 +14,8 @@ namespace DAL.Repositories.Merchandising
     /// </summary>
     public class HomepageBlockRepository : TableRepository<TbHomepageBlock>, IHomepageBlockRepository
     {
-        public HomepageBlockRepository(ApplicationDbContext dbContext, ILogger logger)
-            : base(dbContext, logger)
+        public HomepageBlockRepository(ApplicationDbContext dbContext, ICurrentUserService currentUserService, ILogger logger)
+            : base(dbContext, currentUserService, logger)
         {
         }
 
@@ -34,7 +35,6 @@ namespace DAL.Repositories.Merchandising
                     .Include(b => b.Campaign)
                     .Include(b => b.BlockProducts.Where(p => !p.IsDeleted))
                         .ThenInclude(p => p.Item)
-                            .ThenInclude(i => i.ItemImages)
                     .Include(b => b.BlockCategories.Where(c => !c.IsDeleted))
                         .ThenInclude(c => c.Category)
                     .Where(b => b.IsVisible && !b.IsDeleted)

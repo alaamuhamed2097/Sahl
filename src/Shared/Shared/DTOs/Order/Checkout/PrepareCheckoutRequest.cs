@@ -5,7 +5,7 @@
     /// </summary>
     public class PrepareCheckoutRequest
     {
-        public Guid DeliveryAddressId { get; set; }
+        public Guid? DeliveryAddressId { get; set; }
         public string? CouponCode { get; set; }
     }
 }

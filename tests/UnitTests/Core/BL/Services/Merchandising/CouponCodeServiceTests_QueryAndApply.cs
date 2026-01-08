@@ -1,12 +1,12 @@
 ﻿using AutoMapper;
 using BL.Services.Merchandising.CouponCode;
 using Common.Enumerations.Order;
+using Common.Filters;
 using DAL.Contracts.Repositories.Merchandising;
 using DAL.Contracts.UnitOfWork;
 using Domains.Entities.Merchandising.CouponCode;
 using Moq;
 using Shared.DTOs.Order.CouponCode;
-using Shared.GeneralModels.SearchCriteriaModels;
 
 namespace UnitTests.Core.BL.Services.Merchandising
 {

@@ -44,7 +44,6 @@ namespace Shared.DTOs.ECommerce.Offer
         public int LowStockThreshold { get; set; } = 5;
 
         // Navigation properties
-        public virtual List<ItemCombinationImageDto> ItemCombinationImages { get; set; } = new List<ItemCombinationImageDto>();
         public virtual List<ItemCombinationDto> ItemCombinationDtos  { get; set; } = new List<ItemCombinationDto>();
     }
 

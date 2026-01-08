@@ -379,20 +379,38 @@
             public const string Approve = $"{Base}/approve";
             public const string Reject = $"{Base}/reject";
 
-        }
+		}
+		public static class HomePageSlider
+		{
+			private const string Base = "api/v1/HomePageSlider";
 
-        public static class ReviewReport
-        {
-            private const string Base = "api/v1/ReviewReport";
-            public const string Submit = $"{Base}/Submit";
-            public const string Get = Base;
-            public const string Search = $"{Base}/Search";
-            public const string GetByItemReviewId = $"{Base}/reports-by-Item";
-            public const string Resolve = $"{Base}/resolve";
-            public const string MarkAsFlagged = $"{Base}/MarkAsFlagged";
-        }
-        // Wallet endpoints
-        public static class Wallet
+			// Single Operations
+			public const string Get = Base;
+			public const string GetById = $"{Base}";
+			public const string GetAll = $"{Base}/all";
+			public const string Create = $"{Base}/create";
+			public const string Update = $"{Base}/update";
+			public const string Delete = $"{Base}";
+
+			// Batch Operations
+			//public const string BatchGet = $"{Base}/batch/get";
+			//public const string BatchActivate = $"{Base}/batch/activate";
+			//public const string BatchDeactivate = $"{Base}/batch/deactivate";
+			//public const string BatchDelete = $"{Base}/batch/delete";
+			//public const string BatchReorder = $"{Base}/batch/reorder";
+		}
+		public static class ReviewReport
+		{
+			private const string Base = "api/v1/ReviewReport";
+			public const string Submit = $"{Base}/Submit";
+			public const string Get = Base;
+			public const string Search = $"{Base}/Search";
+			public const string GetByItemReviewId = $"{Base}/reports-by-Item";
+			public const string Resolve = $"{Base}/resolve";
+			public const string MarkAsFlagged = $"{Base}/MarkAsFlagged";
+		}
+		// Wallet endpoints
+		public static class Wallet
         {
             public static class Customer
             {

@@ -1,4 +1,4 @@
-namespace Shared.DTOs.Order.Checkout
+﻿namespace Shared.DTOs.Order.Checkout
 {
     /// <summary>
     /// Price breakdown with all components
@@ -6,8 +6,9 @@ namespace Shared.DTOs.Order.Checkout
     public class PriceBreakdownDto
     {
         public decimal Subtotal { get; set; }
-        public decimal ShippingCost { get; set; }
+        public decimal? ShippingCost { get; set; }
         public decimal TaxAmount { get; set; }
+        public decimal TaxPercentage { get; set; }  // ✅ Added
         public decimal DiscountAmount { get; set; }
         public decimal GrandTotal { get; set; }
     }

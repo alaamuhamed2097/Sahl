@@ -1,11 +1,11 @@
 ﻿using BL.Contracts.IMapper;
 using BL.Contracts.Service.Wallet.Customer;
+using Common.Filters;
 using DAL.Contracts.UnitOfWork;
 using DAL.Models;
 using Domains.Entities.Wallet.Customer;
 using Microsoft.EntityFrameworkCore;
 using Shared.DTOs.Wallet.Customer;
-using Shared.GeneralModels.SearchCriteriaModels;
 
 namespace BL.Services.Wallet.Customer
 {

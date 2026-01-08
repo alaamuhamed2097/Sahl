@@ -1,8 +1,8 @@
 ﻿using BL.Contracts.Service.Base;
+using Common.Filters;
 using DAL.Models;
 using Domains.Entities.Order.Shipping;
 using Shared.DTOs.ECommerce;
-using Shared.GeneralModels.SearchCriteriaModels;
 
 namespace BL.Contracts.Service.ShippingCompny;
 

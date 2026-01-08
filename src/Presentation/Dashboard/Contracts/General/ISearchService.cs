@@ -1,6 +1,6 @@
-﻿using Dashboard.Models.pagintion;
+﻿using Common.Filters;
+using Dashboard.Models.pagintion;
 using Shared.GeneralModels;
-using Shared.GeneralModels.SearchCriteriaModels;
 
 namespace Dashboard.Contracts.General
 {

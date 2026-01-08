@@ -1,12 +1,12 @@
 using BL.Contracts.IMapper;
 using BL.Contracts.Service.Location;
 using BL.Services.Base;
+using Common.Filters;
 using DAL.Contracts.Repositories;
 using DAL.Models;
 using Domains.Entities.Location;
 using Resources;
 using Shared.DTOs.Location;
-using Shared.GeneralModels.SearchCriteriaModels;
 using System.Linq.Expressions;
 
 namespace BL.Services.Location;

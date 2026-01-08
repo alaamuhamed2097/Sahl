@@ -24,7 +24,8 @@ public partial class MappingProfile
             .ForMember(dest => dest.ItemCount, opt => opt.Ignore());  // Calculated in service
 
         CreateMap<TbShoppingCartItem, CartItemDto>()
-            .ForMember(dest => dest.ItemName, opt => opt.MapFrom(src => src.Item.TitleEn))
+            .ForMember(dest => dest.ItemNameAr, opt => opt.MapFrom(src => src.Item.TitleAr))
+            .ForMember(dest => dest.ItemNameEn, opt => opt.MapFrom(src => src.Item.TitleEn))
             // .ForMember(dest => dest.SellerName, opt => opt.MapFrom(src => src.OfferCombinationPricing.Offer.Vendor.CompanyName))
             .ForMember(dest => dest.SubTotal, opt => opt.Ignore());  // Calculated in service
     }

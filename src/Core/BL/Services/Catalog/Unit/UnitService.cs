@@ -1,6 +1,7 @@
 using BL.Contracts.IMapper;
 using BL.Contracts.Service.Catalog.Unit;
 using BL.Services.Base;
+using Common.Filters;
 using DAL.Contracts.UnitOfWork;
 using DAL.Models;
 using DAL.ResultModels;
@@ -8,7 +9,6 @@ using Domains.Entities.Catalog.Unit;
 using Domains.Views.Unit;
 using Resources;
 using Shared.DTOs.Catalog.Unit;
-using Shared.GeneralModels.SearchCriteriaModels;
 using System.Linq.Expressions;
 
 namespace BL.Services.Catalog.Unit;

@@ -1,4 +1,5 @@
-﻿using Common.Enumerations.Offer;
+﻿using BL.Contracts.GeneralService;
+using Common.Enumerations.Offer;
 using DAL.ApplicationContext;
 using DAL.Contracts.Repositories;
 using DAL.Exceptions;
@@ -20,8 +21,8 @@ namespace DAL.Repositories
         private readonly ILogger _logger;
         private readonly DbSet<TbOfferCombinationPricing> _offerPricing;
 
-        public OfferRepository(ApplicationDbContext dbContext, ILogger logger)
-            : base(dbContext, logger)
+        public OfferRepository(ApplicationDbContext dbContext, ICurrentUserService currentUserService, ILogger logger)
+            : base(dbContext, currentUserService, logger)
         {
             _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
@@ -718,13 +719,25 @@ CancellationToken cancellationToken = default)
 
         public async Task<IEnumerable<TbOffer>> GetOffersByCombinationPricingIdsAsync(IEnumerable<Guid> pricingIds, CancellationToken cancellationToken = default)
         {
-            var offers = _dbContext.Set<TbOfferCombinationPricing>()
-                .AsNoTracking()
-                .Where(p => pricingIds.Contains(p.Id) && !p.IsDeleted)
-                .Select(p => p.Offer)
-                .Where(o => !o.IsDeleted);
+            var pricingIdsList = pricingIds.ToList();
 
-            return await offers.ToListAsync();
+            if (!pricingIdsList.Any())
+            {
+                return Enumerable.Empty<TbOffer>();
+            }
+
+            var offers = await _dbContext.Set<TbOfferCombinationPricing>()
+                .AsNoTracking()
+                .Where(p => pricingIdsList.Contains(p.Id) && !p.IsDeleted)
+                .Include(p => p.Offer)
+                    .ThenInclude(o => o.OfferCombinationPricings)
+                .AsSplitQuery()
+                .Select(p => p.Offer)
+                .Distinct()
+                .Where(o => !o.IsDeleted)
+                .ToListAsync(cancellationToken);
+
+            return offers;
         }
     }
 }

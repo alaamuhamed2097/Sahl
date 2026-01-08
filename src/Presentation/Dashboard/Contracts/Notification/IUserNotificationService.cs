@@ -1,7 +1,7 @@
-﻿using Dashboard.Models.pagintion;
+﻿using Common.Filters;
+using Dashboard.Models.pagintion;
 using Shared.GeneralModels;
 using Shared.GeneralModels.Parameters.Notification;
-using Shared.GeneralModels.SearchCriteriaModels;
 using Shared.ResultModels;
 
 namespace Dashboard.Contracts.Notification

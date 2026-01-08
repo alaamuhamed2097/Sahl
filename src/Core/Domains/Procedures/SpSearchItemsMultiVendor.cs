@@ -15,8 +15,8 @@ namespace Domains.Procedures
         public string ShortDescriptionEn { get; set; }
         public Guid CategoryId { get; set; }
         public Guid? BrandId { get; set; }
-        public string BrandNameAr { get; set; }
-        public string BrandNameEn { get; set; }
+        public string? BrandNameAr { get; set; }
+        public string? BrandNameEn { get; set; }
         public string ThumbnailImage { get; set; }
         public DateTime CreatedDateUtc { get; set; }
         public decimal? AverageRating { get; set; }

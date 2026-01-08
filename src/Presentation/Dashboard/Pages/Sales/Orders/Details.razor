@@ -73,7 +73,7 @@
                                                 <i class="fas fa-circle text-c-red f-10 m-r-5"></i><strong class="fw-bold">@ECommerceResources.PaymentStatus : </strong>
                                                 @switch (Model.PaymentStatus)
                                             {
-                                                case PaymentStatus.Paid:
+                                                case PaymentStatus.Completed:
                                                     <span class="text-success">@ECommerceResources.Paid</span>
                                                     break;
                                                 case PaymentStatus.Pending:

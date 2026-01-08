@@ -172,31 +172,6 @@ namespace Api.Controllers.v1.Catalog
             }
         }
 
-        /// <summary>
-        /// Creates a standardized success response
-        /// </summary>
-        private ResponseModel<T> CreateSuccessResponse<T>(T data, string message)
-        {
-            return new ResponseModel<T>
-            {
-                Success = true,
-                Message = message,
-                Data = data
-            };
-        }
-
-        /// <summary>
-        /// Creates a standardized error response
-        /// </summary>
-        private ResponseModel<string> CreateErrorResponse(string message)
-        {
-            return new ResponseModel<string>
-            {
-                Success = false,
-                Message = message
-            };
-        }
-
         #endregion
     }
 }

@@ -1,4 +1,4 @@
-﻿using BL.Contracts.Service.Order;
+﻿using BL.Contracts.Service.Order.Notifications;
 using BL.Contracts.Service.Order.OrderProcessing;
 using Common.Enumerations.Order;
 using Shared.DTOs.Order.OrderEvents;

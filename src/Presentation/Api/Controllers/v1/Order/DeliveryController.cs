@@ -29,13 +29,13 @@ namespace Api.Controllers.v1.Order
         }
 
         /// <summary>
-        /// Stage 6: Process Fulfillment (FBA)
+        /// Stage 6: Process Fulfillment (FBM)
         /// </summary>
         /// <remarks>
         /// API Version: 1.0+
         /// Requires Admin or System role.
         /// </remarks>
-        [HttpPost("{shipmentId}/process-fba")]
+        [HttpPost("{shipmentId}/process-fbm")]
         [Authorize(Roles = "Admin,System")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -45,10 +45,7 @@ namespace Api.Controllers.v1.Order
         {
             try
             {
-                var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-                _logger.LogInformation($"User {userId} processing FBA shipment {shipmentId}");
-
-                await _fulfillmentService.ProcessFBAShipmentAsync(shipmentId);
+                await _fulfillmentService.ProcessFulfillmentByMarketplaceShipmentAsync(shipmentId);
                 return Ok(new { message = "FBA shipment processed successfully", shipmentId });
             }
             catch (Exception ex)
@@ -59,26 +56,23 @@ namespace Api.Controllers.v1.Order
         }
 
         /// <summary>
-        /// Process FBM Shipment
+        /// Process FBS Shipment
         /// </summary>
         /// <remarks>
         /// API Version: 1.0+
         /// Requires Vendor role.
         /// </remarks>
-        [HttpPost("{shipmentId}/process-fbm")]
+        [HttpPost("{shipmentId}/process-fbs")]
         [Authorize(Roles = "Vendor")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
-        public async Task<ActionResult<object>> ProcessFBMShipment(Guid shipmentId)
+        public async Task<ActionResult<object>> ProcessFBSShipment(Guid shipmentId)
         {
             try
             {
-                var vendorId = User.FindFirst("VendorId")?.Value;
-                _logger.LogInformation($"Vendor {vendorId} processing FBM shipment {shipmentId}");
-
-                await _fulfillmentService.ProcessFBMShipmentAsync(shipmentId);
+                await _fulfillmentService.ProcessFulfillmentBySellerShipmentAsync(shipmentId);
                 return Ok(new { message = "FBM shipment processed successfully", shipmentId });
             }
             catch (Exception ex)

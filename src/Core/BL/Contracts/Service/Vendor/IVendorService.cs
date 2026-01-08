@@ -1,8 +1,8 @@
 ﻿using BL.Contracts.Service.Base;
+using Common.Filters;
 using DAL.Models;
 using Domains.Entities.ECommerceSystem.Vendor;
 using Shared.DTOs.Vendor;
-using Shared.GeneralModels.SearchCriteriaModels;
 
 namespace BL.Contracts.Service.Vendor;
 
