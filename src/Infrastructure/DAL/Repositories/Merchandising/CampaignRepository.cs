@@ -1,4 +1,5 @@
-﻿using DAL.ApplicationContext;
+﻿using BL.Contracts.GeneralService;
+using DAL.ApplicationContext;
 using DAL.Contracts.Repositories.Merchandising;
 using Domains.Entities.Campaign;
 using Microsoft.EntityFrameworkCore;
@@ -11,8 +12,8 @@ namespace DAL.Repositories.Merchandising
     /// </summary>
     public class CampaignRepository : TableRepository<TbCampaign>, ICampaignRepository
     {
-        public CampaignRepository(ApplicationDbContext dbContext, ILogger logger)
-            : base(dbContext, logger)
+        public CampaignRepository(ApplicationDbContext dbContext, ICurrentUserService currentUserService, ILogger logger)
+            : base(dbContext, currentUserService, logger)
         {
         }
 

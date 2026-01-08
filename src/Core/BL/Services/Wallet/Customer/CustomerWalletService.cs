@@ -90,7 +90,7 @@ namespace BL.Services.Wallet.Customer
             return _mapper.MapList<TbCustomerWalletTransaction, CustomerWalletTransactionsDto>(allTransactions);
         }
 
-        public async Task<PaymentResultDto> InitiateChargingRequestAsync(WalletChargingRequestDto request, string userId)
+        public async Task<PaymentResult> InitiateChargingRequestAsync(WalletChargingRequestDto request, string userId)
         {
             try
             {
@@ -131,11 +131,11 @@ namespace BL.Services.Wallet.Customer
                     TransactionId = transactionId
                 };
 
-                var proccessPayment = await _paymentService.ProcessPaymentAsync(paymentRequest);
-                if (!proccessPayment.Success)
+                var processPayment = await _paymentService.ProcessPaymentAsync(paymentRequest);
+                if (!processPayment.Success)
                 {
-                    _logger.Error($"Charging Payment initiation failed at gateway. User: {userId}, Error: {proccessPayment.Message}");
-                    throw new InvalidOperationException("Failed to initiate payment: " + proccessPayment.Message);
+                    _logger.Error($"Charging Payment initiation failed at gateway. User: {userId}, Error: {processPayment.Message}");
+                    throw new InvalidOperationException("Failed to initiate payment: " + processPayment.Message);
                 }
 
                 var chargingRequest = new TbWalletChargingRequest
@@ -149,14 +149,14 @@ namespace BL.Services.Wallet.Customer
                 await _unitOfWork.TableRepository<TbWalletChargingRequest>().CreateAsync(chargingRequest, Guid.Parse(userId));
 
                 await _unitOfWork.CommitAsync();
-                return proccessPayment;
+                return processPayment;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 await _unitOfWork.RollbackAsync();
             }
 
-            return new PaymentResultDto
+            return new PaymentResult
             {
                 Success = false,
                 Message = "Failed to initiate charging request."

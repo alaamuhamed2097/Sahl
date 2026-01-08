@@ -91,7 +91,7 @@ public class CheckoutService : ICheckoutService
 
         if (!offersEntities.Any())
         {
-            _logger.Error("No offers found for any of the {PricingCount} combination pricing IDs: {PricingIds}", 
+            _logger.Error("No offers found for any of the {PricingCount} combination pricing IDs: {PricingIds}",
                 offerCombinationPricingIds.Count, string.Join(", ", offerCombinationPricingIds));
             throw new InvalidOperationException("No offers found for the given combination pricing IDs. The offers may have been deleted or are no longer active.");
         }
@@ -125,7 +125,7 @@ public class CheckoutService : ICheckoutService
 
         if (missingPricingIds.Any())
         {
-            _logger.Error("Could not find {MissingCount} offers. Missing pricing IDs: {MissingIds}. Found {FoundCount} mappings from {OfferCount} offers", 
+            _logger.Error("Could not find {MissingCount} offers. Missing pricing IDs: {MissingIds}. Found {FoundCount} mappings from {OfferCount} offers",
                 missingPricingIds.Count, string.Join(", ", missingPricingIds), pricingIdToOfferDictionary.Count, offerDtos.Count());
             throw new InvalidOperationException(
                 $"Offers not found for combination pricing IDs: {string.Join(", ", missingPricingIds)}"

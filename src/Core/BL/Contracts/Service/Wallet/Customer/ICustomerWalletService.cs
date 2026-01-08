@@ -18,7 +18,7 @@ namespace BL.Contracts.Service.Wallet.Customer
         Task<bool> PayOrderAsync(string userId, decimal amount, Guid orderId); // Can return a Result object for more details
 
         // Charging Flow
-        Task<PaymentResultDto> InitiateChargingRequestAsync(WalletChargingRequestDto request, string userId);
+        Task<PaymentResult> InitiateChargingRequestAsync(WalletChargingRequestDto request, string userId);
         Task<bool> VerifyChargingPaymentAsync(string gatewayTransactionId, bool isSuccess, string? failureReason);
 
         // Reporting

@@ -25,9 +25,8 @@ namespace BL.Services.Order.OrderProcessing;
 
 /// <summary>
 /// Handles order creation, retrieval, cancellation, and validation.
-/// FIXED: Now correctly handles CartItemDto.OfferId as OfferCombinationPricingId
 /// </summary>
-public class OrderMangmentService : IOrderMangmentService
+public class OrderManagementService : IOrderMangmentService
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly ICartService _cartService;
@@ -35,7 +34,7 @@ public class OrderMangmentService : IOrderMangmentService
     private readonly ILogger _logger;
 
 
-    public OrderMangmentService(
+    public OrderManagementService(
         IUnitOfWork unitOfWork,
         ICartService cartService,
         IBaseMapper mapper,
@@ -836,7 +835,7 @@ Guid userId)
             var shipment = new TbOrderShipment
             {
                 Id = shipmentId,
-                ShipmentNumber = GenerateShipmentNumber(shipmentId),
+                Number = GenerateShipmentNumber(shipmentId),
                 OrderId = orderId,
                 VendorId = group.Key.VendorId,
                 WarehouseId = warehouseId,  // ✅ Correctly assigned

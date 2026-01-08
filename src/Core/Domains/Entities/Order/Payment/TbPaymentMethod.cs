@@ -14,7 +14,7 @@ namespace Domains.Entities.Order.Payment
         public string TitleAr { get; set; } = string.Empty;
 
         [Required]
-        public PaymentMethod MethodType { get; set; }
+        public PaymentMethodType MethodType { get; set; }
 
         public bool IsActive { get; set; } = true;
 

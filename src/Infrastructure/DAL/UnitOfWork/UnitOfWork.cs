@@ -1,4 +1,5 @@
-﻿using DAL.ApplicationContext;
+﻿using BL.Contracts.GeneralService;
+using DAL.ApplicationContext;
 using DAL.Contracts.Repositories;
 using DAL.Contracts.UnitOfWork;
 using DAL.Repositories;
@@ -16,11 +17,13 @@ namespace DAL.UnitOfWork
         private bool _disposed;
         private IDbContextTransaction _transaction;
         private readonly ILogger _logger;
+        private readonly ICurrentUserService _currentUserService;
         public int transactionsCount = 0;
 
-        public UnitOfWork(ApplicationDbContext context, ILogger logger)
+        public UnitOfWork(ApplicationDbContext context, ICurrentUserService currentUserService, ILogger logger)
         {
             _context = context;
+            _currentUserService = currentUserService;
             _logger = logger;
         }
 
@@ -40,7 +43,7 @@ namespace DAL.UnitOfWork
             var type = typeof(TD);
             if (!_repositories.TryGetValue(type, out var repo))
             {
-                repo = new TableRepository<TD>(_context, _logger);
+                repo = new TableRepository<TD>(_context, _currentUserService, _logger);
                 _repositories[type] = repo;
             }
             return (ITableRepository<TD>)repo;

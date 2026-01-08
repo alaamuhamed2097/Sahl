@@ -2,18 +2,39 @@
 using Common.Enumerations.Payment;
 using Domains.Entities.Merchandising.CouponCode;
 using Domains.Entities.Order.Payment;
-using Domains.Entities.Order.Refund;
-using Domains.Entities.Order.Returns;
 using Domains.Entities.Order.Shipping;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Domains.Entities.Order
 {
+    /// <summary>
+    /// Main order entity with complete pricing breakdown
+    /// </summary>
     public class TbOrder : BaseEntity
     {
+        [Required]
+        [MaxLength(50)]
         public string Number { get; set; } = null!;
 
+        [Column(TypeName = "decimal(18,2)")]
+        public decimal SubTotal { get; set; }
+
+        // DiscountAmount from coupon
+        [Column(TypeName = "decimal(18,2)")]
+        public decimal DiscountAmount { get; set; } = 0m;
+
+        [Column(TypeName = "decimal(18,2)")]
+        public decimal ShippingAmount { get; set; } = 0m;
+
+        [Column(TypeName = "decimal(18,2)")]
+        public decimal TaxAmount { get; set; } = 0m;
+
+        [Column(TypeName = "decimal(5,2)")]
+        public decimal TaxPercentage { get; set; } = 0m;
+
+        // Final total price (SubTotal + Shipping + Tax - Discount)
+        [Column(TypeName = "decimal(18,2)")]
         public decimal Price { get; set; }
 
         [MaxLength(50)]
@@ -26,23 +47,22 @@ namespace Domains.Entities.Order
         // PaymentStatus stored as enum
         public PaymentStatus PaymentStatus { get; set; }
 
-        // New OrderStatus column to reflect progress (default 0 -> Pending)
+        // OrderStatus column to reflect progress (default 0 -> Pending)
         public OrderProgressStatus OrderStatus { get; set; } = OrderProgressStatus.Pending;
 
         public DateTime? OrderDeliveryDate { get; set; }
 
-        public DateTime? PaymentDate { get; set; }
+        public DateTime? PaidAt { get; set; }
 
         [ForeignKey("User")]
-        public string UserId { get; set; }
+        [Required]
+        public string UserId { get; set; } = null!;
 
         [ForeignKey("Coupon")]
         public Guid? CouponId { get; set; }
 
-        public decimal ShippingAmount { get; set; } = 0m;
-
-        public decimal TaxAmount { get; set; } = 0m;
-        public decimal TaxPrecentage { get; set; } = 0m;
+        [MaxLength(1000)]
+        public string? Notes { get; set; }
 
         // Navigation Properties
         public virtual ApplicationUser User { get; set; } = null!;

@@ -1,4 +1,5 @@
-﻿using Common.Enumerations.Offer;
+﻿using BL.Contracts.GeneralService;
+using Common.Enumerations.Offer;
 using DAL.ApplicationContext;
 using DAL.Contracts.Repositories;
 using DAL.Exceptions;
@@ -20,8 +21,8 @@ namespace DAL.Repositories
         private readonly ILogger _logger;
         private readonly DbSet<TbOfferCombinationPricing> _offerPricing;
 
-        public OfferRepository(ApplicationDbContext dbContext, ILogger logger)
-            : base(dbContext, logger)
+        public OfferRepository(ApplicationDbContext dbContext, ICurrentUserService currentUserService, ILogger logger)
+            : base(dbContext, currentUserService, logger)
         {
             _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));

@@ -1,4 +1,5 @@
-﻿using DAL.ApplicationContext;
+﻿using BL.Contracts.GeneralService;
+using DAL.ApplicationContext;
 using DAL.Contracts.Repositories.Order;
 using DAL.Exceptions;
 using DAL.ResultModels;
@@ -19,8 +20,8 @@ namespace DAL.Repositories.Order
         private readonly ILogger _logger;
         private readonly DbSet<TbShoppingCartItem> _cartItems;
 
-        public CartRepository(ApplicationDbContext dbContext, ILogger logger)
-            : base(dbContext, logger)
+        public CartRepository(ApplicationDbContext dbContext, ICurrentUserService currentUserService, ILogger logger)
+            : base(dbContext, currentUserService, logger)
         {
             _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));

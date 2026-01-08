@@ -7,6 +7,23 @@ namespace Api.Extensions
 {
     public static class AdditionalServicesExtensions
     {
+        public static IServiceCollection AddDomainServices(this IServiceCollection services, IConfiguration configuration)
+        {
+            // Add all categorized domain services
+            services.AddGeneralServices(configuration);
+            services.AddCatalogServices(configuration);
+            services.AddVendorServices(configuration);
+            services.AddCurrencyAndShippingServices(configuration);
+            services.AddOrderServices(configuration);
+            services.AddPricingServices(configuration);
+            services.AddMerchandisingServices(configuration);
+            services.AddReviewServices(configuration);
+            services.AddWalletServices(configuration);
+            services.AddSettingServices(configuration);
+
+            return services;
+        }
+
         public static IServiceCollection AddWarehouseAndInventoryServices(this IServiceCollection services)
         {
             // Warehouse Services
