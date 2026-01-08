@@ -369,6 +369,17 @@ public class UserRegistrationService : IUserRegistrationService
                 }
             }
 
+            // Check BirthDate is before Last Now 
+            if (request.BirthDate >= DateOnly.FromDateTime(DateTime.UtcNow))
+            {
+                return new ServiceResult<VendorRegistrationResponseDto>
+                {
+                    Success = false,
+                    Message = string.Format(UserResources.InValidDate, request.BirthDate),
+                    Errors = new List<string> { string.Format(UserResources.InValidDate, request.BirthDate) }
+                };
+            }
+
             // Auto-generate username from phone number
             var username = request.PhoneNumber;
             var existingUserByUsername = await _userManager.Users
@@ -403,15 +414,15 @@ public class UserRegistrationService : IUserRegistrationService
                 PhoneNumberConfirmed = true
             };
 
-             // Create Vendor Profile using AutoMapper
+            // Create Vendor Profile using AutoMapper
             var vendor = _mapper.MapModel<RegisterVendorRequestDto, TbVendor>(request);
-            
+
             // Handle Image Uploads
             vendor.IdentificationImageFrontPath = await SaveImage(request.IdentificationImageFront);
             vendor.IdentificationImageBackPath = await SaveImage(request.IdentificationImageBack);
 
             vendor.Id = Guid.NewGuid();
-            vendor.Status = VendorStatus.Pending; 
+            vendor.Status = VendorStatus.Pending;
             vendor.CreatedDateUtc = DateTime.UtcNow;
             // UserId and CreatedBy will be properly linked in the repository method
 
@@ -420,9 +431,9 @@ public class UserRegistrationService : IUserRegistrationService
 
             if (!registrationResult.Success)
             {
-                 var friendlyErrors = registrationResult.Errors
-                    .Select(e => GetUserFriendlyErrorMessage(e))
-                    .ToList();
+                var friendlyErrors = registrationResult.Errors
+                   .Select(e => GetUserFriendlyErrorMessage(e))
+                   .ToList();
 
                 return new ServiceResult<VendorRegistrationResponseDto>
                 {

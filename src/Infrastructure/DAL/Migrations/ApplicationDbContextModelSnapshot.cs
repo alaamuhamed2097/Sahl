@@ -3104,8 +3104,8 @@ namespace DAL.Migrations
                     b.Property<decimal?>("AverageRating")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<DateTime>("BirthDate")
-                        .HasColumnType("datetime2");
+                    b.Property<DateOnly>("BirthDate")
+                        .HasColumnType("date");
 
                     b.Property<Guid>("CityId")
                         .HasColumnType("uniqueidentifier");
@@ -7175,6 +7175,199 @@ namespace DAL.Migrations
                     b.ToTable("TbWarehouses", (string)null);
                 });
 
+            modelBuilder.Entity("Domains.Entities.WithdrawalMethods.TbField", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier")
+                        .HasDefaultValueSql("NEWID()");
+
+                    b.Property<Guid>("CreatedBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedDateUtc")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2(2)")
+                        .HasDefaultValueSql("GETUTCDATE()");
+
+                    b.Property<int>("FieldType")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<string>("TitleAr")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("TitleEn")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<Guid?>("UpdatedBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("UpdatedDateUtc")
+                        .HasColumnType("datetime2(2)");
+
+                    b.Property<Guid>("WithdrawalMethodId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("FieldType");
+
+                    b.HasIndex("IsDeleted");
+
+                    b.HasIndex("WithdrawalMethodId");
+
+                    b.ToTable("TbFields");
+                });
+
+            modelBuilder.Entity("Domains.Entities.WithdrawalMethods.TbUserWithdrawalMethod", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier")
+                        .HasDefaultValueSql("NEWID()");
+
+                    b.Property<Guid>("CreatedBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedDateUtc")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2(2)")
+                        .HasDefaultValueSql("GETUTCDATE()");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<Guid?>("UpdatedBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("UpdatedDateUtc")
+                        .HasColumnType("datetime2(2)");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasMaxLength(450)
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<Guid>("WithdrawalMethodId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("IsDeleted");
+
+                    b.HasIndex("UserId");
+
+                    b.HasIndex("WithdrawalMethodId");
+
+                    b.ToTable("TbUserWithdrawalMethods");
+                });
+
+            modelBuilder.Entity("Domains.Entities.WithdrawalMethods.TbWithdrawalMethod", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier")
+                        .HasDefaultValueSql("NEWID()");
+
+                    b.Property<Guid>("CreatedBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedDateUtc")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2(2)")
+                        .HasDefaultValueSql("GETUTCDATE()");
+
+                    b.Property<string>("ImagePath")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<string>("TitleAr")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("TitleEn")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<Guid?>("UpdatedBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("UpdatedDateUtc")
+                        .HasColumnType("datetime2(2)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("IsDeleted");
+
+                    b.ToTable("TbWithdrawalMethods");
+                });
+
+            modelBuilder.Entity("Domains.Entities.WithdrawalMethods.TbWithdrawalMethodField", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier")
+                        .HasDefaultValueSql("NEWID()");
+
+                    b.Property<Guid>("CreatedBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedDateUtc")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2(2)")
+                        .HasDefaultValueSql("GETUTCDATE()");
+
+                    b.Property<Guid>("FieldId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<Guid?>("UpdatedBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("UpdatedDateUtc")
+                        .HasColumnType("datetime2(2)");
+
+                    b.Property<Guid>("UserWithdrawalMethodId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Value")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("FieldId");
+
+                    b.HasIndex("IsDeleted");
+
+                    b.HasIndex("UserWithdrawalMethodId");
+
+                    b.ToTable("TbWithdrawalMethodFields");
+                });
+
             modelBuilder.Entity("Domains.Identity.ApplicationUser", b =>
                 {
                     b.Property<string>("Id")
@@ -8898,6 +9091,56 @@ namespace DAL.Migrations
                     b.ToView("VwVendorPublicDetails", (string)null);
                 });
 
+            modelBuilder.Entity("Domains.Views.WithdrawalMethods.VwWithdrawalMethodsFieldsValues", b =>
+                {
+                    b.Property<string>("FieldsJson")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ImagePath")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("TitleAr")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("TitleEn")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("WithdrawalMethodId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.ToTable((string)null);
+
+                    b.ToView("VwWithdrawalMethodsFieldsValues", (string)null);
+                });
+
+            modelBuilder.Entity("Domains.Views.WithdrawalMethods.VwWithdrawalMethodsWithFields", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("ImagePath")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("TitleAr")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("TitleEn")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("WithdrawalMethodFieldsJson")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.ToTable((string)null);
+
+                    b.ToView("VwWithdrawalMethodsWithFields", (string)null);
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
                 {
                     b.Property<string>("Id")
@@ -10414,6 +10657,58 @@ namespace DAL.Migrations
                     b.Navigation("Vendor");
                 });
 
+            modelBuilder.Entity("Domains.Entities.WithdrawalMethods.TbField", b =>
+                {
+                    b.HasOne("Domains.Entities.WithdrawalMethods.TbWithdrawalMethod", "WithdrawalMethod")
+                        .WithMany("Fields")
+                        .HasForeignKey("WithdrawalMethodId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("FK_TbFields_TbWithdrawalMethods_WithdrawalMethodId");
+
+                    b.Navigation("WithdrawalMethod");
+                });
+
+            modelBuilder.Entity("Domains.Entities.WithdrawalMethods.TbUserWithdrawalMethod", b =>
+                {
+                    b.HasOne("Domains.Identity.ApplicationUser", "User")
+                        .WithMany("UserWithdrawalMethods")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("Domains.Entities.WithdrawalMethods.TbWithdrawalMethod", "WithdrawalMethod")
+                        .WithMany("UserWithdrawalMethods")
+                        .HasForeignKey("WithdrawalMethodId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("User");
+
+                    b.Navigation("WithdrawalMethod");
+                });
+
+            modelBuilder.Entity("Domains.Entities.WithdrawalMethods.TbWithdrawalMethodField", b =>
+                {
+                    b.HasOne("Domains.Entities.WithdrawalMethods.TbField", "Field")
+                        .WithMany("WithdrawalMethodField")
+                        .HasForeignKey("FieldId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("FK_TbWithdrawalMethodFields_TbFields_FieldId");
+
+                    b.HasOne("Domains.Entities.WithdrawalMethods.TbUserWithdrawalMethod", "UserWithdrawalMethod")
+                        .WithMany("WithdrawalMethodFields")
+                        .HasForeignKey("UserWithdrawalMethodId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired()
+                        .HasConstraintName("FK_TbWithdrawalMethodFields_TbUserWithdrawalMethods_UserWithdrawalMethodId");
+
+                    b.Navigation("Field");
+
+                    b.Navigation("UserWithdrawalMethod");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
@@ -10736,6 +11031,23 @@ namespace DAL.Migrations
                     b.Navigation("Transactions");
                 });
 
+            modelBuilder.Entity("Domains.Entities.WithdrawalMethods.TbField", b =>
+                {
+                    b.Navigation("WithdrawalMethodField");
+                });
+
+            modelBuilder.Entity("Domains.Entities.WithdrawalMethods.TbUserWithdrawalMethod", b =>
+                {
+                    b.Navigation("WithdrawalMethodFields");
+                });
+
+            modelBuilder.Entity("Domains.Entities.WithdrawalMethods.TbWithdrawalMethod", b =>
+                {
+                    b.Navigation("Fields");
+
+                    b.Navigation("UserWithdrawalMethods");
+                });
+
             modelBuilder.Entity("Domains.Identity.ApplicationUser", b =>
                 {
                     b.Navigation("CustomerAddresses");
@@ -10749,6 +11061,8 @@ namespace DAL.Migrations
                     b.Navigation("Refunds");
 
                     b.Navigation("ShoppingCarts");
+
+                    b.Navigation("UserWithdrawalMethods");
                 });
 #pragma warning restore 612, 618
         }

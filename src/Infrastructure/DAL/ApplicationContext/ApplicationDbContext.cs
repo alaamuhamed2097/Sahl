@@ -39,6 +39,7 @@ using Domains.Entities.VideoProvider;
 using Domains.Entities.Visibility;
 using Domains.Entities.Wallet.Customer;
 using Domains.Entities.Warehouse;
+using Domains.Entities.WithdrawalMethods;
 using Domains.Identity;
 using Domains.Procedures;
 using Domains.Views.Brand;
@@ -48,6 +49,7 @@ using Domains.Views.Offer;
 using Domains.Views.Unit;
 using Domains.Views.UserNotification;
 using Domains.Views.Vendor;
+using Domains.Views.WithdrawalMethods;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -209,7 +211,7 @@ namespace DAL.ApplicationContext
         public DbSet<TbOrder> TbOrders { get; set; }
         public DbSet<TbOrderDetail> TbOrderDetails { get; set; }
         public DbSet<TbRefund> TbRefunds { get; set; }
-        public DbSet<TbRefundStatusHistory> TbRefundStatusHistories  { get; set; }
+        public DbSet<TbRefundStatusHistory> TbRefundStatusHistories { get; set; }
         public DbSet<TbRefundItemVideo> TbRefundItemVideos { get; set; }
         public DbSet<TbShippingDetail> TbShippingDetails { get; set; }
 
@@ -226,9 +228,16 @@ namespace DAL.ApplicationContext
 
         // E-Commerce System - Customers
         public DbSet<TbCustomer> TbCustomers { get; set; }
+
         // Customer Related
         public DbSet<TbCustomerAddress> TbCustomerAddresses { get; set; }
         public DbSet<TbCustomerItemView> TbCustomerItemViews { get; set; }
+
+        // Withdrawal methods
+        public DbSet<TbWithdrawalMethod> TbWithdrawalMethods { get; set; }
+        public DbSet<TbUserWithdrawalMethod> TbUserWithdrawalMethods { get; set; }
+        public DbSet<TbWithdrawalMethodField> TbWithdrawalMethodFields { get; set; }
+        public DbSet<TbField> TbFields { get; set; }
 
 
         #endregion
@@ -272,6 +281,10 @@ namespace DAL.ApplicationContext
         public DbSet<VwBrandAuthorizedDistributors> VwBrandAuthorizedDistributors { get; set; }
         public DbSet<VwBrandSalesAnalysis> VwBrandSalesAnalysis { get; set; }
         public DbSet<VwBrandCampaigns> VwBrandCampaigns { get; set; }
+
+        // Withdrawal Methods Viewa
+        public DbSet<VwWithdrawalMethodsWithFields> VwWithdrawalMethodsWithFields { get; set; }
+        public DbSet<VwWithdrawalMethodsFieldsValues> VwWithdrawalMethodsFieldsValues { get; set; }
 
 
         #endregion
@@ -624,6 +637,19 @@ namespace DAL.ApplicationContext
 
                 entity.Property(e => e.BrandNameEn)
                       .HasMaxLength(200);
+            });
+
+            // Withdrawal Methods Views
+            modelBuilder.Entity<VwWithdrawalMethodsWithFields>(entity =>
+            {
+                entity.HasNoKey();
+                entity.ToView("VwWithdrawalMethodsWithFields");
+            });
+
+            modelBuilder.Entity<VwWithdrawalMethodsFieldsValues>(entity =>
+            {
+                entity.HasNoKey();
+                entity.ToView("VwWithdrawalMethodsFieldsValues");
             });
 
         }

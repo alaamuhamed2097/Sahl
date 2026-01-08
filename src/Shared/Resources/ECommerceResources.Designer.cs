@@ -19,7 +19,7 @@ namespace Resources {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "18.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "17.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     public class ECommerceResources {
@@ -1348,6 +1348,15 @@ namespace Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to لا توجد طرق سحب متاحه.
+        /// </summary>
+        public static string NoWithdrawalMethodsAvailable {
+            get {
+                return ResourceManager.GetString("NoWithdrawalMethodsAvailable", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to الطلب.
         /// </summary>
         public static string Order {
@@ -2289,6 +2298,15 @@ namespace Resources {
         public static string Waitingforapproved {
             get {
                 return ResourceManager.GetString("Waitingforapproved", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to طرق السحب.
+        /// </summary>
+        public static string WithdrawalMethods {
+            get {
+                return ResourceManager.GetString("WithdrawalMethods", resourceCulture);
             }
         }
     }

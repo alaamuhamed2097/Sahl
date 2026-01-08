@@ -762,48 +762,48 @@
   <data name="No Options Configured" xml:space="preserve">
     <value>No Options Configured</value>
   </data>
+  <data name="Vendor" xml:space="preserve">
+    <value>Vendor</value>
+  </data>
   <data name="Vendors" xml:space="preserve">
     <value>Vendors</value>
   </data>
-  <data name="Vendor" xml:space="preserve">
-  <value>Vendor</value>
-</data>
   <data name="CompanyName" xml:space="preserve">
-  <value>Company Name</value>
-</data>
+    <value>Company Name</value>
+  </data>
   <data name="ContactName" xml:space="preserve">
-  <value>Contact Name</value>
-</data>
+    <value>Contact Name</value>
+  </data>
   <data name="VendorCode" xml:space="preserve">
-  <value>Vendor Code</value>
-</data>
+    <value>Vendor Code</value>
+  </data>
   <data name="Address" xml:space="preserve">
-  <value>Address</value>
-</data>
+    <value>Address</value>
+  </data>
   <data name="PostalCode" xml:space="preserve">
-  <value>Postal Code</value>
-</data>
+    <value>Postal Code</value>
+  </data>
   <data name="CommercialRegister" xml:space="preserve">
-  <value>Commercial Register</value>
-</data>
+    <value>Commercial Register</value>
+  </data>
   <data name="VATRegistered" xml:space="preserve">
-  <value>VAT Registered</value>
-</data>
+    <value>VAT Registered</value>
+  </data>
   <data name="TaxNumber" xml:space="preserve">
-  <value>Tax Number</value>
-</data>
+    <value>Tax Number</value>
+  </data>
   <data name="Notes" xml:space="preserve">
-  <value>Notes</value>
-</data>
+    <value>Notes</value>
+  </data>
   <data name="IsActive" xml:space="preserve">
-  <value>Is Active</value>
-</data>
+    <value>Is Active</value>
+  </data>
   <data name="Rating" xml:space="preserve">
-  <value>Rating</value>
-</data>
+    <value>Rating</value>
+  </data>
   <data name="VendorType" xml:space="preserve">
-  <value>Vendor Type</value>
-</data>
+    <value>Vendor Type</value>
+  </data>
   <data name="PricingSystem" xml:space="preserve">
     <value>Pricing System</value>
   </data>
@@ -885,4 +885,43 @@
 	<data name="MainBanner">
 		<value>Main Banner</value>
 	</data>
+  <data name="AttributeValues" xml:space="preserve">
+    <value>Attribute Values</value>
+  </data>
+  <data name="DefaultPricingNote" xml:space="preserve">
+    <value>Default pricing will be used if no variant prices are set.</value>
+  </data>
+  <data name="MaximumPrice" xml:space="preserve">
+    <value>Maximum Price</value>
+  </data>
+  <data name="MinimumPrice" xml:space="preserve">
+    <value>Minimum Price</value>
+  </data>
+  <data name="BasePrice" xml:space="preserve">
+    <value>Base Price</value>
+  </data>
+  <data name="StockKeepingUnit" xml:space="preserve">
+    <value>Stock Keeping Unit (SKU)</value>
+  </data>
+  <data name="SetDefaultPricing" xml:space="preserve">
+    <value>Set Default Pricing</value>
+  </data>
+  <data name="PricingInformation" xml:space="preserve">
+    <value>Pricing Information</value>
+  </data>
+  <data name="Barcode" xml:space="preserve">
+    <value>Barcode</value>
+  </data>
+  <data name="ConfigureAttributes" xml:space="preserve">
+    <value>Configure attributes for this product</value>
+  </data>
+  <data name="AffectsPricingListTypeOnly" xml:space="preserve">
+    <value>Affects Pricing is only available for List type attributes</value>
+  </data>
+  <data name="NoWithdrawalMethodsAvailable" xml:space="preserve">
+    <value>No Withdrawal Methods Available</value>
+  </data>
+  <data name="WithdrawalMethods" xml:space="preserve">
+    <value>Withdrawal Methods</value>
+  </data>
 </root>

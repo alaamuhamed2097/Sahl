@@ -9,7 +9,7 @@ public partial class MappingProfile
     private void ConfigureVendorMappings()
     {
         CreateMap<TbVendor, VendorDto>().ReverseMap();
-        CreateMap<RegisterVendorRequestDto, TbVendor>();
+        CreateMap<TbVendor, RegisterVendorRequestDto>().ReverseMap();
         CreateMap<VwVendorPublicDetailsDto, VwVendorPublicDetailsDto>();
         CreateMap<VwVendorOwnerDetails, VwVendorOwnerDetailsDto>();
         CreateMap<VwVendorAdminDetails, VwVendorAdminDetailsDto>();

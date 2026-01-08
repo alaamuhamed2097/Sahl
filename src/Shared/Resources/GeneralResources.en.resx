@@ -1155,19 +1155,18 @@
   <data name="Content" xml:space="preserve">
     <value>Content</value>
   </data>
-	<!-- Import Feature Resources -->
-	<data name="ImportantNotes" xml:space="preserve">
-  <value>Important Notes</value>
-</data>
-	<data name="FileSelected" xml:space="preserve">
-  <value>File Selected</value>
-</data>
-	<data name="Processing" xml:space="preserve">
-  <value>Processing</value>
-</data>
-	<data name="Tips" xml:space="preserve">
-  <value>Tips</value>
-</data>
+  <data name="ImportantNotes" xml:space="preserve">
+    <value>Important Notes</value>
+  </data>
+  <data name="FileSelected" xml:space="preserve">
+    <value>File Selected</value>
+  </data>
+  <data name="Processing" xml:space="preserve">
+    <value>Processing</value>
+  </data>
+  <data name="Tips" xml:space="preserve">
+    <value>Tips</value>
+  </data>
   <data name="LoadingAttributes" xml:space="preserve">
     <value>Loading attributes...</value>
   </data>
@@ -1180,19 +1179,25 @@
   <data name="PriceMustBeGreaterThanZero" xml:space="preserve">
     <value>Price must be greater than 0</value>
   </data>
-	<data name="Note" xml:space="preserve">
-  <value>Note</value>
-</data>
-	<data name="MaximumPrice" xml:space="preserve">
-  <value>Maximum Price {0}</value>
-</data>
-	<data name="MinimumPrice" xml:space="preserve">
-  <value>Minimum Price {0}</value>
-</data>
-	<data name="StartingPrice" xml:space="preserve">
-  <value>Starting Price {0}</value>
-</data>
-	<data name="ProductBarcode" xml:space="preserve">
-  <value>Product Barcode</value>
-</data>
+  <data name="Note" xml:space="preserve">
+    <value>Note</value>
+  </data>
+  <data name="MaximumPrice" xml:space="preserve">
+    <value>Maximum Price {0}</value>
+  </data>
+  <data name="MinimumPrice" xml:space="preserve">
+    <value>Minimum Price {0}</value>
+  </data>
+  <data name="StartingPrice" xml:space="preserve">
+    <value>Starting Price {0}</value>
+  </data>
+  <data name="ProductBarcode" xml:space="preserve">
+    <value>Product Barcode</value>
+  </data>
+  <data name="WithdrawalMethod" xml:space="preserve">
+    <value>Withdrawal Method</value>
+  </data>
+  <data name="WithdrawalMethods" xml:space="preserve">
+    <value>Withdrawal Methods</value>
+  </data>
 </root>

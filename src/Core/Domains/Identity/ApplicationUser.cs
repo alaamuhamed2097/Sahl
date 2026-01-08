@@ -2,9 +2,8 @@
 using Domains.Entities.Loyalty;
 using Domains.Entities.Order.Cart;
 using Domains.Entities.Order.Refund;
-using Domains.Entities.Order.Returns;
-using Domains.Entities.Wallet;
 using Domains.Entities.Wallet.Customer;
+using Domains.Entities.WithdrawalMethods;
 using Microsoft.AspNetCore.Identity;
 
 namespace Domains.Identity
@@ -30,6 +29,7 @@ namespace Domains.Identity
         public DateTime? LastLoginDate { get; set; }
         public UserStateType UserState { get; set; }
 
+        public virtual ICollection<TbUserWithdrawalMethod> UserWithdrawalMethods { get; set; }
         public virtual ICollection<TbCustomerAddress> CustomerAddresses { get; set; }
         public virtual ICollection<TbShoppingCart> ShoppingCarts { get; set; }
         public virtual ICollection<TbCustomerLoyalty> CustomerLoyalties { get; set; }
