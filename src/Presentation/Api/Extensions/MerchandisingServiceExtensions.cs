@@ -1,8 +1,7 @@
-using BL.Contracts.Service.HomeSlider;
+using BL.Contracts.Service.HomePageSlider;
 using BL.Contracts.Service.Merchandising;
 using BL.Contracts.Service.Merchandising.Campaign;
 using BL.Contracts.Service.Merchandising.CouponCode;
-using BL.Contracts.Service.HomeSlider;
 using BL.Services.HomeSlider;
 using BL.Services.Merchandising;
 using BL.Services.Merchandising.Campaign;

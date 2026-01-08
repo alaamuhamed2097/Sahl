@@ -68,7 +68,6 @@ namespace Api.Extensions.Services
             services.AddScoped<IItemCombinationRepository, ItemCombinationRepository>();
             services.AddScoped<IVendorRepository, VendorRepository>();
 
-            services.AddScoped<IOrderRepository, OrderRepository>();
             services.AddScoped<IShipmentRepository, ShipmentRepository>();
             services.AddScoped<IOrderPaymentRepository, OrderPaymentRepository>();
 

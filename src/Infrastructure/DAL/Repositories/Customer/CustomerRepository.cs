@@ -1,5 +1,6 @@
 ﻿using BL.Contracts.GeneralService;
 using DAL.ApplicationContext;
+using DAL.Contracts.Repositories.Customer;
 using Domains.Entities.ECommerceSystem.Customer;
 using Serilog;
 
