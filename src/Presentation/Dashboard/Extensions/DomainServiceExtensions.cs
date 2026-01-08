@@ -12,6 +12,7 @@ using Dashboard.Contracts.Review;
 using Dashboard.Contracts.User;
 using Dashboard.Contracts.Vendor;
 using Dashboard.Contracts.Warehouse;
+using Dashboard.Contracts.WithdrawalMethod;
 using Dashboard.Services;
 using Dashboard.Services.Brand;
 using Dashboard.Services.Content;
@@ -26,6 +27,7 @@ using Dashboard.Services.Review;
 using Dashboard.Services.User;
 using Dashboard.Services.Vendor;
 using Dashboard.Services.Warehouse;
+using UI.Services.Withdrawal;
 
 namespace Dashboard.Extensions
 {
@@ -58,11 +60,13 @@ namespace Dashboard.Extensions
             services.AddScoped<IContentAreaService, ContentAreaService>();
             services.AddScoped<IMediaContentService, MediaContentService>();
 
-			services.AddScoped<IItemReviewService, ItemReviewService>();
-			services.AddScoped<IReportReviewService, ReportReviewService>();
+            services.AddScoped<IItemReviewService, ItemReviewService>();
+            services.AddScoped<IReportReviewService, ReportReviewService>();
 
-			// Excel Template Service
-			services.AddScoped<ExcelTemplateService>();
+            services.AddScoped<IWithdrawalMethodService, WithdrawalMethodService>();
+
+            // Excel Template Service
+            services.AddScoped<ExcelTemplateService>();
 
             return services;
         }

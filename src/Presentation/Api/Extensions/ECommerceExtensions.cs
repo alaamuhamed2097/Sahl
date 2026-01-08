@@ -23,6 +23,7 @@ using BL.Contracts.Service.ShippingCompny;
 using BL.Contracts.Service.Vendor;
 using BL.Contracts.Service.VendorItem;
 using BL.Contracts.Service.Wallet.Customer;
+using BL.Contracts.Service.WithdrawalMethod;
 using BL.GeneralService.Location;
 using BL.Services.Brand;
 using BL.Services.Catalog.Category;
@@ -48,6 +49,7 @@ using BL.Services.ShippingCompany;
 using BL.Services.Vendor;
 using BL.Services.VendorItem;
 using BL.Services.Wallet.Customer;
+using BL.Services.WithdrawalMethod;
 
 namespace Api.Extensions
 {
@@ -138,6 +140,10 @@ namespace Api.Extensions
             services.AddScoped<ICustomerWalletService, CustomerWalletService>();
             services.AddScoped<ICustomerWalletTransactionService, CustomerWalletTransactionService>();
             services.AddScoped<IWalletSettingService, WalletSettingService>();
+
+            // Withdrawal Method Services
+            services.AddScoped<IWithdrawalMethodService, WithdrawalMethodService>();
+            services.AddScoped<IUserWithdrawalMethodService, UserWithdrawalMethodService>();
 
             services.AddScoped<ISystemSettingsService, SystemSettingsService>();
 

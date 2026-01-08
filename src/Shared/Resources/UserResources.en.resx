@@ -360,4 +360,7 @@
   <data name="Company" xml:space="preserve">
     <value>Company</value>
   </data>
+  <data name="InValidDate" xml:space="preserve">
+    <value>Invalid date</value>
+  </data>
 </root>

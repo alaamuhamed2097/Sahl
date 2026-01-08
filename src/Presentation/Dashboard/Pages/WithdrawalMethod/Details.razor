@@ -1,0 +1,105 @@
+﻿@page "/withdrawalMethod"
+@page "/withdrawalMethod/{Id:guid}"
+@using Common.Enumerations.FieldType
+@using Common.Enumerations.User
+@attribute [Authorize(Roles = nameof(UserRole.Admin))]
+
+<PageTitle>@GeneralResources.WithdrawalMethods</PageTitle>
+
+<div class="container-fluid p-0">
+	<div class="card shadow-sm border-0">
+		<div class="card-header d-flex justify-content-between align-items-center">
+			<h4 class="modal-title" id="countryModalTitle">
+				@(Model.Id == Guid.Empty ? ActionsResources.Add : ActionsResources.Edit)
+			</h4>
+		</div>
+
+		<EditForm Model="@Model" OnValidSubmit="Save" enctype="multipart/form-data">
+			<DataAnnotationsValidator />
+			<div class="card-body p-4">
+				<div class="form-group row">
+					<div class="col-md-6">
+						<label>@FormResources.ArabicTitle</label>
+						<InputText type="text"
+								   class="form-control"
+								   @bind-Value="Model.TitleAr"
+								   placeholder="@($"{FormResources.Write} {FormResources.ArabicTitle}")" />
+						<ValidationMessage For="@(() => Model.TitleAr)" />
+					</div>
+					<div class="col-md-6">
+						<label>@FormResources.EnglishTitle</label>
+						<InputText type="text" class="form-control" @bind-Value="Model.TitleEn"
+								   placeholder="@($"{FormResources.Write} {FormResources.EnglishTitle}")" />
+						<ValidationMessage For="@(() => Model.TitleEn)" />
+					</div>
+				</div>
+				<div class="form-group row">
+
+					<div class="col-md-6">
+						<label>@FormResources.Image</label>
+						<div class="form-file mb-3">
+							<InputFile class="form-control" aria-label="file example" OnChange="HandleSelectedImage" accept="image/*" />
+							<ValidationMessage For="@(() => Model.ImageFile)" />
+							<div class="invalid-feedback"></div>
+						</div>
+					</div>
+					<div class="col-md-6 d-flex justify-content-center align-items-center">
+						@if (!string.IsNullOrEmpty(previewImageUrl))
+						{
+							<img src="@previewImageUrl" alt="Preview" class="align-content-center img-thumbnail mt-2" style="width:200px;" />
+						}
+						else if (!string.IsNullOrEmpty(Model.ImagePath))
+						{
+							<img src="@baseUrl/@Model.ImagePath" alt="Preview" class="img-thumbnail mt-2" style="width:200px;" />
+						}
+					</div>
+				</div>
+				@foreach (var field in Model.Fields)
+				{
+					<div class="form-group row mb-2">
+						<div class="col-md-4">
+							<InputText class=" form-control" @bind-Value="field.TitleAr"
+									   EnglishTitle placeholder="@($"{FormResources.Write} {FormResources.ArabicTitle}")" />
+						</div>
+
+						<div class="col-md-4">
+							<InputText class="col-md-4 form-control" @bind-Value="field.TitleEn"
+									   placeholder="@($"{FormResources.Write} {FormResources.EnglishTitle}")" />
+						</div>
+
+						<div class="col-md-2">
+							<InputSelect class="form-control" @bind-Value="field.FieldType">
+								@foreach (var type in fieldTypes)
+								{
+									if (type == FieldType.List || type == FieldType.MultiSelectList) continue;
+									<option value="@type">@GetFieldTypeDisplayName(type)</option>
+								}
+							</InputSelect>
+						</div>
+
+						<div class="col-md-2 d-flex justify-content-center align-items-center">
+							<button class="btn btn-danger" type="button" @onclick="@(() => RemoveField(field))">@ActionsResources.Delete</button>
+						</div>
+					</div>
+				}
+				<button class=" btn btn-primary" type="button" @onclick="AddField">@ECommerceResources.AddField</button>
+			</div>
+			<div class="card-footer bg-light py-3 d-flex justify-content-end gap-2">
+				<button type="button" class="btn btn-secondary" @onclick="CloseModal">@ActionsResources.Cancel</button>
+				<button type="submit" class="btn btn-primary" disabled="@isSaving">
+					@if (isSaving)
+					{
+						<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+						<span class="sr-only">@GeneralResources.Loading ...</span>
+					}
+					else
+					{
+						<span>@ActionsResources.Save</span>
+					}
+				</button>
+			</div>
+
+		</EditForm>
+
+	</div>
+</div>
