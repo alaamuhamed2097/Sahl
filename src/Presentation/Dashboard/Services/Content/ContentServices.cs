@@ -1,3 +1,4 @@
+using Common.Filters;
 using Dashboard.Constants;
 using Dashboard.Contracts.Content;
 using Dashboard.Contracts.General;
@@ -5,7 +6,6 @@ using Dashboard.Models.pagintion;
 using Resources;
 using Shared.DTOs.Content;
 using Shared.GeneralModels;
-using Shared.GeneralModels.SearchCriteriaModels;
 
 namespace Dashboard.Services.Content
 {

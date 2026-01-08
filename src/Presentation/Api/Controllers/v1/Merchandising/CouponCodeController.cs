@@ -2,6 +2,7 @@ using Api.Controllers.v1.Base;
 using Asp.Versioning;
 using BL.Contracts.Service.Merchandising.CouponCode;
 using Common.Enumerations.User;
+using Common.Filters;
 using DAL.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -9,7 +10,6 @@ using Resources;
 using Shared.DTOs.Merchandising.CouponCode;
 using Shared.DTOs.Order.CouponCode;
 using Shared.GeneralModels;
-using Shared.GeneralModels.SearchCriteriaModels;
 
 namespace Api.Controllers.v1.Merchandising
 {

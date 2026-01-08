@@ -1,6 +1,6 @@
+using Common.Filters;
 using DAL.Models;
 using Shared.DTOs.Brand;
-using Shared.GeneralModels.SearchCriteriaModels;
 
 namespace BL.Contracts.Service.Brand;
 

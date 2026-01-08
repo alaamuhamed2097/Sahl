@@ -1,11 +1,11 @@
-﻿namespace Shared.GeneralModels.SearchCriteriaModels
+﻿namespace Common.Filters
 {
     public class BaseSearchCriteriaModel
     {
         /// <summary>
         /// Search term for unit name or description
         /// </summary>
-        public string? SearchTerm { get; set; } = "";
+        public string? SearchTerm { get; set; }
 
         /// <summary>
         /// Page number (default: 1)

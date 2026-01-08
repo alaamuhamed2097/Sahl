@@ -1,8 +1,8 @@
 using BL.Contracts.Service.Base;
+using Common.Filters;
 using DAL.Models;
 using Domains.Entities.Catalog.Unit;
 using Shared.DTOs.Catalog.Unit;
-using Shared.GeneralModels.SearchCriteriaModels;
 
 namespace BL.Contracts.Service.Catalog.Unit;
 

@@ -16,6 +16,9 @@ namespace Domains.Entities.Catalog.Item.ItemAttributes
         [StringLength(200)]
         public string SKU { get; set; }
 
+        [Column(TypeName = "decimal(18,2)")]
+        public decimal BasePrice { get; set; } = 0m;
+
         public bool IsDefault { get; set; } = false;
 
         // Navigation Properties

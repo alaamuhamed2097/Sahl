@@ -2,13 +2,13 @@ using BL.Contracts.IMapper;
 using BL.Contracts.Service.Warehouse;
 using BL.Extensions;
 using BL.Services.Base;
+using Common.Filters;
 using DAL.Contracts.Repositories;
 using DAL.Models;
 using Domains.Entities.Warehouse;
 using Resources;
 using Serilog;
 using Shared.DTOs.Warehouse;
-using Shared.GeneralModels.SearchCriteriaModels;
 using System.Linq.Expressions;
 
 namespace BL.Services.Warehouse;

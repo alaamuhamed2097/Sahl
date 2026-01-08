@@ -1,7 +1,7 @@
+using Common.Filters;
 using Dashboard.Models.pagintion;
 using Shared.DTOs.Content;
 using Shared.GeneralModels;
-using Shared.GeneralModels.SearchCriteriaModels;
 
 namespace Dashboard.Contracts.Content
 {

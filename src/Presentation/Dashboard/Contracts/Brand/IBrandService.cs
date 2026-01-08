@@ -1,7 +1,7 @@
+using Common.Filters;
 using Dashboard.Models.pagintion;
 using Shared.DTOs.Brand;
 using Shared.GeneralModels;
-using Shared.GeneralModels.SearchCriteriaModels;
 
 namespace Dashboard.Contracts.Brand
 {
