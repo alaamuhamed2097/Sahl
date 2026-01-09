@@ -1,9 +1,6 @@
-@page "/content/pages"
-@page "/pages"
-
-@using Common.Enumerations
-@using Common.Enumerations.User
+@* @page "/pages"
 @using Microsoft.AspNetCore.Authorization
+@using Common.Enumerations
 @using Resources
 @using Shared.DTOs.Page
 @using Shared.GeneralModels
@@ -12,66 +9,51 @@
 
 <PageTitle>@GeneralResources.StaticPages</PageTitle>
 
-<style>
-    .cursor-pointer {
-        cursor: pointer;
-        user-select: none;
-    }
-
-    .cursor-pointer:hover {
-        background-color: rgba(0, 0, 0, 0.05);
-    }
-</style>
-
 <div class="container-fluid p-0">
     <div class="card shadow-sm border-0">
-        <div class="card-header bg-primary text-white py-3 d-flex justify-content-between align-items-center">
-            <h5 class="mb-0 fw-semibold text-white">📄 @GeneralResources.StaticPages</h5>
-       <!-- Removed Add button since users can only edit existing pages -->
-            <div class="d-flex justify-content-between align-items-center w-100">
-                <h5 class="mb-0 fw-semibold text-white">📄 @GeneralResources.StaticPages</h5>
-                <button class="btn btn-light" @onclick="Add">
-                    <i class="feather icon-plus-circle me-2"></i>
-                    <span class="fw-bold">@ActionsResources.Add</span>
-                </button>
-            </div>
-      </div>
-      <div class="card-body">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h4 class="mb-0">📄 @GeneralResources.StaticPages</h4>
+            <!-- Removed Add button since users can only edit existing pages -->
+        </div>
+        <div class="card-body">
             <div class="dt-responsive table-responsive">
                 <!-- Filtration start -->
                 <ul class="navbar-nav d-flex flex-row align-items-center gap-3 mb-2 px-0 w-100">
                     <li class="nav-item col-md-6 w-auto d-flex flex-row align-items-center gap-3">
-                           <EditForm Model="searchModel" OnSubmit="@Search">
-    <!-- Search Box -->
-    <div class="input-group rounded search-box">
-        <input type="text" @bind="searchModel.SearchTerm"
-               id="searchInput"
-               class="form-control text-center border-0 @(ResourceManager.CurrentLanguage == Language.Arabic ? "rounded-end" : "rounded-start")"
-               placeholder="@ActionsResources.Search" />
-        <button type="submit"
-                class="btn btn-danger d-flex align-items-center justify-content-center border-0 @(ResourceManager.CurrentLanguage == Language.Arabic ? "rounded-start" : "rounded-end")">
-            <i class="fas fa-search text-white m-0"></i>
-        </button>
-    </div>
-</EditForm>
+                        <EditForm Model="searchModel" OnSubmit="@Search">
+                            <!-- Search Box -->
+                            <div class="input-group rounded-3 border" style="width: 170px; height: 38px;">
+                                <InputText @bind-Value="searchModel.SearchTerm"
+                                           id="searchInput"
+                                           class="form-control rounded-end-3 text-center border-0"
+                                           placeholder="@ActionsResources.Search"
+                                           style="height: 38px;" />
+                                <button type="submit"
+                                        class="btn btn-danger rounded-start-3 d-flex align-items-center justify-content-center border-0"
+                                        style="width: 40px; height: 38px;">
+                                    <i class="fas fa-search text-white m-0"></i>
+                                </button>
+                            </div>
+                        </EditForm>
 
-                                   <!-- Page Size -->
-                                                                <div class="d-flex align-items-center gap-2">
-                                            <select class="form-select rounded-3 shadow-sm border-light text-primary fw-bold text-center custom-dropdown"
-                                                    style="width: 130px; height: 40px; padding-right: 30px;"
-                                                    @onchange="OnPageSizeChanged">
-                                                <option value="10"selected="@(searchModel.PageSize == 10)">10</option>
-                                                <option value="15"selected="@(searchModel.PageSize == 15)">15</option>
-                                                <option value="20"selected="@(searchModel.PageSize == 20)">20</option>
-                                                <option value="30"selected="@(searchModel.PageSize == 30)">30</option>
-                                            </select>
-                                        </div>
+                        <!-- Page Size -->
+                        <div class="d-flex align-items-center gap-2">
+                            <label class="form-label fw-semibold mb-0">@ActionsResources.Show</label>
+                            <select class="form-select rounded-3 shadow-sm border-light text-primary fw-bold text-center"
+                                    style="width: 100px; height: 38px; padding-right: 16px;"
+                                    @onchange="OnPageSizeChanged">
+                                <option value="10" selected="@(searchModel.PageSize == 10)">10</option>
+                                <option value="15" selected="@(searchModel.PageSize == 15)">15</option>
+                                <option value="20" selected="@(searchModel.PageSize == 20)">20</option>
+                                <option value="30" selected="@(searchModel.PageSize == 30)">30</option>
+                            </select>
+                        </div>
                     </li>
                     <li class="nav-item ms-auto d-flex flex-row align-items-center gap-2">
                         <!-- Export Buttons -->
                         <div class="dropdown">
                             <button class="btn btn-info" type="button" id="exportDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                                <i class="fas fa-file-export mx-1"></i>
+                                <i class="fas fa-file-export me-2"></i>
                                 <span class="fw-bold">@ActionsResources.Export</span>
                             </button>
                             <ul class="dropdown-menu" aria-labelledby="exportDropdown">
@@ -83,20 +65,14 @@
                 </ul>
                 
                 <!-- Table -->
-                <div class="table-responsive  border rounded-3 overflow-hidden">
+                <div class="table-responsive border rounded-3 overflow-hidden">
                     <table class="table table-hover mb-0 d-none d-md-table">
                         <thead class="bg-light">
                             <tr>
                                 <th class="text-center align-middle" style="width: 8%;">#</th>
-                                <th class="text-center align-middle cursor-pointer" style="width: 30%;" @onclick='() => SortByColumn("Title")'>
-                                    @FormResources.Title
-                                    <i class="@GetSortIconClass("Title") ms-1"></i>
-                                </th>
+                                <th class="text-center align-middle" style="width: 30%;">@FormResources.Title</th>
                                 <th class="text-center align-middle" style="width: 35%;">@FormResources.ShortDescription</th>
-                                <th class="text-center align-middle cursor-pointer" style="width: 12%;" @onclick='() => SortByColumn("CreatedDateUtc")'>
-                                    @FormResources.CreationDate
-                                    <i class="@GetSortIconClass("CreatedDateUtc") ms-1"></i>
-                                </th>
+                                <th class="text-center align-middle" style="width: 12%;">@FormResources.CreationDate</th>
                                 <th class="text-center align-middle" style="width: 15%;">@FormResources.Actions</th>
                             </tr>
                         </thead>
@@ -131,20 +107,12 @@
                                 }
                             }
                             else
-							{
-			     <tr>
-          <td colspan="7" class="p-0">
-        <div class="d-flex flex-column justify-content-center align-items-center text-center" style="height: 45vh;">
-            <!-- أيقونة كبيرة -->
-            <i class="fas fa-database text-muted" style="font-size: 60px;"></i>
-
-            <!-- نص -->
-            <p class="text-muted mt-3" style="font-size: 18px;">
-                @NotifiAndAlertsResources.NoDataFound
-            </p>
-        </div>
-    </td>
-    </tr>
+                            {
+                                <tr>
+                                    <td colspan="5" class="text-center">
+                                        @NotifiAndAlertsResources.NoDataFound
+                                    </td>
+                                </tr>
                             }
                         </tbody>
                     </table>
@@ -180,96 +148,83 @@
                         }
                         else
                         {
-                                      
-        <div class="d-flex flex-column justify-content-center align-items-center text-center" style="height: 500px;">
-            <!-- أيقونة كبيرة -->
-            <i class="fas fa-database text-muted" style="font-size: 60px;"></i>
-
-            <!-- نص -->
-            <p class="text-muted mt-3" style="font-size: 18px;">
-                @NotifiAndAlertsResources.NoDataFound
-            </p>
-        </div>
-    
+                            <div class="text-center p-4">
+                                <i class="fas fa-file-alt fa-3x text-muted mb-3"></i>
+                                <p class="text-muted">@NotifiAndAlertsResources.NoDataFound</p>
+                            </div>
                         }
                     </div>
                 </div>
 
                 <!-- Pagination -->
-                <div class="pagination-wrapper d-flex flex-column justify-content-end flex-grow-1">
-    <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mt-4 pagination-container" dir="ltr">
+                <div class="d-flex justify-content-between mt-3" dir="ltr">
+                    <div class="d-flex align-items-center">
+                        <span class="text-muted">
+                            @string.Format(ActionsResources.ShowingEntries, StartRecord, EndRecord, totalRecords)
+                        </span>
+                    </div>
+                    <nav>
+                        <ul class="pagination mb-0">
+                            <!-- First Button -->
+                            <li class="page-item @(currentPage == 1 ? "disabled" : "")">
+                                <a class="page-link" @onclick="() => GoToPage(1)" title="@ActionsResources.First">
+                                    <i class="fas fa-angle-double-left"></i>
+                                </a>
+                            </li>
 
-        <!-- معلومات العرض -->
-        <div class="text-muted small">
-            @string.Format(ActionsResources.ShowingEntries, StartRecord, EndRecord, totalRecords)
-        </div>
+                            <!-- Previous Button -->
+                            <li class="page-item @(currentPage == 1 ? "disabled" : "")">
+                                <a class="page-link" @onclick="() => GoToPage(currentPage - 1)">
+                                    @ActionsResources.Previous
+                                </a>
+                            </li>
 
-        <!-- الباجينيشن -->
-        <nav aria-label="Page navigation">
-            <ul class="pagination pagination-sm mb-0 shadow-sm rounded-3 overflow-hidden">
+                            <!-- Dynamic Page Numbers -->
+                            @{
+                                const int maxVisiblePages = 5;
+                                int startPage = Math.Max(1, currentPage - 2);
+                                int endPage = Math.Min(totalPages, startPage + maxVisiblePages - 1);
+                                if (endPage - startPage + 1 < maxVisiblePages)
+                                {
+                                    startPage = Math.Max(1, endPage - maxVisiblePages + 1);
+                                }
+                            }
+                            @if (startPage > 1)
+                            {
+                                <li class="page-item disabled">
+                                    <a class="page-link">...</a>
+                                </li>
+                            }
+                            @for (int pag = startPage; pag <= endPage; pag++)
+                            {
+                                int pageNumber = pag;
+                                <li class="page-item @(pag == currentPage ? "active":"")">
+                                    <a class="page-link" @onclick="() => GoToPage(pageNumber)">@pag</a>
+                                </li>
+                            }
+                            @if (endPage < totalPages)
+                            {
+                                <li class="page-item disabled">
+                                    <a class="page-link">...</a>
+                                </li>
+                            }
 
-                <!-- أول صفحة -->
-                <li class="page-item @(currentPage == 1 ? "disabled" : "")">
-                    <a class="page-link" @onclick="() => GoToPage(1)" title="@ActionsResources.First">
-                        <i class="fas fa-angle-double-left"></i>
-                    </a>
-                </li>
+                            <!-- Next Button -->
+                            <li class="page-item @(CanGoToNextPage ? "" : "disabled")">
+                                <a class="page-link" @onclick="() => GoToPage(currentPage + 1)">
+                                    @ActionsResources.Next
+                                </a>
+                            </li>
 
-                <!-- السابقة -->
-                <li class="page-item @(currentPage == 1 ? "disabled" : "")">
-                    <a class="page-link" @onclick="() => GoToPage(currentPage - 1)">
-                        <i class="fas fa-angle-left"></i>
-                    </a>
-                </li>
-
-                <!-- الأرقام الديناميكية -->
-                @{
-                    const int maxVisiblePages = 5;
-                    int startPage = Math.Max(1, currentPage - 2);
-                    int endPage = Math.Min(totalPages, startPage + maxVisiblePages - 1);
-                    if (endPage - startPage + 1 < maxVisiblePages)
-                    {
-                        startPage = Math.Max(1, endPage - maxVisiblePages + 1);
-                    }
-                }
-
-                @if (startPage > 1)
-                {
-                    <li class="page-item disabled"><span class="page-link">...</span></li>
-                }
-
-                @for (int pag = startPage; pag <= endPage; pag++)
-                {
-                    int pageNumber = pag;
-                    <li class="page-item @(pag == currentPage ? "active" : "")">
-                        <a class="page-link fw-bold" @onclick="() => GoToPage(pageNumber)">@pag</a>
-                    </li>
-                }
-
-                @if (endPage < totalPages)
-                {
-                    <li class="page-item disabled"><span class="page-link">...</span></li>
-                }
-
-                <!-- التالية -->
-                <li class="page-item @(CanGoToNextPage ? "" : "disabled")">
-                    <a class="page-link" @onclick="() => GoToPage(currentPage + 1)">
-                        <i class="fas fa-angle-right"></i>
-                    </a>
-                </li>
-
-                <!-- آخر صفحة -->
-                <li class="page-item @(CanGoToNextPage ? "" : "disabled")">
-                    <a class="page-link" @onclick="() => GoToPage(totalPages)" title="@ActionsResources.Last">
-                        <i class="fas fa-angle-double-right"></i>
-                    </a>
-                </li>
-
-            </ul>
-        </nav>
-    </div>
-</div>
-
+                            <!-- Last Button -->
+                            <li class="page-item @(CanGoToNextPage ? "" : "disabled")">
+                                <a class="page-link" @onclick="() => GoToPage(totalPages)" title="@ActionsResources.Last">
+                                    <i class="fas fa-angle-double-right"></i>
+                                </a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
             </div>
         </div>
     </div>
@@ -300,4 +255,4 @@
         var modal = new bootstrap.Modal(document.getElementById('previewModal'));
         modal.show();
     };
-</script>
+</script> *@

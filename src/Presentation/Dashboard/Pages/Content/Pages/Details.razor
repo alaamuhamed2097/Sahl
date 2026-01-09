@@ -1,4 +1,4 @@
-﻿@page "/content/pages/{id:guid?}"
+﻿@* @page "/content/pages/{id:guid?}"
 @page "/pages/{id:guid?}"
 
 @using Common.Enumerations
@@ -137,6 +137,174 @@
                         @ActionsResources.Save
                     </button>
                 }
+            </div>
+        </EditForm>
+    </div>
+</div> *@
+@page "/content/pages/add"
+@page "/pages/add"
+@page "/content/pages/{Id:guid}"
+@page "/pages/{Id:guid}"
+
+@using Common.Enumerations
+@using Common.Enumerations.User
+@using Microsoft.AspNetCore.Authorization
+@using Resources
+@using Dashboard.Components.Forms
+@attribute [Authorize(Roles = nameof(UserRole.Admin))]
+
+<PageTitle>@(IsAddMode? ActionsResources.Add: ActionsResources.Edit) @GeneralResources.Page</PageTitle>
+
+<div class="container-fluid p-0">
+    <div class="card shadow-sm border-0">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h4 class="mb-0">
+                📄 @(IsAddMode? ActionsResources.Add: ActionsResources.Edit) @GeneralResources.Page
+                @if (!IsAddMode && !string.IsNullOrEmpty(Model.Title))
+                {
+                    <span> - @Model.Title</span>
+                }
+            </h4>
+        </div>
+        <EditForm Model="@Model" OnValidSubmit="Save">
+            <DataAnnotationsValidator />
+            <div class="card-body p-4">
+                @if (!string.IsNullOrEmpty(ErrorMessage))
+                {
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <i class="fas fa-exclamation-circle me-2"></i>
+                        @ErrorMessage
+                        <button type="button" class="btn-close" @onclick="() => ErrorMessage = string.Empty"></button>
+                    </div>
+                }
+                @if (!string.IsNullOrEmpty(SuccessMessage))
+                {
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        <i class="fas fa-check-circle me-2"></i>
+                        @SuccessMessage
+                        <button type="button" class="btn-close" @onclick="() => SuccessMessage = string.Empty"></button>
+                    </div>
+                }
+
+                <div class="row">
+                    <!-- Basic Information -->
+                    <div class="col-md-6">
+                        <div class="form-group mb-3">
+                            <label class="form-label">@FormResources.ArabicTitle *</label>
+                            <InputText class="form-control"
+                                       @bind-Value="Model.TitleAr"
+                                       placeholder="أدخل العنوان بالعربية" />
+                            <ValidationMessage For="@(() => Model.TitleAr)" />
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group mb-3">
+                            <label class="form-label">@FormResources.EnglishTitle *</label>
+                            <InputText class="form-control"
+                                       @bind-Value="Model.TitleEn"
+                                       placeholder="Enter title in English" />
+                            <ValidationMessage For="@(() => Model.TitleEn)" />
+                        </div>
+                    </div>
+                </div>
+                @if (IsAddMode)
+                {
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group mb-3">
+                                <label class="form-label">@FormResources.PageType *</label>
+                                <InputSelect class="form-select" @bind-Value="Model.PageType">
+                                    <option value="">-- @FormResources.SelectPageType --</option>
+                                    @foreach (var pageType in GetPageTypes())
+                                    {
+                                        <option value="@pageType.Key">@pageType.Value</option>
+                                    }
+                                </InputSelect>
+                                <ValidationMessage For="@(() => Model.PageType)" />
+                                <small class="form-text text-muted">
+                                    <i class="fas fa-info-circle me-1"></i>
+                                    @FormResources.PageTypeHint
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="alert alert-info py-2 mb-3">
+                                <i class="fas fa-tag me-2"></i>
+                                <strong>@FormResources.PageType:</strong> @GetPageTypeDisplayName(Model.PageType)
+                            </div>
+                        </div>
+                    </div>
+                }
+                <!-- Short Descriptions -->
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group mb-3">
+                            <label class="form-label">@FormResources.ArabicShortDescription *</label>
+                            <InputTextArea class="form-control"
+                                           rows="3"
+                                           @bind-Value="Model.ShortDescriptionAr"
+                                           placeholder="أدخل وصف مختصر بالعربية" />
+                            <ValidationMessage For="@(() => Model.ShortDescriptionAr)" />
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group mb-3">
+                            <label class="form-label">@FormResources.EnglishShortDescription *</label>
+                            <InputTextArea class="form-control"
+                                           rows="3"
+                                           @bind-Value="Model.ShortDescriptionEn"
+                                           placeholder="Enter short description in English" />
+                            <ValidationMessage For="@(() => Model.ShortDescriptionEn)" />
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Content Editors -->
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group mb-3">
+                            <label class="form-label">@FormResources.ArabicContent *</label>
+                            <RichTextEditor @bind-Value="Model.ContentAr"
+                                            Placeholder="أدخل المحتوى العربي..."
+                                            Height="500"
+                                            Language="ar" />
+                            <ValidationMessage For="@(() => Model.ContentAr)" />
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group mb-3">
+                            <label class="form-label">@FormResources.EnglishContent *</label>
+                            <RichTextEditor @bind-Value="Model.ContentEn"
+                                            Placeholder="Enter English content..."
+                                            Height="500"
+                                            Language="en" />
+                            <ValidationMessage For="@(() => Model.ContentEn)" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer bg-light py-3 d-flex justify-content-end gap-2">
+                <button type="button" class="btn btn-secondary px-4" @onclick="Cancel">
+                    <i class="feather icon-x-circle me-2"></i>
+                    @ActionsResources.Cancel
+                </button>
+                <button type="submit" class="btn btn-success px-4" disabled="@IsSaving">
+                    @if (IsSaving)
+                    {
+                        <span class="spinner-border spinner-border-sm me-1"></span>
+                        @GeneralResources.Saving
+                    }
+                    else
+                    {
+                        <i class="fas fa-save me-2"></i>
+                        @ActionsResources.Save
+                    }
+                </button>
             </div>
         </EditForm>
     </div>
