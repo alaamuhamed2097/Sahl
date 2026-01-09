@@ -1,4 +1,5 @@
 using Common.Enumerations;
+using Common.Filters;
 using DAL.Models;
 using Shared.DTOs.Page;
 using Shared.GeneralModels.SearchCriteriaModels;

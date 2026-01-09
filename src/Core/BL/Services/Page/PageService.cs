@@ -2,6 +2,7 @@ using BL.Contracts.IMapper;
 using BL.Contracts.Services.Page;
 using BL.Extensions;
 using Common.Enumerations;
+using Common.Filters;
 using DAL.Contracts.Repositories;
 using DAL.Models;
 using Domains.Entities.Page;
