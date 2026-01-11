@@ -63,7 +63,7 @@ namespace Api.Extensions
             services.AddScoped<IPaymentService, PaymentService>();
 
             // Vendor Service
-            services.AddScoped<IVendorService, VendorService>();
+            services.AddScoped<IVendorManagementService, VendorManagementService>();
 
             // Category Services
             services.AddScoped<ICategoryService, CategoryService>();

@@ -10,7 +10,7 @@ namespace Api.Extensions
         public static IServiceCollection AddVendorServices(this IServiceCollection services, IConfiguration configuration)
         {
             // Vendor Service
-            services.AddScoped<IVendorService, VendorService>();
+            services.AddScoped<IVendorManagementService, VendorManagementService>();
 
             // Vendor Items Services
             services.AddScoped<IVendorItemService, VendorItemService>();

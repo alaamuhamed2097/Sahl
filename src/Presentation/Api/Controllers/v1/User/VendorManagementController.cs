@@ -16,11 +16,11 @@ namespace Api.Controllers.v1.User
     [ApiVersion("1.0")]
     [Route("api/v{version:apiVersion}/[controller]")]
     [Authorize(Roles = nameof(UserRole.Admin))]
-    public class VendorController : BaseController
+    public class VendorManagementController : BaseController
     {
-        private readonly IVendorService _vendorService;
+        private readonly IVendorManagementService _vendorService;
 
-        public VendorController(IVendorService vendorService)
+        public VendorManagementController(IVendorManagementService vendorService)
         {
             _vendorService = vendorService;
         }

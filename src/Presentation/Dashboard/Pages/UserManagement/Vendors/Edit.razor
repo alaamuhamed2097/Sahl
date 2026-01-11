@@ -23,18 +23,18 @@
                     <!-- Personal Information -->
                     <div class="col-md-6">
                         <div class="form-group">
-                            <label>@ECommerceResources.CompanyName</label>
-                            <InputText type="text" placeholder="@($"{FormResources.Write} {ECommerceResources.CompanyName}")"
-                                       class="form-control" @bind-Value="Model.CompanyName" />
-                            <ValidationMessage For="@(() => Model.CompanyName)" />
+                            <label>@ECommerceResources.StoreName</label>
+                            <InputText type="text" placeholder="@($"{FormResources.Write} {ECommerceResources.StoreName}")"
+                                       class="form-control" @bind-Value="Model.StoreName" />
+                            <ValidationMessage For="@(() => Model.StoreName)" />
                         </div>
                     </div>
                     <div class="col-md-6">
                         <div class="form-group">
                             <label>@ECommerceResources.ContactName</label>
                             <InputText type="text" placeholder="@($"{FormResources.Write} {ECommerceResources.ContactName}")"
-                                       class="form-control" @bind-Value="Model.ContactName" />
-                            <ValidationMessage For="@(() => Model.ContactName)" />
+                                       class="form-control" @bind-Value="Model.AdministratorFirstName" />
+                            <ValidationMessage For="@(() => Model.AdministratorFirstName)" />
                         </div>
                     </div>
                 </div>
@@ -62,12 +62,12 @@
                 <!-- Security Information -->
                 <div class="row g-3">
                     <div class="col-md-6">
-                        <div class="form-group">
+                        @* <div class="form-group">
                             <label>@ECommerceResources.TaxNumber</label>
                             <InputText type="text" placeholder="@($"{FormResources.Write} {ECommerceResources.TaxNumber}")"
                                        class="form-control" @bind-Value="Model.TaxNumber" />
                             <ValidationMessage For="@(() => Model.TaxNumber)" />
-                        </div>
+                        </div> *@
                     </div>
                     <div class="col-md-6">
                         <div class="form-group">
@@ -101,12 +101,12 @@
                         </div>
                     </div> *@
                     <div class="col-md-6">
-                        <div class="form-group form-check mt-4">
+                        @* <div class="form-group form-check mt-4">
                             <InputCheckbox @bind-Value="Model.VATRegistered" class="form-check-input" />
                             <label class="form-check-label">@ECommerceResources.VATRegistered</label>
 
                             <ValidationMessage For="@(() => Model.VATRegistered)" />
-                        </div>
+                        </div> *@
                     </div>
                 </div>
             </div>

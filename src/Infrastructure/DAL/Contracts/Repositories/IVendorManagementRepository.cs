@@ -1,11 +1,13 @@
-using DAL.Contracts.Repositories;
+using Common.Filters;
+using DAL.Models;
 using Domains.Entities.ECommerceSystem.Vendor;
 using Domains.Identity;
 
 namespace DAL.Contracts.Repositories
 {
-    public interface IVendorRepository : ITableRepository<TbVendor>
+    public interface IVendorManagementRepository : ITableRepository<TbVendor>
     {
         Task<(bool Success, IEnumerable<string> Errors)> RegisterVendorWithUserAsync(ApplicationUser user, string password, TbVendor vendor);
+        Task<PagedResult<TbVendor>> GetPageAsync(BaseSearchCriteriaModel criteriaModel, CancellationToken cancellationToken);
     }
 }
