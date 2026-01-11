@@ -77,4 +77,13 @@ public class CityService : BaseService<TbCity, CityDto>, ICityService
 
         return new PagedResult<CityDto>(dtoList, entitiesList.TotalRecords);
     }
+
+    public async Task<IEnumerable<CityDto>> GetByStateIdAsync(Guid stateId)
+    {
+        if (stateId == Guid.Empty)
+            throw new ArgumentException("State ID cannot be empty.", nameof(stateId));
+
+        var cities = await _baseRepository.GetAsync(x => !x.IsDeleted && x.StateId == stateId);
+        return _mapper.MapList<TbCity, CityDto>(cities);
+    }
 }
