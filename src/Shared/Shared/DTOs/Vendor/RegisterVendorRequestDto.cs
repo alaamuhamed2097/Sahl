@@ -15,10 +15,6 @@ namespace Shared.DTOs.Vendor
 
         [Required(ErrorMessageResourceName = "FieldRequired", ErrorMessageResourceType = typeof(ValidationResources))]
         [MaxLength(50, ErrorMessageResourceName = "OutOfMaxLength", ErrorMessageResourceType = typeof(ValidationResources))]
-        public string MiddleName { get; set; } = null!;
-
-        [Required(ErrorMessageResourceName = "FieldRequired", ErrorMessageResourceType = typeof(ValidationResources))]
-        [MaxLength(50, ErrorMessageResourceName = "OutOfMaxLength", ErrorMessageResourceType = typeof(ValidationResources))]
         public string LastName { get; set; } = null!;
 
         [StringLength(100, MinimumLength = 5, ErrorMessageResourceName = "EmailLength", ErrorMessageResourceType = typeof(ValidationResources))]

@@ -1,4 +1,5 @@
-﻿using Shared.DTOs.User;
+﻿using Common.Enumerations.User;
+using Shared.DTOs.User;
 using Shared.GeneralModels.ResultModels;
 using System.Security.Claims;
 
@@ -7,7 +8,10 @@ namespace BL.Contracts.GeneralService.CMS
     public interface IUserAuthenticationService
     {
         Task<string> LoginUserAsync(LoginDto loginDto);
-        Task<SignInResult> EmailOrPhoneNumberSignInAsync(string identifier, string password, string clientType);
+        Task<SignInResult> EmailOrPhoneNumberSignInAsync(string identifier, string password, string clientTyp, SignInMethod method = SignInMethod.Email);
+        Task<CustomerSignInResult> CustomerSignInAsync(PhoneLoginDto request, string clientType);
+        Task<VendorSignInResult> VendorSignInAsync(EmailLoginDto request, string clientType);
+
         Task<Microsoft.AspNetCore.Identity.SignInResult> PasswordSignInAsync(string email, string password, bool isPersistent, bool lockoutOnFailure);
         Task<OperationResult> ChangePasswordAsync(string userId, string currentPassword, string newPassword);
         Task<OperationResult> ResetPasswordAsync(PasswordResetDto resetDto);

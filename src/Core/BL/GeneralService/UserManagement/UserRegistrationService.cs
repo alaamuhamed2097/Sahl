@@ -469,7 +469,6 @@ public class UserRegistrationService : IUserRegistrationService
                     UserId = applicationUser.Id,
                     VendorId = vendor.Id,
                     FirstName = applicationUser.FirstName,
-                    MiddleName = request.MiddleName,
                     LastName = applicationUser.LastName,
                     Email = applicationUser.Email,
                     UserName = applicationUser.UserName,

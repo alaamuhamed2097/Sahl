@@ -1,8 +1,10 @@
 using Api.Controllers.v1.Base;
 using Asp.Versioning;
 using BL.Contracts.Service.Vendor;
+using Common.Enumerations.User;
 using Common.Filters;
 using DAL.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Resources;
 using Shared.DTOs.Vendor;
@@ -10,9 +12,10 @@ using Shared.GeneralModels;
 
 namespace Api.Controllers.v1.User
 {
-    [Route("api/v{version:apiVersion}/[controller]")]
     [ApiController]
     [ApiVersion("1.0")]
+    [Route("api/v{version:apiVersion}/[controller]")]
+    [Authorize(Roles = nameof(UserRole.Admin))]
     public class VendorController : BaseController
     {
         private readonly IVendorService _vendorService;

@@ -304,8 +304,11 @@ public class UserProfileService : IUserProfileService
             LastName = user.LastName,
             FullName = $"{user.FirstName} {user.LastName}",
             Email = user.Email,
-            Phone = user.PhoneNumber,
-            ProfileImagePath = user.ProfileImagePath ?? "uploads/Images/ProfileImages/Marketers/default.png" // Default logic from login
+            PhoneCode = user.PhoneCode,
+            PhoneNumber = user.PhoneNumber,
+            ProfileImagePath = user.ProfileImagePath ?? "uploads/Images/ProfileImages/Vendor/default.png", // Default logic from login
+            PhoneNumberConfirmed = user.PhoneNumberConfirmed,
+            EmailConfirmed = user.EmailConfirmed
         };
     }
 
