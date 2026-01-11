@@ -48,10 +48,11 @@ namespace DAL.Contracts.Repositories
             CancellationToken cancellationToken = default);
 
         /// <summary>
-        /// Finds the first entity matching the predicate
+        /// Finds the first entity matching the predicate with optional eager loading
         /// </summary>
         Task<T> FindAsync(
             Expression<Func<T, bool>> predicate,
+            string includeProperties = "",
             CancellationToken cancellationToken = default);
 
         /// <summary>

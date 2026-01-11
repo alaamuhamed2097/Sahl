@@ -9,4 +9,5 @@ namespace BL.Contracts.Service.Location;
 public interface ICityService : IBaseService<TbCity, CityDto>
 {
     Task<PagedResult<CityDto>> GetPage(BaseSearchCriteriaModel criteriaModel);
+    Task<IEnumerable<CityDto>> GetByStateIdAsync(Guid stateId);
 }

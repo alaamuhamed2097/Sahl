@@ -30,11 +30,11 @@ namespace Api.Controllers.v1.Order
         /// Requires Customer role.<br/>
         /// Returns all saved addresses for the authenticated user.
         /// </remarks>
-        [HttpGet]
+        [HttpGet(Name = "ListAddresses")]
         [Authorize(Roles = nameof(UserRole.Customer))]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        public async Task<IActionResult> GetMyAddresses()
+        public async Task<IActionResult> GetAddresses()
         {
             var addresses = await _addressService.GetCustomerAddressesAsync(UserId);
 
@@ -54,12 +54,12 @@ namespace Api.Controllers.v1.Order
         /// Requires Customer role.<br/>
         /// Returns address details if it belongs to the authenticated user.
         /// </remarks>
-        [HttpGet("{addressId}")]
+        [HttpGet("{addressId:guid}", Name = "GetAddress")]
         [Authorize(Roles = nameof(UserRole.Customer))]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
-        public async Task<IActionResult> GetAddressById(Guid addressId)
+        public async Task<IActionResult> GetById(Guid addressId)
         {
             var address = await _addressService.GetAddressByIdAsync(addressId, UserId);
 
@@ -88,11 +88,11 @@ namespace Api.Controllers.v1.Order
         /// Requires Customer role.<br/>
         /// Returns the default delivery address if set.
         /// </remarks>
-        [HttpGet("default")]
+        [HttpGet("~/api/v{version:apiVersion}/[controller]/default", Name = "GetDefaultAddress")]
         [Authorize(Roles = nameof(UserRole.Customer))]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> GetDefaultAddress()
+        public async Task<IActionResult> GetDefault()
         {
             var address = await _addressService.GetDefaultAddressAsync(UserId);
 
@@ -122,16 +122,16 @@ namespace Api.Controllers.v1.Order
         /// Creates a new delivery address for the authenticated user.<br/>
         /// If this is the first address, it will automatically be set as default.
         /// </remarks>
-        [HttpPost]
+        [HttpPost(Name = "CreateAddress")]
         [Authorize(Roles = nameof(UserRole.Customer))]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> CreateAddress([FromBody] CreateCustomerAddressRequest request)
+        public async Task<IActionResult> Create([FromBody] CreateCustomerAddressRequest request)
         {
             var address = await _addressService.CreateAddressAsync(UserId, request);
 
-            return CreatedAtAction(
-                nameof(GetAddressById),
+            return CreatedAtRoute(
+                "GetAddress",
                 new { addressId = address.Id },
                 new ResponseModel<CustomerAddressDto>
                 {
@@ -149,13 +149,13 @@ namespace Api.Controllers.v1.Order
         /// Requires Customer role.<br/>
         /// Updates address details. User can only update their own addresses.
         /// </remarks>
-        [HttpPut("{addressId}")]
+        [HttpPut("{addressId:guid}", Name = "UpdateAddress")]
         [Authorize(Roles = nameof(UserRole.Customer))]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
-        public async Task<IActionResult> UpdateAddress(Guid addressId, [FromBody] UpdateCustomerAddressRequest request)
+        public async Task<IActionResult> Update(Guid addressId, [FromBody] UpdateCustomerAddressRequest request)
         {
             var address = await _addressService.UpdateAddressAsync(addressId, UserId, request);
 
@@ -185,12 +185,12 @@ namespace Api.Controllers.v1.Order
         /// Sets the specified address as the default delivery address.<br/>
         /// Any previously default address will be unmarked.
         /// </remarks>
-        [HttpPut("{addressId}/set-default")]
+        [HttpPut("{addressId:guid}/default", Name = "SetDefaultAddress")]
         [Authorize(Roles = nameof(UserRole.Customer))]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
-        public async Task<IActionResult> SetDefaultAddress(Guid addressId)
+        public async Task<IActionResult> MarkAsDefault(Guid addressId)
         {
             var result = await _addressService.SetDefaultAddressAsync(addressId, UserId);
 
@@ -220,13 +220,13 @@ namespace Api.Controllers.v1.Order
         /// Soft deletes the address. User can only delete their own addresses.<br/>
         /// If deleting the default address and other addresses exist, another will be set as default.
         /// </remarks>
-        [HttpDelete("{addressId}")]
+        [HttpDelete("{addressId:guid}", Name = "DeleteAddress")]
         [Authorize(Roles = nameof(UserRole.Customer))]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> DeleteAddress(Guid addressId)
+        public async Task<IActionResult> Delete(Guid addressId)
         {
             var result = await _addressService.DeleteAddressAsync(addressId, UserId);
 

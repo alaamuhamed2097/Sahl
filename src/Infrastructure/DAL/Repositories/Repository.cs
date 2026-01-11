@@ -165,15 +165,31 @@ namespace DAL.Repositories
         }
 
         /// <summary>
-        /// Finds the first entity matching the predicate asynchronously.
+        /// Finds the first entity matching the predicate asynchronously with optional eager loading support.
         /// </summary>
         public virtual async Task<T> FindAsync(
             Expression<Func<T, bool>> predicate,
+            string includeProperties = "",
             CancellationToken cancellationToken = default)
         {
             try
             {
-                return await DbSet.FirstOrDefaultAsync(predicate, cancellationToken);
+                IQueryable<T> query = DbSet.AsNoTracking();
+
+                if (predicate != null)
+                {
+                    query = query.Where(predicate);
+                }
+
+                if (!string.IsNullOrEmpty(includeProperties))
+                {
+                    foreach (var includeProperty in includeProperties.Split(',', StringSplitOptions.RemoveEmptyEntries))
+                    {
+                        query = query.Include(includeProperty.Trim());
+                    }
+                }
+
+                return await query.FirstOrDefaultAsync(cancellationToken);
             }
             catch (Exception ex)
             {

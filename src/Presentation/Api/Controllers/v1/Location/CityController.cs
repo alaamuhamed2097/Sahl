@@ -83,6 +83,40 @@ namespace Api.Controllers.v1.Location
         }
 
         /// <summary>
+        /// Retrieves cities by state ID.
+        /// </summary>
+        /// <remarks>
+        /// API Version: 1.0+
+        /// </remarks>
+        /// <param name="stateId">The state ID to filter cities</param>
+        [HttpGet("by-state/{stateId}")]
+        [AllowAnonymous]
+        public async Task<IActionResult> GetByStateId(Guid stateId)
+        {
+            if (stateId == Guid.Empty)
+                return BadRequest(new ResponseModel<string>
+                {
+                    Success = false,
+                    Message = "Invalid state ID."
+                });
+
+            var cities = await _cityService.GetByStateIdAsync(stateId);
+            if (cities == null || !cities.Any())
+                return NotFound(new ResponseModel<string>
+                {
+                    Success = false,
+                    Message = "No cities found for this state."
+                });
+
+            return Ok(new ResponseModel<IEnumerable<CityDto>>
+            {
+                Success = true,
+                Message = "Cities retrieved successfully.",
+                Data = cities
+            });
+        }
+
+        /// <summary>
         /// Searches cities with pagination and filtering.
         /// </summary>
         /// <remarks>
