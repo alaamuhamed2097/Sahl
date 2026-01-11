@@ -1,8 +1,10 @@
 ﻿using BL.Contracts.GeneralService;
 using BL.Contracts.GeneralService.CMS;
+using BL.Contracts.Service.Vendor;
 using BL.Utils;
 using Common.Enumerations.Notification;
 using Common.Enumerations.User;
+using Common.Enumerations.VendorStatus;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Resources;
@@ -19,18 +21,23 @@ public class UserAuthenticationService : IUserAuthenticationService
     private readonly IUserTokenService _tokenService;
     private readonly IEmailService _emailService;
     private readonly IVerificationCodeService _verificationCodeService;
+    private readonly IVendorService _vendorService;
+
     public UserAuthenticationService(UserManager<ApplicationUser> userManager,
         SignInManager<ApplicationUser> signInManager,
         IUserTokenService tokenService,
         IEmailService emailService,
-        IVerificationCodeService verificationCodeService)
+        IVerificationCodeService verificationCodeService,
+        IVendorService vendorService)
     {
         _userManager = userManager;
         _signInManager = signInManager;
         _tokenService = tokenService;
         _emailService = emailService;
         _verificationCodeService = verificationCodeService;
+        _vendorService = vendorService;
     }
+
 
     public async Task<string> LoginUserAsync(LoginDto loginDto)
     {
@@ -45,31 +52,34 @@ public class UserAuthenticationService : IUserAuthenticationService
         throw new UnauthorizedAccessException("Invalid login credentials.");
     }
 
-    public async Task<Shared.GeneralModels.ResultModels.SignInResult> EmailOrPhoneNumberSignInAsync(string identifier, string password, string clientType)
+    public async Task<Shared.GeneralModels.ResultModels.SignInResult> EmailOrPhoneNumberSignInAsync(string identifier, string password, string clientType, SignInMethod method = SignInMethod.Email)
     {
         try
         {
             ApplicationUser? user = null;
 
-            // Try to find by email
-            user = await _userManager.FindByEmailAsync(identifier);
-
-            // If not found by email, try by username
-            if (user == null)
+            if (method == SignInMethod.Email)
             {
-                user = await _userManager.FindByNameAsync(identifier);
+                // Try to find by email
+                user = await _userManager.FindByEmailAsync(identifier);
             }
-
-            // If still not found, try by phone number (new feature)
-            if (user == null && !string.IsNullOrWhiteSpace(identifier))
+            else if (method == SignInMethod.PhoneNumber)
             {
-                var normalizedPhone = PhoneNormalizationHelper.NormalizePhone(identifier);
-                if (!string.IsNullOrWhiteSpace(normalizedPhone))
+                // If still not found, try by phone number
+                if (user == null && !string.IsNullOrWhiteSpace(identifier))
                 {
-                    user = await _userManager.Users
-                        .FirstOrDefaultAsync(u => u.NormalizedPhone != null &&
-                                                 u.NormalizedPhone.Contains(normalizedPhone));
+                    var normalizedPhone = PhoneNormalizationHelper.NormalizePhone(identifier);
+                    if (!string.IsNullOrWhiteSpace(normalizedPhone))
+                    {
+                        user = await _userManager.Users
+                            .FirstOrDefaultAsync(u => u.NormalizedPhone != null &&
+                                                      u.NormalizedPhone.Contains(normalizedPhone));
+                    }
                 }
+            }
+            else
+            {
+                throw new ArgumentException("Invalid sign-in method.");
             }
 
             if (user == null)
@@ -144,8 +154,7 @@ public class UserAuthenticationService : IUserAuthenticationService
                 Success = true,
                 FirstName = user.FirstName,
                 LastName = user.LastName,
-                Email = user.Email,
-                ProfileImagePath = user.ProfileImagePath ?? "uploads/Images/ProfileImages/Marketers/default.png",
+                ProfileImagePath = user.ProfileImagePath ?? "uploads/Images/ProfileImages/Vendor/default.png",
                 Token = tokenResult.Token,
                 RefreshToken = refreshToken,
                 Role = userRoles[0]
@@ -161,6 +170,240 @@ public class UserAuthenticationService : IUserAuthenticationService
             };
         }
     }
+
+    public async Task<CustomerSignInResult> CustomerSignInAsync(PhoneLoginDto request, string clientType)
+    {
+        try
+        {
+            ApplicationUser? user = user = await _userManager.Users
+                    .FirstOrDefaultAsync(u => u.PhoneCode == request.PhoneCode &&
+                                              u.PhoneNumber == request.PhoneNumber);
+
+            if (user == null)
+            {
+                return new Shared.GeneralModels.ResultModels.CustomerSignInResult
+                {
+                    Success = false,
+                    Message = "User not found."
+                };
+            }
+
+            // Get user roles
+            var userRoles = await _userManager.GetRolesAsync(user);
+            if (!userRoles.Contains(nameof(UserRole.Customer)))
+            {
+                return new Shared.GeneralModels.ResultModels.CustomerSignInResult
+                {
+                    Success = false,
+                    Message = "User not found."
+                };
+            }
+
+            if (await _userManager.IsLockedOutAsync(user))
+            {
+                return new Shared.GeneralModels.ResultModels.CustomerSignInResult
+                {
+                    Success = false,
+                    Message = "User is locked out."
+                };
+            }
+
+            var passwordCheckResult = await _userManager.CheckPasswordAsync(user, request.Password);
+            if (!passwordCheckResult)
+            {
+                return new Shared.GeneralModels.ResultModels.CustomerSignInResult
+                {
+                    Success = false,
+                    Message = "Invalid password."
+                };
+            }
+
+            if (user.UserState == UserStateType.Suspended)
+            {
+                return new Shared.GeneralModels.ResultModels.CustomerSignInResult
+                {
+                    Success = false,
+                    Message = "Your account has been suspended by the administration due to a violation of the platform's policies. For more details, please contact technical support."
+                };
+            }
+
+            // Reset failed access count on successful login
+            await _userManager.ResetAccessFailedCountAsync(user);
+
+            // Update last login date
+            user.LastLoginDate = DateTime.UtcNow;
+            await _userManager.UpdateAsync(user);
+
+            // Generate new security stamp to invalidate other sessions
+            await _userManager.UpdateSecurityStampAsync(user);
+
+            // Generate JWT token
+            var tokenResult = await _tokenService.GenerateJwtTokenAsync(user.Id.ToString(), userRoles);
+            if (!tokenResult.Success)
+            {
+                return new Shared.GeneralModels.ResultModels.CustomerSignInResult
+                {
+                    Success = false,
+                    Message = "Failed to generate token."
+                };
+            }
+
+            // Invalidate all previous refresh tokens (single session)
+            await InvalidateAllRefreshTokens(user.Id.ToString());
+
+            // create a refresh token
+            var refreshToken = await _tokenService.CreateRefreshTokenAsync(user, clientType);
+
+            return new Shared.GeneralModels.ResultModels.CustomerSignInResult
+            {
+                Success = true,
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                PhoneCode = user.PhoneCode,
+                PhoneNumber = user.PhoneNumber,
+                ProfileImagePath = user.ProfileImagePath ?? "uploads/Images/ProfileImages/Vendor/default.png",
+                Token = tokenResult.Token,
+                RefreshToken = refreshToken,
+                Role = userRoles[0],
+                IsActive = user.PhoneNumberConfirmed
+            };
+        }
+        catch (Exception)
+        {
+            // Log the exception (ex)
+            return new Shared.GeneralModels.ResultModels.CustomerSignInResult
+            {
+                Success = false,
+                Message = ValidationResources.InvalidLoginAttempt
+            };
+        }
+    }
+
+    public async Task<VendorSignInResult> VendorSignInAsync(EmailLoginDto request, string clientType)
+    {
+        try
+        {
+            ApplicationUser? user = user = await _userManager.FindByEmailAsync(request.Email);
+
+            if (user == null)
+            {
+                return new Shared.GeneralModels.ResultModels.VendorSignInResult
+                {
+                    Success = false,
+                    Message = "User not found."
+                };
+            }
+
+            // Get user roles
+            var userRoles = await _userManager.GetRolesAsync(user);
+            if (!userRoles.Contains(nameof(UserRole.Vendor)))
+            {
+                return new Shared.GeneralModels.ResultModels.VendorSignInResult
+                {
+                    Success = false,
+                    Message = "User not found."
+                };
+            }
+
+            if (await _userManager.IsLockedOutAsync(user))
+            {
+                return new Shared.GeneralModels.ResultModels.VendorSignInResult
+                {
+                    Success = false,
+                    Message = "User is locked out."
+                };
+            }
+
+            var passwordCheckResult = await _userManager.CheckPasswordAsync(user, request.Password);
+            if (!passwordCheckResult)
+            {
+                return new Shared.GeneralModels.ResultModels.VendorSignInResult
+                {
+                    Success = false,
+                    Message = "Invalid password."
+                };
+            }
+
+            if (user.UserState == UserStateType.Suspended)
+            {
+                return new Shared.GeneralModels.ResultModels.VendorSignInResult
+                {
+                    Success = false,
+                    Message = "Your account has been suspended by the administration due to a violation of the platform's policies. For more details, please contact technical support."
+                };
+            }
+
+            var vendor = await _vendorService.GetByUserIdAsync(user.Id);
+            if (vendor == null)
+            {
+                return new Shared.GeneralModels.ResultModels.VendorSignInResult
+                {
+                    Success = false,
+                    Message = "Vendor profile not found."
+                };
+            }
+
+            if (vendor.Status == VendorStatus.Rejected)
+            {
+                return new Shared.GeneralModels.ResultModels.VendorSignInResult
+                {
+                    Success = false,
+                    Message = "you are rejected."
+                };
+            }
+
+            // Reset failed access count on successful login
+            await _userManager.ResetAccessFailedCountAsync(user);
+
+            // Update last login date
+            user.LastLoginDate = DateTime.UtcNow;
+            await _userManager.UpdateAsync(user);
+
+            // Generate new security stamp to invalidate other sessions
+            await _userManager.UpdateSecurityStampAsync(user);
+
+            // Generate JWT token
+            var tokenResult = await _tokenService.GenerateJwtTokenAsync(user.Id.ToString(), userRoles);
+            if (!tokenResult.Success)
+            {
+                return new Shared.GeneralModels.ResultModels.VendorSignInResult
+                {
+                    Success = false,
+                    Message = "Failed to generate token."
+                };
+            }
+
+            // Invalidate all previous refresh tokens (single session)
+            await InvalidateAllRefreshTokens(user.Id.ToString());
+
+            // create a refresh token
+            var refreshToken = await _tokenService.CreateRefreshTokenAsync(user, clientType);
+
+            return new Shared.GeneralModels.ResultModels.VendorSignInResult
+            {
+                Success = true,
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                Email = user.Email,
+                ProfileImagePath = user.ProfileImagePath ?? "uploads/Images/ProfileImages/Vendor/default.png",
+                Token = tokenResult.Token,
+                RefreshToken = refreshToken,
+                Role = userRoles[0],
+                IsActive = user.EmailConfirmed,
+                IsVerified = vendor.Status == VendorStatus.Approved
+            };
+        }
+        catch (Exception)
+        {
+            // Log the exception (ex)
+            return new Shared.GeneralModels.ResultModels.VendorSignInResult
+            {
+                Success = false,
+                Message = ValidationResources.InvalidLoginAttempt
+            };
+        }
+    }
+
 
     public async Task<Microsoft.AspNetCore.Identity.SignInResult> PasswordSignInAsync(string email, string password, bool isPersistent, bool lockoutOnFailure)
     {
@@ -390,6 +633,16 @@ public class UserAuthenticationService : IUserAuthenticationService
         return new OperationResult { Success = false, Message = "Failed to update user status.", Errors = errors };
     }
 
+    public Task<ApplicationUser> GetAuthenticatedUserAsync(ClaimsPrincipal principal)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<bool> IsUserAuthorizedAsync(ApplicationUser user, string policy)
+    {
+        throw new NotImplementedException();
+    }
+
     #region Helper Methods
 
     private async Task InvalidateAllRefreshTokens(string userId)
@@ -409,14 +662,5 @@ public class UserAuthenticationService : IUserAuthenticationService
         }
     }
 
-    public Task<ApplicationUser> GetAuthenticatedUserAsync(ClaimsPrincipal principal)
-    {
-        throw new NotImplementedException();
-    }
-
-    public Task<bool> IsUserAuthorizedAsync(ApplicationUser user, string policy)
-    {
-        throw new NotImplementedException();
-    }
     #endregion
 }

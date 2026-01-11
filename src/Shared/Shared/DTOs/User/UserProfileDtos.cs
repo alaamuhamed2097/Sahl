@@ -10,8 +10,11 @@ namespace Shared.DTOs.User
         public string LastName { get; set; } = null!;
         public string FullName { get; set; } = null!;
         public string Email { get; set; } = null!;
-        public string Phone { get; set; } = null!;
+        public string PhoneCode { get; set; } = null!;
+        public string PhoneNumber { get; set; } = null!;
         public string? ProfileImagePath { get; set; }
+        public bool PhoneNumberConfirmed { get; set; }
+        public bool EmailConfirmed { get; set; }
     }
 
     public class UserProfileUpdateDto

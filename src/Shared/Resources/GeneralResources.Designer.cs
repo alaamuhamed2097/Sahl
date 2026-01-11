@@ -511,11 +511,20 @@ namespace Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to إعدادات العمل.
+        ///   Looks up a localized string similar to إعدادات الأعمال.
         /// </summary>
         public static string BusinessSettings {
             get {
                 return ResourceManager.GetString("BusinessSettings", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to إعدادات العمل.
+        /// </summary>
+        public static string BusinessSettings_Duplicate_1_ {
+            get {
+                return ResourceManager.GetString("BusinessSettings_Duplicate[1]", resourceCulture);
             }
         }
         
@@ -1672,11 +1681,20 @@ namespace Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to جاري تحميل الإعدادات....
+        ///   Looks up a localized string similar to تحميل الإعدادات....
         /// </summary>
         public static string LoadingSettings {
             get {
                 return ResourceManager.GetString("LoadingSettings", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to جاري تحميل الإعدادات....
+        /// </summary>
+        public static string LoadingSettings_Duplicate_1_ {
+            get {
+                return ResourceManager.GetString("LoadingSettings_Duplicate[1]", resourceCulture);
             }
         }
         
