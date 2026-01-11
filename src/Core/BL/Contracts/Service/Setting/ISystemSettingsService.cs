@@ -36,9 +36,13 @@ public interface ISystemSettingsService
     /// Update setting value
     /// </summary>
     Task<bool> UpdateSettingAsync(SystemSettingKey key, string value, Guid updatedBy);
+	//Task<bool> UpdateSettingsBatchAsync(List<(SystemSettingKey Key, string Value)> settings, Guid updatedBy);
 
-    // Convenience methods for commonly used settings
-    Task<decimal> GetTaxRateAsync();
+	Task<bool> UpdateSettingsBatchAsync(
+	   List<(SystemSettingKey key, string value, SystemSettingDataType dataType, SystemSettingCategory category)> settings,
+	   Guid userId);
+	// Convenience methods for commonly used settings
+	Task<decimal> GetTaxRateAsync();
     Task<decimal> GetFreeShippingThresholdAsync();
     Task<bool> IsCashOnDeliveryEnabledAsync();
     Task<bool> IsMaintenanceModeAsync();

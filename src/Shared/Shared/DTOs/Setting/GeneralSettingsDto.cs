@@ -46,5 +46,12 @@ namespace Shared.DTOs.Setting
         [Phone(ErrorMessageResourceName = "InvalidPhone", ErrorMessageResourceType = typeof(ValidationResources))]
         [StringLength(25, ErrorMessageResourceName = "OutOfMaxLength", ErrorMessageResourceType = typeof(ValidationResources))]
         public string? WhatsAppNumber { get; set; }
-    }
+
+		[StringLength(10, ErrorMessageResourceName = "OutOfMaxLength", ErrorMessageResourceType = typeof(ValidationResources))]
+		public string? WhatsAppCode { get; set; }
+
+		[Required(ErrorMessageResourceName = "FieldRequired", ErrorMessageResourceType = typeof(ValidationResources))]
+		[StringLength(10, ErrorMessageResourceName = "OutOfMaxLength", ErrorMessageResourceType = typeof(ValidationResources))]
+		public string PhoneCode { get; set; } = "+20";
+	}
 }

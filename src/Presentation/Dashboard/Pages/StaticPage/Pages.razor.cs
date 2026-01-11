@@ -1,20 +1,22 @@
-﻿using Dashboard.Contracts.Page;
-using Microsoft.AspNetCore.Components;
+﻿using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 using Shared.DTOs.Page;
 using Shared.GeneralModels;
+using Resources;
 using Shared.GeneralModels.SearchCriteriaModels;
+using Common.Enumerations;
+using Dashboard.Contracts.Page;
 
-namespace Dashboard.Pages.Content.Pages
+namespace UI.Pages.StaticPage
 {
-    public partial class Index : BaseListPage<PageDto>
+    public partial class Pages : BaseListPage<PageDto>
     {
         [Inject] private IPageService PageService { get; set; } = null!;
 
         // Abstract properties implementation
         protected override string EntityName => "Pages";
-        protected override string AddRoute => $"/content/pages/{Guid.Empty}";
-        protected override string EditRouteTemplate => "/content/pages/{id}";
+        protected override string AddRoute => "/static-page-modal";
+        protected override string EditRouteTemplate => "/static-page-modal/{id}";
         protected override string SearchEndpoint => "api/Page/search";
 
         // Export columns configuration
@@ -33,44 +35,6 @@ namespace Dashboard.Pages.Content.Pages
             return await PageService.GetAllAsync();
         }
 
-
-		//protected override async Task<ResponseModel<IEnumerable<PageDto>>> searchItems()
-		//{
-		//	// استدعاء Search مع Criteria فاضية عشان تجيب كل الداتا
-		//	var searchCriteria = new BaseSearchCriteriaModel
-		//	{
-		//		PageNumber = currentPage,
-		//		PageSize = searchModel.PageSize,
-		//		SearchTerm = searchModel.SearchTerm,
-		//		SortBy = searchModel.SortBy,
-		//		SortDirection = searchModel.SortDirection
-		//	};
-
-		//	var result = await PageService.SearchAsync(searchCriteria);
-
-		//	if (result.Success && result.Data != null)
-		//	{
-		//		// تحديث معلومات الـ Pagination
-		//		totalRecords = result.Data.TotalCount;
-		//		totalPages = result.Data.TotalPages;
-
-		//		return new ResponseModel<IEnumerable<PageDto>>
-		//		{
-		//			Success = true,
-		//			Message = result.Message,
-		//			Data = result.Data.Items
-		//		};
-		//	}
-
-		//	return new ResponseModel<IEnumerable<PageDto>>
-		//	{
-		//		Success = false,
-		//		Message = result.Message ?? "Failed to retrieve data",
-		//		Data = Enumerable.Empty<PageDto>()
-		//	};
-		//}
-		
-        
         protected override async Task<ResponseModel<bool>> DeleteItemAsync(Guid id)
         {
             return await PageService.DeleteAsync(id);
@@ -98,19 +62,16 @@ namespace Dashboard.Pages.Content.Pages
 
                 await JSRuntime.InvokeVoidAsync("showPreviewModal", page.Title, content);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 await ShowErrorNotification("Error", "Failed to preview page");
             }
         }
-		protected void Add()
-		{
-			Navigation.NavigateTo("/pages/add");
-		}
-		// Navigation methods
-		protected void EditPage(PageDto page)
+
+        // Navigation methods
+        protected void EditPage(PageDto page)
         {
-            Navigation.NavigateTo($"/pages/{page.Id}");
+            Navigation.NavigateTo($"/static-page-modal/{page.Id}");
         }
 
         protected void ViewPage(PageDto page)
@@ -125,8 +86,8 @@ namespace Dashboard.Pages.Content.Pages
             if (string.IsNullOrEmpty(content))
                 return "-";
 
-            return content.Length <= maxLength
-                ? content
+            return content.Length <= maxLength 
+                ? content 
                 : content.Substring(0, maxLength) + "...";
         }
 
@@ -137,11 +98,11 @@ namespace Dashboard.Pages.Content.Pages
             if (page == null) return;
 
             var confirmed = await ShowConfirmDialog(
-                "Delete Page",
+                "Delete Page", 
                 $"Are you sure you want to delete the page '{page.Title}'? This action cannot be undone.",
                 "Delete",
                 "Cancel");
-
+            
             if (confirmed)
             {
                 var result = await DeleteItemAsync(id);

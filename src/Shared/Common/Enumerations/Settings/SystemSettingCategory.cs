@@ -9,7 +9,7 @@ namespace Common.Enumerations.Settings
     public enum SystemSettingCategory
     {
         [Description("Tax")]
-        Tax = 1,
+        Tax = 1, //<<<
 
         [Description("Shipping")]
         Shipping = 2,
@@ -27,6 +27,11 @@ namespace Common.Enumerations.Settings
         Notification = 6,
 
         [Description("Security")]
-        Security = 7
-    }
+        Security = 7,
+
+        [Description("Refund Allowed Days")]
+		RefundAllowedDays = 8
+
+        
+	}
 }
