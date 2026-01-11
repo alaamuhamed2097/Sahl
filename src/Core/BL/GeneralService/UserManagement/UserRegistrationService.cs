@@ -9,6 +9,7 @@ using Domains.Entities.ECommerceSystem.Vendor;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Resources;
+using Shared.DTOs.User;
 using Shared.DTOs.User.Admin;
 using Shared.DTOs.User.Customer;
 using Shared.DTOs.Vendor;
@@ -26,7 +27,7 @@ public class UserRegistrationService : IUserRegistrationService
     private readonly IUserAuthenticationService _userAuthenticationService;
     private readonly IBaseMapper _mapper;
     private readonly Serilog.ILogger _logger;
-    private readonly IVendorRepository _vendorRepository;
+    private readonly IVendorManagementRepository _vendorRepository;
 
     public UserRegistrationService(UserManager<ApplicationUser> userManager,
         IFileUploadService fileUploadService,
@@ -34,7 +35,7 @@ public class UserRegistrationService : IUserRegistrationService
         IImageProcessingService imageProcessingService,
         IBaseMapper mapper,
         Serilog.ILogger logger,
-        IVendorRepository vendorRepository)
+        IVendorManagementRepository vendorRepository)
     {
         _userManager = userManager;
         _fileUploadService = fileUploadService;
@@ -277,59 +278,6 @@ public class UserRegistrationService : IUserRegistrationService
         }
     }
 
-    #region Helper functions
-    private async Task<string> SaveImage(string image)
-    {
-        // Check if the file is null or empty
-        if (image == null || image.Length == 0)
-        {
-            throw new ValidationException(ValidationResources.ImageRequired);
-        }
-
-        // Validate the file
-        var imageValidation = _fileUploadService.ValidateFile(image);
-        if (!imageValidation.isValid)
-        {
-            throw new ValidationException(imageValidation.errorMessage);
-        }
-
-        try
-        {
-            // Convert the file to byte array
-            var imageBytes = await _fileUploadService.GetFileBytesAsync(image);
-
-            // Resize the image
-            var resizedImage = _imageProcessingService.ResizeImagePreserveAspectRatio(imageBytes, 800, 600);
-
-            // Convert the resized image to WebP format
-            var webpImage = _imageProcessingService.ConvertToWebP(resizedImage);
-
-            // Upload the WebP image to the specified location
-            var imagePath = await _fileUploadService.UploadFileAsync(webpImage, "Images/IdAndPassports");
-
-            // Return the path of the uploaded image
-            return imagePath;
-        }
-        catch (Exception ex)
-        {
-            throw new ApplicationException(ValidationResources.ErrorProcessingImage, ex);
-        }
-    }
-
-    private string GetUserFriendlyErrorMessage(string errorCode)
-    {
-        return errorCode switch
-        {
-            "DuplicateEmail" => UserResources.Email_Duplicate,
-            "DuplicateUserName" => UserResources.UserName_Duplicate,
-            "InvalidEmail" => UserResources.Invalid_Email,
-            "UserNameAlreadyTaken" => UserResources.UserName_Duplicate,
-            "PasswordTooShort" => UserResources.Password_Too_Short,
-            _ => NotifiAndAlertsResources.SaveFailed
-        };
-    }
-    #endregion
-
     public async Task<ServiceResult<VendorRegistrationResponseDto>> RegisterVendorAsync(
         RegisterVendorRequestDto request, string clientType)
     {
@@ -448,8 +396,12 @@ public class UserRegistrationService : IUserRegistrationService
                 ? request.Email
                 : username;
 
-            var signInResult = await _userAuthenticationService.EmailOrPhoneNumberSignInAsync(
-                signInIdentifier, request.Password, clientType);
+            var signInResult = await _userAuthenticationService.VendorSignInAsync(
+                new EmailLoginDto
+                {
+                    Email = signInIdentifier,
+                    Password = request.Password
+                }, clientType);
 
             if (!signInResult.Success)
             {
@@ -493,4 +445,57 @@ public class UserRegistrationService : IUserRegistrationService
             };
         }
     }
+
+    #region Helper functions
+    private async Task<string> SaveImage(string image)
+    {
+        // Check if the file is null or empty
+        if (image == null || image.Length == 0)
+        {
+            throw new ValidationException(ValidationResources.ImageRequired);
+        }
+
+        // Validate the file
+        var imageValidation = _fileUploadService.ValidateFile(image);
+        if (!imageValidation.isValid)
+        {
+            throw new ValidationException(imageValidation.errorMessage);
+        }
+
+        try
+        {
+            // Convert the file to byte array
+            var imageBytes = await _fileUploadService.GetFileBytesAsync(image);
+
+            // Resize the image
+            var resizedImage = _imageProcessingService.ResizeImagePreserveAspectRatio(imageBytes, 800, 600);
+
+            // Convert the resized image to WebP format
+            var webpImage = _imageProcessingService.ConvertToWebP(resizedImage);
+
+            // Upload the WebP image to the specified location
+            var imagePath = await _fileUploadService.UploadFileAsync(webpImage, "Images/IdAndPassports");
+
+            // Return the path of the uploaded image
+            return imagePath;
+        }
+        catch (Exception ex)
+        {
+            throw new ApplicationException(ValidationResources.ErrorProcessingImage, ex);
+        }
+    }
+
+    private string GetUserFriendlyErrorMessage(string errorCode)
+    {
+        return errorCode switch
+        {
+            "DuplicateEmail" => UserResources.Email_Duplicate,
+            "DuplicateUserName" => UserResources.UserName_Duplicate,
+            "InvalidEmail" => UserResources.Invalid_Email,
+            "UserNameAlreadyTaken" => UserResources.UserName_Duplicate,
+            "PasswordTooShort" => UserResources.Password_Too_Short,
+            _ => NotifiAndAlertsResources.SaveFailed
+        };
+    }
+    #endregion
 }

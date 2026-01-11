@@ -1,53 +1,47 @@
-﻿using Common.Enumerations.VendorType;
-using Resources;
+﻿using Common.Enumerations.IdentificationType;
+using Common.Enumerations.VendorStatus;
+using Common.Enumerations.VendorType;
 using Shared.DTOs.Base;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Shared.DTOs.Vendor
 {
-	public class VendorDto : BaseDto
-	{
-		public string? UserId { get; set; }
+    public class VendorDto : BaseDto
+    {
+        // Administrator's name
+        public string UserId { get; set; } = null!;
+        public string AdministratorFirstName { get; set; } = null!;
+        public string AdministratorLastName { get; set; } = null!;
+        public DateOnly BirthDate { get; set; }
 
-		public VendorType VendorType { get; set; }
+        // Identification Details
+        public IdentificationType IdentificationType { get; set; }
+        public string IdentificationNumber { get; set; } = null!;
+        public string IdentificationImageFrontPath { get; set; } = null!;
+        public string IdentificationImageBackPath { get; set; } = null!;
 
-		[Required(ErrorMessageResourceName = "FieldRequired", ErrorMessageResourceType = typeof(ValidationResources))]
-		[StringLength(20, MinimumLength = 2, ErrorMessageResourceName = "OutOfMaxLength", ErrorMessageResourceType = typeof(ValidationResources))]
-		[RegularExpression(@"^\p{L}+$", ErrorMessageResourceName = "InvalidFormat", ErrorMessageResourceType = typeof(ValidationResources))]
+        // Business Information
+        public VendorType VendorType { get; set; }
+        public string StoreName { get; set; } = null!;
+        public bool IsRealEstateRegistered { get; set; }
 
-		public string? CompanyName { get; set; }
-		[Required(ErrorMessageResourceName = "FieldRequired", ErrorMessageResourceType = typeof(ValidationResources))]
-		[StringLength(20, MinimumLength = 2, ErrorMessageResourceName = "OutOfMaxLength", ErrorMessageResourceType = typeof(ValidationResources))]
-		[RegularExpression(@"^\p{L}+$", ErrorMessageResourceName = "InvalidFormat", ErrorMessageResourceType = typeof(ValidationResources))]
+        // Contact Information
+        public string PhoneCode { get; set; } = null!;
+        public string PhoneNumber { get; set; } = null!;
 
-		public string? ContactName { get; set; }
-		/// </summary>
-		[Required(ErrorMessageResourceName = "FieldRequired", ErrorMessageResourceType = typeof(ValidationResources))]
-		[StringLength(3, MinimumLength = 3, ErrorMessageResourceName = "OutOfMaxLength", ErrorMessageResourceType = typeof(ValidationResources))]
-		public string? VendorCode { get; set; }
+        public string Address { get; set; } = null!;
+        public string PostalCode { get; set; } = null!;
+        public Guid CityId { get; set; }
 
-		
-		public string? Address { get; set; }
-		/// </summary>
-		[Required(ErrorMessageResourceName = "FieldRequired", ErrorMessageResourceType = typeof(ValidationResources))]
-		[StringLength(3, MinimumLength = 3, ErrorMessageResourceName = "OutOfMaxLength", ErrorMessageResourceType = typeof(ValidationResources))]
+        // Additional Info
+        public string? Notes { get; set; }
+        public decimal? AverageRating { get; set; }
+        public VendorStatus Status { get; set; } = VendorStatus.Pending;
 
-		public string? PostalCode { get; set; }
+        public DateTime RegistrationDate => CreatedDateUtc;
+        public string AdministratorFullName => AdministratorFirstName + ' ' + AdministratorLastName;
 
-		
-		public string? CommercialRegister { get; set; }
-
-		public bool VATRegistered { get; set; }
-		public string? TaxNumber { get; set; }
-
-	
-		public string? Notes { get; set; }
-		public bool IsActive { get; set; }
-		public byte? Rating { get; set; }
-	}
+        [NotMapped]
+        public DateTime CreatedDateUtc { get; set; }
+    }
 }

@@ -40,19 +40,19 @@ namespace Dashboard.Pages.UserManagement.Vendors
                 Model = new VendorDto();
                 if (result.Data is not null)
                 {
-                    Model.CompanyName = result.Data.CompanyName;
-                    Model.ContactName = result.Data.ContactName;
-                    Model.CommercialRegister = result.Data.CommercialRegister;
-                    Model.TaxNumber = result.Data.TaxNumber;
-                    Model.Address = result.Data.Address;
-                    Model.VendorCode = result.Data.VendorCode;
-                    Model.IsActive = result.Data.IsActive;
-                    Model.Notes = result.Data.Notes;
-                    Model.PostalCode = result.Data.PostalCode;
-                    Model.Rating = result.Data.Rating;
-                    Model.VATRegistered = result.Data.VATRegistered;
-                    Model.VendorType = result.Data.VendorType;
-				}
+                    //Model.CompanyName = result.Data.CompanyName;
+                    //Model.ContactName = result.Data.ContactName;
+                    //Model.CommercialRegister = result.Data.CommercialRegister;
+                    //Model.TaxNumber = result.Data.TaxNumber;
+                    //Model.Address = result.Data.Address;
+                    //Model.VendorCode = result.Data.VendorCode;
+                    //Model.IsActive = result.Data.IsActive;
+                    //Model.Notes = result.Data.Notes;
+                    //Model.PostalCode = result.Data.PostalCode;
+                    //Model.Rating = result.Data.Rating;
+                    //Model.VATRegistered = result.Data.VATRegistered;
+                    //Model.VendorType = result.Data.VendorType;
+                }
                 StateHasChanged();
             }
             catch (Exception ex)

@@ -768,9 +768,6 @@
   <data name="Vendors" xml:space="preserve">
     <value>Vendors</value>
   </data>
-  <data name="CompanyName" xml:space="preserve">
-    <value>Company Name</value>
-  </data>
   <data name="ContactName" xml:space="preserve">
     <value>Contact Name</value>
   </data>
@@ -866,6 +863,62 @@
   </data>
   <data name="WithdrawalMethods" xml:space="preserve">
     <value>Withdrawal Methods</value>
+  <data name="AttributeValues" xml:space="preserve">
+    <value>Attribute Values</value>
+  </data>
+  <data name="DefaultPricingNote" xml:space="preserve">
+    <value>Default pricing will be used if no variant prices are set.</value>
+  </data>
+  <data name="MaximumPrice" xml:space="preserve">
+    <value>Maximum Price</value>
+  </data>
+  <data name="MinimumPrice" xml:space="preserve">
+    <value>Minimum Price</value>
+  </data>
+  <data name="BasePrice" xml:space="preserve">
+    <value>Base Price</value>
+  </data>
+  <data name="StockKeepingUnit" xml:space="preserve">
+    <value>Stock Keeping Unit (SKU)</value>
+  </data>
+  <data name="SetDefaultPricing" xml:space="preserve">
+    <value>Set Default Pricing</value>
+  </data>
+  <data name="PricingInformation" xml:space="preserve">
+    <value>Pricing Information</value>
+  </data>
+  <data name="Barcode" xml:space="preserve">
+    <value>Barcode</value>
+  </data>
+  <data name="ConfigureAttributes" xml:space="preserve">
+    <value>Configure attributes for this product</value>
+  </data>
+  <data name="AffectsPricingListTypeOnly" xml:space="preserve">
+    <value>Affects Pricing is only available for List type attributes</value>
+  </data>
+  <data name="NoWithdrawalMethodsAvailable" xml:space="preserve">
+    <value>No Withdrawal Methods Available</value>
+  </data>
+  <data name="WithdrawalMethods" xml:space="preserve">
+    <value>Withdrawal Methods</value>
+  </data>
+  <data name="HomePageSlider" xml:space="preserve">
+    <value>Home Page Slider</value>
+  </data>
+  <data name="DisplayOrder" xml:space="preserve">
+    <value>Display Order</value>
+  </data>
+  <data name="SliderImage" xml:space="preserve">
+    <value>Slider Image</value>
+  </data>
+  <data name="SliderTitle" xml:space="preserve">
+    <value>Slider Title</value>
+  </data>
+  <data name="BannerDuration" xml:space="preserve">
+    <value>Banner Duration</value>
+  </data>
+  <data name="StoreName" xml:space="preserve">
+    <value>Store Name</value>
   </data>
   <data name="Sales" xml:space="preserve">
     <value>Sales</value>

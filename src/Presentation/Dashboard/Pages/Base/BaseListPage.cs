@@ -78,16 +78,16 @@ public abstract partial class BaseListPage<TDto> : ComponentBase, IDisposable
         StateHasChanged();
     }
 
-    #endregion
+	#endregion
 
-    #region Navigation
+	#region Navigation
 
-    protected virtual void Add()
-    {
-        Navigation.NavigateTo("HomePageSlider/Add");
-    }
+	protected virtual void Add()
+	{
+		Navigation.NavigateTo(AddRoute); 
+	}
 
-    protected virtual async Task Edit(TDto item)
+	protected virtual async Task Edit(TDto item)
     {
         var id = await GetItemId(item);
         var editRoute = EditRouteTemplate.Replace("{id}", id.ToString());

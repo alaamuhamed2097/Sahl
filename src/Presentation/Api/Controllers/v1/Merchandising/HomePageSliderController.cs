@@ -15,7 +15,7 @@ namespace Api.Controllers.v1.Merchandising
     [ApiController]
     [ApiVersion("1.0")]
     [Route("api/v{version:apiVersion}/[controller]")]
-    [Authorize(Roles = nameof(UserRole.Admin))]
+   
     public class HomePageSliderController : BaseController
     {
         private readonly IHomePageSliderService _homePageSliderService;

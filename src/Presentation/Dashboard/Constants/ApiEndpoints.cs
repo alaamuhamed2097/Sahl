@@ -156,22 +156,21 @@
             public const string Delete = "api/v1/Admin/delete";
             public const string Search = "api/v1/Admin/search";
         }
+
         public static class Vendor
         {
-            public const string Get = "api/v1/Vendor";
-            public const string Create = "api/v1/Vendor";
-            public const string Update = "api/v1/Vendor";
-            public const string Delete = "api/v1/Vendor/delete";
+            public const string Get = "api/v1/VendorManagement";
+            public const string Create = "api/v1/VendorManagement";
+            public const string Update = "api/v1/VendorManagement";
+            public const string Delete = "api/v1/VendorManagement/delete";
 
-            public const string Search = "api/v1/Vendor/search";
-            public const string FindById = "api/v1/Vendor";
-            public const string GetForSelect = "api/v1/Vendor/forSelect";
-            public const string ChangeStatus = "api/v1/Vendor/changeStatus";
-            public const string GetUserStatus = "api/v1/Vendor/getStatus";
-            public const string GetVendorInfo = "api/v1/Vendor/VendorInfo";
+            public const string Search = "api/v1/VendorManagement/search";
+            public const string FindById = "api/v1/VendorManagement";
+            public const string GetForSelect = "api/v1/VendorManagement/forSelect";
+            public const string ChangeStatus = "api/v1/VendorManagement/changeStatus";
+            public const string GetUserStatus = "api/v1/VendorManagement/getStatus";
+            public const string GetVendorInfo = "api/v1/VendorManagement/VendorInfo";
         }
-
-
 
         public static class VendorRegistration
         {
@@ -309,13 +308,18 @@
             public const string Get = "api/v1/Warehouse";
             public const string GetActive = "api/v1/Warehouse/active";
             public const string Search = "api/v1/Warehouse/search";
+            public const string SearchVendor = "api/v1/Warehouse/search-vendor";
+            public const string withUsers = "api/v1/Warehouse/with-users";
             public const string Save = "api/v1/Warehouse/save";
             public const string Delete = "api/v1/Warehouse/delete";
             public const string ToggleStatus = "api/v1/Warehouse/toggle-status";
-        }
+			public const string GetVendors = "api/v1/Warehouse/vendors"; 
+			public const string IsMultiVendorEnabled = "api/v1/Warehouse/multi-vendor-enabled";
 
-        // Inventory Movement endpoints
-        public static class InventoryMovement
+		}
+
+		// Inventory Movement endpoints
+		public static class InventoryMovement
         {
             public const string Get = "api/v1/InventoryMovement";
             public const string GetById = "api/v1/InventoryMovement";

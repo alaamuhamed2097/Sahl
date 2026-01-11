@@ -382,7 +382,7 @@
     <value>ضمن التصنيف المميز</value>
   </data>
   <data name="CurrentPosition" xml:space="preserve">
-    <value>الموضع الحالي</value>
+    <value>الموقع الحالي</value>
   </data>
   <data name="Level" xml:space="preserve">
     <value>المستوى</value>
@@ -457,10 +457,10 @@
     <value>التحكم في الإعلانات</value>
   </data>
   <data name="MainBanners" xml:space="preserve">
-    <value>البنرات الرئيسية</value>
+    <value>البانرات الرئيسية</value>
   </data>
   <data name="MainBanner" xml:space="preserve">
-    <value>البنر الرئيسي</value>
+    <value>البانر الرئيسي</value>
   </data>
   <data name="AdvertViews" xml:space="preserve">
     <value>مشاهدات الإعلان</value>
@@ -768,9 +768,6 @@
   <data name="Vendors" xml:space="preserve">
     <value>البائعون</value>
   </data>
-  <data name="CompanyName" xml:space="preserve">
-    <value>اسم الشركة</value>
-  </data>
   <data name="ContactName" xml:space="preserve">
     <value>اسم المسؤول</value>
   </data>
@@ -869,5 +866,32 @@
   </data>
   <data name="Sales" xml:space="preserve">
     <value>المبيعات</value>
+  </data>
+  <data name="HomePageSlider" xml:space="preserve">
+    <value>سلايدر الصفحة الرئيسية</value>
+  </data>
+  <data name="DisplayOrder" xml:space="preserve">
+    <value>ترتيب العرض</value>
+  </data>
+  <data name="SliderImage" xml:space="preserve">
+    <value>صورة السلايدر</value>
+  </data>
+  <data name="SliderTitle" xml:space="preserve">
+    <value>عنوان السلايدر</value>
+  </data>
+  <data name="BannerDuration" xml:space="preserve">
+    <value>مدة البانر</value>
+  </data>
+  <data name="StoreName" xml:space="preserve">
+    <value>اسم المتجر</value>
+    <comment>Store Name</comment>
+  </data>
+  <data name="NoRating" xml:space="preserve">
+    <value>لا يوجد تقييم</value>
+    <comment>No Rating</comment>
+  </data>
+  <data name="ComingSoon" xml:space="preserve">
+    <value>قريباً</value>
+    <comment>Coming Soon</comment>
   </data>
 </root>

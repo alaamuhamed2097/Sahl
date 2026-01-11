@@ -19,7 +19,7 @@ namespace Resources {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "18.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "17.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     public class ECommerceResources {
@@ -511,6 +511,15 @@ namespace Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to قريباً.
+        /// </summary>
+        public static string ComingSoon {
+            get {
+                return ResourceManager.GetString("ComingSoon", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to السجل التجاري.
         /// </summary>
         public static string CommercialRegister {
@@ -525,15 +534,6 @@ namespace Resources {
         public static string CommissionRate {
             get {
                 return ResourceManager.GetString("CommissionRate", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to اسم الشركة.
-        /// </summary>
-        public static string CompanyName {
-            get {
-                return ResourceManager.GetString("CompanyName", resourceCulture);
             }
         }
         
@@ -1339,6 +1339,15 @@ namespace Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to لا يوجد تقييم.
+        /// </summary>
+        public static string NoRating {
+            get {
+                return ResourceManager.GetString("NoRating", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to ملاحظات.
         /// </summary>
         public static string Notes {
@@ -2046,6 +2055,15 @@ namespace Resources {
         public static string StockStatus {
             get {
                 return ResourceManager.GetString("StockStatus", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to اسم المتجر.
+        /// </summary>
+        public static string StoreName {
+            get {
+                return ResourceManager.GetString("StoreName", resourceCulture);
             }
         }
         

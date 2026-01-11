@@ -1321,6 +1321,16 @@
   <data name="ConfirmResetSettings" xml:space="preserve">
     <value>هل أنت متأكد من إعادة تعيين جميع الإعدادات إلى القيم الافتراضية؟ لا يمكن التراجع عن هذا الإجراء.</value>
 </data>
+	<data name="Warehouses" xml:space="preserve">
+    <value>المخزن</value>
+</data>
+	<data name="ManageReviews" xml:space="preserve">
+    <value>ادارة التقييمات</value>
+</data>
+	<data name="Sliders" xml:space="preserve">
+    <value>عرض الهوم</value>
+</data>
+	
   <data name="WithdrawalMethod" xml:space="preserve">
     <value>طريقة السحب</value>
   </data>
