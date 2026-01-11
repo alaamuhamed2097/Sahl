@@ -15,7 +15,7 @@ namespace DAL.Configurations
             builder.Property(x => x.Id)
                 .HasDefaultValueSql("NEWID()");
 
-            builder.Property(x => x.ShipmentNumber)
+            builder.Property(x => x.Number)
                 .IsRequired();
 
             // Configure relationship with shipment items
@@ -28,7 +28,7 @@ namespace DAL.Configurations
             builder.HasIndex(e => e.OrderId).HasDatabaseName("IX_OrderShipments_OrderId");
             builder.HasIndex(e => e.VendorId).HasDatabaseName("IX_OrderShipments_VendorId");
             builder.HasIndex(e => e.ShipmentStatus).HasDatabaseName("IX_OrderShipments_Status");
-            builder.HasIndex(e => e.ShipmentNumber).HasDatabaseName("IX_OrderShipments_Number");
+            builder.HasIndex(e => e.Number).HasDatabaseName("IX_OrderShipments_Number");
         }
     }
 }

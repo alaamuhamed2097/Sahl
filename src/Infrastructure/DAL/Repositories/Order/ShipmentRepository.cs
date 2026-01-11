@@ -1,4 +1,5 @@
-﻿using DAL.ApplicationContext;
+﻿using BL.Contracts.GeneralService;
+using DAL.ApplicationContext;
 using DAL.Contracts.Repositories.Order;
 using DAL.Models;
 using Domains.Entities.Order.Shipping;
@@ -12,8 +13,8 @@ namespace DAL.Repositories.Order
     /// </summary>
     public class ShipmentRepository : TableRepository<TbOrderShipment>, IShipmentRepository
     {
-        public ShipmentRepository(ApplicationDbContext dbContext, ILogger logger)
-            : base(dbContext, logger)
+        public ShipmentRepository(ApplicationDbContext dbContext, ICurrentUserService currentUserService, ILogger logger)
+            : base(dbContext, currentUserService, logger)
         {
         }
 
@@ -33,6 +34,7 @@ namespace DAL.Repositories.Order
                             .ThenInclude(a => a.City)
                                 .ThenInclude(c => c.State) // ✅ State instead of Governorate
                     .Include(s => s.Vendor)
+                        .ThenInclude(v => v.User)
                     .Include(s => s.Warehouse)
                     .Include(s => s.ShippingCompany)
                     .Include(s => s.Items)
@@ -59,6 +61,7 @@ namespace DAL.Repositories.Order
                     .AsNoTracking()
                     .Where(s => s.OrderId == orderId && !s.IsDeleted)
                     .Include(s => s.Vendor)
+                        .ThenInclude(v => v.User)
                     .Include(s => s.Warehouse)
                     .Include(s => s.ShippingCompany)
                     .Include(s => s.Items)

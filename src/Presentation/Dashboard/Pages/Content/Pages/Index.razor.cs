@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 using Shared.DTOs.Page;
 using Shared.GeneralModels;
+using Shared.GeneralModels.SearchCriteriaModels;
 
 namespace Dashboard.Pages.Content.Pages
 {
@@ -32,6 +33,44 @@ namespace Dashboard.Pages.Content.Pages
             return await PageService.GetAllAsync();
         }
 
+
+		//protected override async Task<ResponseModel<IEnumerable<PageDto>>> searchItems()
+		//{
+		//	// استدعاء Search مع Criteria فاضية عشان تجيب كل الداتا
+		//	var searchCriteria = new BaseSearchCriteriaModel
+		//	{
+		//		PageNumber = currentPage,
+		//		PageSize = searchModel.PageSize,
+		//		SearchTerm = searchModel.SearchTerm,
+		//		SortBy = searchModel.SortBy,
+		//		SortDirection = searchModel.SortDirection
+		//	};
+
+		//	var result = await PageService.SearchAsync(searchCriteria);
+
+		//	if (result.Success && result.Data != null)
+		//	{
+		//		// تحديث معلومات الـ Pagination
+		//		totalRecords = result.Data.TotalCount;
+		//		totalPages = result.Data.TotalPages;
+
+		//		return new ResponseModel<IEnumerable<PageDto>>
+		//		{
+		//			Success = true,
+		//			Message = result.Message,
+		//			Data = result.Data.Items
+		//		};
+		//	}
+
+		//	return new ResponseModel<IEnumerable<PageDto>>
+		//	{
+		//		Success = false,
+		//		Message = result.Message ?? "Failed to retrieve data",
+		//		Data = Enumerable.Empty<PageDto>()
+		//	};
+		//}
+		
+        
         protected override async Task<ResponseModel<bool>> DeleteItemAsync(Guid id)
         {
             return await PageService.DeleteAsync(id);
@@ -64,11 +103,14 @@ namespace Dashboard.Pages.Content.Pages
                 await ShowErrorNotification("Error", "Failed to preview page");
             }
         }
-
-        // Navigation methods
-        protected void EditPage(PageDto page)
+		protected void Add()
+		{
+			Navigation.NavigateTo("/pages/add");
+		}
+		// Navigation methods
+		protected void EditPage(PageDto page)
         {
-            Navigation.NavigateTo($"/static-page-modal/{page.Id}");
+            Navigation.NavigateTo($"/pages/{page.Id}");
         }
 
         protected void ViewPage(PageDto page)

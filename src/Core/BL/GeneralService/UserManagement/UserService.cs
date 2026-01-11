@@ -1,10 +1,10 @@
 ﻿using AutoMapper;
 using BL.Contracts.GeneralService.UserManagement;
 using Common.Enumerations.User;
+using Common.Filters;
 using DAL.Models;
 using Microsoft.AspNetCore.Identity;
 using Shared.DTOs.User.Base;
-using Shared.GeneralModels.SearchCriteriaModels;
 
 namespace BL.GeneralService.UserManagement;
 

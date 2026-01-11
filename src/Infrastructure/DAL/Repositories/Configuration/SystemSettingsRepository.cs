@@ -1,4 +1,5 @@
-﻿using Common.Enumerations.Settings;
+﻿using BL.Contracts.GeneralService;
+using Common.Enumerations.Settings;
 using DAL.ApplicationContext;
 using DAL.Contracts.Repositories.Configuration;
 using Domains.Entities.Setting;
@@ -14,7 +15,8 @@ public class SystemSettingsRepository : TableRepository<TbSystemSettings>, ISyst
 {
     private readonly ApplicationDbContext _context;
 
-    public SystemSettingsRepository(ApplicationDbContext context, ILogger logger) : base(context, logger)
+    public SystemSettingsRepository(ApplicationDbContext context, ICurrentUserService currentUserService, ILogger logger)
+        : base(context, currentUserService, logger)
     {
         _context = context ?? throw new ArgumentNullException(nameof(context));
     }

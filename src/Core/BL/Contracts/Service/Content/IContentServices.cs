@@ -1,6 +1,6 @@
+using Common.Filters;
 using DAL.Models;
 using Shared.DTOs.Content;
-using Shared.GeneralModels.SearchCriteriaModels;
 
 namespace BL.Contracts.Service.Content;
 

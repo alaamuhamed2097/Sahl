@@ -1,7 +1,7 @@
 using DAL.Models;
 using Shared.DTOs.Notification;
-using Shared.GeneralModels.SearchCriteriaModels;
 using Common.Enumerations.Notification;
+using Common.Filters;
 
 namespace BL.Contracts.Service.Notification;
 

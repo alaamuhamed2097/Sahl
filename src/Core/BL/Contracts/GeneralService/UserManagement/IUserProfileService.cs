@@ -1,10 +1,10 @@
 ﻿using Common.Enumerations.User;
+using Common.Filters;
 using DAL.Models;
 using Shared.DTOs.User;
 using Shared.DTOs.User.Admin;
 using Shared.GeneralModels;
 using Shared.GeneralModels.ResultModels;
-using Shared.GeneralModels.SearchCriteriaModels;
 
 namespace BL.Contracts.GeneralService.UserManagement;
 

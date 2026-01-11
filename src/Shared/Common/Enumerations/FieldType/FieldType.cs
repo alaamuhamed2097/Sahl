@@ -8,6 +8,8 @@
         Date = 4,
         CheckBox = 5,
         List = 6,
-        MultiSelectList = 7
+        MultiSelectList = 7,
+        Email = 8,
+        PhoneNumber = 9,
     }
 }

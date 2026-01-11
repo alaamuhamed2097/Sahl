@@ -2,6 +2,7 @@
 using BL.Contracts.IMapper;
 using BL.Contracts.Service.ShippingCompny;
 using BL.Services.Base;
+using Common.Filters;
 using DAL.Contracts.Repositories;
 using DAL.Models;
 using Domains.Entities.Order.Shipping;
@@ -9,7 +10,6 @@ using Microsoft.AspNetCore.Hosting;
 using Resources;
 using Serilog;
 using Shared.DTOs.ECommerce;
-using Shared.GeneralModels.SearchCriteriaModels;
 using System.ComponentModel.DataAnnotations;
 using System.Linq.Expressions;
 using System.Text.RegularExpressions;

@@ -1,12 +1,12 @@
 using BL.Contracts.IMapper;
 using BL.Contracts.Service.Location;
 using BL.Services.Base;
+using Common.Filters;
 using DAL.Contracts.Repositories;
 using DAL.Models;
 using Domains.Entities.Location;
 using Resources;
 using Shared.DTOs.Location;
-using Shared.GeneralModels.SearchCriteriaModels;
 using System.Linq.Expressions;
 
 namespace BL.Services.Location;
@@ -76,5 +76,14 @@ public class CityService : BaseService<TbCity, CityDto>, ICityService
         var dtoList = _mapper.MapList<TbCity, CityDto>(entitiesList.Items);
 
         return new PagedResult<CityDto>(dtoList, entitiesList.TotalRecords);
+    }
+
+    public async Task<IEnumerable<CityDto>> GetByStateIdAsync(Guid stateId)
+    {
+        if (stateId == Guid.Empty)
+            throw new ArgumentException("State ID cannot be empty.", nameof(stateId));
+
+        var cities = await _baseRepository.GetAsync(x => !x.IsDeleted && x.StateId == stateId);
+        return _mapper.MapList<TbCity, CityDto>(cities);
     }
 }

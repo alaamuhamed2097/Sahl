@@ -205,7 +205,7 @@ namespace Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to العنوان بالعربية.
+        ///   Looks up a localized string similar to العنوان بالعربي.
         /// </summary>
         public static string ArabicTitle {
             get {
@@ -475,6 +475,33 @@ namespace Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to ترتيب العرض.
+        /// </summary>
+        public static string DisplayOrder {
+            get {
+                return ResourceManager.GetString("DisplayOrder", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to حدد الترتيب الذي سيظهر به هذا العنصر (1 = الأول).
+        /// </summary>
+        public static string DisplayOrderHint {
+            get {
+                return ResourceManager.GetString("DisplayOrderHint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to الموقع الحالي: {0} من {1}.
+        /// </summary>
+        public static string DisplayOrderStatus {
+            get {
+                return ResourceManager.GetString("DisplayOrderStatus", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to مطلق.
         /// </summary>
         public static string Divorced {
@@ -601,7 +628,7 @@ namespace Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to العنوان بالإنجليزية.
+        ///   Looks up a localized string similar to العنوان بالإنجليزي.
         /// </summary>
         public static string EnglishTitle {
             get {
@@ -1006,6 +1033,15 @@ namespace Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to سيتم إضافة {1} في الموقع {0}.
+        /// </summary>
+        public static string NewEntityOrderInfo {
+            get {
+                return ResourceManager.GetString("NewEntityOrderInfo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to كلمة المرور الجديدة.
         /// </summary>
         public static string NewPassword {
@@ -1078,6 +1114,24 @@ namespace Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to نوع الصفحة.
+        /// </summary>
+        public static string PageType {
+            get {
+                return ResourceManager.GetString("PageType", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to اختر التصنيف الخاص بهذه الصفحة. لا يمكن تغييره بعد الإنشاء..
+        /// </summary>
+        public static string PageTypeHint {
+            get {
+                return ResourceManager.GetString("PageTypeHint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to كلمة المرور.
         /// </summary>
         public static string Password {
@@ -1105,7 +1159,7 @@ namespace Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to الرجاء إدخال {0}.
+        ///   Looks up a localized string similar to أدخل {0}.
         /// </summary>
         public static string Placeholder {
             get {
@@ -1317,6 +1371,15 @@ namespace Resources {
         public static string SelectedMarketers {
             get {
                 return ResourceManager.GetString("SelectedMarketers", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to اختر نوع الصفحة.
+        /// </summary>
+        public static string SelectPageType {
+            get {
+                return ResourceManager.GetString("SelectPageType", resourceCulture);
             }
         }
         

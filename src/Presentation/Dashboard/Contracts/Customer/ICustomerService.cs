@@ -1,9 +1,9 @@
-﻿using Dashboard.Models.pagintion;
+﻿using Common.Filters;
+using Dashboard.Models.pagintion;
 using Shared.DTOs.Brand;
 using Shared.DTOs.Customer;
 using Shared.DTOs.Location;
 using Shared.GeneralModels;
-using Shared.GeneralModels.SearchCriteriaModels;
 
 namespace Dashboard.Contracts.Customer
 {

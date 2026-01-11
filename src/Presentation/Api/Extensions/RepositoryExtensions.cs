@@ -36,11 +36,13 @@ namespace Api.Extensions
             services.AddScoped<ICartRepository, CartRepository>();
             services.AddScoped<IOfferRepository, OfferRepository>();
             services.AddScoped<IOrderRepository, OrderRepository>();
+            services.AddScoped<IOrderPaymentRepository, OrderPaymentRepository>();
             services.AddScoped<IItemSearchRepository, ItemSearchRepository>();
 
             // Customer repositories
             services.AddScoped<ICustomerRepository, CustomerRepository>();
             services.AddScoped<ICustomerItemViewRepository, CustomerItemViewRepository>();
+            services.AddScoped<ICustomerRecommendedItemsRepository, CustomerRecommendedItemsRepository>();
             services.AddScoped<IWishlistRepository, WishlistRepository>();
 
             // Register repositories

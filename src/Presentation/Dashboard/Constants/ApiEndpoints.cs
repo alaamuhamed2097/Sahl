@@ -57,6 +57,14 @@
             public const string GetOrderNumber = "api/v1/Order/orderNumber";
         }
 
+        public static class WithdrawalMethod
+        {
+            public const string Get = "api/v1/WithdrawalMethod";
+            public const string Save = "api/v1/WithdrawalMethod/save";
+            public const string Delete = "api/v1/WithdrawalMethod/delete";
+            public const string Search = "api/v1/WithdrawalMethod/search";
+        }
+
         public static class Refund
         {
             public const string Get = "api/v1/Refund";
@@ -101,7 +109,9 @@
 
         public static class PaymentMethod
         {
-            public const string Get = "api/v1/PaymentMethod";
+            public const string GetAll = "api/v1/PaymentMethod/all";
+            public const string GetActive = "api/v1/PaymentMethod";
+            public const string GetById = "api/v1/PaymentMethod/{0}";
             public const string Save = "api/v1/PaymentMethod/save";
             public const string Delete = "api/v1/PaymentMethod/delete";
             public const string Search = "api/v1/PaymentMethod/search";
@@ -145,24 +155,24 @@
             public const string Delete = "api/v1/Admin/delete";
             public const string Search = "api/v1/Admin/search";
         }
-		public static class Vendor
-		{
-			public const string Get = "api/v1/Vendor";
-			public const string Create = "api/v1/Vendor";
-			public const string Update = "api/v1/Vendor";
-			public const string Delete = "api/v1/Vendor/delete";
+        public static class Vendor
+        {
+            public const string Get = "api/v1/Vendor";
+            public const string Create = "api/v1/Vendor";
+            public const string Update = "api/v1/Vendor";
+            public const string Delete = "api/v1/Vendor/delete";
 
-			public const string Search = "api/v1/Vendor/search";
-			public const string FindById = "api/v1/Vendor";
-			public const string GetForSelect = "api/v1/Vendor/forSelect";
-			public const string ChangeStatus = "api/v1/Vendor/changeStatus";
-			public const string GetUserStatus = "api/v1/Vendor/getStatus";
-			public const string GetVendorInfo = "api/v1/Vendor/VendorInfo";
-		}
-		
-		
+            public const string Search = "api/v1/Vendor/search";
+            public const string FindById = "api/v1/Vendor";
+            public const string GetForSelect = "api/v1/Vendor/forSelect";
+            public const string ChangeStatus = "api/v1/Vendor/changeStatus";
+            public const string GetUserStatus = "api/v1/Vendor/getStatus";
+            public const string GetVendorInfo = "api/v1/Vendor/VendorInfo";
+        }
 
-		public static class VendorRegistration
+
+
+        public static class VendorRegistration
         {
             public const string Register = "api/v1/VendorRegistration";
             public const string GetSponsor = "api/v1/VendorRegistration/getSponsor";
@@ -176,23 +186,23 @@
             public const string WithdrawPoints = "api/v1/VendorBusinessPoints/WithdrawPoints";
         }
 
-		public static class Customer
-		{
-			public const string Get = "api/v1/Customer";
-			public const string Create = "api/v1/Customer";
-			public const string Update = "api/v1/Customer";
-			public const string Delete = "api/v1/Customer/delete";
-			public const string Save = "api/v1/Customer/Save";
+        public static class Customer
+        {
+            public const string Get = "api/v1/Customer";
+            public const string Create = "api/v1/Customer";
+            public const string Update = "api/v1/Customer";
+            public const string Delete = "api/v1/Customer/delete";
+            public const string Save = "api/v1/Customer/Save";
 
-			public const string Search = "api/v1/Customer/search";
-			public const string FindById = "api/v1/Customer";
-			public const string GetForSelect = "api/v1/Customer/forSelect";
-			public const string ChangeStatus = "api/v1/Customer/changeStatus";
-			public const string GetUserStatus = "api/v1/Customer/getStatus";
-			public const string GetVendorInfo = "api/v1/Customer/VendorInfo";
-		}
+            public const string Search = "api/v1/Customer/search";
+            public const string FindById = "api/v1/Customer";
+            public const string GetForSelect = "api/v1/Customer/forSelect";
+            public const string ChangeStatus = "api/v1/Customer/changeStatus";
+            public const string GetUserStatus = "api/v1/Customer/getStatus";
+            public const string GetVendorInfo = "api/v1/Customer/VendorInfo";
+        }
 
-		public static class CouponCode
+        public static class CouponCode
         {
             public const string Get = "api/v1/CouponCode";
             public const string Save = "api/v1/CouponCode/save";
@@ -237,17 +247,38 @@
             public const string WithdrawelFeePersentage = "api/v1/Setting/withdrawelFeePersentage";
             public const string Update = "api/v1/Setting/update";
         }
+		public static class SystemSettings
+		{
+			private const string Base = "api/v1/SystemSettings";
 
-        public static class Page
+			// Get by type
+			public static string GetDecimal(int key) => $"{Base}/decimal/{key}";
+			public static string GetInt(int key) => $"{Base}/int/{key}";
+			public static string GetBool(int key) => $"{Base}/bool/{key}";
+			public static string GetString(int key) => $"{Base}/string/{key}";
+			public static string GetDateTime(int key) => $"{Base}/datetime/{key}";
+
+			// Update
+			public const string Update = $"{Base}/update";
+			public const string UpdateBatch = $"{Base}/update-batch";
+
+			// Specific business settings
+			public const string TaxRate = $"{Base}/tax-rate";
+			public const string FreeShippingThreshold = $"{Base}/free-shipping-threshold";
+			public const string CashOnDeliveryEnabled = $"{Base}/cash-on-delivery-enabled";
+			public const string MaintenanceMode = $"{Base}/maintenance-mode";
+			public const string MinimumOrderAmount = $"{Base}/minimum-order-amount";
+		}
+		public static class Page
         {
-            public const string Get = "api/v1/Page";
-            public const string GetById = "api/v1/Page";
-            public const string GetBySlug = "api/v1/Page/by-slug";
-            public const string GetByTitle = "api/v1/Page/by-title";
-            public const string Search = "api/v1/Page/search";
-            public const string Save = "api/v1/Page/save";
-            public const string Delete = "api/v1/Page/delete";
-            public const string ToggleStatus = "api/v1/Page/toggle-status";
+            public const string Get = "api/v1/PageStatic";
+            public const string GetById = "api/v1/PageStatic";
+            public const string GetBySlug = "api/v1/PageStatic/by-slug";
+            public const string GetByTitle = "api/v1/PageStatic/by-title";
+            public const string Search = "api/v1/PageStatic/search";
+            public const string Save = "api/v1/PageStatic/save";
+            public const string Delete = "api/v1/PageStatic/delete";
+            public const string ToggleStatus = "api/v1/PageStatic/toggle-status";
         }
 
         // Brand endpoints
@@ -357,22 +388,40 @@
             public const string Products = "api/v1/Campaign/{0}/products";
             public const string AddProduct = "api/v1/Campaign/products";
         }
-		public static class ItemReview
-		{
-			private const string Base = "api/v1/ItemReview";
+        public static class ItemReview
+        {
+            private const string Base = "api/v1/ItemReview";
 
-			public const string Update = $"{Base}/update";
-			public const string Get = Base;
-			public const string Delete = $"{Base}/delete";
-			public const string GetByItemId = $"{Base}/reviews-by-Item";
-			public const string Search = $"{Base}/search";
-			public const string GetStats = $"{Base}/Item-review-stats";
-			public const string GetPending = $"{Base}/pending";
-			public const string Approve = $"{Base}/approve"; 
-			public const string Reject = $"{Base}/reject"; 
+            public const string Update = $"{Base}/update";
+            public const string Get = Base;
+            public const string Delete = $"{Base}/delete";
+            public const string GetByItemId = $"{Base}/reviews-by-Item";
+            public const string Search = $"{Base}/search";
+            public const string GetStats = $"{Base}/Item-review-stats";
+            public const string GetPending = $"{Base}/pending";
+            public const string Approve = $"{Base}/approve";
+            public const string Reject = $"{Base}/reject";
 
 		}
+		public static class HomePageSlider
+		{
+			private const string Base = "api/v1/HomePageSlider";
 
+			// Single Operations
+			public const string Get = Base;
+			public const string GetById = $"{Base}";
+			public const string GetAll = $"{Base}/all";
+			public const string Create = $"{Base}/create";
+			public const string Update = $"{Base}/update";
+			public const string Delete = $"{Base}";
+
+			// Batch Operations
+			//public const string BatchGet = $"{Base}/batch/get";
+			//public const string BatchActivate = $"{Base}/batch/activate";
+			//public const string BatchDeactivate = $"{Base}/batch/deactivate";
+			//public const string BatchDelete = $"{Base}/batch/delete";
+			//public const string BatchReorder = $"{Base}/batch/reorder";
+		}
 		public static class ReviewReport
 		{
 			private const string Base = "api/v1/ReviewReport";
@@ -410,9 +459,9 @@
                 public const string Approve = "api/v1/Wallet/transactions/{0}/approve";
                 public const string Reject = "api/v1/Wallet/transactions/{0}/reject";
             }
-			
 
-			public const string Deposit = "api/v1/Wallet/deposit";
+
+            public const string Deposit = "api/v1/Wallet/deposit";
             public const string Withdrawal = "api/v1/Wallet/withdrawal";
             public const string Treasury = "api/v1/Wallet/treasury";
             public const string TreasuryUpdate = "api/v1/Wallet/treasury/update";

@@ -19,7 +19,7 @@ namespace Resources {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "17.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "18.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     public class UserResources {
@@ -273,6 +273,15 @@ namespace Resources {
         public static string Invalid_UsernamePassword_Couple {
             get {
                 return ResourceManager.GetString("Invalid_UsernamePassword_Couple", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to تاريخ غير صالح.
+        /// </summary>
+        public static string InValidDate {
+            get {
+                return ResourceManager.GetString("InValidDate", resourceCulture);
             }
         }
         

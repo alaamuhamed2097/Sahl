@@ -80,7 +80,7 @@ public class ShipmentService : IShipmentService
                     OrderId = orderId,
                     VendorId = group.Key.VendorId,
                     WarehouseId = group.Key.WarehouseId,
-                    ShipmentNumber = await GenerateShipmentNumberAsync(),
+                    Number = await GenerateShipmentNumberAsync(),
                     FulfillmentType = fulfillmentType,
                     ShipmentStatus = ShipmentStatus.Pending,
                     ShippingCost = shippingCost,
@@ -129,7 +129,7 @@ public class ShipmentService : IShipmentService
 
                 _logger.Information(
                     "Created shipment {ShipmentNumber} for vendor {VendorId}",
-                    shipment.ShipmentNumber,
+                    shipment.Number,
                     group.Key.VendorId
                 );
             }
@@ -175,7 +175,7 @@ public class ShipmentService : IShipmentService
         try
         {
             var shipmentRepo = _unitOfWork.TableRepository<TbOrderShipment>();
-            var shipment = await shipmentRepo.FindAsync(s => s.ShipmentNumber == shipmentNumber);
+            var shipment = await shipmentRepo.FindAsync(s => s.Number == shipmentNumber);
 
             if (shipment == null)
             {
@@ -347,7 +347,7 @@ public class ShipmentService : IShipmentService
 
             return new ShipmentTrackingDto
             {
-                ShipmentNumber = shipment.ShipmentNumber,
+                ShipmentNumber = shipment.Number,
                 TrackingNumber = trackingNumber,
                 CurrentStatus = shipment.ShipmentStatus.ToString(),
                 EstimatedDeliveryDate = shipment.EstimatedDeliveryDate,

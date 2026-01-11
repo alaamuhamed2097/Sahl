@@ -2,12 +2,12 @@
 using BL.Contracts.Service.Vendor;
 using BL.Extensions;
 using BL.Services.Base;
+using Common.Filters;
 using DAL.Contracts.Repositories;
 using DAL.Models;
 using Domains.Entities.ECommerceSystem.Vendor;
 using Resources;
 using Shared.DTOs.Vendor;
-using Shared.GeneralModels.SearchCriteriaModels;
 using System.Linq.Expressions;
 
 namespace BL.Services.Vendor;

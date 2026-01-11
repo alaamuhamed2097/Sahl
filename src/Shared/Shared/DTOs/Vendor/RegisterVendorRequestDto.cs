@@ -45,7 +45,8 @@ namespace Shared.DTOs.Vendor
 
         // Vendor Personal Information
         [Required(ErrorMessageResourceName = "FieldRequired", ErrorMessageResourceType = typeof(ValidationResources))]
-        public DateTime BirthDate { get; set; }
+        [DataType(DataType.Date)]
+        public DateOnly BirthDate { get; set; }
 
         [Required(ErrorMessageResourceName = "FieldRequired", ErrorMessageResourceType = typeof(ValidationResources))]
         public IdentificationType IdentificationType { get; set; }

@@ -1,3 +1,4 @@
+using BL.Contracts.GeneralService;
 using DAL.ApplicationContext;
 using DAL.Contracts.Repositories;
 using Domains.Entities.ECommerceSystem.Vendor;
@@ -11,7 +12,8 @@ namespace DAL.Repositories
     {
         private readonly UserManager<ApplicationUser> _userManager;
 
-        public VendorRepository(ApplicationDbContext dbContext, ILogger logger, UserManager<ApplicationUser> userManager) : base(dbContext, logger)
+        public VendorRepository(ApplicationDbContext dbContext, ICurrentUserService currentUserService, ILogger logger, UserManager<ApplicationUser> userManager)
+            : base(dbContext, currentUserService, logger)
         {
             _userManager = userManager;
         }

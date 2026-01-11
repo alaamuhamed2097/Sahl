@@ -1,0 +1,139 @@
+﻿@* @page "/HomePageSlider" *@
+@* @page "/HomePageSlider/{Id:guid}" *@
+@page "/HomePageSlider/Add"
+@page "/HomePageSlider/Edit/{Id:guid}"
+<div class="container-fluid p-0">
+    <div class="card shadow-sm border-0">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h4 class="modal-title">
+                @(Model.Id == Guid.Empty ? ActionsResources.Add : ActionsResources.Edit)
+            </h4>
+        </div>
+        <EditForm Model="@Model" OnValidSubmit="Save">
+
+            <DataAnnotationsValidator />
+            <div class="card-body p-4">
+                <div class="form-group row">
+                    <div class="col-md-6">
+                        <label>@FormResources.ArabicTitle</label>
+                        <InputText type="text" class="form-control" @bind-value="Model.TitleAr"
+                                   placeholder="@string.Format(FormResources.Placeholder, FormResources.ArabicTitle)" />
+                        <ValidationMessage For="@(() => Model.TitleAr)" />
+                    </div>
+                    <div class="col-md-6">
+                        <label>@FormResources.EnglishTitle</label>
+                        <InputText type="text" class="form-control" @bind-value="Model.TitleEn"
+                                   placeholder="@string.Format(FormResources.Placeholder, FormResources.EnglishTitle)" />
+                        <ValidationMessage For="@(() => Model.TitleEn)" />
+                    </div>
+                </div>
+
+                <!-- Date Range Section -->
+                <div class="form-group row mt-3">
+                    @* <div class="col-md-6">
+                        <label class="form-label">@FormResources.StartDate <span class="text-danger">*</span></label>
+                        <InputDate class="form-control"
+                                   @bind-Value="Model.StartDate"
+                                   @onchange="OnStartDateChanged"
+                                   min="@DateTime.UtcNow.Date.ToString("yyyy-MM-dd")" />
+                        <ValidationMessage For="@(() => Model.StartDate)" />
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">@FormResources.EndDate <span class="text-danger">*</span></label>
+                        <InputDate class="form-control"
+                                   @bind-Value="Model.EndDate"
+                                   @onchange="OnEndDateChanged"
+                                   min="@Model.StartDate.AddDays(1).ToString("yyyy-MM-dd")" />
+                        <ValidationMessage For="@(() => Model.EndDate)" />
+                    </div> *@
+                </div>
+
+                <!-- Date Range Info Alert -->
+                <div class="row mt-2">
+                    <div class="col-12">
+                        <div class="alert alert-info py-2">
+                            <i class="feather icon-calendar me-1"></i>
+                            <strong>@ECommerceResources.BannerDuration: </strong>
+                            @* @if (Model.StartDate != default && Model.EndDate != default)
+                            {
+                                var bannerDuration = (Model.EndDate - Model.StartDate).Days;
+                                <span dir="ltr">@($" ({Model.StartDate:dd/MM/yyyy})")</span>
+                                @(" : ")
+                                <span dir="ltr">@($"({Model.EndDate:dd/MM/yyyy})") </span>
+                                @($" - {bannerDuration} {GeneralResources.Days} ")
+                            } *@
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row mt-3">
+                    <div class="form-group">
+                        <label>@FormResources.Image <span class="text-danger">*</span></label>
+                        <div class="form-file col-md-6 ">
+                            <InputFile class="form-control" aria-label="file example" OnChange="HandleSelectedImage" accept="image/*"
+                                       placeholder="@(FormResources.Select + ' ' + @FormResources.Image)" />
+                            <div class="invalid-feedback"></div>
+                            <ValidationMessage For="@(() => Model.ImageUrl)" />
+                        </div>
+                        <div class="form-file col-md-6 ">
+                            @if (!string.IsNullOrEmpty(previewImageUrl))
+                            {
+                                <img src="@previewImageUrl" alt="Preview" class="img-thumbnail mt-2" />
+                            }
+                            else if (!string.IsNullOrEmpty(Model.ImageUrl))
+                            {
+                                <img src="@baseUrl/@Model.ImageUrl" alt="Preview" class="img-thumbnail mt-2" />
+                            }
+                        </div>
+                    </div>
+                    <div class="row align-items-center">
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">@FormResources.DisplayOrder</label>
+                            <div class="input-group">
+                                <InputNumber class="form-control"
+                                             @bind-Value="Model.DisplayOrder"
+                                             @onchange="OnDisplayOrderChanged"
+                                             min="1" />
+                            </div>
+                            <small class="text-muted">@FormResources.DisplayOrderHint</small>
+                        </div>
+
+                        @if (Model.Id != Guid.Empty)
+                        {
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-semibold">@ECommerceResources.CurrentPosition</label>
+                                <div class="alert alert-info py-2 mb-0">
+                                    <i class="feather icon-info me-1"></i>
+                                    @string.Format(FormResources.DisplayOrderStatus, Model.DisplayOrder, AllMainBanners.Count)
+                                </div>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="col-md-6 mt-2">
+                                <div class="alert alert-success py-2 mb-0">
+                                    <i class="feather icon-info me-1"></i>
+                                    @string.Format(FormResources.NewEntityOrderInfo, Model.DisplayOrder, ECommerceResources.MainBanner)
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer bg-light py-3 d-flex justify-content-end gap-2">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal" @onclick="CloseModal">@ActionsResources.Cancel</button>
+                <button type="submit" class="btn btn-success" disabled="@isSaving">
+                    @if (isSaving)
+                    {
+                        <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                        <span class="sr-only">@GeneralResources.Loading...</span>
+                    }
+                    else
+                    {
+                        <span>@ActionsResources.Save</span>
+                    }
+                </button>
+            </div>
+        </EditForm>
+    </div>
+</div>

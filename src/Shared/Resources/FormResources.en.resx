@@ -705,4 +705,50 @@
   <data name="Values" xml:space="preserve">
     <value>Values</value>
   </data>
+
+	<data name="ArabicTitle">
+		<value>Arabic Title</value>
+	</data>
+	<data name="EnglishTitle">
+		<value>English Title</value>
+	</data>
+	<data name="Title">
+		<value>Title</value>
+	</data>
+	<data name="StartDate">
+		<value>Start Date</value>
+	</data>
+	<data name="EndDate">
+		<value>End Date</value>
+	</data>
+	<data name="DisplayOrder">
+		<value>Display Order</value>
+	</data>
+	<data name="DisplayOrderHint">
+		<value>Set the order in which this item appears (1 = first)</value>
+	</data>
+	<data name="DisplayOrderStatus">
+		<value>Current position: {0} of {1}</value>
+	</data>
+	<data name="NewEntityOrderInfo">
+		<value>This {1} will be added at position {0}</value>
+	</data>
+	<data name="Image">
+		<value>Image</value>
+	</data>
+	<data name="Select">
+		<value>Select</value>
+	</data>
+	<data name="Placeholder">
+		<value>Enter {0}</value>
+	</data>
+	<data name="PageType" xml:space="preserve">
+    <value>Page Type</value>
+</data>
+	<data name="SelectPageType" xml:space="preserve">
+    <value>Select Page Type</value>
+</data>
+	<data name="PageTypeHint" xml:space="preserve">
+    <value>Choose the category/type of this page. This cannot be changed after creation.</value>
+</data>
 </root>

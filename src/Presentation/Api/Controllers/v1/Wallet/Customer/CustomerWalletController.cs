@@ -52,7 +52,7 @@ namespace Api.Controllers.v1.Wallet.Customer
             try
             {
                 var result = await _customerWalletService.InitiateChargingRequestAsync(request, UserId);
-                return Ok(new ResponseModel<PaymentResultDto>
+                return Ok(new ResponseModel<PaymentResult>
                 {
                     Success = true,
                     Data = result,

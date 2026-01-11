@@ -1,13 +1,13 @@
 ﻿using AutoMapper;
 using BL.Contracts.Service.Merchandising.CouponCode;
 using Common.Enumerations.Order;
+using Common.Filters;
 using DAL.Contracts.Repositories.Merchandising;
 using DAL.Contracts.UnitOfWork;
 using DAL.Models;
 using Domains.Entities.Merchandising.CouponCode;
 using Shared.DTOs.Merchandising.CouponCode;
 using Shared.DTOs.Order.CouponCode;
-using Shared.GeneralModels.SearchCriteriaModels;
 
 namespace BL.Services.Merchandising.CouponCode
 {

@@ -1,4 +1,6 @@
-﻿namespace Shared.GeneralModels.SearchCriteriaModels
+﻿using Common.Filters;
+
+namespace Shared.GeneralModels.SearchCriteriaModels
 {
     public class ItemSearchCriteriaModel : BaseSearchCriteriaModel
     {

@@ -358,6 +358,15 @@ namespace Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to مدة البانر.
+        /// </summary>
+        public static string BannerDuration {
+            get {
+                return ResourceManager.GetString("BannerDuration", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to الباركود.
         /// </summary>
         public static string Barcode {
@@ -637,7 +646,7 @@ namespace Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to الموضع الحالي.
+        ///   Looks up a localized string similar to الموقع الحالي.
         /// </summary>
         public static string CurrentPosition {
             get {
@@ -750,6 +759,15 @@ namespace Resources {
         public static string DirectSaleOrders {
             get {
                 return ResourceManager.GetString("DirectSaleOrders", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ترتيب العرض.
+        /// </summary>
+        public static string DisplayOrder {
+            get {
+                return ResourceManager.GetString("DisplayOrder", resourceCulture);
             }
         }
         
@@ -894,6 +912,15 @@ namespace Resources {
         public static string FromUnit {
             get {
                 return ResourceManager.GetString("FromUnit", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to سلايدر الصفحة الرئيسية.
+        /// </summary>
+        public static string HomePageSlider {
+            get {
+                return ResourceManager.GetString("HomePageSlider", resourceCulture);
             }
         }
         
@@ -1141,7 +1168,7 @@ namespace Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to البنر الرئيسي.
+        ///   Looks up a localized string similar to البانر الرئيسي.
         /// </summary>
         public static string MainBanner {
             get {
@@ -1150,7 +1177,7 @@ namespace Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to البنرات الرئيسية.
+        ///   Looks up a localized string similar to البانرات الرئيسية.
         /// </summary>
         public static string MainBanners {
             get {
@@ -1317,6 +1344,15 @@ namespace Resources {
         public static string Notes {
             get {
                 return ResourceManager.GetString("Notes", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to لا توجد طرق سحب متاحه.
+        /// </summary>
+        public static string NoWithdrawalMethodsAvailable {
+            get {
+                return ResourceManager.GetString("NoWithdrawalMethodsAvailable", resourceCulture);
             }
         }
         
@@ -1879,6 +1915,24 @@ namespace Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to صورة السلايدر.
+        /// </summary>
+        public static string SliderImage {
+            get {
+                return ResourceManager.GetString("SliderImage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to عنوان السلايدر.
+        /// </summary>
+        public static string SliderTitle {
+            get {
+                return ResourceManager.GetString("SliderTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to مباع.
         /// </summary>
         public static string Sold {
@@ -2244,6 +2298,15 @@ namespace Resources {
         public static string Waitingforapproved {
             get {
                 return ResourceManager.GetString("Waitingforapproved", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to طرق السحب.
+        /// </summary>
+        public static string WithdrawalMethods {
+            get {
+                return ResourceManager.GetString("WithdrawalMethods", resourceCulture);
             }
         }
     }

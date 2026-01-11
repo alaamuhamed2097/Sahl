@@ -134,7 +134,7 @@
                                         <td class="text-center align-middle">$@(item.Price % 1 == 0 ? item.Price.ToString("F0") : item.Price.ToString("F2"))</td>
                                         @switch (item.PaymentStatus)
                                         {
-                                            case PaymentStatus.Paid:
+                                            case PaymentStatus.Completed:
                                                 <td class="text-success text-center align-middle">@ECommerceResources.Paid</td>
                                                 break;
                                             case PaymentStatus.Pending:

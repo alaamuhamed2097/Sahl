@@ -1,13 +1,13 @@
 ﻿using Api.Controllers.v1.Base;
 using BL.Contracts.Service.Wallet.Customer;
 using Common.Enumerations.User;
+using Common.Filters;
 using DAL.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Resources;
 using Shared.DTOs.Wallet.Customer;
 using Shared.GeneralModels;
-using Shared.GeneralModels.SearchCriteriaModels;
 
 namespace Api.Controllers.v1.Wallet.Customer
 {
