@@ -1327,6 +1327,15 @@
   <data name="ConfirmResetSettings" xml:space="preserve">
     <value>Are you sure you want to reset all settings to their default values? This action cannot be undone.</value>
 </data>
+	<data name="Warehouses" xml:space="preserve">
+    <value>Warehouse</value>
+</data>
+	<data name="ManageReviews" xml:space="preserve">
+    <value>ManageReview</value>
+</data>
+	<data name="Sliders" xml:space="preserve">
+    <value>Slider</value>
+</data>
   <data name="WithdrawalMethod" xml:space="preserve">
     <value>Withdrawal Method</value>
   </data>

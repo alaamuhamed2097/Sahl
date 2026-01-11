@@ -510,4 +510,7 @@
   <data name="EntityCannotBeDeletedInUse" xml:space="preserve">
     <value>لا يمكن حذف {0} لأنه مستخدم من قبل {1} التالية: {2}</value>
   </data>
+	<data name="WarehouseAlreadyExists" xml:space="preserve">
+  <value>يوجد مخزن مسجل بالفعل لهذا المورد</value>
+</data>
 </root>

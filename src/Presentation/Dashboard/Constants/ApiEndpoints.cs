@@ -306,13 +306,18 @@
             public const string Get = "api/v1/Warehouse";
             public const string GetActive = "api/v1/Warehouse/active";
             public const string Search = "api/v1/Warehouse/search";
+            public const string SearchVendor = "api/v1/Warehouse/search-vendor";
+            public const string withUsers = "api/v1/Warehouse/with-users";
             public const string Save = "api/v1/Warehouse/save";
             public const string Delete = "api/v1/Warehouse/delete";
             public const string ToggleStatus = "api/v1/Warehouse/toggle-status";
-        }
+			public const string GetVendors = "api/v1/Warehouse/vendors"; 
+			public const string IsMultiVendorEnabled = "api/v1/Warehouse/multi-vendor-enabled";
 
-        // Inventory Movement endpoints
-        public static class InventoryMovement
+		}
+
+		// Inventory Movement endpoints
+		public static class InventoryMovement
         {
             public const string Get = "api/v1/InventoryMovement";
             public const string GetById = "api/v1/InventoryMovement";

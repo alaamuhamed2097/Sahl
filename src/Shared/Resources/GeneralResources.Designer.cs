@@ -1753,6 +1753,15 @@ namespace Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to ادارة التقييمات.
+        /// </summary>
+        public static string ManageReviews {
+            get {
+                return ResourceManager.GetString("ManageReviews", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to مارس.
         /// </summary>
         public static string March {
@@ -2842,7 +2851,7 @@ namespace Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to السلايدر.
+        ///   Looks up a localized string similar to عرض الهوم.
         /// </summary>
         public static string Sliders {
             get {
@@ -3414,6 +3423,15 @@ namespace Resources {
         public static string WalletPasswordRequired {
             get {
                 return ResourceManager.GetString("WalletPasswordRequired", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to المخزن.
+        /// </summary>
+        public static string Warehouses {
+            get {
+                return ResourceManager.GetString("Warehouses", resourceCulture);
             }
         }
         
