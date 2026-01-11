@@ -12,6 +12,7 @@ namespace Api.Extensions
             // General Application Services
             services.AddScoped<ICacheService, CacheService>();
             services.AddScoped<IApiService, ApiService>();
+            services.AddScoped<IDateTimeService, DateTimeService>();
 
             return services;
         }

@@ -77,4 +77,15 @@ public interface IOrderRepository : ITableRepository<TbOrder>
     Task<int> CountTodayOrdersAsync(
         DateTime date,
         CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Search orders with pagination and filtering
+    /// </summary>
+    Task<(List<TbOrder> Items, int TotalCount)> SearchAsync(
+        string? searchTerm = null,
+        int pageNumber = 1,
+        int pageSize = 10,
+        string sortBy = "CreatedDateUtc",
+        string sortDirection = "desc",
+        CancellationToken cancellationToken = default);
 }

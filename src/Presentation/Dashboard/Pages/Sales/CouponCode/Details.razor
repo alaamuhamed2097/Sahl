@@ -1,120 +1,191 @@
-﻿@page "/promocode"
-@page "/promocode/{id:guid}"
-
+﻿@page "/couponcode/{Id:guid}"
+@page "/couponcode"
+@attribute [Authorize(Roles = nameof(UserRole.Admin))]
 @using Common.Enumerations
-@using Common.Enumerations.FieldType
 @using Common.Enumerations.Order
 @using Common.Enumerations.User
-@using Shared.DTOs.ECommerce
-@using Shared.DTOs.User
-@attribute [Authorize(Roles = nameof(UserRole.Admin))]
+@using Shared.DTOs.Order.CouponCode
 
-<PageTitle>@ECommerceResources.PromoCodes</PageTitle>
+<PageTitle>@CouponCodeResources.PromoCode - @(Id != Guid.Empty ? ActionsResources.Edit : ActionsResources.Create)</PageTitle>
 
 <div class="container-fluid p-0">
     <div class="card shadow-sm border-0">
         <div class="card-header d-flex bg-primary justify-content-between align-items-center">
             <h4 class="modal-title text-white">
-                @(Model.Id == Guid.Empty ? $"➕ {ActionsResources.Add}" : $"✏️ {ActionsResources.Edit}")
-                @FormResources.PromoCode
+                🏷️ @CouponCodeResources.PromoCode - @(Id != Guid.Empty ? ActionsResources.Edit : ActionsResources.Create)
             </h4>
+            <button type="button" class="btn btn-light btn-sm" @onclick="() => GoBack()">
+                <i class="fas fa-arrow-left me-1"></i> @ActionsResources.Back
+            </button>
         </div>
 
         <div class="card-body p-4">
-            <div class="row g-3">
-                <EditForm Model="@Model" id="mainForm" OnValidSubmit="Save">
+            @if (Model == null)
+            {
+                <div class="text-center py-5">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">@GeneralResources.Loading</span>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <EditForm Model="Model" OnSubmit="@(async () => await Save())">
                     <DataAnnotationsValidator />
-                    <!-- Basic Information -->
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label">@FormResources.ArabicTitle:</label>
-                            <InputText class="form-control" @bind-Value="Model.TitleAr"
-                                       placeholder="@String.Format(FormResources.ArabicTitle)" />
-                            <ValidationMessage For="@(() => Model.TitleAr)" />
-                        </div>
+                    <ValidationSummary />
 
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label">@FormResources.EnglishTitle:</label>
-                            <InputText class="form-control" @bind-Value="Model.TitleEn"
-                                       placeholder="@String.Format(FormResources.EnglishTitle)" />
-                            <ValidationMessage For="@(() => Model.TitleEn)" />
+                    <!-- Basic Information Section -->
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="titleAr" class="form-label fw-bold">@CouponCodeResources.ArabicTitle</label>
+                                <InputText id="titleAr" @bind-Value="Model.TitleAr" class="form-control" />
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="titleEn" class="form-label fw-bold">@CouponCodeResources.EnglishTitle</label>
+                                <InputText id="titleEn" @bind-Value="Model.TitleEn" class="form-control" />
+                            </div>
                         </div>
                     </div>
 
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label">@FormResources.Code:</label>
-                            <InputText class="form-control" @bind-Value="Model.Code"
-                                       placeholder="@String.Format(FormResources.Code)" />
-                            <ValidationMessage For="@(() => Model.Code)" />
+                    <!-- Code Section -->
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="code" class="form-label fw-bold">@CouponCodeResources.Code <span class="text-danger">*</span></label>
+                                <InputText id="code" @bind-Value="Model.Code" class="form-control" />
+                            </div>
                         </div>
-
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label">@FormResources.PromoCodeType:</label>
-                            <InputSelect class="form-control" @bind-Value="Model.DiscountType">
-                                @foreach (var type in Enum.GetValues(typeof(DiscountType)))
-                                {
-                                    <option value="@type">@type.ToString()</option>
-                                }
-                            </InputSelect>
-                            <ValidationMessage For="@(() => Model.DiscountType)" />
-                        </div>
-                    </div>
-
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label">@FormResources.Value:</label>
-                            <InputNumber class="form-control" @bind-Value="Model.DiscountValue"
-                                         placeholder="@String.Format(FormResources.Value)" />
-                            <ValidationMessage For="@(() => Model.DiscountValue)" />
-                        </div>
-
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label">@FormResources.UsageLimit:</label>
-                            <InputNumber class="form-control" @bind-Value="Model.UsageLimit"
-                                         placeholder="@String.Format(FormResources.UsageLimit)" />
-                            <ValidationMessage For="@(() => Model.UsageLimit)" />
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="status" class="form-label fw-bold">@CouponCodeResources.Status</label>
+                                <div class="form-check form-switch">
+                                    <InputCheckbox id="status" @bind-Value="Model.IsActive" class="form-check-input" />
+                                    <label class="form-check-label" for="status">
+                                        @(Model.IsActive ? CouponCodeResources.Active : CouponCodeResources.InActive)
+                                    </label>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label">@FormResources.StartDate:</label>
-                            <InputDate class="form-control" @bind-Value="Model.StartDate" min="@DateTime.Today.ToString("yyyy-MM-dd")" />
-                            <ValidationMessage For="@(() => Model.StartDate)" />
+                    <!-- Coupon Type Section -->
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="promoType" class="form-label fw-bold">@CouponCodeResources.Type</label>
+                                <InputSelect id="promoType" @bind-Value="Model.PromoType" class="form-select">
+                                    <option value="@((int)CouponCodeType.General)">@CouponCodeResources.GeneralCoupon</option>
+                                    <option value="@((int)CouponCodeType.CategoryBased)">@CouponCodeResources.CategoryBasedCoupon</option>
+                                    <option value="@((int)CouponCodeType.VendorBased)">@CouponCodeResources.VendorBasedCoupon</option>
+                                    <option value="@((int)CouponCodeType.NewUserOnly)">@CouponCodeResources.NewUserOnlyCoupon</option>
+                                </InputSelect>
+                            </div>
                         </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="discountType" class="form-label fw-bold">@CouponCodeResources.DiscountType</label>
+                                <InputSelect id="discountType" @bind-Value="Model.DiscountType" class="form-select">
+                                    <option value="@((int)DiscountType.Percentage)">@CouponCodeResources.PercentageDiscount</option>
+                                    <option value="@((int)DiscountType.FixedAmount)">@CouponCodeResources.FixedAmountDiscount</option>
+                                </InputSelect>
+                            </div>
+                        </div>
+                    </div>
 
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label">@FormResources.EndDate:</label>
-                            <InputDate class="form-control" @bind-Value="Model.ExpiryDate" min="@DateTime.Today.ToString("yyyy-MM-dd")" />
-                            <ValidationMessage For="@(() => Model.ExpiryDate)" />
+                    <!-- Discount Value Section -->
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="discountValue" class="form-label fw-bold">
+                                    @CouponCodeResources.Value
+                                    @(Model.DiscountType == DiscountType.Percentage ? "(%)" : "(LE)")
+                                </label>
+                                <InputNumber id="discountValue" @bind-Value="Model.DiscountValue" class="form-control" />
+                            </div>
                         </div>
+                        @if (Model.DiscountType == DiscountType.Percentage)
+                        {
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="maxDiscountAmount" class="form-label fw-bold">@CouponCodeResources.MaxDiscountAmount (SAR)</label>
+                                    <InputNumber id="maxDiscountAmount" @bind-Value="Model.MaxDiscountAmount" class="form-control" />
+                                </div>
+                            </div>
+                        }
+                    </div>
+
+                    <!-- Dates Section -->
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="startDate" class="form-label fw-bold">@CouponCodeResources.StartDate</label>
+                                <InputDate id="startDate" @bind-Value="Model.StartDate" class="form-control" />
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="expiryDate" class="form-label fw-bold">@CouponCodeResources.EndDate</label>
+                                <InputDate id="expiryDate" @bind-Value="Model.ExpiryDate" class="form-control" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Usage Limits Section -->
+                    <div class="row mb-4">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="usageLimit" class="form-label fw-bold">@CouponCodeResources.UsageLimit</label>
+                                <InputNumber id="usageLimit" @bind-Value="Model.UsageLimit" class="form-control" placeholder="∞" />
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="usageLimitPerUser" class="form-label fw-bold">@CouponCodeResources.UsageLimitPerUser</label>
+                                <InputNumber id="usageLimitPerUser" @bind-Value="Model.UsageLimitPerUser" class="form-control" placeholder="∞" />
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="minimumOrderAmount" class="form-label fw-bold">@CouponCodeResources.MinimumOrderAmount</label>
+                                <InputNumber id="minimumOrderAmount" @bind-Value="Model.MinimumOrderAmount" class="form-control" placeholder="0" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Additional Options -->
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <div class="form-check">
+                                <InputCheckbox id="isFirstOrderOnly" @bind-Value="Model.IsFirstOrderOnly" class="form-check-input" />
+                                <label class="form-check-label" for="isFirstOrderOnly">
+                                    @CouponCodeResources.IsFirstOrderOnly
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Form Actions -->
+                    <div class="card-footer bg-light py-3 d-flex justify-content-end gap-2">
+                        <button type="button" class="btn btn-secondary" @onclick="() => GoBack()">
+                            <i class="fas fa-times me-1"></i> @ActionsResources.Cancel
+                        </button>
+                        <button type="submit" class="btn btn-primary" disabled="@_isSaving">
+                            <i class="fas fa-save me-1"></i> 
+                            @if (_isSaving)
+                            {
+                                <span>@ActionsResources.Update</span>
+                            }
+                            else
+                            {
+                                <span>@ActionsResources.Save</span>
+                            }
+                        </button>
                     </div>
                 </EditForm>
-            </div>
+            }
         </div>
-
-       <div class="card-footer bg-light py-3 d-flex justify-content-end gap-2">
-    <!-- زر الإلغاء -->
-    <button type="button" class="btn btn-secondary btn-responsive d-flex align-items-center" @onclick="CloseModal">
-        <i class="fas fa-times me-2 ms-2"></i>
-        <span class="btn-text">@ActionsResources.Cancel</span>
-    </button>
-
-    <!-- زر الحفظ -->
-    <button type="submit" form="mainForm" class="btn btn-primary btn-responsive d-flex align-items-center" disabled="@_isSaving">
-        @if (_isSaving)
-        {
-            <span class="spinner-border spinner-border-sm mx-2" role="status" aria-hidden="true"></span>
-            <span class="btn-text">@FormResources.Saving</span>
-        }
-        else
-        {
-            <i class="fas fa-save mx-2 ms-2"></i>
-            <span class="btn-text">@ActionsResources.Save</span>
-        }
-    </button>
-</div>
-
     </div>
 </div>

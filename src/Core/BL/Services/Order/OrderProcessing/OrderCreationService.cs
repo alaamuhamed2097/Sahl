@@ -75,9 +75,15 @@ public class OrderCreationService : IOrderCreationService
             }
 
             // 2. Validate: Payment method is mandatory
-            if (!request.PaymentMethodId.HasValue && request.PaymentMethod != PaymentMethodType.CashOnDelivery)
+            if (request.PaymentMethod == PaymentMethodType.CashOnDelivery)
             {
-                return CreateOrderResult.CreateFailure("Payment method is required");
+                // COD doesn't require payment method setup
+            }
+            else if (request.PaymentMethod != PaymentMethodType.Wallet && 
+                     request.PaymentMethod != PaymentMethodType.Card && 
+                     request.PaymentMethod != PaymentMethodType.WalletAndCard)
+            {
+                return CreateOrderResult.CreateFailure("Invalid payment method");
             }
 
             var userId = _currentUserService.GetCurrentUserId();
@@ -312,7 +318,6 @@ public class OrderCreationService : IOrderCreationService
                 // 3. Card - Payment gateway
                 PaymentMethodType.Card => await ProcessCardPaymentAsync(
                     order,
-                    request.PaymentMethodId!.Value,
                     totalAmount,
                     userId,
                     cancellationToken),
@@ -320,18 +325,17 @@ public class OrderCreationService : IOrderCreationService
                 // 4. Mixed - Wallet first, then card
                 PaymentMethodType.WalletAndCard => await ProcessMixedPaymentAsync(
                     order,
-                    request.PaymentMethodId!.Value,
                     totalAmount,
                     userId,
                     cancellationToken),
 
-                _ => PaymentResult.CreateFailure("Unsupported payment method")
+                _ => PaymentResult.CreateFailure("Invalid payment method")
             };
         }
         catch (Exception ex)
         {
-            _logger.Error(ex, "Payment processing failed for order {OrderId}", order.Id);
-            return PaymentResult.CreateFailure("Payment processing failed");
+            _logger.Error(ex, "Failed to process payment for order {OrderId}", order.Id);
+            throw;
         }
     }
 
@@ -370,14 +374,12 @@ public class OrderCreationService : IOrderCreationService
     /// </summary>
     private async Task<PaymentResult> ProcessCardPaymentAsync(
         TbOrder order,
-        Guid paymentMethodId,
         decimal amount,
         string customerId,
         CancellationToken cancellationToken)
     {
         return await _paymentProcessor.ProcessCardPaymentAsync(
             order.Id,
-            paymentMethodId,
             amount,
             customerId,
             cancellationToken);
@@ -388,14 +390,12 @@ public class OrderCreationService : IOrderCreationService
     /// </summary>
     private async Task<PaymentResult> ProcessMixedPaymentAsync(
         TbOrder order,
-        Guid paymentMethodId,
         decimal amount,
         string customerId,
         CancellationToken cancellationToken)
     {
         return await _paymentProcessor.ProcessMixedPaymentAsync(
             order.Id,
-            paymentMethodId,
             amount,
             customerId,
             cancellationToken);

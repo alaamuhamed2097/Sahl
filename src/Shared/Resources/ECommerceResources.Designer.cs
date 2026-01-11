@@ -646,7 +646,7 @@ namespace Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to الموقع الحالي.
+        ///   Looks up a localized string similar to الموضع الحالي.
         /// </summary>
         public static string CurrentPosition {
             get {
@@ -1168,7 +1168,7 @@ namespace Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to البانر الرئيسي.
+        ///   Looks up a localized string similar to البنر الرئيسي.
         /// </summary>
         public static string MainBanner {
             get {
@@ -1177,7 +1177,7 @@ namespace Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to البانرات الرئيسية.
+        ///   Looks up a localized string similar to البنرات الرئيسية.
         /// </summary>
         public static string MainBanners {
             get {
@@ -1785,6 +1785,15 @@ namespace Resources {
         public static string RootCategory {
             get {
                 return ResourceManager.GetString("RootCategory", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to المبيعات.
+        /// </summary>
+        public static string Sales {
+            get {
+                return ResourceManager.GetString("Sales", resourceCulture);
             }
         }
         

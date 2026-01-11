@@ -1,4 +1,5 @@
-﻿using Dashboard.Contracts;
+﻿using Common.Enumerations.Order;
+using Dashboard.Contracts;
 using Dashboard.Contracts.General;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
@@ -7,7 +8,7 @@ using Shared.DTOs.Order.CouponCode;
 
 namespace Dashboard.Pages.Sales.CouponCode
 {
-    public partial class Details
+    public partial class Details : ComponentBase, IDisposable
     {
         private bool _isSaving;
         private bool _disposed;
@@ -21,14 +22,14 @@ namespace Dashboard.Pages.Sales.CouponCode
         // Services
         [Inject] private IJSRuntime JSRuntime { get; set; } = default!;
         [Inject] private NavigationManager Navigation { get; set; } = null!;
-        [Inject] private IResourceLoaderService ResourceLoaderService { get; set; } = null!;
+        [Inject] private IResourceLoaderService? ResourceLoaderService { get; set; }
         [Inject] private ICouponCodeService CouponCodeService { get; set; } = null!;
 
         protected override void OnParametersSet()
         {
             if (Id != Guid.Empty)
             {
-                Edit(Id);
+                _ = Edit(Id);
             }
         }
 
@@ -36,11 +37,17 @@ namespace Dashboard.Pages.Sales.CouponCode
         {
             try
             {
-                // Initialize if needed
+                // Initialize default values
+                if (Model.Id == Guid.Empty)
+                {
+                    Model.IsActive = true;
+                    Model.DiscountType = DiscountType.Percentage;
+                    Model.PromoType = CouponCodeType.General;
+                }
             }
             catch (Exception ex)
             {
-                await HandleErrorAsync("Initialization error", ex);
+                await HandleErrorAsync(ValidationResources.Error, ex);
             }
         }
 
@@ -50,21 +57,35 @@ namespace Dashboard.Pages.Sales.CouponCode
             {
                 _isSaving = true;
 
+                // Validate model
+                if (!ValidateModel())
+                {
+                    _isSaving = false;
+                    return;
+                }
+
+                // Trim and uppercase code
+                if (!string.IsNullOrWhiteSpace(Model.Code))
+                {
+                    Model.Code = Model.Code.Trim().ToUpper();
+                }
+
                 var result = await CouponCodeService.SaveAsync(Model);
 
                 if (result.Success)
                 {
                     await ShowSuccessNotification(NotifiAndAlertsResources.SavedSuccessfully);
-                    await CloseModal();
+                    GoBack();
                 }
                 else
                 {
-                    await ShowErrorNotification(ValidationResources.Failed, NotifiAndAlertsResources.SaveFailed);
+                    var errorMessage = result.Message ?? NotifiAndAlertsResources.SaveFailed;
+                    await ShowErrorNotification(ValidationResources.Failed, errorMessage);
                 }
             }
             catch (Exception ex)
             {
-                await HandleErrorAsync("Error saving promo code", ex);
+                await HandleErrorAsync(ValidationResources.Error, ex);
             }
             finally
             {
@@ -89,11 +110,61 @@ namespace Dashboard.Pages.Sales.CouponCode
             }
             catch (Exception ex)
             {
-                await HandleErrorAsync("Error editing promo code", ex);
+                await HandleErrorAsync(ValidationResources.Error, ex);
             }
         }
 
-        private async Task CloseModal()
+        private bool ValidateModel()
+        {
+            // Validate percentage
+            if (Model.DiscountType == DiscountType.Percentage
+                && Model.DiscountValue > 100)
+            {
+                ShowWarningNotificationSync(
+                    ValidationResources.Failed,
+                    CouponCodeResources.PercentageValueInvalid);
+                return false;
+            }
+
+            // Validate dates
+            if (Model.ExpiryDate.HasValue
+                && Model.StartDate > Model.ExpiryDate)
+            {
+                ShowWarningNotificationSync(
+                    ValidationResources.Failed,
+                    CouponCodeResources.StartDateMustBeBeforeEndDate);
+                return false;
+            }
+
+            // Validate co-funded coupon
+            if (Model.PlatformSharePercentage.HasValue && Model.PlatformSharePercentage.Value > 0)
+            {
+                if (!Model.VendorId.HasValue)
+                {
+                    ShowWarningNotificationSync(
+                        ValidationResources.Failed,
+                        CouponCodeResources.VendorRequiredForCoFunded);
+                    return false;
+                }
+            }
+
+            // Validate scope for category/vendor based
+            if (Model.PromoType == CouponCodeType.CategoryBased
+                || Model.PromoType == CouponCodeType.VendorBased)
+            {
+                if (Model.ScopeItems == null || !Model.ScopeItems.Any())
+                {
+                    ShowWarningNotificationSync(
+                        ValidationResources.Failed,
+                        CouponCodeResources.ScopeItemsRequired);
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        private void GoBack()
         {
             Navigation.NavigateTo("/couponCodes", true);
         }

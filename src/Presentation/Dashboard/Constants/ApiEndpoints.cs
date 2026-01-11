@@ -47,6 +47,7 @@
         public static class Order
         {
             public const string Get = "api/v1/Order";
+            public const string All = "api/v1/Order/all";
             public const string Save = "api/v1/Order/save";
             public const string ChangeOrderStatus = "api/v1/Order/changeOrderStatus";
             public const string Delete = "api/v1/Order/delete";
@@ -208,6 +209,7 @@
             public const string Save = "api/v1/CouponCode/save";
             public const string Delete = "api/v1/CouponCode/delete";
             public const string Search = "api/v1/CouponCode/search";
+            public const string GetByVendor = "api/v1/CouponCode/vendor/{vendorId}";
         }
 
         public static class ShippingCompany
@@ -247,29 +249,29 @@
             public const string WithdrawelFeePersentage = "api/v1/Setting/withdrawelFeePersentage";
             public const string Update = "api/v1/Setting/update";
         }
-		public static class SystemSettings
-		{
-			private const string Base = "api/v1/SystemSettings";
+        public static class SystemSettings
+        {
+            private const string Base = "api/v1/SystemSettings";
 
-			// Get by type
-			public static string GetDecimal(int key) => $"{Base}/decimal/{key}";
-			public static string GetInt(int key) => $"{Base}/int/{key}";
-			public static string GetBool(int key) => $"{Base}/bool/{key}";
-			public static string GetString(int key) => $"{Base}/string/{key}";
-			public static string GetDateTime(int key) => $"{Base}/datetime/{key}";
+            // Get by type
+            public static string GetDecimal(int key) => $"{Base}/decimal/{key}";
+            public static string GetInt(int key) => $"{Base}/int/{key}";
+            public static string GetBool(int key) => $"{Base}/bool/{key}";
+            public static string GetString(int key) => $"{Base}/string/{key}";
+            public static string GetDateTime(int key) => $"{Base}/datetime/{key}";
 
-			// Update
-			public const string Update = $"{Base}/update";
-			public const string UpdateBatch = $"{Base}/update-batch";
+            // Update
+            public const string Update = $"{Base}/update";
+            public const string UpdateBatch = $"{Base}/update-batch";
 
-			// Specific business settings
-			public const string TaxRate = $"{Base}/tax-rate";
-			public const string FreeShippingThreshold = $"{Base}/free-shipping-threshold";
-			public const string CashOnDeliveryEnabled = $"{Base}/cash-on-delivery-enabled";
-			public const string MaintenanceMode = $"{Base}/maintenance-mode";
-			public const string MinimumOrderAmount = $"{Base}/minimum-order-amount";
-		}
-		public static class Page
+            // Specific business settings
+            public const string TaxRate = $"{Base}/tax-rate";
+            public const string FreeShippingThreshold = $"{Base}/free-shipping-threshold";
+            public const string CashOnDeliveryEnabled = $"{Base}/cash-on-delivery-enabled";
+            public const string MaintenanceMode = $"{Base}/maintenance-mode";
+            public const string MinimumOrderAmount = $"{Base}/minimum-order-amount";
+        }
+        public static class Page
         {
             public const string Get = "api/v1/PageStatic";
             public const string GetById = "api/v1/PageStatic";
@@ -402,38 +404,38 @@
             public const string Approve = $"{Base}/approve";
             public const string Reject = $"{Base}/reject";
 
-		}
-		public static class HomePageSlider
-		{
-			private const string Base = "api/v1/HomePageSlider";
+        }
+        public static class HomePageSlider
+        {
+            private const string Base = "api/v1/HomePageSlider";
 
-			// Single Operations
-			public const string Get = Base;
-			public const string GetById = $"{Base}";
-			public const string GetAll = $"{Base}/all";
-			public const string Create = $"{Base}/create";
-			public const string Update = $"{Base}/update";
-			public const string Delete = $"{Base}";
+            // Single Operations
+            public const string Get = Base;
+            public const string GetById = $"{Base}";
+            public const string GetAll = $"{Base}/all";
+            public const string Create = $"{Base}/create";
+            public const string Update = $"{Base}/update";
+            public const string Delete = $"{Base}";
 
-			// Batch Operations
-			//public const string BatchGet = $"{Base}/batch/get";
-			//public const string BatchActivate = $"{Base}/batch/activate";
-			//public const string BatchDeactivate = $"{Base}/batch/deactivate";
-			//public const string BatchDelete = $"{Base}/batch/delete";
-			//public const string BatchReorder = $"{Base}/batch/reorder";
-		}
-		public static class ReviewReport
-		{
-			private const string Base = "api/v1/ReviewReport";
-			public const string Submit = $"{Base}/Submit";
-			public const string Get = Base;
-			public const string Search = $"{Base}/Search";
-			public const string GetByItemReviewId = $"{Base}/reports-by-Item";
-			public const string Resolve = $"{Base}/resolve";
-			public const string MarkAsFlagged = $"{Base}/MarkAsFlagged";
-		}
-		// Wallet endpoints
-		public static class Wallet
+            // Batch Operations
+            //public const string BatchGet = $"{Base}/batch/get";
+            //public const string BatchActivate = $"{Base}/batch/activate";
+            //public const string BatchDeactivate = $"{Base}/batch/deactivate";
+            //public const string BatchDelete = $"{Base}/batch/delete";
+            //public const string BatchReorder = $"{Base}/batch/reorder";
+        }
+        public static class ReviewReport
+        {
+            private const string Base = "api/v1/ReviewReport";
+            public const string Submit = $"{Base}/Submit";
+            public const string Get = Base;
+            public const string Search = $"{Base}/Search";
+            public const string GetByItemReviewId = $"{Base}/reports-by-Item";
+            public const string Resolve = $"{Base}/resolve";
+            public const string MarkAsFlagged = $"{Base}/MarkAsFlagged";
+        }
+        // Wallet endpoints
+        public static class Wallet
         {
             public static class Customer
             {

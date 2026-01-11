@@ -1247,9 +1247,6 @@
     <value>السماح للعملاء بالدفع عند استلام الطلب</value>
 </data>
   <!-- Business Settings -->
-  <data name="BusinessSettings_Duplicate[1]" xml:space="preserve">
-    <value>إعدادات العمل</value>
-</data>
   <data name="MaintenanceMode" xml:space="preserve">
     <value>وضع الصيانة</value>
 </data>
@@ -1317,9 +1314,6 @@
     <value>الحد الأدنى لطول كلمة المرور</value>
 </data>
   <!-- Loading States -->
-  <data name="LoadingSettings_Duplicate[1]" xml:space="preserve">
-    <value>جاري تحميل الإعدادات...</value>
-</data>
   <!-- Messages -->
   <data name="SettingsResetSuccess" xml:space="preserve">
     <value>تم إعادة تعيين الإعدادات إلى القيم الافتراضية. لا تنس الحفظ!</value>

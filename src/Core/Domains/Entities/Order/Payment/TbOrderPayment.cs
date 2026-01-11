@@ -50,6 +50,9 @@ namespace Domains.Entities.Order.Payment
         [MaxLength(1000)]
         public string? Notes { get; set; }
 
+        // CurrentState field (mapped from IsDeleted in BaseEntity via migration)
+        public int CurrentState { get; set; } = 1;
+
         // Navigation Properties
         public virtual TbOrder Order { get; set; } = null!;
         public virtual TbPaymentMethod PaymentMethod { get; set; } = null!;
