@@ -1179,25 +1179,161 @@
   <data name="PriceMustBeGreaterThanZero" xml:space="preserve">
     <value>Price must be greater than 0</value>
   </data>
-  <data name="Note" xml:space="preserve">
-    <value>Note</value>
-  </data>
-  <data name="MaximumPrice" xml:space="preserve">
-    <value>Maximum Price {0}</value>
-  </data>
-  <data name="MinimumPrice" xml:space="preserve">
-    <value>Minimum Price {0}</value>
-  </data>
-  <data name="StartingPrice" xml:space="preserve">
-    <value>Starting Price {0}</value>
-  </data>
-  <data name="ProductBarcode" xml:space="preserve">
-    <value>Product Barcode</value>
-  </data>
-  <data name="WithdrawalMethod" xml:space="preserve">
-    <value>Withdrawal Method</value>
-  </data>
-  <data name="WithdrawalMethods" xml:space="preserve">
-    <value>Withdrawal Methods</value>
-  </data>
+	<data name="Note" xml:space="preserve">
+  <value>Note</value>
+</data>
+	<data name="MaximumPrice" xml:space="preserve">
+  <value>Maximum Price {0}</value>
+</data>
+	<data name="MinimumPrice" xml:space="preserve">
+  <value>Minimum Price {0}</value>
+</data>
+	<data name="StartingPrice" xml:space="preserve">
+  <value>Starting Price {0}</value>
+</data>
+	<data name="ProductBarcode" xml:space="preserve">
+  <value>Product Barcode</value>
+</data>
+	<!-- System Settings -->
+	<data name="SystemSettings" xml:space="preserve">
+    <value>System Settings</value>
+</data>
+
+	<!-- Tax Settings -->
+	<data name="TaxSettings" xml:space="preserve">
+    <value>Tax Settings</value>
+</data>
+	<data name="TaxIncludedInPrice" xml:space="preserve">
+    <value>Tax Included in Price</value>
+</data>
+	<data name="TaxIncludedHelpText" xml:space="preserve">
+    <value>Enable this if product prices already include tax</value>
+</data>
+
+	<!-- Shipping Settings -->
+	<data name="ShippingSettings" xml:space="preserve">
+    <value>Shipping Settings</value>
+</data>
+	<data name="ShippingPerKg" xml:space="preserve">
+    <value>Shipping Cost Per Kg</value>
+</data>
+	<data name="FreeShippingThreshold" xml:space="preserve">
+    <value>Free Shipping Threshold</value>
+</data>
+	<data name="FreeShippingHelpText" xml:space="preserve">
+    <value>Orders above this amount will have free shipping</value>
+</data>
+	<data name="EstimatedDeliveryDays" xml:space="preserve">
+    <value>Estimated Delivery Days</value>
+</data>
+
+	<!-- Payment Settings -->
+	<data name="PaymentSettings" xml:space="preserve">
+    <value>Payment Settings</value>
+</data>
+	<data name="PaymentGateway" xml:space="preserve">
+    <value>Payment Gateway</value>
+</data>
+	<data name="EnablePaymentGateway" xml:space="preserve">
+    <value>Enable Payment Gateway</value>
+</data>
+	<data name="PaymentGatewayHelpText" xml:space="preserve">
+    <value>Allow customers to pay online using credit/debit cards</value>
+</data>
+	<data name="CashOnDelivery" xml:space="preserve">
+    <value>Cash on Delivery</value>
+</data>
+	<data name="EnableCashOnDelivery" xml:space="preserve">
+    <value>Enable Cash on Delivery</value>
+</data>
+	<data name="CashOnDeliveryHelpText" xml:space="preserve">
+    <value>Allow customers to pay when receiving the order</value>
+</data>
+
+	<!-- Business Settings -->
+	<data name="BusinessSettings" xml:space="preserve">
+    <value>Business Settings</value>
+</data>
+	<data name="MaintenanceMode" xml:space="preserve">
+    <value>Maintenance Mode</value>
+</data>
+	<data name="EnableMaintenanceMode" xml:space="preserve">
+    <value>Enable Maintenance Mode</value>
+</data>
+	<data name="MaintenanceModeWarning" xml:space="preserve">
+    <value>Warning: Enabling this will make the site unavailable to customers</value>
+</data>
+	<data name="GuestCheckout" xml:space="preserve">
+    <value>Guest Checkout</value>
+</data>
+	<data name="AllowGuestCheckout" xml:space="preserve">
+    <value>Allow Guest Checkout</value>
+</data>
+	<data name="GuestCheckoutHelpText" xml:space="preserve">
+    <value>Allow customers to checkout without creating an account</value>
+</data>
+
+	<!-- Order Settings -->
+	<data name="MinimumOrderAmount" xml:space="preserve">
+    <value>Minimum Order Amount</value>
+</data>
+	<data name="MaximumOrderAmount" xml:space="preserve">
+    <value>Maximum Order Amount</value>
+</data>
+	<data name="OrderCancellationPeriod" xml:space="preserve">
+    <value>Order Cancellation Period</value>
+</data>
+	<data name="CancellationPeriodHelpText" xml:space="preserve">
+    <value>Hours within which customers can cancel their orders</value>
+</data>
+
+	<!-- Notification Settings -->
+	<data name="NotificationSettings" xml:space="preserve">
+    <value>Notification Settings</value>
+</data>
+	<data name="EmailNotifications" xml:space="preserve">
+    <value>Email Notifications</value>
+</data>
+	<data name="EnableEmailNotifications" xml:space="preserve">
+    <value>Enable Email Notifications</value>
+</data>
+	<data name="EmailNotifHelpText" xml:space="preserve">
+    <value>Send email notifications for orders and updates</value>
+</data>
+	<data name="SMSNotifications" xml:space="preserve">
+    <value>SMS Notifications</value>
+</data>
+	<data name="EnableSMSNotifications" xml:space="preserve">
+    <value>Enable SMS Notifications</value>
+</data>
+	<data name="SMSNotifHelpText" xml:space="preserve">
+    <value>Send SMS notifications for important updates</value>
+</data>
+
+	<!-- Security Settings -->
+	<data name="SecuritySettings" xml:space="preserve">
+    <value>Security Settings</value>
+</data>
+	<data name="MaxLoginAttempts" xml:space="preserve">
+    <value>Max Login Attempts</value>
+</data>
+	<data name="SessionTimeout" xml:space="preserve">
+    <value>Session Timeout</value>
+</data>
+	<data name="PasswordMinLength" xml:space="preserve">
+    <value>Password Minimum Length</value>
+</data>
+
+	<!-- Loading States -->
+	<data name="LoadingSettings" xml:space="preserve">
+    <value>Loading settings...</value>
+</data>
+
+	<!-- Messages -->
+	<data name="SettingsResetSuccess" xml:space="preserve">
+    <value>Settings have been reset to defaults. Don't forget to save!</value>
+</data>
+	<data name="ConfirmResetSettings" xml:space="preserve">
+    <value>Are you sure you want to reset all settings to their default values? This action cannot be undone.</value>
+</data>
 </root>

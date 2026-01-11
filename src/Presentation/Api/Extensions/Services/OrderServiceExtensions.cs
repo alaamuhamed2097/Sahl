@@ -3,11 +3,11 @@ using BL.Contracts.Service.Order.Cart;
 using BL.Contracts.Service.Order.Checkout;
 using BL.Contracts.Service.Order.OrderProcessing;
 using BL.Contracts.Service.Order.Payment;
+using BL.Services.Customer.Wishlist;
 using BL.Services.Order.Cart;
 using BL.Services.Order.Checkout;
 using BL.Services.Order.OrderProcessing;
 using BL.Services.Order.Payment;
-using BL.Services.Customer.Wishlist;
 
 namespace Api.Extensions.Services
 {
@@ -26,13 +26,14 @@ namespace Api.Extensions.Services
         {
             // Order Services
             services.AddScoped<ICartService, CartService>();
-            services.AddScoped<IOrderMangmentService, OrderManagementService>();
+            services.AddScoped<IOrderManagementService, OrderManagementService>();
             services.AddScoped<ICustomerAddressService, CustomerAddressService>();
 
             services.AddScoped<IWishlistService, WishlistService>();
 
             // Payment Services
             services.AddScoped<IPaymentService, PaymentService>();
+            services.AddScoped<IPaymentMethodService, PaymentMethodService>();
 
             services.AddScoped<ICheckoutService, CheckoutService>();
 

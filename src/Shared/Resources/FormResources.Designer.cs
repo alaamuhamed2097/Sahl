@@ -1114,6 +1114,24 @@ namespace Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to نوع الصفحة.
+        /// </summary>
+        public static string PageType {
+            get {
+                return ResourceManager.GetString("PageType", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to اختر التصنيف الخاص بهذه الصفحة. لا يمكن تغييره بعد الإنشاء..
+        /// </summary>
+        public static string PageTypeHint {
+            get {
+                return ResourceManager.GetString("PageTypeHint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to كلمة المرور.
         /// </summary>
         public static string Password {
@@ -1353,6 +1371,15 @@ namespace Resources {
         public static string SelectedMarketers {
             get {
                 return ResourceManager.GetString("SelectedMarketers", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to اختر نوع الصفحة.
+        /// </summary>
+        public static string SelectPageType {
+            get {
+                return ResourceManager.GetString("SelectPageType", resourceCulture);
             }
         }
         

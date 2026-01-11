@@ -33,5 +33,6 @@ public partial class MappingProfile : Profile
         ConfigureRefundMappings();
         ConfigureCustomerMappings();
         ConfigureWithdrawalMethodsMappings();
+        ConfigurePaymentMethodMappings();
     }
 }

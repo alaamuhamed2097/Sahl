@@ -742,4 +742,13 @@
 	<data name="Placeholder">
 		<value>أدخل {0}</value>
 	</data>
+	<data name="PageType" xml:space="preserve">
+    <value>نوع الصفحة</value>
+</data>
+	<data name="SelectPageType" xml:space="preserve">
+    <value>اختر نوع الصفحة</value>
+</data>
+	<data name="PageTypeHint" xml:space="preserve">
+    <value>اختر التصنيف الخاص بهذه الصفحة. لا يمكن تغييره بعد الإنشاء.</value>
+</data>
 </root>

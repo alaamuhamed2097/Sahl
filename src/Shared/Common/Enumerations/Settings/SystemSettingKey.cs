@@ -10,7 +10,7 @@ namespace Common.Enumerations.Settings
     {
         // Tax Settings
         [Description("Order Tax Percentage")]
-        OrderTaxPercentage = 1,
+        OrderTaxPercentage = 1, //<<<
 
         [Description("Tax Included In Price")]
         TaxIncludedInPrice = 2,
@@ -54,6 +54,9 @@ namespace Common.Enumerations.Settings
         [Description("Stripe Secret Key")]
         StripeSecretKey = 33,
 
+
+        //--------34
+
         // Business Settings
         [Description("Business Hours Start")]
         BusinessHoursStart = 40,
@@ -85,6 +88,10 @@ namespace Common.Enumerations.Settings
         SessionTimeoutMinutes = 61,
 
         [Description("Password Min Length")]
-        PasswordMinLength = 62
-    }
+        PasswordMinLength = 62,
+
+		// Refund Settings
+		[Description("Refund Allowed Days")]
+		RefundAllowedDays = 70
+	}
 }

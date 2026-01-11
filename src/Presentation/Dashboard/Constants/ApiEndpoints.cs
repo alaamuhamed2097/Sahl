@@ -109,7 +109,9 @@
 
         public static class PaymentMethod
         {
-            public const string Get = "api/v1/PaymentMethod";
+            public const string GetAll = "api/v1/PaymentMethod/all";
+            public const string GetActive = "api/v1/PaymentMethod";
+            public const string GetById = "api/v1/PaymentMethod/{0}";
             public const string Save = "api/v1/PaymentMethod/save";
             public const string Delete = "api/v1/PaymentMethod/delete";
             public const string Search = "api/v1/PaymentMethod/search";
@@ -245,17 +247,38 @@
             public const string WithdrawelFeePersentage = "api/v1/Setting/withdrawelFeePersentage";
             public const string Update = "api/v1/Setting/update";
         }
+		public static class SystemSettings
+		{
+			private const string Base = "api/v1/SystemSettings";
 
-        public static class Page
+			// Get by type
+			public static string GetDecimal(int key) => $"{Base}/decimal/{key}";
+			public static string GetInt(int key) => $"{Base}/int/{key}";
+			public static string GetBool(int key) => $"{Base}/bool/{key}";
+			public static string GetString(int key) => $"{Base}/string/{key}";
+			public static string GetDateTime(int key) => $"{Base}/datetime/{key}";
+
+			// Update
+			public const string Update = $"{Base}/update";
+			public const string UpdateBatch = $"{Base}/update-batch";
+
+			// Specific business settings
+			public const string TaxRate = $"{Base}/tax-rate";
+			public const string FreeShippingThreshold = $"{Base}/free-shipping-threshold";
+			public const string CashOnDeliveryEnabled = $"{Base}/cash-on-delivery-enabled";
+			public const string MaintenanceMode = $"{Base}/maintenance-mode";
+			public const string MinimumOrderAmount = $"{Base}/minimum-order-amount";
+		}
+		public static class Page
         {
-            public const string Get = "api/v1/Page";
-            public const string GetById = "api/v1/Page";
-            public const string GetBySlug = "api/v1/Page/by-slug";
-            public const string GetByTitle = "api/v1/Page/by-title";
-            public const string Search = "api/v1/Page/search";
-            public const string Save = "api/v1/Page/save";
-            public const string Delete = "api/v1/Page/delete";
-            public const string ToggleStatus = "api/v1/Page/toggle-status";
+            public const string Get = "api/v1/PageStatic";
+            public const string GetById = "api/v1/PageStatic";
+            public const string GetBySlug = "api/v1/PageStatic/by-slug";
+            public const string GetByTitle = "api/v1/PageStatic/by-title";
+            public const string Search = "api/v1/PageStatic/search";
+            public const string Save = "api/v1/PageStatic/save";
+            public const string Delete = "api/v1/PageStatic/delete";
+            public const string ToggleStatus = "api/v1/PageStatic/toggle-status";
         }
 
         // Brand endpoints

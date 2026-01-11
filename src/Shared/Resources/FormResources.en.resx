@@ -742,4 +742,13 @@
 	<data name="Placeholder">
 		<value>Enter {0}</value>
 	</data>
+	<data name="PageType" xml:space="preserve">
+    <value>Page Type</value>
+</data>
+	<data name="SelectPageType" xml:space="preserve">
+    <value>Select Page Type</value>
+</data>
+	<data name="PageTypeHint" xml:space="preserve">
+    <value>Choose the category/type of this page. This cannot be changed after creation.</value>
+</data>
 </root>

@@ -8,11 +8,6 @@ namespace Shared.DTOs.Order.Payment.PaymentProcessing;
 public class CreateOrderRequest
 {
     /// <summary>
-    /// Customer ID making the order
-    /// </summary>
-    public string CustomerId { get; set; } = string.Empty;
-
-    /// <summary>
     /// Delivery address ID (MANDATORY)
     /// </summary>
     public Guid? DeliveryAddressId { get; set; }

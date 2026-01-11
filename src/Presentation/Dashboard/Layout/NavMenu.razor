@@ -255,30 +255,37 @@
 				</ul>
 			</li>
 
-            <!-- ⚙️ System Settings -->
-            <li data-username="settings" class="nav-item pcoded-hasmenu @(IsSubmenuOpen("settings") ? "pcoded-trigger" : "")">
-                <a href="javascript:void(0)" class="nav-link" @onclick="@(() => ToggleSubmenu("settings"))">
-                    <span class="pcoded-micon"><i class="feather icon-settings"></i></span>
-                    <span class="pcoded-mtext">@GeneralResources.System</span>
-                    <span class="pcoded-mcaret"></span>
-                </a>
-                <ul class="pcoded-submenu" style="display: @(IsSubmenuOpen("settings") ? "block" : "none")">
-                    <li class="nav-item">
-                        <NavLink href="/settings" class="nav-link" Match="NavLinkMatch.Prefix" onclick="closeNavMenu()">
-                            <span class="pcoded-micon"><i class="feather icon-settings"></i></span>
-                            <span class="pcoded-mtext">@GeneralResources.Settings</span>
-                        </NavLink>
-                    </li>
-                    <li class="nav-item">
-                        <NavLink href="/currencies" class="nav-link" Match="NavLinkMatch.Prefix" onclick="closeNavMenu()">
-                            <span class="pcoded-micon"><i class="fas fa-dollar-sign"></i></span>
-                            <span class="pcoded-mtext">@CurrencyResources.CurrencyManagement</span>
-                        </NavLink>
-                    </li>
-                </ul>
-            </li>
-            </Authorized>
-            </AuthorizeView>
+						<!-- ⚙️ System Settings -->
+						<li data-username="settings" class="nav-item pcoded-hasmenu @(IsSubmenuOpen("settings") ? "pcoded-trigger" : "")">
+							<a href="javascript:void(0)" class="nav-link" @onclick="@(() => ToggleSubmenu("settings"))">
+								<span class="pcoded-micon"><i class="feather icon-settings"></i></span>
+								<span class="pcoded-mtext">@GeneralResources.System</span>
+								<span class="pcoded-mcaret"></span>
+							</a>
+							<ul class="pcoded-submenu" style="display: @(IsSubmenuOpen("settings") ? "block" : "none")">
+								<li class="nav-item">
+									<NavLink href="/settings" class="nav-link" Match="NavLinkMatch.Prefix" onclick="closeNavMenu()">
+										<span class="pcoded-micon"><i class="feather icon-settings"></i></span>
+										<span class="pcoded-mtext">@GeneralResources.Settings</span>
+									</NavLink>
+								</li>
+					<li class="nav-item">
+						<NavLink href="/system-settings" class="nav-link" Match="NavLinkMatch.Prefix" onclick="closeNavMenu()">
+							<span class="pcoded-micon"><i class="feather icon-settings"></i></span>
+							<span class="pcoded-mtext">@GeneralResources.SystemSettings</span>
+						</NavLink>
+					</li>
+								@* <li class="nav-item">
+									<NavLink href="/currencies" class="nav-link" Match="NavLinkMatch.Prefix" onclick="closeNavMenu()">
+										<span class="pcoded-micon"><i class="fas fa-dollar-sign"></i></span>
+										<span class="pcoded-mtext">@CurrencyResources.CurrencyManagement</span>
+									</NavLink>
+								</li> *@
+
+							</ul>
+						</li>
+					</Authorized>
+				</AuthorizeView>
 
             <!-- Vendor Only Items -->
             <AuthorizeView Roles="@nameof(UserRole.Vendor)">
