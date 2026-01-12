@@ -61,6 +61,15 @@ namespace Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to معلومات إضافية.
+        /// </summary>
+        public static string AdditionalInformation {
+            get {
+                return ResourceManager.GetString("AdditionalInformation", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to إضافة رد.
         /// </summary>
         public static string AddReply {
@@ -97,7 +106,7 @@ namespace Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to الموافقة.
+        ///   Looks up a localized string similar to موافقة.
         /// </summary>
         public static string Approve {
             get {
@@ -106,7 +115,7 @@ namespace Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to موافق عليها.
+        ///   Looks up a localized string similar to تمت الموافقة.
         /// </summary>
         public static string Approved {
             get {
@@ -133,7 +142,7 @@ namespace Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to هل أنت متأكد من الموافقة على هذه المراجعة؟.
+        ///   Looks up a localized string similar to هل أنت متأكد من الموافقة على هذا التقييم؟.
         /// </summary>
         public static string ConfirmApproveReview {
             get {
@@ -142,7 +151,7 @@ namespace Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to هل أنت متأكد من وضع علامة على هذه المراجعة كمخالفة؟.
+        ///   Looks up a localized string similar to هل أنت متأكد من وضع علامة على هذا التقييم كمُبلّغ عنه؟.
         /// </summary>
         public static string ConfirmMarkAsFlagged {
             get {
@@ -151,7 +160,7 @@ namespace Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to هل أنت متأكد من رفض هذه المراجعة؟.
+        ///   Looks up a localized string similar to هل أنت متأكد من رفض هذا التقييم؟.
         /// </summary>
         public static string ConfirmRejectReview {
             get {
@@ -160,7 +169,7 @@ namespace Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to هل أنت متأكد من حل هذا التقرير؟.
+        ///   Looks up a localized string similar to هل أنت متأكد من حل هذا البلاغ؟.
         /// </summary>
         public static string ConfirmResolveReport {
             get {
@@ -169,11 +178,20 @@ namespace Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to بريد العميل الإلكتروني.
+        ///   Looks up a localized string similar to البريد الإلكتروني للعميل.
         /// </summary>
         public static string CustomerEmail {
             get {
                 return ResourceManager.GetString("CustomerEmail", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to معرّف العميل.
+        /// </summary>
+        public static string CustomerID {
+            get {
+                return ResourceManager.GetString("CustomerID", resourceCulture);
             }
         }
         
@@ -232,7 +250,7 @@ namespace Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to مراجعة مزيفة.
+        ///   Looks up a localized string similar to تقييم مزيف.
         /// </summary>
         public static string FakeReview {
             get {
@@ -268,7 +286,7 @@ namespace Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to مخالف.
+        ///   Looks up a localized string similar to مُبلّغ عنه.
         /// </summary>
         public static string Flagged {
             get {
@@ -286,7 +304,7 @@ namespace Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to التصويتات المفيدة.
+        ///   Looks up a localized string similar to الأصوات المفيدة.
         /// </summary>
         public static string HelpfulVotes {
             get {
@@ -300,6 +318,15 @@ namespace Resources {
         public static string IrrelevantContent {
             get {
                 return ResourceManager.GetString("IrrelevantContent", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to تم التعديل.
+        /// </summary>
+        public static string IsEdited {
+            get {
+                return ResourceManager.GetString("IsEdited", resourceCulture);
             }
         }
         
@@ -340,7 +367,7 @@ namespace Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to وضع علامة كمخالف.
+        ///   Looks up a localized string similar to وضع علامة كمُبلّغ عنه.
         /// </summary>
         public static string MarkAsFlagged {
             get {
@@ -358,7 +385,7 @@ namespace Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to لا توجد تقارير.
+        ///   Looks up a localized string similar to لا توجد بلاغات.
         /// </summary>
         public static string NoReportsFound {
             get {
@@ -376,11 +403,38 @@ namespace Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to غير موثّق.
+        /// </summary>
+        public static string NotVerified {
+            get {
+                return ResourceManager.GetString("NotVerified", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to عملية شراء غير موثقة.
+        /// </summary>
+        public static string NotVerifiedPurchase {
+            get {
+                return ResourceManager.GetString("NotVerifiedPurchase", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to لغة مسيئة.
         /// </summary>
         public static string OffensiveLanguage {
             get {
                 return ResourceManager.GetString("OffensiveLanguage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to معرّف تفاصيل الطلب.
+        /// </summary>
+        public static string OrderDetailID {
+            get {
+                return ResourceManager.GetString("OrderDetailID", resourceCulture);
             }
         }
         
@@ -430,7 +484,7 @@ namespace Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to الرفض.
+        ///   Looks up a localized string similar to رفض.
         /// </summary>
         public static string Reject {
             get {
@@ -439,7 +493,7 @@ namespace Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to مرفوضة.
+        ///   Looks up a localized string similar to مرفوض.
         /// </summary>
         public static string Rejected {
             get {
@@ -538,7 +592,7 @@ namespace Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to سبب التبليغ.
+        ///   Looks up a localized string similar to سبب البلاغ.
         /// </summary>
         public static string ReportReason {
             get {
@@ -547,7 +601,7 @@ namespace Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to تم حل التقرير بنجاح.
+        ///   Looks up a localized string similar to تم حل البلاغ بنجاح.
         /// </summary>
         public static string ReportResolvedSuccessfully {
             get {
@@ -556,7 +610,7 @@ namespace Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to حالة التقرير.
+        ///   Looks up a localized string similar to حالة البلاغ.
         /// </summary>
         public static string ReportStatus {
             get {
@@ -592,7 +646,7 @@ namespace Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to تمت الموافقة على المراجعة بنجاح.
+        ///   Looks up a localized string similar to تمت الموافقة على التقييم بنجاح.
         /// </summary>
         public static string ReviewApprovedSuccessfully {
             get {
@@ -646,7 +700,7 @@ namespace Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to تم وضع علامة على المراجعة بنجاح.
+        ///   Looks up a localized string similar to تم وضع علامة على التقييم بنجاح.
         /// </summary>
         public static string ReviewFlaggedSuccessfully {
             get {
@@ -655,7 +709,7 @@ namespace Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to رقم المراجعة.
+        ///   Looks up a localized string similar to معرّف التقييم.
         /// </summary>
         public static string ReviewID {
             get {
@@ -682,7 +736,7 @@ namespace Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to رقم المراجعة.
+        ///   Looks up a localized string similar to رقم التقييم.
         /// </summary>
         public static string ReviewNumber {
             get {
@@ -691,7 +745,7 @@ namespace Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to تم رفض المراجعة بنجاح.
+        ///   Looks up a localized string similar to تم رفض التقييم بنجاح.
         /// </summary>
         public static string ReviewRejectedSuccessfully {
             get {
@@ -709,7 +763,7 @@ namespace Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to تقارير المراجعات.
+        ///   Looks up a localized string similar to بلاغات التقييمات.
         /// </summary>
         public static string ReviewReports {
             get {
@@ -718,7 +772,7 @@ namespace Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to نص المراجعة.
+        ///   Looks up a localized string similar to نص التقييم.
         /// </summary>
         public static string ReviewText {
             get {
@@ -727,7 +781,7 @@ namespace Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to عنوان المراجعة.
+        ///   Looks up a localized string similar to عنوان التقييم.
         /// </summary>
         public static string ReviewTitle {
             get {
@@ -736,7 +790,7 @@ namespace Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to رسائل مزعجة.
+        ///   Looks up a localized string similar to محتوى مزعج.
         /// </summary>
         public static string Spam {
             get {
@@ -750,6 +804,15 @@ namespace Resources {
         public static string Stars {
             get {
                 return ResourceManager.GetString("Stars", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to الحالة.
+        /// </summary>
+        public static string Status {
+            get {
+                return ResourceManager.GetString("Status", resourceCulture);
             }
         }
         
@@ -768,6 +831,69 @@ namespace Resources {
         public static string TotalReviews {
             get {
                 return ResourceManager.GetString("TotalReviews", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Vendor.
+        /// </summary>
+        public static string Vendor {
+            get {
+                return ResourceManager.GetString("Vendor", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to معرّف البائع.
+        /// </summary>
+        public static string VendorID {
+            get {
+                return ResourceManager.GetString("VendorID", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to اسم البائع.
+        /// </summary>
+        public static string VendorName {
+            get {
+                return ResourceManager.GetString("VendorName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to تفاصيل تقييم البائع.
+        /// </summary>
+        public static string VendorReviewDetails {
+            get {
+                return ResourceManager.GetString("VendorReviewDetails", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to إدارة تقييمات البائعين.
+        /// </summary>
+        public static string VendorReviewManagement {
+            get {
+                return ResourceManager.GetString("VendorReviewManagement", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to تقييمات البائعين.
+        /// </summary>
+        public static string VendorReviews {
+            get {
+                return ResourceManager.GetString("VendorReviews", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to موثّق.
+        /// </summary>
+        public static string Verified {
+            get {
+                return ResourceManager.GetString("Verified", resourceCulture);
             }
         }
         

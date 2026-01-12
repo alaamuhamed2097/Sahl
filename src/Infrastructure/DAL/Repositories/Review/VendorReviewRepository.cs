@@ -30,13 +30,26 @@ namespace DAL.Repositories.Review
                 .FirstOrDefaultAsync(r => r.Id == reviewId && !r.IsDeleted, cancellationToken);
         }
 
-        /// <summary>
-        /// Retrieves all approved reviews for a specific vendor.
-        /// </summary>
-        /// <param name="vendorId">Vendor identifier.</param>
-        /// <param name="cancellationToken">Cancellation token.</param>
-        /// <returns>Collection of approved vendor reviews.</returns>
-        public async Task<IEnumerable<TbVendorReview>> GetReviewsByVendorIdAsync(
+		//public async Task<TbVendorReview?> GetReviewDetailsAsync(
+	 // Guid reviewId,
+	 // CancellationToken cancellationToken = default)
+		//{
+		//	return await _dbContext.TbVendorReviews
+		//		.Include(r => r.Customer)
+		//			.ThenInclude(c => c.User) // إذا كان Customer مرتبط بـ User
+		//		.Include(r => r.Vendor)
+		//		.Include(r => r.OrderDetail)
+		//			.ThenInclude(od => od.Order.OrderDetails) // لجلب اسم المنتج
+		//		.FirstOrDefaultAsync(r => r.Id == reviewId, cancellationToken);
+		//}
+
+		/// <summary>
+		/// Retrieves all approved reviews for a specific vendor.
+		/// </summary>
+		/// <param name="vendorId">Vendor identifier.</param>
+		/// <param name="cancellationToken">Cancellation token.</param>
+		/// <returns>Collection of approved vendor reviews.</returns>
+		public async Task<IEnumerable<TbVendorReview>> GetReviewsByVendorIdAsync(
             Guid vendorId,
             CancellationToken cancellationToken = default)
         {

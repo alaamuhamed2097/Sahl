@@ -1,0 +1,266 @@
+﻿@page "/VendorsReviews/details/{Id:guid}"
+
+@using Common.Enumerations.Review
+@using Common.Enumerations.User
+@using Shared.DTOs.Review
+@attribute [Authorize(Roles = nameof(UserRole.Admin))]
+
+<PageTitle>@ReviewResources.VendorReviewDetails</PageTitle>
+
+<style>
+    .info-card {
+        border-left: 4px solid #007bff;
+        background: #f8f9fa;
+    }
+
+    .status-badge {
+        padding: 8px 16px;
+        border-radius: 20px;
+        font-weight: 600;
+    }
+
+    .rating-stars {
+        color: #ffc107;
+        font-size: 1.2rem;
+    }
+</style>
+
+<div class="container-fluid p-0">
+    @if (isLoading)
+    {
+        <div class="d-flex justify-content-center align-items-center" style="height: 400px;">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+        </div>
+    }
+    else if (reviewItem == null)
+    {
+        <div class="alert alert-warning">
+            <i class="fas fa-exclamation-triangle me-2"></i>
+            @NotifiAndAlertsResources.NoDataFound
+        </div>
+    }
+    else
+    {
+        <!-- Header Card -->
+        <div class="card shadow-sm border-0 mb-3">
+            <div class="card-header bg-primary text-white py-3 d-flex justify-content-between align-items-center">
+                <h5 class="mb-0 fw-semibold text-white">
+                    <i class="fas fa-store me-2"></i>@ReviewResources.VendorReviewDetails
+                </h5>
+                <button class="btn btn-light btn-sm" @onclick="GoBack">
+                    <i class="fas fa-arrow-left me-1"></i>@ActionsResources.Back
+                </button>
+            </div>
+            <div class="card-body">
+                <!-- Status Badge & Rating -->
+                <div class="mb-4 d-flex justify-content-between align-items-center flex-wrap gap-3">
+                    <span class="status-badge @GetReviewStatusClass(reviewItem.Status)">
+                        @GetReviewStatusText(reviewItem.Status)
+                    </span>
+                    <div class="rating-stars">
+                        @for (int i = 1; i <= 5; i++)
+                        {
+                            <i class="@(i <= reviewItem.Rating ? "fas" : "far") fa-star"></i>
+                        }
+                        <span class="ms-2 text-dark fw-bold">@reviewItem.Rating.ToString("0.0")</span>
+                    </div>
+                </div>
+
+                <!-- Review Information -->
+                <div class="row g-3">
+                    <!-- Review ID -->
+                    <div class="col-md-6">
+                        <div class="info-card p-3 rounded">
+                            <label class="text-muted small mb-1">@ReviewResources.ReviewID</label>
+                            <div class="fw-bold">@reviewItem.Id.ToString().Substring(0, 13)...</div>
+                        </div>
+                    </div>
+
+                    <!-- Customer ID -->
+                    <div class="col-md-6">
+                        <div class="info-card p-3 rounded">
+                            <label class="text-muted small mb-1">@ReviewResources.CustomerID</label>
+                            <div class="fw-bold">@reviewItem.CustomerId.ToString().Substring(0, 13)...</div>
+                        </div>
+                    </div>
+
+                    <!-- Vendor ID -->
+                    <div class="col-md-6">
+                        <div class="info-card p-3 rounded">
+                            <label class="text-muted small mb-1">@ReviewResources.VendorID</label>
+                            <div class="fw-bold">@reviewItem.VendorId.ToString().Substring(0, 13)...</div>
+                        </div>
+                    </div>
+
+                    <!-- Order Detail ID -->
+                    <div class="col-md-6">
+                        <div class="info-card p-3 rounded">
+                            <label class="text-muted small mb-1">@ReviewResources.OrderDetailID</label>
+                            <div class="fw-bold">@reviewItem.OrderDetailId.ToString().Substring(0, 13)...</div>
+                        </div>
+                    </div>
+
+                    <!-- Review Text -->
+                    @if (!string.IsNullOrWhiteSpace(reviewItem.ReviewText))
+                    {
+                        <div class="col-12">
+                            <div class="info-card p-3 rounded">
+                                <label class="text-muted small mb-1">@ReviewResources.ReviewText</label>
+                                <div class="fw-bold">@reviewItem.ReviewText</div>
+                            </div>
+                        </div>
+                    }
+
+                    <!-- Verified Purchase -->
+                    <div class="col-md-6">
+                        <div class="info-card p-3 rounded">
+                            <label class="text-muted small mb-1">@ReviewResources.VerifiedPurchase</label>
+                            <div class="fw-bold">
+                                @if (reviewItem.IsVerifiedPurchase)
+                                {
+                                    <span class="text-success">
+                                        <i class="fas fa-check-circle me-1"></i>@GeneralResources.Yes
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="text-muted">
+                                        <i class="fas fa-times-circle me-1"></i>@GeneralResources.No
+                                    </span>
+                                }
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Is Edited -->
+                    <div class="col-md-6">
+                        <div class="info-card p-3 rounded">
+                            <label class="text-muted small mb-1">@ReviewResources.IsEdited</label>
+                            <div class="fw-bold">
+                                @if (reviewItem.IsEdited)
+                                {
+                                    <span class="text-warning">
+                                        <i class="fas fa-edit me-1"></i>@GeneralResources.Yes
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="text-muted">
+                                        <i class="fas fa-times-circle me-1"></i>@GeneralResources.No
+                                    </span>
+                                }
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Created Date -->
+                    @* @if (reviewItem.CreatedDateUtc.HasValue)
+                    {
+                        <div class="col-md-6">
+                            <div class="info-card p-3 rounded">
+                                <label class="text-muted small mb-1">@FormResources.CreatedDate</label>
+                                <div class="fw-bold">@reviewItem.CreatedDateUtc.Value.ToString("yyyy-MM-dd HH:mm")</div>
+                            </div>
+                        </div>
+                    } *@
+
+                    <!-- Updated Date -->
+                    @* @if (reviewItem.UpdatedDateUtc.HasValue)
+                    {
+                        <div class="col-md-6">
+                            <div class="info-card p-3 rounded">
+                                <label class="text-muted small mb-1">@FormResources.UpdatedDate</label>
+                                <div class="fw-bold">@reviewItem.UpdatedDateUtc.Value.ToString("yyyy-MM-dd HH:mm")</div>
+                            </div>
+                        </div>
+                    } *@
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="mt-4 d-flex gap-2 flex-wrap">
+                    @if (reviewItem.Status == ReviewStatus.Pending)
+                    {
+                        <button class="btn btn-success" @onclick="ApproveReview">
+                            <i class="fas fa-check me-2"></i>@ReviewResources.Approve
+                        </button>
+                        <button class="btn btn-warning" @onclick="RejectReview">
+                            <i class="fas fa-times me-2"></i>@ReviewResources.Reject
+                        </button>
+                    }
+                    else if (reviewItem.Status == ReviewStatus.Approved)
+                    {
+                        <button class="btn btn-warning" @onclick="RejectReview">
+                            <i class="fas fa-times me-2"></i>@ReviewResources.Reject
+                        </button>
+                    }
+                    else if (reviewItem.Status == ReviewStatus.Rejected)
+                    {
+                        <button class="btn btn-success" @onclick="ApproveReview">
+                            <i class="fas fa-check me-2"></i>@ReviewResources.Approve
+                        </button>
+                    }
+
+                    <button class="btn btn-danger" @onclick="DeleteReview">
+                        <i class="fas fa-trash me-2"></i>@ActionsResources.Delete
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Additional Information Card -->
+        <div class="card shadow-sm border-0">
+            <div class="card-header bg-info text-white py-3">
+                <h6 class="mb-0 fw-semibold">
+                    <i class="fas fa-info-circle me-2"></i>@ReviewResources.AdditionalInformation
+                </h6>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <div class="text-center p-3 bg-light rounded">
+                            <div class="text-muted small mb-1">@ReviewResources.Rating</div>
+                            <div class="display-6 fw-bold text-primary">@reviewItem.Rating</div>
+                            <div class="rating-stars mt-2">
+                                @for (int i = 1; i <= 5; i++)
+                                {
+                                    <i class="@(i <= reviewItem.Rating ? "fas" : "far") fa-star"></i>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="text-center p-3 bg-light rounded">
+                            <div class="text-muted small mb-1">@ReviewResources.Status</div>
+                            <div class="mt-2">
+                                <span class="status-badge @GetReviewStatusClass(reviewItem.Status)">
+                                    @GetReviewStatusText(reviewItem.Status)
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="text-center p-3 bg-light rounded">
+                            <div class="text-muted small mb-1">@ReviewResources.VerifiedPurchase</div>
+                            <div class="mt-2">
+                                @if (reviewItem.IsVerifiedPurchase)
+                                {
+                                    <span class="badge bg-success" style="font-size: 1rem; padding: 0.5rem 1rem;">
+                                        <i class="fas fa-check-circle me-1"></i>@GeneralResources.Verified
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-secondary" style="font-size: 1rem; padding: 0.5rem 1rem;">
+                                        <i class="fas fa-times-circle me-1"></i>@GeneralResources.NotVerified
+                                    </span>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>

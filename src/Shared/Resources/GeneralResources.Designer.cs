@@ -2086,6 +2086,15 @@ namespace Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to غير مشتري.
+        /// </summary>
+        public static string NotVerified {
+            get {
+                return ResourceManager.GetString("NotVerified", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to نوفمبر.
         /// </summary>
         public static string November {
@@ -3351,6 +3360,15 @@ namespace Resources {
         public static string VerificationCode {
             get {
                 return ResourceManager.GetString("VerificationCode", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to مشتري.
+        /// </summary>
+        public static string Verified {
+            get {
+                return ResourceManager.GetString("Verified", resourceCulture);
             }
         }
         

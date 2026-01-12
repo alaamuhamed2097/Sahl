@@ -42,7 +42,7 @@ namespace Api.Controllers.v1.Review.VendorReview
 		/// API Version: 1.0+
 		/// </remarks>
 		[HttpGet("{reviewId}")]
-		[Authorize(Roles = nameof(UserRole.Customer))]
+		[Authorize(Roles = $"{nameof(UserRole.Customer)},{nameof(UserRole.Vendor)}")]
 		[ProducesResponseType(StatusCodes.Status200OK)]
 		[ProducesResponseType(StatusCodes.Status404NotFound)]
 		public async Task<IActionResult> GetReviewById(Guid reviewId)

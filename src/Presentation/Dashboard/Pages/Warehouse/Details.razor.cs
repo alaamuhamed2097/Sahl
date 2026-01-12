@@ -1,9 +1,10 @@
-using Dashboard.Contracts.General;
+﻿using Dashboard.Contracts.General;
 using Dashboard.Contracts.Warehouse;
 using Dashboard.Services.General;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 using Resources;
+using Resources.Enumerations;
 using Shared.DTOs.Vendor;
 using Shared.DTOs.Warehouse;
 
@@ -17,20 +18,23 @@ namespace Dashboard.Pages.Warehouse
 
 		protected WarehouseDto Model { get; set; } = new();
 
-		// Vendors list with new DTO
+		
 		private IEnumerable<VendorWithUserDto> vendors = new List<VendorWithUserDto>();
 		private Guid? selectedVendorId = null;
 		private bool showVendorValidation = false;
+		private bool select2Initialized = false;
+		private bool _disposed = false;
 
 		[Parameter] public Guid Id { get; set; }
-		[Parameter] public string? Type { get; set; } // "platform" or "vendor"
+		[Parameter] public string? Type { get; set; } 
 
 		[Inject] private IJSRuntime JSRuntime { get; set; } = default!;
 		[Inject] protected NavigationManager Navigation { get; set; } = null!;
 		[Inject] protected IWarehouseService WarehouseService { get; set; } = null!;
 		[Inject] protected ICountryPhoneCodeService CountryPhoneCodeService { get; set; } = null!;
 
-		// Properties for UI
+    [Inject] protected IResourceLoaderService ResourceLoaderService { get; set; } = null!;
+		private bool dataLoaded = false;
 		protected string PageTitle => Id == Guid.Empty ? "Add" : "Edit";
 		protected bool IsEditMode => Id != Guid.Empty;
 		protected bool IsVendorWarehouse => Type?.ToLower() == "vendor";
@@ -88,7 +92,6 @@ namespace Dashboard.Pages.Warehouse
 				Console.WriteLine($"Error checking multi-vendor status: {ex.Message}");
 			}
 		}
-
 		private async Task LoadVendors()
 		{
 			try
@@ -107,6 +110,7 @@ namespace Dashboard.Pages.Warehouse
 						Console.WriteLine($"Vendor: {vendor.UserName} - {vendor.Email} - ID: {vendor.VendorId}");
 					}
 
+					dataLoaded = true; 
 					StateHasChanged();
 				}
 				else
@@ -122,6 +126,42 @@ namespace Dashboard.Pages.Warehouse
 				vendors = new List<VendorWithUserDto>();
 			}
 		}
+		
+		
+		
+		//private async Task LoadVendors()
+		//{
+		//	try
+		//	{
+		//		Console.WriteLine("Loading vendors...");
+		//		var result = await WarehouseService.GetActiveVendorsAsync();
+
+		//		if (result.Success && result.Data != null)
+		//		{
+		//			vendors = result.Data;
+		//			Console.WriteLine($"Loaded {vendors.Count()} vendors");
+
+		//			// Log vendor details for debugging
+		//			foreach (var vendor in vendors)
+		//			{
+		//				Console.WriteLine($"Vendor: {vendor.UserName} - {vendor.Email} - ID: {vendor.VendorId}");
+		//			}
+
+		//			StateHasChanged();
+		//		}
+		//		else
+		//		{
+		//			Console.WriteLine($"Failed to load vendors: {result.Message}");
+		//			vendors = new List<VendorWithUserDto>();
+		//		}
+		//	}
+		//	catch (Exception ex)
+		//	{
+		//		Console.WriteLine($"Exception loading vendors: {ex.Message}");
+		//		await ShowErrorNotification("Error", "Failed to load vendors");
+		//		vendors = new List<VendorWithUserDto>();
+		//	}
+		//}
 
 		/// <summary>
 		/// Method called when vendor selection changes from select element
@@ -317,7 +357,70 @@ namespace Dashboard.Pages.Warehouse
 		{
 			Navigation.NavigateTo("/warehouses", true);
 		}
+		protected override async Task OnAfterRenderAsync(bool firstRender)
+		{
+			if (firstRender)
+			{
+				await ResourceLoaderService.LoadStyleSheet("css/display_order.css");
+				await ResourceLoaderService.LoadScript( "js/select2Helper.js");
+			}
 
+			// Initialize Select2 after component is rendered and data is loaded
+			if (dataLoaded && !select2Initialized)
+			{
+				// Small delay to ensure DOM is ready
+				await Task.Delay(100);
+				await InitializeSelect2();
+				select2Initialized = true;
+			}
+		}
+		private async Task InitializeSelect2()
+		{
+			try
+			{
+				if (_disposed) return;
+
+				// Check if Select2 is already initialized
+				var isParentInitialized = await JSRuntime.InvokeAsync<bool>("isSelect2Initialized", ".select2-parent");
+				var isAttributeInitialized = await JSRuntime.InvokeAsync<bool>("isSelect2Initialized", ".select2-attribute");
+
+				// Only initialize if not already initialized
+				if (!isParentInitialized || !isAttributeInitialized)
+				{
+					// Create resources object to pass to JavaScript
+					var resources = new
+					{
+						parentCategoryPlaceholder = ResourceManager.CurrentLanguage == Language.Arabic
+							? "اختر الفئة الأساسية"
+							: FormResources.Select + " " + ECommerceResources.CategoryParent,
+						attributePlaceholder = ResourceManager.CurrentLanguage == Language.Arabic
+							? "اختر الخاصية"
+							: FormResources.Select + " " + ECommerceResources.Attribute,
+						noResults = ResourceManager.CurrentLanguage == Language.Arabic
+							? "لا توجد نتائج"
+							: "No results found",
+						searching = ResourceManager.CurrentLanguage == Language.Arabic
+							? "جاري البحث..."
+							: "Searching..."
+					};
+
+					await JSRuntime.InvokeVoidAsync("initializeSelect2", resources);
+					select2Initialized = true;
+				}
+			}
+			catch (JSDisconnectedException)
+			{
+				Console.WriteLine("JS circuit disconnected, skipping Select2 initialization");
+			}
+			catch (ObjectDisposedException)
+			{
+				Console.WriteLine("Object disposed, skipping Select2 initialization");
+			}
+			catch (Exception ex)
+			{
+				Console.WriteLine($"Error initializing Select2: {ex.Message}");
+			}
+		}
 		private async Task ShowErrorNotification(string title, string message)
 		{
 			await JSRuntime.InvokeVoidAsync("swal", title, message, "error");

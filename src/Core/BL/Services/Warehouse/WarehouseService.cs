@@ -452,38 +452,86 @@ public class WarehouseService : BaseService<TbWarehouse, WarehouseDto>, IWarehou
 		}
 	}
 
+	//public async Task<IEnumerable<VendorWithUserDto>> GetVendorUsersAsync()
+	//{
+	//	try
+	//	{
+	//		var vendors = await _vendorRepository.GetAsync(x => !x.IsDeleted);
+			
+	//		//var vendorByUserId = vendors
+	//		//	.Where(v => !string.IsNullOrEmpty(v.UserId))
+	//		//	.ToDictionary(v => v.UserId, v => v.Id);
+	//		var vendorByUserId = vendors
+	//		.Where(v => !string.IsNullOrEmpty(v.UserId))
+	//		.GroupBy(v => v.UserId)
+	//		.ToDictionary(g => g.Key, g => g.First().Id);
+
+	//		var users = new List<ApplicationUser>();
+	//		foreach (var userId in vendorByUserId.Keys)
+	//		{
+	//			var user = await _userManager.FindByIdAsync(userId);
+	//			if (user != null)
+	//			{
+	//				users.Add(user);
+	//			}
+	//		}
+
+	//		return users.Select(u =>
+	//		{
+				
+	//			return new VendorWithUserDto
+	//			{
+	//				VendorId = vendorByUserId[u.Id], 
+	//				UserId = new Guid(u.Id),               
+	//				UserName = u.UserName,
+	//				Email = u.Email,
+	//				PhoneNumber = u.PhoneNumber
+	//			};
+	//		}).ToList();
+	//	}
+	//	catch (Exception ex)
+	//	{
+	//		_logger.Error(ex, "Error getting vendor users");
+	//		return Enumerable.Empty<VendorWithUserDto>();
+	//	}
+	//}
+	
 	public async Task<IEnumerable<VendorWithUserDto>> GetVendorUsersAsync()
 	{
 		try
 		{
 			var vendors = await _vendorRepository.GetAsync(x => !x.IsDeleted);
 
-			//var vendorByUserId = vendors
-			//	.Where(v => !string.IsNullOrEmpty(v.UserId))
-			//	.ToDictionary(v => v.UserId, v => v.Id);
 			var vendorByUserId = vendors
-	.Where(v => !string.IsNullOrEmpty(v.UserId))
-	.GroupBy(v => v.UserId)
-	.ToDictionary(g => g.Key, g => g.First().Id);
+				.Where(v => !string.IsNullOrEmpty(v.UserId))
+				.GroupBy(v => v.UserId)
+				.ToDictionary(g => g.Key, g => g.First().Id);
+
+			var vendorIdsWithWarehouses = await _warehouseRepository
+				.GetAsync(w => !w.IsDeleted && w.VendorId.HasValue)
+				.ContinueWith(t => t.Result.Select(w => w.VendorId.Value).Distinct().ToList());
 
 			var users = new List<ApplicationUser>();
 			foreach (var userId in vendorByUserId.Keys)
 			{
-				var user = await _userManager.FindByIdAsync(userId);
-				if (user != null)
+				var vendorId = vendorByUserId[userId];
+
+				if (!vendorIdsWithWarehouses.Contains(vendorId))
 				{
-					users.Add(user);
+					var user = await _userManager.FindByIdAsync(userId);
+					if (user != null)
+					{
+						users.Add(user);
+					}
 				}
 			}
 
 			return users.Select(u =>
 			{
-				
-
 				return new VendorWithUserDto
 				{
-					VendorId = vendorByUserId[u.Id], 
-					UserId = new Guid(u.Id),               
+					VendorId = vendorByUserId[u.Id],
+					UserId = new Guid(u.Id),
 					UserName = u.UserName,
 					Email = u.Email,
 					PhoneNumber = u.PhoneNumber
@@ -496,7 +544,6 @@ public class WarehouseService : BaseService<TbWarehouse, WarehouseDto>, IWarehou
 			return Enumerable.Empty<VendorWithUserDto>();
 		}
 	}
-
 	public async Task<bool> IsMultiVendorEnabledAsync()
 	{
 		try

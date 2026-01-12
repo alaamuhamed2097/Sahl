@@ -34,6 +34,11 @@ namespace Shared.DTOs.Review
 
 		public bool IsVerifiedPurchase { get; set; }
 
+		public CustomerBasicDto? Customer { get; set; }
+		public VendorBasicDto? Vendor { get; set; }
+		public OrderDetailBasicDto? OrderDetail { get; set; }
+
+
 	}
 
 }

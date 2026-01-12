@@ -31,7 +31,7 @@ namespace Dashboard.Pages.Catalog.Products
 
 		private void GoToItemReviews(Guid itemId)
 		{
-			NavigationManager.NavigateTo($"/ManageReviews/{itemId}");
+			NavigationManager.NavigateTo($"/ManageReviews/ItemReviews/{itemId}");
 		}
 		protected override async Task<ResponseModel<IEnumerable<ItemDto>>> GetAllItemsAsync()
         {

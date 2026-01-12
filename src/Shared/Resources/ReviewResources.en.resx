@@ -316,4 +316,345 @@
 	<data name="Flagged">
 		<value>Flagged</value>
 	</data>
+	<!-- Page Titles -->
+	<data name="VendorReviewManagement" xml:space="preserve">
+    <value>إدارة تقييمات البائعين</value>
+  </data>
+	<data name="VendorReviews" xml:space="preserve">
+    <value>تقييمات البائعين</value>
+  </data>
+	<data name="VendorReviewDetails" xml:space="preserve">
+    <value>تفاصيل تقييم البائع</value>
+  </data>
+
+	<!-- Entity Names -->
+	<data name="VendorName" xml:space="preserve">
+    <value>اسم البائع</value>
+  </data>
+	<data name="VendorID" xml:space="preserve">
+    <value>معرف البائع</value>
+  </data>
+	<data name="CustomerName" xml:space="preserve">
+    <value>اسم العميل</value>
+  </data>
+	<data name="CustomerID" xml:space="preserve">
+    <value>معرف العميل</value>
+  </data>
+	<data name="CustomerEmail" xml:space="preserve">
+    <value>البريد الإلكتروني للعميل</value>
+  </data>
+	<data name="OrderDetailID" xml:space="preserve">
+    <value>معرف تفاصيل الطلب</value>
+  </data>
+
+	<!-- Review Fields -->
+	<data name="ReviewID" xml:space="preserve">
+    <value>معرف التقييم</value>
+  </data>
+	<data name="ReviewNumber" xml:space="preserve">
+    <value>رقم التقييم</value>
+  </data>
+	<data name="ReviewTitle" xml:space="preserve">
+    <value>عنوان التقييم</value>
+  </data>
+	<data name="ReviewText" xml:space="preserve">
+    <value>نص التقييم</value>
+  </data>
+	<data name="Rating" xml:space="preserve">
+    <value>التقييم</value>
+  </data>
+	<data name="HelpfulVotes" xml:space="preserve">
+    <value>الأصوات المفيدة</value>
+  </data>
+
+	<!-- Status -->
+	<data name="Status" xml:space="preserve">
+    <value>الحالة</value>
+  </data>
+	<data name="Pending" xml:space="preserve">
+    <value>قيد الانتظار</value>
+  </data>
+	<data name="Approved" xml:space="preserve">
+    <value>موافق عليه</value>
+  </data>
+	<data name="Rejected" xml:space="preserve">
+    <value>مرفوض</value>
+  </data>
+	<data name="Flagged" xml:space="preserve">
+    <value>مُبلغ عنه</value>
+  </data>
+	<data name="Reviewed" xml:space="preserve">
+    <value>تمت المراجعة</value>
+  </data>
+	<data name="Resolved" xml:space="preserve">
+    <value>تم الحل</value>
+  </data>
+
+	<!-- Verification -->
+	<data name="VerifiedPurchase" xml:space="preserve">
+    <value>عملية شراء موثقة</value>
+  </data>
+	<data name="NotVerifiedPurchase" xml:space="preserve">
+    <value>عملية شراء غير موثقة</value>
+  </data>
+	<data name="IsEdited" xml:space="preserve">
+    <value>تم التعديل</value>
+  </data>
+	<data name="Verified" xml:space="preserve">
+    <value>موثق</value>
+  </data>
+	<data name="NotVerified" xml:space="preserve">
+    <value>غير موثق</value>
+  </data>
+
+	<!-- Actions -->
+	<data name="Approve" xml:space="preserve">
+    <value>موافقة</value>
+  </data>
+	<data name="Reject" xml:space="preserve">
+    <value>رفض</value>
+  </data>
+	<data name="MarkAsFlagged" xml:space="preserve">
+    <value>وضع علامة كمُبلغ عنه</value>
+  </data>
+
+	<!-- Confirmations -->
+	<data name="ConfirmApproveReview" xml:space="preserve">
+    <value>هل أنت متأكد من الموافقة على هذا التقييم؟</value>
+  </data>
+	<data name="ConfirmRejectReview" xml:space="preserve">
+    <value>هل أنت متأكد من رفض هذا التقييم؟</value>
+  </data>
+	<data name="ConfirmMarkAsFlagged" xml:space="preserve">
+    <value>هل أنت متأكد من وضع علامة على هذا التقييم كمُبلغ عنه؟</value>
+  </data>
+	<data name="ConfirmResolveReport" xml:space="preserve">
+    <value>هل أنت متأكد من حل هذا البلاغ؟</value>
+  </data>
+
+	<!-- Success Messages -->
+	<data name="ReviewApprovedSuccessfully" xml:space="preserve">
+    <value>تمت الموافقة على التقييم بنجاح!</value>
+  </data>
+	<data name="ReviewRejectedSuccessfully" xml:space="preserve">
+    <value>تم رفض التقييم بنجاح!</value>
+  </data>
+	<data name="ReviewFlaggedSuccessfully" xml:space="preserve">
+    <value>تم وضع علامة على التقييم بنجاح!</value>
+  </data>
+	<data name="ReportResolvedSuccessfully" xml:space="preserve">
+    <value>تم حل البلاغ بنجاح!</value>
+  </data>
+
+	<!-- Additional Information -->
+	<data name="AdditionalInformation" xml:space="preserve">
+    <value>معلومات إضافية</value>
+  </data>
+	<data name="ReviewReports" xml:space="preserve">
+    <value>بلاغات التقييم</value>
+  </data>
+	<data name="NoReportsFound" xml:space="preserve">
+    <value>لم يتم العثور على بلاغات</value>
+  </data>
+	<data name="ReportReason" xml:space="preserve">
+    <value>سبب البلاغ</value>
+  </data>
+	<data name="ReportStatus" xml:space="preserve">
+    <value>حالة البلاغ</value>
+  </data>
+
+	<!-- Report Reasons -->
+	<data name="Spam" xml:space="preserve">
+    <value>بريد مزعج</value>
+  </data>
+	<data name="OffensiveLanguage" xml:space="preserve">
+    <value>لغة مسيئة</value>
+  </data>
+	<data name="HateSpeech" xml:space="preserve">
+    <value>خطاب كراهية</value>
+  </data>
+	<data name="FakeReview" xml:space="preserve">
+    <value>تقييم مزيف</value>
+  </data>
+	<data name="IrrelevantContent" xml:space="preserve">
+    <value>محتوى غير ذي صلة</value>
+  </data>
+	<data name="Duplicate" xml:space="preserve">
+    <value>مكرر</value>
+  </data>
+	<data name="Other" xml:space="preserve">
+    <value>أخرى</value>
+  </data>
+
+	<data name="VendorReviewManagement" xml:space="preserve">
+    <value>Vendor Review Management</value>
+  </data>
+	<data name="VendorReviews" xml:space="preserve">
+    <value>Vendor Reviews</value>
+  </data>
+	<data name="VendorReviewDetails" xml:space="preserve">
+    <value>Vendor Review Details</value>
+  </data>
+
+	<!-- Entity Names -->
+	<data name="VendorName" xml:space="preserve">
+    <value>Vendor Name</value>
+  </data>
+	<data name="VendorID" xml:space="preserve">
+    <value>Vendor ID</value>
+  </data>
+	<data name="CustomerName" xml:space="preserve">
+    <value>Customer Name</value>
+  </data>
+	<data name="CustomerID" xml:space="preserve">
+    <value>Customer ID</value>
+  </data>
+	<data name="CustomerEmail" xml:space="preserve">
+    <value>Customer Email</value>
+  </data>
+	<data name="OrderDetailID" xml:space="preserve">
+    <value>Order Detail ID</value>
+  </data>
+
+	<!-- Review Fields -->
+	<data name="ReviewID" xml:space="preserve">
+    <value>Review ID</value>
+  </data>
+	<data name="ReviewNumber" xml:space="preserve">
+    <value>Review Number</value>
+  </data>
+	<data name="ReviewTitle" xml:space="preserve">
+    <value>Review Title</value>
+  </data>
+	<data name="ReviewText" xml:space="preserve">
+    <value>Review Text</value>
+  </data>
+	<data name="Rating" xml:space="preserve">
+    <value>Rating</value>
+  </data>
+	<data name="HelpfulVotes" xml:space="preserve">
+    <value>Helpful Votes</value>
+  </data>
+
+	<!-- Status -->
+	<data name="Status" xml:space="preserve">
+    <value>Status</value>
+  </data>
+	<data name="Pending" xml:space="preserve">
+    <value>Pending</value>
+  </data>
+	<data name="Approved" xml:space="preserve">
+    <value>Approved</value>
+  </data>
+	<data name="Rejected" xml:space="preserve">
+    <value>Rejected</value>
+  </data>
+	<data name="Flagged" xml:space="preserve">
+    <value>Flagged</value>
+  </data>
+	<data name="Reviewed" xml:space="preserve">
+    <value>Reviewed</value>
+  </data>
+	<data name="Resolved" xml:space="preserve">
+    <value>Resolved</value>
+  </data>
+
+	<!-- Verification -->
+	<data name="VerifiedPurchase" xml:space="preserve">
+    <value>Verified Purchase</value>
+  </data>
+	<data name="NotVerifiedPurchase" xml:space="preserve">
+    <value>Not Verified Purchase</value>
+  </data>
+	<data name="IsEdited" xml:space="preserve">
+    <value>Is Edited</value>
+  </data>
+	<data name="Verified" xml:space="preserve">
+    <value>Verified</value>
+  </data>
+	<data name="NotVerified" xml:space="preserve">
+    <value>Not Verified</value>
+  </data>
+
+	<!-- Actions -->
+	<data name="Approve" xml:space="preserve">
+    <value>Approve</value>
+  </data>
+	<data name="Reject" xml:space="preserve">
+    <value>Reject</value>
+  </data>
+	<data name="MarkAsFlagged" xml:space="preserve">
+    <value>Mark as Flagged</value>
+  </data>
+
+	<!-- Confirmations -->
+	<data name="ConfirmApproveReview" xml:space="preserve">
+    <value>Are you sure you want to approve this review?</value>
+  </data>
+	<data name="ConfirmRejectReview" xml:space="preserve">
+    <value>Are you sure you want to reject this review?</value>
+  </data>
+	<data name="ConfirmMarkAsFlagged" xml:space="preserve">
+    <value>Are you sure you want to mark this review as flagged?</value>
+  </data>
+	<data name="ConfirmResolveReport" xml:space="preserve">
+    <value>Are you sure you want to resolve this report?</value>
+  </data>
+
+	<!-- Success Messages -->
+	<data name="ReviewApprovedSuccessfully" xml:space="preserve">
+    <value>Review approved successfully!</value>
+  </data>
+	<data name="ReviewRejectedSuccessfully" xml:space="preserve">
+    <value>Review rejected successfully!</value>
+  </data>
+	<data name="ReviewFlaggedSuccessfully" xml:space="preserve">
+    <value>Review flagged successfully!</value>
+  </data>
+	<data name="ReportResolvedSuccessfully" xml:space="preserve">
+    <value>Report resolved successfully!</value>
+  </data>
+
+	<!-- Additional Information -->
+	<data name="AdditionalInformation" xml:space="preserve">
+    <value>Additional Information</value>
+  </data>
+	<data name="ReviewReports" xml:space="preserve">
+    <value>Review Reports</value>
+  </data>
+	<data name="NoReportsFound" xml:space="preserve">
+    <value>No Reports Found</value>
+  </data>
+	<data name="ReportReason" xml:space="preserve">
+    <value>Report Reason</value>
+  </data>
+	<data name="ReportStatus" xml:space="preserve">
+    <value>Report Status</value>
+  </data>
+
+	<!-- Report Reasons -->
+	<data name="Spam" xml:space="preserve">
+    <value>Spam</value>
+  </data>
+	<data name="OffensiveLanguage" xml:space="preserve">
+    <value>Offensive Language</value>
+  </data>
+	<data name="HateSpeech" xml:space="preserve">
+    <value>Hate Speech</value>
+  </data>
+	<data name="FakeReview" xml:space="preserve">
+    <value>Fake Review</value>
+  </data>
+	<data name="IrrelevantContent" xml:space="preserve">
+    <value>Irrelevant Content</value>
+  </data>
+	<data name="Duplicate" xml:space="preserve">
+    <value>Duplicate</value>
+  </data>
+	<data name="Other" xml:space="preserve">
+    <value>Other</value>
+  </data>
+	<data name="Vendor" xml:space="preserve">
+    <value>البائع</value>
+  </data>
 </root>
