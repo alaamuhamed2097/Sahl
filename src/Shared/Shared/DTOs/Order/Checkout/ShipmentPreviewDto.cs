@@ -9,6 +9,6 @@ namespace Shared.DTOs.Order.Checkout
         public List<string> ItemsList { get; set; } = new();
         public decimal SubTotal { get; set; }
         public decimal ShippingCost { get; set; }
-        public int EstimatedDeliveryDays { get; set; }
+        public int? EstimatedDeliveryDays { get; set; }
     }
 }

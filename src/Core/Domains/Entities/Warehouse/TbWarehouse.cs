@@ -1,4 +1,5 @@
 using Domains.Entities.ECommerceSystem.Vendor;
+using Domains.Entities.Offer;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -33,5 +34,6 @@ namespace Domains.Entities.Warehouse
 
         // Navigation Properties
         public virtual TbVendor? Vendor { get; set; }
+        public virtual ICollection<TbOffer> Offers { get; set; } = new List<TbOffer>();
     }
 }

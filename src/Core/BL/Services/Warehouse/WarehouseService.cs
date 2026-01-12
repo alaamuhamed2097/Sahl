@@ -46,6 +46,14 @@ public class WarehouseService : BaseService<TbWarehouse, WarehouseDto>, IWarehou
         return _mapper.MapList<TbWarehouse, WarehouseDto>(warehouses).ToList();
     }
 
+    public async Task<WarehouseDto> GetMarketWarehousesAsync()
+    {
+        var warehouses = await _warehouseRepository
+            .FindAsync(x => !x.IsDeleted && x.IsDefaultPlatformWarehouse);
+
+        return _mapper.MapModel<TbWarehouse, WarehouseDto>(warehouses);
+    }
+
     public async Task<WarehouseDto?> GetByIdAsync(Guid id)
     {
         if (id == Guid.Empty)

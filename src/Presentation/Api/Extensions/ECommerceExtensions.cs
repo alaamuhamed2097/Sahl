@@ -140,7 +140,9 @@ namespace Api.Extensions
             services.AddScoped<ICustomerWalletTransactionService, CustomerWalletTransactionService>();
             services.AddScoped<IWalletSettingService, WalletSettingService>();
 
+            // System Settings Services
             services.AddScoped<ISystemSettingsService, SystemSettingsService>();
+            services.AddScoped<IDevelopmentSettingsService, DevelopmentSettingsService>();
 
             services.AddScoped<ICheckoutService, CheckoutService>();
             return services;

@@ -1,4 +1,9 @@
-﻿using Common.Enumerations.User;
+﻿using Common.Enumerations.IdentificationType;
+using Common.Enumerations.User;
+using Common.Enumerations.VendorStatus;
+using Common.Enumerations.VendorType;
+using Domains.Entities.ECommerceSystem.Vendor;
+using Domains.Entities.Location;
 using Domains.Entities.Setting;
 using Domains.Identity;
 using Microsoft.AspNetCore.Identity;
@@ -10,6 +15,8 @@ namespace DAL.ApplicationContext
     {
         private static readonly string seedAdminEmail = "admin@gmail.com";
         private static readonly string seedVendorEmail = "vendor@gmail.com";
+        private static readonly Guid seedVendorId = Guid.Parse("f47ac10b-58cc-4372-a567-0e02b2c3d479");
+        private static readonly Guid seedVendorCityId = Guid.Parse("33333333-3333-3333-3333-333333333333");
 
         public static void Configure(ModelBuilder modelBuilder)
         {
@@ -60,6 +67,7 @@ namespace DAL.ApplicationContext
                     throw new ArgumentNullException(nameof(roleManager));
 
                 await SeedRolesAsync(roleManager);
+                await SeedLocationAsync(context);
                 await SeedUserAsync(userManager);
                 await SeedSettingAsync(context);
 
@@ -109,6 +117,74 @@ namespace DAL.ApplicationContext
                 throw;
             }
         }
+        private static async Task SeedLocationAsync(ApplicationDbContext context)
+        {
+            try
+            {
+                Console.WriteLine("[SeedLocationAsync] Starting...");
+
+                // ===== Fixed Ids =====
+                var countryId = Guid.Parse("11111111-1111-1111-1111-111111111111");
+                var stateId = Guid.Parse("22222222-2222-2222-2222-222222222222");
+
+                // ===== Country =====
+                var country = await context.TbCountries.FindAsync(countryId);
+                if (country == null)
+                {
+                    country = new TbCountry
+                    {
+                        Id = countryId,
+                        TitleAr = "مصر",
+                        TitleEn = "Egypt",
+                        CreatedBy = Guid.Empty,
+                        CreatedDateUtc = DateTime.UtcNow,
+                        IsDeleted = false
+                    };
+
+                    context.TbCountries.Add(country);
+                    Console.WriteLine("[SeedLocationAsync] Country created");
+
+                    // ===== State =====
+                    TbState state = new TbState
+                    {
+                        Id = stateId,
+                        TitleAr = "الجيزة",
+                        TitleEn = "Giza",
+                        CountryId = countryId,
+                        CreatedBy = Guid.Empty,
+                        CreatedDateUtc = DateTime.UtcNow,
+                        IsDeleted = false
+                    };
+
+                    context.TbStates.Add(state);
+                    Console.WriteLine("[SeedLocationAsync] State created");
+
+                    // ===== City =====
+                    TbCity city = new TbCity
+                    {
+                        Id = seedVendorCityId,
+                        TitleAr = "الدقي",
+                        TitleEn = "Dokki",
+                        StateId = stateId,
+                        CreatedBy = Guid.Empty,
+                        CreatedDateUtc = DateTime.UtcNow,
+                        IsDeleted = false
+                    };
+
+                    context.TbCities.Add(city);
+                    Console.WriteLine("[SeedLocationAsync] City created");
+                }
+
+                await context.SaveChangesAsync();
+
+                Console.WriteLine("[SeedLocationAsync] Completed");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[SeedLocationAsync] ERROR: {ex.Message}");
+                throw;
+            }
+        }
 
         private static async Task SeedUserAsync(UserManager<ApplicationUser> userManager)
         {
@@ -150,9 +226,10 @@ namespace DAL.ApplicationContext
                 var VendorUser = await userManager.FindByEmailAsync(VendorEmail);
                 if (VendorUser == null)
                 {
+                    var vendorApplicationUserId = Guid.NewGuid().ToString();
                     VendorUser = new ApplicationUser
                     {
-                        Id = Guid.NewGuid().ToString(),
+                        Id = vendorApplicationUserId,
                         UserName = VendorEmail,
                         Email = VendorEmail,
                         EmailConfirmed = true,
@@ -169,8 +246,34 @@ namespace DAL.ApplicationContext
                     var result = await userManager.CreateAsync(VendorUser, "Vendor123456");
                     if (result.Succeeded)
                     {
-                        await userManager.AddToRoleAsync(VendorUser, "Vendor");
+                        await userManager.AddToRoleAsync(VendorUser,nameof(UserType.Vendor));
                         Console.WriteLine("[SeedUserAsync] Created Vendor user");
+                        var vendorEntity = new TbVendor()
+                        {
+                            Id = seedVendorId,
+                            UserId = vendorApplicationUserId,
+                            Address = "Market Address",
+                            AverageRating = 0,
+                            VendorType = VendorType.Company,
+                            BirthDate = DateTime.UtcNow,
+                            FirstName = "Market",
+                            MiddleName = "Store",
+                            LastName = "Vendor",
+                            IdentificationImageBackPath = "image.webp",
+                            IdentificationImageFrontPath = "image.webp",
+                            IdentificationNumber = "1",
+                            IdentificationType = IdentificationType.NationalId,
+                            IsRealEstateRegistered = false,
+                            PhoneCode = "+20",
+                            PhoneNumber ="111111111",
+                            PostalCode = "5345455",
+                            Status = VendorStatus.Approved,
+                            StoreName = "Market Store",
+                            CreatedBy =Guid.Empty,
+                            CreatedDateUtc = DateTime.UtcNow,
+                            IsDeleted = false,
+                            CityId = seedVendorCityId
+                        };
                     }
                 }
 

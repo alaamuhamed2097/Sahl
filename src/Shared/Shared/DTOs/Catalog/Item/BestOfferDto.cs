@@ -48,6 +48,6 @@ namespace Shared.DTOs.Catalog.Item
         /// <summary>
         /// Estimated delivery time in days
         /// </summary>
-        public int EstimatedDeliveryDays { get; set; }
+        public int? EstimatedDeliveryDays { get; set; }
     }
 }

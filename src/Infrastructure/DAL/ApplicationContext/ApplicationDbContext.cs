@@ -108,6 +108,7 @@ namespace DAL.ApplicationContext
         // Settings
         public DbSet<TbGeneralSettings> TbGeneralSettings { get; set; }
         public DbSet<TbSystemSettings> TbSystemSettings { get; set; }
+        public DbSet<TbDevelopmentSettings> TbDevelopmentSettings { get; set; }
 
         // Shipping Management
         public DbSet<TbShippingCompany> TbShippingCompanies { get; set; }

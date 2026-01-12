@@ -83,7 +83,13 @@ namespace DAL.Configurations
                    .WithMany(w => w.OffersList)
                    .HasForeignKey(o => o.WarrantyId)
                    .IsRequired(false)
-                   .OnDelete(DeleteBehavior.Restrict); // ✅ CHANGED from SetNull
+                   .OnDelete(DeleteBehavior.Restrict);
+
+            //Offer -> Warehouse (many offers can reference a Warehouse)
+            builder.HasOne(o=> o.Warehouse)
+                   .WithMany(w => w.Offers)
+                   .HasForeignKey(o => o.WarehouseId)
+                   .OnDelete(DeleteBehavior.Restrict);
 
             // Collections - CRITICAL: Change all Cascade to Restrict
             builder.HasMany(o => o.UserOfferRatings)

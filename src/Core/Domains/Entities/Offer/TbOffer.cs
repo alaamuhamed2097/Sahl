@@ -5,6 +5,7 @@ using Domains.Entities.ECommerceSystem.Vendor;
 using Domains.Entities.Offer.Rating;
 using Domains.Entities.Offer.Warranty;
 using Domains.Entities.Order.Shipping;
+using Domains.Entities.Warehouse;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Domains.Entities.Offer
@@ -17,7 +18,7 @@ namespace Domains.Entities.Offer
         public Guid WarehouseId { get; set; }
 
         // Filtering and search optimization
-        public int EstimatedDeliveryDays { get; set; }
+        public int? EstimatedDeliveryDays { get; set; }
         public bool IsFreeShipping { get; set; } = false;
         public OfferVisibilityScope VisibilityScope { get; set; }
         public FulfillmentType FulfillmentType { get; set; } = FulfillmentType.Seller;
@@ -33,6 +34,8 @@ namespace Domains.Entities.Offer
         public virtual TbVendor Vendor { get; set; }
         [ForeignKey("WarrantyId")]
         public virtual TbWarranty Warranty { get; set; }
+        [ForeignKey("WarehouseId")]
+        public virtual TbWarehouse Warehouse { get; set; }
 
         // Collections
         public virtual ICollection<TbUserOfferRating> UserOfferRatings { get; set; }
