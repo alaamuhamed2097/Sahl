@@ -135,13 +135,13 @@ namespace BL.Services.WithdrawalMethod
             try
             {
                 await _unitOfWork.BeginTransactionAsync();
-                await _unitOfWork.TableRepository<TbWithdrawalMethod>().UpdateCurrentStateAsync(id, userId, true);
+                await _unitOfWork.TableRepository<TbWithdrawalMethod>().UpdateIsDeletedAsync(id, userId, true);
                 var fields = await _unitOfWork.TableRepository<TbField>().GetAsync(x => x.WithdrawalMethodId == id);
                 if (fields?.Count() > 0)
                 {
                     foreach (var field in fields)
                     {
-                        await _unitOfWork.TableRepository<TbField>().UpdateCurrentStateAsync(field.Id, userId, true);
+                        await _unitOfWork.TableRepository<TbField>().UpdateIsDeletedAsync(field.Id, userId, true);
                     }
                 }
                 await _unitOfWork.CommitAsync();
@@ -293,7 +293,7 @@ namespace BL.Services.WithdrawalMethod
         {
             foreach (var entity in entities)
             {
-                _unitOfWork.TableRepository<T>().UpdateCurrentStateAsync(entity.Id, userId, true);
+                _unitOfWork.TableRepository<T>().UpdateIsDeletedAsync(entity.Id, userId, true);
             }
         }
 

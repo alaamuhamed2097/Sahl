@@ -15,7 +15,7 @@ namespace Shared.DTOs.Catalog.Item
         public int AvailableQuantity { get; set; }
         public StockStatus StockStatus { get; set; }
         public bool IsFreeShipping { get; set; }
-        public int EstimatedDeliveryDays { get; set; }
+        public int? EstimatedDeliveryDays { get; set; }
         public bool IsBuyBoxWinner { get; set; }
         public int MinOrderQuantity { get; set; }
         public int MaxOrderQuantity { get; set; }

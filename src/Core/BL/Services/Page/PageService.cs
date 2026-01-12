@@ -107,7 +107,7 @@ namespace BL.Services.Page
         public async Task<bool> DeleteAsync(Guid id, Guid userId)
         {
             var success = await _pageRepository
-                .UpdateCurrentStateAsync(id, userId);
+                .UpdateIsDeletedAsync(id, userId);
 
             return success;
         }

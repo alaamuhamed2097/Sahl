@@ -17,7 +17,7 @@ namespace Shared.DTOs.Catalog.Item
         public StockStatus StockStatus { get; set; }
         public bool IsFreeShipping { get; set; }
         public decimal ShippingCost { get; set; }
-        public int EstimatedDeliveryDays { get; set; }
+        public int? EstimatedDeliveryDays { get; set; }
         public bool IsBuyBoxWinner { get; set; }
         public bool HasWarranty { get; set; }
         public string ConditionNameAr { get; set; }

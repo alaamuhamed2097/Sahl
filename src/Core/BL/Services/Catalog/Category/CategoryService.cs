@@ -518,7 +518,7 @@ public class CategoryService : BaseService<TbCategory, CategoryDto>, ICategorySe
             //_categoryUnitOfWork.TableRepository<TbCategory>().Update(entity, userId, out Guid categoryId);
 
             // Update current state (soft delete)
-            await _categoryUnitOfWork.TableRepository<TbCategory>().UpdateCurrentStateAsync(id,userId);
+            await _categoryUnitOfWork.TableRepository<TbCategory>().UpdateIsDeletedAsync(id,userId);
 
             // Handle category attributes
             var categoryAttributes =(await _categoryUnitOfWork.TableRepository<TbCategoryAttribute>()
@@ -527,7 +527,7 @@ public class CategoryService : BaseService<TbCategory, CategoryDto>, ICategorySe
             {
                 foreach (var attribute in categoryAttributes)
                 {
-                   await _categoryUnitOfWork.TableRepository<TbCategoryAttribute>().UpdateCurrentStateAsync(attribute.Id,userId);
+                   await _categoryUnitOfWork.TableRepository<TbCategoryAttribute>().UpdateIsDeletedAsync(attribute.Id,userId);
                 }
             }
 

@@ -23,7 +23,6 @@ namespace Api.Controllers.v1.Review.ItemReview
 	[ApiController]
 	[ApiVersion("1.0")]
 	[Route("api/v{version:apiVersion}/[controller]")]
-	[Authorize]
 	//[Authorize(Roles = $"{nameof(UserRole.Customer)},{nameof(UserRole.Admin)}")]
 
 	public class ItemReviewController : BaseController
@@ -174,8 +173,6 @@ namespace Api.Controllers.v1.Review.ItemReview
 		/// API Version: 1.0+
 		/// </remarks>
 		[HttpGet("reviews-by-Item/{ItemId}")]
-		[Authorize(Roles = $"{nameof(UserRole.Admin)}")]
-
 		[ProducesResponseType(StatusCodes.Status200OK)]
 		public async Task<IActionResult> GetReviewsByItem(Guid ItemId)
 		{
@@ -197,7 +194,6 @@ namespace Api.Controllers.v1.Review.ItemReview
 		/// </remarks>
 		[HttpGet("search")]
 		[Authorize(Roles = $"{nameof(UserRole.Admin)}")]
-
 		[ProducesResponseType(StatusCodes.Status200OK)]
 		public async Task<IActionResult> Search([FromQuery] ItemReviewSearchCriteriaModel criteria)
 		{

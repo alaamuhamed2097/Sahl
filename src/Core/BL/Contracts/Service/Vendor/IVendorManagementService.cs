@@ -10,6 +10,7 @@ public interface IVendorManagementService : IBaseService<TbVendor, VendorDto>
 {
     Task<PagedResult<VendorDto>> SearchAsync(BaseSearchCriteriaModel criteriaModel);
     Task<TbVendor> GetByUserIdAsync(string userId);
+    Guid GetMarketStoreVendorId();
     //Task<PaginatedDataModel<VendorDto>> SearchAsync(BaseSearchCriteriaModel criteriaModel);
 
 }

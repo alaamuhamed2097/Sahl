@@ -148,7 +148,7 @@ public class CurrencyService : BaseService<TbCurrency, CurrencyDto>, ICurrencySe
                 };
             }
 
-            var success = await _currencyRepository.UpdateCurrentStateAsync(currencyId, userId, true);
+            var success = await _currencyRepository.UpdateIsDeletedAsync(currencyId, userId, true);
             if (!success)
             {
                 throw new Exception(NotifiAndAlertsResources.DeleteFailed);

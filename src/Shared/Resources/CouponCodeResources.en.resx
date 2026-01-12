@@ -460,11 +460,6 @@
 	<data name="CoFundingHint" xml:space="preserve">
   <value>Platform share percentage of the discount (remaining is covered by the vendor)</value>
 </data>
-
-	<!-- Status Messages -->
-	<data name="Saving" xml:space="preserve">
-  <value>Saving...</value>
-</data>
 	<data name="Loading" xml:space="preserve">
   <value>Loading...</value>
 </data>

@@ -122,7 +122,7 @@ public class ShippingCalculationService : IShippingCalculationService
         if (offers != null && offers.Any())
         {
             // Calculate average estimated delivery days from all vendor's offers
-            var avgDays = (int)offers.Average(o => o.EstimatedDeliveryDays);
+            var avgDays = (int)offers.Average(o => o.EstimatedDeliveryDays??0);
 
             return avgDays;
         }
@@ -151,7 +151,7 @@ public class ShippingCalculationService : IShippingCalculationService
             offer.EstimatedDeliveryDays
         );
 
-        return offer.EstimatedDeliveryDays;
+        return offer.EstimatedDeliveryDays ?? 0;
     }
 
     /// <summary>

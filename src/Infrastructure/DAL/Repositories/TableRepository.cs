@@ -308,7 +308,7 @@ namespace DAL.Repositories
             return await UpdateAsync(model, userId, cancellationToken);
         }
 
-        public async Task<bool> UpdateCurrentStateAsync(
+        public async Task<bool> UpdateIsDeletedAsync(
             Guid entityId,
             Guid updaterId,
             bool newState = true,
@@ -330,26 +330,26 @@ namespace DAL.Repositories
             }
             catch (DbUpdateException dbEx)
             {
-                HandleException(nameof(UpdateCurrentStateAsync),
-                    $"Database update error while updating CurrentState for entity type {typeof(T).Name}, ID {entityId}.", dbEx);
+                HandleException(nameof(UpdateIsDeletedAsync),
+                    $"Database update error while updating IsDeleted for entity type {typeof(T).Name}, ID {entityId}.", dbEx);
                 return false;
             }
             catch (Exception ex)
             {
-                HandleException(nameof(UpdateCurrentStateAsync),
-                    $"Error occurred while updating CurrentState for entity type {typeof(T).Name}, ID {entityId}.", ex);
+                HandleException(nameof(UpdateIsDeletedAsync),
+                    $"Error occurred while updating IsDeleted for entity type {typeof(T).Name}, ID {entityId}.", ex);
                 return false;
             }
         }
 
         public async Task<bool> SoftDeleteAsync(Guid entityId, Guid updaterId, CancellationToken cancellationToken = default)
         {
-            return await UpdateCurrentStateAsync(entityId, updaterId, true, cancellationToken);
+            return await UpdateIsDeletedAsync(entityId, updaterId, true, cancellationToken);
         }
 
         public async Task<bool> RestoreAsync(Guid entityId, Guid updaterId, CancellationToken cancellationToken = default)
         {
-            return await UpdateCurrentStateAsync(entityId, updaterId, false, cancellationToken);
+            return await UpdateIsDeletedAsync(entityId, updaterId, false, cancellationToken);
         }
 
         public async Task<bool> HardDeleteAsync(Guid id, CancellationToken cancellationToken = default)

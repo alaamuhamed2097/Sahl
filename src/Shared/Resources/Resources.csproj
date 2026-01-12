@@ -136,8 +136,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="CouponCodeResources.en.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>CouponCodeResources.resx.Designer.cs</LastGenOutput>
+      <Generator></Generator>
     </None>
   </ItemGroup>
 </Project>
