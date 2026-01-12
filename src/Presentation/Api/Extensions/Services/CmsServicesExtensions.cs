@@ -4,7 +4,7 @@ using BL.GeneralService.CMS;
 using BL.GeneralService.UserManagement;
 using System;
 
-namespace Api.Extensions
+namespace Api.Extensions.Services
 {
     public static class CmsServicesExtensions
     {

@@ -7,7 +7,7 @@ using BL.Services.Merchandising;
 using BL.Services.Merchandising.Campaign;
 using BL.Services.Merchandising.CouponCode;
 
-namespace Api.Extensions
+namespace Api.Extensions.Services
 {
     public static class MerchandisingServiceExtensions
     {

@@ -3,7 +3,7 @@ using BL.Contracts.Service.Pricing;
 using BL.Services.Catalog.Pricing;
 using BL.Services.Setting.Pricing;
 
-namespace Api.Extensions
+namespace Api.Extensions.Services
 {
     public static class PricingServiceExtensions
     {

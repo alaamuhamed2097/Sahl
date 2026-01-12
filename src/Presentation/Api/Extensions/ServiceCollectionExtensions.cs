@@ -1,4 +1,5 @@
 using Api.Extensions.Infrastructure;
+using Api.Extensions.Services;
 
 namespace Api.Extensions
 {

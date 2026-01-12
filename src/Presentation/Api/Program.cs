@@ -1,5 +1,6 @@
 ﻿using Api.Extensions;
 using Api.Extensions.Infrastructure;
+using Api.Extensions.Services;
 using Api.Middleware;
 using Asp.Versioning.ApiExplorer;
 using BL.GeneralService.Notification;

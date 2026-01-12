@@ -1,7 +1,7 @@
 using BL.Contracts.Service.Wallet.Customer;
 using BL.Services.Wallet.Customer;
 
-namespace Api.Extensions
+namespace Api.Extensions.Services
 {
     public static class WalletServiceExtensions
     {

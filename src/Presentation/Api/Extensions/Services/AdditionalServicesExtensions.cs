@@ -3,7 +3,7 @@ using BL.Contracts.Service.Warehouse;
 using BL.Services.Notification;
 using BL.Services.Warehouse;
 
-namespace Api.Extensions
+namespace Api.Extensions.Services
 {
     public static class AdditionalServicesExtensions
     {

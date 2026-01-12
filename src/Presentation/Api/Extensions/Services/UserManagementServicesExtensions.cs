@@ -1,7 +1,7 @@
 using BL.Contracts.GeneralService.UserManagement;
 using BL.GeneralService.UserManagement;
 
-namespace Api.Extensions
+namespace Api.Extensions.Services
 {
     public static class UserManagementServicesExtensions
     {

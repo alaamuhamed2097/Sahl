@@ -5,7 +5,7 @@ using BL.Services.Vendor;
 using BL.Services.VendorDashboard;
 using BL.Services.VendorItem;
 
-namespace Api.Extensions
+namespace Api.Extensions.Services
 {
     public static class VendorServiceExtensions
     {

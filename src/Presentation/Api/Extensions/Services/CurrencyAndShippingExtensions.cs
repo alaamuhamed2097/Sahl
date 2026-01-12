@@ -7,7 +7,7 @@ using BL.Services.Currency;
 using BL.Services.Order.Fulfillment;
 using BL.Services.ShippingCompany;
 
-namespace Api.Extensions
+namespace Api.Extensions.Services
 {
     public static class CurrencyAndShippingExtensions
     {

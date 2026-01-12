@@ -4,7 +4,7 @@ using BL.GeneralService;
 using BL.GeneralService.CMS;
 using DAL.Services;
 
-namespace Api.Extensions
+namespace Api.Extensions.Services
 {
     public static class GeneralServicesExtensions
     {

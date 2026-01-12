@@ -9,7 +9,7 @@ using BL.Services.Order.Checkout;
 using BL.Services.Order.OrderProcessing;
 using BL.Services.Order.Payment;
 
-namespace Api.Extensions
+namespace Api.Extensions.Services
 {
     public static class OrderServiceExtensions
     {

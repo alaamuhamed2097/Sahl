@@ -2,7 +2,7 @@ using Domains.Entities.Offer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace Api.Extensions
+namespace Api.Extensions.Services
 {
     public class OfferPriceHistoryConfiguration : IEntityTypeConfiguration<TbOfferPriceHistory>
 {

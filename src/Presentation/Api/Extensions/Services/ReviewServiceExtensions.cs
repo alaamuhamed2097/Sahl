@@ -1,7 +1,7 @@
 using BL.Contracts.Service.Review;
 using BL.Services.Review;
 
-namespace Api.Extensions
+namespace Api.Extensions.Services
 {
     public static class ReviewServiceExtensions
     {

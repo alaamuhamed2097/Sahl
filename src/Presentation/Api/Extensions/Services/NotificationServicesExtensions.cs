@@ -6,7 +6,7 @@ using BL.Contracts.GeneralService.Notification;
 using BL.GeneralService;
 using BL.GeneralService.Notification;
 
-namespace Api.Extensions
+namespace Api.Extensions.Services
 {
     public static class NotificationServicesExtensions
     {

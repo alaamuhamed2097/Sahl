@@ -3,7 +3,7 @@ using BL.Contracts.Service.Location;
 using BL.GeneralService.Location;
 using BL.Services.Location;
 
-namespace Api.Extensions
+namespace Api.Extensions.Services
 {
     public static class LocationServicesExtensions
     {

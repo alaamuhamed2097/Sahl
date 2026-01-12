@@ -9,7 +9,7 @@ using BL.Services.Catalog.Item;
 using BL.Services.Catalog.Unit;
 using BL.Services.Customer;
 
-namespace Api.Extensions
+namespace Api.Extensions.Services
 {
     public static class CatalogServiceExtensions
     {

@@ -1,7 +1,7 @@
 using BL.Contracts.Service.Setting;
 using BL.Services.Setting;
 
-namespace Api.Extensions
+namespace Api.Extensions.Services
 {
     public static class SettingServiceExtensions
     {

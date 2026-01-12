@@ -1,7 +1,7 @@
 using BL.Contracts.Service.WithdrawalMethod;
 using BL.Services.WithdrawalMethod;
 
-namespace Api.Extensions
+namespace Api.Extensions.Services
 {
     public static class WithdrawalMethodServiceExtensions
     {
