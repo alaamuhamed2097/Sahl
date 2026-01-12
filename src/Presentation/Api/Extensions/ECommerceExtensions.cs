@@ -23,6 +23,7 @@ using BL.Contracts.Service.ShippingCompny;
 using BL.Contracts.Service.Vendor;
 using BL.Contracts.Service.VendorItem;
 using BL.Contracts.Service.Wallet.Customer;
+using BL.Contracts.Services.Page;
 using BL.GeneralService.Location;
 using BL.Services.Brand;
 using BL.Services.Catalog.Category;
@@ -41,6 +42,7 @@ using BL.Services.Order.Checkout;
 using BL.Services.Order.Fulfillment;
 using BL.Services.Order.OrderProcessing;
 using BL.Services.Order.Payment;
+using BL.Services.Page;
 using BL.Services.Review;
 using BL.Services.Setting;
 using BL.Services.Setting.Pricing;
@@ -61,7 +63,7 @@ namespace Api.Extensions
             services.AddScoped<IPaymentService, PaymentService>();
 
             // Vendor Service
-            services.AddScoped<IVendorService, VendorService>();
+            services.AddScoped<IVendorManagementService, VendorManagementService>();
 
             // Category Services
             services.AddScoped<ICategoryService, CategoryService>();
@@ -74,7 +76,6 @@ namespace Api.Extensions
 
             // Custom Items Services
             services.AddScoped<ICustomerItemViewService, CustomerItemViewService>();
-            services.AddScoped<ICustomerRecommendedItemsService, CustomerRecommendedItemsService>();
 
             // Vendor Items Services
             services.AddScoped<IVendorItemService, VendorItemService>();
@@ -105,7 +106,7 @@ namespace Api.Extensions
 
             // Order Services
             services.AddScoped<ICartService, CartService>();
-            services.AddScoped<IOrderMangmentService, OrderMangmentService>();
+            services.AddScoped<IOrderManagementService, OrderManagementService>();
             services.AddScoped<ICustomerAddressService, CustomerAddressService>();
 
             services.AddScoped<IWishlistService, WishlistService>();
@@ -115,6 +116,10 @@ namespace Api.Extensions
             services.AddScoped<IReviewReportService, ReviewReportService>();
             services.AddScoped<IReviewVoteService, ReviewVoteService>();
             services.AddScoped<IVendorReviewService, VendorReviewService>();
+
+
+            services.AddScoped<IPageService, PageService>();
+
 
             // Merchandising Services
             services.AddScoped<IHomepageService, HomepageService>();

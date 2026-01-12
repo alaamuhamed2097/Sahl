@@ -7,7 +7,7 @@
 @attribute [Authorize(Roles = nameof(UserRole.Admin))]
 
 <PageTitle>@GeneralResources.Settings</PageTitle>
-@* 
+
 <div class="container-fluid p-0">
 	<div class="card shadow-sm border-0">
 		<div class="card-header bg-primary py-3 d-flex justify-content-between align-items-center">
@@ -92,19 +92,6 @@
 							</button>
 						</li>
 						<li class="nav-item" role="presentation">
-							<button class="@GetTabClass("order")"
-									@onclick='() => SetActiveTab("order")' type="button">
-								<i class="fas fa-shopping-cart me-2"></i>
-								@GeneralResources.OrderSettings
-								@if (tabValidationErrors.ContainsKey("order") && tabValidationErrors["order"])
-								{
-									<span class="error-indicator ms-2">
-										<i class="fas fa-exclamation-circle"></i>
-									</span>
-								}
-							</button>
-						</li>
-						<li class="nav-item" role="presentation">
 							<button class="@GetTabClass("seo")"
 									@onclick='() => SetActiveTab("seo")' type="button">
 								<i class="fas fa-search me-2"></i>
@@ -117,6 +104,20 @@
 								}
 							</button>
 						</li>
+						@* <li class="nav-item" role="presentation">
+							<button class="@GetTabClass("order")"
+									@onclick='() => SetActiveTab("order")' type="button">
+								<i class="fas fa-shopping-cart me-2"></i>
+								@GeneralResources.OrderSettings
+								@if (tabValidationErrors.ContainsKey("order") && tabValidationErrors["order"])
+								{
+									<span class="error-indicator ms-2">
+										<i class="fas fa-exclamation-circle"></i>
+									</span>
+								}
+							</button>
+						</li>
+						
 						<li class="nav-item" role="presentation">
 							<button class="@GetTabClass("banner")"
 									@onclick='() => SetActiveTab("banner")' type="button">
@@ -130,6 +131,8 @@
 								}
 							</button>
 						</li>
+					 *@
+					
 					</ul>
 
 					<!-- Tab Content -->
@@ -338,92 +341,6 @@
 								</ul>
 							</div>
 						</div>
-
-						<!-- Order Settings Tab -->
-						<div class="@($"tab-pane {(ActiveTab == "order" ? "show active" : "")}")" id="order">
-							<div class="row mt-3">
-								<!-- Shipping Amount -->
-								<div class="col-md-6">
-									<div class="card border-0 bg-light">
-										<div class="card-header bg-transparent">
-											<h6 class="mb-0">
-												<i class="fas fa-truck me-2"></i>
-												@ECommerceResources.ShippingAmount
-											</h6>
-										</div>
-										<div class="card-body">
-											<div class="form-group mb-0">
-												<label class="form-label">@ECommerceResources.ShippingAmount</label>
-												<div class="input-group">
-													<span class="input-group-text"><i class="fas fa-truck"></i></span>
-													<InputNumber class="form-control" @bind-Value="Model.ShippingAmount"
-																 @bind-Value:after="UpdateTabValidationState"
-																 min="0" step="0.1" />
-													<span class="input-group-text">$</span>
-												</div>
-												<ValidationMessage For="@(() => Model.ShippingAmount)" />
-												<small class="form-text text-muted">@GeneralResources.ShippingAmountHelpText</small>
-											</div>
-										</div>
-									</div>
-								</div>
-
-								<!-- Order Tax Amount -->
-								<div class="col-md-6">
-									<div class="card border-0 bg-light">
-										<div class="card-header bg-transparent">
-											<h6 class="mb-0">
-												<i class="fas fa-file-invoice-dollar me-2"></i>
-												@ECommerceResources.OrderTaxAmount
-											</h6>
-										</div>
-										<div class="card-body">
-											<div class="form-group mb-0">
-												<label class="form-label">@ECommerceResources.OrderTaxAmount</label>
-												<div class="input-group">
-													<span class="input-group-text"><i class="fas fa-file-invoice-dollar me-2"></i></span>
-													<InputNumber class="form-control" @bind-Value="Model.OrderTaxPercentage"
-																 @bind-Value:after="UpdateTabValidationState"
-																 min="0" step="0.1" />
-													<span class="input-group-text">%</span>
-												</div>
-												<ValidationMessage For="@(() => Model.OrderTaxPercentage)" />
-												<small class="form-text text-muted">@GeneralResources.OrderTaxPercentageHelpText</small>
-											</div>
-										</div>
-									</div>
-								</div>
-							</div>
-
-							<div class="row mt-3">
-								<!-- Order Extra Cost -->
-								<div class="col-md-6">
-									<div class="card border-0 bg-light">
-										<div class="card-header bg-transparent">
-											<h6 class="mb-0">
-												<i class="fas fa-file-invoice-dollar me-2"></i>
-												@ECommerceResources.OrderExtraCost
-											</h6>
-										</div>
-										<div class="card-body">
-											<div class="form-group mb-0">
-												<label class="form-label">@ECommerceResources.OrderExtraCost</label>
-												<div class="input-group">
-													<span class="input-group-text"><i class="fas fa-file-invoice-dollar me-2"></i></span>
-													<InputNumber class="form-control" @bind-Value="Model.OrderExtraCost"
-																 @bind-Value:after="UpdateTabValidationState"
-																 min="0" step="0.1" />
-													<span class="input-group-text">$</span>
-												</div>
-												<ValidationMessage For="@(() => Model.OrderExtraCost)" />
-												<small class="form-text text-muted">@GeneralResources.OrderExtraCostHelpText</small>
-											</div>
-										</div>
-									</div>
-								</div>
-							</div>
-						</div>
-
 						<!-- SEO Settings Tab -->
 						<div class="@($"tab-pane {(ActiveTab == "seo" ? "show active" : "")}")" id="seo">
 							<div class="row">
@@ -496,6 +413,99 @@
 								</div>
 							</div>
 						</div>
+				@* 		<!-- Order Settings Tab -->
+						<div class="@($"tab-pane {(ActiveTab == "order" ? "show active" : "")}")" id="order">
+							<div class="row mt-3">
+								<!-- Shipping Amount -->
+								
+								<div class="col-md-6">
+									<div class="card border-0 bg-light">
+										<div class="card-header bg-transparent">
+											<h6 class="mb-0">
+												<i class="fas fa-truck me-2"></i>
+												@ECommerceResources.ShippingAmount
+											</h6>
+										</div>
+										<div class="card-body">
+											<div class="form-group mb-0">
+												<label class="form-label">@ECommerceResources.ShippingAmount</label>
+												<div class="input-group">
+													<span class="input-group-text"><i class="fas fa-truck"></i></span>
+													<InputNumber class="form-control" @bind-Value="Model.ShippingAmount"
+																 @bind-Value:after="UpdateTabValidationState"
+																 min="0" step="0.1" />
+													<span class="input-group-text">$</span>
+												</div>
+												<ValidationMessage For="@(() => Model.ShippingAmount)" />
+												<small class="form-text text-muted">@GeneralResources.ShippingAmountHelpText</small>
+											</div>
+										</div>
+									</div>
+								</div>
+
+								<!-- Order Tax Amount -->
+
+								 <div class="col-md-6">
+									<div class="card border-0 bg-light">
+										<div class="card-header bg-transparent">
+											<h6 class="mb-0">
+												<i class="fas fa-file-invoice-dollar me-2"></i>
+												@ECommerceResources.OrderTaxAmount
+											</h6>
+										</div>
+										<div class="card-body">
+											<div class="form-group mb-0">
+												<label class="form-label">@ECommerceResources.OrderTaxAmount</label>
+												<div class="input-group">
+													<span class="input-group-text"><i class="fas fa-file-invoice-dollar me-2"></i></span>
+													<InputNumber class="form-control" @bind-Value="Model.OrderTaxPercentage"
+																 @bind-Value:after="UpdateTabValidationState"
+																 min="0" step="0.1" />
+													<span class="input-group-text">%</span>
+												</div>
+												<ValidationMessage For="@(() => Model.OrderTaxPercentage)" />
+												<small class="form-text text-muted">@GeneralResources.OrderTaxPercentageHelpText</small>
+											</div>
+										</div>
+									</div>
+								</div>
+							 
+							
+							</div>
+
+							<div class="row mt-3">
+
+								<!-- Order Extra Cost -->
+								 <div class="col-md-6">
+									<div class="card border-0 bg-light">
+										<div class="card-header bg-transparent">
+											<h6 class="mb-0">
+												<i class="fas fa-file-invoice-dollar me-2"></i>
+												@ECommerceResources.OrderExtraCost
+											</h6>
+										</div>
+										<div class="card-body">
+											<div class="form-group mb-0">
+												<label class="form-label">@ECommerceResources.OrderExtraCost</label>
+												<div class="input-group">
+													<span class="input-group-text"><i class="fas fa-file-invoice-dollar me-2"></i></span>
+													<InputNumber class="form-control" @bind-Value="Model.OrderExtraCost"
+																 @bind-Value:after="UpdateTabValidationState"
+																 min="0" step="0.1" />
+													<span class="input-group-text">$</span>
+												</div>
+												<ValidationMessage For="@(() => Model.OrderExtraCost)" />
+												<small class="form-text text-muted">@GeneralResources.OrderExtraCostHelpText</small>
+											</div>
+										</div>
+									</div>
+								</div>
+							 
+							
+							</div>
+						</div>
+
+						
 
 						<!-- Banner Settings Tab -->
 						<div class="@($"tab-pane {(ActiveTab == "banner" ? "show active" : "")}")" id="banner">
@@ -508,7 +518,8 @@
 												@GeneralResources.MainBanner
 											</h6>
 										</div>
-										<div class="card-body">
+
+										 <div class="card-body">
 											<div class="form-group mb-3">
 												<label class="form-label">@GeneralResources.MainBanner:</label>
 												<InputFile class="form-control"
@@ -559,6 +570,8 @@
 												</ul>
 											</div>
 										</div>
+									 
+									
 									</div>
 								</div>
 
@@ -598,12 +611,14 @@
 								</div>
 							</div>
 						</div>
+					
+					 *@
 					</div>
 				</div>
 			</EditForm>
 		}
 	</div>
-</div> *@
+</div> 
 
 <style>
 	.nav-tabs .nav-link {

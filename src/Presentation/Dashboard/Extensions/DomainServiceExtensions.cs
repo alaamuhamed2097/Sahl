@@ -9,10 +9,13 @@ using Dashboard.Contracts.General;
 using Dashboard.Contracts.HomePageSlider;
 using Dashboard.Contracts.Location;
 using Dashboard.Contracts.Order;
+using Dashboard.Contracts.Page;
 using Dashboard.Contracts.Review;
+using Dashboard.Contracts.Setting;
 using Dashboard.Contracts.User;
 using Dashboard.Contracts.Vendor;
 using Dashboard.Contracts.Warehouse;
+using Dashboard.Contracts.WithdrawalMethod;
 using Dashboard.Services;
 using Dashboard.Services.Brand;
 using Dashboard.Services.Content;
@@ -24,10 +27,13 @@ using Dashboard.Services.General;
 using Dashboard.Services.HomePageSlider;
 using Dashboard.Services.Location;
 using Dashboard.Services.Order;
+using Dashboard.Services.Page;
 using Dashboard.Services.Review;
+using Dashboard.Services.Setting;
 using Dashboard.Services.User;
 using Dashboard.Services.Vendor;
 using Dashboard.Services.Warehouse;
+using UI.Services.Withdrawal;
 
 namespace Dashboard.Extensions
 {
@@ -52,9 +58,10 @@ namespace Dashboard.Extensions
             services.AddScoped<IShippingCompanyService, ShippingCompanyService>();
             services.AddScoped<ICountryPhoneCodeService, CountryPhoneCodeService>();
             services.AddScoped<ICurrencyService, CurrencyService>();
+			services.AddScoped<IPageService, PageService>();
 
-            // Warehouse & Inventory Services
-            services.AddScoped<IWarehouseService, WarehouseService>();
+			// Warehouse & Inventory Services
+			services.AddScoped<IWarehouseService, WarehouseService>();
 
             // Content Management Services
             services.AddScoped<IContentAreaService, ContentAreaService>();
@@ -63,9 +70,14 @@ namespace Dashboard.Extensions
 			services.AddScoped<IItemReviewService, ItemReviewService>();
 			services.AddScoped<IReportReviewService, ReportReviewService>();
 			services.AddScoped<IHomePageSliderService, HomePageSliderService>();
-
+			services.AddScoped<ISystemSettingsService, SystemSettingsService>();
 			// Excel Template Service
 			services.AddScoped<ExcelTemplateService>();
+
+            services.AddScoped<IWithdrawalMethodService, WithdrawalMethodService>();
+
+            // Excel Template Service
+            services.AddScoped<ExcelTemplateService>();
 
             return services;
         }

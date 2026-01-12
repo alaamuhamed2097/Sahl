@@ -470,7 +470,7 @@ public class RefundService : IRefundService
         if (order.OrderStatus != OrderProgressStatus.Completed)
             return RefundEligibilityResult.NotEligible("Only completed orders can be refunded");
 
-        if (order.PaymentStatus != PaymentStatus.Paid)
+        if (order.PaymentStatus != PaymentStatus.Completed)
             return RefundEligibilityResult.NotEligible("Order has not been paid");
 
         if (!order.OrderDeliveryDate.HasValue)
@@ -498,7 +498,7 @@ public class RefundService : IRefundService
 
             var paymentRepo = _unitOfWork.TableRepository<TbOrderPayment>();
             var payment = await paymentRepo.GetQueryable()
-                .FirstOrDefaultAsync(p => p.OrderId == order.Id && p.PaymentStatus == PaymentStatus.Paid);
+                .FirstOrDefaultAsync(p => p.OrderId == order.Id && p.PaymentStatus == PaymentStatus.Completed);
 
             if (payment == null)
                 return RefundExecutionResult.Fail("Payment record not found");

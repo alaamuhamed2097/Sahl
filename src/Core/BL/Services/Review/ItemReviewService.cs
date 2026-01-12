@@ -98,7 +98,7 @@ namespace BL.Services.Review
 
 
 				//return _mapper.MapModel<TbItemReview, ItemReviewDto>(review);
-				var customer = await _customerRepository.FindAsync(c => c.Id == reviewDto.CustomerId, cancellationToken);
+			var customer = await _customerRepository.FindAsync(c => c.Id == reviewDto.CustomerId, "", cancellationToken);
 				string customerEmail = string.Empty;
 				if (customer != null)
 				{
@@ -190,7 +190,7 @@ namespace BL.Services.Review
 				{
 					await UpdateItemAverageRatingAsync(review.ItemId, cancellationToken);
 				}
-				var customer = await _customerRepository.FindAsync(c => c.Id == reviewDto.CustomerID, cancellationToken);
+			var customer = await _customerRepository.FindAsync(c => c.Id == reviewDto.CustomerID, "", cancellationToken);
 				string customerEmail = string.Empty;
 				if (customer != null)
 				{
@@ -392,9 +392,10 @@ namespace BL.Services.Review
 				foreach (var review in reviews)
 				{
 					
-					var customer = await _customerRepository.FindAsync(
-						c => c.Id == review.CustomerId,
-						cancellationToken);
+				var customer = await _customerRepository.FindAsync(
+					c => c.Id == review.CustomerId,
+					"",
+					cancellationToken);
 
 					string customerEmail = string.Empty;
 					if (customer != null)

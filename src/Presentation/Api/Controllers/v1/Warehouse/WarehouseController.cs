@@ -7,8 +7,10 @@ using DAL.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Resources;
+using Shared.DTOs.Vendor;
 using Shared.DTOs.Warehouse;
 using Shared.GeneralModels;
+using Shared.GeneralModels.SearchCriteriaModels;
 
 namespace Api.Controllers.v1.Warehouse
 {
@@ -45,16 +47,43 @@ namespace Api.Controllers.v1.Warehouse
                 Data = warehouses
             });
         }
+		[HttpGet("vendors")]
+		[Authorize(Roles = nameof(UserRole.Admin))]
+		public async Task<IActionResult> GetVendors()
+		{
+			var vendors = await _warehouseService.GetVendorsAsync();
 
-        /// <summary>
-        /// Retrieves active warehouses only.
-        /// </summary>
-        /// <remarks>
-        /// Requires Admin role.
-        /// 
-        /// API Version: 1.0+
-        /// </remarks>
-        [HttpGet("active")]
+			return Ok(new ResponseModel<IEnumerable<VendorDto>>
+			{
+				Success = true,
+				Message = GetResource<NotifiAndAlertsResources>(nameof(NotifiAndAlertsResources.DataRetrieved)),
+				Data = vendors
+			});
+		}
+
+		[HttpGet("multi-vendor-enabled")]
+		[Authorize(Roles = nameof(UserRole.Admin))]
+		public async Task<IActionResult> IsMultiVendorEnabled()
+		{
+			var isEnabled = await _warehouseService.IsMultiVendorEnabledAsync();
+
+			return Ok(new ResponseModel<bool>
+			{
+				Success = true,
+				Data = isEnabled
+			});
+		}
+
+
+		/// <summary>
+		/// Retrieves active warehouses only.
+		/// </summary>
+		/// <remarks>
+		/// Requires Admin role.
+		/// 
+		/// API Version: 1.0+
+		/// </remarks>
+		[HttpGet("active")]
         [Authorize(Roles = nameof(UserRole.Admin))]
         public async Task<IActionResult> GetActive()
         {
@@ -115,7 +144,7 @@ namespace Api.Controllers.v1.Warehouse
         /// </remarks>
         [HttpGet("search")]
         [Authorize(Roles = nameof(UserRole.Admin))]
-        public async Task<IActionResult> Search([FromQuery] BaseSearchCriteriaModel criteriaModel)
+        public async Task<IActionResult> Search([FromQuery] WarehouseSearchCriteriaModel criteriaModel)
         {
             criteriaModel.PageNumber = criteriaModel.PageNumber < 1 ? 1 : criteriaModel.PageNumber;
             criteriaModel.PageSize = criteriaModel.PageSize < 1 || criteriaModel.PageSize > 100 ? 10 : criteriaModel.PageSize;
@@ -129,17 +158,32 @@ namespace Api.Controllers.v1.Warehouse
                 Data = result
             });
         }
+		[HttpGet("search-vendor")]
+		[Authorize(Roles = nameof(UserRole.Admin))]
+		public async Task<IActionResult> SearchVendor([FromQuery] WarehouseSearchCriteriaModel criteriaModel)
+		{
+			criteriaModel.PageNumber = criteriaModel.PageNumber < 1 ? 1 : criteriaModel.PageNumber;
+			criteriaModel.PageSize = criteriaModel.PageSize < 1 || criteriaModel.PageSize > 100 ? 10 : criteriaModel.PageSize;
 
-        /// <summary>
-        /// Adds a new warehouse or updates an existing one.
-        /// </summary>
-        /// <param name="dto">The warehouse data.</param>
-        /// <remarks>
-        /// Requires Admin role.
-        /// 
-        /// API Version: 1.0+
-        /// </remarks>
-        [HttpPost("save")]
+			var result = await _warehouseService.SearchVendorAsync(criteriaModel);
+
+			return Ok(new ResponseModel<PagedResult<WarehouseDto>>
+			{
+				Success = true,
+				Message = GetResource<NotifiAndAlertsResources>(nameof(NotifiAndAlertsResources.DataRetrieved)),
+				Data = result
+			});
+		}
+		/// <summary>
+		/// Adds a new warehouse or updates an existing one.
+		/// </summary>
+		/// <param name="dto">The warehouse data.</param>
+		/// <remarks>
+		/// Requires Admin role.
+		/// 
+		/// API Version: 1.0+
+		/// </remarks>
+		[HttpPost("save")]
         [Authorize(Roles = nameof(UserRole.Admin))]
         public async Task<IActionResult> Save([FromBody] WarehouseDto dto)
         {

@@ -20,11 +20,9 @@ public partial class MappingProfile
             .ForMember(dest => dest.CreatedDate,
                 opt => opt.MapFrom(src => src.CreatedDateUtc))
             .ForMember(dest => dest.CityName,
-                opt => opt.Ignore()) // Set manually or use custom resolver
+                opt => opt.MapFrom(src => src.City.TitleAr))
             .ForMember(dest => dest.StateName,
-                opt => opt.Ignore()) // Set manually or use custom resolver
-            .ForMember(dest => dest.CountryName,
-                opt => opt.Ignore()); // Set manually or use custom resolver
+                opt => opt.MapFrom(src => src.City.State.TitleAr));
 
         // TbCustomerAddress → AddressSelectionDto
         CreateMap<TbCustomerAddress, AddressSelectionDto>()
@@ -51,6 +49,8 @@ public partial class MappingProfile
                 opt => opt.MapFrom(src => src.PhoneNumber.Trim()))
             .ForMember(dest => dest.PhoneCode,
                 opt => opt.MapFrom(src => src.PhoneCode.Trim()))
+            .ForMember(dest => dest.Address,
+                opt => opt.MapFrom(src => src.Address.Trim()))
             .ForMember(dest => dest.IsDefault,
                 opt => opt.Ignore()) // Handled by service logic
             .ForMember(dest => dest.IsDeleted,
@@ -76,6 +76,8 @@ public partial class MappingProfile
                 opt => opt.MapFrom(src => src.PhoneNumber.Trim()))
             .ForMember(dest => dest.PhoneCode,
                 opt => opt.MapFrom(src => src.PhoneCode.Trim()))
+            .ForMember(dest => dest.Address,
+                opt => opt.MapFrom(src => src.Address.Trim()))
             .ForMember(dest => dest.IsDefault,
                 opt => opt.Ignore()) // Handled separately
             .ForMember(dest => dest.IsDeleted,
@@ -101,6 +103,8 @@ public partial class MappingProfile
                 opt => opt.MapFrom(src => src.PhoneNumber.Trim()))
             .ForMember(dest => dest.PhoneCode,
                 opt => opt.MapFrom(src => src.PhoneCode.Trim()))
+            .ForMember(dest => dest.Address,
+                opt => opt.MapFrom(src => src.Address.Trim()))
             .ForMember(dest => dest.IsDefault,
                 opt => opt.Ignore())
             .ForMember(dest => dest.IsDeleted,

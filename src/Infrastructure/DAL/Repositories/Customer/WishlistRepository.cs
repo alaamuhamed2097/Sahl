@@ -1,4 +1,5 @@
-﻿using DAL.ApplicationContext;
+﻿using BL.Contracts.GeneralService;
+using DAL.ApplicationContext;
 using DAL.Contracts.Repositories.Customer;
 using DAL.Exceptions;
 using DAL.Models;
@@ -14,7 +15,8 @@ namespace DAL.Repositories.Customer
     /// </summary>
     public class WishlistRepository : TableRepository<TbWishlist>, IWishlistRepository
     {
-        public WishlistRepository(ApplicationDbContext dbContext, ILogger logger) : base(dbContext, logger)
+        public WishlistRepository(ApplicationDbContext dbContext, ICurrentUserService currentUserService, ILogger logger)
+            : base(dbContext, currentUserService, logger)
         {
         }
 

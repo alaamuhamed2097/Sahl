@@ -18,8 +18,7 @@ namespace BL.Services.Order.Checkout;
 
 /// <summary>
 /// Service responsible for orchestrating the checkout process.
-/// Coordinates between cart, address, shipping calculation, and coupon validation.
-/// Note: For post-order operations, use IShipmentService, IDeliveryService, and IFulfillmentService
+/// UPDATED: Populates complete CheckoutItemDto with all required properties
 /// </summary>
 public class CheckoutService : ICheckoutService
 {
@@ -84,14 +83,13 @@ public class CheckoutService : ICheckoutService
             .Distinct()
             .ToList();
 
-        // Build a mapping from combination pricing ID to offer by querying the offers
-        // and their combination pricings
+        // Build a mapping from combination pricing ID to offer
         var offersEntities = await _offerRepository
             .GetOffersByCombinationPricingIdsAsync(offerCombinationPricingIds);
 
         if (!offersEntities.Any())
         {
-            _logger.Error("No offers found for any of the {PricingCount} combination pricing IDs: {PricingIds}", 
+            _logger.Error("No offers found for any of the {PricingCount} combination pricing IDs: {PricingIds}",
                 offerCombinationPricingIds.Count, string.Join(", ", offerCombinationPricingIds));
             throw new InvalidOperationException("No offers found for the given combination pricing IDs. The offers may have been deleted or are no longer active.");
         }
@@ -100,12 +98,9 @@ public class CheckoutService : ICheckoutService
         var offerDtos = _mapper.MapList<TbOffer, OfferDto>(offersEntities);
 
         // Create a mapping from OfferCombinationPricingId to OfferDto
-        // Since we need to match cart items to offers by their combination pricing ID,
-        // we need to find which offer each combination pricing belongs to
         var pricingIdToOfferDictionary = new Dictionary<Guid, OfferDto>();
         foreach (var offer in offerDtos)
         {
-            // Check if OfferCombinationPricings is null or empty
             if (offer.OfferCombinationPricings == null || !offer.OfferCombinationPricings.Any())
             {
                 _logger.Warning("Offer {OfferId} has no combination pricings loaded", offer.Id);
@@ -125,14 +120,14 @@ public class CheckoutService : ICheckoutService
 
         if (missingPricingIds.Any())
         {
-            _logger.Error("Could not find {MissingCount} offers. Missing pricing IDs: {MissingIds}. Found {FoundCount} mappings from {OfferCount} offers", 
-                missingPricingIds.Count, string.Join(", ", missingPricingIds), pricingIdToOfferDictionary.Count, offerDtos.Count());
+            _logger.Error("Could not find {MissingCount} offers. Missing pricing IDs: {MissingIds}",
+                missingPricingIds.Count, string.Join(", ", missingPricingIds));
             throw new InvalidOperationException(
                 $"Offers not found for combination pricing IDs: {string.Join(", ", missingPricingIds)}"
             );
         }
 
-        // Step 4: Calculate shipping costs using dedicated shipping service (only if address is provided)
+        // Step 4: Calculate shipping costs (only if address is provided)
         ShippingCalculationResult shippingResult = new();
 
         if (address != null)
@@ -163,10 +158,11 @@ public class CheckoutService : ICheckoutService
         // Step 5: Calculate tax from system settings
         var subtotal = cart.SubTotal;
         var taxRate = await _systemSettings.GetTaxRateAsync();
-        var taxAmount = (subtotal) * (taxRate / 100);
+        var taxPercentage = taxRate;
+        var totalTaxAmount = subtotal * (taxRate / 100);
 
         // Step 6: Apply coupon discount if provided
-        decimal discountAmount = 0;
+        decimal totalDiscountAmount = 0;
         CouponInfoDto? couponInfo = null;
         Guid? couponId = null;
 
@@ -180,12 +176,12 @@ public class CheckoutService : ICheckoutService
 
             if (couponResult.IsValid)
             {
-                discountAmount = couponResult.DiscountAmount;
+                totalDiscountAmount = couponResult.DiscountAmount;
                 couponId = couponResult.CouponId;
                 couponInfo = new CouponInfoDto
                 {
                     Code = request.CouponCode,
-                    DiscountAmount = discountAmount,
+                    DiscountAmount = totalDiscountAmount,
                     DiscountPercentage = couponResult.DiscountPercentage,
                     DiscountType = couponResult.DiscountTypeName
                 };
@@ -202,29 +198,66 @@ public class CheckoutService : ICheckoutService
         }
 
         // Step 7: Calculate final grand total
-        var grandTotal = subtotal + (shippingResult.TotalShippingCost ?? 0) + taxAmount - discountAmount;
+        var grandTotal = subtotal + (shippingResult.TotalShippingCost ?? 0) + totalTaxAmount - totalDiscountAmount;
 
-        // Step 8: Build checkout summary response
+        // Step 8: Build checkout items with complete information
+        var checkoutItems = cart.Items.Select(cartItem =>
+        {
+            var offer = pricingIdToOfferDictionary[cartItem.OfferCombinationPricingId];
+
+            // ✅ Get the specific pricing from the offer
+            var pricing = offer.OfferCombinationPricings
+                .FirstOrDefault(p => p.Id == cartItem.OfferCombinationPricingId);
+
+            // ✅ Calculate per-item discount (distribute total discount proportionally)
+            decimal itemDiscountAmount = 0;
+            if (totalDiscountAmount > 0 && subtotal > 0)
+            {
+                decimal itemRatio = cartItem.SubTotal / subtotal;
+                itemDiscountAmount = totalDiscountAmount * itemRatio;
+            }
+
+            // ✅ Calculate per-item tax
+            decimal itemTaxAmount = cartItem.SubTotal * (taxRate / 100);
+
+            return new CheckoutItemDto
+            {
+                // ✅ IDENTIFICATION - All required fields
+                ItemId = cartItem.ItemId,
+                ItemCombinationId = pricing?.ItemCombinationId ?? Guid.Empty,
+                OfferCombinationPricingId = cartItem.OfferCombinationPricingId,
+                VendorId = offer.VendorId,
+                WarehouseId = offer.WarehouseId,
+
+                // ✅ DISPLAY
+                ItemName = cartItem.ItemNameEn,
+                SellerName = cartItem.SellerName,
+
+                // ✅ PRICING - All amounts
+                Quantity = cartItem.Quantity,
+                UnitPrice = cartItem.UnitPrice,
+                SubTotal = cartItem.SubTotal,
+                DiscountAmount = itemDiscountAmount,
+                TaxAmount = itemTaxAmount,
+
+                // ✅ AVAILABILITY
+                IsAvailable = cartItem.IsAvailable
+            };
+        }).ToList();
+
+        // Step 9: Build checkout summary response
         var summary = new CheckoutSummaryDto
         {
-            Items = cart.Items.Select(i => new CheckoutItemDto
-            {
-                ItemId = i.ItemId,
-                ItemName = i.ItemNameEn,
-                SellerName = i.SellerName,
-                Quantity = i.Quantity,
-                UnitPrice = i.UnitPrice,
-                SubTotal = i.SubTotal,
-                IsAvailable = i.IsAvailable
-            }).ToList(),
+            Items = checkoutItems,  // ✅ Complete items with all properties
             ShipmentPreviews = shippingResult.ShipmentPreviews,
             DeliveryAddress = address,
             PriceBreakdown = new PriceBreakdownDto
             {
                 Subtotal = subtotal,
                 ShippingCost = shippingResult.TotalShippingCost,
-                TaxAmount = taxAmount,
-                DiscountAmount = discountAmount,
+                TaxPercentage = taxPercentage,
+                TaxAmount = totalTaxAmount,
+                DiscountAmount = totalDiscountAmount,
                 GrandTotal = grandTotal
             },
             CouponInfo = couponInfo,
@@ -282,15 +315,12 @@ public class CheckoutService : ICheckoutService
                 $"The following items are no longer available: {itemNames}"
             );
         }
-
-        _logger.Information("Checkout validation passed for customer {CustomerId}", customerId);
     }
 
     #region Private Helper Methods
 
     /// <summary>
     /// Validates and applies a coupon code to the order.
-    /// Checks coupon status, expiry, usage limits, and calculates discount amount.
     /// </summary>
     private async Task<CouponValidationResult> ApplyCouponAsync(
         string couponCode,

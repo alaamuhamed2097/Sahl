@@ -98,13 +98,10 @@ namespace BL.GeneralService.Notification
 
         public Task<OperationResult> SendAsync(EmailRequest request)
         {
-            return new Task<OperationResult>(() =>
+            return Task.FromResult(new OperationResult
             {
-                return new OperationResult
-                {
-                    Success = true,
-                    Message = "MailGunProviderService SendAsync Not implemented (stub)."
-                };
+                Success = true,
+                Message = "MailGunProviderService SendAsync Not implemented (stub)."
             });
         }
     }

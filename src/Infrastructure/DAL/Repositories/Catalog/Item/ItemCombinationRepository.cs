@@ -1,3 +1,4 @@
+using BL.Contracts.GeneralService;
 using DAL.ApplicationContext;
 using DAL.Contracts.Repositories.Catalog.Item;
 using Domains.Entities.Catalog.Item.ItemAttributes;
@@ -11,8 +12,8 @@ namespace DAL.Repositories.Catalog.Item
     /// </summary>
     public class ItemCombinationRepository : TableRepository<TbItemCombination>, IItemCombinationRepository
     {
-        public ItemCombinationRepository(ApplicationDbContext dbContext, ILogger logger)
-            : base(dbContext, logger)
+        public ItemCombinationRepository(ApplicationDbContext dbContext, ICurrentUserService currentUserService, ILogger logger)
+            : base(dbContext, currentUserService, logger)
         {
         }
 

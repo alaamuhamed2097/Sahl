@@ -19,5 +19,4 @@ namespace Shared.DTOs.Merchandising.CouponCode
 
         public List<OrderItemDetailsDto>? OrderItems { get; set; }
     }
-
 }

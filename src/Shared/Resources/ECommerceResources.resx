@@ -382,7 +382,7 @@
     <value>ضمن التصنيف المميز</value>
   </data>
   <data name="CurrentPosition" xml:space="preserve">
-    <value>الموضع الحالي</value>
+    <value>الموقع الحالي</value>
   </data>
   <data name="Level" xml:space="preserve">
     <value>المستوى</value>
@@ -457,10 +457,10 @@
     <value>التحكم في الإعلانات</value>
   </data>
   <data name="MainBanners" xml:space="preserve">
-    <value>البنرات الرئيسية</value>
+    <value>البانرات الرئيسية</value>
   </data>
   <data name="MainBanner" xml:space="preserve">
-    <value>البنر الرئيسي</value>
+    <value>البانر الرئيسي</value>
   </data>
   <data name="AdvertViews" xml:space="preserve">
     <value>مشاهدات الإعلان</value>
@@ -768,9 +768,6 @@
   <data name="Vendors" xml:space="preserve">
     <value>البائعون</value>
   </data>
-  <data name="CompanyName" xml:space="preserve">
-    <value>اسم الشركة</value>
-  </data>
   <data name="ContactName" xml:space="preserve">
     <value>اسم المسؤول</value>
   </data>
@@ -813,76 +810,88 @@
   <data name="SalesPrice" xml:space="preserve">
     <value>سعر البيع</value>
   </data>
-	<data name="AttributeValues" xml:space="preserve">
-  <value>قيم الخصائص</value>
-</data>
-	<data name="DefaultPricingNote" xml:space="preserve">
-  <value>سيتم استخدام التسعير الافتراضي إذا لم يتم تعيين أسعار للخيارات.</value>
-</data>
-	<data name="MaximumPrice" xml:space="preserve">
-  <value>السعر الأقصى</value>
-</data>
-	<data name="MinimumPrice" xml:space="preserve">
-  <value>السعر الأدنى</value>
-</data>
-	<data name="BasePrice" xml:space="preserve">
-  <value>السعر الأساسي</value>
-</data>
-	<data name="StockKeepingUnit" xml:space="preserve">
-  <value>وحدة حفظ المخزون (SKU)</value>
-</data>
-	<data name="SetDefaultPricing" xml:space="preserve">
-  <value>تعيين التسعير الافتراضي</value>
-</data>
-	<data name="PricingInformation" xml:space="preserve">
-  <value>معلومات التسعير</value>
-</data>
-	<data name="Barcode" xml:space="preserve">
-  <value>الباركود</value>
-</data>
-	<data name="ConfigureAttributes" xml:space="preserve">
-  <value>قم بتكوين الخصائص لهذا المنتج</value>
-</data>
-	<data name="AffectsPricingListTypeOnly" xml:space="preserve">
-  <value>خاصية "تؤثر على التسعير" متوفرة فقط للسمات من نوع القائمة</value>
-</data>
-	<data name="MainBanners">
-	<value>البانرات الرئيسية</value>
-</data>
-<data name="HomePageSlider">
-	<value>سلايدر الصفحة الرئيسية</value>
-</data>
-<data name="DisplayOrder">
-	<value>ترتيب العرض</value>
-</data>
-<data name="SliderImage">
-	<value>صورة السلايدر</value>
-</data>
-<data name="SliderTitle">
-	<value>عنوان السلايدر</value>
-</data>
-	<data name="MainBanners">
-		<value>البانرات الرئيسية</value>
-	</data>
-	<data name="HomePageSlider">
-		<value>سلايدر الصفحة الرئيسية</value>
-	</data>
-	<data name="DisplayOrder">
-		<value>ترتيب العرض</value>
-	</data>
-	<data name="SliderImage">
-		<value>صورة السلايدر</value>
-	</data>
-	<data name="SliderTitle">
-		<value>عنوان السلايدر</value>
-	</data>
-	<data name="BannerDuration">
-		<value>مدة البانر</value>
-	</data>
-	<data name="CurrentPosition">
-		<value>الموقع الحالي</value>
-	</data>
-	<data name="MainBanner">
-		<value>البانر الرئيسي</value>
-	</data>
+  <data name="AttributeValues" xml:space="preserve">
+    <value>قيم الخصائص</value>
+  </data>
+  <data name="DefaultPricingNote" xml:space="preserve">
+    <value>سيتم استخدام التسعير الافتراضي إذا لم يتم تعيين أسعار للخيارات.</value>
+  </data>
+  <data name="MaximumPrice" xml:space="preserve">
+    <value>السعر الأقصى</value>
+  </data>
+  <data name="MinimumPrice" xml:space="preserve">
+    <value>السعر الأدنى</value>
+  </data>
+  <data name="BasePrice" xml:space="preserve">
+    <value>السعر الأساسي</value>
+  </data>
+  <data name="StockKeepingUnit" xml:space="preserve">
+    <value>وحدة حفظ المخزون (SKU)</value>
+  </data>
+  <data name="SetDefaultPricing" xml:space="preserve">
+    <value>تعيين التسعير الافتراضي</value>
+  </data>
+  <data name="PricingInformation" xml:space="preserve">
+    <value>معلومات التسعير</value>
+  </data>
+  <data name="Barcode" xml:space="preserve">
+    <value>الباركود</value>
+  </data>
+  <data name="ConfigureAttributes" xml:space="preserve">
+    <value>قم بتكوين الخصائص لهذا المنتج</value>
+  </data>
+  <data name="AffectsPricingListTypeOnly" xml:space="preserve">
+    <value>خاصية "تؤثر على التسعير" متوفرة فقط للسمات من نوع القائمة</value>
+  </data>
+  <data name="NoWithdrawalMethodsAvailable" xml:space="preserve">
+    <value>لا توجد طرق سحب متاحه</value>
+  </data>
+  <data name="WithdrawalMethods" xml:space="preserve">
+    <value>طرق السحب</value>
+  </data>
+  <data name="HomePageSlider">
+    <value>سلايدر الصفحة الرئيسية</value>
+  </data>
+  <data name="DisplayOrder">
+    <value>ترتيب العرض</value>
+  </data>
+  <data name="SliderImage">
+    <value>صورة السلايدر</value>
+  </data>
+  <data name="SliderTitle">
+    <value>عنوان السلايدر</value>
+  </data>
+  <data name="BannerDuration">
+    <value>مدة البانر</value>
+  </data>
+  <data name="Sales" xml:space="preserve">
+    <value>المبيعات</value>
+  </data>
+  <data name="HomePageSlider" xml:space="preserve">
+    <value>سلايدر الصفحة الرئيسية</value>
+  </data>
+  <data name="DisplayOrder" xml:space="preserve">
+    <value>ترتيب العرض</value>
+  </data>
+  <data name="SliderImage" xml:space="preserve">
+    <value>صورة السلايدر</value>
+  </data>
+  <data name="SliderTitle" xml:space="preserve">
+    <value>عنوان السلايدر</value>
+  </data>
+  <data name="BannerDuration" xml:space="preserve">
+    <value>مدة البانر</value>
+  </data>
+  <data name="StoreName" xml:space="preserve">
+    <value>اسم المتجر</value>
+    <comment>Store Name</comment>
+  </data>
+  <data name="NoRating" xml:space="preserve">
+    <value>لا يوجد تقييم</value>
+    <comment>No Rating</comment>
+  </data>
+  <data name="ComingSoon" xml:space="preserve">
+    <value>قريباً</value>
+    <comment>Coming Soon</comment>
+  </data>
 </root>

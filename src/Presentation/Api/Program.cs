@@ -31,9 +31,7 @@ builder.Services.AddNotificationServices();
 builder.Services.AddUserManagementServices();
 builder.Services.AddLocationServices();
 builder.Services.AddGeneralServices();
-
-// Configure E-Commerce Services
-builder.Services.AddECommerceConfiguration(builder.Configuration);
+builder.Services.AddDomainServices(builder.Configuration);
 
 // Configure New Services
 builder.Services.AddWarehouseAndInventoryServices();

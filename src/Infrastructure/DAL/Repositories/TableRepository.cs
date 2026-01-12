@@ -1,4 +1,5 @@
-﻿using DAL.ApplicationContext;
+﻿using BL.Contracts.GeneralService;
+using DAL.ApplicationContext;
 using DAL.Contracts.Repositories;
 using DAL.Exceptions;
 using DAL.Models;
@@ -15,14 +16,18 @@ namespace DAL.Repositories
     public class TableRepository<T> : Repository<T>, ITableRepository<T> where T : BaseEntity
     {
         protected readonly ApplicationDbContext _dbContext;
+        private readonly ICurrentUserService _currentUserService;
         protected readonly ILogger _logger;
 
         // Constants
         private const int BULK_OPERATION_CHUNK_SIZE = 1000;
 
-        public TableRepository(ApplicationDbContext dbContext, ILogger logger) : base(dbContext, logger)
+        public TableRepository(ApplicationDbContext dbContext,
+            ICurrentUserService currentUserService,
+            ILogger logger) : base(dbContext, logger)
         {
             _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext), "Database context cannot be null.");
+            _currentUserService = currentUserService ?? throw new ArgumentNullException(nameof(currentUserService), "Current user service cannot be null.");
             _logger = logger ?? throw new ArgumentNullException(nameof(logger), "Logger instance cannot be null.");
         }
 
@@ -249,6 +254,13 @@ namespace DAL.Repositories
                 HandleException(nameof(CreateAsync), $"Error occurred while creating an entity of type {typeof(T).Name}.", ex);
                 return new SaveResult { Success = false };
             }
+        }
+
+        public async Task<SaveResult> CreateAsync(T model, CancellationToken cancellationToken = default)
+        {
+            var userId = Guid.Parse(_currentUserService.GetCurrentUserId() ?? Guid.Empty.ToString());
+
+            return await CreateAsync(model, userId, cancellationToken);
         }
 
         public async Task<SaveResult> UpdateAsync(T model, Guid updaterId, CancellationToken cancellationToken = default)

@@ -526,7 +526,7 @@
     <value>ID card or Passport</value>
   </data>
   <data name="Placeholder" xml:space="preserve">
-    <value>Please enter your {0}</value>
+    <value>Enter {0}</value>
   </data>
   <data name="Saving" xml:space="preserve">
     <value>Saving....</value>
@@ -595,7 +595,7 @@
     <value>Usage Limit</value>
   </data>
   <data name="InActive" xml:space="preserve">
-    <value>InActive</value>
+    <value>In Active</value>
   </data>
   <data name="PromoCodeType" xml:space="preserve">
     <value>Promo Code Type</value>
@@ -705,41 +705,25 @@
   <data name="Values" xml:space="preserve">
     <value>Values</value>
   </data>
-
-	<data name="ArabicTitle">
-		<value>Arabic Title</value>
-	</data>
-	<data name="EnglishTitle">
-		<value>English Title</value>
-	</data>
-	<data name="Title">
-		<value>Title</value>
-	</data>
-	<data name="StartDate">
-		<value>Start Date</value>
-	</data>
-	<data name="EndDate">
-		<value>End Date</value>
-	</data>
-	<data name="DisplayOrder">
-		<value>Display Order</value>
-	</data>
-	<data name="DisplayOrderHint">
-		<value>Set the order in which this item appears (1 = first)</value>
-	</data>
-	<data name="DisplayOrderStatus">
-		<value>Current position: {0} of {1}</value>
-	</data>
-	<data name="NewEntityOrderInfo">
-		<value>This {1} will be added at position {0}</value>
-	</data>
-	<data name="Image">
-		<value>Image</value>
-	</data>
-	<data name="Select">
-		<value>Select</value>
-	</data>
-	<data name="Placeholder">
-		<value>Enter {0}</value>
-	</data>
+  <data name="DisplayOrder" xml:space="preserve">
+    <value>Display Order</value>
+  </data>
+  <data name="DisplayOrderHint" xml:space="preserve">
+    <value>Set the order in which this item appears (1 = first)</value>
+  </data>
+  <data name="DisplayOrderStatus" xml:space="preserve">
+    <value>Current position: {0} of {1}</value>
+  </data>
+  <data name="NewEntityOrderInfo" xml:space="preserve">
+    <value>This {1} will be added at position {0}</value>
+  </data>
+  <data name="PageType" xml:space="preserve">
+    <value>Page Type</value>
+  </data>
+  <data name="SelectPageType" xml:space="preserve">
+    <value>Select Page Type</value>
+  </data>
+  <data name="PageTypeHint" xml:space="preserve">
+    <value>Choose the category/type of this page. This cannot be changed after creation.</value>
+  </data>
 </root>

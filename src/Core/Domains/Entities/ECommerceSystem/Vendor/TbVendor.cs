@@ -1,6 +1,6 @@
 ﻿using Common.Enumerations.IdentificationType;
-using Common.Enumerations.VendorType;
 using Common.Enumerations.VendorStatus;
+using Common.Enumerations.VendorType;
 using Domains.Entities.ECommerceSystem.Review;
 using Domains.Entities.Location;
 using Domains.Entities.Order.Refund;
@@ -13,10 +13,7 @@ namespace Domains.Entities.ECommerceSystem.Vendor
         public string UserId { get; set; } = null!;
 
         // Personal Information
-        public string FirstName { get; set; } = null!;
-        public string MiddleName { get; set; } = null!;
-        public string LastName { get; set; } = null!;
-        public DateTime BirthDate { get; set; }
+        public DateOnly BirthDate { get; set; }
 
         // Identification Details
         public IdentificationType IdentificationType { get; set; }

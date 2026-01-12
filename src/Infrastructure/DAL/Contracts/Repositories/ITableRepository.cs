@@ -56,6 +56,11 @@ namespace DAL.Contracts.Repositories
         Task<SaveResult> CreateAsync(T model, Guid creatorId, CancellationToken cancellationToken = default);
 
         /// <summary>
+        /// Creates a new entity
+        /// </summary>
+        Task<SaveResult> CreateAsync(T model, CancellationToken cancellationToken = default);
+
+        /// <summary>
         /// Updates an existing entity
         /// </summary>
         Task<SaveResult> UpdateAsync(T model, Guid updaterId, CancellationToken cancellationToken = default);

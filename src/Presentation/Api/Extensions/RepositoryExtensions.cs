@@ -39,6 +39,7 @@ namespace Api.Extensions
             services.AddScoped<IOfferRepository, OfferRepository>();
             services.AddScoped<IVendorItemConditionRepository, VendorItemConditionRepository>();
             services.AddScoped<IOrderRepository, OrderRepository>();
+            services.AddScoped<IOrderPaymentRepository, OrderPaymentRepository>();
             services.AddScoped<IItemSearchRepository, ItemSearchRepository>();
 
             // Customer repositories
@@ -62,7 +63,7 @@ namespace Api.Extensions
             services.AddScoped<ICouponCodeRepository, CouponCodeRepository>();
 
             services.AddScoped<IItemCombinationRepository, ItemCombinationRepository>();
-            services.AddScoped<IVendorRepository, VendorRepository>();
+            services.AddScoped<IVendorManagementRepository, VendorManagementRepository>();
 
             services.AddScoped<IOrderRepository, OrderRepository>();
             services.AddScoped<IShipmentRepository, ShipmentRepository>();

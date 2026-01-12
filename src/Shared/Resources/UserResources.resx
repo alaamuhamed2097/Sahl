@@ -360,4 +360,11 @@
   <data name="Company" xml:space="preserve">
     <value>شركات</value>
   </data>
+  <data name="InValidDate" xml:space="preserve">
+    <value>تاريخ غير صالح</value>
+  </data>
+  <data name="RegistrationDate" xml:space="preserve">
+    <value>تاريخ التسجيل</value>
+    <comment>Registration Date</comment>
+  </data>
 </root>

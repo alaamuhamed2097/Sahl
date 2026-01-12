@@ -7,7 +7,6 @@ using DAL.Contracts.UnitOfWork;
 using Domains.Entities.Merchandising.CouponCode;
 using Moq;
 using Shared.DTOs.Order.CouponCode;
-using Shared.GeneralModels.SearchCriteriaModels;
 
 namespace UnitTests.Core.BL.Services.Merchandising
 {

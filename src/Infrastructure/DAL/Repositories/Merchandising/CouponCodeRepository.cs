@@ -1,4 +1,5 @@
-﻿using DAL.ApplicationContext;
+﻿using BL.Contracts.GeneralService;
+using DAL.ApplicationContext;
 using DAL.Contracts.Repositories.Merchandising;
 using Domains.Entities.Merchandising.CouponCode;
 using Microsoft.EntityFrameworkCore;
@@ -13,7 +14,8 @@ namespace DAL.Repositories.Merchandising
     {
         private readonly ApplicationDbContext _context;
 
-        public CouponCodeRepository(ApplicationDbContext context, ILogger logger) : base(context, logger)
+        public CouponCodeRepository(ApplicationDbContext context, ICurrentUserService currentUserService, ILogger logger)
+            : base(context, currentUserService, logger)
         {
             _context = context ?? throw new ArgumentNullException(nameof(context));
         }

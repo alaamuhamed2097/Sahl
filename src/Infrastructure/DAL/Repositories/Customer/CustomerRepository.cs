@@ -1,11 +1,7 @@
-﻿using DAL.ApplicationContext;
+﻿using BL.Contracts.GeneralService;
+using DAL.ApplicationContext;
 using DAL.Contracts.Repositories.Customer;
-using DAL.Exceptions;
-using DAL.Models;
-using Domains.Entities.Catalog.Item.ItemAttributes;
-using Domains.Entities.Customer;
 using Domains.Entities.ECommerceSystem.Customer;
-using Microsoft.EntityFrameworkCore;
 using Serilog;
 
 namespace DAL.Repositories.Customer
@@ -16,7 +12,8 @@ namespace DAL.Repositories.Customer
     /// </summary>
     public class CustomerRepository : TableRepository<TbCustomer>, ICustomerRepository
     {
-        public CustomerRepository(ApplicationDbContext dbContext, ILogger logger) : base(dbContext, logger)
+        public CustomerRepository(ApplicationDbContext dbContext, ICurrentUserService currentUserService, ILogger logger)
+            : base(dbContext, currentUserService, logger)
         {
         }
         /// <summary>

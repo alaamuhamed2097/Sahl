@@ -13,7 +13,7 @@ namespace CoursesAcademyAPI.Controllers.User
     /// Provides endpoints for user profile management, including email updates.
     /// </summary>
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api/v{version:apiVersion}/[controller]")]
     public class EmailController : BaseController
     {
         private readonly IUserProfileService _profileService;

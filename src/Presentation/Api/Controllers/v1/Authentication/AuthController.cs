@@ -1,15 +1,13 @@
 using Asp.Versioning;
 using BL.Contracts.GeneralService.CMS;
 using BL.Contracts.GeneralService.UserManagement;
-using BL.Utils;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Resources;
 using Shared.DTOs.User;
-using Shared.DTOs.User.Customer;
 using Shared.DTOs.User.OAuth;
-using Shared.DTOs.Vendor;
 using Shared.GeneralModels;
+using Shared.GeneralModels.ResultModels;
 using SignInResult = Shared.GeneralModels.ResultModels.SignInResult;
 
 namespace Api.Controllers.v1.Authentication
@@ -37,20 +35,6 @@ namespace Api.Controllers.v1.Authentication
             _logger = logger;
         }
 
-        /// <summary>
-        /// Logs in a user using their email/username and password.
-        /// Sets HTTP-only cookies for authentication tokens.
-        /// </summary>
-        /// <remarks>
-        /// API Version: 1.0+
-        /// </remarks>
-        /// <param name="loginDto">The login data transfer object containing the identifier and password.</param>
-        /// <returns>
-        /// A task that represents the asynchronous operation. The task result contains an IActionResult 
-        /// that represents the result of the login operation. 
-        /// Returns 200 OK if login is successful with cookies set, 400 Bad Request if validation fails, 
-        /// or 500 Internal Server Error if an unexpected error occurs.
-        /// </returns>
         [HttpPost("login")]
         [ProducesResponseType(typeof(ResponseModel<SignInResult>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ResponseModel<string>), StatusCodes.Status400BadRequest)]
@@ -104,14 +88,10 @@ namespace Api.Controllers.v1.Authentication
             });
         }
 
-        /// <summary>
-        /// Customer-specific login. Accepts email/username/phone and password but only allows users in the "Customer" role.
-        /// Sets HTTP-only cookies for successful authentication.
-        /// </summary>
         [HttpPost("login-customer")]
         [ProducesResponseType(typeof(ResponseModel<SignInResult>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ResponseModel<string>), StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> CustomerLogin([FromBody] IdentifierLoginDto loginDto)
+        public async Task<IActionResult> CustomerLogin([FromBody] PhoneLoginDto loginDto)
         {
             if (!ModelState.IsValid)
             {
@@ -120,7 +100,7 @@ namespace Api.Controllers.v1.Authentication
                     .Select(e => e.ErrorMessage)
                     .ToList();
 
-                return Ok(new ResponseModel<SignInResult>
+                return Ok(new ResponseModel<CustomerSignInResult>
                 {
                     Success = false,
                     Errors = errors,
@@ -132,47 +112,15 @@ namespace Api.Controllers.v1.Authentication
                 ? Request.Headers["X-Platform"].ToString().ToLower()
                 : "website";
 
-            // Customer login: accept only email or phone as identifier
-            var identifier = loginDto.Identifier?.Trim() ?? string.Empty;
-            if (string.IsNullOrWhiteSpace(identifier))
-            {
-                return Ok(new ResponseModel<SignInResult>
-                {
-                    Success = false,
-                    Message = "Email or phone number is required."
-                });
-            }
-
-            var isEmail = identifier.Contains("@") && identifier.Contains(".");
-            var normalizedPhone = string.Empty;
-            var isPhone = false;
-
-            if (!isEmail)
-            {
-                normalizedPhone = PhoneNormalizationHelper.NormalizePhone(identifier);
-                isPhone = !string.IsNullOrWhiteSpace(normalizedPhone);
-            }
-
-            if (!isEmail && !isPhone)
-            {
-                return Ok(new ResponseModel<SignInResult>
-                {
-                    Success = false,
-                    Message = "Customer login requires an email address or phone number as identifier."
-                });
-            }
-
-            var authIdentifier = isEmail ? identifier : normalizedPhone;
-
             var result = await _authenticationService
-                .EmailOrPhoneNumberSignInAsync(authIdentifier, loginDto.Password, clientType);
+                .CustomerSignInAsync(loginDto, clientType);
 
             if (result.Success)
             {
                 var role = result.Role ?? string.Empty;
                 if (!string.Equals(role, "customer", StringComparison.OrdinalIgnoreCase))
                 {
-                    return Ok(new ResponseModel<SignInResult>
+                    return Ok(new ResponseModel<CustomerSignInResult>
                     {
                         Success = false,
                         Message = "This endpoint is for customers only. Please use the appropriate login for vendors or administrators."
@@ -181,7 +129,7 @@ namespace Api.Controllers.v1.Authentication
 
                 SetAuthCookies(result.Token, result.RefreshToken);
 
-                var response = new ResponseModel<SignInResult>
+                var response = new ResponseModel<CustomerSignInResult>
                 {
                     Data = result
                 };
@@ -190,23 +138,18 @@ namespace Api.Controllers.v1.Authentication
                 return Ok(response);
             }
 
-            return Ok(new ResponseModel<SignInResult>
+            return Ok(new ResponseModel<CustomerSignInResult>
             {
                 Success = false,
                 Message = result.Message ?? ValidationResources.InvalidLoginAttempt
             });
         }
 
-        /// <summary>
-        /// Registers a new customer account.
-        /// </summary>
-        [HttpPost("register-customer")]
-        [ProducesResponseType(typeof(ResponseModel<CustomerRegistrationResponseDto>), StatusCodes.Status200OK)]
+        [HttpPost("login-vendor")]
+        [ProducesResponseType(typeof(ResponseModel<SignInResult>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ResponseModel<string>), StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(typeof(ResponseModel<object>), StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> RegisterCustomer([FromBody] CustomerRegistrationDto registerDto)
+        public async Task<IActionResult> VendorLogin([FromBody] EmailLoginDto loginDto)
         {
-            // Validate model state
             if (!ModelState.IsValid)
             {
                 var errors = ModelState.Values
@@ -214,7 +157,7 @@ namespace Api.Controllers.v1.Authentication
                     .Select(e => e.ErrorMessage)
                     .ToList();
 
-                return Ok(new ResponseModel<CustomerRegistrationResponseDto>
+                return Ok(new ResponseModel<VendorSignInResult>
                 {
                     Success = false,
                     Errors = errors,
@@ -226,103 +169,37 @@ namespace Api.Controllers.v1.Authentication
                 ? Request.Headers["X-Platform"].ToString().ToLower()
                 : "website";
 
-            try
+            var result = await _authenticationService
+                .VendorSignInAsync(loginDto, clientType);
+
+            if (result.Success)
             {
-                var result = await _registrationService.RegisterCustomerAsync(registerDto, clientType);
-
-                if (result.Success && result.Data != null)
+                var role = result.Role ?? string.Empty;
+                if (!string.Equals(role, "customer", StringComparison.OrdinalIgnoreCase))
                 {
-                    // Set HTTP-only cookies
-                    SetAuthCookies(result.Data.Token, result.Data.RefreshToken);
-
-                    var response = new ResponseModel<CustomerRegistrationResponseDto>
+                    return Ok(new ResponseModel<VendorSignInResult>
                     {
-                        Data = result.Data
-                    };
-                    response.SetSuccessMessage(NotifiAndAlertsResources.RegistrationSuccessful);
-                    return Ok(response);
+                        Success = false,
+                        Message = "This endpoint is for customers only. Please use the appropriate login for vendors or administrators."
+                    });
                 }
 
-                return Ok(new ResponseModel<CustomerRegistrationResponseDto>
+                SetAuthCookies(result.Token, result.RefreshToken);
+
+                var response = new ResponseModel<VendorSignInResult>
                 {
-                    Success = false,
-                    Message = result.Message ?? NotifiAndAlertsResources.RegistrationFailed,
-                    Errors = result.Errors
-                });
+                    Data = result
+                };
+
+                response.SetSuccessMessage(NotifiAndAlertsResources.LoginSuccessful);
+                return Ok(response);
             }
-            catch (Exception ex)
+
+            return Ok(new ResponseModel<VendorSignInResult>
             {
-                _logger.Error(ex, "Customer registration error");
-                return Ok(new ResponseModel<CustomerRegistrationResponseDto>
-                {
-                    Success = false,
-                    Message = NotifiAndAlertsResources.SomethingWentWrong
-                });
-            }
-        }
-
-        /// <summary>
-        /// Registers a new vendor account.
-        /// </summary>
-        [HttpPost("register-vendor")]
-        [ProducesResponseType(typeof(ResponseModel<VendorRegistrationResponseDto>), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(ResponseModel<string>), StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(typeof(ResponseModel<object>), StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> RegisterVendor([FromBody] RegisterVendorRequestDto registerDto)
-        {
-            // Validate model state
-            if (!ModelState.IsValid)
-            {
-                var errors = ModelState.Values
-                    .SelectMany(v => v.Errors)
-                    .Select(e => e.ErrorMessage)
-                    .ToList();
-
-                return Ok(new ResponseModel<VendorRegistrationResponseDto>
-                {
-                    Success = false,
-                    Errors = errors,
-                    Message = ValidationResources.PleaseFixValidationErrors
-                });
-            }
-
-            var clientType = Request.Headers.ContainsKey("X-Platform")
-                ? Request.Headers["X-Platform"].ToString().ToLower()
-                : "website";
-
-            try
-            {
-                var result = await _registrationService.RegisterVendorAsync(registerDto, clientType);
-
-                if (result.Success && result.Data != null)
-                {
-                    // Set HTTP-only cookies
-                    SetAuthCookies(result.Data.Token, result.Data.RefreshToken);
-
-                    var response = new ResponseModel<VendorRegistrationResponseDto>
-                    {
-                        Data = result.Data
-                    };
-                    response.SetSuccessMessage(NotifiAndAlertsResources.RegistrationSuccessful);
-                    return Ok(response);
-                }
-
-                return Ok(new ResponseModel<VendorRegistrationResponseDto>
-                {
-                    Success = false,
-                    Message = result.Message ?? NotifiAndAlertsResources.RegistrationFailed,
-                    Errors = result.Errors
-                });
-            }
-            catch (Exception ex)
-            {
-                _logger.Error(ex, "Vendor registration error");
-                return Ok(new ResponseModel<VendorRegistrationResponseDto>
-                {
-                    Success = false,
-                    Message = NotifiAndAlertsResources.SomethingWentWrong
-                });
-            }
+                Success = false,
+                Message = result.Message ?? ValidationResources.InvalidLoginAttempt
+            });
         }
 
         /// <summary>

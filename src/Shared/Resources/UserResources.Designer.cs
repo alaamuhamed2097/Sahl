@@ -277,6 +277,15 @@ namespace Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to تاريخ غير صالح.
+        /// </summary>
+        public static string InValidDate {
+            get {
+                return ResourceManager.GetString("InValidDate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to الاسم يجب أن يحتوي فقط على حروف ومسافات وشرطات وعلامات اقتباس مفردة..
         /// </summary>
         public static string InvalidNameFormat {
@@ -516,6 +525,15 @@ namespace Resources {
         public static string ProfileImage {
             get {
                 return ResourceManager.GetString("ProfileImage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to تاريخ التسجيل.
+        /// </summary>
+        public static string RegistrationDate {
+            get {
+                return ResourceManager.GetString("RegistrationDate", resourceCulture);
             }
         }
         

@@ -1,6 +1,6 @@
-﻿using AutoMapper;
+using AutoMapper;
 using BL.Contracts.Service.Order.Checkout;
-using DAL.Contracts.UnitOfWork;
+using DAL.Contracts.Repositories;
 using Domains.Entities.Order;
 using Serilog;
 using Shared.DTOs.Order.Checkout.Address;
@@ -14,16 +14,16 @@ namespace BL.Services.Order.Checkout;
 /// </summary>
 public class CustomerAddressService : ICustomerAddressService
 {
-    private readonly IUnitOfWork _unitOfWork;
+    private readonly ITableRepository<TbCustomerAddress> _addressRepository;
     private readonly IMapper _mapper;
     private readonly ILogger _logger;
 
     public CustomerAddressService(
-        IUnitOfWork unitOfWork,
+        ITableRepository<TbCustomerAddress> addressRepository,
         IMapper mapper,
         ILogger logger)
     {
-        _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
+        _addressRepository = addressRepository ?? throw new ArgumentNullException(nameof(addressRepository));
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
@@ -35,14 +35,13 @@ public class CustomerAddressService : ICustomerAddressService
             if (string.IsNullOrWhiteSpace(customerId))
                 throw new ArgumentException("Customer ID cannot be empty.", nameof(customerId));
 
-            var repo = _unitOfWork.TableRepository<TbCustomerAddress>();
-            var addresses = await repo.GetAsync(
+            var addresses = await _addressRepository.GetAsync(
                 a => a.UserId == customerId && !a.IsDeleted,
                 orderBy: q => q.OrderByDescending(a => a.IsDefault)
-                               .ThenByDescending(a => a.CreatedDateUtc)
+                               .ThenByDescending(a => a.CreatedDateUtc),
+                includeProperties: "City,City.State"
             );
 
-            // Use AutoMapper to convert list
             return _mapper.Map<List<CustomerAddressDto>>(addresses);
         }
         catch (Exception ex)
@@ -61,12 +60,11 @@ public class CustomerAddressService : ICustomerAddressService
             if (string.IsNullOrWhiteSpace(customerId))
                 throw new ArgumentException("Customer ID cannot be empty.", nameof(customerId));
 
-            var repo = _unitOfWork.TableRepository<TbCustomerAddress>();
-            var address = await repo.FindAsync(
-                a => a.Id == addressId && a.UserId == customerId && !a.IsDeleted
+            var address = await _addressRepository.FindAsync(
+                a => a.Id == addressId && a.UserId == customerId && !a.IsDeleted,
+                includeProperties: "City,City.State"
             );
 
-            // Use AutoMapper for single object
             return address == null ? null : _mapper.Map<CustomerAddressDto>(address);
         }
         catch (Exception ex)
@@ -83,9 +81,9 @@ public class CustomerAddressService : ICustomerAddressService
             if (string.IsNullOrWhiteSpace(customerId))
                 throw new ArgumentException("Customer ID cannot be empty.", nameof(customerId));
 
-            var repo = _unitOfWork.TableRepository<TbCustomerAddress>();
-            var address = await repo.FindAsync(
-                a => a.UserId == customerId && a.IsDefault && !a.IsDeleted
+            var address = await _addressRepository.FindAsync(
+                a => a.UserId == customerId && a.IsDefault && !a.IsDeleted,
+                includeProperties: "City,City.State"
             );
 
             return address == null ? null : _mapper.Map<CustomerAddressDto>(address);
@@ -106,11 +104,13 @@ public class CustomerAddressService : ICustomerAddressService
             if (request == null)
                 throw new ArgumentNullException(nameof(request));
 
+            // Validate address
+            ValidateAddress(request.Address, nameof(request.Address));
+
             var customerIdGuid = Guid.Parse(customerId);
-            var repo = _unitOfWork.TableRepository<TbCustomerAddress>();
 
             // Check if this is the first address
-            var existingAddresses = await repo.GetAsync(
+            var existingAddresses = await _addressRepository.GetAsync(
                 a => a.UserId == customerId && !a.IsDeleted
             );
 
@@ -133,15 +133,20 @@ public class CustomerAddressService : ICustomerAddressService
             address.CreatedDateUtc = DateTime.UtcNow;
             address.CreatedBy = customerIdGuid;
 
-            await repo.CreateAsync(address, customerIdGuid);
+            await _addressRepository.CreateAsync(address, customerIdGuid);
 
             _logger.Information(
                 "Address {AddressId} created for customer {CustomerId}. IsDefault: {IsDefault}",
                 address.Id, customerId, shouldBeDefault
             );
 
-            // Map back to DTO
-            return _mapper.Map<CustomerAddressDto>(address);
+            // Reload address with related entities for mapping
+            var createdAddress = await _addressRepository.FindAsync(
+                a => a.Id == address.Id,
+                includeProperties: "City,City.State"
+            );
+
+            return createdAddress == null ? new CustomerAddressDto() : _mapper.Map<CustomerAddressDto>(createdAddress);
         }
         catch (Exception ex)
         {
@@ -164,12 +169,15 @@ public class CustomerAddressService : ICustomerAddressService
             if (request == null)
                 throw new ArgumentNullException(nameof(request));
 
+            // Validate address
+            ValidateAddress(request.Address, nameof(request.Address));
+
             var customerIdGuid = Guid.Parse(customerId);
-            var repo = _unitOfWork.TableRepository<TbCustomerAddress>();
 
             // Get address with ownership validation
-            var address = await repo.FindAsync(
-                a => a.Id == addressId && a.UserId == customerId && !a.IsDeleted
+            var address = await _addressRepository.FindAsync(
+                a => a.Id == addressId && a.UserId == customerId && !a.IsDeleted,
+                includeProperties: "City,City.State"
             );
 
             if (address == null)
@@ -187,7 +195,7 @@ public class CustomerAddressService : ICustomerAddressService
             // Set update timestamp
             address.UpdatedDateUtc = DateTime.UtcNow;
 
-            var result = await repo.UpdateAsync(address, customerIdGuid);
+            var result = await _addressRepository.UpdateAsync(address, customerIdGuid);
 
             if (!result.Success)
             {
@@ -215,10 +223,9 @@ public class CustomerAddressService : ICustomerAddressService
                 throw new ArgumentException("Customer ID cannot be empty.", nameof(customerId));
 
             var customerIdGuid = Guid.Parse(customerId);
-            var repo = _unitOfWork.TableRepository<TbCustomerAddress>();
 
             // Validate ownership
-            var address = await repo.FindAsync(
+            var address = await _addressRepository.FindAsync(
                 a => a.Id == addressId && a.UserId == customerId && !a.IsDeleted
             );
 
@@ -238,7 +245,7 @@ public class CustomerAddressService : ICustomerAddressService
             address.IsDefault = true;
             address.UpdatedDateUtc = DateTime.UtcNow;
 
-            var result = await repo.UpdateAsync(address, customerIdGuid);
+            var result = await _addressRepository.UpdateAsync(address, customerIdGuid);
 
             if (result.Success)
             {
@@ -271,10 +278,9 @@ public class CustomerAddressService : ICustomerAddressService
                 throw new ArgumentException("Customer ID cannot be empty.", nameof(customerId));
 
             var customerIdGuid = Guid.Parse(customerId);
-            var repo = _unitOfWork.TableRepository<TbCustomerAddress>();
 
             // Validate ownership
-            var address = await repo.FindAsync(
+            var address = await _addressRepository.FindAsync(
                 a => a.Id == addressId && a.UserId == customerId && !a.IsDeleted
             );
 
@@ -294,9 +300,9 @@ public class CustomerAddressService : ICustomerAddressService
             address.IsDefault = false;
             address.UpdatedDateUtc = DateTime.UtcNow;
 
-            var result = await repo.UpdateAsync(address, customerIdGuid);
+            var success = await _addressRepository.UpdateCurrentStateAsync(address.Id, customerIdGuid);
 
-            if (result.Success)
+            if (success)
             {
                 _logger.Information("Address {AddressId} deleted for customer {CustomerId}", addressId, customerId);
 
@@ -307,7 +313,7 @@ public class CustomerAddressService : ICustomerAddressService
                 }
             }
 
-            return result.Success;
+            return success;
         }
         catch (Exception ex)
         {
@@ -323,8 +329,7 @@ public class CustomerAddressService : ICustomerAddressService
             if (addressId == Guid.Empty || string.IsNullOrWhiteSpace(customerId))
                 return false;
 
-            var repo = _unitOfWork.TableRepository<TbCustomerAddress>();
-            var address = await repo.FindAsync(
+            var address = await _addressRepository.FindAsync(
                 a => a.Id == addressId && a.UserId == customerId && !a.IsDeleted
             );
 
@@ -350,15 +355,14 @@ public class CustomerAddressService : ICustomerAddressService
             if (string.IsNullOrWhiteSpace(customerId))
                 throw new ArgumentException("Customer ID cannot be empty.", nameof(customerId));
 
-            var repo = _unitOfWork.TableRepository<TbCustomerAddress>();
-            var address = await repo.FindAsync(
-                a => a.Id == addressId && a.UserId == customerId && !a.IsDeleted
+            var address = await _addressRepository.FindAsync(
+                a => a.Id == addressId && a.UserId == customerId && !a.IsDeleted,
+                includeProperties: "City,City.State"
             );
 
             if (address == null)
                 return null;
 
-            // Use AutoMapper to convert to AddressSelectionDto
             return _mapper.Map<AddressSelectionDto>(address);
         }
         catch (Exception ex)
@@ -379,8 +383,7 @@ public class CustomerAddressService : ICustomerAddressService
     /// </summary>
     private async Task UnmarkExistingDefaultAsync(string customerId, Guid updaterId)
     {
-        var repo = _unitOfWork.TableRepository<TbCustomerAddress>();
-        var currentDefault = await repo.FindAsync(
+        var currentDefault = await _addressRepository.FindAsync(
             a => a.UserId == customerId && a.IsDefault && !a.IsDeleted
         );
 
@@ -388,7 +391,7 @@ public class CustomerAddressService : ICustomerAddressService
         {
             currentDefault.IsDefault = false;
             currentDefault.UpdatedDateUtc = DateTime.UtcNow;
-            await repo.UpdateAsync(currentDefault, updaterId);
+            await _addressRepository.UpdateAsync(currentDefault, updaterId);
         }
     }
 
@@ -397,8 +400,7 @@ public class CustomerAddressService : ICustomerAddressService
     /// </summary>
     private async Task SetFirstAvailableAsDefaultAsync(string customerId, Guid updaterId)
     {
-        var repo = _unitOfWork.TableRepository<TbCustomerAddress>();
-        var addresses = await repo.GetAsync(
+        var addresses = await _addressRepository.GetAsync(
             a => a.UserId == customerId && !a.IsDeleted,
             orderBy: q => q.OrderByDescending(a => a.CreatedDateUtc)
         );
@@ -408,12 +410,30 @@ public class CustomerAddressService : ICustomerAddressService
         {
             firstAddress.IsDefault = true;
             firstAddress.UpdatedDateUtc = DateTime.UtcNow;
-            await repo.UpdateAsync(firstAddress, updaterId);
+            await _addressRepository.UpdateAsync(firstAddress, updaterId);
 
             _logger.Information(
                 "Address {AddressId} automatically set as default for customer {CustomerId} after deletion",
                 firstAddress.Id, customerId
             );
         }
+    }
+
+    /// <summary>
+    /// Validates the address string to ensure it meets minimum requirements
+    /// </summary>
+    /// <param name="address">The address to validate</param>
+    /// <param name="fieldName">The name of the field for error messages</param>
+    /// <exception cref="ArgumentException">Thrown when address validation fails</exception>
+    private void ValidateAddress(string address, string fieldName)
+    {
+        if (string.IsNullOrWhiteSpace(address))
+            throw new ArgumentException("Address cannot be empty.", fieldName);
+
+        if (address.Trim().Length < 5)
+            throw new ArgumentException("Address must be at least 5 characters long.", fieldName);
+
+        if (address.Trim().Length > 200)
+            throw new ArgumentException("Address cannot exceed 200 characters.", fieldName);
     }
 }
