@@ -107,7 +107,7 @@ public class UnitService : BaseService<TbUnit, UnitDto>, IUnitService
                 var conversionUnits = await _unitRepository.TableRepository<TbUnitConversion>().GetAsync(c => c.ToUnitId == dto.Id || c.FromUnitId == dto.Id);
                 foreach (var conversionUnit in conversionUnits)
                 {
-                    await _unitRepository.TableRepository<TbUnitConversion>().UpdateCurrentStateAsync(conversionUnit.Id, userId, true);
+                    await _unitRepository.TableRepository<TbUnitConversion>().UpdateIsDeletedAsync(conversionUnit.Id, userId, true);
                 }
             }
 
@@ -142,7 +142,7 @@ public class UnitService : BaseService<TbUnit, UnitDto>, IUnitService
         }
         catch (Exception ex)
         {
-            _unitRepository.RollbackAsync();
+            await _unitRepository.RollbackAsync();
             throw new Exception(string.Format(ValidationResources.SaveEntityError, ECommerceResources.Unit), ex);
         }
     }
@@ -152,14 +152,14 @@ public class UnitService : BaseService<TbUnit, UnitDto>, IUnitService
         try
         {
             await _unitRepository.BeginTransactionAsync();
-            await _unitRepository.TableRepository<TbUnit>().UpdateCurrentStateAsync(id, userId);
+            await _unitRepository.TableRepository<TbUnit>().UpdateIsDeletedAsync(id, userId);
 
             var conversionUnits = await _unitRepository.TableRepository<TbUnitConversion>().GetAsync(c => c.ToUnitId == id || c.FromUnitId == id);
             if (conversionUnits?.Any() == true)
             {
                 foreach (var conversionUnit in conversionUnits)
                 {
-                    await _unitRepository.TableRepository<TbUnitConversion>().UpdateCurrentStateAsync(conversionUnit.Id, userId, true);
+                    await _unitRepository.TableRepository<TbUnitConversion>().UpdateIsDeletedAsync(conversionUnit.Id, userId, true);
                 }
             }
 
@@ -168,7 +168,7 @@ public class UnitService : BaseService<TbUnit, UnitDto>, IUnitService
         }
         catch (Exception ex)
         {
-            _unitRepository.RollbackAsync();
+            await _unitRepository.RollbackAsync();
             throw new Exception(string.Format(ValidationResources.DeleteEntityError, ECommerceResources.Unit), ex);
         }
     }

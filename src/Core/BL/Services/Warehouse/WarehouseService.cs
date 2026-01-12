@@ -547,7 +547,7 @@ public class WarehouseService : BaseService<TbWarehouse, WarehouseDto>, IWarehou
 
     public async Task<bool> DeleteAsync(Guid id, Guid userId)
     {
-        return await _warehouseRepository.UpdateCurrentStateAsync(id, userId, true);
+        return await _warehouseRepository.UpdateIsDeletedAsync(id, userId, true);
     }
 
     public async Task<bool> ToggleActiveStatusAsync(Guid id, Guid userId)

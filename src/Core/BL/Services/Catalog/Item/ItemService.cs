@@ -39,7 +39,7 @@ public class ItemService : BaseService<TbItem, ItemDto>, IItemService
     private readonly IRepository<VwItem> _repository;
     private readonly ITableRepository<TbCategory> _categoryRepository;
     private readonly IWarehouseService _warehouseService;
-    private readonly IVendorService _vendorService;
+    private readonly IVendorManagementService _vendorService;
     private readonly IFileUploadService _fileUploadService;
     private readonly IImageProcessingService _imageProcessingService;
     private readonly IVendorItemConditionService _vendorItemConditionService;
@@ -57,7 +57,7 @@ public class ItemService : BaseService<TbItem, ItemDto>, IItemService
         ILogger logger,
         ITableRepository<TbCategory> categoryRepository,
         IWarehouseService warehouseService,
-        IVendorService vendorService,
+        IVendorManagementService vendorService,
         IVendorItemConditionService vendorItemConditionService,
         IDevelopmentSettingsService developmentSettingsService)
         : base(tableRepository, mapper)

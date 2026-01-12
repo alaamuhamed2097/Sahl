@@ -246,7 +246,7 @@ public class AttributeService : BaseService<TbAttribute, AttributeDto>, IAttribu
             var attributeOptions = await _attributeUnitOfWork.TableRepository<TbAttributeOption>().GetAsync(x => x.AttributeId == id && !x.IsDeleted);
 
             // Update attribute state
-            await _attributeUnitOfWork.TableRepository<TbAttribute>().UpdateCurrentStateAsync(id, new Guid(userId));
+            await _attributeUnitOfWork.TableRepository<TbAttribute>().UpdateIsDeletedAsync(id, new Guid(userId));
 
             // Update attribute options state and manage display order
             if (attributeOptions?.Count() > 0)
@@ -256,7 +256,7 @@ public class AttributeService : BaseService<TbAttribute, AttributeDto>, IAttribu
 
                 foreach (var option in sortedOptions)
                 {
-                    await _attributeUnitOfWork.TableRepository<TbAttributeOption>().UpdateCurrentStateAsync(option.Id, new Guid(userId));
+                    await _attributeUnitOfWork.TableRepository<TbAttributeOption>().UpdateIsDeletedAsync(option.Id, new Guid(userId));
                 }
             }
 
@@ -265,7 +265,7 @@ public class AttributeService : BaseService<TbAttribute, AttributeDto>, IAttribu
         }
         catch (Exception ex)
         {
-            _attributeUnitOfWork.RollbackAsync();
+            await _attributeUnitOfWork.RollbackAsync();
             throw new Exception(string.Format(ValidationResources.DeleteEntityError, ECommerceResources.Attribute), ex);
         }
     }

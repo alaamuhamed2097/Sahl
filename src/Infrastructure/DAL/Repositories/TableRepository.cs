@@ -302,6 +302,12 @@ namespace DAL.Repositories
             }
         }
 
+        public async Task<SaveResult> UpdateAsync(T model, CancellationToken cancellationToken = default)
+        {
+            var userId = Guid.Parse(_currentUserService.GetCurrentUserId() ?? Guid.Empty.ToString());
+            return await UpdateAsync(model, userId, cancellationToken);
+        }
+
         public async Task<bool> UpdateIsDeletedAsync(
             Guid entityId,
             Guid updaterId,

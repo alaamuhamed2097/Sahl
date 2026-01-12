@@ -300,7 +300,7 @@ public class CustomerAddressService : ICustomerAddressService
             address.IsDefault = false;
             address.UpdatedDateUtc = DateTime.UtcNow;
 
-            var success = await _addressRepository.UpdateCurrentStateAsync(address.Id, customerIdGuid);
+            var success = await _addressRepository.UpdateIsDeletedAsync(address.Id, customerIdGuid);
 
             if (success)
             {

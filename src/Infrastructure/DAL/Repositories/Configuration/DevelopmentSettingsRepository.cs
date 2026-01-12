@@ -1,4 +1,5 @@
-﻿using Common.Enumerations.Settings;
+﻿using BL.Contracts.GeneralService;
+using Common.Enumerations.Settings;
 using DAL.ApplicationContext;
 using DAL.Contracts.Repositories.Configuration;
 using Domains.Entities.Setting;
@@ -13,10 +14,13 @@ namespace DAL.Repositories.Configuration;
 public class DevelopmentSettingsRepository : TableRepository<TbDevelopmentSettings>, IDevelopmentSettingsRepository
 {
     private readonly ApplicationDbContext _context;
+    private readonly ICurrentUserService _currentUserService;
 
-    public DevelopmentSettingsRepository(ApplicationDbContext context, ILogger logger) : base(context, logger)
+    public DevelopmentSettingsRepository(ApplicationDbContext context, ILogger logger, ICurrentUserService currentUserService) :
+        base(context,currentUserService, logger)
     {
         _context = context ?? throw new ArgumentNullException(nameof(context));
+        _currentUserService = currentUserService;
     }
     public async Task<bool> IsMultiVendorModeEnabledAsync()
     {

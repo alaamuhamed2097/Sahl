@@ -144,7 +144,7 @@ public class NotificationsService : BaseService<TbNotification, NotificationsDto
 
     public async Task<bool> DeleteAsync(Guid id, Guid userId)
     {
-        return await _notificationsRepository.UpdateCurrentStateAsync(id, userId, true);
+        return await _notificationsRepository.UpdateIsDeletedAsync(id, userId, true);
     }
 
     public async Task<int> GetUnreadCountAsync(int recipientId, RecipientType recipientType)

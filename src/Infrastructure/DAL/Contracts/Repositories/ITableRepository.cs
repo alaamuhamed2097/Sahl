@@ -66,6 +66,11 @@ namespace DAL.Contracts.Repositories
         Task<SaveResult> UpdateAsync(T model, Guid updaterId, CancellationToken cancellationToken = default);
 
         /// <summary>
+        /// Updates an existing entity
+        /// </summary>
+        Task<SaveResult> UpdateAsync(T model, CancellationToken cancellationToken = default);
+
+        /// <summary>
         /// Updates the IsDeleted of an entity (soft delete/restore)
         /// </summary>
         Task<bool> UpdateIsDeletedAsync(

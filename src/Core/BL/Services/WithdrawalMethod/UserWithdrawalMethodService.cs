@@ -196,12 +196,12 @@ namespace BL.Services.WithdrawalMethod
                 foreach (var methodField in WithdrawalMethodFields)
                 {
                     await _userWithdrawalMethodRepository.TableRepository<TbWithdrawalMethodField>()
-                         .UpdateCurrentStateAsync(methodField.Id, userId, false);
+                         .UpdateIsDeletedAsync(methodField.Id, userId, false);
                 }
 
                 // Delete the user Withdrawal method
                 await _userWithdrawalMethodRepository.TableRepository<TbUserWithdrawalMethod>()
-                     .UpdateCurrentStateAsync(userWithdrawalMethod.Id, userId, false);
+                     .UpdateIsDeletedAsync(userWithdrawalMethod.Id, userId, false);
 
                 // Commit transaction
                 await _userWithdrawalMethodRepository.CommitAsync();

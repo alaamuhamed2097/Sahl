@@ -62,9 +62,6 @@ namespace Api.Extensions
             // Payment Services
             services.AddScoped<IPaymentService, PaymentService>();
 
-            // Vendor Service
-            services.AddScoped<IVendorManagementService, VendorManagementService>();
-
             // Category Services
             services.AddScoped<ICategoryService, CategoryService>();
             services.AddScoped<IAttributeService, AttributeService>();

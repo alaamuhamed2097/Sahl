@@ -24,6 +24,8 @@ namespace Api.Extensions.Services
             // Vendor Items Services
             services.AddScoped<IVendorItemService, VendorItemService>();
 
+            // Additional vendor-related services can be registered here
+            services.AddScoped<IVendorItemConditionService, VendorItemConditionService>();
             return services;
         }
     }
