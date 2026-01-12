@@ -30,6 +30,7 @@
 
 	<ItemGroup>
 	  <Folder Include="Controllers\v1\Wallet\Vendor\" />
+	  <Folder Include="Extensions\Services\" />
 	  <Folder Include="wwwroot\NotificationTemplates\SignalR\" />
 	  <Folder Include="wwwroot\uploads\" />
 	</ItemGroup>

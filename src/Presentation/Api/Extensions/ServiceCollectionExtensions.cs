@@ -1,5 +1,4 @@
 using Api.Extensions.Infrastructure;
-using Api.Extensions.Services;
 
 namespace Api.Extensions
 {
@@ -44,11 +43,8 @@ namespace Api.Extensions
             // ============================================
             // Domain/Business Services (organized by domain)
             // ============================================
-            services.AddCmsServices();
-            services.AddNotificationServices();
-            services.AddUserManagementServices();
-            services.AddLocationServices();
-            services.AddGeneralServices(configuration);
+            // AddDomainServices includes all business services:
+            // CMS, Notification, UserManagement, Location, General, Catalog, Vendor, Currency, Order, Pricing, Merchandising, Review, Wallet, WithdrawalMethod, Settings
             services.AddDomainServices(configuration);
 
             // ============================================
@@ -99,11 +95,7 @@ namespace Api.Extensions
         {
             services.AddAutoMapperConfiguration();
             services.AddRepositoryServices();
-            services.AddCmsServices();
-            services.AddNotificationServices();
-            services.AddUserManagementServices();
-            services.AddLocationServices();
-            services.AddGeneralServices(configuration);
+            // AddDomainServices includes all business services
             services.AddDomainServices(configuration);
             services.AddWarehouseAndInventoryServices();
             services.AddEnhancedNotificationServices();

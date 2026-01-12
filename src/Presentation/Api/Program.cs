@@ -1,4 +1,5 @@
 ﻿using Api.Extensions;
+using Api.Extensions.Infrastructure;
 using Api.Middleware;
 using Asp.Versioning.ApiExplorer;
 using BL.GeneralService.Notification;
@@ -26,14 +27,10 @@ builder.Services.AddAutoMapperConfiguration();
 builder.Services.AddRepositoryServices();
 
 // Configure Business Services
-builder.Services.AddCmsServices();
-builder.Services.AddNotificationServices();
-builder.Services.AddUserManagementServices();
-builder.Services.AddLocationServices();
-builder.Services.AddGeneralServices();
+// AddDomainServices includes all business services (catalog, vendor, currency, order, pricing, merchandising, review, wallet, settings)
 builder.Services.AddDomainServices(builder.Configuration);
 
-// Configure New Services
+// Configure Additional Services
 builder.Services.AddWarehouseAndInventoryServices();
 builder.Services.AddEnhancedNotificationServices();
 

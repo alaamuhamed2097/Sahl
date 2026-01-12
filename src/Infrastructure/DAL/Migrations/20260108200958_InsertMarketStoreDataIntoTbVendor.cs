@@ -34,13 +34,10 @@ namespace DAL.Migrations
                 [IsDeleted],
                 [BirthDate],
                 [CityId],
-                [FirstName],
                 [IdentificationImageBackPath],
                 [IdentificationImageFrontPath],
                 [IdentificationNumber],
                 [IdentificationType],
-                [LastName],
-                [MiddleName],
                 [PhoneCode],
                 [PhoneNumber],
                 [Status],
@@ -62,14 +59,11 @@ namespace DAL.Migrations
                 NULL,                                  -- UpdatedDateUtc
                 0,                                     -- IsDeleted
                 SYSUTCDATETIME(),                      -- BirthDate
-                '33333333-3333-3333-3333-333333333333',-- CityId
-                'Market',                              -- FirstName
+                (select top 1 Id from TbCities),      -- CityId
                 'image.webp',                          -- IdentificationImageBackPath
                 'image.webp',                          -- IdentificationImageFrontPath
                 '1',                                   -- IdentificationNumber
                 1,                                     -- IdentificationType (NationalId)
-                'Vendor',                              -- LastName
-                'Store',                               -- MiddleName
                 '+20',                                 -- PhoneCode
                 '111111111',                           -- PhoneNumber
                 3,                                     -- Status (Approved)

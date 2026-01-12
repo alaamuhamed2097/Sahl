@@ -9,10 +9,11 @@ namespace Api.Extensions
         {
             // Setting Services
             services.AddScoped<ISettingService, SettingService>();
-
             services.AddScoped<ISystemSettingsService, SystemSettingsService>();
+            services.AddScoped<IDevelopmentSettingsService, DevelopmentSettingsService>();
 
             return services;
         }
     }
 }
+

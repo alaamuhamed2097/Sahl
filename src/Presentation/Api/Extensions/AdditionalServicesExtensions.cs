@@ -10,6 +10,10 @@ namespace Api.Extensions
         public static IServiceCollection AddDomainServices(this IServiceCollection services, IConfiguration configuration)
         {
             // Add all categorized domain services
+            services.AddCmsServices();
+            services.AddNotificationServices();
+            services.AddUserManagementServices();
+            services.AddLocationServices();
             services.AddGeneralServices(configuration);
             services.AddCatalogServices(configuration);
             services.AddVendorServices(configuration);
@@ -19,6 +23,7 @@ namespace Api.Extensions
             services.AddMerchandisingServices(configuration);
             services.AddReviewServices(configuration);
             services.AddWalletServices(configuration);
+            services.AddWithdrawalMethodServices(configuration);
             services.AddSettingServices(configuration);
 
             return services;

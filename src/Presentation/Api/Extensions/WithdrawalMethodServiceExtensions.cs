@@ -1,9 +1,9 @@
-﻿using BL.Contracts.Service.WithdrawalMethod;
+using BL.Contracts.Service.WithdrawalMethod;
 using BL.Services.WithdrawalMethod;
 
-namespace Api.Extensions.Services
+namespace Api.Extensions
 {
-    public static class WithdrawalMethodServicesExtensions
+    public static class WithdrawalMethodServiceExtensions
     {
         public static IServiceCollection AddWithdrawalMethodServices(this IServiceCollection services, IConfiguration configuration)
         {
