@@ -19,7 +19,7 @@ namespace Resources {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "17.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "18.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     public class ECommerceResources {
@@ -646,7 +646,7 @@ namespace Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to الموضع الحالي.
+        ///   Looks up a localized string similar to الموقع الحالي.
         /// </summary>
         public static string CurrentPosition {
             get {
@@ -1168,7 +1168,7 @@ namespace Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to البنر الرئيسي.
+        ///   Looks up a localized string similar to البانر الرئيسي.
         /// </summary>
         public static string MainBanner {
             get {
@@ -1177,7 +1177,7 @@ namespace Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to البنرات الرئيسية.
+        ///   Looks up a localized string similar to البانرات الرئيسية.
         /// </summary>
         public static string MainBanners {
             get {

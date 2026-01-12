@@ -21,6 +21,7 @@ using BL.Contracts.Service.Review;
 using BL.Contracts.Service.Setting;
 using BL.Contracts.Service.ShippingCompny;
 using BL.Contracts.Service.Vendor;
+using BL.Contracts.Service.VendorDashboard;
 using BL.Contracts.Service.VendorItem;
 using BL.Contracts.Service.Wallet.Customer;
 using BL.Contracts.Services.Page;
@@ -48,6 +49,7 @@ using BL.Services.Setting;
 using BL.Services.Setting.Pricing;
 using BL.Services.ShippingCompany;
 using BL.Services.Vendor;
+using BL.Services.VendorDashboard;
 using BL.Services.VendorItem;
 using BL.Services.Wallet.Customer;
 
@@ -148,6 +150,11 @@ namespace Api.Extensions
             services.AddScoped<ISystemSettingsService, SystemSettingsService>();
 
             services.AddScoped<ICheckoutService, CheckoutService>();
+
+            // Vendor Dashboard Services
+            services.AddScoped<IVendorDashboardService, VendorDashboardService>();
+            services.AddScoped<IVendorPerformanceIndicatorsService, VendorPerformanceIndicatorsService>();
+
             return services;
         }
     }
