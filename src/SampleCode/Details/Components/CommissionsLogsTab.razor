@@ -1,0 +1,229 @@
+<div class="tab-pane fade" id="v-pills-commessions" role="tabpanel"
+     aria-labelledby="v-pills-profile-tab">
+    <div class="col-sm-12">
+        <div class="card-header">
+            <h4>@ECommerceResources.CommissionsLogs:</h4>
+        </div>
+        <div class="card-body">
+            <div class="dt-responsive table-responsive">
+                <!-- Filtration start -->
+                <ul class="navbar-nav d-flex flex-row align-items-center gap-3 mb-2 px-0 w-100">
+                    <li class="nav-item col-md-6 w-auto d-flex flex-row align-items-center gap-3">
+                        <!-- Page Size -->
+                        <div class="d-flex align-items-center gap-2">
+                            <label class="form-label fw-semibold mb-0">@GeneralResources.ShowBy : </label>
+                            <select class="form-select rounded-3 shadow-sm border-light text-primary fw-bold text-center"
+                                    style="width: 100px; height: 38px; padding-right: 16px;"
+                                    @onchange="OnPageSizeChanged">
+                                <option value="10">10</option>
+                                <option value="15">15</option>
+                                <option value="20">20</option>
+                                <option value="30">30</option>
+                            </select>
+                            <select class="form-select rounded-3 shadow-sm border-light text-primary fw-bold text-center"
+                                    style="width: 150px; height: 38px; padding-right: 16px;"
+                                    @onchange="OnAccountPositionChanged">
+                                <option selected value="0">@ECommerceResources.AllAccounts</option>
+                                <option value="1">@ECommerceResources.Account001</option>
+                                <option value="2">@ECommerceResources.Account002</option>
+                                <option value="3">@ECommerceResources.Account003</option>
+                            </select>
+                            <select class="form-select rounded-3 shadow-sm border-light text-primary fw-bold text-center"
+                                    style="width: 220px; height: 38px; padding-right: 16px;"
+                                    @onchange="OnCommissionTypeChanged">
+                                <option selected value="0">@ECommerceResources.AllCommissions</option>
+                                <option value="3">@ECommerceResources.DirectCommissionForSales</option>
+                                <option value="4">@ECommerceResources.RecruitmentCommission</option>
+                                <option value="5">@ECommerceResources.BinaryCommission</option>
+                                <option value="6">@ECommerceResources.LevelCommission</option>
+                                <option value="7">@ECommerceResources.RankCommission</option>
+                            </select>
+                        </div>
+                    </li>
+                    <li class="nav-item ms-auto d-flex flex-row align-items-center gap-2">
+                        <!-- Export Buttons -->
+                        <div class="dropdown">
+                            <button class="btn btn-info" type="button" id="exportDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="fas fa-file-export me-2"></i>
+                                <span class="fw-bold">@ActionsResources.Export</span>
+                            </button>
+                            <ul class="dropdown-menu" aria-labelledby="exportDropdown">
+                                <li><a class="dropdown-item" href="javascript:void(0)" @onclick="ExportToExcel"><i class="far fa-file-excel mx-2"></i>@GeneralResources.Excel</a></li>
+                                <li><a class="dropdown-item" href="javascript:void(0)" @onclick="ExportToPrint"><i class="fas fa-print mx-2"></i>@ActionsResources.Print</a></li>
+                            </ul>
+                        </div>
+                    </li>
+                </ul>
+                <!-- Responsive Table Container -->
+                <div class="table-responsive border rounded-3 overflow-hidden">
+                    <table class="table table-hover mb-0 d-none d-md-table">
+                        <thead class="bg-light">
+                            <tr>
+                                <th class="text-center">@ECommerceResources.Date</th>
+                                <th class="text-center">@ECommerceResources.CommissionType</th>
+                                <th class="text-center">@ECommerceResources.Source</th>
+                                <th class="text-center">@FormResources.Amount</th>
+                                <th class="text-center">@FormResources.Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (CommissionLogs != null && CommissionLogs.Count() != 0)
+                            {
+                                @foreach (var commissionLog in CommissionLogs)
+                                {
+                                    <tr>
+                                        <td class="text-center align-middle">@commissionLog.CreatedDateLocalFormatted</td>
+                                        @switch (commissionLog.CommissionType)
+                                        {
+                                            case WalletEarningType.DirectSale:
+                                                <td class="text-center align-middle">@ECommerceResources.DirectCommissionForSales</td>
+                                                break;
+                                            case WalletEarningType.Recruitment:
+                                                <td class="text-center align-middle">@ECommerceResources.RecruitmentCommission</td>
+                                                break;
+                                            case WalletEarningType.Binary:
+                                                <td class="text-center align-middle">@ECommerceResources.BinaryCommission</td>
+                                                break;
+                                            case WalletEarningType.Level:
+                                                <td class="text-center align-middle">@ECommerceResources.LevelCommission</td>
+                                                break;
+                                            case WalletEarningType.Rank:
+                                                <td class="text-center align-middle">@ECommerceResources.RankCommission</td>
+                                                break;
+                                            default:
+                                                <td class="text-center align-middle">@commissionLog.CommissionType.ToString()</td>
+                                                break;
+                                        }
+                                        <td class="text-center align-middle">@commissionLog.Account.ToString()</td>
+                                        <td class="text-center align-middle">$@commissionLog.Amount</td>
+                                        @switch (commissionLog.TransactionStatus)
+                                        {
+                                            case WalletTransactionStatus.Accepted:
+                                                <td class="text-center text-success">@ECommerceResources.Accepted</td>
+                                                break;
+                                            case WalletTransactionStatus.Rejected:
+                                                <td class="text-center text-danger">@ECommerceResources.Rejected</td>
+                                                break;
+                                            case WalletTransactionStatus.Pending:
+                                                <td class="text-center text-c-info">@ECommerceResources.Pending</td>
+                                                break;
+                                            case WalletTransactionStatus.Received:
+                                                <td class="text-center text-success">@ECommerceResources.Received</td>
+                                                break;
+                                            default:
+                                                <td class="text-center text-secondary">@commissionLog.TransactionStatus.ToString()</td>
+                                                break;
+                                        }
+                                    </tr>
+                                }
+                            }
+                            else
+                            {
+                                <tr>
+                                    <td colspan="7" class=" text-center">
+                                        @NotifiAndAlertsResources.NoDataFound
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                        <!-- Totals -->
+                        <tfoot class="fw-bold text-center">
+
+                            <tr>
+                                <td rowspan="4">@ECommerceResources.Total</td>
+                                <td class="text-center align-middle">@ECommerceResources.BinaryCommission</td>
+                                <td class="text-center" colspan="3">$@CommissionsHistoryResult.BinaryCommission</td>
+
+                            </tr>
+                            <tr>
+                                <td class="text-center align-middle">@ECommerceResources.DirectCommission</td>
+                                <td class="text-center" colspan="3">$@(CommissionsHistoryResult.DirectSaleCommission + CommissionsHistoryResult.RecruitmentCommission)</td>
+
+                            </tr>
+                            <tr>
+                                <td class="text-center align-middle">@ECommerceResources.LevelCommission</td>
+                                <td class="text-center" colspan="3">$@CommissionsHistoryResult.LevelCommission</td>
+
+                            </tr>
+                            <tr>
+                                <td class="text-center align-middle">@ECommerceResources.RankCommission</td>
+                                <td class="text-center" colspan="3">$@CommissionsHistoryResult.RankCommission</td>
+
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+                <!-- Pagination -->
+                <div class="d-flex justify-content-between  mt-3" dir="ltr">
+                    <div class="d-flex align-items-center just flex-end">
+                        <span class="text-muted">
+                            @string.Format(ActionsResources.ShowingEntries, ((currentPage - 1) * searchModel.PageSize + 1), Math.Min(currentPage * searchModel.PageSize, totalRecords), totalRecords)
+                        </span>
+                    </div>
+                    <nav>
+                        <ul class="pagination mb-0">
+                            <!-- First Button -->
+                            <li class="page-item @(currentPage == 1 ? "disabled" : "")">
+                                <a class="page-link" @onclick="() => GoToPage(1)" title="@ActionsResources.First">
+                                    <i class="fas fa-angle-double-left"></i>
+                                </a>
+                            </li>
+
+                            <!-- Previous Button -->
+                            <li class="page-item @(currentPage == 1 ? "disabled" : "")">
+                                <a class="page-link" @onclick="() => GoToPage(currentPage - 1)">
+                                    @ActionsResources.Previous
+                                </a>
+                            </li>
+                            <!-- Dynamic Page Numbers -->
+                            @{
+                                const int maxVisiblePages = 5;
+                                int startPage = Math.Max(1, currentPage - 2);
+                                int endPage = Math.Min(totalPages, startPage + maxVisiblePages - 1);
+                                if (endPage - startPage + 1 < maxVisiblePages)
+                                {
+                                    startPage = Math.Max(1, endPage - maxVisiblePages + 1);
+                                }
+                            }
+                            @if (startPage > 1)
+                            {
+                                <li class="page-item disabled">
+                                    <a class="page-link">...</a>
+                                </li>
+                            }
+                            @for (int pag = startPage; pag <= endPage; pag++)
+                            {
+                                // Capture the loop variable in a local variable
+                                int pageNumber = pag;
+                                <li class="page-item @(pag == currentPage ? "active":"")">
+                                    <a class="page-link" @onclick="() => GoToPage(pageNumber)">@pag</a>
+                                </li>
+                            }
+                            @if (endPage < totalPages)
+                            {
+                                <li class="page-item disabled">
+                                    <a class="page-link">...</a>
+                                </li>
+                            }
+                            <!-- Next Button -->
+                            <li class="page-item @(currentPage == totalPages ? "disabled" : "")">
+                                <a class="page-link" @onclick="() => GoToPage(currentPage + 1)">
+                                    @ActionsResources.Next
+                                </a>
+                            </li>
+
+                            <!-- Last Button -->
+                            <li class="page-item @(currentPage == totalPages ? "disabled" : "")">
+                                <a class="page-link" @onclick="() => GoToPage(totalPages)" title="@ActionsResources.Last">
+                                    <i class="fas fa-angle-double-right"></i>
+                                </a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+

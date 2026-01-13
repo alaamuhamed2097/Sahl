@@ -98,7 +98,7 @@ namespace Api.Controllers.v1.User
         [ProducesResponseType(typeof(ResponseModel<VendorRegistrationResponseDto>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ResponseModel<string>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ResponseModel<object>), StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> RegisterVendor([FromBody] RegisterVendorRequestDto registerDto)
+        public async Task<IActionResult> RegisterVendor([FromBody] VendorRegistrationRequestDto registerDto)
         {
             // Validate model state
             if (!ModelState.IsValid)

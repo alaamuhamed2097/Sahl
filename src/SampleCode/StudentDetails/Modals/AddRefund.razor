@@ -1,0 +1,122 @@
+﻿@page "/AddRefund/{ItemId}/{Type}"
+@using Shared.GeneralModels.RequestModels
+@using Resources
+@using Common.Enumeration
+
+<EditForm Model="model" OnValidSubmit="SubmitRefund">
+    <DataAnnotationsValidator />
+    
+    <div class="manual-invoice-card">
+        <div class="card-header">
+            <div class="card-title">
+                <i class="fas fa-undo"></i> <span>@GeneralUIResources.AddRefund</span>
+            </div>
+        </div>
+
+        <div class="card-content">
+            @if (isLoading)
+            {
+                <div class="invoice-empty-state">
+                    <i class="fas fa-spinner fa-spin"></i>
+                    <p>@GeneralResources.Loading...</p>
+                </div>
+            }
+            else
+            {
+                <!-- Refund Details -->
+                <div class="invoice-topbar">
+                    <div class="invoice-form-group">
+                        <label>@GeneralUIResources.RefundDate</label>
+                        <InputDate class="invoice-input" Type="InputDateType.DateTimeLocal" @bind-Value="refundDateLocal" />
+                    </div>
+                    <div class="invoice-form-group">
+                        <label>@GeneralUIResources.PaymentMethod</label>
+                        <InputSelect class="invoice-select" @bind-Value="model.PaymentMethodId">
+                            <option value="@Guid.Empty" selected>@GeneralUIResources.Select</option>
+                            @foreach (var pm in paymentMethods)
+                            {
+                                <option value="@pm.PaymentMethodId">@pm.Name</option>
+                            }
+                        </InputSelect>
+                        <ValidationMessage For="@(() => model.PaymentMethodId)" />
+                    </div>
+                    <div class="invoice-form-group">
+                        <label>@GeneralUIResources.RefundReason</label>
+                        <InputSelect class="invoice-select" @bind-Value="model.RefundReseonId">
+                            <option value="@Guid.Empty" selected>@GeneralUIResources.Select</option>
+                            @foreach (var reason in refundReasons)
+                            {
+                                <option value="@reason.Id">@reason.TitleAr</option>
+                            }
+                        </InputSelect>
+                        <ValidationMessage For="@(() => model.RefundReseonId)" />
+                    </div>
+                    <div class="invoice-form-group">
+                        <label>@GeneralUIResources.TotalRefundValue</label>
+                        <InputNumber class="invoice-input" step="0.01" @bind-Value="@model.RefundValue" @bind-Value:after="DistributeTotalRefund" />
+                    </div>
+                </div>
+
+                <!-- Items Table -->
+                <div class="invoice-section">
+                    <div class="invoice-section-title"><i class="fas fa-list"></i> @GeneralUIResources.InvoiceItems</div>
+                    <div class="invoice-table-wrapper">
+                        <table class="invoice-data-table">
+    <thead>
+        <tr>
+            <th>@GeneralUIResources.Select</th>
+            <th>@FormResources.Name</th>
+            <th>@FormResources.Price</th>
+            <th>@GeneralUIResources.RefundValue</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in refundItemsVm)
+        {
+            <tr>
+                <td>
+                    <input type="checkbox"
+                           checked="@item.IsSelected"
+                           @onchange="@(e => { item.IsSelected = (bool)e.Value!; CalculateTotalRefund(); })" />
+                </td>
+                <td>@item.Name</td>
+                <td>@item.OriginalPrice.ToString("F2") @currencyCode</td>
+                <td>
+                    <InputNumber class="invoice-input"
+                                 step="0.01"
+                                 @bind-Value="item.RefundValue"
+                                 @bind-Value:after="CalculateTotalRefund"
+                                 disabled="@(!item.IsSelected)" />
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+                    </div>
+                </div>
+
+                <!-- Comment -->
+                <div class="invoice-form-group invoice-form-grid-full" style="margin-top: 1rem;">
+                    <label>@GeneralUIResources.Comment</label>
+                    <InputTextArea class="invoice-textarea" rows="3" @bind-Value="model.Comment"></InputTextArea>
+                </div>
+
+                <!-- Actions -->
+                <div class="invoice-actions">
+                    <button type="submit" class="invoice-btn invoice-btn-primary" disabled="@isSubmitting">
+                        @if (isSubmitting)
+                        {
+                            <i class="fas fa-spinner fa-spin"></i>
+                            <span>@NotifiAndAlertsResources.Processing</span>
+                        }
+                        else
+                        {
+                            <i class="fas fa-save"></i>
+                            <span>@ActionsResources.Save</span>
+                        }
+                    </button>
+                </div>
+            }
+        </div>
+    </div>
+</EditForm>

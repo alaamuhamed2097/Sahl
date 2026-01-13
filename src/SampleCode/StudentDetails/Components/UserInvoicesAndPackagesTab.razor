@@ -1,0 +1,711 @@
+@namespace Dashboard.Pages.User.UserDetails.Components
+@using Resources
+@using Shared.DTOs.Payment
+@using Common.Enumeration
+
+<PageTitle>@AdminResources.Invoices</PageTitle>
+
+@if (isLoading)
+{
+    <div class="loading-spinner">
+        <div class="spinner-border text-primary" role="status"></div>
+    </div>
+}
+else
+{
+    <div class="invoices-modern-container">
+        <div class="invoices-header">
+            <h3 class="invoices-title">
+                <i class="fas fa-file-invoice"></i>
+                @AdminResources.Invoices
+            </h3>
+            <button class="btn btn-primary" @onclick="OpenCreateModal">
+                <i class="fas fa-plus"></i>
+                <span>@AdminResources.AddInvoice</span>
+            </button>
+        </div>
+
+        @if (invoices != null && invoices.Any())
+        {
+            <div class="invoices-table-wrapper">
+                <table class="invoices-table">
+                    <thead>
+                        <tr>
+                            <th class="col-date">
+                                <i class="fas fa-calendar"></i>
+                                @AdminResources.Invoice_Date
+                            </th>
+                            <th class="col-payment">
+                                <i class="fas fa-credit-card"></i>
+                                @AdminResources.Invoice_PaymentMethod
+                            </th>
+                            <th class="col-advertising">
+                                <i class="fas fa-bullhorn"></i>
+                                @AdminResources.Invoice_AdvertisingMethod
+                            </th>
+                            <th class="col-amount">
+                                <i class="fas fa-money-bill-wave"></i>
+                                @AdminResources.Invoice_Amount
+                            </th>
+                            <th class="col-crons">
+                                <i class="fas fa-coins"></i>
+                                @AdminResources.Invoice_Crons
+                            </th>
+                            <th class="col-status">
+                                <i class="fas fa-info-circle"></i>
+                                @AdminResources.Invoice_Status
+                            </th>
+                            <th class="col-items">
+                                <i class="fas fa-shopping-bag"></i>
+                                @AdminResources.Invoice_Items
+                            </th>
+                            <th class="col-actions">
+                                <i class="fas fa-cog"></i>
+                                الإجراءات
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var invoice in invoices)
+                        {
+                            var invoiceIndex = invoices.IndexOf(invoice);
+                            var isExpanded = expandedInvoices.Contains(invoiceIndex);
+                            
+                            <tr class="invoice-row @(isExpanded ? "expanded" : "")">
+                                <td class="date-cell">
+                                    <div class="date-wrapper">
+                                        <span class="date-primary">@invoice.InvoiceDateUtc.ToString("dd MMM yyyy")</span>
+                                        <span class="date-time">@invoice.InvoiceDateUtc.ToString("hh:mm tt")</span>
+                                    </div>
+                                </td>
+                                <td class="payment-method-cell">
+                                    <div class="method-badge payment-badge">
+                                        <i class="fas fa-wallet"></i>
+                                        <span>@invoice.PaymentMethodNameAr</span>
+                                    </div>
+                                </td>
+                                <td class="advertising-method-cell">
+                                    <div class="method-badge advertising-badge">
+                                        <i class="fas fa-ad"></i>
+                                        <span>@invoice.AdvertisingMethodNameAr</span>
+                                    </div>
+                                </td>
+                                <td class="amount-cell">
+                                    <div class="amount-wrapper">
+                                        <span class="amount-value">@invoice.FinalTotalLocal.ToString("N2")</span>
+                                        <span class="amount-currency">@invoice.Currency</span>
+                                        @if (invoice.PaymentValue != invoice.FinalTotalLocal)
+                                        {
+                                            <span class="amount-paid">(@invoice.PaymentValue.ToString("N2") @AdminResources.Invoice_PaidAmount)</span>
+                                        }
+                                    </div>
+                                </td>
+                                <td class="crons-cell">
+                                    <div class="crons-wrapper">
+                                        @if (invoice.GoldCronsUsed > 0)
+                                        {
+                                            <span class="cron-badge gold">
+                                                <i class="fas fa-coins"></i>
+                                                @invoice.GoldCronsUsed @AdminResources.Invoice_GoldCrons
+                                            </span>
+                                        }
+                                        @if (invoice.SilverCronsUsed > 0)
+                                        {
+                                            <span class="cron-badge silver">
+                                                <i class="fas fa-coins"></i>
+                                                @invoice.SilverCronsUsed @AdminResources.Invoice_SilverCrons
+                                            </span>
+                                        }
+                                        @if (invoice.GoldCronsUsed == 0 && invoice.SilverCronsUsed == 0)
+                                        {
+                                            <span class="no-crons">x</span>
+                                        }
+                                    </div>
+                                </td>
+                                <td class="status-cell">
+                                    <span class="status-badge @GetStatusClass(invoice.PaymentState)">
+                                        @GetPaymentStatus(invoice.PaymentState)
+                                    </span>
+                                </td>
+                                <td class="items-cell">
+                                    <button class="toggle-items-btn @(isExpanded ? "active" : "")" 
+                                            @onclick="() => ToggleInvoiceItems(invoiceIndex)">
+                                        <span class="items-count">@invoice.Items.Count</span>
+                                        <i class="fas fa-chevron-down"></i>
+                                    </button>
+                                </td>
+                                <td class="actions-cell">
+                                    <div class="action-buttons">
+                                        <button class="btn-action btn-edit" title="تعديل" @onclick="() => EditInvoice(invoice.InvoiceId)">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button class="btn-action btn-delete" title="حذف" @onclick="() => DeleteInvoice(invoice.InvoiceId)">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                        <button class="btn-action btn-refund" title="@GeneralUIResources.AddRefund" @onclick='() => Navigation.NavigateTo($"/AddRefund/{invoice.PaymentInvoiceId}/Invoice")'>
+                                            <i class="fas fa-undo"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            
+                            @if (isExpanded && invoice.Items != null && invoice.Items.Any())
+                            {
+                                <tr class="items-row">
+                                    <td colspan="9">
+                                        <div class="items-container">
+                                            <div class="items-grid">
+                                                @foreach (var item in invoice.Items)
+                                                {
+                                                    <div class="item-card">
+                                                        <div class="item-header">
+                                                            <span class="item-type @GetItemTypeClass(item.Scope)">
+                                                                @GetItemTypeIcon(item.Scope)
+                                                                @GetItemTypeLabel(item.Scope)
+                                                            </span>
+                                                            @if (item.Quantity > 1)
+                                                            {
+                                                                <span class="item-quantity">×@item.Quantity</span>
+                                                            }
+                                                        </div>
+                                                        <div class="item-body">
+                                                            <h5 class="item-name">@item.NameEn</h5>
+                                                            @if (!string.IsNullOrEmpty(item.SubNameEn))
+                                                            {
+                                                                <p class="item-subname">@item.SubNameEn</p>
+                                                            }
+                                                        </div>
+                                                        <div class="item-footer">
+                                                            <span class="item-price">
+                                                                @item.UnitPrice.ToString("N2") @invoice.Currency
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                }
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+        else
+        {
+            <div class="no-data">
+                <i class="fas fa-receipt"></i>
+                <p>@AdminResources.Invoice_NoInvoices</p>
+            </div>
+        }
+    </div>
+}
+
+<style>
+    .loading-spinner {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 3rem;
+    }
+
+    .invoices-modern-container {
+        background: #fff;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+
+    .invoices-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1.5rem;
+        border-bottom: 2px solid #f0f0f0;
+        background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+    }
+
+    .invoices-title {
+        margin: 0;
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #333;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+        .invoices-title i {
+            color: #667eea;
+            font-size: 1.75rem;
+        }
+
+    .invoices-table-wrapper {
+        overflow-x: auto;
+    }
+
+    .invoices-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.875rem;
+    }
+
+        .invoices-table thead {
+            background: linear-gradient(135deg, var(--secondary), var(--secondary-light));
+            color: white;
+        }
+
+            .invoices-table thead th {
+                padding: 1rem 0.75rem;
+                text-align: right;
+                font-weight: 600;
+                font-size: 0.813rem;
+                white-space: nowrap;
+                border-bottom: 2px solid rgba(255,255,255,0.2);
+            }
+
+                .invoices-table thead th i {
+                    margin-left: 0.4rem;
+                    opacity: 0.9;
+                }
+
+        .invoices-table tbody tr.invoice-row {
+            border-bottom: 1px solid #e8e8e8;
+            transition: all 0.2s ease;
+        }
+
+            .invoices-table tbody tr.invoice-row:hover {
+                background: #f8f9ff;
+            }
+
+            .invoices-table tbody tr.invoice-row.expanded {
+                background: #f0f4ff;
+            }
+
+        .invoices-table tbody td {
+            padding: 0.875rem 0.75rem;
+            vertical-align: middle;
+        }
+
+    .invoice-id-cell {
+        font-weight: 600;
+    }
+
+    .invoice-number {
+        color: #667eea;
+        font-family: 'Courier New', monospace;
+        font-size: 0.875rem;
+    }
+
+    .date-wrapper {
+        display: flex;
+        flex-direction: column;
+        gap: 0.15rem;
+    }
+
+    .date-primary {
+        color: #333;
+        font-weight: 500;
+    }
+
+    .date-time {
+        color: #999;
+        font-size: 0.75rem;
+    }
+
+    .method-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        padding: 0.4rem 0.75rem;
+        border-radius: 6px;
+        font-size: 0.813rem;
+        font-weight: 500;
+        white-space: nowrap;
+    }
+
+    .payment-badge {
+        background: #e3f2fd;
+        color: #1565c0;
+    }
+
+        .payment-badge i {
+            font-size: 0.75rem;
+        }
+
+    .advertising-badge {
+        background: #fff3e0;
+        color: #e65100;
+    }
+
+        .advertising-badge i {
+            font-size: 0.75rem;
+        }
+
+    .amount-wrapper {
+        display: flex;
+        flex-direction: column;
+        gap: 0.15rem;
+    }
+
+    .amount-value {
+        color: #2e7d32;
+        font-weight: 700;
+        font-size: 0.938rem;
+    }
+
+    .amount-currency {
+        color: #666;
+        font-size: 0.75rem;
+    }
+
+    .amount-paid {
+        color: #999;
+        font-size: 0.75rem;
+        font-style: italic;
+    }
+
+    .crons-wrapper {
+        display: flex;
+        flex-direction: column;
+        gap: 0.3rem;
+    }
+
+    .cron-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.3rem;
+        padding: 0.25rem 0.5rem;
+        border-radius: 4px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        width: fit-content;
+    }
+
+        .cron-badge.gold {
+            background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
+            color: #b8860b;
+        }
+
+        .cron-badge.silver {
+            background: linear-gradient(135deg, #c0c0c0 0%, #e8e8e8 100%);
+            color: #666;
+        }
+
+        .cron-badge i {
+            font-size: 0.688rem;
+        }
+
+    .no-crons {
+        color: #ccc;
+        font-size: 0.875rem;
+    }
+
+    .status-badge {
+        display: inline-block;
+        padding: 0.4rem 0.875rem;
+        border-radius: 20px;
+        font-weight: 600;
+        font-size: 0.813rem;
+        white-space: nowrap;
+    }
+
+        .status-badge.paid {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+
+        .status-badge.pending {
+            background: #fff3e0;
+            color: #e65100;
+        }
+
+        .status-badge.hold {
+            background: #f3e5f5;
+            color: #6a1b9a;
+        }
+
+    .toggle-items-btn {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.5rem 0.875rem;
+        background: #f5f5f5;
+        border: 1px solid #e0e0e0;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        font-weight: 600;
+        color: #666;
+    }
+
+        .toggle-items-btn:hover {
+            background: #667eea;
+            border-color: #667eea;
+            color: white;
+        }
+
+        .toggle-items-btn.active {
+            background: #667eea;
+            border-color: #667eea;
+            color: white;
+        }
+
+            .toggle-items-btn.active i {
+                transform: rotate(180deg);
+            }
+
+        .toggle-items-btn i {
+            transition: transform 0.2s ease;
+            font-size: 0.75rem;
+        }
+
+    .items-count {
+        background: white;
+        color: #667eea;
+        padding: 0.15rem 0.5rem;
+        border-radius: 12px;
+        font-size: 0.75rem;
+    }
+
+    .toggle-items-btn.active .items-count {
+        background: rgba(255,255,255,0.3);
+        color: white;
+    }
+
+    .items-row td {
+        padding: 0 !important;
+        background: #fafbff;
+    }
+
+    .items-container {
+        padding: 1.25rem;
+        animation: slideDown 0.3s ease;
+    }
+
+    @@keyframes slideDown {
+        from {
+            opacity: 0;
+            transform: translateY(-10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .items-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+        gap: 1rem;
+    }
+
+    .item-card {
+        background: white;
+        border: 1px solid #e8e8e8;
+        border-radius: 8px;
+        padding: 0.875rem;
+        transition: all 0.2s ease;
+    }
+
+        .item-card:hover {
+            border-color: #667eea;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.15);
+            transform: translateY(-2px);
+        }
+
+    .item-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 0.625rem;
+    }
+
+    .item-type {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.3rem;
+        padding: 0.25rem 0.625rem;
+        border-radius: 4px;
+        font-size: 0.75rem;
+        font-weight: 600;
+    }
+
+        .item-type.course {
+            background: #e3f2fd;
+            color: #1565c0;
+        }
+
+        .item-type.package {
+            background: #f3e5f5;
+            color: #6a1b9a;
+        }
+
+        .item-type.product {
+            background: #fff3e0;
+            color: #e65100;
+        }
+
+    .item-quantity {
+        background: #f5f5f5;
+        color: #666;
+        padding: 0.15rem 0.5rem;
+        border-radius: 12px;
+        font-size: 0.75rem;
+        font-weight: 600;
+    }
+
+    .item-body {
+        margin-bottom: 0.75rem;
+    }
+
+    .item-name {
+        margin: 0;
+        font-size: 0.938rem;
+        font-weight: 600;
+        color: #333;
+        line-height: 1.4;
+    }
+
+    .item-subname {
+        margin: 0.3rem 0 0 0;
+        font-size: 0.813rem;
+        color: #666;
+        line-height: 1.3;
+    }
+
+    .item-footer {
+        padding-top: 0.625rem;
+        border-top: 1px solid #f0f0f0;
+    }
+
+    .item-price {
+        color: #2e7d32;
+        font-weight: 700;
+        font-size: 0.938rem;
+    }
+
+    .no-data {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 4rem 1rem;
+        text-align: center;
+        color: #999;
+    }
+
+        .no-data i {
+            font-size: 3.5rem;
+            margin-bottom: 1rem;
+            opacity: 0.3;
+            color: #667eea;
+        }
+
+        .no-data p {
+            margin: 0;
+            font-size: 1.125rem;
+            font-weight: 500;
+        }
+
+    /* Responsive Design */
+    @@media (max-width: 1200px) {
+        .invoices-table {
+            font-size: 0.813rem;
+        }
+
+        .items-grid {
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+        }
+    }
+
+    @@media (max-width: 768px) {
+        .invoices-table thead th {
+            padding: 0.75rem 0.5rem;
+            font-size: 0.75rem;
+        }
+
+        .invoices-table tbody td {
+            padding: 0.75rem 0.5rem;
+        }
+
+        .method-badge {
+            padding: 0.3rem 0.5rem;
+            font-size: 0.75rem;
+        }
+
+        .items-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    /* Action Buttons Styles */
+    .actions-cell {
+        text-align: center;
+    }
+
+    .action-buttons {
+        display: flex;
+        gap: 0.5rem;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .btn-action {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 36px;
+        height: 36px;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        font-size: 0.875rem;
+    }
+
+        .btn-action:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        }
+
+        .btn-action:active {
+            transform: translateY(0);
+        }
+
+    .btn-edit {
+        background: #e3f2fd;
+        color: #1976d2;
+    }
+
+        .btn-edit:hover {
+            background: #1976d2;
+            color: white;
+        }
+
+    .btn-delete {
+        background: #ffebee;
+        color: #d32f2f;
+    }
+
+        .btn-delete:hover {
+            background: #d32f2f;
+            color: white;
+        }
+
+    .btn-refund {
+        background: #fff3e0;
+        color: #e65100;
+    }
+
+        .btn-refund:hover {
+            background: #e65100;
+            color: white;
+        }
+
+    .col-actions {
+        width: 120px;
+        text-align: center;
+    }
+</style>

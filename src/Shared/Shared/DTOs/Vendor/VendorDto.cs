@@ -1,4 +1,5 @@
 ﻿using Common.Enumerations.IdentificationType;
+using Common.Enumerations.User;
 using Common.Enumerations.VendorStatus;
 using Common.Enumerations.VendorType;
 using Shared.DTOs.Base;
@@ -28,6 +29,7 @@ namespace Shared.DTOs.Vendor
         // Contact Information
         public string PhoneCode { get; set; } = null!;
         public string PhoneNumber { get; set; } = null!;
+        public string? Email { get; set; }
 
         public string Address { get; set; } = null!;
         public string PostalCode { get; set; } = null!;
@@ -37,6 +39,7 @@ namespace Shared.DTOs.Vendor
         public string? Notes { get; set; }
         public decimal? AverageRating { get; set; }
         public VendorStatus Status { get; set; } = VendorStatus.Pending;
+        public UserStateType UserStatus { get; set; }
 
         public DateTime RegistrationDate => CreatedDateUtc;
         public string AdministratorFullName => AdministratorFirstName + ' ' + AdministratorLastName;

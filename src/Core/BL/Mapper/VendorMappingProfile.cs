@@ -15,9 +15,16 @@ public partial class MappingProfile
             .ForMember(
                 desc => desc.AdministratorLastName,
                 opt => opt.MapFrom(src => src.User.LastName))
+            .ForMember(
+                desc => desc.Email,
+                opt => opt.MapFrom(src => src.User.Email))
+            .ForMember(
+                desc => desc.UserStatus,
+                opt => opt.MapFrom(src => src.User.UserState))
             .ReverseMap();
 
-        CreateMap<TbVendor, RegisterVendorRequestDto>().ReverseMap();
+        CreateMap<TbVendor, VendorRegistrationRequestDto>().ReverseMap();
+        CreateMap<VendorUpdateRequestDto, TbVendor>();
         CreateMap<VwVendorPublicDetailsDto, VwVendorPublicDetailsDto>();
         CreateMap<VwVendorOwnerDetails, VwVendorOwnerDetailsDto>();
         CreateMap<VwVendorAdminDetails, VwVendorAdminDetailsDto>();

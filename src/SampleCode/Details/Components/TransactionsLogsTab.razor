@@ -1,0 +1,305 @@
+<div class="tab-pane fade" id="v-pills-transactions" role="tabpanel"
+     aria-labelledby="v-pills-messages-tab">
+
+    <div class="card-body p-4">
+        <div class="card-header fw-bold">
+            <h5>@ECommerceResources.TransactionsLogs:</h5>
+        </div>
+        <div class="dt-responsive">
+            <!-- Filtration start -->
+            <div class="d-flex flex-wrap align-items-center gap-3 mb-3">
+                <EditForm Model="searchModel" OnSubmit="@SearchWalletTransactions">
+                    <!-- Search Box -->
+                    <div class="input-group rounded-3 border" style="width: 170px; height: 38px;">
+                        <InputText @bind-Value="searchModel.SearchTerm"
+                                   id="searchInput"
+                                   class="form-control rounded-end-3 text-center border-0"
+                                   placeholder="@ActionsResources.Search"
+                                   style="height: 38px;" />
+                        <button type="submit"
+                                class="btn btn-danger rounded-start-3 d-flex align-items-center justify-content-center border-0"
+                                style="width: 40px; height: 38px;">
+                            <i class="fas fa-search text-white m-0"></i>
+                        </button>
+                    </div>
+                </EditForm>
+
+                <div class="d-flex align-items-center gap-2">
+                    <label class="form-label fw-semibold mb-0">@ActionsResources.Show</label>
+                    <select class="form-select rounded-3 shadow-sm border-light text-primary fw-bold text-center"
+                            style="width: 100px; height: 38px; padding-right: 16px;"
+                            @onchange="OnPageSizeChanged">
+                        <option value="10">10</option>
+                        <option value="25">25</option>
+                        <option value="50">50</option>
+                        <option value="100">100</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Responsive Table Container -->
+            <div class="table-responsive border rounded-3">
+                <table class="table table-hover mb-0 d-none d-md-table overflow-x-auto">
+                    <thead class="bg-light">
+                        <tr>
+                            <th>@ECommerceResources.Date</th>
+                            <th>@ECommerceResources.TransactionType</th>
+                            <th>@ECommerceResources.Account</th>
+                            <th>@ECommerceResources.Amount</th>
+                            <th>@ECommerceResources.Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (WalletTransactions != null && WalletTransactions.Any())
+                        {
+                            @foreach (var transaction in WalletTransactions)
+                            {
+                                <tr>
+                                    <td>@transaction.Date.ToString("d MMM yyyy", ResourceManager.CurrentLanguage == Language.Arabic ? new System.Globalization.CultureInfo("ar-EG") : new System.Globalization.CultureInfo("en-US"))</td>
+                                    <td>@transaction.TransactionType</td>
+                                    <td>@transaction.Account</td>
+                                    <td>$@transaction.Amount.ToString("N2")</td>
+                                    <td>
+                                        @if (transaction.TransactionStatus == WalletTransactionStatus.Rejected)
+                                        {
+                                            <span class="text-danger">@transaction.TransactionStatus</span>
+                                        }
+                                        @if (transaction.TransactionStatus == WalletTransactionStatus.Accepted)
+                                        {
+                                            <span class="text-success">@transaction.TransactionStatus</span>
+                                        }
+                                        @if (transaction.TransactionStatus == WalletTransactionStatus.Received)
+                                        {
+                                            <span class="text-success">@transaction.TransactionStatus</span>
+                                        }
+                                        @if (transaction.TransactionStatus == WalletTransactionStatus.Pending)
+                                        {
+                                            <span class="text-warning">@transaction.TransactionStatus</span>
+                                        }
+
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="5" class="text-center">@NotifiAndAlertsResources.NoDataFound</td>
+                            </tr>
+                        }
+
+                        <tr class="wallet-tfoot">
+                            <td rowspan="2" class="fw-bold">@ECommerceResources.Total</td>
+                            <td class="fw-bold">@ECommerceResources.Withdraw</td>
+                            <td colspan="3">$@GetTotalWithdrawals().ToString("N2")</td>
+                        </tr>
+                        <tr class="wallet-tfoot">
+                            <td class="fw-bold">@ECommerceResources.Transfer</td>
+                            <td colspan="3">$@GetTotalTransfers().ToString("N2")</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+
+            </div>
+
+            <!-- Pagination -->
+
+            <div class="d-flex justify-content-between mt-3" dir="ltr">
+                <div class="d-flex align-items-center">
+                    <span class="text-muted">
+                        @string.Format(ActionsResources.ShowingEntries, ((CurrentPage - 1) * PageSize + 1), Math.Min(CurrentPage * PageSize, TotalRecords), TotalRecords)
+                    </span>
+                </div>
+                <nav>
+                    <ul class="pagination mb-0">
+                        <!-- First Button -->
+                        <li class="page-item @(CurrentPage == 1 ? "disabled" : "")">
+                            <a class="page-link" @onclick="() => GoToPage(1)" title="@ActionsResources.First">
+                                <i class="fas fa-angle-double-left"></i>
+                            </a>
+                        </li>
+
+                        <!-- Previous Button -->
+                        <li class="page-item @(CurrentPage == 1 ? "disabled" : "")">
+                            <a class="page-link" @onclick="() => GoToPage(CurrentPage - 1)">
+                                @ActionsResources.Previous
+                            </a>
+                        </li>
+
+                        <!-- Dynamic Page Numbers -->
+                        @{
+                            const int maxVisiblePages = 5;
+                            int startPage = Math.Max(1, CurrentPage - 2);
+                            int endPage = Math.Min(TotalPages, startPage + maxVisiblePages - 1);
+
+                            if (endPage - startPage + 1 < maxVisiblePages)
+                            {
+                                startPage = Math.Max(1, endPage - maxVisiblePages + 1);
+                            }
+                        }
+
+                        @if (startPage > 1)
+                        {
+                            <li class="page-item disabled">
+                                <a class="page-link">...</a>
+                            </li>
+                        }
+
+                        @for (int pag = startPage; pag <= endPage; pag++)
+                        {
+                            int pageNumber = pag;
+                            <li class="page-item @(pag == CurrentPage ? "active" : "")">
+                                <a class="page-link" @onclick="() => GoToPage(pageNumber)">@pag</a>
+                            </li>
+                        }
+
+                        @if (endPage < TotalPages)
+                        {
+                            <li class="page-item disabled">
+                                <a class="page-link">...</a>
+                            </li>
+                        }
+
+                        <!-- Next Button -->
+                        <li class="page-item @(CurrentPage == TotalPages ? "disabled" : "")">
+                            <a class="page-link" @onclick="() => GoToPage(CurrentPage + 1)">
+                                @ActionsResources.Next
+                            </a>
+                        </li>
+
+                        <!-- Last Button -->
+                        <li class="page-item @(CurrentPage == TotalPages ? "disabled" : "")">
+                            <a class="page-link" @onclick="() => GoToPage(TotalPages)" title="@ActionsResources.Last">
+                                <i class="fas fa-angle-double-right"></i>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </div>
+@* 
+    <div class="col-sm-12">
+        <div class="card">
+            <div class="card-header fw-bold">
+                <h5>@ECommerceResources.TransactionsLogs:</h5>
+            </div>
+            <div class="card-body">
+                <!-- Search and Filter Controls -->
+                <!-- Search and Filter Controls -->
+                <div class="d-flex gap-4 mb-3">
+                    <input type="text"
+                           placeholder="@ECommerceResources.SearchForTransaction"
+                           class="form-control"
+                           value="@searchTerm"
+                           @oninput="OnSearchTermChanged" />
+
+                    <select class="form-control"
+                            value="@selectedTransactionType"
+                            @onchange="OnTransactionTypeChanged">
+                        <option value="">@ECommerceResources.AllTransactions</option>
+                        <option value="@WalletTransactionType.Withdraw">@ECommerceResources.Withdraw</option>
+                        <option value="@WalletTransactionType.Transfer">@ECommerceResources.Transfer</option>
+                    </select>
+
+                    <select class="form-control"
+                            value="@selectedAccount"
+                            @onchange="OnAccountChanged">
+                        <option value="">@ECommerceResources.Account</option>
+                        <option value="@AccountPosition.A1">@AccountPosition.A1</option>
+                        <option value="@AccountPosition.A2">@AccountPosition.A2</option>
+                        <option value="@AccountPosition.A3">@AccountPosition.A3</option>
+                    </select>
+
+                    <button type="button"
+                            class="btn btn-primary"
+                            @onclick="LoadWalletTransactions">
+                        @ActionsResources.Search
+                    </button>
+
+                    <button type="button"
+                            class="btn btn-secondary"
+                            @onclick="ClearFilters">
+                        Clear
+                    </button>
+                </div>
+
+                <!-- Transactions Table -->
+                @if (IsLoadingTransactions)
+                {
+                    <div class="text-center py-4">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">@GeneralResources.LoadingDots</span>
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    <table id="demo-foo-filtering2" class="table table-striped table-hover table-bordered">
+                        <thead class="border">
+                            <tr>
+                                <th>@ECommerceResources.Date</th>
+                                <th>@ECommerceResources.TransactionType</th>
+                                <th>@ECommerceResources.Account</th>
+                                <th>@ECommerceResources.Amount</th>
+                                <th>@ECommerceResources.Status</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            @if (WalletTransactions.Any())
+                            {
+                                @foreach (var transaction in WalletTransactions)
+                                    <tr>
+                                        <td>@transaction.Date.ToString("d MMM yyyy", ResourceManager.CurrentLanguage == Language.Arabic ? new System.Globalization.CultureInfo("ar-EG") : new System.Globalization.CultureInfo("en-US"))</td>
+                                        <td>@transaction.TransactionType</td>
+                                        <td>@transaction.Account</td>
+                                        <td>$@transaction.Amount.ToString("N2")</td>
+                                        <td>
+                                            @if (transaction.TransactionStatus == WalletTransactionStatus.Rejected)
+                                            {
+                                                <span class="text-danger">@transaction.TransactionStatus</span>
+                                            }
+                                            @if (transaction.TransactionStatus == WalletTransactionStatus.Accepted)
+                                            {
+                                                <span class="text-success">@transaction.TransactionStatus</span>
+                                            }
+                                            @if (transaction.TransactionStatus == WalletTransactionStatus.Received)
+                                            {
+                                                <span class="text-success">@transaction.TransactionStatus</span>
+                                            }
+                                            @if (transaction.TransactionStatus == WalletTransactionStatus.Pending)
+                                            {
+                                                <span class="text-warning">@transaction.TransactionStatus</span>
+                                            }
+
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                            else
+                            {
+                                <tr>
+                                    <td colspan="5" class="text-center">@NotifiAndAlertsResources.NoDataFound</td>
+                                </tr>
+                            }
+                        </tbody>
+
+                        <tfoot class="text-center">
+                            <tr class="wallet-tfoot">
+                                <td rowspan="2" class="fw-bold">@ECommerceResources.Total</td>
+                                <td class="fw-bold">@ECommerceResources.Withdraw</td>
+                                <td colspan="3">$@GetTotalWithdrawals().ToString("N2")</td>
+                            </tr>
+                            <tr class="wallet-tfoot">
+                                <td class="fw-bold">@ECommerceResources.Transfer</td>
+                                <td colspan="3">$@GetTotalTransfers().ToString("N2")</td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                }
+            </div>
+        </div>
+    </div> *@
+</div>
