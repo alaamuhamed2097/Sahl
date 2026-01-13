@@ -867,4 +867,70 @@
   <data name="StoreName" xml:space="preserve">
     <value>Store Name</value>
   </data>
+  <data name="YesRealEstateRegistered" xml:space="preserve">
+    <value>Yes, Real Estate Registered</value>
+  </data>
+  <data name="IdentificationType" xml:space="preserve">
+    <value>Identification Type</value>
+  </data>
+  <data name="IdentificationNumber" xml:space="preserve">
+    <value>Identification Number</value>
+  </data>
+  <data name="IdentificationImageFront" xml:space="preserve">
+    <value>Identification Image (Front)</value>
+  </data>
+  <data name="IdentificationImageBack" xml:space="preserve">
+    <value>Identification Image (Back)</value>
+  </data>
+  <data name="BusinessInformation" xml:space="preserve">
+    <value>Business Information</value>
+  </data>
+  <data name="IsRealEstateRegistered" xml:space="preserve">
+    <value>Is Real Estate Registered</value>
+  </data>
+  <data name="VendorDetails" xml:space="preserve">
+    <value>Vendor Details</value>
+  </data>
+  <data name="ManageVendorDetailsDescription" xml:space="preserve">
+    <value>Manage vendor details and status</value>
+  </data>
+  <data name="ManageUserStatus" xml:space="preserve">
+    <value>Manage User Status</value>
+  </data>
+  <data name="ManageVendorStatus" xml:space="preserve">
+    <value>Manage Vendor Status</value>
+  </data>
+  <data name="VendorInformation" xml:space="preserve">
+    <value>Vendor Information</value>
+  </data>
+  <data name="AdministratorName" xml:space="preserve">
+    <value>Administrator Name</value>
+  </data>
+  <data name="IdentificationInformation" xml:space="preserve">
+    <value>Identification Information</value>
+  </data>
+  <data name="RegistrationInfo" xml:space="preserve">
+    <value>Registration Info</value>
+  </data>
+  <data name="RegistrationDate" xml:space="preserve">
+    <value>Registration Date</value>
+  </data>
+  <data name="Suspended" xml:space="preserve">
+    <value>Suspended</value>
+  </data>
+  <data name="Restricted" xml:space="preserve">
+    <value>Restricted</value>
+  </data>
+  <data name="AutoLocked" xml:space="preserve">
+    <value>Auto Locked</value>
+  </data>
+  <data name="Approved" xml:space="preserve">
+    <value>Approved</value>
+  </data>
+  <data name="UnderReview" xml:space="preserve">
+    <value>Under Review</value>
+  </data>
+  <data name="Status" xml:space="preserve">
+    <value>Status</value>
+  </data>
 </root>

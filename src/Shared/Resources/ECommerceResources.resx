@@ -876,4 +876,70 @@
     <value>قريباً</value>
     <comment>Coming Soon</comment>
   </data>
+  <data name="YesRealEstateRegistered" xml:space="preserve">
+    <value>نعم، مسجل عقارياً</value>
+  </data>
+  <data name="IdentificationType" xml:space="preserve">
+    <value>نوع الهوية</value>
+  </data>
+  <data name="IdentificationNumber" xml:space="preserve">
+    <value>رقم الهوية</value>
+  </data>
+  <data name="IdentificationImageFront" xml:space="preserve">
+    <value>صورة الهوية (أمام)</value>
+  </data>
+  <data name="IdentificationImageBack" xml:space="preserve">
+    <value>صورة الهوية (خلف)</value>
+  </data>
+  <data name="BusinessInformation" xml:space="preserve">
+    <value>معلومات العمل</value>
+  </data>
+  <data name="IsRealEstateRegistered" xml:space="preserve">
+    <value>هل مسجل عقارياً</value>
+  </data>
+  <data name="VendorDetails" xml:space="preserve">
+    <value>تفاصيل البائع</value>
+  </data>
+  <data name="ManageVendorDetailsDescription" xml:space="preserve">
+    <value>إدارة تفاصيل البائع وحالته</value>
+  </data>
+  <data name="ManageUserStatus" xml:space="preserve">
+    <value>إدارة حالة الحساب</value>
+  </data>
+  <data name="ManageVendorStatus" xml:space="preserve">
+    <value>إدارة حالة البائع</value>
+  </data>
+  <data name="VendorInformation" xml:space="preserve">
+    <value>معلومات البائع</value>
+  </data>
+  <data name="AdministratorName" xml:space="preserve">
+    <value>اسم المسؤول</value>
+  </data>
+  <data name="IdentificationInformation" xml:space="preserve">
+    <value>معلومات الهوية</value>
+  </data>
+  <data name="RegistrationInfo" xml:space="preserve">
+    <value>معلومات التسجيل</value>
+  </data>
+  <data name="RegistrationDate" xml:space="preserve">
+    <value>تاريخ التسجيل</value>
+  </data>
+  <data name="Suspended" xml:space="preserve">
+    <value>موقوف</value>
+  </data>
+  <data name="Restricted" xml:space="preserve">
+    <value>مقيد</value>
+  </data>
+  <data name="AutoLocked" xml:space="preserve">
+    <value>مغلق تلقائياً</value>
+  </data>
+  <data name="Approved" xml:space="preserve">
+    <value>معتمد</value>
+  </data>
+  <data name="UnderReview" xml:space="preserve">
+    <value>قيد المراجعة</value>
+  </data>
+  <data name="Status" xml:space="preserve">
+    <value>الحالة</value>
+  </data>
 </root>

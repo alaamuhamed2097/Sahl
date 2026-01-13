@@ -279,7 +279,7 @@ public class UserRegistrationService : IUserRegistrationService
     }
 
     public async Task<ServiceResult<VendorRegistrationResponseDto>> RegisterVendorAsync(
-        RegisterVendorRequestDto request, string clientType)
+        VendorRegistrationRequestDto request, string clientType)
     {
         try
         {
@@ -363,7 +363,7 @@ public class UserRegistrationService : IUserRegistrationService
             };
 
             // Create Vendor Profile using AutoMapper
-            var vendor = _mapper.MapModel<RegisterVendorRequestDto, TbVendor>(request);
+            var vendor = _mapper.MapModel<VendorRegistrationRequestDto, TbVendor>(request);
 
             // Handle Image Uploads
             vendor.IdentificationImageFrontPath = await SaveImage(request.IdentificationImageFront);

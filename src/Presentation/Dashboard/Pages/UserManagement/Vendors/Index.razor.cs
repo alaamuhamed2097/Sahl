@@ -30,6 +30,7 @@ namespace Dashboard.Pages.UserManagement.Vendors
         };
 
         [Inject] protected IVendorService _vendorService { get; set; } = null!;
+        [Inject] private NavigationManager Navigation { get; set; } = default!;
 
         protected override async Task<ResponseModel<IEnumerable<VendorDto>>> GetAllItemsAsync()
         {
@@ -57,11 +58,15 @@ namespace Dashboard.Pages.UserManagement.Vendors
                 return string.Empty;
             }
         }
+
         protected override async Task<ResponseModel<bool>> DeleteItemAsync(Guid id)
         {
             return await _vendorService.DeleteAsync(id);
         }
 
-
+        private void GoToDetails(VendorDto item)
+        {
+            Navigation.NavigateTo($"/users/vendors/details/{item.Id}");
+        }
     }
 }

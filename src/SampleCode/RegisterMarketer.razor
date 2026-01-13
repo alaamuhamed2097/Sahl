@@ -1,0 +1,373 @@
+    @page "/registerMarketer/{recruitmentLinkCode}"
+@using Shared.DTOs.ECommerce
+@using Shared.DTOs.ECommerce.Item
+@using Shared.DTOs.User
+@using Common.Enumerations
+@using Common.Enumerations.FieldType
+@using UI.Components
+
+<PageTitle>@ActionsResources.SignUp</PageTitle>
+
+@if (isLoading)
+{
+    <div class="loading-overlay">
+        <div class="spinner-border" role="status">
+            <span class="visually-hidden">@ActionsResources.Loading ...</span>
+        </div>
+    </div>
+
+    <style>
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(255, 255, 255, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+
+        .spinner-border {
+            width: 4rem;
+            height: 4rem;
+            color: #0d6efd;
+        }
+    </style>
+}
+else if (Sponsor == null && !isLoading)
+{
+    <!-- This will briefly show before redirecting -->
+    <div>@GeneralResources.Redirecting</div>
+}
+else
+{
+    <header>
+        <ul class="nav">
+            <li class="nav-item">
+                <button class="btn btn-link nav-link" @onclick="ChangeLanguage">
+                    <i class="feather icon-globe"></i>
+                    @(ResourceManager.CurrentLanguage == Language.English ? "العربية" : "English")
+                </button>
+            </li>
+        </ul>
+    </header>
+
+    <div class="auth-wrapper">
+        <div class="auth-content container position-relative">
+            <div class="card">
+                <div class="row align-items-center">
+                    <div class="col-md-5 d-none d-md-block">
+                        <img src="assets/images/auth/register.svg"
+                             alt="@ActionsResources.MarketerRegister"
+                             class="img-fluid" />
+                    </div>
+                    <div class="col-md-7">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-center gap-4 mb-4">
+                                <div class="d-flex justify-content-center align-items-center text-center gap-4">
+                                    <h2 class="fw-bold text-start f-w-400">@GeneralResources.MarketerMotivationalMessage</h2>
+                                    <div class="d-flex justify-content-center flex-column">
+                                        <img src="@baseUrl/@Sponsor.ProfileImagePath"
+                                             alt="logo"
+                                             class="img-fluid rounded-pill mx-auto"
+                                             style="width: 80px; margin-bottom: 15px;" />
+                                        <h6 class="text-nowrap">@SponsorFullName</h6>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <EditForm Model="@Model" OnValidSubmit="HandleValidSubmit">
+                                <DataAnnotationsValidator />
+
+                                <!-- Personal Information Section -->
+                                <div class="mb-3">
+                                    <h5 class="text-primary mb-3"><i class="fas fa-user me-2"></i>@FormResources.PersonalInformation</h5>
+                                    <div class="row">
+                                        <div class="mb-3 col-md-6">
+                                            <label class="form-label" for="firstName">@FormResources.FirstName <span class="text-danger">*</span></label>
+                                            <InputText type="text"
+                                                       class="form-control"
+                                                       id="firstName"
+                                                       placeholder="@FormResources.FirstName"
+                                                       @bind-Value="Model.FirstName" />
+                                            <ValidationMessage For="@(() => Model.FirstName)" />
+                                        </div>
+                                        <div class="mb-3 col-md-6">
+                                            <label class="form-label" for="lastName">@FormResources.LastName <span class="text-danger">*</span></label>
+                                            <InputText type="text"
+                                                       class="form-control"
+                                                       id="lastName"
+                                                       placeholder="@FormResources.LastName"
+                                                       @bind-Value="Model.LastName" />
+                                            <ValidationMessage For="@(() => Model.LastName)" />
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <label class="form-label" for="nationalId">@FormResources.NationalId <span class="text-danger">*</span></label>
+                                            <InputText type="number"
+                                                       class="form-control"
+                                                       id="nationalId"
+                                                       placeholder="@FormResources.NationalId"
+                                                       @bind-Value="Model.NationalIdNumber" />
+                                            <ValidationMessage For="@(() => Model.NationalIdNumber)" />
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label class="form-label">@FormResources.PhoneNumber <span class="text-danger">*</span></label>
+                                                <div class="input-group">
+                                                    <select class="btn bg-primary"
+                                                            style="width:105px; padding:0px"
+                                                            @bind="Model.PhoneCode">
+                                                        @foreach (var country in countries)
+                                                        {
+                                                            <option value="@country.PhoneCode">
+                                                                @country.Flag @country.PhoneCode @(ResourceManager.CurrentLanguage == Language.Arabic ? country.NameAr : country.NameEn)
+                                                            </option>
+                                                        }
+                                                    </select>
+                                                    <input type="number"
+                                                               class="form-control"
+                                                               placeholder="@FormResources.EnterPhoneNumber"
+                                                               @bind="Model.PhoneNumber" />
+                                                </div>
+                                                <ValidationMessage For="@(() => Model.PhoneCode)" />
+                                                <ValidationMessage For="@(() => Model.PhoneNumber)" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Account Information Section -->
+                                <div class="mb-3">
+                                    <h5 class="text-primary mb-3"><i class="fas fa-key me-2"></i>@FormResources.AccountInformation</h5>
+                                    <div class="row">
+                                        <div class="mb-3 col-md-6">
+                                            <label class="form-label" for="inputUserName4">@FormResources.Username <span class="text-danger">*</span></label>
+                                            <InputText type="userName"
+                                                       autocomplete="off"
+                                                       class="form-control"
+                                                       id="inputUserName4"
+                                                       placeholder="@FormResources.Username"
+                                                       @bind-Value="Model.UserName" />
+                                            <ValidationMessage For="@(() => Model.UserName)" />
+                                        </div>
+                                        <div class="mb-3 col-md-6">
+                                            <label class="form-label" for="inputEmail4">@FormResources.Email <span class="text-danger">*</span></label>
+                                            <InputText type="email"
+                                                       autocomplete="off"
+                                                       class="form-control"
+                                                       id="inputEmail4"
+                                                       placeholder="@FormResources.Email"
+                                                       @bind-Value="Model.Email" />
+                                            <ValidationMessage For="@(() => Model.Email)" />
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="mb-3 col-md-6">
+                                            <label class="form-label" for="inputPassword4">@FormResources.Password <span class="text-danger">*</span></label>
+                                            <InputText type="password"
+                                                       autocomplete="new-password"
+                                                       class="form-control"
+                                                       id="inputPassword4"
+                                                       placeholder="@FormResources.Password"
+                                                       @bind-Value="Model.Password" />
+                                            <ValidationMessage For="@(() => Model.Password)" />
+                                        </div>
+                                        <div class="mb-3 col-md-6">
+                                            <label class="form-label" for="confirmPassword">@FormResources.ConfirmPassword <span class="text-danger">*</span></label>
+                                            <InputText type="password"
+                                                       autocomplete="new-password"
+                                                       class="form-control"
+                                                       id="confirmPassword"
+                                                       placeholder="@FormResources.ConfirmPassword"
+                                                       @bind-Value="Model.PasswordConfirmation" />
+                                            <ValidationMessage For="@(() => Model.PasswordConfirmation)" />
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Location Information Section -->
+                                <div class="mb-3">
+                                    <h5 class="text-primary mb-3"><i class="fas fa-map-marker-alt me-2"></i>@FormResources.LocationInformation</h5>
+                                    <div class="row">
+                                        <div class="mb-3 col-md-6">
+                                            <label class="form-label" for="inputCountry">@FormResources.Country <span class="text-danger">*</span></label>
+                                            <InputSelect id="inputCountry"
+                                                         class="form-control"
+                                                         @bind-Value="@Model.CountryId"
+                                                         @bind-Value:after="@(() => OnCountryChanged())"
+                                                         disabled="@isLoadingLocations">
+                                                <option value="@Guid.Empty" selected hidden class="text-secondary">@FormResources.SelectCountry</option>
+                                                @foreach (var country in Countries)
+                                                {
+                                                    <option value="@country.Id">@country.Title</option>
+                                                }
+                                            </InputSelect>
+                                            <ValidationMessage For="@(() => Model.CountryId)" />
+                                            @if (isLoadingLocations)
+                                            {
+                                                <div class="spinner-border spinner-border-sm text-primary mt-1" role="status">
+                                                    <span class="sr-only">@GeneralResources.LoadingDots</span>
+                                                </div>
+                                            }
+                                        </div>
+                                        <div class="mb-3 col-md-6">
+                                            <label class="form-label" for="inputState">@FormResources.State <span class="text-danger">*</span></label>
+                                            <InputSelect id="inputState"
+                                                         class="form-control"
+                                                         @bind-Value="@Model.StateId"
+                                                         @bind-Value:after="@(() => OnStateChanged())"
+                                                         disabled="@(isLoadingLocations || !isCountrySelected)">
+                                                <option value="@Guid.Empty" selected hidden class="text-secondary">@FormResources.SelectState</option>
+                                                @foreach (var state in States)
+                                                {
+                                                    <option value="@state.Id">@state.Title</option>
+                                                }
+                                            </InputSelect>
+                                            <ValidationMessage For="@(() => Model.StateId)" />
+                                            @if (isLoadingLocations && !isCountrySelected)
+                                            {
+                                                <div class="spinner-border spinner-border-sm text-primary mt-1" role="status">
+                                                    <span class="sr-only">@GeneralResources.LoadingDots</span>
+                                                </div>
+                                            }
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="mb-3 col-md-6">
+                                            <label class="form-label" for="inputCity">@FormResources.City <span class="text-danger">*</span></label>
+                                            <InputSelect id="inputCity"
+                                                         class="form-control"
+                                                         @bind-Value="Model.CityId"
+                                                         disabled="@(isLoadingLocations || !isStateSelected)">
+                                                <option value="@Guid.Empty" selected hidden class="text-secondary">@FormResources.SelectCity</option>
+                                                @foreach (var city in Cities)
+                                                {
+                                                    <option value="@city.Id">@city.Title</option>
+                                                }
+                                            </InputSelect>
+                                            <ValidationMessage For="@(() => Model.CityId)" />
+                                            @if (isLoadingLocations && !isStateSelected)
+                                            {
+                                                <div class="spinner-border spinner-border-sm text-primary mt-1" role="status">
+                                                    <span class="sr-only">@GeneralResources.LoadingDots</span>
+                                                </div>
+                                            }
+                                        </div>
+                                        <div class="mb-3 col-md-6">
+                                            <label class="form-label" for="zipCode">@FormResources.ZipCode</label>
+                                            <InputText type="text"
+                                                       class="form-control"
+                                                       id="zipCode"
+                                                       placeholder="@FormResources.ZipCode"
+                                                       @bind-Value="Model.ZipCode" />
+                                            <ValidationMessage For="@(() => Model.ZipCode)" />
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Team Information Section -->
+                                <div class="mb-3">
+                                    <h5 class="text-primary mb-3"><i class="fas fa-users me-2"></i>@FormResources.TeamInformation</h5>
+                                    <div class="row">
+                                        <div class="mb-3 col-md-6">
+                                            <label class="form-label" for="team">@FormResources.Team</label>
+                                            <InputSelect id="team"
+                                                         class="form-control"
+                                                         @bind-Value="Model.TeamId">
+                                                <option value="@Guid.Empty" selected hidden class="text-secondary">@FormResources.SelectTeam</option>
+                                                @foreach (var team in Teams)
+                                                {
+                                                    <option value="@team.Id">@team.Name</option>
+                                                }
+                                            </InputSelect>
+                                            <ValidationMessage For="@(() => Model.TeamId)" />
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- ID and Passport Images Gallery -->
+                                <div class="mb-3">
+                                    <h5 class="text-primary mb-3"><i class="fas fa-id-card me-2"></i>@FormResources.DocumentVerification</h5>
+                                    <div class="card">
+                                        <div class="card-header d-flex justify-content-between align-items-center">
+                                            <h6 class="mb-0">@FormResources.IDorPassport <span class="text-danger">*</span></h6>
+                                            <div>
+                                                <small class="text-muted">@Model.NationalIdImageFiles.Count @($"/ {MaxImageCount}")</small>
+                                            </div>
+                                        </div>
+                                        <div class="card-body">
+                                            <!-- Image Upload Section -->
+                                            <div class="mb-4">
+                                                <InputFile class="form-control" OnChange="HandleImageUpload" multiple accept="image/*"
+                                                           disabled="@(Model.NationalIdImageFiles.Count >= MaxImageCount)" />
+                                                <small class="text-muted">@ValidationResources.MaxFileSize: @(MaxFileSize / 1024 / 1024)MB, @ValidationResources.MaxFiles: @MaxImageCount</small>
+                                                <ValidationMessage For="@(() => Model.NationalIdImageFiles)" />
+
+                                                @if (isProcessing)
+                                                {
+                                                    <div class="progress mt-2">
+                                                        <div class="progress-bar" role="progressbar" style="width: @processingProgress%;"
+                                                             aria-valuenow="@processingProgress" aria-valuemin="0" aria-valuemax="100">
+                                                            @processingProgress%
+                                                        </div>
+                                                    </div>
+                                                }
+                                            </div>
+                                            <!-- Image Gallery -->
+                                            @if (Model.NationalIdImageFiles.Any())
+                                            {
+                                                <div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 g-4">
+                                                    @foreach (var image in Model.NationalIdImageFiles)
+                                                    {
+                                                        <div class="col">
+                                                            <div class="card h-100 position-relative">
+                                                                <img src="@GetImageSourceForDisplay(image)" class="card-img-top" alt="Document image" style="height: 150px; object-fit: cover;">
+                                                                <button type="button" @onclick="() => DeleteImage(image)"
+                                                                        class="btn btn-sm btn-danger position-absolute top-0 end-0 m-1">
+                                                                    <i class="fas fa-trash"></i>
+                                                                </button>
+                                                            </div>
+                                                        </div>
+                                                    }
+                                                </div>
+                                            }
+                                            else
+                                            {
+                                                <div class="text-center py-4 text-muted">
+                                                    <i class="fas fa-images fa-3x mb-3"></i>
+                                                    <p>@ValidationResources.NoImagesYet</p>
+                                                </div>
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <button type="submit" class="btn btn-primary btn-lg w-100" disabled="@isSaving">
+                                    @if (isSaving)
+                                    {
+                                        <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                                        <span>@GeneralResources.ProcessingDots</span>
+                                    }
+                                    else
+                                    {
+                                        <i class="fas fa-user-plus me-2"></i>
+                                        <span>@ActionsResources.MarketerRegister</span>
+                                    }
+                                </button>
+                            </EditForm>
+                            <p class="mb-2 text-center mt-3">
+                                @GeneralResources.HaveAccount
+                                <a href="/Login" class="f-w-400 text-decoration-none">@ActionsResources.Login</a>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}

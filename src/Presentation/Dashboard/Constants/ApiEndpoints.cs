@@ -12,6 +12,11 @@
             public const string UserInfo = "api/v1/UserAuthentication/userinfo";
         }
 
+        public static class UserRegistration
+        {
+            public const string CreateVendor = "api/v1/UserRegistration/register-vendor";
+        }
+
         public static class Token
         {
             public const string AccessToken = "api/v1/token/generate-access-token";
@@ -159,14 +164,14 @@
         public static class Vendor
         {
             public const string Get = "api/v1/VendorManagement";
-            public const string Create = "api/v1/VendorManagement";
-            public const string Update = "api/v1/VendorManagement";
+            public const string Update = "api/v1/VendorManagement/update";
             public const string Delete = "api/v1/VendorManagement/delete";
 
             public const string Search = "api/v1/VendorManagement/search";
             public const string FindById = "api/v1/VendorManagement";
             public const string GetForSelect = "api/v1/VendorManagement/forSelect";
-            public const string ChangeStatus = "api/v1/VendorManagement/changeStatus";
+            public const string UpdateVendorStatus = "api/v1/VendorManagement/update-vendor-status";
+            public const string UpdateUserStatus = "api/v1/VendorManagement/update-user-status";
             public const string GetUserStatus = "api/v1/VendorManagement/getStatus";
             public const string GetVendorInfo = "api/v1/VendorManagement/VendorInfo";
         }
@@ -311,13 +316,13 @@
             public const string Save = "api/v1/Warehouse/save";
             public const string Delete = "api/v1/Warehouse/delete";
             public const string ToggleStatus = "api/v1/Warehouse/toggle-status";
-			public const string GetVendors = "api/v1/Warehouse/vendors"; 
-			public const string IsMultiVendorEnabled = "api/v1/Warehouse/multi-vendor-enabled";
+            public const string GetVendors = "api/v1/Warehouse/vendors";
+            public const string IsMultiVendorEnabled = "api/v1/Warehouse/multi-vendor-enabled";
 
-		}
+        }
 
-		// Inventory Movement endpoints
-		public static class InventoryMovement
+        // Inventory Movement endpoints
+        public static class InventoryMovement
         {
             public const string Get = "api/v1/InventoryMovement";
             public const string GetById = "api/v1/InventoryMovement";

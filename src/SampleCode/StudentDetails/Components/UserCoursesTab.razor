@@ -1,0 +1,166 @@
+﻿@namespace Dashboard.Pages.User.UserDetails.Components
+@using Resources
+@using Common.Enumeration
+
+<PageTitle>@AdminResources.Tab_Courses</PageTitle>
+
+@if (isLoading)
+{
+    <div class="loading-spinner">
+        <div class="spinner-border text-primary" role="status"></div>
+    </div>
+}
+else
+{
+    <div class="courses-container">
+        <div class="courses-header">
+            <h3 class="courses-title">
+                <i class="fas fa-book"></i>
+                @AdminResources.Tab_Courses
+            </h3>
+        </div>
+
+        @if (courses != null && courses.Any())
+        {
+            <div class="table-responsive">
+                <table class="courses-table">
+                    <thead>
+                        <tr>
+                            <th>@AdminResources.CourseName</th>
+                            <th>@AdminResources.lbPaymentValue</th>
+                            <th>@AdminResources.EnrollmentDate</th>
+                            <th>@GeneralUIResources.Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var course in courses)
+                        {
+                            <tr>
+                                <td>@course.ItemNameEn</td>
+                                <td>@course.PaymentValue.ToString("N2")</td>
+                                <td>@course.InvoiceDateUtc.ToString("yyyy-MM-dd HH:mm")</td>
+                                <td>
+                                    <button class="btn btn-sm btn-outline-danger" @onclick='() => NavigationManager.NavigateTo($"/AddRefund/{course.Id}/Course")'>
+                                        @GeneralUIResources.AddRefund
+                                    </button>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+        else
+        {
+            <div class="no-data">
+                <i class="fas fa-inbox"></i>
+                <p>@GeneralUIResources.NoCourses</p>
+            </div>
+        }
+    </div>
+}
+
+<style>
+    .loading-spinner {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 3rem;
+    }
+
+    .courses-container {
+        background: #fff;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    }
+
+    .courses-header {
+        padding: 1.5rem;
+        border-bottom: 2px solid #f0f0f0;
+        background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+    }
+
+    .courses-title {
+        margin: 0;
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #333;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+        .courses-title i {
+            color: #667eea;
+            font-size: 1.75rem;
+        }
+
+    .table-responsive {
+        overflow-x: auto;
+    }
+
+    .courses-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.95rem;
+    }
+
+        .courses-table thead {
+            background: #f8f9fa;
+            border-bottom: 2px solid #dee2e6;
+        }
+
+            .courses-table thead th {
+                padding: 1rem;
+                text-align: right;
+                font-weight: 700;
+                color: #495057;
+                border-right: 1px solid #dee2e6;
+            }
+
+                .courses-table thead th:first-child {
+                    border-right: none;
+                }
+
+        .courses-table tbody tr {
+            border-bottom: 1px solid #dee2e6;
+            transition: background-color 0.2s ease;
+        }
+
+            .courses-table tbody tr:hover {
+                background-color: #f8f9fa;
+            }
+
+        .courses-table tbody td {
+            padding: 1rem;
+            color: #495057;
+            border-right: 1px solid #dee2e6;
+        }
+
+            .courses-table tbody td:first-child {
+                border-right: none;
+                font-weight: 600;
+                color: #333;
+            }
+
+    .text-center {
+        text-align: center;
+    }
+
+    .no-data {
+        text-align: center;
+        padding: 3rem;
+        color: #6c757d;
+    }
+
+        .no-data i {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        .no-data p {
+            font-size: 1.125rem;
+        }
+</style>

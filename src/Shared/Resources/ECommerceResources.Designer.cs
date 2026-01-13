@@ -178,6 +178,15 @@ namespace Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to اسم المسؤول.
+        /// </summary>
+        public static string AdministratorName {
+            get {
+                return ResourceManager.GetString("AdministratorName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to المسؤولون.
         /// </summary>
         public static string Admins {
@@ -313,6 +322,15 @@ namespace Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to معتمد.
+        /// </summary>
+        public static string Approved {
+            get {
+                return ResourceManager.GetString("Approved", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to اسم التخصص باللغة العربية.
         /// </summary>
         public static string ArabicSpecializationName {
@@ -354,6 +372,15 @@ namespace Resources {
         public static string AttributeValues {
             get {
                 return ResourceManager.GetString("AttributeValues", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to مغلق تلقائياً.
+        /// </summary>
+        public static string AutoLocked {
+            get {
+                return ResourceManager.GetString("AutoLocked", resourceCulture);
             }
         }
         
@@ -408,6 +435,15 @@ namespace Resources {
         public static string BusinessAdvertisers {
             get {
                 return ResourceManager.GetString("BusinessAdvertisers", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to معلومات العمل.
+        /// </summary>
+        public static string BusinessInformation {
+            get {
+                return ResourceManager.GetString("BusinessInformation", resourceCulture);
             }
         }
         
@@ -925,6 +961,51 @@ namespace Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to صورة الهوية (خلف).
+        /// </summary>
+        public static string IdentificationImageBack {
+            get {
+                return ResourceManager.GetString("IdentificationImageBack", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to صورة الهوية (أمام).
+        /// </summary>
+        public static string IdentificationImageFront {
+            get {
+                return ResourceManager.GetString("IdentificationImageFront", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to معلومات الهوية.
+        /// </summary>
+        public static string IdentificationInformation {
+            get {
+                return ResourceManager.GetString("IdentificationInformation", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to رقم الهوية.
+        /// </summary>
+        public static string IdentificationNumber {
+            get {
+                return ResourceManager.GetString("IdentificationNumber", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to نوع الهوية.
+        /// </summary>
+        public static string IdentificationType {
+            get {
+                return ResourceManager.GetString("IdentificationType", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to استيراد المنتجات.
         /// </summary>
         public static string ImportProducts {
@@ -1060,6 +1141,15 @@ namespace Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to هل مسجل عقارياً.
+        /// </summary>
+        public static string IsRealEstateRegistered {
+            get {
+                return ResourceManager.GetString("IsRealEstateRegistered", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to مطلوب.
         /// </summary>
         public static string IsRequired {
@@ -1191,6 +1281,33 @@ namespace Resources {
         public static string MainCurrency {
             get {
                 return ResourceManager.GetString("MainCurrency", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to إدارة حالة الحساب.
+        /// </summary>
+        public static string ManageUserStatus {
+            get {
+                return ResourceManager.GetString("ManageUserStatus", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to إدارة تفاصيل البائع وحالته.
+        /// </summary>
+        public static string ManageVendorDetailsDescription {
+            get {
+                return ResourceManager.GetString("ManageVendorDetailsDescription", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to إدارة حالة البائع.
+        /// </summary>
+        public static string ManageVendorStatus {
+            get {
+                return ResourceManager.GetString("ManageVendorStatus", resourceCulture);
             }
         }
         
@@ -1753,6 +1870,24 @@ namespace Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to تاريخ التسجيل.
+        /// </summary>
+        public static string RegistrationDate {
+            get {
+                return ResourceManager.GetString("RegistrationDate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to معلومات التسجيل.
+        /// </summary>
+        public static string RegistrationInfo {
+            get {
+                return ResourceManager.GetString("RegistrationInfo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to معلن عادي.
         /// </summary>
         public static string RegularAdvertiser {
@@ -1776,6 +1911,15 @@ namespace Resources {
         public static string Rejected {
             get {
                 return ResourceManager.GetString("Rejected", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to مقيد.
+        /// </summary>
+        public static string Restricted {
+            get {
+                return ResourceManager.GetString("Restricted", resourceCulture);
             }
         }
         
@@ -2077,6 +2221,15 @@ namespace Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to موقوف.
+        /// </summary>
+        public static string Suspended {
+            get {
+                return ResourceManager.GetString("Suspended", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to الوحدة المحول إليها .
         /// </summary>
         public static string TargetUnit {
@@ -2176,6 +2329,24 @@ namespace Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to الحالة.
+        /// </summary>
+        public static string Status {
+            get {
+                return ResourceManager.GetString("Status", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to قيد المراجعة.
+        /// </summary>
+        public static string UnderReview {
+            get {
+                return ResourceManager.GetString("UnderReview", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to الوحدة.
         /// </summary>
         public static string Unit {
@@ -2257,6 +2428,24 @@ namespace Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to تفاصيل البائع.
+        /// </summary>
+        public static string VendorDetails {
+            get {
+                return ResourceManager.GetString("VendorDetails", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to معلومات البائع.
+        /// </summary>
+        public static string VendorInformation {
+            get {
+                return ResourceManager.GetString("VendorInformation", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to البائعون.
         /// </summary>
         public static string Vendors {
@@ -2325,6 +2514,15 @@ namespace Resources {
         public static string WithdrawalMethods {
             get {
                 return ResourceManager.GetString("WithdrawalMethods", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to نعم، مسجل عقارياً.
+        /// </summary>
+        public static string YesRealEstateRegistered {
+            get {
+                return ResourceManager.GetString("YesRealEstateRegistered", resourceCulture);
             }
         }
     }

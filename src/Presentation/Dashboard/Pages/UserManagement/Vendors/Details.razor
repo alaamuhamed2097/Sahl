@@ -1,0 +1,295 @@
+@page "/users/vendors/details/{Id:guid}"
+@using Common.Enumerations.User
+@using Common.Enumerations.VendorStatus
+@using Common.Enumerations.VendorType
+@using Common.Enumerations.IdentificationType
+@attribute [Authorize(Roles = nameof(UserRole.Admin))]
+
+<PageTitle>@ECommerceResources.VendorDetails</PageTitle>
+
+<div class="dashboard">
+    @* <div class="breadcrumb">
+        <a href="/">@GeneralResources.Home</a>
+        <i class="fas fa-chevron-left"></i>
+        <a href="/users/vendors">@ECommerceResources.Vendors</a>
+        <i class="fas fa-chevron-left"></i>
+        <span class="breadcrumb-current">@Vendor.StoreName</span>
+    </div> *@
+
+    <div class="page-header d-flex justify-content-between align-items-center">
+        <div>
+            <h1 class="page-title">@ECommerceResources.VendorDetails</h1>
+            <p class="page-description">@ECommerceResources.ManageVendorDetailsDescription</p>
+        </div>
+        <div class="d-flex gap-2">
+            <button class="btn btn-primary" @onclick="EditVendor">
+                <i class="fas fa-edit me-2"></i> @ActionsResources.Edit
+            </button>
+            <button class="btn btn-secondary" @onclick="OpenChangePasswordModal">
+                <i class="fas fa-key me-2"></i> @UserResources.ChangePassword
+            </button>
+            @* <button class="btn btn-outline-secondary" @onclick="OpenChangeEmailModal">
+                <i class="fas fa-envelope me-2"></i> @UserResources.ChangeEmail
+            </button> *@
+        </div>
+    </div>
+
+    @if (IsLoading)
+    {
+        <div class="text-center mt-5">
+            <div class="spinner-border text-primary" role="status">
+                <span class="sr-only">@GeneralResources.LoadingDots</span>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="tabs-container">
+            <div class="tabs-sidebar">
+                <button class="tab-btn @(ActiveTab == "details" ? "active" : "")"
+                        @onclick="@(() => SetActiveTab("details"))">
+                    <i class="fas fa-info-circle"></i> @GeneralResources.Details
+                </button>
+                <button class="tab-btn @(ActiveTab == "manageUserStatus" ? "active" : "")"
+                        @onclick="@(() => SetActiveTab("manageUserStatus"))">
+                    <i class="fas fa-user-cog"></i> @ECommerceResources.ManageUserStatus
+                </button>
+                <button class="tab-btn @(ActiveTab == "manageVendorStatus" ? "active" : "")"
+                        @onclick="@(() => SetActiveTab("manageVendorStatus"))">
+                    <i class="fas fa-store-alt"></i> @ECommerceResources.ManageVendorStatus
+                </button>
+            </div>
+        </div>
+
+        <div class="tabs-content">
+            @if (ActiveTab == "details")
+            {
+                <div class="card shadow-sm border-0">
+                    <div class="card-body">
+                        <h5 class="text-primary mb-3">@ECommerceResources.VendorInformation</h5>
+                        <div class="row mb-3">
+                            <div class="col-md-3 font-weight-bold">@ECommerceResources.StoreName</div>
+                            <div class="col-md-9">@Vendor.StoreName</div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-3 font-weight-bold">@ECommerceResources.VendorType</div>
+                            <div class="col-md-9">@Vendor.VendorType</div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-3 font-weight-bold">@ECommerceResources.AdministratorName</div>
+                            <div class="col-md-9">@Vendor.AdministratorFullName</div>
+                        </div>
+
+                        <h5 class="text-primary mb-3 mt-4">@UserResources.ContactInfo</h5>
+                        <div class="row mb-3">
+                            <div class="col-md-3 font-weight-bold">@ECommerceResources.Email</div>
+                            <div class="col-md-9">@Vendor.Email</div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-3 font-weight-bold">@FormResources.PhoneNumber</div>
+                            <div class="col-md-9" dir="ltr">@Vendor.PhoneCode @Vendor.PhoneNumber</div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-3 font-weight-bold">@ECommerceResources.Address</div>
+                            <div class="col-md-9">@Vendor.Address, @Vendor.PostalCode</div>
+                        </div>
+
+                        <h5 class="text-primary mb-3 mt-4">@ECommerceResources.IdentificationInformation</h5>
+                        <div class="row mb-3">
+                            <div class="col-md-3 font-weight-bold">@ECommerceResources.IdentificationType</div>
+                            <div class="col-md-9">@Vendor.IdentificationType</div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-3 font-weight-bold">@ECommerceResources.IdentificationNumber</div>
+                            <div class="col-md-9">@Vendor.IdentificationNumber</div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="font-weight-bold d-block mb-2">@ECommerceResources.IdentificationImageFront</label>
+                                @if (!string.IsNullOrEmpty(Vendor.IdentificationImageFrontPath))
+                                {
+                                    <img src="@baseUrl/@Vendor.IdentificationImageFrontPath" class="img-thumbnail" style="max-height: 200px;" />
+                                }
+                            </div>
+                            <div class="col-md-6">
+                                <label class="font-weight-bold d-block mb-2">@ECommerceResources.IdentificationImageBack</label>
+                                @if (!string.IsNullOrEmpty(Vendor.IdentificationImageBackPath))
+                                {
+                                    <img src="@baseUrl/@Vendor.IdentificationImageBackPath" class="img-thumbnail" style="max-height: 200px;" />
+                                }
+                            </div>
+                        </div>
+
+                        <h5 class="text-primary mb-3 mt-4">@ECommerceResources.RegistrationInfo</h5>
+                        <div class="row mb-3">
+                            <div class="col-md-3 font-weight-bold">@ECommerceResources.RegistrationDate</div>
+                            <div class="col-md-9">@Vendor.RegistrationDate.ToShortDateString()</div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-3 font-weight-bold">@ECommerceResources.IsRealEstateRegistered</div>
+                            <div class="col-md-9">
+                                @if (Vendor.IsRealEstateRegistered)
+                                {
+                                    <span class="badge bg-success">@GeneralResources.Yes</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-secondary">@GeneralResources.No</span>
+                                }
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-3 font-weight-bold">@ECommerceResources.Status</div>
+                            <div class="col-md-9">
+                                <span class="badge bg-info">@Vendor.Status</span>
+                            </div>
+                        </div>
+
+                        <h5 class="text-primary mb-3 mt-4">@ECommerceResources.Notes</h5>
+                        <div class="row mb-3">
+                            <div class="col-md-12">
+                                <textarea class="form-control" rows="3" readonly>
+                                    @Vendor.Notes
+                                </textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+
+            @if (ActiveTab == "manageUserStatus")
+            {
+                <div class="card shadow-sm border-0 p-4">
+                    <h5 class="card-title">@ECommerceResources.ManageUserStatus</h5>
+                    <div class="mt-3">
+                        <div class="form-check form-switch mb-3">
+                            <input class="form-check-input" type="radio" name="userStatus" id="statusActive"
+                                   checked="@(CurrentUserStatus == UserStateType.Active)"
+                                   @onchange="@(() => UpdateUserStatus(UserStateType.Active))">
+                            <label class="form-check-label" for="statusActive">
+                                @ECommerceResources.Active
+                            </label>
+                        </div>
+                        <div class="form-check form-switch mb-3">
+                            <input class="form-check-input" type="radio" name="userStatus" id="statusSuspended"
+                                   checked="@(CurrentUserStatus == UserStateType.Suspended)"
+                                   @onchange="@(() => UpdateUserStatus(UserStateType.Suspended))">
+                            <label class="form-check-label" for="statusSuspended">
+                                @ECommerceResources.Suspended
+                            </label>
+                        </div>
+                        <div class="form-check form-switch mb-3">
+                            <input class="form-check-input" type="radio" name="userStatus" id="statusRestricted"
+                                   checked="@(CurrentUserStatus == UserStateType.Restricted)"
+                                   @onchange="@(() => UpdateUserStatus(UserStateType.Restricted))">
+                            <label class="form-check-label" for="statusRestricted">
+                                @ECommerceResources.Restricted
+                            </label>
+                        </div>
+                        <div class="form-check form-switch mb-3">
+                            <input class="form-check-input" type="radio" name="userStatus" id="statusLocked"
+                                   checked="@(CurrentUserStatus == UserStateType.Auto_Locked)"
+                                   @onchange="@(() => UpdateUserStatus(UserStateType.Auto_Locked))" disabled>
+                            <label class="form-check-label" for="statusLocked">
+                                @ECommerceResources.AutoLocked (Read Only)
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            }
+
+            @if (ActiveTab == "manageVendorStatus")
+            {
+                <div class="card shadow-sm border-0 p-4">
+                    <h5 class="card-title">@ECommerceResources.ManageVendorStatus</h5>
+                    <div class="mt-3">
+                        <div class="form-check form-switch mb-3">
+                            <input class="form-check-input" type="radio" name="vendorStatus" id="vStatusPending"
+                                   checked="@(Vendor.Status == VendorStatus.Pending)"
+                                   @onchange="@(() => UpdateVendorStatus(VendorStatus.Pending))">
+                            <label class="form-check-label" for="vStatusPending">
+                                @ECommerceResources.Pending
+                            </label>
+                        </div>
+                        <div class="form-check form-switch mb-3">
+                            <input class="form-check-input" type="radio" name="vendorStatus" id="vStatusUnderReview"
+                                   checked="@(Vendor.Status == VendorStatus.UnderReview)"
+                                   @onchange="@(() => UpdateVendorStatus(VendorStatus.UnderReview))">
+                            <label class="form-check-label" for="vStatusUnderReview">
+                                @ECommerceResources.UnderReview
+                            </label>
+                        </div>
+                        <div class="form-check form-switch mb-3">
+                            <input class="form-check-input" type="radio" name="vendorStatus" id="vStatusApproved"
+                                   checked="@(Vendor.Status == VendorStatus.Approved)"
+                                   @onchange="@(() => UpdateVendorStatus(VendorStatus.Approved))">
+                            <label class="form-check-label" for="vStatusApproved">
+                                @ECommerceResources.Approved
+                            </label>
+                        </div>
+                        <div class="form-check form-switch mb-3">
+                            <input class="form-check-input" type="radio" name="vendorStatus" id="vStatusRejected"
+                                   checked="@(Vendor.Status == VendorStatus.Rejected)"
+                                   @onchange="@(() => UpdateVendorStatus(VendorStatus.Rejected))">
+                            <label class="form-check-label" for="vStatusRejected">
+                                @ECommerceResources.Rejected
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>
+
+@if (ShowPasswordModal)
+{
+    <div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.5);">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">@UserResources.ChangePassword</h5>
+                    <button type="button" class="btn-close" @onclick="CloseChangePasswordModal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">@UserResources.Password</label>
+                        <input type="password" class="form-control" @bind="NewPassword" placeholder="@UserResources.Password" />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">@UserResources.ConfirmPassword</label>
+                        <input type="password" class="form-control" @bind="ConfirmNewPassword" placeholder="@UserResources.ConfirmPassword" />
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" @onclick="CloseChangePasswordModal">@ActionsResources.Cancel</button>
+                    <button type="button" class="btn btn-primary" @onclick="SubmitChangePassword">@ActionsResources.Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@if (ShowEmailModal)
+{
+    <div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.5);">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">@UserResources.ChangeEmail</h5>
+                    <button type="button" class="btn-close" @onclick="CloseChangeEmailModal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">@ECommerceResources.Email</label>
+                        <input type="email" class="form-control" @bind="NewEmail" placeholder="@ECommerceResources.Email" />
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" @onclick="CloseChangeEmailModal">@ActionsResources.Cancel</button>
+                    <button type="button" class="btn btn-primary" @onclick="SubmitChangeEmail">@ActionsResources.Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}

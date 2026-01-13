@@ -6,7 +6,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Shared.DTOs.Vendor
 {
-    public class RegisterVendorRequestDto
+    public class VendorRegistrationRequestDto
     {
         // User Information
         [Required(ErrorMessageResourceName = "FieldRequired", ErrorMessageResourceType = typeof(ValidationResources))]
@@ -17,9 +17,10 @@ namespace Shared.DTOs.Vendor
         [MaxLength(50, ErrorMessageResourceName = "OutOfMaxLength", ErrorMessageResourceType = typeof(ValidationResources))]
         public string LastName { get; set; } = null!;
 
+        [Required(ErrorMessageResourceName = "FieldRequired", ErrorMessageResourceType = typeof(ValidationResources))]
         [StringLength(100, MinimumLength = 5, ErrorMessageResourceName = "EmailLength", ErrorMessageResourceType = typeof(ValidationResources))]
         [EmailAddress(ErrorMessageResourceName = "EmailFormat", ErrorMessageResourceType = typeof(ValidationResources))]
-        public string? Email { get; set; }
+        public string Email { get; set; } = null!;
 
         [Required(ErrorMessageResourceName = "PasswordRequired", ErrorMessageResourceType = typeof(ValidationResources))]
         [DataType(DataType.Password)]
@@ -42,7 +43,7 @@ namespace Shared.DTOs.Vendor
         // Vendor Personal Information
         [Required(ErrorMessageResourceName = "FieldRequired", ErrorMessageResourceType = typeof(ValidationResources))]
         [DataType(DataType.Date)]
-        public DateOnly BirthDate { get; set; }
+        public DateOnly BirthDate { get; set; } = DateOnly.FromDateTime(DateTime.UtcNow.Date);
 
         [Required(ErrorMessageResourceName = "FieldRequired", ErrorMessageResourceType = typeof(ValidationResources))]
         public IdentificationType IdentificationType { get; set; }
@@ -56,9 +57,7 @@ namespace Shared.DTOs.Vendor
         [RequiredImage(nameof(IdentificationImageFront), 5, 1)]
         public string IdentificationImageFront { get; set; } = null!;
 
-        [Required(ErrorMessageResourceName = "FieldRequired", ErrorMessageResourceType = typeof(ValidationResources))]
-        [RequiredImage(nameof(IdentificationImageBack), 5, 1)]
-        public string IdentificationImageBack { get; set; } = null!;
+        public string? IdentificationImageBack { get; set; }
 
         // Business Information
         [Required(ErrorMessageResourceName = "FieldRequired", ErrorMessageResourceType = typeof(ValidationResources))]

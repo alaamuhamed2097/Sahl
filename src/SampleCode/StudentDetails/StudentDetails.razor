@@ -1,0 +1,77 @@
+@page "/student/{id:guid}"
+@namespace Dashboard.Pages.User.UserDetails
+@using Dashboard.Pages.User.Student.StudentDetails.Components
+@using Dashboard.Pages.User.UserDetails.Components
+
+<div class="dashboard">
+    <div class="breadcrumb">
+        <span>@GeneralResources.Home</span>
+        <i class="fas fa-chevron-left"></i>
+        <span>@AdminResources.Users</span>
+        <i class="fas fa-chevron-left"></i>
+        <span class="breadcrumb-current">@AdminResources.UserDetails</span>
+    </div>
+
+    <div class="page-header">
+        <div>
+            <h1 class="page-title">@AdminResources.UserDetails</h1>
+            <p class="page-description">@AdminResources.UserDetailsDescription</p>
+        </div>
+    </div>
+
+    <div class="tabs-container">
+        <div class="tabs-sidebar">
+            <button class="tab-btn @(ActiveTab == "basicInfoTab" ? "active" : "")"
+                    @onclick="@(() => SetActiveTab("basicInfoTab"))">
+                <i class="fas fa-user"></i> @AdminResources.Tab_BasicInfo
+            </button>
+            <button class="tab-btn @(ActiveTab == "coursesTab" ? "active" : "")"
+                    @onclick="@(() => SetActiveTab("coursesTab"))">
+                <i class="fas fa-user"></i> @AdminResources.Tab_Courses
+            </button>
+            <button class="tab-btn @(ActiveTab == "diplomasTab" ? "active" : "")"
+                    @onclick="@(() => SetActiveTab("diplomasTab"))">
+                <i class="fas fa-user"></i> @AdminResources.Tab_Diplomas
+            </button>
+            <button class="tab-btn @(ActiveTab == "invoicesTab" ? "active" : "")"
+                    @onclick="@(() => SetActiveTab("invoicesTab"))">
+                <i class="fas fa-shopping-cart"></i> @AdminResources.Invoices
+            </button>
+@*             <button class="tab-btn @(ActiveTab == "paymentsTab" ? "active" : "")"
+                    @onclick="@(() => SetActiveTab("paymentsTab"))">
+                <i class="fas fa-credit-card"></i> @AdminResources.Tab_Payments
+            </button> *@
+            <button class="tab-btn @(ActiveTab == "returnsTab" ? "active" : "")"
+                    @onclick="@(() => SetActiveTab("returnsTab"))">
+                <i class="fas fa-history"></i> @AdminResources.Tab_Returns
+            </button>
+        </div>
+    </div>
+
+    <div class="tabs-content">
+        @if (ActiveTab == "basicInfoTab")
+        {
+            <BasicInfoTab UserId="@Id"></BasicInfoTab>
+        }
+        @if (ActiveTab == "coursesTab")
+        {
+            <UserCoursesTab UserId="@Id"></UserCoursesTab>
+        }
+        @if (ActiveTab == "diplomasTab")
+        {
+            <UserDiplomasTab UserId="@Id"></UserDiplomasTab>
+        }
+        @if (ActiveTab == "invoicesTab")
+        {
+            <UserInvoicesAndPackagesTab UserId="@Id"></UserInvoicesAndPackagesTab>
+        }
+@*         @if (ActiveTab == "paymentsTab")
+        {
+            <PaymentsTab UserId="@Id"></PaymentsTab>
+        } *@
+        @if (ActiveTab == "returnsTab")
+        {
+            <ReturnsTab UserId="@Id"></ReturnsTab>
+        }
+    </div>
+</div>
