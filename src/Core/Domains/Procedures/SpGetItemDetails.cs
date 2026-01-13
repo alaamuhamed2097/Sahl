@@ -81,8 +81,6 @@ namespace Domains.Procedures
     public class CurrentCombination
     {
         public Guid CombinationId { get; set; }
-        public string? SKU { get; set; }
-        public string? Barcode { get; set; }
         public bool IsDefault { get; set; }
         public Guid CreatedBy { get; set; }
 
@@ -122,7 +120,8 @@ namespace Domains.Procedures
         public decimal? VendorRating { get; set; }
 
         public Guid OfferPricingId { get; set; }
-
+        public string? SKU { get; set; }
+        public string? Barcode { get; set; }
         public decimal Price { get; set; }
         public decimal SalesPrice { get; set; }
         public decimal DiscountPercentage { get; set; }

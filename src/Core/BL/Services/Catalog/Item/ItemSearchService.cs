@@ -95,7 +95,7 @@ public class ItemSearchService : IItemSearchService
                 Vendors = filterData.Vendors.Select(v => new FilterOptionDto
                 {
                     Id = v.Id,
-                    NameAr = v.StoreNameAr ?? v.StoreName,
+                    NameAr = v.StoreName,
                     NameEn = v.StoreName,
                     Count = v.ItemCount
                 }).ToList(),

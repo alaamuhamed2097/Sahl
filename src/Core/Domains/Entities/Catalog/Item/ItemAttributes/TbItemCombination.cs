@@ -10,12 +10,6 @@ namespace Domains.Entities.Catalog.Item.ItemAttributes
         [Required]
         public Guid ItemId { get; set; }
 
-        [StringLength(200)]
-        public string Barcode { get; set; }
-
-        [StringLength(200)]
-        public string SKU { get; set; }
-
         [Column(TypeName = "decimal(18,2)")]
         public decimal BasePrice { get; set; } = 0m;
 

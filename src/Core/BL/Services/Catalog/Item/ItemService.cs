@@ -264,6 +264,8 @@ public class ItemService : BaseService<TbItem, ItemDto>, IItemService
             // Handle combinations and offers based on create vs update
             if (dto.Id == Guid.Empty)
             {
+                // ===== NEW ITEM =====
+
                 // RULE 1: Multi-vendor mode with combination-based pricing
                 // No default combination, no default offer (vendors create their own combinations and offers)
                 if (isMultiVendorMode && !isNonCombinationPricing)
@@ -278,8 +280,6 @@ public class ItemService : BaseService<TbItem, ItemDto>, IItemService
                     var defaultItemCombination = new TbItemCombination()
                     {
                         ItemId = itemId,
-                        Barcode = dto.Barcode ?? "DEFAULT",
-                        SKU = dto.SKU ?? "DEFAULT",
                         BasePrice = dto.BasePrice ?? 0,
                         IsDefault = true
                     };
@@ -291,6 +291,7 @@ public class ItemService : BaseService<TbItem, ItemDto>, IItemService
                         throw new ValidationException("Failed to save item combinations");
 
                     // No default offer created - vendors will add their own offers on this combination
+                    // Barcode and SKU will be set by vendors when they create their offers
                 }
                 // RULE 3: Single-vendor mode with simple pricing
                 // Create both default combination AND default offer
@@ -299,8 +300,6 @@ public class ItemService : BaseService<TbItem, ItemDto>, IItemService
                     var defaultItemCombination = new TbItemCombination()
                     {
                         ItemId = itemId,
-                        Barcode = dto.Barcode ?? "DEFAULT",
-                        SKU = dto.SKU ?? "DEFAULT",
                         BasePrice = dto.BasePrice ?? 0,
                         IsDefault = true
                     };
@@ -356,11 +355,13 @@ public class ItemService : BaseService<TbItem, ItemDto>, IItemService
                     if (defaultConditionId == Guid.Empty)
                         throw new ValidationException("Failed to get or create default condition");
 
-                    // Create pricing
+                    // Create pricing with Barcode and SKU (now in TbOfferCombinationPricing)
                     var defaultVendorItemCombinationPricing = new TbOfferCombinationPricing()
                     {
                         OfferId = vendorItemSaved.Id,
                         ItemCombinationId = combinationsSaved.Id,
+                        Barcode = dto.Barcode ?? "DEFAULT",
+                        SKU = dto.SKU ?? "DEFAULT",
                         AvailableQuantity = 0,
                         IsBuyBoxWinner = true,
                         Price = dto.BasePrice ?? 0,
@@ -384,6 +385,8 @@ public class ItemService : BaseService<TbItem, ItemDto>, IItemService
             }
             else
             {
+                // ===== UPDATE EXISTING ITEM =====
+
                 // Only update default combination for Simple pricing system
                 if (isNonCombinationPricing)
                 {
@@ -393,9 +396,7 @@ public class ItemService : BaseService<TbItem, ItemDto>, IItemService
 
                     if (existingCombination != null)
                     {
-                        // Update existing combination
-                        existingCombination.Barcode = dto.Barcode ?? existingCombination.Barcode;
-                        existingCombination.SKU = dto.SKU ?? existingCombination.SKU;
+                        // Update existing combination (BasePrice only, Barcode/SKU are in pricing now)
                         existingCombination.BasePrice = dto.BasePrice ?? existingCombination.BasePrice;
 
                         var combinationsSaved = await _unitOfWork.TableRepository<TbItemCombination>()
@@ -417,7 +418,11 @@ public class ItemService : BaseService<TbItem, ItemDto>, IItemService
 
                     if (existingCombinationPricing != null)
                     {
-                        // Only update if values are provided in DTO
+                        // Update Barcode and SKU (now in TbOfferCombinationPricing)
+                        existingCombinationPricing.Barcode = dto.Barcode ?? existingCombinationPricing.Barcode;
+                        existingCombinationPricing.SKU = dto.SKU ?? existingCombinationPricing.SKU;
+
+                        // Only update price/quantity if values are provided in DTO
                         if (dto.BasePrice.HasValue)
                             existingCombinationPricing.Price = dto.BasePrice.Value;
 
