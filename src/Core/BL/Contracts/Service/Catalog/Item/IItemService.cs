@@ -10,5 +10,5 @@ public interface IItemService : IBaseService<TbItem, ItemDto>
 {
     Task<PagedResult<ItemDto>> GetPage(ItemSearchCriteriaModel criteriaModel);
     new Task<ItemDto> FindByIdAsync(Guid Id);
-    new Task<bool> Save(ItemDto dto, Guid userId);
+    new Task<bool> SaveAsync(ItemDto dto, Guid userId);
 }

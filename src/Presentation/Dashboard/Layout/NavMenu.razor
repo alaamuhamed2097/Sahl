@@ -125,6 +125,29 @@
                 </ul>
             </li>
 
+            <!-- 🛒 Sales & Orders -->
+            <li data-username="sales" class="nav-item pcoded-hasmenu @(IsSubmenuOpen("sales") ? "pcoded-trigger" : "")">
+                <a href="javascript:void(0)" class="nav-link" @onclick="@(() => ToggleSubmenu("sales"))">
+                    <span class="pcoded-micon"><i class="fas fa-shopping-bag"></i></span>
+                    <span class="pcoded-mtext">@ECommerceResources.Sales</span>
+                    <span class="pcoded-mcaret"></span>
+                </a>
+                <ul class="pcoded-submenu" style="display: @(IsSubmenuOpen("sales") ? "block" : "none")">
+                    <li class="nav-item">
+                        <NavLink href="/sales/orders" class="nav-link" Match="NavLinkMatch.Prefix" onclick="closeNavMenu()">
+                            <span class="pcoded-micon"><i class="fas fa-dolly-flatbed"></i></span>
+                            <span class="pcoded-mtext">@ECommerceResources.Orders</span>
+                        </NavLink>
+                    </li>
+                    <li class="nav-item">
+                        <NavLink href="/refunds" class="nav-link" Match="NavLinkMatch.Prefix" onclick="closeNavMenu()">
+                            <span class="pcoded-micon"><i class="fas fa-undo-alt"></i></span>
+                            <span class="pcoded-mtext">@ECommerceResources.Refunds</span>
+                        </NavLink>
+                    </li>
+                </ul>
+            </li>
+
             <!-- 📢 Marketing & Promotions -->
             <li data-username="marketing" class="nav-item pcoded-hasmenu @(IsSubmenuOpen("marketing") ? "pcoded-trigger" : "")">
                 <a href="javascript:void(0)" class="nav-link" @onclick="@(() => ToggleSubmenu("marketing"))">
@@ -134,9 +157,9 @@
                 </a>
                 <ul class="pcoded-submenu" style="display: @(IsSubmenuOpen("marketing") ? "block" : "none")">
                     <li class="nav-item">
-                        <NavLink href="/promocodes" class="nav-link" Match="NavLinkMatch.Prefix" onclick="closeNavMenu()">
+                        <NavLink href="/couponCodes" class="nav-link" Match="NavLinkMatch.Prefix" onclick="closeNavMenu()">
                             <span class="pcoded-micon"><i class="fas fa-tag"></i></span>
-                            <span class="pcoded-mtext">@FormResources.PromoCodes</span>
+                            <span class="pcoded-mtext">@CouponCodeResources.CouponCodes</span>
                         </NavLink>
                     </li>
                     @*   <li class="nav-item">

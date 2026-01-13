@@ -20,7 +20,11 @@ namespace Dashboard.Extensions
             services.AddScoped<IPageService, PageService>();
             services.AddScoped(typeof(ISearchService<>), typeof(SearchService<>));
             services.AddScoped<IResourceLoaderService, ResourceLoaderService>();
+            services.AddScoped<IDateTimeService, DateTimeService>();
             return services;
         }
     }
 }
+
+
+

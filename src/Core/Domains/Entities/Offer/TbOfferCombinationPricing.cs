@@ -17,6 +17,12 @@ namespace Domains.Entities.Offer
 
 		[Required]
         public Guid OfferConditionId { get; set; }
+        
+        [StringLength(200)]
+        public string Barcode { get; set; }
+
+        [StringLength(200)]
+        public string SKU { get; set; }
 
         [Column(TypeName = "decimal(18,2)")]
 		public decimal Price { get; set; }

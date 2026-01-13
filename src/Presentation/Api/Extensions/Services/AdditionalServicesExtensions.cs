@@ -5,20 +5,15 @@ using BL.Services.Warehouse;
 
 namespace Api.Extensions.Services
 {
-    /// <summary>
-    /// Extension methods for registering additional domain services (warehouse, inventory, notifications).
-    /// </summary>
     public static class AdditionalServicesExtensions
     {
-        /// <summary>
-        /// Adds all categorized domain services for the application.
-        /// </summary>
-        /// <param name="services">The IServiceCollection instance.</param>
-        /// <param name="configuration">The application configuration.</param>
-        /// <returns>The IServiceCollection for chaining.</returns>
         public static IServiceCollection AddDomainServices(this IServiceCollection services, IConfiguration configuration)
         {
             // Add all categorized domain services
+            services.AddCmsServices();
+            services.AddNotificationServices();
+            services.AddUserManagementServices();
+            services.AddLocationServices();
             services.AddGeneralServices(configuration);
             services.AddCatalogServices(configuration);
             services.AddVendorServices(configuration);
@@ -34,11 +29,6 @@ namespace Api.Extensions.Services
             return services;
         }
 
-        /// <summary>
-        /// Adds warehouse and inventory services.
-        /// </summary>
-        /// <param name="services">The IServiceCollection instance.</param>
-        /// <returns>The IServiceCollection for chaining.</returns>
         public static IServiceCollection AddWarehouseAndInventoryServices(this IServiceCollection services)
         {
             // Warehouse Services
@@ -47,11 +37,6 @@ namespace Api.Extensions.Services
             return services;
         }
 
-        /// <summary>
-        /// Adds enhanced notification channel services.
-        /// </summary>
-        /// <param name="services">The IServiceCollection instance.</param>
-        /// <returns>The IServiceCollection for chaining.</returns>
         public static IServiceCollection AddEnhancedNotificationServices(this IServiceCollection services)
         {
             // Enhanced Notification Services

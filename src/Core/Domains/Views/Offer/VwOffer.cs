@@ -6,7 +6,7 @@
         public Guid Id { get; set; }
         public Guid ItemId { get; set; }
         public Guid VendorId { get; set; }
-        public int EstimatedDeliveryDays { get; set; }
+        public int? EstimatedDeliveryDays { get; set; }
         public int VisibilityScope { get; set; }
         public int FulfillmentType { get; set; }
         public decimal VendorRatingForThisItem { get; set; }

@@ -1,5 +1,6 @@
 using AutoMapper;
 using BL.Contracts.Service.Order.Payment;
+using Common.Enumerations.Payment;
 using DAL.Contracts.UnitOfWork;
 using Domains.Entities.Order.Payment;
 using Serilog;
@@ -82,6 +83,31 @@ namespace BL.Services.Order.Payment
             catch (Exception ex)
             {
                 _logger.Error(ex, "Error retrieving payment method {PaymentMethodId}", id);
+                throw;
+            }
+        }
+
+        public async Task<PaymentMethodDto?> GetPaymentMethodByTypeAsync(PaymentMethodType type)
+        {
+            try
+            {
+                _logger.Information("Retrieving payment method by type {PaymentMethodType}", type);
+
+                var paymentMethodRepo = _unitOfWork.Repository<TbPaymentMethod>();
+                var method = (await paymentMethodRepo.GetAsync(m => m.MethodType == type)).FirstOrDefault();
+
+                if (method == null)
+                {
+                    _logger.Warning("Payment method with type {PaymentMethodType} not found", type);
+                    return null;
+                }
+
+                var result = _mapper.Map<PaymentMethodDto>(method);
+                return result;
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex, "Error retrieving payment method by type {PaymentMethodType}", type);
                 throw;
             }
         }

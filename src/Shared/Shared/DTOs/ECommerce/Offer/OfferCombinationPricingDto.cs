@@ -15,6 +15,10 @@ namespace Shared.DTOs.ECommerce.Offer
 
         public Guid OfferConditionId { get; set; }
 
+        public string Barcode { get; set; } = null!;
+
+        public string SKU { get; set; } = null!;
+
         public decimal Price { get; set; }
 
         public decimal SalesPrice { get; set; }

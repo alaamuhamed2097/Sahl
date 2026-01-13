@@ -5,17 +5,8 @@ using BL.Services.Setting.Pricing;
 
 namespace Api.Extensions.Services
 {
-    /// <summary>
-    /// Extension methods for registering pricing strategy services.
-    /// </summary>
     public static class PricingServiceExtensions
     {
-        /// <summary>
-        /// Adds pricing strategy and pricing settings services.
-        /// </summary>
-        /// <param name="services">The IServiceCollection instance.</param>
-        /// <param name="configuration">The application configuration.</param>
-        /// <returns>The IServiceCollection for chaining.</returns>
         public static IServiceCollection AddPricingServices(this IServiceCollection services, IConfiguration configuration)
         {
             // Pricing Services

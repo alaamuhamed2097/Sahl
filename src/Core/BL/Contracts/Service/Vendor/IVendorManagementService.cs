@@ -16,4 +16,7 @@ public interface IVendorManagementService : IBaseService<TbVendor, VendorDto>
     Task<bool> UpdateVendorStatusAsync(Guid vendorId, VendorStatus status);
     Task<bool> UpdateUserStatusAsync(Guid vendorId, UserStateType status);
     Task<ServiceResult<VendorUpdateResponseDto>> UpdateVendorAsync(VendorUpdateRequestDto request, string updaterId);
+    Guid GetMarketStoreVendorId();
+    //Task<PaginatedDataModel<VendorDto>> SearchAsync(BaseSearchCriteriaModel criteriaModel);
+
 }

@@ -8,16 +8,8 @@ using BL.GeneralService.Notification;
 
 namespace Api.Extensions.Services
 {
-    /// <summary>
-    /// Extension methods for registering notification and communication services.
-    /// </summary>
     public static class NotificationServicesExtensions
     {
-        /// <summary>
-        /// Adds notification, email, SMS, and SignalR services.
-        /// </summary>
-        /// <param name="services">The IServiceCollection instance.</param>
-        /// <returns>The IServiceCollection for chaining.</returns>
         public static IServiceCollection AddNotificationServices(this IServiceCollection services)
         {
             // Communication Services

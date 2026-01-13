@@ -78,6 +78,43 @@ public class OrderController : BaseController
     // ============================================
 
     /// <summary>
+    /// Get All Orders (Admin/Dashboard)
+    /// </summary>
+    /// <remarks>
+    /// API Version: 1.0+<br/>
+    /// Requires Admin role.<br/>
+    /// Returns all orders for admin dashboard.
+    /// </remarks>
+    [HttpGet("all")]
+    [Authorize(Roles = nameof(UserRole.Admin))]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    public async Task<IActionResult> GetAllOrders()
+    {
+        try
+        {
+            var orders = await _orderManagementService.GetAllOrdersAsync();
+
+            return Ok(new ResponseModel<IEnumerable<OrderDto>>
+            {
+                Success = true,
+                Message = "Data retrieved successfully",
+                Data = orders
+            });
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new ResponseModel<IEnumerable<OrderDto>>
+            {
+                Success = false,
+                Message = ex.Message,
+                Data = Enumerable.Empty<OrderDto>()
+            });
+        }
+    }
+
+    /// <summary>
     /// Get My Orders
     /// </summary>
     /// <remarks>
@@ -293,6 +330,58 @@ public class OrderController : BaseController
     // ============================================
 
     /// <summary>
+    /// Search Orders (Admin/Dashboard) - GET variant
+    /// </summary>
+    /// <remarks>
+    /// API Version: 1.0+<br/>
+    /// Requires Admin role.<br/>
+    /// Returns paginated orders with search and filter support.
+    /// </remarks>
+    [HttpGet("search")]
+    [Authorize(Roles = nameof(UserRole.Admin))]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    public async Task<IActionResult> SearchOrdersGet(
+        [FromQuery] string? searchTerm = "",
+        [FromQuery] int pageNumber = 1,
+        [FromQuery] int pageSize = 10,
+        [FromQuery] string? sortBy = "createdDateUtc",
+        [FromQuery] string? sortDirection = "desc")
+    {
+        try
+        {
+            var (orders, totalRecords) = await _orderManagementService.SearchOrdersAsync(
+                searchTerm,
+                pageNumber,
+                pageSize,
+                sortBy,
+                sortDirection);
+
+            return Ok(new ResponseModel<PaginatedModel<OrderDto>>
+            {
+                Success = true,
+                Message = "Orders retrieved successfully",
+                Data = new PaginatedModel<OrderDto>
+                {
+                    Items = orders,
+                    TotalRecords = totalRecords,
+                    PageNumber = pageNumber,
+                    PageSize = pageSize
+                }
+            });
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new ResponseModel<PaginatedModel<OrderDto>>
+            {
+                Success = false,
+                Message = ex.Message
+            });
+        }
+    }
+
+    /// <summary>
     /// Cancel Order Before Shipping
     /// </summary>
     /// <remarks>
@@ -327,6 +416,29 @@ public class OrderController : BaseController
             Data = new { OrderId = orderId }
         });
     }
+}
+
+/// <summary>
+/// Request DTO for searching orders
+/// </summary>
+public class OrderSearchRequest
+{
+    public string SearchTerm { get; set; } = string.Empty;
+    public int PageNumber { get; set; } = 1;
+    public int PageSize { get; set; } = 10;
+    public string SortBy { get; set; } = "createdDateUtc";
+    public string SortDirection { get; set; } = "desc";
+}
+
+/// <summary>
+/// Paginated model for API responses
+/// </summary>
+public class PaginatedModel<T>
+{
+    public IEnumerable<T> Items { get; set; } = Enumerable.Empty<T>();
+    public int TotalRecords { get; set; }
+    public int PageNumber { get; set; }
+    public int PageSize { get; set; }
 }
 
 /// <summary>

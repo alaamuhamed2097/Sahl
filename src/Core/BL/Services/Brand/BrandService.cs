@@ -138,7 +138,7 @@ public class BrandService : BaseService<TbBrand, BrandDto>, IBrandService
     public async Task<bool> DeleteAsync(Guid id, Guid userId)
     {
         var success = await _brandRepository
-            .UpdateCurrentStateAsync(id, userId, true);
+            .UpdateIsDeletedAsync(id, userId, true);
 
         return success;
     }

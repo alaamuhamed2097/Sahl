@@ -92,6 +92,10 @@ namespace Common.Enumerations.Settings
 
 		// Refund Settings
 		[Description("Refund Allowed Days")]
-		RefundAllowedDays = 70
+		RefundAllowedDays = 70,
+
+		// DateTime Settings
+		[Description("System Timezone ID")]
+		SystemTimeZoneId = 80
 	}
 }

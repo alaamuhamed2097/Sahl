@@ -67,9 +67,12 @@ namespace Shared.DTOs.Catalog.Item
 
         [Required(ErrorMessageResourceName = "FieldRequired", ErrorMessageResourceType = typeof(ValidationResources))]
         public string ThumbnailImage { get; set; } = null!;
+        public Guid? OfferConditionId { get; set; }
         public string? Barcode { get; set; }
         public string? SKU { get; set; }
         public decimal? BasePrice { get; set; }
+        public decimal? BaseSalesPrice { get; set; }
+        public int? Quantity { get; set; }
         public decimal? MinimumPrice { get; set; }
         public decimal? MaximumPrice { get; set; }
         public ProductVisibilityStatus VisibilityScope { get; set; }

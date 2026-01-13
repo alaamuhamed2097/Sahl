@@ -1,3 +1,4 @@
+using Common.Enumerations.Payment;
 using Shared.DTOs.Order.Payment.PaymentProcessing;
 
 namespace BL.Contracts.Service.Order.Payment
@@ -29,7 +30,6 @@ namespace BL.Contracts.Service.Order.Payment
         /// </summary>
         Task<PaymentResult> ProcessCardPaymentAsync(
             Guid orderId,
-            Guid paymentMethodId,
             decimal amount,
             string customerId,
             CancellationToken cancellationToken = default);
@@ -39,7 +39,6 @@ namespace BL.Contracts.Service.Order.Payment
         /// </summary>
         Task<PaymentResult> ProcessMixedPaymentAsync(
             Guid orderId,
-            Guid paymentMethodId,
             decimal totalAmount,
             string customerId,
             CancellationToken cancellationToken = default);

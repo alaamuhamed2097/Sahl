@@ -229,6 +229,11 @@ public class VendorManagementService : BaseService<TbVendor, VendorDto>, IVendor
         }
     }
 
+    public Guid GetMarketStoreVendorId()
+    {
+        return Guid.Parse("f47ac10b-58cc-4372-a567-0e02b2c3d479");
+    }
+
     #region Helper functions
     private async Task<string> SaveImage(string image)
     {

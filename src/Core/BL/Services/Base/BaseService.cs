@@ -51,7 +51,7 @@ public abstract class BaseService<TS, TD> : IBaseService<TS, TD> where TS : Base
 
     public virtual async Task<bool> DeleteAsync(Guid id, Guid userId)
     {
-        return await _baseRepository.UpdateCurrentStateAsync(id, userId);
+        return await _baseRepository.UpdateIsDeletedAsync(id, userId);
     }
 
     #endregion

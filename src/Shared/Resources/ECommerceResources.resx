@@ -849,6 +849,24 @@
   <data name="WithdrawalMethods" xml:space="preserve">
     <value>طرق السحب</value>
   </data>
+  <data name="HomePageSlider">
+    <value>سلايدر الصفحة الرئيسية</value>
+  </data>
+  <data name="DisplayOrder">
+    <value>ترتيب العرض</value>
+  </data>
+  <data name="SliderImage">
+    <value>صورة السلايدر</value>
+  </data>
+  <data name="SliderTitle">
+    <value>عنوان السلايدر</value>
+  </data>
+  <data name="BannerDuration">
+    <value>مدة البانر</value>
+  </data>
+  <data name="Sales" xml:space="preserve">
+    <value>المبيعات</value>
+  </data>
   <data name="HomePageSlider" xml:space="preserve">
     <value>سلايدر الصفحة الرئيسية</value>
   </data>

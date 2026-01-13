@@ -1308,11 +1308,6 @@ namespace DAL.Migrations
                         .HasColumnType("uniqueidentifier")
                         .HasDefaultValueSql("NEWID()");
 
-                    b.Property<string>("Barcode")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
-
                     b.Property<decimal>("BasePrice")
                         .HasColumnType("decimal(18,2)");
 
@@ -1335,11 +1330,6 @@ namespace DAL.Migrations
                     b.Property<Guid>("ItemId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("SKU")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
-
                     b.Property<Guid?>("UpdatedBy")
                         .HasColumnType("uniqueidentifier");
 
@@ -1348,15 +1338,9 @@ namespace DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("Barcode")
-                        .IsUnique();
-
                     b.HasIndex("IsDeleted");
 
                     b.HasIndex("ItemId");
-
-                    b.HasIndex("SKU")
-                        .IsUnique();
 
                     b.HasIndex("ItemId", "IsDefault")
                         .IsUnique()
@@ -4416,7 +4400,7 @@ namespace DAL.Migrations
                         .HasColumnType("datetime2(2)")
                         .HasDefaultValueSql("GETUTCDATE()");
 
-                    b.Property<int>("EstimatedDeliveryDays")
+                    b.Property<int?>("EstimatedDeliveryDays")
                         .HasColumnType("int");
 
                     b.Property<int>("FulfillmentType")
@@ -4458,6 +4442,8 @@ namespace DAL.Migrations
                     b.HasIndex("VendorId")
                         .HasDatabaseName("IX_TbOffers_VendorId_NC");
 
+                    b.HasIndex("WarehouseId");
+
                     b.HasIndex("WarrantyId")
                         .HasDatabaseName("IX_TbOffers_WarrantyId");
 
@@ -4489,6 +4475,11 @@ namespace DAL.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasDefaultValue(0);
+
+                    b.Property<string>("Barcode")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
 
                     b.Property<decimal?>("CostPrice")
                         .HasColumnType("decimal(18,2)");
@@ -4553,6 +4544,11 @@ namespace DAL.Migrations
                     b.Property<int>("ReturnedQuantity")
                         .HasColumnType("int");
 
+                    b.Property<string>("SKU")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
                     b.Property<decimal>("SalesPrice")
                         .HasColumnType("decimal(18,2)");
 
@@ -4567,6 +4563,9 @@ namespace DAL.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("Barcode")
+                        .IsUnique();
+
                     b.HasIndex("IsBuyBoxWinner")
                         .HasDatabaseName("IX_TbOfferPricing_BuyBoxWinner_Filtered_NC")
                         .HasFilter("[IsBuyBoxWinner] = 1");
@@ -4578,6 +4577,9 @@ namespace DAL.Migrations
                     b.HasIndex("OfferConditionId");
 
                     b.HasIndex("OfferId");
+
+                    b.HasIndex("SKU")
+                        .IsUnique();
 
                     b.HasIndex("SalesPrice")
                         .HasDatabaseName("IX_TbOfferPricing_SalesPrice_NC");
@@ -6429,6 +6431,42 @@ namespace DAL.Migrations
                     b.HasIndex("VendorId", "AchievedAt");
 
                     b.ToTable("TbVendorTierHistories", (string)null);
+                });
+
+            modelBuilder.Entity("Domains.Entities.Setting.TbDevelopmentSettings", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier")
+                        .HasDefaultValueSql("NEWID()");
+
+                    b.Property<Guid>("CreatedBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedDateUtc")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2(2)")
+                        .HasDefaultValueSql("GETUTCDATE()");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<bool>("IsMultiVendorSystem")
+                        .HasColumnType("bit");
+
+                    b.Property<Guid?>("UpdatedBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("UpdatedDateUtc")
+                        .HasColumnType("datetime2(2)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("IsDeleted");
+
+                    b.ToTable("TbDevelopmentSettings");
                 });
 
             modelBuilder.Entity("Domains.Entities.Setting.TbGeneralSettings", b =>
@@ -8661,7 +8699,7 @@ namespace DAL.Migrations
                     b.Property<DateTime>("CreatedDateUtc")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("EstimatedDeliveryDays")
+                    b.Property<int?>("EstimatedDeliveryDays")
                         .HasColumnType("int");
 
                     b.Property<int>("FulfillmentType")
@@ -8791,7 +8829,7 @@ namespace DAL.Migrations
                     b.Property<DateTime>("CreatedDateUtc")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("EstimatedDeliveryDays")
+                    b.Property<int?>("EstimatedDeliveryDays")
                         .HasColumnType("int");
 
                     b.Property<int>("FulfillmentType")
@@ -10069,6 +10107,12 @@ namespace DAL.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.HasOne("Domains.Entities.Warehouse.TbWarehouse", "Warehouse")
+                        .WithMany("Offers")
+                        .HasForeignKey("WarehouseId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
                     b.HasOne("Domains.Entities.Offer.Warranty.TbWarranty", "Warranty")
                         .WithMany("OffersList")
                         .HasForeignKey("WarrantyId")
@@ -10077,6 +10121,8 @@ namespace DAL.Migrations
                     b.Navigation("Item");
 
                     b.Navigation("Vendor");
+
+                    b.Navigation("Warehouse");
 
                     b.Navigation("Warranty");
                 });
@@ -10999,6 +11045,11 @@ namespace DAL.Migrations
             modelBuilder.Entity("Domains.Entities.Wallet.Customer.TbCustomerWallet", b =>
                 {
                     b.Navigation("Transactions");
+                });
+
+            modelBuilder.Entity("Domains.Entities.Warehouse.TbWarehouse", b =>
+                {
+                    b.Navigation("Offers");
                 });
 
             modelBuilder.Entity("Domains.Entities.WithdrawalMethods.TbField", b =>

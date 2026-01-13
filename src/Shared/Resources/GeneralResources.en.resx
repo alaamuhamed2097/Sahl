@@ -1247,9 +1247,6 @@
     <value>Allow customers to pay when receiving the order</value>
 </data>
   <!-- Business Settings -->
-  <data name="BusinessSettings_Duplicate[1]" xml:space="preserve">
-    <value>Business Settings</value>
-</data>
   <data name="MaintenanceMode" xml:space="preserve">
     <value>Maintenance Mode</value>
 </data>
@@ -1317,9 +1314,6 @@
     <value>Password Minimum Length</value>
 </data>
   <!-- Loading States -->
-  <data name="LoadingSettings_Duplicate[1]" xml:space="preserve">
-    <value>Loading settings...</value>
-</data>
   <!-- Messages -->
   <data name="SettingsResetSuccess" xml:space="preserve">
     <value>Settings have been reset to defaults. Don't forget to save!</value>

@@ -10,6 +10,11 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>ActionsResources.resx</DependentUpon>
     </Compile>
+    <Compile Update="CouponCodeResources.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>CouponCodeResources.resx</DependentUpon>
+    </Compile>
     <Compile Update="CurrencyResources.Designer.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
@@ -71,6 +76,10 @@
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>ActionsResources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+    <EmbeddedResource Update="CouponCodeResources.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>CouponCodeResources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
     <EmbeddedResource Update="CurrencyResources.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>CurrencyResources.Designer.cs</LastGenOutput>
@@ -121,5 +130,13 @@
   </ItemGroup>
   <ItemGroup>
     <AdditionalFiles Remove="C:\Users\alaam\AppData\Roaming\SonarLint for Visual Studio\.global\csharp\SonarLint.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Remove="CouponCodeResources.en.resx" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="CouponCodeResources.en.resx">
+      <Generator></Generator>
+    </None>
   </ItemGroup>
 </Project>

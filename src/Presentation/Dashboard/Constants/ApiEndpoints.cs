@@ -52,6 +52,7 @@
         public static class Order
         {
             public const string Get = "api/v1/Order";
+            public const string All = "api/v1/Order/all";
             public const string Save = "api/v1/Order/save";
             public const string ChangeOrderStatus = "api/v1/Order/changeOrderStatus";
             public const string Delete = "api/v1/Order/delete";
@@ -212,6 +213,7 @@
             public const string Save = "api/v1/CouponCode/save";
             public const string Delete = "api/v1/CouponCode/delete";
             public const string Search = "api/v1/CouponCode/search";
+            public const string GetByVendor = "api/v1/CouponCode/vendor/{vendorId}";
         }
 
         public static class ShippingCompany
