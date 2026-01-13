@@ -12,4 +12,5 @@ public interface IFileUploadService
     bool IsValidFile(string base64File, string fileName);
     (bool isValid, string errorMessage) ValidateFile(IFormFile file, int MaxFileSizeBytes = 5 * 1024 * 1024);
     (bool isValid, string errorMessage) ValidateFile(string base64String, int MaxFileSizeBytes = 5 * 1024 * 1024);
+    Task DeleteFileAsync(string filePath);
 }

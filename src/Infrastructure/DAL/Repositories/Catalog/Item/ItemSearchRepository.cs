@@ -111,27 +111,33 @@ namespace DAL.Repositories.Catalog.Item
             {
                 Categories = string.IsNullOrEmpty(result.CategoriesJson)
                     ? new List<CategoryFilter>()
-                    : JsonSerializer.Deserialize<List<CategoryFilter>>(result.CategoriesJson),
+                    : JsonSerializer.Deserialize<List<CategoryFilter>>(result.CategoriesJson) 
+                    ?? new List<CategoryFilter>(),
 
                 Brands = string.IsNullOrEmpty(result.BrandsJson)
                     ? new List<BrandFilter>()
-                    : JsonSerializer.Deserialize<List<BrandFilter>>(result.BrandsJson),
+                    : JsonSerializer.Deserialize<List<BrandFilter>>(result.BrandsJson) 
+                    ?? new List<BrandFilter>(),
 
                 Vendors = string.IsNullOrEmpty(result.VendorsJson)
                     ? new List<VendorFilter>()
-                    : JsonSerializer.Deserialize<List<VendorFilter>>(result.VendorsJson),
+                    : JsonSerializer.Deserialize<List<VendorFilter>>(result.VendorsJson) 
+                    ?? new List<VendorFilter>(),
 
                 PriceRange = string.IsNullOrEmpty(result.PriceRangeJson)
                     ? new PriceRangeFilter()
-                    : JsonSerializer.Deserialize<PriceRangeFilter>(result.PriceRangeJson),
+                    : JsonSerializer.Deserialize<PriceRangeFilter>(result.PriceRangeJson)
+                    ?? new PriceRangeFilter(),
 
                 Attributes = string.IsNullOrEmpty(result.AttributesJson)
                     ? new List<AttributeFilter>()
-                    : JsonSerializer.Deserialize<List<AttributeFilter>>(result.AttributesJson),
+                    : JsonSerializer.Deserialize<List<AttributeFilter>>(result.AttributesJson) 
+                    ?? new List<AttributeFilter>(),
 
                 Conditions = string.IsNullOrEmpty(result.ConditionsJson)
                     ? new List<ConditionFilter>()
-                    : JsonSerializer.Deserialize<List<ConditionFilter>>(result.ConditionsJson)
+                    : JsonSerializer.Deserialize<List<ConditionFilter>>(result.ConditionsJson) 
+                    ?? new List<ConditionFilter>()
             };
         }
 

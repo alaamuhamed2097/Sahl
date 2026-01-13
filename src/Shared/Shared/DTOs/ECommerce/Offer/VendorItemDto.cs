@@ -4,7 +4,7 @@ using Shared.DTOs.Base;
 
 namespace Shared.DTOs.ECommerce.Offer
 {
-    public class OfferDto : BaseDto
+    public class VendorItemDto : BaseDto
     {
         // Required properties
         public Guid ItemId { get; set; }
@@ -12,19 +12,14 @@ namespace Shared.DTOs.ECommerce.Offer
         public Guid WarehouseId { get; set; }
 
         // Filtering and search optimization
-        public int HandlingTimeInDays { get; set; }
+        public int? EstimatedDeliveryDays { get; set; }
         public bool IsFreeShipping { get; set; } = false;
         public OfferVisibilityScope VisibilityScope { get; set; }
-        public FulfillmentType FulfillmentType { get; set; } = FulfillmentType.Seller;
-
-        // Vendor performance metrics
-        public bool IsBuyBoxWinner { get; set; } = false;
+        public FulfillmentType FulfillmentType { get; set; } = FulfillmentType.Vendor;
 
         // Optional properties
         public Guid? WarrantyId { get; set; }
-
         // Collections
-        public List<UserOfferRatingDto> UserOfferRatings { get; set; } = new List<UserOfferRatingDto>();
         public List<OfferCombinationPricingDto> OfferCombinationPricings { get; set; } = new List<OfferCombinationPricingDto>();
     }
 }

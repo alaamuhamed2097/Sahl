@@ -2,7 +2,7 @@
 
 namespace Shared.DTOs.ECommerce.Offer
 {
-    public class CombinationAttributeDto :BaseDto
+    public class CombinationAttributeDetailsDto :BaseDto
     {
         public Guid AttributeId { get; set; }
         public string AttributeTitleAr { get; set; } = string.Empty;
