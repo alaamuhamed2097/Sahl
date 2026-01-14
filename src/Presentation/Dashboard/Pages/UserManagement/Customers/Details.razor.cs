@@ -61,16 +61,16 @@ namespace Dashboard.Pages.UserManagement.Customers
 			}
 		}
 
-		private void SetActiveTab(string tabName)
+		private async Task SetActiveTab(string tabName)
 		{
 			ActiveTab = tabName;
 			if (tabName == "orders")
 			{
-				LoadOrderHistory();
+				await LoadOrderHistory();
 			}
 			else if (tabName == "wallet")
 			{
-				LoadWalletHistory();
+				await LoadWalletHistory();
 			}
 		}
 
