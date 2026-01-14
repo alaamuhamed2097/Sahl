@@ -428,7 +428,7 @@
             public static string GetNonVerified(Guid vendorId) => $"{BaseUrl}/vendor/{vendorId}/non-verified";
 
             // Search & Filter
-            public static string Search => $"{BaseUrl}/searchVendorReviews";
+            public static string Search => $"{BaseUrl}/search-admin-vendorreviews";
 
             // Statistics
             public static string GetStats(Guid vendorId) => $"{BaseUrl}/vendor-review-stats-by/{vendorId}";

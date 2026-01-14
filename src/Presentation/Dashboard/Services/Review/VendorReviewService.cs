@@ -30,7 +30,7 @@ namespace Dashboard.Services.Review
 				ApiEndpoints.VendorReview.GetByVendorId(vendorId));
 		}
 
-		public async Task<ResponseModel<PaginatedDataModel<VendorReviewDto>>> SearchVendorReviews(VendorReviewSearchCriteriaModel criteria, CancellationToken cancellationToken = default)
+		public async Task<ResponseModel<PaginatedDataModel<VendorReviewDto>>> SearchVendorReviews(AdminVendorReviewSearchCriteriaModel criteria, CancellationToken cancellationToken = default)
 		{
 			var queryParams = new List<string>
 			{

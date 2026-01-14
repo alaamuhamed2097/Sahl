@@ -1,5 +1,64 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <root>
+	<!-- 
+		Microsoft ResX Schema
+
+		Version 1.3
+
+		The primary goals of this format is to allow a simple XML format 
+		that is mostly human readable. The generation and parsing of the 
+		various data types are done through the TypeConverter classes 
+		associated with the data types.
+
+		Example:
+
+		... ado.net/XML headers & schema ...
+		<resheader name="resmimetype">text/microsoft-resx</resheader>
+		<resheader name="version">1.3</resheader>
+		<resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+		<resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+		<data name="Name1">this is my long string</data>
+		<data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+		<data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+			[base64 mime encoded serialized .NET Framework object]
+		</data>
+		<data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+			[base64 mime encoded string representing a byte array form of the .NET Framework object]
+		</data>
+
+		There are any number of "resheader" rows that contain simple 
+		name/value pairs.
+
+		Each data row contains a name, and value. The row also contains a 
+		type or mimetype. Type corresponds to a .NET class that support 
+		text/value conversion through the TypeConverter architecture. 
+		Classes that don't support this are serialized and stored with the 
+		mimetype set.
+
+		The mimetype is used for serialized objects, and tells the 
+		ResXResourceReader how to depersist the object. This is currently not 
+		extensible. For a given mimetype the value must be set accordingly:
+
+		Note - application/x-microsoft.net.object.binary.base64 is the format 
+		that the ResXResourceWriter will generate, however the reader can 
+		read any of the formats listed below.
+
+		mimetype: application/x-microsoft.net.object.binary.base64
+		value   : The object must be serialized with 
+			: System.Serialization.Formatters.Binary.BinaryFormatter
+			: and then encoded with base64 encoding.
+
+		mimetype: application/x-microsoft.net.object.soap.base64
+		value   : The object must be serialized with 
+			: System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+			: and then encoded with base64 encoding.
+
+		mimetype: application/x-microsoft.net.object.bytearray.base64
+		value   : The object must be serialized into a byte array 
+			: using a System.ComponentModel.TypeConverter
+			: and then encoded with base64 encoding.
+	-->
+	
 	<xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
 		<xsd:element name="root" msdata:IsDataSet="true">
 			<xsd:complexType>
@@ -42,10 +101,10 @@
 
 	<!-- Item Reviews -->
 	<data name="ItemReviews">
-		<value>مراجعات المنتجات</value>
+		<value>تقييمات المنتج</value>
 	</data>
 	<data name="ReviewDetails">
-		<value>تفاصيل المراجعة</value>
+		<value>تفاصيل التقييم</value>
 	</data>
 	<data name="CustomerName">
 		<value>اسم العميل</value>
@@ -54,10 +113,10 @@
 		<value>التقييم</value>
 	</data>
 	<data name="ReviewComment">
-		<value>نص المراجعة</value>
+		<value>تعليق التقييم</value>
 	</data>
 	<data name="ReviewImages">
-		<value>صور المراجعة</value>
+		<value>صور التقييم</value>
 	</data>
 
 	<!-- Status -->
@@ -65,30 +124,30 @@
 		<value>قيد الانتظار</value>
 	</data>
 	<data name="Approved">
-		<value>موافق عليها</value>
+		<value>مقبول</value>
 	</data>
 	<data name="Rejected">
-		<value>مرفوضة</value>
+		<value>مرفوض</value>
 	</data>
 
 	<!-- Actions -->
 	<data name="Approve">
-		<value>الموافقة</value>
+		<value>قبول</value>
 	</data>
 	<data name="Reject">
-		<value>الرفض</value>
+		<value>رفض</value>
 	</data>
 	<data name="ConfirmApproveReview">
-		<value>هل أنت متأكد من الموافقة على هذه المراجعة؟</value>
+		<value>هل أنت متأكد من قبول هذا التقييم؟</value>
 	</data>
 	<data name="ConfirmRejectReview">
-		<value>هل أنت متأكد من رفض هذه المراجعة؟</value>
+		<value>هل أنت متأكد من رفض هذا التقييم؟</value>
 	</data>
 	<data name="ReviewApprovedSuccessfully">
-		<value>تمت الموافقة على المراجعة بنجاح</value>
+		<value>تم قبول التقييم بنجاح</value>
 	</data>
 	<data name="ReviewRejectedSuccessfully">
-		<value>تم رفض المراجعة بنجاح</value>
+		<value>تم رفض التقييم بنجاح</value>
 	</data>
 
 	<!-- Information -->
@@ -101,7 +160,7 @@
 
 	<!-- Reply -->
 	<data name="AdminReply">
-		<value>رد الإدارة</value>
+		<value>رد المسؤول</value>
 	</data>
 	<data name="AddReply">
 		<value>إضافة رد</value>
@@ -110,24 +169,24 @@
 		<value>أدخل ردك...</value>
 	</data>
 	<data name="ReplyAddedSuccessfully">
-		<value>تمت إضافة الرد بنجاح</value>
+		<value>تم إضافة الرد بنجاح</value>
 	</data>
 
 	<!-- Statistics -->
 	<data name="TotalReviews">
-		<value>إجمالي المراجعات</value>
+		<value>إجمالي التقييمات</value>
 	</data>
 	<data name="AverageRating">
 		<value>متوسط التقييم</value>
 	</data>
 	<data name="PendingReviews">
-		<value>المراجعات قيد الانتظار</value>
+		<value>التقييمات المعلقة</value>
 	</data>
 	<data name="ApprovedReviews">
-		<value>المراجعات الموافق عليها</value>
+		<value>التقييمات المقبولة</value>
 	</data>
 	<data name="RejectedReviews">
-		<value>المراجعات المرفوضة</value>
+		<value>التقييمات المرفوضة</value>
 	</data>
 
 	<!-- Filter -->
@@ -138,29 +197,29 @@
 		<value>تصفية حسب التقييم</value>
 	</data>
 	<data name="AllReviews">
-		<value>جميع المراجعات</value>
+		<value>جميع التقييمات</value>
 	</data>
 
 	<!-- Messages -->
 	<data name="NoReviewsFound">
-		<value>لا توجد مراجعات</value>
+		<value>لا توجد تقييمات</value>
 	</data>
 	<data name="ReviewDeletedSuccessfully">
-		<value>تم حذف المراجعة بنجاح</value>
+		<value>تم حذف التقييم بنجاح</value>
 	</data>
 	<data name="ErrorLoadingReviews">
-		<value>حدث خطأ أثناء تحميل المراجعات</value>
+		<value>خطأ في تحميل التقييمات</value>
 	</data>
 
 	<!-- Additional -->
 	<data name="ViewAllReviews">
-		<value>عرض جميع المراجعات</value>
+		<value>عرض جميع التقييمات</value>
 	</data>
 	<data name="ManageReviews">
-		<value>إدارة المراجعات</value>
+		<value>إدارة التقييمات</value>
 	</data>
 	<data name="ReviewManagement">
-		<value>إدارة المراجعات</value>
+		<value>إدارة التقييمات</value>
 	</data>
 	<data name="Stars">
 		<value>نجوم</value>
@@ -172,38 +231,39 @@
 		<value>عملية شراء موثقة</value>
 	</data>
 	<data name="ReviewTitle">
-		<value>عنوان المراجعة</value>
+		<value>عنوان التقييم</value>
 	</data>
 	<data name="CustomerEmail">
-		<value>بريد العميل الإلكتروني</value>
+		<value>البريد الإلكتروني للعميل</value>
 	</data>
 	<data name="ReviewNumber">
-		<value>رقم المراجعة</value>
+		<value>رقم التقييم</value>
 	</data>
 	<data name="HelpfulVotes">
 		<value>التصويتات المفيدة</value>
 	</data>
 	<data name="ReviewText">
-		<value>نص المراجعة</value>
+		<value>نص التقييم</value>
 	</data>
+
 	<!-- Review Reports -->
 	<data name="ReviewReports">
-		<value>تقارير المراجعات</value>
+		<value>تقارير التقييمات</value>
 	</data>
 	<data name="ReviewReportDetails">
-		<value>تفاصيل تقرير المراجعة</value>
+		<value>تفاصيل تقرير التقييم</value>
 	</data>
 	<data name="ReportID">
-		<value>رقم التقرير</value>
+		<value>معرف التقرير</value>
 	</data>
 	<data name="ReviewID">
-		<value>رقم المراجعة</value>
+		<value>معرف التقييم</value>
 	</data>
 	<data name="ReporterID">
-		<value>رقم المبلغ</value>
+		<value>معرف المبلغ</value>
 	</data>
 	<data name="ReportReason">
-		<value>سبب التبليغ</value>
+		<value>سبب البلاغ</value>
 	</data>
 	<data name="ReportDetails">
 		<value>تفاصيل التقرير</value>
@@ -212,7 +272,7 @@
 		<value>حالة التقرير</value>
 	</data>
 	<data name="RelatedReports">
-		<value>التقارير المرتبطة</value>
+		<value>التقارير ذات الصلة</value>
 	</data>
 
 	<!-- Report Reasons -->
@@ -226,7 +286,7 @@
 		<value>خطاب كراهية</value>
 	</data>
 	<data name="FakeReview">
-		<value>مراجعة مزيفة</value>
+		<value>تقييم مزيف</value>
 	</data>
 	<data name="IrrelevantContent">
 		<value>محتوى غير ذي صلة</value>
@@ -251,7 +311,7 @@
 		<value>حل التقرير</value>
 	</data>
 	<data name="MarkAsFlagged">
-		<value>وضع علامة كمخالف</value>
+		<value>وضع علامة كمبلغ عنه</value>
 	</data>
 	<data name="ViewReport">
 		<value>عرض التقرير</value>
@@ -260,13 +320,13 @@
 		<value>هل أنت متأكد من حل هذا التقرير؟</value>
 	</data>
 	<data name="ConfirmMarkAsFlagged">
-		<value>هل أنت متأكد من وضع علامة على هذه المراجعة كمخالفة؟</value>
+		<value>هل أنت متأكد من وضع علامة على هذا التقييم؟</value>
 	</data>
 	<data name="ReportResolvedSuccessfully">
 		<value>تم حل التقرير بنجاح</value>
 	</data>
 	<data name="ReviewFlaggedSuccessfully">
-		<value>تم وضع علامة على المراجعة بنجاح</value>
+		<value>تم وضع علامة على التقييم بنجاح</value>
 	</data>
 
 	<!-- Filter -->
@@ -277,7 +337,7 @@
 		<value>جميع التقارير</value>
 	</data>
 	<data name="PendingReports">
-		<value>التقارير قيد الانتظار</value>
+		<value>التقارير المعلقة</value>
 	</data>
 	<data name="ReviewedReports">
 		<value>التقارير المراجعة</value>
@@ -291,7 +351,7 @@
 		<value>لا توجد تقارير</value>
 	</data>
 	<data name="ErrorLoadingReports">
-		<value>حدث خطأ أثناء تحميل التقارير</value>
+		<value>خطأ في تحميل التقارير</value>
 	</data>
 	<data name="ReportDeletedSuccessfully">
 		<value>تم حذف التقرير بنجاح</value>
@@ -311,181 +371,60 @@
 		<value>تم الإبلاغ بواسطة</value>
 	</data>
 	<data name="ReportedOn">
-		<value>تم الإبلاغ في</value>
+		<value>تاريخ الإبلاغ</value>
 	</data>
 	<data name="Flagged">
-		<value>مخالف</value>
+		<value>مُبلغ عنه</value>
 	</data>
-	<!-- Page Titles -->
+
+	<!-- Vendor Reviews -->
 	<data name="VendorReviewManagement" xml:space="preserve">
-    <value>إدارة تقييمات البائعين</value>
-  </data>
+	<value>إدارة تقييمات البائعين</value>
+</data>
 	<data name="VendorReviews" xml:space="preserve">
-    <value>تقييمات البائعين</value>
-  </data>
+	<value>تقييمات البائعين</value>
+</data>
 	<data name="VendorReviewDetails" xml:space="preserve">
-    <value>تفاصيل تقييم البائع</value>
-  </data>
+	<value>تفاصيل تقييم البائع</value>
+</data>
 
 	<!-- Entity Names -->
-	<data name="VendorName" xml:space="preserve">
-    <value>اسم البائع</value>
-  </data>
 	<data name="VendorID" xml:space="preserve">
-    <value>معرّف البائع</value>
-  </data>
-	<data name="CustomerName" xml:space="preserve">
-    <value>اسم العميل</value>
-  </data>
+	<value>معرف البائع</value>
+</data>
 	<data name="CustomerID" xml:space="preserve">
-    <value>معرّف العميل</value>
-  </data>
-	<data name="CustomerEmail" xml:space="preserve">
-    <value>البريد الإلكتروني للعميل</value>
-  </data>
+	<value>معرف العميل</value>
+</data>
 	<data name="OrderDetailID" xml:space="preserve">
-    <value>معرّف تفاصيل الطلب</value>
-  </data>
-
-	<!-- Review Fields -->
-	<data name="ReviewID" xml:space="preserve">
-    <value>معرّف التقييم</value>
-  </data>
-	<data name="ReviewNumber" xml:space="preserve">
-    <value>رقم التقييم</value>
-  </data>
-	<data name="ReviewTitle" xml:space="preserve">
-    <value>عنوان التقييم</value>
-  </data>
-	<data name="ReviewText" xml:space="preserve">
-    <value>نص التقييم</value>
-  </data>
-	<data name="Rating" xml:space="preserve">
-    <value>التقييم</value>
-  </data>
-	<data name="HelpfulVotes" xml:space="preserve">
-    <value>الأصوات المفيدة</value>
-  </data>
-
-	<!-- Status -->
-	<data name="Status" xml:space="preserve">
-    <value>الحالة</value>
-  </data>
-	<data name="Pending" xml:space="preserve">
-    <value>قيد الانتظار</value>
-  </data>
-	<data name="Approved" xml:space="preserve">
-    <value>تمت الموافقة</value>
-  </data>
-	<data name="Rejected" xml:space="preserve">
-    <value>مرفوض</value>
-  </data>
-	<data name="Flagged" xml:space="preserve">
-    <value>مُبلّغ عنه</value>
-  </data>
-	<data name="Reviewed" xml:space="preserve">
-    <value>تمت المراجعة</value>
-  </data>
-	<data name="Resolved" xml:space="preserve">
-    <value>تم الحل</value>
-  </data>
+	<value>معرف تفاصيل الطلب</value>
+</data>
 
 	<!-- Verification -->
-	<data name="VerifiedPurchase" xml:space="preserve">
-    <value>عملية شراء موثقة</value>
-  </data>
 	<data name="NotVerifiedPurchase" xml:space="preserve">
-    <value>عملية شراء غير موثقة</value>
-  </data>
+	<value>عملية شراء غير موثقة</value>
+</data>
 	<data name="IsEdited" xml:space="preserve">
-    <value>تم التعديل</value>
-  </data>
+	<value>تم التعديل</value>
+</data>
 	<data name="Verified" xml:space="preserve">
-    <value>موثّق</value>
-  </data>
+	<value>موثق</value>
+</data>
 	<data name="NotVerified" xml:space="preserve">
-    <value>غير موثّق</value>
-  </data>
-
-	<!-- Actions -->
-	<data name="Approve" xml:space="preserve">
-    <value>موافقة</value>
-  </data>
-	<data name="Reject" xml:space="preserve">
-    <value>رفض</value>
-  </data>
-	<data name="MarkAsFlagged" xml:space="preserve">
-    <value>وضع علامة كمُبلّغ عنه</value>
-  </data>
-
-	<!-- Confirmations -->
-	<data name="ConfirmApproveReview" xml:space="preserve">
-    <value>هل أنت متأكد من الموافقة على هذا التقييم؟</value>
-  </data>
-	<data name="ConfirmRejectReview" xml:space="preserve">
-    <value>هل أنت متأكد من رفض هذا التقييم؟</value>
-  </data>
-	<data name="ConfirmMarkAsFlagged" xml:space="preserve">
-    <value>هل أنت متأكد من وضع علامة على هذا التقييم كمُبلّغ عنه؟</value>
-  </data>
-	<data name="ConfirmResolveReport" xml:space="preserve">
-    <value>هل أنت متأكد من حل هذا البلاغ؟</value>
-  </data>
-
-	<!-- Success Messages -->
-	<data name="ReviewApprovedSuccessfully" xml:space="preserve">
-    <value>تمت الموافقة على التقييم بنجاح</value>
-  </data>
-	<data name="ReviewRejectedSuccessfully" xml:space="preserve">
-    <value>تم رفض التقييم بنجاح</value>
-  </data>
-	<data name="ReviewFlaggedSuccessfully" xml:space="preserve">
-    <value>تم وضع علامة على التقييم بنجاح</value>
-  </data>
-	<data name="ReportResolvedSuccessfully" xml:space="preserve">
-    <value>تم حل البلاغ بنجاح</value>
-  </data>
+	<value>غير موثق</value>
+</data>
 
 	<!-- Additional Information -->
 	<data name="AdditionalInformation" xml:space="preserve">
-    <value>معلومات إضافية</value>
-  </data>
-	<data name="ReviewReports" xml:space="preserve">
-    <value>بلاغات التقييمات</value>
-  </data>
-	<data name="NoReportsFound" xml:space="preserve">
-    <value>لا توجد بلاغات</value>
-  </data>
-	<data name="ReportReason" xml:space="preserve">
-    <value>سبب البلاغ</value>
-  </data>
-	<data name="ReportStatus" xml:space="preserve">
-    <value>حالة البلاغ</value>
-  </data>
+	<value>معلومات إضافية</value>
+</data>
 
-	<!-- Report Reasons -->
-	<data name="Spam" xml:space="preserve">
-    <value>محتوى مزعج</value>
-  </data>
-	<data name="OffensiveLanguage" xml:space="preserve">
-    <value>لغة مسيئة</value>
-  </data>
-	<data name="HateSpeech" xml:space="preserve">
-    <value>خطاب كراهية</value>
-  </data>
-	<data name="FakeReview" xml:space="preserve">
-    <value>تقييم مزيف</value>
-  </data>
-	<data name="IrrelevantContent" xml:space="preserve">
-    <value>محتوى غير ذي صلة</value>
-  </data>
-	<data name="Duplicate" xml:space="preserve">
-    <value>مكرر</value>
-  </data>
-	<data name="Other" xml:space="preserve">
-    <value>أخرى</value>
-  </data>
+	<data name="VendorName" xml:space="preserve">
+	<value>اسم البائع</value>
+</data>
 	<data name="Vendor" xml:space="preserve">
-    <value>Vendor</value>
-  </data>
+	<value>البائع</value>
+</data>
+	<data name="Status" xml:space="preserve">
+	<value>الحاله</value>
+</data>
 </root>

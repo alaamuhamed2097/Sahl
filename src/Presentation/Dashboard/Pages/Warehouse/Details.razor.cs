@@ -22,8 +22,6 @@ namespace Dashboard.Pages.Warehouse
 		private IEnumerable<VendorWithUserDto> vendors = new List<VendorWithUserDto>();
 		private Guid? selectedVendorId = null;
 		private bool showVendorValidation = false;
-		private bool select2Initialized = false;
-		private bool _disposed = false;
 
 		[Parameter] public Guid Id { get; set; }
 		[Parameter] public string? Type { get; set; } 
@@ -92,6 +90,7 @@ namespace Dashboard.Pages.Warehouse
 				Console.WriteLine($"Error checking multi-vendor status: {ex.Message}");
 			}
 		}
+
 		private async Task LoadVendors()
 		{
 			try
@@ -243,24 +242,24 @@ namespace Dashboard.Pages.Warehouse
 			try
 			{
 				// Validation for Vendor Warehouses
-				if (IsVendorWarehouse)
-				{
-					// In Add mode, check vendor selection
-					if (!IsEditMode && !Model.VendorId.HasValue)
-					{
-						showVendorValidation = true;
-						StateHasChanged();
-						await ShowErrorNotification(ValidationResources.Error, "Please select a vendor");
-						return;
-					}
+				//if (IsVendorWarehouse)
+				//{
+				//	// In Add mode, check vendor selection
+				//	if (!IsEditMode && !Model.VendorId.HasValue)
+				//	{
+				//		showVendorValidation = true;
+				//		StateHasChanged();
+				//		await ShowErrorNotification(ValidationResources.Error, "Please select a vendor");
+				//		return;
+				//	}
 
-					// Check email
-					if (string.IsNullOrWhiteSpace(Model.Email))
-					{
-						await ShowErrorNotification(ValidationResources.Error, "Vendor email is required");
-						return;
-					}
-				}
+				//	// في Edit Mode، تأكد إن الـ VendorId موجود
+				//	if (IsEditMode && !Model.VendorId.HasValue)
+				//	{
+				//		await ShowErrorNotification(ValidationResources.Error, "Vendor information is missing");
+				//		return;
+				//	}
+				//}
 
 				showVendorValidation = false;
 				isSaving = true;
@@ -274,11 +273,21 @@ namespace Dashboard.Pages.Warehouse
 				{
 					Model.VendorId = null;
 					Model.Email = null;
+					Model.VendorName = null;
 				}
 
-				Console.WriteLine($"Saving warehouse - Type: {(IsPlatformWarehouse ? "Platform" : "Vendor")}, VendorId: {Model.VendorId}, Email: {Model.Email}");
+				Console.WriteLine($"=== Save Started ===");
+				Console.WriteLine($"Saving warehouse - Type: {(IsPlatformWarehouse ? "Platform" : "Vendor")}");
+				Console.WriteLine($"  - Id: {Model.Id}");
+				Console.WriteLine($"  - VendorId: {Model.VendorId}");
+				Console.WriteLine($"  - Address: {Model.Address}");
+				Console.WriteLine($"  - IsActive: {Model.IsActive}");
+				Console.WriteLine($"  - IsDefaultPlatformWarehouse: {Model.IsDefaultPlatformWarehouse}");
 
 				var result = await WarehouseService.SaveAsync(Model);
+
+				Console.WriteLine($"Save result - Success: {result.Success}, Message: {result.Message}");
+
 				isSaving = false;
 
 				if (result.Success)
@@ -294,10 +303,72 @@ namespace Dashboard.Pages.Warehouse
 			catch (Exception ex)
 			{
 				isSaving = false;
-				Console.WriteLine($"Save exception: {ex.Message}");
+				Console.WriteLine($"✗ Save exception: {ex.Message}");
+				Console.WriteLine($"Stack trace: {ex.StackTrace}");
 				await ShowErrorNotification(NotifiAndAlertsResources.FailedAlert, ex.Message ?? NotifiAndAlertsResources.SomethingWentWrong);
 			}
 		}
+
+		//protected async Task Save()
+		//{
+		//	try
+		//	{
+		//		// Validation for Vendor Warehouses
+		//		if (IsVendorWarehouse)
+		//		{
+		//			// In Add mode, check vendor selection
+		//			if (!IsEditMode && !Model.VendorId.HasValue)
+		//			{
+		//				showVendorValidation = true;
+		//				StateHasChanged();
+		//				await ShowErrorNotification(ValidationResources.Error, "Please select a vendor");
+		//				return;
+		//			}
+
+		//			// Check email
+		//			if (string.IsNullOrWhiteSpace(Model.Email))
+		//			{
+		//				await ShowErrorNotification(ValidationResources.Error, "Vendor email is required");
+		//				return;
+		//			}
+		//		}
+
+		//		showVendorValidation = false;
+		//		isSaving = true;
+		//		StateHasChanged();
+
+		//		// Set warehouse type
+		//		Model.IsDefaultPlatformWarehouse = IsPlatformWarehouse;
+
+		//		// Clear VendorId if it's a platform warehouse
+		//		if (IsPlatformWarehouse)
+		//		{
+		//			Model.VendorId = null;
+		//			Model.Email = null;
+		//		}
+
+		//		Console.WriteLine($"Saving warehouse - Type: {(IsPlatformWarehouse ? "Platform" : "Vendor")}, VendorId: {Model.VendorId}, Email: {Model.Email}");
+
+		//		var result = await WarehouseService.SaveAsync(Model);
+		//		isSaving = false;
+
+		//		if (result.Success)
+		//		{
+		//			await ShowSuccessNotification(NotifiAndAlertsResources.SavedSuccessfully);
+		//			await CloseModal();
+		//		}
+		//		else
+		//		{
+		//			await ShowErrorNotification(ValidationResources.Failed, result.Message ?? NotifiAndAlertsResources.SaveFailed);
+		//		}
+		//	}
+		//	catch (Exception ex)
+		//	{
+		//		isSaving = false;
+		//		Console.WriteLine($"Save exception: {ex.Message}");
+		//		await ShowErrorNotification(NotifiAndAlertsResources.FailedAlert, ex.Message ?? NotifiAndAlertsResources.SomethingWentWrong);
+		//	}
+		//}
 
 		protected async Task Edit(Guid id)
 		{
@@ -340,73 +411,33 @@ namespace Dashboard.Pages.Warehouse
 				await ShowErrorNotification(ValidationResources.Error, ex.Message ?? NotifiAndAlertsResources.SomethingWentWrong);
 			}
 		}
-		// Handle parent category selection change
-		private async Task OnParentCategoryChanged(ChangeEventArgs e)
-		{
-			if (Guid.TryParse(e.Value?.ToString(), out var VendorId))
-			{
-				Model.VendorId = VendorId;
-			}
-			else
-			{
-				Model.VendorId = Guid.Empty;
-			}
-			StateHasChanged();
-		}
+		
 		protected async Task CloseModal()
 		{
 			Navigation.NavigateTo("/warehouses", true);
 		}
+
 		protected override async Task OnAfterRenderAsync(bool firstRender)
 		{
 			if (firstRender)
 			{
-				await ResourceLoaderService.LoadStyleSheet("css/display_order.css");
-				await ResourceLoaderService.LoadScript( "js/select2Helper.js");
+				await ResourceLoaderService.LoadStyleSheet("assets/plugins/select2/css/select2.min.css");
+				await ResourceLoaderService.LoadScript("assets/plugins/select2/js/select2.full.min.js");
+				await ResourceLoaderService.LoadScript("common/select2helper.js");
 			}
 
 			// Initialize Select2 after component is rendered and data is loaded
-			if (dataLoaded && !select2Initialized)
-			{
+		
 				// Small delay to ensure DOM is ready
 				await Task.Delay(100);
 				await InitializeSelect2();
-				select2Initialized = true;
-			}
 		}
+
 		private async Task InitializeSelect2()
 		{
 			try
 			{
-				if (_disposed) return;
-
-				// Check if Select2 is already initialized
-				var isParentInitialized = await JSRuntime.InvokeAsync<bool>("isSelect2Initialized", ".select2-parent");
-				var isAttributeInitialized = await JSRuntime.InvokeAsync<bool>("isSelect2Initialized", ".select2-attribute");
-
-				// Only initialize if not already initialized
-				if (!isParentInitialized || !isAttributeInitialized)
-				{
-					// Create resources object to pass to JavaScript
-					var resources = new
-					{
-						parentCategoryPlaceholder = ResourceManager.CurrentLanguage == Language.Arabic
-							? "اختر الفئة الأساسية"
-							: FormResources.Select + " " + ECommerceResources.CategoryParent,
-						attributePlaceholder = ResourceManager.CurrentLanguage == Language.Arabic
-							? "اختر الخاصية"
-							: FormResources.Select + " " + ECommerceResources.Attribute,
-						noResults = ResourceManager.CurrentLanguage == Language.Arabic
-							? "لا توجد نتائج"
-							: "No results found",
-						searching = ResourceManager.CurrentLanguage == Language.Arabic
-							? "جاري البحث..."
-							: "Searching..."
-					};
-
-					await JSRuntime.InvokeVoidAsync("initializeSelect2", resources);
-					select2Initialized = true;
-				}
+				await JSRuntime.InvokeVoidAsync("initializeSelect2", "fgesheth");
 			}
 			catch (JSDisconnectedException)
 			{

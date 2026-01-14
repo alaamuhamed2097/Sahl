@@ -61,7 +61,7 @@ namespace Api.Controllers.v1.VendorDashboardReviews
 		[HttpGet("searchVendorReviews")]
 		[Authorize(Roles = nameof(UserRole.Vendor))]
 		[ProducesResponseType(StatusCodes.Status200OK)]
-		public async Task<IActionResult> Search([FromQuery] VendorReviewSearchCriteriaModel criteria)
+		public async Task<IActionResult> Search([FromQuery] AdminVendorReviewSearchCriteriaModel criteria)
 		{
 			var result = await _vendorReviewService.GetPaginatedReviewsAsync(criteria);
 
@@ -116,8 +116,6 @@ namespace Api.Controllers.v1.VendorDashboardReviews
 		//	});
 		//}
 
-		
-		
 		/// <summary>
 		/// Get all reviews for a vendor with optional status filter
 		/// </summary>
@@ -141,6 +139,7 @@ namespace Api.Controllers.v1.VendorDashboardReviews
 				Data = reviews
 			});
 		}
+		
 		/// <summary>
 		/// Get only verified purchase reviews for a vendor
 		/// </summary>
@@ -170,6 +169,7 @@ namespace Api.Controllers.v1.VendorDashboardReviews
 					"An error occurred while retrieving verified reviews");
 			}
 		}
+		
 		/// <summary>
 		/// Get only non-verified purchase reviews for a vendor
 		/// </summary>
@@ -199,6 +199,7 @@ namespace Api.Controllers.v1.VendorDashboardReviews
 					"An error occurred while retrieving non-verified reviews");
 			}
 		}
+		
 		///// <summary>
 		///// Get all reviews created by a specific customer
 		///// </summary>

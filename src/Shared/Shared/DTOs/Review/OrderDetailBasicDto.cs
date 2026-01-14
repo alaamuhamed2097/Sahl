@@ -8,6 +8,7 @@ namespace Shared.DTOs.Review
 	{
 		public Guid? OrderDetailId { get; set; }
 		public string? ProductName { get; set; }
+		public string? OrderNumber { get; set; }
 		public decimal? Quantity { get; set; }
 		public decimal? Price { get; set; }
 		public DateTime? OrderDate { get; set; }

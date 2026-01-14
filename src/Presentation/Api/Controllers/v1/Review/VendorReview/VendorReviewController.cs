@@ -199,7 +199,7 @@ namespace Api.Controllers.v1.Review.VendorReview
 		/// </remarks>
 		[HttpGet("search")]
 		[ProducesResponseType(StatusCodes.Status200OK)]
-		public async Task<IActionResult> Search([FromQuery] VendorReviewSearchCriteriaModel criteria)
+		public async Task<IActionResult> Search([FromQuery] AdminVendorReviewSearchCriteriaModel criteria)
 		{
 			var result = await _reviewService.GetPaginatedReviewsAsync(criteria);
 
@@ -417,7 +417,6 @@ namespace Api.Controllers.v1.Review.VendorReview
 			});
 		}
 
-
 		/// <summary>
 		/// Get all approved reviews for a Vendor
 		/// </summary>
@@ -445,12 +444,28 @@ namespace Api.Controllers.v1.Review.VendorReview
 		/// <remarks>
 		/// API Version: 1.0+
 		/// </remarks>
-		[HttpGet("searchVendorReviews")]
-		[Authorize(Roles = nameof(UserRole.Vendor))]
+		[HttpGet("search-admin-vendorreviews")]
+		[Authorize(Roles = nameof(UserRole.Admin))]
 		[ProducesResponseType(StatusCodes.Status200OK)]
-		public async Task<IActionResult> SearchVendorReviews([FromQuery] VendorReviewSearchCriteriaModel criteria)
+		public async Task<IActionResult> SearchAdminForVendorReviews([FromQuery] AdminVendorReviewSearchCriteriaModel criteria)
 		{
 			var result = await _vendorReviewService.GetPaginatedReviewsAsync(criteria);
+
+			return Ok(new ResponseModel<PagedResult<VendorReviewDto>>
+			{
+				Success = true,
+				Message = NotifiAndAlertsResources.DataRetrieved,
+				Data = result
+			});
+		}
+
+		[HttpGet("search-vendor-vendorreviews")]
+		[Authorize(Roles = nameof(UserRole.Vendor))]
+		[ProducesResponseType(StatusCodes.Status200OK)]
+		public async Task<IActionResult> SearchVendorForVendorReviews([FromQuery] VendorReviewSearchCriteriaModel criteria)
+		{
+
+			var result = await _vendorReviewService.GetPaginatedReviewsAsync(GuidUserId, criteria);
 
 			return Ok(new ResponseModel<PagedResult<VendorReviewDto>>
 			{
@@ -503,8 +518,6 @@ namespace Api.Controllers.v1.Review.VendorReview
 		//	});
 		//}
 
-
-
 		/// <summary>
 		/// Get all reviews for a vendor with optional status filter
 		/// </summary>
@@ -528,6 +541,7 @@ namespace Api.Controllers.v1.Review.VendorReview
 				Data = reviews
 			});
 		}
+		
 		/// <summary>
 		/// Get only verified purchase reviews for a vendor
 		/// </summary>
@@ -557,6 +571,7 @@ namespace Api.Controllers.v1.Review.VendorReview
 					"An error occurred while retrieving verified reviews");
 			}
 		}
+		
 		/// <summary>
 		/// Get only non-verified purchase reviews for a vendor
 		/// </summary>
@@ -586,6 +601,7 @@ namespace Api.Controllers.v1.Review.VendorReview
 					"An error occurred while retrieving non-verified reviews");
 			}
 		}
+		
 		///// <summary>
 		///// Get all reviews created by a specific customer
 		///// </summary>

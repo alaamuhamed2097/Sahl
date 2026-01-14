@@ -19,8 +19,11 @@ namespace Dashboard.Pages.ManageReviews.VendorsReviews
 		[Inject] protected IJSRuntime JSRuntime { get; set; } = null!;
 		[Inject] protected IResourceLoaderService ResourceLoaderService { get; set; } = null!;
 
+		private string selectedStatus = "All"; 
+		private ReviewStatus? currentStatusFilter = null;  
+
 		private IEnumerable<VendorReviewDto> items = new List<VendorReviewDto>();
-		private VendorReviewSearchCriteriaModel searchModel = new VendorReviewSearchCriteriaModel
+		private AdminVendorReviewSearchCriteriaModel searchModel = new AdminVendorReviewSearchCriteriaModel
 		{
 			PageNumber = 1,
 			PageSize = 10,
@@ -31,7 +34,7 @@ namespace Dashboard.Pages.ManageReviews.VendorsReviews
 		private int totalRecords = 0;
 		private string currentSortColumn = "";
 		private bool isAscending = true;
-		private string selectedStatus = "All";
+		//private string selectedStatus = "All";
 
 		protected override async Task OnInitializedAsync()
 		{
@@ -53,7 +56,7 @@ namespace Dashboard.Pages.ManageReviews.VendorsReviews
 				await LoadData();
 			}
 		}
-
+		
 		private async Task LoadData()
 		{
 			try
@@ -66,12 +69,14 @@ namespace Dashboard.Pages.ManageReviews.VendorsReviews
 					totalRecords = response.Data.TotalRecords;
 					totalPages = (int)Math.Ceiling(totalRecords / (double)searchModel.PageSize);
 					currentPage = searchModel.PageNumber;
+
 				}
 				else
 				{
 					items = new List<VendorReviewDto>();
 					Console.WriteLine($"Error: {response.Message}");
 				}
+				StateHasChanged();
 			}
 			catch (Exception ex)
 			{
@@ -154,7 +159,7 @@ namespace Dashboard.Pages.ManageReviews.VendorsReviews
 			return isAscending ? "fas fa-sort-up text-primary" : "fas fa-sort-down text-primary";
 		}
 
-		private async Task FilterByStatus(ReviewStatus? status)
+		private async Task FilterByStatusSearch(ReviewStatus? status)
 		{
 			selectedStatus = status?.ToString() ?? "All";
 			searchModel.PageNumber = 1;
@@ -173,7 +178,100 @@ namespace Dashboard.Pages.ManageReviews.VendorsReviews
 				searchModel.VendorId = Id;
 			}
 
+
 			await LoadData();
+		}
+		protected virtual async Task<bool> DeleteConfirmNotification()
+		{
+			var options = new
+			{
+				title = NotifiAndAlertsResources.AreYouSure,
+				text = NotifiAndAlertsResources.ConfirmDeleteAlert,
+				icon = "warning",
+				buttons = new
+				{
+					cancel = new
+					{
+						text = ActionsResources.Cancel,
+						value = false,
+						visible = true,
+						className = "",
+						closeModal = true
+					},
+					confirm = new
+					{
+						text = ActionsResources.Confirm,
+						value = true,
+						visible = true,
+						className = "swal-button--danger",
+						closeModal = true
+					}
+				}
+			};
+
+			return (await JSRuntime.InvokeAsync<bool>("swal", options));
+		}
+
+		protected virtual async Task<bool> RejectConfirmNotification()
+		{
+			var options = new
+			{
+				title = NotifiAndAlertsResources.AreYouSure,
+				text = NotifiAndAlertsResources.ConfirmRejectAlert,
+				icon = "warning",
+				buttons = new
+				{
+					cancel = new
+					{
+						text = ActionsResources.Cancel,
+						value = false,
+						visible = true,
+						className = "",
+						closeModal = true
+					},
+					confirm = new
+					{
+						text = ActionsResources.Confirm,
+						value = true,
+						visible = true,
+						className = "swal-button--danger",
+						closeModal = true
+					}
+				}
+			};
+
+			return (await JSRuntime.InvokeAsync<bool>("swal", options));
+		}
+
+		protected virtual async Task<bool> ApproveConfirmNotification()
+		{
+			var options = new
+			{
+				title = NotifiAndAlertsResources.AreYouSure,
+				text = NotifiAndAlertsResources.ConfirmRejectAlert,
+				icon = "warning",
+				buttons = new
+				{
+					cancel = new
+					{
+						text = ActionsResources.Cancel,
+						value = false,
+						visible = true,
+						className = "",
+						closeModal = true
+					},
+					confirm = new
+					{
+						text = ActionsResources.Confirm,
+						value = true,
+						visible = true,
+						className = "swal-button--danger",
+						closeModal = true
+					}
+				}
+			};
+
+			return (await JSRuntime.InvokeAsync<bool>("swal", options));
 		}
 
 		private void ViewDetails(Guid reviewId)
@@ -183,85 +281,94 @@ namespace Dashboard.Pages.ManageReviews.VendorsReviews
 
 		private async Task ApproveReview(Guid reviewId)
 		{
-			bool confirmed = await JSRuntime.InvokeAsync<bool>("confirm",
-				"Are you sure you want to approve this review?");
 
-			if (!confirmed) return;
+			bool confirmed = await ApproveConfirmNotification();
 
-			try
+
+
+			if (confirmed)
 			{
-				var response = await VendorReviewService.ApproveReviewAsync(reviewId);
-
-				if (response.Success)
+				var result = await VendorReviewService.ApproveReviewAsync(reviewId);
+				if (result.Success)
 				{
-					await JSRuntime.InvokeVoidAsync("alert", "Review approved successfully!");
-					await LoadData();
+					await ShowSuccessNotification(NotifiAndAlertsResources.Successful);
+					await Search();
+					await OnAfterDeleteAsync(reviewId);
+					StateHasChanged();
 				}
 				else
 				{
-					await JSRuntime.InvokeVoidAsync("alert", $"Error: {response.Message}");
+					if (result.Message == null)
+						await ShowErrorNotification(ValidationResources.Failed, NotifiAndAlertsResources.Failed);
+					else
+						await ShowErrorNotification(ValidationResources.Failed, result.Message);
 				}
 			}
-			catch (Exception ex)
-			{
-				await JSRuntime.InvokeVoidAsync("alert", $"Error: {ex.Message}");
-			}
 		}
+
 
 		private async Task RejectReview(Guid reviewId)
 		{
-			bool confirmed = await JSRuntime.InvokeAsync<bool>("confirm",
-				"Are you sure you want to reject this review?");
+			bool confirmed = await RejectConfirmNotification();
 
-			if (!confirmed) return;
-
-			try
+			if (confirmed)
 			{
-				var response = await VendorReviewService.RejectReviewAsync(reviewId);
-
-				if (response.Success)
+				var result = await VendorReviewService.RejectReviewAsync(reviewId);
+				if (result.Success)
 				{
-					await JSRuntime.InvokeVoidAsync("alert", "Review rejected successfully!");
-					await LoadData();
+					await ShowSuccessNotification(NotifiAndAlertsResources.Successful);
+					await Search();
+					await OnAfterDeleteAsync(reviewId);
+					StateHasChanged();
 				}
 				else
 				{
-					await JSRuntime.InvokeVoidAsync("alert", $"Error: {response.Message}");
+					if (result.Message == null)
+						await ShowErrorNotification(ValidationResources.Failed, NotifiAndAlertsResources.Failed);
+					else
+						await ShowErrorNotification(ValidationResources.Failed, result.Message);
 				}
 			}
-			catch (Exception ex)
-			{
-				await JSRuntime.InvokeVoidAsync("alert", $"Error: {ex.Message}");
-			}
 		}
-
+		
+		
+		
+		protected virtual async Task OnAfterDeleteAsync(Guid id)
+		{
+			await Task.CompletedTask;
+		}
+		protected virtual async Task ShowSuccessNotification(string message)
+		{
+			await JSRuntime.InvokeVoidAsync("swal", ValidationResources.Done, message, "success");
+		}
 		private async Task Delete(Guid reviewId)
 		{
-			bool confirmed = await JSRuntime.InvokeAsync<bool>("confirm",
-				"Are you sure you want to delete this review?");
+			bool confirmed = await DeleteConfirmNotification();
 
-			if (!confirmed) return;
 
-			try
+			if (confirmed)
 			{
-				var response = await VendorReviewService.DeleteReviewAsync(reviewId);
-
-				if (response.Success)
+				var result = await VendorReviewService.DeleteReviewAsync(reviewId);
+				if (result.Success)
 				{
-					await JSRuntime.InvokeVoidAsync("alert", "Review deleted successfully!");
-					await LoadData();
+					await ShowSuccessNotification(NotifiAndAlertsResources.DeletedSuccessfully);
+					await Search();
+					await OnAfterDeleteAsync(reviewId);
+					StateHasChanged();
 				}
 				else
 				{
-					await JSRuntime.InvokeVoidAsync("alert", $"Error: {response.Message}");
+					if (result.Message == null)
+						await ShowErrorNotification(ValidationResources.Failed, NotifiAndAlertsResources.DeleteFailed);
+					else
+						await ShowErrorNotification(ValidationResources.Failed, result.Message);
 				}
 			}
-			catch (Exception ex)
-			{
-				await JSRuntime.InvokeVoidAsync("alert", $"Error: {ex.Message}");
-			}
 		}
-
+		protected virtual async Task ShowErrorNotification(string title, string message)
+		{
+			await JSRuntime.InvokeVoidAsync("swal", title, message, "error");
+		}
 		private async Task ExportToExcel()
 		{
 			await JSRuntime.InvokeVoidAsync("alert", "Excel export will be implemented");

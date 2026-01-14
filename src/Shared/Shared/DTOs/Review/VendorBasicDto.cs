@@ -8,6 +8,7 @@ namespace Shared.DTOs.Review
 	{
 		public Guid? VendorId { get; set; }
 		public string? VendorName { get; set; }
-		public string? BusinessName { get; set; }
+		public string? Email { get; set; }
+		public string? StoreName { get; set; }
 	}
 }

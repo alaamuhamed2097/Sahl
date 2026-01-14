@@ -53,13 +53,12 @@
                             <div class="col-md-12 mb-3">
                                 <label class="form-label">
                                     <i class="fas fa-store me-2"></i>
-                                    Vendor: <span class="text-danger">*</span>
+                                    Add Vendor: <span class="text-danger">*</span>
                                 </label>
-                                <select id="parentCategorySelect"
-                                        class="form-control select2-parent select2-bootstrap"
+                                <select class="form-control select2"
                                         value="@(Model.VendorId?.ToString() ?? Guid.Empty.ToString())"
                                         @onchange="OnVendorSelectionChanged">
-                                    <option value="@Guid.Empty.ToString()">-- Select Vendor --</option>
+                                    <option value="@Guid.Empty.ToString()">@WarehouseResource.SelectVendor</option>
                                     @if (vendors != null && vendors.Any())
                                     {
                                         @foreach (var vendor in vendors)

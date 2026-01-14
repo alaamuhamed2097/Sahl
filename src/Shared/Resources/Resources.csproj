@@ -45,6 +45,11 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>MerchandisingResources.resx</DependentUpon>
     </Compile>
+    <Compile Update="LocalizerResources.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>LocalizerResources.resx</DependentUpon>
+    </Compile>
     <Compile Update="NotifiAndAlertsResources.Designer.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
@@ -54,6 +59,11 @@
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
       <DependentUpon>ReviewResources.resx</DependentUpon>
+    </Compile>
+    <Compile Update="ReviewResourcess.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>ReviewResourcess.resx</DependentUpon>
     </Compile>
     <Compile Update="UserResources.Designer.cs">
       <DesignTime>True</DesignTime>
@@ -79,6 +89,11 @@
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
       <DependentUpon>MerchandisingResources.resx</DependentUpon>
+    </Compile>
+    <Compile Update="warehouseResource.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>WarehouseResource.resx</DependentUpon>
     </Compile>
   </ItemGroup>
   <ItemGroup>
@@ -110,6 +125,10 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>MerchandisingResources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+    <EmbeddedResource Update="LocalizerResources.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>LocalizerResources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
     <EmbeddedResource Update="NotifiAndAlertsResources.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>NotifiAndAlertsResources.Designer.cs</LastGenOutput>
@@ -117,6 +136,10 @@
     <EmbeddedResource Update="ReviewResources.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>ReviewResources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="ReviewResourcess.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>ReviewResourcess.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <EmbeddedResource Update="UserResources.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
@@ -141,6 +164,10 @@
     <EmbeddedResource Update="MerchandisingResources.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>MerchandisingResources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="WarehouseResource.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>warehouseResource.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

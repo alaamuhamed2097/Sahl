@@ -9,6 +9,7 @@ using DAL.Repositories;
 using Domains.Entities.ECommerceSystem.Vendor;
 using Domains.Entities.Warehouse;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Resources;
 using Serilog;
 using Shared.DTOs.Vendor;
@@ -62,11 +63,42 @@ public class WarehouseService : BaseService<TbWarehouse, WarehouseDto>, IWarehou
         if (id == Guid.Empty)
             throw new ArgumentNullException(nameof(id));
 
-        var warehouse = await _warehouseRepository.FindByIdAsync(id);
-        if (warehouse == null) return null;
+		var warehouse = await _warehouseRepository.FindByIdAsync(id);
 
-        return _mapper.MapModel<TbWarehouse, WarehouseDto>(warehouse);
-    }
+		if (warehouse == null)
+			return null;
+
+		// Map الـ Warehouse للـ DTO
+		var warehouseDto = _mapper.MapModel<TbWarehouse, WarehouseDto>(warehouse);
+
+		// جيب الـ Vendor والـ User بشكل منفصل
+		if (warehouse.VendorId.HasValue)
+		{
+			var vendor = await _vendorRepository.FindByIdAsync(warehouse.VendorId.Value);
+			if (vendor != null && !string.IsNullOrEmpty(vendor.UserId))
+			{
+				var user = await _userManager.FindByIdAsync(vendor.UserId);
+				if (user != null)
+				{
+					warehouseDto.Email = user.Email;
+					warehouseDto.VendorName = user.UserName;
+				}
+			}
+		}
+
+		return warehouseDto;
+	}
+
+	//public async Task<WarehouseDto?> GetByIdAsync(Guid id)
+	//{
+	//    if (id == Guid.Empty)
+	//        throw new ArgumentNullException(nameof(id));
+
+	//    var warehouse = await _warehouseRepository.FindByIdAsync(id);
+	//    if (warehouse == null) return null;
+
+	//    return _mapper.MapModel<TbWarehouse, WarehouseDto>(warehouse);
+	//}
 	//public async Task<PagedResult<WarehouseDto>> SearchAsync(BaseSearchCriteriaModel criteriaModel)
 	//{
 	//	if (criteriaModel == null)
@@ -263,168 +295,512 @@ public class WarehouseService : BaseService<TbWarehouse, WarehouseDto>, IWarehou
 
 		return new PagedResult<WarehouseDto>(itemsDto, warehouses.TotalRecords);
 	}
-
 	public async Task<PagedResult<WarehouseDto>> SearchVendorAsync(WarehouseSearchCriteriaModel criteriaModel)
 	{
 		if (criteriaModel == null)
 			throw new ArgumentNullException(nameof(criteriaModel));
-
 		if (criteriaModel.PageNumber < 1)
 			throw new ArgumentOutOfRangeException(nameof(criteriaModel.PageNumber),
 				ValidationResources.PageNumberGreaterThanZero);
-
 		if (criteriaModel.PageSize < 1 || criteriaModel.PageSize > 100)
 			throw new ArgumentOutOfRangeException(nameof(criteriaModel.PageSize),
 				ValidationResources.PageSizeRange);
 
 		Expression<Func<TbWarehouse, bool>> filter = x => !x.IsDeleted;
-
-				filter = filter.And(x => x.IsDefaultPlatformWarehouse == false && x.VendorId != Guid.Empty);
-
-		//if (criteriaModel.IsDefaultPlatformWarehouse.HasValue)
-		//{
-		//	if (criteriaModel.IsDefaultPlatformWarehouse.Value)
-		//	{
-		//		// Platform warehouses: IsDefaultPlatformWarehouse = true AND VendorId = Empty
-		//		filter = filter.And(x => x.IsDefaultPlatformWarehouse == true && x.VendorId == Guid.Empty);
-		//	}
-		//	else
-		//	{
-		//		// Vendor warehouses: IsDefaultPlatformWarehouse = false AND VendorId != Empty
-		//	}
-		//}
-
-
-		//filter = x => !x.IsDeleted && x.IsDefaultPlatformWarehouse == true && x.VendorId == Guid.Empty;
-
-
+		filter = filter.And(x => x.IsDefaultPlatformWarehouse == false && x.VendorId != Guid.Empty);
 
 		var searchTerm = criteriaModel.SearchTerm?.Trim().ToLower();
 		if (!string.IsNullOrWhiteSpace(searchTerm))
 		{
 			filter = filter.And(x =>
 				(x.Address != null && x.Address.ToLower().Contains(searchTerm))
-			//||
-			//(x.Email != null && x.Email.ToLower().Contains(searchTerm))
 			);
 		}
 
-		// Filter by IsActive
 		if (criteriaModel.IsActive.HasValue)
 		{
 			filter = filter.And(x => x.IsActive == criteriaModel.IsActive.Value);
 		}
 
-		// Filter by IsDefaultPlatformWarehouse (Platform vs Vendor warehouse)
 		if (criteriaModel.IsDefaultPlatformWarehouse.HasValue)
 		{
 			filter = filter.And(x => x.IsDefaultPlatformWarehouse == criteriaModel.IsDefaultPlatformWarehouse.Value);
 		}
 
-		// Filter by VendorId
 		if (criteriaModel.VendorId.HasValue)
 		{
 			filter = filter.And(x => x.VendorId == criteriaModel.VendorId.Value);
 		}
 
-		// Filter by specific Email
-		//if (!string.IsNullOrWhiteSpace(criteriaModel.Email))
-		//{
-		//	var email = criteriaModel.Email.Trim().ToLower();
-		//	filter = filter.And(x => x.Email != null && x.Email.ToLower() == email);
-		//}
-
-		// Filter by specific Address
 		if (!string.IsNullOrWhiteSpace(criteriaModel.Address))
 		{
 			var address = criteriaModel.Address.Trim().ToLower();
 			filter = filter.And(x => x.Address != null && x.Address.ToLower().Contains(address));
 		}
 
-		// Filter by CreatedDateFrom
 		if (criteriaModel.CreatedDateFrom.HasValue)
 		{
 			filter = filter.And(x => x.CreatedDateUtc >= criteriaModel.CreatedDateFrom.Value);
 		}
 
-		// Filter by CreatedDateTo
 		if (criteriaModel.CreatedDateTo.HasValue)
 		{
 			filter = filter.And(x => x.CreatedDateUtc <= criteriaModel.CreatedDateTo.Value);
 		}
 
-		// Determine sort expression
-		Func<IQueryable<TbWarehouse>, IOrderedQueryable<TbWarehouse>> orderBy = q =>
-		{
-			var sortBy = criteriaModel.SortBy?.Trim().ToLower();
-			var ascending = criteriaModel.SortDirection?.ToLower() != "desc";
+		// Get all matching warehouses with vendor info
+		var baseQuery = _warehouseRepository.GetQueryable()
+			.Where(filter)
+			.Include(w => w.Vendor);
 
-			return sortBy switch
+		// Get total count before pagination
+		var totalRecords = await baseQuery.CountAsync();
+
+		// Apply sorting (basic sorting on warehouse table fields only)
+		var sortBy = criteriaModel.SortBy?.Trim().ToLower();
+		var ascending = criteriaModel.SortDirection?.ToLower() != "desc";
+
+		// For fields that exist in TbWarehouse, sort in database
+		if (sortBy == "address" || sortBy == "isactive" || sortBy == "createdate" || string.IsNullOrEmpty(sortBy))
+		{
+			IQueryable<TbWarehouse> sortedQuery = sortBy switch
 			{
-				"address" => ascending ? q.OrderBy(x => x.Address) : q.OrderByDescending(x => x.Address),
-				//"email" => ascending ? q.OrderBy(x => x.Email) : q.OrderByDescending(x => x.Email),
-				"isactive" => ascending ? q.OrderBy(x => x.IsActive) : q.OrderByDescending(x => x.IsActive),
-				"createdate" => ascending ? q.OrderBy(x => x.CreatedDateUtc) : q.OrderByDescending(x => x.CreatedDateUtc),
-				_ => q.OrderByDescending(x => x.CreatedDateUtc) // Default sort
+				"address" => ascending ? baseQuery.OrderBy(x => x.Address) : baseQuery.OrderByDescending(x => x.Address),
+				"isactive" => ascending ? baseQuery.OrderBy(x => x.IsActive) : baseQuery.OrderByDescending(x => x.IsActive),
+				"createdate" => ascending ? baseQuery.OrderBy(x => x.CreatedDateUtc) : baseQuery.OrderByDescending(x => x.CreatedDateUtc),
+				_ => baseQuery.OrderByDescending(x => x.CreatedDateUtc)
 			};
-		};
 
-		// Get paged data with includes
-		var warehouses = await _warehouseRepository.GetPageAsync(
-			criteriaModel.PageNumber,
-			criteriaModel.PageSize,
-			filter,
-			orderBy: orderBy
-		//includeProperties: "Vendor"
-		);
+			// Apply pagination
+			var warehouses = await sortedQuery
+				.Skip((criteriaModel.PageNumber - 1) * criteriaModel.PageSize)
+				.Take(criteriaModel.PageSize)
+				.ToListAsync();
 
-		// Map to DTOs
-		var itemsDto = warehouses.Items.Select(w => new WarehouseDto
+			// Get vendor user IDs
+			var vendorUserIds = warehouses
+				.Where(w => w.Vendor != null && !string.IsNullOrEmpty(w.Vendor.UserId))
+				.Select(w => w.Vendor.UserId)
+				.Distinct()
+				.ToList();
+
+			// Get all users at once
+			var users = new Dictionary<string, ApplicationUser>();
+			foreach (var userId in vendorUserIds)
+			{
+				var user = await _userManager.FindByIdAsync(userId);
+				if (user != null)
+				{
+					users[userId] = user;
+				}
+			}
+
+			// Map to DTOs
+			var itemsDto = warehouses.Select(w =>
+			{
+				var dto = new WarehouseDto
+				{
+					Id = w.Id,
+					Address = w.Address,
+					IsDefaultPlatformWarehouse = w.IsDefaultPlatformWarehouse,
+					VendorId = w.VendorId,
+					IsActive = w.IsActive
+				};
+
+				if (w.Vendor != null && !string.IsNullOrEmpty(w.Vendor.UserId) && users.ContainsKey(w.Vendor.UserId))
+				{
+					var user = users[w.Vendor.UserId];
+					dto.Email = user.Email;
+					dto.VendorName = user.UserName;
+				}
+
+				return dto;
+			}).ToList();
+
+			return new PagedResult<WarehouseDto>(itemsDto, totalRecords);
+		}
+		else
 		{
-			Id = w.Id,
-			Address = w.Address,
-			//Email = w.Email,
-			IsDefaultPlatformWarehouse = w.IsDefaultPlatformWarehouse,
-			VendorId = w.VendorId,
-			//VendorName = w.Vendor?.Name,
-			IsActive = w.IsActive
-		}).ToList();
+			// For VendorName and Email, we need to sort in memory after loading user data
+			// Apply default ordering first
+			var allWarehouses = await baseQuery
+				.OrderByDescending(x => x.CreatedDateUtc)
+				.ToListAsync();
 
-		return new PagedResult<WarehouseDto>(itemsDto, warehouses.TotalRecords);
+			// Get vendor user IDs
+			var vendorUserIds = allWarehouses
+				.Where(w => w.Vendor != null && !string.IsNullOrEmpty(w.Vendor.UserId))
+				.Select(w => w.Vendor.UserId)
+				.Distinct()
+				.ToList();
+
+			// Get all users at once
+			var users = new Dictionary<string, ApplicationUser>();
+			foreach (var userId in vendorUserIds)
+			{
+				var user = await _userManager.FindByIdAsync(userId);
+				if (user != null)
+				{
+					users[userId] = user;
+				}
+			}
+
+			// Map to DTOs with user data
+			var allItemsDto = allWarehouses.Select(w =>
+			{
+				var dto = new WarehouseDto
+				{
+					Id = w.Id,
+					Address = w.Address,
+					IsDefaultPlatformWarehouse = w.IsDefaultPlatformWarehouse,
+					VendorId = w.VendorId,
+					IsActive = w.IsActive
+				};
+
+				if (w.Vendor != null && !string.IsNullOrEmpty(w.Vendor.UserId) && users.ContainsKey(w.Vendor.UserId))
+				{
+					var user = users[w.Vendor.UserId];
+					dto.Email = user.Email;
+					dto.VendorName = user.UserName;
+				}
+
+				return dto;
+			}).ToList();
+
+			// Now apply sorting in memory
+			IEnumerable<WarehouseDto> sortedItems = sortBy switch
+			{
+				"vendorname" => ascending
+					? allItemsDto.OrderBy(x => x.VendorName ?? string.Empty)
+					: allItemsDto.OrderByDescending(x => x.VendorName ?? string.Empty),
+				"email" => ascending
+					? allItemsDto.OrderBy(x => x.Email ?? string.Empty)
+					: allItemsDto.OrderByDescending(x => x.Email ?? string.Empty),
+				_ => allItemsDto.OrderByDescending(x => x.Id)
+			};
+
+			// Apply pagination after sorting
+			var pagedItems = sortedItems
+				.Skip((criteriaModel.PageNumber - 1) * criteriaModel.PageSize)
+				.Take(criteriaModel.PageSize)
+				.ToList();
+
+			return new PagedResult<WarehouseDto>(pagedItems, totalRecords);
+		}
 	}
-
-
-
-	//public async Task<PagedResult<WarehouseDto>> SearchAsync(WarehouseSearchCriteriaModel criteriaModel)
+	//public async Task<PagedResult<WarehouseDto>> SearchVendorAsync(WarehouseSearchCriteriaModel criteriaModel)
 	//{
 	//	if (criteriaModel == null)
 	//		throw new ArgumentNullException(nameof(criteriaModel));
-
 	//	if (criteriaModel.PageNumber < 1)
-	//		throw new ArgumentOutOfRangeException(nameof(criteriaModel.PageNumber), ValidationResources.PageNumberGreaterThanZero);
-
+	//		throw new ArgumentOutOfRangeException(nameof(criteriaModel.PageNumber),
+	//			ValidationResources.PageNumberGreaterThanZero);
 	//	if (criteriaModel.PageSize < 1 || criteriaModel.PageSize > 100)
-	//		throw new ArgumentOutOfRangeException(nameof(criteriaModel.PageSize), ValidationResources.PageSizeRange);
+	//		throw new ArgumentOutOfRangeException(nameof(criteriaModel.PageSize),
+	//			ValidationResources.PageSizeRange);
 
 	//	Expression<Func<TbWarehouse, bool>> filter = x => !x.IsDeleted;
+	//	filter = filter.And(x => x.IsDefaultPlatformWarehouse == false && x.VendorId != Guid.Empty);
 
 	//	var searchTerm = criteriaModel.SearchTerm?.Trim().ToLower();
 	//	if (!string.IsNullOrWhiteSpace(searchTerm))
 	//	{
 	//		filter = filter.And(x =>
-	//			//x.TitleEn != null && x.TitleEn.ToLower().Contains(searchTerm) ||
-	//			//x.TitleAr != null && x.TitleAr.ToLower().Contains(searchTerm) ||
-	//			x.Address != null && x.Address.ToLower().Contains(searchTerm)
+	//			(x.Address != null && x.Address.ToLower().Contains(searchTerm))
 	//		);
 	//	}
+
+	//	if (criteriaModel.IsActive.HasValue)
+	//	{
+	//		filter = filter.And(x => x.IsActive == criteriaModel.IsActive.Value);
+	//	}
+
+	//	if (criteriaModel.IsDefaultPlatformWarehouse.HasValue)
+	//	{
+	//		filter = filter.And(x => x.IsDefaultPlatformWarehouse == criteriaModel.IsDefaultPlatformWarehouse.Value);
+	//	}
+
+	//	if (criteriaModel.VendorId.HasValue)
+	//	{
+	//		filter = filter.And(x => x.VendorId == criteriaModel.VendorId.Value);
+	//	}
+
+	//	if (!string.IsNullOrWhiteSpace(criteriaModel.Address))
+	//	{
+	//		var address = criteriaModel.Address.Trim().ToLower();
+	//		filter = filter.And(x => x.Address != null && x.Address.ToLower().Contains(address));
+	//	}
+
+	//	if (criteriaModel.CreatedDateFrom.HasValue)
+	//	{
+	//		filter = filter.And(x => x.CreatedDateUtc >= criteriaModel.CreatedDateFrom.Value);
+	//	}
+
+	//	if (criteriaModel.CreatedDateTo.HasValue)
+	//	{
+	//		filter = filter.And(x => x.CreatedDateUtc <= criteriaModel.CreatedDateTo.Value);
+	//	}
+
+	//	// Get all matching warehouses with vendor info
+	//	var baseQuery = _warehouseRepository.GetQueryable()
+	//		.Where(filter)
+	//		.Include(w => w.Vendor);
+
+	//	// Get total count before pagination
+	//	var totalRecords = await baseQuery.CountAsync();
+
+	//	// Apply sorting (basic sorting on warehouse table fields only)
+	//	var sortBy = criteriaModel.SortBy?.Trim().ToLower();
+	//	var ascending = criteriaModel.SortDirection?.ToLower() != "desc";
+
+	//	// For fields that exist in TbWarehouse, sort in database
+	//	if (sortBy == "address" || sortBy == "isactive" || sortBy == "createdate" || string.IsNullOrEmpty(sortBy))
+	//	{
+	//		IQueryable<TbWarehouse> sortedQuery = sortBy switch
+	//		{
+	//			"address" => ascending ? baseQuery.OrderBy(x => x.Address) : baseQuery.OrderByDescending(x => x.Address),
+	//			"isactive" => ascending ? baseQuery.OrderBy(x => x.IsActive) : baseQuery.OrderByDescending(x => x.IsActive),
+	//			"createdate" => ascending ? baseQuery.OrderBy(x => x.CreatedDateUtc) : baseQuery.OrderByDescending(x => x.CreatedDateUtc),
+	//			_ => baseQuery.OrderByDescending(x => x.CreatedDateUtc)
+	//		};
+
+	//		// Apply pagination
+	//		var warehouses = await sortedQuery
+	//			.Skip((criteriaModel.PageNumber - 1) * criteriaModel.PageSize)
+	//			.Take(criteriaModel.PageSize)
+	//			.ToListAsync();
+
+	//		// Get vendor user IDs
+	//		var vendorUserIds = warehouses
+	//			.Where(w => w.Vendor != null && !string.IsNullOrEmpty(w.Vendor.UserId))
+	//			.Select(w => w.Vendor.UserId)
+	//			.Distinct()
+	//			.ToList();
+
+	//		// Get all users at once
+	//		var users = new Dictionary<string, ApplicationUser>();
+	//		foreach (var userId in vendorUserIds)
+	//		{
+	//			var user = await _userManager.FindByIdAsync(userId);
+	//			if (user != null)
+	//			{
+	//				users[userId] = user;
+	//			}
+	//		}
+
+	//		// Map to DTOs
+	//		var itemsDto = warehouses.Select(w =>
+	//		{
+	//			var dto = new WarehouseDto
+	//			{
+	//				Id = w.Id,
+	//				Address = w.Address,
+	//				IsDefaultPlatformWarehouse = w.IsDefaultPlatformWarehouse,
+	//				VendorId = w.VendorId,
+	//				IsActive = w.IsActive
+	//			};
+
+	//			if (w.Vendor != null && !string.IsNullOrEmpty(w.Vendor.UserId) && users.ContainsKey(w.Vendor.UserId))
+	//			{
+	//				var user = users[w.Vendor.UserId];
+	//				dto.Email = user.Email;
+	//				dto.VendorName = user.UserName;
+	//			}
+
+	//			return dto;
+	//		}).ToList();
+
+	//		return new PagedResult<WarehouseDto>(itemsDto, totalRecords);
+	//	}
+	//	else
+	//	{
+	//		// For VendorName and Email, we need to sort in memory after loading user data
+	//		// Apply default ordering first
+	//		var allWarehouses = await baseQuery
+	//			.OrderByDescending(x => x.CreatedDateUtc)
+	//			.ToListAsync();
+
+	//		// Get vendor user IDs
+	//		var vendorUserIds = allWarehouses
+	//			.Where(w => w.Vendor != null && !string.IsNullOrEmpty(w.Vendor.UserId))
+	//			.Select(w => w.Vendor.UserId)
+	//			.Distinct()
+	//			.ToList();
+
+	//		// Get all users at once
+	//		var users = new Dictionary<string, ApplicationUser>();
+	//		foreach (var userId in vendorUserIds)
+	//		{
+	//			var user = await _userManager.FindByIdAsync(userId);
+	//			if (user != null)
+	//			{
+	//				users[userId] = user;
+	//			}
+	//		}
+
+	//		// Map to DTOs with user data
+	//		var allItemsDto = allWarehouses.Select(w =>
+	//		{
+	//			var dto = new WarehouseDto
+	//			{
+	//				Id = w.Id,
+	//				Address = w.Address,
+	//				IsDefaultPlatformWarehouse = w.IsDefaultPlatformWarehouse,
+	//				VendorId = w.VendorId,
+	//				IsActive = w.IsActive
+	//			};
+
+	//			if (w.Vendor != null && !string.IsNullOrEmpty(w.Vendor.UserId) && users.ContainsKey(w.Vendor.UserId))
+	//			{
+	//				var user = users[w.Vendor.UserId];
+	//				dto.Email = user.Email;
+	//				dto.VendorName = user.UserName;
+	//			}
+
+	//			return dto;
+	//		}).ToList();
+
+	//		// Now apply sorting in memory
+	//		IEnumerable<WarehouseDto> sortedItems = sortBy switch
+	//		{
+	//			"vendorname" => ascending
+	//				? allItemsDto.OrderBy(x => x.VendorName ?? string.Empty)
+	//				: allItemsDto.OrderByDescending(x => x.VendorName ?? string.Empty),
+	//			"email" => ascending
+	//				? allItemsDto.OrderBy(x => x.Email ?? string.Empty)
+	//				: allItemsDto.OrderByDescending(x => x.Email ?? string.Empty),
+	//			_ => allItemsDto.OrderByDescending(x => x.Id)
+	//		};
+
+	//		// Apply pagination after sorting
+	//		var pagedItems = sortedItems
+	//			.Skip((criteriaModel.PageNumber - 1) * criteriaModel.PageSize)
+	//			.Take(criteriaModel.PageSize)
+	//			.ToList();
+
+	//		return new PagedResult<WarehouseDto>(pagedItems, totalRecords);
+	//	}
+	//}
+
+	//public async Task<PagedResult<WarehouseDto>> SearchVendorAsync(WarehouseSearchCriteriaModel criteriaModel)
+	//{
+	//	if (criteriaModel == null)
+	//		throw new ArgumentNullException(nameof(criteriaModel));
+
+	//	if (criteriaModel.PageNumber < 1)
+	//		throw new ArgumentOutOfRangeException(nameof(criteriaModel.PageNumber),
+	//			ValidationResources.PageNumberGreaterThanZero);
+
+	//	if (criteriaModel.PageSize < 1 || criteriaModel.PageSize > 100)
+	//		throw new ArgumentOutOfRangeException(nameof(criteriaModel.PageSize),
+	//			ValidationResources.PageSizeRange);
+
+	//	Expression<Func<TbWarehouse, bool>> filter = x => !x.IsDeleted;
+	//	filter = filter.And(x => x.IsDefaultPlatformWarehouse == false && x.VendorId != Guid.Empty);
+
+	//	var searchTerm = criteriaModel.SearchTerm?.Trim().ToLower();
+	//	if (!string.IsNullOrWhiteSpace(searchTerm))
+	//	{
+	//		filter = filter.And(x =>
+	//			(x.Address != null && x.Address.ToLower().Contains(searchTerm))
+	//		);
+	//	}
+
+	//	if (criteriaModel.IsActive.HasValue)
+	//	{
+	//		filter = filter.And(x => x.IsActive == criteriaModel.IsActive.Value);
+	//	}
+
+	//	if (criteriaModel.IsDefaultPlatformWarehouse.HasValue)
+	//	{
+	//		filter = filter.And(x => x.IsDefaultPlatformWarehouse == criteriaModel.IsDefaultPlatformWarehouse.Value);
+	//	}
+
+	//	if (criteriaModel.VendorId.HasValue)
+	//	{
+	//		filter = filter.And(x => x.VendorId == criteriaModel.VendorId.Value);
+	//	}
+
+	//	if (!string.IsNullOrWhiteSpace(criteriaModel.Address))
+	//	{
+	//		var address = criteriaModel.Address.Trim().ToLower();
+	//		filter = filter.And(x => x.Address != null && x.Address.ToLower().Contains(address));
+	//	}
+
+	//	if (criteriaModel.CreatedDateFrom.HasValue)
+	//	{
+	//		filter = filter.And(x => x.CreatedDateUtc >= criteriaModel.CreatedDateFrom.Value);
+	//	}
+
+	//	if (criteriaModel.CreatedDateTo.HasValue)
+	//	{
+	//		filter = filter.And(x => x.CreatedDateUtc <= criteriaModel.CreatedDateTo.Value);
+	//	}
+
+
+	//	Func<IQueryable<TbWarehouse>, IOrderedQueryable<TbWarehouse>> orderBy = q =>
+	//	{
+
+	//		var queryWithInclude = q.Include(w => w.Vendor);
+
+	//		var sortBy = criteriaModel.SortBy?.Trim().ToLower();
+	//		var ascending = criteriaModel.SortDirection?.ToLower() != "desc";
+
+	//		return sortBy switch
+	//		{
+	//			"address" => ascending ? queryWithInclude.OrderBy(x => x.Address) : queryWithInclude.OrderByDescending(x => x.Address),
+	//			"isactive" => ascending ? queryWithInclude.OrderBy(x => x.IsActive) : queryWithInclude.OrderByDescending(x => x.IsActive),
+	//			"createdate" => ascending ? queryWithInclude.OrderBy(x => x.CreatedDateUtc) : queryWithInclude.OrderByDescending(x => x.CreatedDateUtc),
+	//			_ => queryWithInclude.OrderByDescending(x => x.CreatedDateUtc)
+	//		};
+	//	};
 
 	//	var warehouses = await _warehouseRepository.GetPageAsync(
 	//		criteriaModel.PageNumber,
 	//		criteriaModel.PageSize,
 	//		filter,
-	//		orderBy: q => q.OrderByDescending(x => x.CreatedDateUtc));
+	//		orderBy: orderBy
+	//	);
 
-	//	var itemsDto = _mapper.MapList<TbWarehouse, WarehouseDto>(warehouses.Items).ToList();
+	//	// جيب الـ User IDs
+	//	var vendorUserIds = warehouses.Items
+	//		.Where(w => w.Vendor != null && !string.IsNullOrEmpty(w.Vendor.UserId))
+	//		.Select(w => w.Vendor.UserId)
+	//		.Distinct()
+	//		.ToList();
+
+	//	// جيب كل الـ Users مرة واحدة
+	//	var users = new Dictionary<string, ApplicationUser>();
+	//	foreach (var userId in vendorUserIds)
+	//	{
+	//		var user = await _userManager.FindByIdAsync(userId);
+	//		if (user != null)
+	//		{
+	//			users[userId] = user;
+	//		}
+	//	}
+
+	//	// Map to DTOs
+	//	var itemsDto = warehouses.Items.Select(w =>
+	//	{
+	//		var dto = new WarehouseDto
+	//		{
+	//			Id = w.Id,
+	//			Address = w.Address,
+	//			IsDefaultPlatformWarehouse = w.IsDefaultPlatformWarehouse,
+	//			VendorId = w.VendorId,
+	//			IsActive = w.IsActive
+	//		};
+
+	//		if (w.Vendor != null && !string.IsNullOrEmpty(w.Vendor.UserId) && users.ContainsKey(w.Vendor.UserId))
+	//		{
+	//			var user = users[w.Vendor.UserId];
+	//			dto.Email = user.Email;
+	//			dto.VendorName = user.UserName;
+	//		}
+
+	//		return dto;
+	//	}).ToList();
 
 	//	return new PagedResult<WarehouseDto>(itemsDto, warehouses.TotalRecords);
 	//}
@@ -576,7 +952,7 @@ public class WarehouseService : BaseService<TbWarehouse, WarehouseDto>, IWarehou
 		{
 			isExist = await _warehouseRepository.FindAsync(x => x.VendorId == dto.VendorId.Value);
 		}
-		if (isExist != null)
+		if (isExist != null && dto.Id == Guid.Empty)
 			return false;
 
 		var entity = _mapper.MapModel<WarehouseDto, TbWarehouse>(dto);

@@ -1,7 +1,7 @@
 ﻿namespace Dashboard.Contracts.Review
 {
 	using Common.Enumerations.Review;
-	using Dashboard.Models.pagintion;
+	using global::Dashboard.Models.pagintion;
 	using Shared.DTOs.Review;
 	using Shared.GeneralModels;
 	using Shared.GeneralModels.SearchCriteriaModels;
@@ -22,7 +22,7 @@
 		/// <summary>
 		/// Search vendor reviews with pagination and filters
 		/// </summary>
-		Task<ResponseModel<PaginatedDataModel<VendorReviewDto>>> SearchVendorReviews(VendorReviewSearchCriteriaModel criteria, CancellationToken cancellationToken = default);
+		Task<ResponseModel<PaginatedDataModel<VendorReviewDto>>> SearchVendorReviews(AdminVendorReviewSearchCriteriaModel criteria, CancellationToken cancellationToken = default);
 
 			/// <summary>
 			/// Get vendor review statistics
