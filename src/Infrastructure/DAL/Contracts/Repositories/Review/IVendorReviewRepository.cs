@@ -2,6 +2,7 @@
 using Domains.Entities.ECommerceSystem.Review;
 using System;
 using System.Collections.Generic;
+using System.Linq.Expressions;
 using System.Text;
 
 namespace DAL.Contracts.Repositories.Review
@@ -117,10 +118,16 @@ namespace DAL.Contracts.Repositories.Review
 			CancellationToken cancellationToken = default);
 
 		Task<bool> IsVerifiedPurchaseAsync(
-string customerId,
-Guid? orderDetailId,
-CancellationToken cancellationToken = default);
+			string customerId,
+			Guid? orderDetailId,
+			CancellationToken cancellationToken = default);
 
+		Task<(List<TbVendorReview> Items, int TotalRecords)> GetPagedReviewsWithDetailsAsync(
+		int pageNumber,
+		int pageSize,
+		Expression<Func<TbVendorReview, bool>> filter,
+		Func<IQueryable<TbVendorReview>, IOrderedQueryable<TbVendorReview>> orderBy,
+		CancellationToken cancellationToken = default);
 
 	}
 }

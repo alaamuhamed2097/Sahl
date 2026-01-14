@@ -17,11 +17,11 @@ namespace Api.Controllers.v1.Warehouse
     [Route("api/v{version:apiVersion}/[controller]")]
     [ApiController]
     [ApiVersion("1.0")]
-    public class WarehouseController : BaseController
+    public class VendorWarehouseController : BaseController
     {
         private readonly IWarehouseService _warehouseService;
 
-        public WarehouseController(IWarehouseService warehouseService)
+        public VendorWarehouseController(IWarehouseService warehouseService)
         {
             _warehouseService = warehouseService;
         }
@@ -54,20 +54,6 @@ namespace Api.Controllers.v1.Warehouse
 			var vendors = await _warehouseService.GetVendorsAsync();
 
 			return Ok(new ResponseModel<IEnumerable<VendorDto>>
-			{
-				Success = true,
-				Message = GetResource<NotifiAndAlertsResources>(nameof(NotifiAndAlertsResources.DataRetrieved)),
-				Data = vendors
-			});
-		}
-
-		[HttpGet("vendors-select")]
-		[Authorize(Roles = nameof(UserRole.Admin))]
-		public async Task<IActionResult> GetVendorsSelect()
-		{
-			var vendors = await _warehouseService.GetVendorUsersAsync();
-
-			return Ok(new ResponseModel<IEnumerable<VendorWithUserDto>>
 			{
 				Success = true,
 				Message = GetResource<NotifiAndAlertsResources>(nameof(NotifiAndAlertsResources.DataRetrieved)),
@@ -156,38 +142,38 @@ namespace Api.Controllers.v1.Warehouse
         /// 
         /// API Version: 1.0+
         /// </remarks>
-        [HttpGet("search")]
-        [Authorize(Roles = nameof(UserRole.Admin))]
-        public async Task<IActionResult> Search([FromQuery] WarehouseSearchCriteriaModel criteriaModel)
-        {
-            criteriaModel.PageNumber = criteriaModel.PageNumber < 1 ? 1 : criteriaModel.PageNumber;
-            criteriaModel.PageSize = criteriaModel.PageSize < 1 || criteriaModel.PageSize > 100 ? 10 : criteriaModel.PageSize;
+        //[HttpGet("search")]
+        //[Authorize(Roles = nameof(UserRole.Admin))]
+        //public async Task<IActionResult> Search([FromQuery] WarehouseSearchCriteriaModel criteriaModel)
+        //{
+        //    criteriaModel.PageNumber = criteriaModel.PageNumber < 1 ? 1 : criteriaModel.PageNumber;
+        //    criteriaModel.PageSize = criteriaModel.PageSize < 1 || criteriaModel.PageSize > 100 ? 10 : criteriaModel.PageSize;
 
-            var result = await _warehouseService.SearchAsync(criteriaModel);
+        //    var result = await _warehouseService.SearchAsync(criteriaModel);
 
-            return Ok(new ResponseModel<PagedResult<WarehouseDto>>
-            {
-                Success = true,
-                Message = GetResource<NotifiAndAlertsResources>(nameof(NotifiAndAlertsResources.DataRetrieved)),
-                Data = result
-            });
-        }
-		[HttpGet("search-vendor")]
-		[Authorize(Roles = nameof(UserRole.Admin))]
-		public async Task<IActionResult> SearchVendor([FromQuery] WarehouseSearchCriteriaModel criteriaModel)
-		{
-			criteriaModel.PageNumber = criteriaModel.PageNumber < 1 ? 1 : criteriaModel.PageNumber;
-			criteriaModel.PageSize = criteriaModel.PageSize < 1 || criteriaModel.PageSize > 100 ? 10 : criteriaModel.PageSize;
+        //    return Ok(new ResponseModel<PagedResult<WarehouseDto>>
+        //    {
+        //        Success = true,
+        //        Message = GetResource<NotifiAndAlertsResources>(nameof(NotifiAndAlertsResources.DataRetrieved)),
+        //        Data = result
+        //    });
+        //}
+		//[HttpGet("search-vendor")]
+		//[Authorize(Roles = nameof(UserRole.Admin))]
+		//public async Task<IActionResult> SearchVendor([FromQuery] WarehouseSearchCriteriaModel criteriaModel)
+		//{
+		//	criteriaModel.PageNumber = criteriaModel.PageNumber < 1 ? 1 : criteriaModel.PageNumber;
+		//	criteriaModel.PageSize = criteriaModel.PageSize < 1 || criteriaModel.PageSize > 100 ? 10 : criteriaModel.PageSize;
 
-			var result = await _warehouseService.SearchVendorAsync(criteriaModel);
+		//	var result = await _warehouseService.SearchVendorAsync(criteriaModel);
 
-			return Ok(new ResponseModel<PagedResult<WarehouseDto>>
-			{
-				Success = true,
-				Message = GetResource<NotifiAndAlertsResources>(nameof(NotifiAndAlertsResources.DataRetrieved)),
-				Data = result
-			});
-		}
+		//	return Ok(new ResponseModel<PagedResult<WarehouseDto>>
+		//	{
+		//		Success = true,
+		//		Message = GetResource<NotifiAndAlertsResources>(nameof(NotifiAndAlertsResources.DataRetrieved)),
+		//		Data = result
+		//	});
+		//}
 		/// <summary>
 		/// Adds a new warehouse or updates an existing one.
 		/// </summary>
@@ -197,31 +183,31 @@ namespace Api.Controllers.v1.Warehouse
 		/// 
 		/// API Version: 1.0+
 		/// </remarks>
-		[HttpPost("save")]
-        [Authorize(Roles = nameof(UserRole.Admin))]
-        public async Task<IActionResult> Save([FromBody] WarehouseDto dto)
-        {
-            if (!ModelState.IsValid)
-                return BadRequest(new ResponseModel<string>
-                {
-                    Success = false,
-                    Message = "Invalid warehouse data."
-                });
+		//[HttpPost("save")]
+  //      [Authorize(Roles = nameof(UserRole.Admin))]
+  //      public async Task<IActionResult> Save([FromBody] WarehouseDto dto)
+  //      {
+  //          if (!ModelState.IsValid)
+  //              return BadRequest(new ResponseModel<string>
+  //              {
+  //                  Success = false,
+  //                  Message = "Invalid warehouse data."
+  //              });
 
-            var success = await _warehouseService.SaveAsync(dto, GuidUserId);
-            if (!success)
-                return Ok(new ResponseModel<string>
-                {
-                    Success = false,
-                    Message = GetResource<NotifiAndAlertsResources>(nameof(NotifiAndAlertsResources.SaveFailed))
-                });
+  //          var success = await _warehouseService.SaveAsync(dto, GuidUserId);
+  //          if (!success)
+  //              return Ok(new ResponseModel<string>
+  //              {
+  //                  Success = false,
+  //                  Message = GetResource<NotifiAndAlertsResources>(nameof(NotifiAndAlertsResources.SaveFailed))
+  //              });
 
-            return Ok(new ResponseModel<string>
-            {
-                Success = true,
-                Message = GetResource<NotifiAndAlertsResources>(nameof(NotifiAndAlertsResources.SavedSuccessfully))
-            });
-        }
+  //          return Ok(new ResponseModel<string>
+  //          {
+  //              Success = true,
+  //              Message = GetResource<NotifiAndAlertsResources>(nameof(NotifiAndAlertsResources.SavedSuccessfully))
+  //          });
+  //      }
 
         /// <summary>
         /// Deletes a warehouse by ID (soft delete).
@@ -232,31 +218,31 @@ namespace Api.Controllers.v1.Warehouse
         /// 
         /// API Version: 1.0+
         /// </remarks>
-        [HttpPost("delete")]
-        [Authorize(Roles = nameof(UserRole.Admin))]
-        public async Task<IActionResult> Delete([FromBody] Guid id)
-        {
-            if (id == Guid.Empty)
-                return BadRequest(new ResponseModel<string>
-                {
-                    Success = false,
-                    Message = "Invalid warehouse ID."
-                });
+        //[HttpPost("delete")]
+        //[Authorize(Roles = nameof(UserRole.Admin))]
+        //public async Task<IActionResult> Delete([FromBody] Guid id)
+        //{
+        //    if (id == Guid.Empty)
+        //        return BadRequest(new ResponseModel<string>
+        //        {
+        //            Success = false,
+        //            Message = "Invalid warehouse ID."
+        //        });
 
-            var success = await _warehouseService.DeleteAsync(id, GuidUserId);
-            if (!success)
-                return BadRequest(new ResponseModel<string>
-                {
-                    Success = false,
-                    Message = GetResource<NotifiAndAlertsResources>(nameof(NotifiAndAlertsResources.DeleteFailed))
-                });
+        //    var success = await _warehouseService.DeleteAsync(id, GuidUserId);
+        //    if (!success)
+        //        return BadRequest(new ResponseModel<string>
+        //        {
+        //            Success = false,
+        //            Message = GetResource<NotifiAndAlertsResources>(nameof(NotifiAndAlertsResources.DeleteFailed))
+        //        });
 
-            return Ok(new ResponseModel<string>
-            {
-                Success = true,
-                Message = GetResource<NotifiAndAlertsResources>(nameof(NotifiAndAlertsResources.DeletedSuccessfully))
-            });
-        }
+        //    return Ok(new ResponseModel<string>
+        //    {
+        //        Success = true,
+        //        Message = GetResource<NotifiAndAlertsResources>(nameof(NotifiAndAlertsResources.DeletedSuccessfully))
+        //    });
+        //}
 
         /// <summary>
         /// Toggles the active status of a warehouse.
@@ -267,30 +253,30 @@ namespace Api.Controllers.v1.Warehouse
         /// 
         /// API Version: 1.0+
         /// </remarks>
-        [HttpPost("toggle-status")]
-        [Authorize(Roles = nameof(UserRole.Admin))]
-        public async Task<IActionResult> ToggleStatus([FromBody] Guid id)
-        {
-            if (id == Guid.Empty)
-                return BadRequest(new ResponseModel<string>
-                {
-                    Success = false,
-                    Message = "Invalid warehouse ID."
-                });
+        //[HttpPost("toggle-status")]
+        //[Authorize(Roles = nameof(UserRole.Admin))]
+        //public async Task<IActionResult> ToggleStatus([FromBody] Guid id)
+        //{
+        //    if (id == Guid.Empty)
+        //        return BadRequest(new ResponseModel<string>
+        //        {
+        //            Success = false,
+        //            Message = "Invalid warehouse ID."
+        //        });
 
-            var success = await _warehouseService.ToggleActiveStatusAsync(id, GuidUserId);
-            if (!success)
-                return BadRequest(new ResponseModel<string>
-                {
-                    Success = false,
-                    Message = "Failed to update warehouse status."
-                });
+        //    var success = await _warehouseService.ToggleActiveStatusAsync(id, GuidUserId);
+        //    if (!success)
+        //        return BadRequest(new ResponseModel<string>
+        //        {
+        //            Success = false,
+        //            Message = "Failed to update warehouse status."
+        //        });
 
-            return Ok(new ResponseModel<string>
-            {
-                Success = true,
-                Message = "Warehouse status updated successfully."
-            });
-        }
+        //    return Ok(new ResponseModel<string>
+        //    {
+        //        Success = true,
+        //        Message = "Warehouse status updated successfully."
+        //    });
+        //}
     }
 }
