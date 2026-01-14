@@ -79,7 +79,7 @@ namespace Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to إضافة كتلة.
+        ///   Looks up a localized string similar to إضافة بلوك.
         /// </summary>
         public static string AddBlock {
             get {
@@ -160,7 +160,7 @@ namespace Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to تم إنشاء الكتلة بنجاح.
+        ///   Looks up a localized string similar to تم إنشاء البلوك بنجاح.
         /// </summary>
         public static string BlockCreatedSuccessfully {
             get {
@@ -169,7 +169,7 @@ namespace Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to الكتلة مخفية.
+        ///   Looks up a localized string similar to البلوك مخفية.
         /// </summary>
         public static string BlockIsHidden {
             get {
@@ -178,7 +178,7 @@ namespace Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to الكتلة ظاهرة.
+        ///   Looks up a localized string similar to البلوك ظاهرة.
         /// </summary>
         public static string BlockIsVisible {
             get {
@@ -187,7 +187,7 @@ namespace Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to اسم الكتلة.
+        ///   Looks up a localized string similar to اسم البلوك.
         /// </summary>
         public static string BlockName {
             get {
@@ -196,7 +196,7 @@ namespace Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to الكتلة غير موجودة.
+        ///   Looks up a localized string similar to البلوك غير موجودة.
         /// </summary>
         public static string BlockNotFound {
             get {
@@ -205,7 +205,7 @@ namespace Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to كتل.
+        ///   Looks up a localized string similar to بلوكات.
         /// </summary>
         public static string blocks {
             get {
@@ -214,7 +214,7 @@ namespace Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to نوع الكتلة والتخطيط.
+        ///   Looks up a localized string similar to نوع البلوك والتخطيط.
         /// </summary>
         public static string BlockTypeAndLayout {
             get {
@@ -223,7 +223,7 @@ namespace Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to تم تحديث الكتلة بنجاح.
+        ///   Looks up a localized string similar to تم تحديث البلوك بنجاح.
         /// </summary>
         public static string BlockUpdatedSuccessfully {
             get {
@@ -232,7 +232,7 @@ namespace Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to ظهور الكتلة.
+        ///   Looks up a localized string similar to ظهور البلوك.
         /// </summary>
         public static string BlockVisibility {
             get {
@@ -279,9 +279,9 @@ namespace Resources {
         /// <summary>
         ///   Looks up a localized string similar to حملات.
         /// </summary>
-        public static string campaigns {
+        public static string Campaigns {
             get {
-                return ResourceManager.GetString("campaigns", resourceCulture);
+                return ResourceManager.GetString("Campaigns", resourceCulture);
             }
         }
         
@@ -367,7 +367,7 @@ namespace Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to إنشاء كتلة.
+        ///   Looks up a localized string similar to إنشاء بلوك.
         /// </summary>
         public static string CreateBlock {
             get {
@@ -403,7 +403,7 @@ namespace Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to إنشاء كتلة صفحة رئيسية جديدة.
+        ///   Looks up a localized string similar to إنشاء بلوك صفحة رئيسية جديدة.
         /// </summary>
         public static string CreateNewHomepageBlock {
             get {
@@ -430,7 +430,7 @@ namespace Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to حذف الكتلة.
+        ///   Looks up a localized string similar to حذف البلوك.
         /// </summary>
         public static string DeleteBlock {
             get {
@@ -511,7 +511,7 @@ namespace Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to تحرير الكتلة.
+        ///   Looks up a localized string similar to تحرير البلوك.
         /// </summary>
         public static string EditBlock {
             get {
@@ -565,7 +565,7 @@ namespace Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to حدث خطأ أثناء حفظ الكتلة.
+        ///   Looks up a localized string similar to حدث خطأ أثناء حفظ البلوك.
         /// </summary>
         public static string ErrorSavingBlock {
             get {
@@ -637,7 +637,16 @@ namespace Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to كتل الصفحة الرئيسية.
+        ///   Looks up a localized string similar to بلوكات الصفحة الرئيسية.
+        /// </summary>
+        public static string HomePageBlocks {
+            get {
+                return ResourceManager.GetString("HomePageBlocks", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to بلوكات الصفحة الرئيسية.
         /// </summary>
         public static string HomePageBlocksTitle {
             get {
@@ -745,6 +754,15 @@ namespace Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to التسويق والترويج.
+        /// </summary>
+        public static string Merchandising {
+            get {
+                return ResourceManager.GetString("Merchandising", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to الأكثر إضافة إلى المفضلة.
         /// </summary>
         public static string MostWishlisted {
@@ -781,7 +799,7 @@ namespace Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to لم يتم العثور على كتل.
+        ///   Looks up a localized string similar to لم يتم العثور على بلوكات.
         /// </summary>
         public static string NoBlocksFound {
             get {
@@ -916,6 +934,15 @@ namespace Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to حفظ.
+        /// </summary>
+        public static string Save {
+            get {
+                return ResourceManager.GetString("Save", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to جارٍ الحفظ....
         /// </summary>
         public static string Saving {
@@ -925,7 +952,7 @@ namespace Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to البحث عن الكتل....
+        ///   Looks up a localized string similar to البحث عن البلوكات....
         /// </summary>
         public static string SearchBlocks {
             get {
@@ -961,7 +988,7 @@ namespace Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to اختر نوع الكتلة.
+        ///   Looks up a localized string similar to اختر نوع البلوك.
         /// </summary>
         public static string SelectBlockType {
             get {
@@ -1177,7 +1204,7 @@ namespace Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to تحديث الكتلة.
+        ///   Looks up a localized string similar to تحديث البلوك.
         /// </summary>
         public static string UpdateBlock {
             get {
@@ -1231,7 +1258,7 @@ namespace Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to عند بدء ظهور الكتلة.
+        ///   Looks up a localized string similar to عند بدء ظهور البلوك.
         /// </summary>
         public static string WhenBlockBecomesVisible {
             get {
@@ -1240,7 +1267,7 @@ namespace Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to عند إيقاف عرض الكتلة.
+        ///   Looks up a localized string similar to عند إيقاف عرض البلوك.
         /// </summary>
         public static string WhenBlockStopsShowing {
             get {

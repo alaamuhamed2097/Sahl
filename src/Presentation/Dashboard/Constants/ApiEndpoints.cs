@@ -216,6 +216,11 @@
             public const string GetByVendor = "api/v1/CouponCode/vendor/{vendorId}";
         }
 
+        public static class VendorPromoCodeParticipation
+        {
+            public const string AdminList = "api/v1/merchandising/vendorpromocodeparticipation/admin/list";
+        }
+
         public static class ShippingCompany
         {
             public const string Get = "api/v1/ShippingCompany";

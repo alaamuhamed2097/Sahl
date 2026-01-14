@@ -9,6 +9,7 @@ using Domains.Entities.Merchandising.CouponCode;
 using Domains.Entities.SellerRequest;
 using Domains.Entities.ECommerceSystem.Vendor;
 using Shared.DTOs.Merchandising.PromoCode;
+using Shared.GeneralModels;
 
 namespace BL.Services.Merchandising.PromoCode
 {
@@ -181,6 +182,90 @@ namespace BL.Services.Merchandising.PromoCode
                 return (true, pagedResult);
             }
             catch (Exception ex)
+            {
+                return (false, null);
+            }
+        }
+
+        /// <summary>
+        /// Admin: Gets promo code participation requests (optionally filtered by promoCodeId)
+        /// </summary>
+        public async Task<(bool Success, AdvancedPagedResult<AdminVendorPromoCodeParticipationRequestListDto>? Data)> GetAdminParticipationRequestsAsync(
+            Guid? promoCodeId,
+            BaseSearchCriteriaModel criteria)
+        {
+            try
+            {
+                var requestsResult = await _sellerRequestRepository.FindAsync(r =>
+                    r.RequestType == SellerRequestType.PromoCodeParticipation &&
+                    (promoCodeId == null || r.RequestData == promoCodeId.Value.ToString()));
+
+                var requests = (requestsResult as IEnumerable<TbSellerRequest>)?.ToList() ?? new List<TbSellerRequest>();
+
+                if (!string.IsNullOrWhiteSpace(criteria.SearchTerm))
+                {
+                    requests = requests.Where(r =>
+                        r.TitleEn.Contains(criteria.SearchTerm, StringComparison.OrdinalIgnoreCase) ||
+                        r.TitleAr.Contains(criteria.SearchTerm, StringComparison.OrdinalIgnoreCase) ||
+                        r.DescriptionEn.Contains(criteria.SearchTerm, StringComparison.OrdinalIgnoreCase) ||
+                        r.DescriptionAr.Contains(criteria.SearchTerm, StringComparison.OrdinalIgnoreCase)).ToList();
+                }
+
+                int totalCount = requests.Count;
+
+                var pagedRequests = requests
+                    .OrderByDescending(r => r.CreatedDateUtc)
+                    .Skip((criteria.PageNumber - 1) * criteria.PageSize)
+                    .Take(criteria.PageSize)
+                    .ToList();
+
+                var resultDtos = new List<AdminVendorPromoCodeParticipationRequestListDto>();
+
+                var vendorIds = pagedRequests.Select(x => x.VendorId).Distinct().ToList();
+                var vendorsResult = await _vendorRepository.FindAsync(v => vendorIds.Contains(v.Id));
+                var vendors = (vendorsResult as IEnumerable<TbVendor>)?.ToList() ?? new List<TbVendor>();
+                var vendorNameById = vendors
+                    .Where(v => v != null)
+                    .GroupBy(v => v.Id)
+                    .ToDictionary(g => g.Key, g => g.First().StoreName);
+
+                foreach (var req in pagedRequests)
+                {
+                    Guid parsedPromoCodeId = Guid.Empty;
+                    if (!string.IsNullOrEmpty(req.RequestData))
+                        Guid.TryParse(req.RequestData, out parsedPromoCodeId);
+
+                    TbCouponCode? promoCode = null;
+                    if (parsedPromoCodeId != Guid.Empty)
+                        promoCode = await _couponCodeRepository.GetByIdAsync(parsedPromoCodeId);
+
+                    resultDtos.Add(new AdminVendorPromoCodeParticipationRequestListDto
+                    {
+                        Id = req.Id,
+                        VendorId = req.VendorId,
+                        VendorName = vendorNameById.TryGetValue(req.VendorId, out var vName) ? vName : null,
+                        PromoCodeId = parsedPromoCodeId,
+                        PromoCodeValue = promoCode?.Code ?? string.Empty,
+                        PromoCodeTitle = promoCode?.TitleEn ?? string.Empty,
+                        Status = (int)req.Status,
+                        StatusName = req.Status.ToString(),
+                        SubmittedAt = req.SubmittedAt ?? req.CreatedDateUtc,
+                        CreatedDateUtc = req.CreatedDateUtc
+                    });
+                }
+
+                var pagedResult = new AdvancedPagedResult<AdminVendorPromoCodeParticipationRequestListDto>
+                {
+                    Items = resultDtos,
+                    TotalRecords = totalCount,
+                    PageNumber = criteria.PageNumber,
+                    PageSize = criteria.PageSize,
+                    TotalPages = (int)Math.Ceiling(totalCount / (double)criteria.PageSize)
+                };
+
+                return (true, pagedResult);
+            }
+            catch
             {
                 return (false, null);
             }

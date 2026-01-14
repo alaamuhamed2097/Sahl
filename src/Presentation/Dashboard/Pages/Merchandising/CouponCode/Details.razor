@@ -4,6 +4,7 @@
 @using Common.Enumerations
 @using Common.Enumerations.Order
 @using Common.Enumerations.User
+@using Shared.DTOs.Merchandising.PromoCode
 @using Shared.DTOs.Order.CouponCode
 
 <PageTitle>@CouponCodeResources.PromoCode - @(Id != Guid.Empty ? ActionsResources.Edit : ActionsResources.Create)</PageTitle>
@@ -185,6 +186,64 @@
                         </button>
                     </div>
                 </EditForm>
+
+                @if (Id != Guid.Empty)
+                {
+                    <hr class="my-4" />
+                    <div class="card border-0 shadow-sm">
+                        <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                            <h6 class="mb-0 fw-bold">@CouponCodeResources.PromoCodes - Participation Requests</h6>
+                            <button type="button" class="btn btn-outline-primary btn-sm" @onclick="@(async () => await LoadParticipationRequestsAsync())">
+                                <i class="fas fa-sync-alt me-1"></i> @ActionsResources.Refresh
+                            </button>
+                        </div>
+                        <div class="card-body">
+                            @if (_isLoadingParticipation)
+                            {
+                                <div class="text-center py-4">
+                                    <div class="spinner-border text-primary" role="status"></div>
+                                </div>
+                            }
+                            else if (ParticipationRequests?.Items != null && ParticipationRequests.Items.Any())
+                            {
+                                <div class="table-responsive">
+                                    <table class="table table-sm table-hover text-center mb-0">
+                                        <thead class="table-light">
+                                            <tr>
+                                                <th style="min-width: 160px;">@CouponCodeResources.Vendor</th>
+                                                <th style="min-width: 120px;">@CouponCodeResources.Code</th>
+                                                <th style="min-width: 130px;">@FormResources.Date</th>
+                                                <th style="min-width: 120px;">@CouponCodeResources.Status</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach (var req in ParticipationRequests.Items)
+                                            {
+                                                <tr>
+                                                    <td>@(req.VendorName ?? "-")</td>
+                                                    <td><span class="badge bg-primary">@req.PromoCodeValue</span></td>
+                                                    <td>@req.SubmittedAt.ToString("yyyy-MM-dd HH:mm")</td>
+                                                    <td>
+                                                        <span class="badge @GetRequestStatusBadge(req.Status)">
+                                                            @(req.StatusName ?? req.Status.ToString())
+                                                        </span>
+                                                    </td>
+                                                </tr>
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                            }
+                            else
+                            {
+                                <div class="text-center py-4 text-muted">
+                                    @NotifiAndAlertsResources.NoDataFound
+                                </div>
+                            }
+                        </div>
+                    </div>
+                }
             }
         </div>
     </div>

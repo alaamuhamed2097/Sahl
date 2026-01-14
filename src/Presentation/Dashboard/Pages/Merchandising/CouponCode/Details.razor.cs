@@ -1,9 +1,13 @@
 ﻿using Common.Enumerations.Order;
+using Common.Filters;
 using Dashboard.Contracts;
 using Dashboard.Contracts.General;
+using Dashboard.Contracts.Merchandising;
+using Dashboard.Models.pagintion;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 using Resources;
+using Shared.DTOs.Merchandising.PromoCode;
 using Shared.DTOs.Order.CouponCode;
 
 namespace Dashboard.Pages.Merchandising.CouponCode
@@ -12,6 +16,12 @@ namespace Dashboard.Pages.Merchandising.CouponCode
     {
         private bool _isSaving;
         private bool _disposed;
+        private bool _isLoadingParticipation;
+
+        protected PaginatedDataModel<AdminVendorPromoCodeParticipationRequestListDto> ParticipationRequests { get; set; }
+            = new PaginatedDataModel<AdminVendorPromoCodeParticipationRequestListDto>(
+                new List<AdminVendorPromoCodeParticipationRequestListDto>(),
+                0);
 
         // Model
         protected CouponCodeDto Model { get; set; } = new();
@@ -24,12 +34,14 @@ namespace Dashboard.Pages.Merchandising.CouponCode
         [Inject] private NavigationManager Navigation { get; set; } = null!;
         [Inject] private IResourceLoaderService? ResourceLoaderService { get; set; }
         [Inject] private ICouponCodeService CouponCodeService { get; set; } = null!;
+        [Inject] private IVendorPromoCodeParticipationAdminService VendorPromoParticipationAdminService { get; set; } = null!;
 
         protected override void OnParametersSet()
         {
             if (Id != Guid.Empty)
             {
                 _ = Edit(Id);
+                _ = LoadParticipationRequestsAsync();
             }
         }
 
@@ -44,11 +56,66 @@ namespace Dashboard.Pages.Merchandising.CouponCode
                     Model.DiscountType = DiscountType.Percentage;
                     Model.PromoType = CouponCodeType.General;
                 }
+
+                await LoadParticipationRequestsAsync();
             }
             catch (Exception ex)
             {
                 await HandleErrorAsync(ValidationResources.Error, ex);
             }
+        }
+
+        private async Task LoadParticipationRequestsAsync()
+        {
+            try
+            {
+                if (Id == Guid.Empty)
+                    return;
+
+                _isLoadingParticipation = true;
+
+                var request = new AdminVendorPromoCodeParticipationListRequestDto
+                {
+                    PromoCodeId = Id,
+                    Criteria = new BaseSearchCriteriaModel
+                    {
+                        PageNumber = 1,
+                        PageSize = 100
+                    }
+                };
+
+                var result = await VendorPromoParticipationAdminService.ListAsync(request);
+                if (result.Success && result.Data != null)
+                    ParticipationRequests = result.Data;
+                else
+                    ParticipationRequests = new PaginatedDataModel<AdminVendorPromoCodeParticipationRequestListDto>(
+                        new List<AdminVendorPromoCodeParticipationRequestListDto>(),
+                        0);
+
+                StateHasChanged();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error in LoadParticipationRequestsAsync: {ex.Message}");
+            }
+            finally
+            {
+                _isLoadingParticipation = false;
+            }
+        }
+
+        protected string GetRequestStatusBadge(int status)
+        {
+            // SellerRequestStatus enum values live in API; keep dashboard mapping lightweight
+            return status switch
+            {
+                2 => "bg-warning text-dark", // Pending
+                3 => "bg-info",             // UnderReview
+                5 => "bg-success",          // Approved
+                6 => "bg-danger",           // Rejected
+                8 => "bg-secondary",        // Cancelled
+                _ => "bg-secondary"
+            };
         }
 
         protected async Task Save()

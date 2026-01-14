@@ -1,4 +1,5 @@
 using Shared.DTOs.Merchandising.PromoCode;
+using Shared.GeneralModels;
 using DAL.Models;
 using Common.Filters;
 
@@ -22,6 +23,13 @@ namespace BL.Contracts.Service.Merchandising.PromoCode
         /// </summary>
         Task<(bool Success, AdvancedPagedResult<VendorPromoCodeParticipationRequestListDto>? Data)> GetVendorParticipationRequestsAsync(
             Guid vendorId,
+            BaseSearchCriteriaModel criteria);
+
+        /// <summary>
+        /// Admin: Gets promo code participation requests (optionally filtered by promoCodeId)
+        /// </summary>
+        Task<(bool Success, AdvancedPagedResult<AdminVendorPromoCodeParticipationRequestListDto>? Data)> GetAdminParticipationRequestsAsync(
+            Guid? promoCodeId,
             BaseSearchCriteriaModel criteria);
 
         /// <summary>

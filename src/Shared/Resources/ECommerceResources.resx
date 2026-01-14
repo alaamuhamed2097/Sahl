@@ -849,9 +849,6 @@
   <data name="WithdrawalMethods" xml:space="preserve">
     <value>طرق السحب</value>
   </data>
-  <data name="HomePageSlider">
-    <value>سلايدر الصفحة الرئيسية</value>
-  </data>
   <data name="DisplayOrder">
     <value>ترتيب العرض</value>
   </data>
@@ -867,19 +864,10 @@
   <data name="Sales" xml:space="preserve">
     <value>المبيعات</value>
   </data>
-  <data name="HomePageSlider" xml:space="preserve">
-    <value>سلايدر الصفحة الرئيسية</value>
-  </data>
-  <data name="DisplayOrder" xml:space="preserve">
+  <data name="DisplayOrder_Duplicate[1]" xml:space="preserve">
     <value>ترتيب العرض</value>
   </data>
-  <data name="SliderImage" xml:space="preserve">
-    <value>صورة السلايدر</value>
-  </data>
-  <data name="SliderTitle" xml:space="preserve">
-    <value>عنوان السلايدر</value>
-  </data>
-  <data name="BannerDuration" xml:space="preserve">
+  <data name="BannerDuration_Duplicate[1]" xml:space="preserve">
     <value>مدة البانر</value>
   </data>
   <data name="StoreName" xml:space="preserve">
@@ -959,5 +947,14 @@
   </data>
   <data name="Status" xml:space="preserve">
     <value>الحالة</value>
+  </data>
+  <data name="OrderManagement" xml:space="preserve">
+    <value>إدارة الطلبات</value>
+  </data>
+  <data name="LogisticsAndShipping" xml:space="preserve">
+    <value>الخدمات اللوجستية والشحن</value>
+  </data>
+  <data name="CatalogManagement" xml:space="preserve">
+    <value>إدارة الكتالوج</value>
   </data>
 </root>

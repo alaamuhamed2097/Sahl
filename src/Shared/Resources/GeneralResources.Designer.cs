@@ -844,6 +844,24 @@ namespace Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to مناطق المحتوى.
+        /// </summary>
+        public static string ContentAreas {
+            get {
+                return ResourceManager.GetString("ContentAreas", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to إدارة المحتوى.
+        /// </summary>
+        public static string ContentManagement {
+            get {
+                return ResourceManager.GetString("ContentManagement", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to متابعة الدفع.
         /// </summary>
         public static string ContinueToPayment {
@@ -1438,6 +1456,15 @@ namespace Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to سلايدر الصفحة الرئيسية.
+        /// </summary>
+        public static string HomePageSlider {
+            get {
+                return ResourceManager.GetString("HomePageSlider", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to الصورة.
         /// </summary>
         public static string Image {
@@ -1830,6 +1857,15 @@ namespace Resources {
         public static string Media {
             get {
                 return ResourceManager.GetString("Media", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to مكتبة الوسائط.
+        /// </summary>
+        public static string MediaLibrary {
+            get {
+                return ResourceManager.GetString("MediaLibrary", resourceCulture);
             }
         }
         
@@ -2770,6 +2806,15 @@ namespace Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to الإعدادات والتهيئة.
+        /// </summary>
+        public static string SettingsAndConfiguration {
+            get {
+                return ResourceManager.GetString("SettingsAndConfiguration", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to صفحات الإعدادات.
         /// </summary>
         public static string SettingsPages {
@@ -2833,7 +2878,7 @@ namespace Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to عرض الهوم.
+        ///   Looks up a localized string similar to السلايدر.
         /// </summary>
         public static string Sliders {
             get {

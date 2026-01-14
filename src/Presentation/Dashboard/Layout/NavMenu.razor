@@ -36,11 +36,11 @@
                 <AuthorizeView Roles="@nameof(UserRole.Admin)">
                     <Authorized>
 
-                        <!-- 🛒 Product Management -->
+                        <!-- 📦 Catalog Management -->
                         <li data-username="catalog" class="nav-item pcoded-hasmenu @(IsSubmenuOpen("catalog") ? "pcoded-trigger" : "")">
-                            <a href="javascript:void(0)" class="nav-link" @onclick="@(() => ToggleSubmenu("catalog"))">
+                            <a href="javascript:void(0)" class="nav-link" @onclick="ToggleCatalogSubmenu">
                                 <span class="pcoded-micon"><i class="fas fa-box-open"></i></span>
-                                <span class="pcoded-mtext">Product Management</span>
+                                <span class="pcoded-mtext">@ECommerceResources.CatalogManagement</span>
                                 <span class="pcoded-mcaret"></span>
                             </a>
                             <ul class="pcoded-submenu" style="display: @(IsSubmenuOpen("catalog") ? "block" : "none")">
@@ -77,14 +77,14 @@
                             </ul>
                         </li>
 
-                        <!-- 🛍️ Order Management -->
-                        <li data-username="sales" class="nav-item pcoded-hasmenu @(IsSubmenuOpen("sales") ? "pcoded-trigger" : "")">
-                            <a href="javascript:void(0)" class="nav-link" @onclick="@(() => ToggleSubmenu("sales"))">
+                        <!-- 🛒 Orders -->
+                        <li data-username="orders" class="nav-item pcoded-hasmenu @(IsSubmenuOpen("orders") ? "pcoded-trigger" : "")">
+                            <a href="javascript:void(0)" class="nav-link" @onclick="ToggleOrdersSubmenu">
                                 <span class="pcoded-micon"><i class="fas fa-shopping-cart"></i></span>
-                                <span class="pcoded-mtext">Order Management</span>
+                                <span class="pcoded-mtext">@ECommerceResources.OrderManagement</span>
                                 <span class="pcoded-mcaret"></span>
                             </a>
-                            <ul class="pcoded-submenu" style="display: @(IsSubmenuOpen("sales") ? "block" : "none")">
+                            <ul class="pcoded-submenu" style="display: @(IsSubmenuOpen("orders") ? "block" : "none")">
                                 <li class="nav-item">
                                     <NavLink href="/sales/orders" class="nav-link" Match="NavLinkMatch.Prefix" onclick="closeNavMenu()">
                                         <span class="pcoded-micon"><i class="fas fa-shopping-bag"></i></span>
@@ -102,7 +102,7 @@
 
                         <!-- 👥 User Management -->
                         <li data-username="users-management" class="nav-item pcoded-hasmenu @(IsSubmenuOpen("users-management") ? "pcoded-trigger" : "")">
-                            <a href="javascript:void(0)" class="nav-link" @onclick="@(() => ToggleSubmenu("users-management"))">
+                            <a href="javascript:void(0)" class="nav-link" @onclick="ToggleUsersManagementSubmenu">
                                 <span class="pcoded-micon"><i class="fas fa-users"></i></span>
                                 <span class="pcoded-mtext">@GeneralResources.UserManagement</span>
                                 <span class="pcoded-mcaret"></span>
@@ -131,9 +131,9 @@
 
                         <!-- 🚚 Logistics & Shipping -->
                         <li data-username="logistics" class="nav-item pcoded-hasmenu @(IsSubmenuOpen("logistics") ? "pcoded-trigger" : "")">
-                            <a href="javascript:void(0)" class="nav-link" @onclick="@(() => ToggleSubmenu("logistics"))">
+                            <a href="javascript:void(0)" class="nav-link" @onclick="ToggleLogisticsSubmenu">
                                 <span class="pcoded-micon"><i class="fas fa-truck"></i></span>
-                                <span class="pcoded-mtext">Logistics & Shipping</span>
+                                <span class="pcoded-mtext">@ECommerceResources.LogisticsAndShipping</span>
                                 <span class="pcoded-mcaret"></span>
                             </a>
                             <ul class="pcoded-submenu" style="display: @(IsSubmenuOpen("logistics") ? "block" : "none")">
@@ -170,18 +170,18 @@
                             </ul>
                         </li>
 
-                        <!-- 📢 Marketing & Promotions -->
-                        <li data-username="marketing" class="nav-item pcoded-hasmenu @(IsSubmenuOpen("marketing") ? "pcoded-trigger" : "")">
-                            <a href="javascript:void(0)" class="nav-link" @onclick="@(() => ToggleSubmenu("marketing"))">
+                        <!-- 📢 Merchandising -->
+                        <li data-username="merchandising" class="nav-item pcoded-hasmenu @(IsSubmenuOpen("merchandising") ? "pcoded-trigger" : "")">
+                            <a href="javascript:void(0)" class="nav-link" @onclick="ToggleMerchandisingSubmenu">
                                 <span class="pcoded-micon"><i class="fas fa-bullhorn"></i></span>
-                                <span class="pcoded-mtext">Marketing & Promotions</span>
+                                <span class="pcoded-mtext">@MerchandisingResources.Merchandising</span>
                                 <span class="pcoded-mcaret"></span>
                             </a>
-                            <ul class="pcoded-submenu" style="display: @(IsSubmenuOpen("marketing") ? "block" : "none")">
+                            <ul class="pcoded-submenu" style="display: @(IsSubmenuOpen("merchandising") ? "block" : "none")">
                                 <li class="nav-item">
                                     <NavLink href="/campaigns" class="nav-link" Match="NavLinkMatch.Prefix" onclick="closeNavMenu()">
                                         <span class="pcoded-micon"><i class="fas fa-calendar-alt"></i></span>
-                                        <span class="pcoded-mtext">Campaigns</span>
+                                        <span class="pcoded-mtext">@MerchandisingResources.Campaigns</span>
                                     </NavLink>
                                 </li>
                                 <li class="nav-item">
@@ -193,23 +193,23 @@
                                 <li class="nav-item">
                                     <NavLink href="/HomepageSlider" class="nav-link" Match="NavLinkMatch.Prefix" onclick="closeNavMenu()">
                                         <span class="pcoded-micon"><i class="fas fa-images"></i></span>
-                                        <span class="pcoded-mtext">Homepage Slider</span>
+                                        <span class="pcoded-mtext">@GeneralResources.HomePageSlider</span>
                                     </NavLink>
                                 </li>
                                 <li class="nav-item">
                                     <NavLink href="/home-blocks" class="nav-link" Match="NavLinkMatch.Prefix" onclick="closeNavMenu()">
                                         <span class="pcoded-micon"><i class="fas fa-cube"></i></span>
-                                        <span class="pcoded-mtext">Home Page Blocks</span>
+                                        <span class="pcoded-mtext">@MerchandisingResources.HomePageBlocks</span>
                                     </NavLink>
                                 </li>
                             </ul>
                         </li>
 
-                        <!-- 📄 Content Management -->
+                        <!-- 🎨 Content & CMS -->
                         <li data-username="content" class="nav-item pcoded-hasmenu @(IsSubmenuOpen("content") ? "pcoded-trigger" : "")">
-                            <a href="javascript:void(0)" class="nav-link" @onclick="@(() => ToggleSubmenu("content"))">
+                            <a href="javascript:void(0)" class="nav-link" @onclick="ToggleContentSubmenu">
                                 <span class="pcoded-micon"><i class="fas fa-file-alt"></i></span>
-                                <span class="pcoded-mtext">Content Management</span>
+                                <span class="pcoded-mtext">@GeneralResources.ContentManagement</span>
                                 <span class="pcoded-mcaret"></span>
                             </a>
                             <ul class="pcoded-submenu" style="display: @(IsSubmenuOpen("content") ? "block" : "none")">
@@ -222,19 +222,19 @@
                                 <li class="nav-item">
                                     <NavLink href="/content/areas" class="nav-link" Match="NavLinkMatch.Prefix" onclick="closeNavMenu()">
                                         <span class="pcoded-micon"><i class="fas fa-th-large"></i></span>
-                                        <span class="pcoded-mtext">Content Areas</span>
+                                        <span class="pcoded-mtext">@GeneralResources.ContentAreas</span>
                                     </NavLink>
                                 </li>
                                 <li class="nav-item">
                                     <NavLink href="/content/media" class="nav-link" Match="NavLinkMatch.Prefix" onclick="closeNavMenu()">
                                         <span class="pcoded-micon"><i class="fas fa-photo-video"></i></span>
-                                        <span class="pcoded-mtext">Media Library</span>
+                                        <span class="pcoded-mtext">@GeneralResources.MediaLibrary</span>
                                     </NavLink>
                                 </li>
                             </ul>
                         </li>
 
-                        <!-- 💰 Financial Settings -->
+                        <!-- 💰 Financial -->
                         <li data-username="financial" class="nav-item">
                             <NavLink href="/withdrawalmethods" class="nav-link" Match="NavLinkMatch.Prefix" onclick="closeNavMenu()">
                                 <span class="pcoded-micon"><i class="fas fa-money-bill-wave"></i></span>
@@ -242,11 +242,11 @@
                             </NavLink>
                         </li>
 
-                        <!-- ⚙️ System Settings -->
+                        <!-- ⚙️ Settings & Configuration -->
                         <li data-username="settings" class="nav-item pcoded-hasmenu @(IsSubmenuOpen("settings") ? "pcoded-trigger" : "")">
-                            <a href="javascript:void(0)" class="nav-link" @onclick="@(() => ToggleSubmenu("settings"))">
+                            <a href="javascript:void(0)" class="nav-link" @onclick="ToggleSettingsSubmenu">
                                 <span class="pcoded-micon"><i class="feather icon-settings"></i></span>
-                                <span class="pcoded-mtext">System Settings</span>
+                                <span class="pcoded-mtext">@GeneralResources.SettingsAndConfiguration</span>
                                 <span class="pcoded-mcaret"></span>
                             </a>
                             <ul class="pcoded-submenu" style="display: @(IsSubmenuOpen("settings") ? "block" : "none")">
@@ -274,7 +274,7 @@
 
                         <!-- 📦 Orders & Rewards -->
                         <li data-username="vendor-orders-rewards" class="nav-item pcoded-hasmenu @(IsSubmenuOpen("vendor-orders-rewards") ? "pcoded-trigger" : "")">
-                            <a href="javascript:void(0)" class="nav-link" @onclick="@(() => ToggleSubmenu("vendor-orders-rewards"))">
+                            <a href="javascript:void(0)" class="nav-link" @onclick="ToggleVendorOrdersRewardsSubmenu">
                                 <span class="pcoded-micon"><i class="fas fa-box-open"></i></span>
                                 <span class="pcoded-mtext">@GeneralResources.OrdersAndRewards</span>
                                 <span class="pcoded-mcaret"></span>
@@ -291,7 +291,7 @@
 
                         <!-- 👤 Account & Settings -->
                         <li data-username="vendor-account-settings" class="nav-item pcoded-hasmenu @(IsSubmenuOpen("vendor-account-settings") ? "pcoded-trigger" : "")">
-                            <a href="javascript:void(0)" class="nav-link" @onclick="@(() => ToggleSubmenu("vendor-account-settings"))">
+                            <a href="javascript:void(0)" class="nav-link" @onclick="ToggleVendorAccountSettingsSubmenu">
                                 <span class="pcoded-micon"><i class="fas fa-user-cog"></i></span>
                                 <span class="pcoded-mtext">@GeneralResources.AccountAndSettings</span>
                                 <span class="pcoded-mcaret"></span>

@@ -73,6 +73,7 @@ namespace Dashboard.Extensions
 
             services.AddScoped<ICampaignService, CampaignService>();
             services.AddScoped<IAdminBlockService, AdminBlockService>();
+            services.AddScoped<IVendorPromoCodeParticipationAdminService, VendorPromoCodeParticipationAdminService>();
             services.AddScoped<IItemReviewService, ItemReviewService>();
             services.AddScoped<IReportReviewService, ReportReviewService>();
             services.AddScoped<IHomePageSliderService, HomePageSliderService>();
