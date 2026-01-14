@@ -11,10 +11,10 @@ namespace Dashboard.Pages.Merchandising.Campaigns
     {
         [Inject] protected ICampaignService CampaignService { get; set; } = null!;
 
-        protected override string EntityName { get; } = "Campaigns";
-        protected override string AddRoute { get; } = "/campaigns/new";
-        protected override string EditRouteTemplate { get; } = "/campaigns/{id}";
-        protected override string SearchEndpoint { get; } = "api/v1/campaigns/search";
+        protected override string EntityName { get; } = "Campaign";
+        protected override string AddRoute { get; } = "/campaign/new";
+        protected override string EditRouteTemplate { get; } = "/campaign/{id}";
+        protected override string SearchEndpoint { get; } = "api/v1/campaign/search";
 
         protected override Dictionary<string, Func<CampaignDto, object>> ExportColumns { get; } =
             new()
@@ -71,8 +71,26 @@ namespace Dashboard.Pages.Merchandising.Campaigns
                 };
             }
         }
+		protected virtual async Task SortByColumn(string columnName)
+		{
+			if (searchModel.SortBy == columnName)
+			{
+				// Toggle sort direction if same column
+				searchModel.SortDirection = searchModel.SortDirection == "asc" ? "desc" : "asc";
+			}
+			else
+			{
+				// New column, default to ascending
+				searchModel.SortBy = columnName;
+				searchModel.SortDirection = "asc";
+			}
 
-        protected override async Task<string> GetItemId(CampaignDto item)
+			// Reset to first page when sorting changes
+			currentPage = 1;
+			searchModel.PageNumber = 1;
+			await Search();
+		}
+		protected override async Task<string> GetItemId(CampaignDto item)
         {
             return item?.Id != Guid.Empty ? item.Id.ToString() : string.Empty;
         }
