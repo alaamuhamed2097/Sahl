@@ -745,6 +745,15 @@ namespace Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to لم يتم تحديد أي خيار.
+        /// </summary>
+        public static string NoSelection {
+            get {
+                return ResourceManager.GetString("NoSelection", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to إشعار.
         /// </summary>
         public static string Notification {

@@ -1,3 +1,4 @@
+using Common.Filters;
 using Shared.DTOs.Campaign;
 
 namespace BL.Contracts.Service.Merchandising.Campaign;
@@ -13,6 +14,16 @@ public interface ICampaignService
     /// Get campaign by ID
     /// </summary>
     Task<CampaignDto?> GetCampaignByIdAsync(Guid id);
+
+    /// <summary>
+    /// Get all campaigns (admin)
+    /// </summary>
+    Task<List<CampaignDto>> GetAllCampaignsAsync();
+
+    /// <summary>
+    /// Search campaigns with pagination
+    /// </summary>
+    Task<(List<CampaignDto> Campaigns, int TotalCount)> SearchCampaignsAsync(BaseSearchCriteriaModel searchCriteria);
 
     /// <summary>
     /// Get all active campaigns

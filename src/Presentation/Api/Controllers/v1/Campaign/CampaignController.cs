@@ -1,6 +1,7 @@
 using Api.Controllers.v1.Base;
 using Asp.Versioning;
 using BL.Contracts.Service.Merchandising.Campaign;
+using Common.Filters;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Shared.DTOs.Campaign;
@@ -59,6 +60,46 @@ namespace Api.Controllers.v1.Campaign
                 Success = true,
                 Data = flashSales,
                 Message = "Active flash sales retrieved successfully"
+            });
+        }
+
+        /// <summary>
+        /// Get all campaigns (admin only)
+        /// </summary>
+        [HttpGet]
+        [Authorize(Roles = "Admin")]
+        [ProducesResponseType(typeof(ResponseModel<List<CampaignDto>>), 200)]
+        public async Task<IActionResult> GetAllCampaigns()
+        {
+            var campaigns = await _campaignService.GetAllCampaignsAsync();
+
+            return Ok(new ResponseModel<List<CampaignDto>>
+            {
+                Success = true,
+                Data = campaigns,
+                Message = "All campaigns retrieved successfully"
+            });
+        }
+
+        /// <summary>
+        /// Search campaigns with pagination (admin only)
+        /// </summary>
+        [HttpGet("search")]
+        [Authorize(Roles = "Admin")]
+        [ProducesResponseType(typeof(ResponseModel<PaginatedSearchResult<CampaignDto>>), 200)]
+        public async Task<IActionResult> SearchCampaigns([FromQuery] BaseSearchCriteriaModel searchCriteria)
+        {
+            var (campaigns, totalCount) = await _campaignService.SearchCampaignsAsync(searchCriteria);
+
+            return Ok(new ResponseModel<PaginatedSearchResult<CampaignDto>>
+            {
+                Success = true,
+                Data = new PaginatedSearchResult<CampaignDto>
+                {
+                    Items = campaigns,
+                    TotalRecords = totalCount
+                },
+                Message = "Campaigns searched successfully"
             });
         }
 

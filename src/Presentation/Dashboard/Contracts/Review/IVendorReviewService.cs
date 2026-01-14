@@ -1,4 +1,4 @@
-﻿namespace Dashboard.Services.Review
+﻿namespace Dashboard.Contracts.Review
 {
 	public interface IVendorReviewService
 	{

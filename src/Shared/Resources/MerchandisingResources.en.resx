@@ -1,0 +1,519 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+		Microsoft ResX Schema
+
+		Version 1.3
+
+		The primary goals of this format is to allow a simple XML format 
+		that is mostly human readable. The generation and parsing of the 
+		various data types are done through the TypeConverter classes 
+		associated with the data types.
+
+		Example:
+
+		... ado.net/XML headers & schema ...
+		<resheader name="resmimetype">text/microsoft-resx</resheader>
+		<resheader name="version">1.3</resheader>
+		<resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+		<resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+		<data name="Name1">this is my long string</data>
+		<data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+		<data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+			[base64 mime encoded serialized .NET Framework object]
+		</data>
+		<data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+			[base64 mime encoded string representing a byte array form of the .NET Framework object]
+		</data>
+
+		There are any number of "resheader" rows that contain simple 
+		name/value pairs.
+
+		Each data row contains a name, and value. The row also contains a 
+		type or mimetype. Type corresponds to a .NET class that support 
+		text/value conversion through the TypeConverter architecture. 
+		Classes that don't support this are serialized and stored with the 
+		mimetype set.
+
+		The mimetype is used for serialized objects, and tells the 
+		ResXResourceReader how to depersist the object. This is currently not 
+		extensible. For a given mimetype the value must be set accordingly:
+
+		Note - application/x-microsoft.net.object.binary.base64 is the format 
+		that the ResXResourceWriter will generate, however the reader can 
+		read any of the formats listed below.
+
+		mimetype: application/x-microsoft.net.object.binary.base64
+		value   : The object must be serialized with 
+			: System.Serialization.Formatters.Binary.BinaryFormatter
+			: and then encoded with base64 encoding.
+
+		mimetype: application/x-microsoft.net.object.soap.base64
+		value   : The object must be serialized with 
+			: System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+			: and then encoded with base64 encoding.
+
+		mimetype: application/x-microsoft.net.object.bytearray.base64
+		value   : The object must be serialized into a byte array 
+			: using a System.ComponentModel.TypeConverter
+			: and then encoded with base64 encoding.
+	-->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>1.3</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.3500.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.3500.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <!-- Campaigns -->
+  <data name="CampaignsTitle" xml:space="preserve">
+	<value>Campaigns</value>
+</data>
+  <data name="AddCampaign" xml:space="preserve">
+	<value>Add Campaign</value>
+</data>
+  <data name="SearchCampaign" xml:space="preserve">
+	<value>Search for a campaign...</value>
+</data>
+  <data name="AllStatus" xml:space="preserve">
+	<value>All Statuses</value>
+</data>
+  <data name="Active" xml:space="preserve">
+	<value>Active</value>
+</data>
+  <data name="Inactive" xml:space="preserve">
+	<value>Inactive</value>
+</data>
+  <data name="AllTypes" xml:space="preserve">
+	<value>All Types</value>
+</data>
+  <data name="FlashSale" xml:space="preserve">
+	<value>Flash Sale</value>
+</data>
+  <data name="Regular" xml:space="preserve">
+	<value>Regular</value>
+</data>
+  <data name="CampaignName" xml:space="preserve">
+	<value>Campaign Name</value>
+</data>
+  <data name="Type" xml:space="preserve">
+	<value>Type</value>
+</data>
+  <data name="StartDate" xml:space="preserve">
+	<value>Start Date</value>
+</data>
+  <data name="EndDate" xml:space="preserve">
+	<value>End Date</value>
+</data>
+  <data name="Items" xml:space="preserve">
+	<value>Items</value>
+</data>
+  <data name="Status" xml:space="preserve">
+	<value>Status</value>
+</data>
+  <data name="Actions" xml:space="preserve">
+	<value>Actions</value>
+</data>
+  <data name="NoCampaignsFound" xml:space="preserve">
+	<value>No campaigns found</value>
+</data>
+  <data name="Edit" xml:space="preserve">
+	<value>Edit</value>
+</data>
+  <data name="Delete" xml:space="preserve">
+	<value>Delete</value>
+</data>
+  <data name="EditCampaign" xml:space="preserve">
+	<value>Edit Campaign</value>
+</data>
+  <data name="DeleteCampaign" xml:space="preserve">
+	<value>Delete Campaign</value>
+</data>
+  <data name="Loading" xml:space="preserve">
+	<value>Loading...</value>
+</data>
+  <data name="Showing" xml:space="preserve">
+	<value>Showing</value>
+</data>
+  <data name="Of" xml:space="preserve">
+	<value>of</value>
+</data>
+  <data name="campaigns" xml:space="preserve">
+	<value>campaigns</value>
+</data>
+  <!-- Home Page Blocks -->
+  <data name="HomePageBlocksTitle" xml:space="preserve">
+	<value>Home Page Blocks</value>
+</data>
+  <data name="AddBlock" xml:space="preserve">
+	<value>Add Block</value>
+</data>
+  <data name="SearchBlocks" xml:space="preserve">
+	<value>Search for blocks...</value>
+</data>
+  <data name="Order" xml:space="preserve">
+	<value>Order</value>
+</data>
+  <data name="BlockName" xml:space="preserve">
+	<value>Block Name</value>
+</data>
+  <data name="Layout" xml:space="preserve">
+	<value>Layout</value>
+</data>
+  <data name="Created" xml:space="preserve">
+	<value>Created</value>
+</data>
+  <data name="NoBlocksFound" xml:space="preserve">
+	<value>No blocks found</value>
+</data>
+  <data name="MoveUp" xml:space="preserve">
+	<value>Move Up</value>
+</data>
+  <data name="MoveDown" xml:space="preserve">
+	<value>Move Down</value>
+</data>
+  <data name="EditBlock" xml:space="preserve">
+	<value>Edit Block</value>
+</data>
+  <data name="DeleteBlock" xml:space="preserve">
+	<value>Delete Block</value>
+</data>
+  <data name="CreateBlock" xml:space="preserve">
+	<value>Create Block</value>
+</data>
+  <data name="blocks" xml:space="preserve">
+	<value>blocks</value>
+</data>
+  <data name="BasicInformation" xml:space="preserve">
+	<value>Basic Information</value>
+</data>
+  <data name="CreateNewHomepageBlock" xml:space="preserve">
+	<value>Create New Home Page Block</value>
+</data>
+  <data name="Edit2" xml:space="preserve">
+	<value>Edit</value>
+</data>
+  <data name="CreateNewCampaign" xml:space="preserve">
+	<value>Create New Campaign</value>
+</data>
+  <data name="CampaignDuration" xml:space="preserve">
+	<value>Campaign Duration</value>
+</data>
+  <data name="FlashSaleConfiguration" xml:space="preserve">
+	<value>Flash Sale Configuration</value>
+</data>
+  <!-- Titles & Text -->
+  <data name="TitleEnglish" xml:space="preserve">
+  <value>Title (English)</value>
+</data>
+  <data name="TitleArabic" xml:space="preserve">
+  <value>Title (Arabic)</value>
+</data>
+  <data name="SubtitleEnglish" xml:space="preserve">
+  <value>Subtitle (English)</value>
+</data>
+  <data name="SubtitleArabic" xml:space="preserve">
+  <value>Subtitle (Arabic)</value>
+</data>
+  <data name="OptionalSubtitle" xml:space="preserve">
+  <value>Optional Subtitle (English)</value>
+</data>
+  <data name="OptionalSubtitleArabic" xml:space="preserve">
+  <value>Optional Subtitle (Arabic)</value>
+</data>
+  <data name="EnterEnglishTitle" xml:space="preserve">
+  <value>Enter English title</value>
+</data>
+  <data name="EnterArabicTitle" xml:space="preserve">
+  <value>Enter Arabic title</value>
+</data>
+  <!-- Block Types -->
+  <data name="BlockTypeAndLayout" xml:space="preserve">
+  <value>Block Type &amp; Layout</value>
+</data>
+  <data name="SelectBlockType" xml:space="preserve">
+  <value>Select Block Type</value>
+</data>
+  <data name="DisplayLayout" xml:space="preserve">
+  <value>Display Layout</value>
+</data>
+  <data name="DisplaySettings" xml:space="preserve">
+  <value>Display Settings</value>
+</data>
+  <!-- Layouts -->
+  <data name="CarouselSlider" xml:space="preserve">
+  <value>Carousel Slider</value>
+</data>
+  <data name="CompactGrid" xml:space="preserve">
+  <value>Compact Grid</value>
+</data>
+  <data name="TwoRowGrid" xml:space="preserve">
+  <value>Two-Row Grid</value>
+</data>
+  <data name="FullWidthBanner" xml:space="preserve">
+  <value>Full-Width Banner</value>
+</data>
+  <data name="FeaturedShowcase" xml:space="preserve">
+  <value>Featured Showcase</value>
+</data>
+  <!-- Layout Descriptions -->
+  <data name="CarouselDescription" xml:space="preserve">
+  <value>Scrollable horizontal product carousel</value>
+</data>
+  <data name="CompactDescription" xml:space="preserve">
+  <value>Dense grid layout for compact display</value>
+</data>
+  <data name="TwoRowGridDescription" xml:space="preserve">
+  <value>Grid layout with two visible rows</value>
+</data>
+  <data name="FullWidthDescription" xml:space="preserve">
+  <value>Large banner spanning the full page width</value>
+</data>
+  <data name="FeaturedDescription" xml:space="preserve">
+  <value>Highlighted products with emphasis</value>
+</data>
+  <!-- Data Source -->
+  <data name="DataSource" xml:space="preserve">
+  <value>Data Source</value>
+</data>
+  <data name="SelectSource" xml:space="preserve">
+  <value>Select Source</value>
+</data>
+  <data name="ChooseHowProductsSelected" xml:space="preserve">
+  <value>Choose how products are selected</value>
+</data>
+  <data name="ChooseHowProductsDisplayed" xml:space="preserve">
+  <value>Choose how products are displayed</value>
+</data>
+  <!-- Selection Types -->
+  <data name="ManualItemsSelection" xml:space="preserve">
+  <value>Manual Product Selection</value>
+</data>
+  <data name="ManualCategoriesSelection" xml:space="preserve">
+  <value>Manual Category Selection</value>
+</data>
+  <data name="CampaignBased" xml:space="preserve">
+  <value>Campaign-Based</value>
+</data>
+  <data name="DynamicRules" xml:space="preserve">
+  <value>Dynamic Rules</value>
+</data>
+  <data name="AIPersonalized" xml:space="preserve">
+  <value>AI-Personalized</value>
+</data>
+  <!-- Selection Descriptions -->
+  <data name="ManualItemsDescription" xml:space="preserve">
+  <value>Select specific products manually</value>
+</data>
+  <data name="ManualCategoriesDescription" xml:space="preserve">
+  <value>Select products based on categories</value>
+</data>
+  <data name="CampaignDescription" xml:space="preserve">
+  <value>Products sourced from a campaign</value>
+</data>
+  <data name="DynamicDescription" xml:space="preserve">
+  <value>Products selected dynamically by rules</value>
+</data>
+  <data name="PersonalizedDescription" xml:space="preserve">
+  <value>Each user sees personalized products</value>
+</data>
+  <!-- Campaign -->
+  <data name="ChooseACampaign" xml:space="preserve">
+  <value>Choose a Campaign</value>
+</data>
+  <data name="SelectCampaign" xml:space="preserve">
+  <value>Select Campaign</value>
+</data>
+  <data name="SelectWhichCampaignProducts" xml:space="preserve">
+  <value>Select which campaign products to display</value>
+</data>
+  <!-- Product Sources -->
+  <data name="BestSellers" xml:space="preserve">
+  <value>Best Sellers</value>
+</data>
+  <data name="NewArrivals" xml:space="preserve">
+  <value>New Arrivals</value>
+</data>
+  <data name="TopRated" xml:space="preserve">
+  <value>Top Rated</value>
+</data>
+  <data name="Trending" xml:space="preserve">
+  <value>Trending</value>
+</data>
+  <data name="MostWishlisted" xml:space="preserve">
+  <value>Most Wishlisted</value>
+</data>
+  <data name="RecentlyViewed" xml:space="preserve">
+  <value>Recently Viewed</value>
+</data>
+  <!-- Personalization -->
+  <data name="PersonalizationType" xml:space="preserve">
+  <value>Personalization Type</value>
+</data>
+  <data name="BasedOnViewHistory" xml:space="preserve">
+  <value>Based on View History</value>
+</data>
+  <data name="BasedOnPurchaseHistory" xml:space="preserve">
+  <value>Based on Purchase History</value>
+</data>
+  <data name="FromWishlist" xml:space="preserve">
+  <value>From Wishlist</value>
+</data>
+  <data name="EachUserWillSeePersonalized" xml:space="preserve">
+  <value>Each user will see personalized products</value>
+</data>
+  <!-- Visibility -->
+  <data name="BlockVisibility" xml:space="preserve">
+  <value>Block Visibility</value>
+</data>
+  <data name="BlockIsVisible" xml:space="preserve">
+  <value>Block is visible</value>
+</data>
+  <data name="BlockIsHidden" xml:space="preserve">
+  <value>Block is hidden</value>
+</data>
+  <data name="VisibleFrom" xml:space="preserve">
+  <value>Visible From</value>
+</data>
+  <data name="VisibleTo" xml:space="preserve">
+  <value>Visible To</value>
+</data>
+  <data name="WhenBlockBecomesVisible" xml:space="preserve">
+  <value>When the block becomes visible</value>
+</data>
+  <data name="WhenBlockStopsShowing" xml:space="preserve">
+  <value>When the block stops showing</value>
+</data>
+  <!-- View All -->
+  <data name="ShowViewAllLink" xml:space="preserve">
+  <value>Show “View All” link</value>
+</data>
+  <data name="ViewAllLink" xml:space="preserve">
+  <value>View All Link</value>
+</data>
+  <data name="ViewAllProducts" xml:space="preserve">
+  <value>View All Products</value>
+</data>
+  <data name="ViewAllProductsArabic" xml:space="preserve">
+  <value>View All Products (Arabic)</value>
+</data>
+  <data name="LinkTextEnglish" xml:space="preserve">
+  <value>Link Text (English)</value>
+</data>
+  <data name="LinkTextArabic" xml:space="preserve">
+  <value>Link Text (Arabic)</value>
+</data>
+  <!-- Metadata -->
+  <data name="CreatedDate" xml:space="preserve">
+  <value>Created Date</value>
+</data>
+  <data name="LastModified" xml:space="preserve">
+  <value>Last Modified</value>
+</data>
+  <!-- Actions -->
+  <data name="Save" xml:space="preserve">
+  <value>Save</value>
+</data>
+  <data name="Saving" xml:space="preserve">
+  <value>Saving...</value>
+</data>
+  <data name="Cancel" xml:space="preserve">
+  <value>Cancel</value>
+</data>
+  <data name="UpdateBlock" xml:space="preserve">
+  <value>Update Block</value>
+</data>
+  <!-- Messages -->
+  <data name="BlockCreatedSuccessfully" xml:space="preserve">
+  <value>Block created successfully</value>
+</data>
+  <data name="BlockUpdatedSuccessfully" xml:space="preserve">
+  <value>Block updated successfully</value>
+</data>
+  <data name="BlockNotFound" xml:space="preserve">
+  <value>Block not found</value>
+</data>
+  <data name="ErrorLoadingData" xml:space="preserve">
+  <value>Error loading data</value>
+</data>
+  <data name="ErrorSavingBlock" xml:space="preserve">
+  <value>Error saving block</value>
+</data>
+  <!-- Selection / Filtering -->
+  <data name="SelectType" xml:space="preserve">
+  <value>Select Type</value>
+</data>
+  <data name="TypeSpecificConfiguration" xml:space="preserve">
+  <value>Type-Specific Configuration</value>
+</data>
+  <data name="Selected" xml:space="preserve">
+  <value>Selected</value>
+</data>
+  <!-- Products -->
+  <data name="SelectProducts" xml:space="preserve">
+  <value>Select Products</value>
+</data>
+  <data name="SearchProducts" xml:space="preserve">
+  <value>Search products...</value>
+</data>
+  <data name="SelectedProducts" xml:space="preserve">
+  <value>Selected Products</value>
+</data>
+  <data name="NoProductsFound" xml:space="preserve">
+  <value>No products found</value>
+</data>
+  <data name="NoProductsSelected" xml:space="preserve">
+  <value>No products selected</value>
+</data>
+  <data name="ProductsWillBeAutoUpdated" xml:space="preserve">
+  <value>Products will be automatically updated</value>
+</data>
+  <!-- Categories -->
+  <data name="SelectCategories" xml:space="preserve">
+  <value>Select Categories</value>
+</data>
+  <data name="SearchCategories" xml:space="preserve">
+  <value>Search categories...</value>
+</data>
+  <data name="SelectedCategories" xml:space="preserve">
+  <value>Selected Categories</value>
+</data>
+  <data name="NoCategoriesFound" xml:space="preserve">
+  <value>No categories found</value>
+</data>
+  <data name="NoCategoriesSelected" xml:space="preserve">
+  <value>No categories selected</value>
+</data>
+</root>

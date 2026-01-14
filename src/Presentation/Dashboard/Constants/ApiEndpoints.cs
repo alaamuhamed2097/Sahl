@@ -472,5 +472,15 @@
             public const string Treasury = "api/v1/Wallet/treasury";
             public const string TreasuryUpdate = "api/v1/Wallet/treasury/update";
         }
+
+        public static class AdminDashboard
+        {
+            private const string Base = "api/v1/admin/dashboard";
+            public const string Summary = $"{Base}/summary";
+            public static string SummaryByPeriod(string period) => $"{Base}/summary/{period}";
+            public const string TopProducts = $"{Base}/top-products";
+            public const string TopVendors = $"{Base}/top-vendors";
+            public const string Statistics = $"{Base}/statistics";
+        }
     }
 }

@@ -7,7 +7,7 @@ using Resources;
 using Shared.DTOs.Order.CouponCode;
 using Shared.GeneralModels;
 
-namespace Dashboard.Pages.Sales.CouponCode
+namespace Dashboard.Pages.Merchandising.CouponCode
 {
     public partial class Index : BaseListPage<CouponCodeDto>
     {

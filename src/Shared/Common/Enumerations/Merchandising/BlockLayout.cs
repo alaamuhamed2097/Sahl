@@ -2,33 +2,37 @@
 {
     /// <summary>
     /// Block layout types for visual presentation
+    /// أنواع تخطيطات البلوك للعرض المرئي
     /// </summary>
     public enum BlockLayout
     {
         /// <summary>
         /// Carousel/Slider - horizontal scrolling
+        /// كاروسيل - عرض أفقي متحرك
         /// </summary>
         Carousel = 1,
 
         /// <summary>
-        /// Two column layout
+        /// Two rows layout - stacked vertically
+        /// صفين - مرتبين عمودياً
         /// </summary>
-        TwoColumn = 2,
+        TwoRows = 2,
 
         /// <summary>
-        /// Featured layout - large product cards 1 item per card
-        /// عرض مميز - كروت كبيرة للمنتجات المختارة
+        /// Featured layout - large product card (1 item)
+        /// عرض مميز - كارت كبير للمنتج (عنصر واحد)
         /// </summary>
         Featured = 3,
 
         /// <summary>
-        /// Compact layout - smaller product cards 4 items in card
-        /// عرض مضغوط - كروت صغيرة جدًا - أكبر عدد منتجات في مساحة أقل
+        /// Compact layout - 4 small items in 2x2 grid
+        /// عرض مضغوط - 4 عناصر صغيرة في شبكة 2×2
         /// </summary>
         Compact = 4,
 
         /// <summary>
         /// Full width banner/hero
+        /// بانر بعرض كامل
         /// </summary>
         FullWidth = 5
     }

@@ -1,148 +1,294 @@
 @using Common.Enumerations.User
 @using Resources
+@using Shared.DTOs.AdminDashboard
+@using Dashboard.Contracts.Dashboard
 @attribute [Authorize(Roles = nameof(UserRole.Admin))]
 
-<div class="row g-4 fade-in">
-    <!-- Total Orders Card -->
-    <div class="col-xl-3 col-md-6">
-        <div class="card dashboard-widget stat-widget">
-            <div class="card-body">
-                <div class="stat-widget-icon stat-primary">
-                    <i class="fas fa-shopping-cart"></i>
+@if (isLoading)
+{
+    <div class="text-center p-5">
+        <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+        <p class="mt-2 text-muted">Loading dashboard data...</p>
+    </div>
+}
+else if (dashboardSummary != null)
+{
+    <div class="row g-4 fade-in">
+        <!-- Total Users Card -->
+        <div class="col-xl-3 col-md-6">
+            <div class="card dashboard-widget stat-widget">
+                <div class="card-body">
+                    <div class="stat-widget-icon stat-primary">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <div class="stat-widget-number">@dashboardSummary.TotalActiveUsers</div>
+                    <div class="stat-widget-label">Total Users</div>
+                    <div class="stat-widget-change @(dashboardSummary.UsersChangePercentage >= 0 ? "positive" : "negative")">
+                        <i class="fas fa-arrow-@(dashboardSummary.UsersChangePercentage >= 0 ? "up" : "down")"></i>
+                        <span>@dashboardSummary.UsersChangePercentage.ToString("F1")%</span>
+                    </div>
                 </div>
-                <div class="stat-widget-number">@TotalOrders</div>
-                <div class="stat-widget-label">Total Orders</div>
-                <div class="stat-widget-change positive">
-                    <i class="fas fa-arrow-up"></i>
-                    <span>+12%</span>
+            </div>
+        </div>
+
+        <!-- Total Orders Card -->
+        <div class="col-xl-3 col-md-6">
+            <div class="card dashboard-widget stat-widget">
+                <div class="card-body">
+                    <div class="stat-widget-icon stat-success">
+                        <i class="fas fa-shopping-cart"></i>
+                    </div>
+                    <div class="stat-widget-number">@dashboardSummary.TotalOrders</div>
+                    <div class="stat-widget-label">Total Orders</div>
+                    <div class="stat-widget-change @(dashboardSummary.OrdersChangePercentage >= 0 ? "positive" : "negative")">
+                        <i class="fas fa-arrow-@(dashboardSummary.OrdersChangePercentage >= 0 ? "up" : "down")"></i>
+                        <span>@dashboardSummary.OrdersChangePercentage.ToString("F1")%</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Total Revenue Card -->
+        <div class="col-xl-3 col-md-6">
+            <div class="card dashboard-widget stat-widget">
+                <div class="card-body">
+                    <div class="stat-widget-icon stat-warning">
+                        <i class="fas fa-dollar-sign"></i>
+                    </div>
+                    <div class="stat-widget-number">@dashboardSummary.TotalRevenue.ToString("C0")</div>
+                    <div class="stat-widget-label">Total Revenue</div>
+                    <div class="stat-widget-change @(dashboardSummary.RevenueChangePercentage >= 0 ? "positive" : "negative")">
+                        <i class="fas fa-arrow-@(dashboardSummary.RevenueChangePercentage >= 0 ? "up" : "down")"></i>
+                        <span>@dashboardSummary.RevenueChangePercentage.ToString("F1")%</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Total Products Card -->
+        <div class="col-xl-3 col-md-6">
+            <div class="card dashboard-widget stat-widget">
+                <div class="card-body">
+                    <div class="stat-widget-icon stat-info">
+                        <i class="fas fa-box"></i>
+                    </div>
+                    <div class="stat-widget-number">@dashboardSummary.TotalProducts</div>
+                    <div class="stat-widget-label">Total Products</div>
+                    <div class="stat-widget-change positive">
+                        <i class="fas fa-arrow-up"></i>
+                        <span>+@dashboardSummary.NewProductsThisPeriod</span>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Total Revenue Card -->
-    <div class="col-xl-3 col-md-6">
-        <div class="card dashboard-widget stat-widget">
-            <div class="card-body">
-                <div class="stat-widget-icon stat-success">
-                    <i class="fas fa-dollar-sign"></i>
+    <!-- Secondary Stats Row -->
+    <div class="row g-4 mt-3">
+        <!-- Vendors Card -->
+        <div class="col-xl-4 col-md-6">
+            <div class="card dashboard-widget stat-widget">
+                <div class="card-body">
+                    <div class="stat-widget-icon stat-secondary">
+                        <i class="fas fa-store"></i>
+                    </div>
+                    <div class="stat-widget-number">@dashboardSummary.TotalVendors</div>
+                    <div class="stat-widget-label">Active Vendors</div>
+                    <div class="stat-widget-info">
+                        <small class="text-muted">@dashboardSummary.NewUsersThisPeriod new this period</small>
+                    </div>
                 </div>
-                <div class="stat-widget-number">@TotalRevenue.ToString("C")</div>
-                <div class="stat-widget-label">Total Revenue</div>
-                <div class="stat-widget-change positive">
-                    <i class="fas fa-arrow-up"></i>
-                    <span>+8%</span>
+            </div>
+        </div>
+
+        <!-- Pending Orders Card -->
+        <div class="col-xl-4 col-md-6">
+            <div class="card dashboard-widget stat-widget">
+                <div class="card-body">
+                    <div class="stat-widget-icon stat-danger">
+                        <i class="fas fa-hourglass-end"></i>
+                    </div>
+                    <div class="stat-widget-number">@dashboardSummary.PendingOrders</div>
+                    <div class="stat-widget-label">Pending Orders</div>
+                    <div class="stat-widget-info">
+                        <small class="text-muted">Awaiting processing</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Average Rating Card -->
+        <div class="col-xl-4 col-md-6">
+            <div class="card dashboard-widget stat-widget">
+                <div class="card-body">
+                    <div class="stat-widget-icon stat-accent">
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <div class="stat-widget-number">@dashboardSummary.AverageCustomerRating.ToString("F1")</div>
+                    <div class="stat-widget-label">Avg. Rating</div>
+                    <div class="stat-widget-info">
+                        <small class="text-muted">@dashboardSummary.TotalReviews reviews</small>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Total Products Card -->
-    <div class="col-xl-3 col-md-6">
-        <div class="card dashboard-widget stat-widget">
-            <div class="card-body">
-                <div class="stat-widget-icon stat-info">
-                    <i class="fas fa-box"></i>
+    <!-- Charts and Lists Row -->
+    <div class="row g-4 mt-3">
+        <!-- Top Products -->
+        <div class="col-xl-6">
+            <div class="card dashboard-widget">
+                <div class="card-body">
+                    <div class="dashboard-widget-header">
+                        <h5 class="dashboard-widget-title">Top Selling Products</h5>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Product</th>
+                                    <th>Units Sold</th>
+                                    <th>Revenue</th>
+                                    <th>Rating</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var product in dashboardSummary.TopProducts.Take(5))
+                                {
+                                    <tr>
+                                        <td>
+                                            <div class="product-name">
+                                                <span>@product.ProductName</span>
+                                                <small class="text-muted d-block">@product.VendorName</small>
+                                            </div>
+                                        </td>
+                                        <td><span class="badge bg-primary">@product.UnitsSold</span></td>
+                                        <td class="fw-bold">@product.Revenue.ToString("C0")</td>
+                                        <td>
+                                            <span class="text-warning">
+                                                <i class="fas fa-star"></i> @product.Rating.ToString("F1")
+                                            </span>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
-                <div class="stat-widget-number">@TotalProducts</div>
-                <div class="stat-widget-label">@ECommerceResources.Products</div>
-                <div class="stat-widget-change neutral">
-                    <i class="fas fa-minus"></i>
-                    <span>0%</span>
+            </div>
+        </div>
+
+        <!-- Top Vendors -->
+        <div class="col-xl-6">
+            <div class="card dashboard-widget">
+                <div class="card-body">
+                    <div class="dashboard-widget-header">
+                        <h5 class="dashboard-widget-title">Top Performing Vendors</h5>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Vendor</th>
+                                    <th>Orders</th>
+                                    <th>Revenue</th>
+                                    <th>Rating</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var vendor in dashboardSummary.TopVendors.Take(5))
+                                {
+                                    <tr>
+                                        <td>
+                                            <div class="vendor-info">
+                                                <span class="fw-bold">@vendor.VendorName</span>
+                                                <small class="text-muted d-block">@vendor.ProductCount products</small>
+                                            </div>
+                                        </td>
+                                        <td><span class="badge bg-info">@vendor.OrderCount</span></td>
+                                        <td class="fw-bold">@vendor.Revenue.ToString("C0")</td>
+                                        <td>
+                                            <span class="text-warning">
+                                                <i class="fas fa-star"></i> @vendor.Rating.ToString("F1")
+                                            </span>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Total Users Card -->
-    <div class="col-xl-3 col-md-6">
-        <div class="card dashboard-widget stat-widget">
-            <div class="card-body">
-                <div class="stat-widget-icon stat-warning">
-                    <i class="fas fa-users"></i>
-                </div>
-                <div class="stat-widget-number">@TotalUsers</div>
-                <div class="stat-widget-label">Total Users</div>
-                <div class="stat-widget-change positive">
-                    <i class="fas fa-arrow-up"></i>
-                    <span>+5%</span>
-                </div>
+    <!-- Period and Refresh Info -->
+    <div class="row g-4 mt-2">
+        <div class="col-12">
+            <div class="alert alert-light border">
+                <small class="text-muted">
+                    <strong>Period:</strong> @dashboardSummary.Period | 
+                    <strong>Last Updated:</strong> @dashboardSummary.GeneratedAt.ToString("g")
+                </small>
             </div>
         </div>
     </div>
-</div>
-
-<!-- Charts Row -->
-<div class="row g-4 mt-3">
-    <!-- Sales Chart -->
-    <div class="col-xl-8">
-        <div class="card dashboard-widget chart-widget">
-            <div class="card-body">
-                <div class="dashboard-widget-header">
-                    <h5 class="dashboard-widget-title">Sales Overview</h5>
-                </div>
-                <div class="chart-container">
-                    <div id="sale-view" style="height: 300px;"></div>
-                </div>
-            </div>
-        </div>
+}
+else
+{
+    <div class="alert alert-danger">
+        <strong>Error:</strong> Failed to load dashboard data. Please try refreshing the page.
     </div>
-
-    <!-- Recent Orders -->
-    <div class="col-xl-4">
-        <div class="card dashboard-widget">
-            <div class="card-body">
-                <div class="dashboard-widget-header">
-                    <h5 class="dashboard-widget-title">Recent Orders</h5>
-                </div>
-                <div class="activity-widget">
-                    @for (int i = 0; i < 5; i++)
-                    {
-                        <div class="activity-item">
-                            <div class="activity-icon activity-primary">
-                                <i class="fas fa-shopping-bag"></i>
-                            </div>
-                            <div class="activity-content">
-                                <div class="activity-title">Order #@(1000 + i)</div>
-                                <div class="activity-description">New order received</div>
-                                <div class="activity-time">@(i + 1) hours ago</div>
-                            </div>
-                        </div>
-                    }
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
+}
 
 @code {
-    private int TotalOrders { get; set; } = 1234;
-    private decimal TotalRevenue { get; set; } = 45678.90m;
-    private int TotalProducts { get; set; } = 567;
-    private int TotalUsers { get; set; } = 890;
+    [Inject] private IAdminDashboardService DashboardService { get; set; } = null!;
+
+    private AdminDashboardSummaryDto? dashboardSummary;
     private bool isLoading = true;
+    private string? errorMessage;
 
     protected override async Task OnInitializedAsync()
     {
-        // Simulate loading data
-        await Task.Delay(500);
-        
-        // TODO: Replace with actual API calls
-        // TotalOrders = await StatisticsService.GetTotalOrdersAsync();
-        // TotalRevenue = await StatisticsService.GetTotalRevenueAsync();
-        // TotalProducts = await StatisticsService.GetTotalProductsAsync();
-        // TotalUsers = await StatisticsService.GetTotalUsersAsync();
-        
-        isLoading = false;
+        await LoadDashboardData();
+    }
+
+    private async Task LoadDashboardData()
+    {
+        try
+        {
+            isLoading = true;
+            var result = await DashboardService.GetDashboardSummaryAsync();
+            
+            if (result.Success && result.Data != null)
+            {
+                dashboardSummary = result.Data;
+                errorMessage = null;
+            }
+            else
+            {
+                errorMessage = result.Message ?? "Failed to load dashboard data";
+            }
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Error loading dashboard: {ex.Message}";
+        }
+        finally
+        {
+            isLoading = false;
+        }
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (firstRender && !isLoading)
+        if (firstRender && dashboardSummary != null)
         {
-            // Initialize charts using the existing statistic.js
-            await Task.Delay(100); // Allow DOM to render
-            // The floatchart() function from statistic.js will be called automatically
+            await Task.Delay(100);
+            // Chart initialization if needed
         }
     }
 }

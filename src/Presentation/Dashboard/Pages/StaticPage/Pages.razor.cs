@@ -7,7 +7,7 @@ using Shared.GeneralModels.SearchCriteriaModels;
 using Common.Enumerations;
 using Dashboard.Contracts.Page;
 
-namespace UI.Pages.StaticPage
+namespace Dashboard.Pages.StaticPage
 {
     public partial class Pages : BaseListPage<PageDto>
     {

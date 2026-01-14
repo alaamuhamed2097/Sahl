@@ -6,7 +6,7 @@ using Microsoft.JSInterop;
 using Resources;
 using Shared.DTOs.Order.CouponCode;
 
-namespace Dashboard.Pages.Sales.CouponCode
+namespace Dashboard.Pages.Merchandising.CouponCode
 {
     public partial class Details : ComponentBase, IDisposable
     {

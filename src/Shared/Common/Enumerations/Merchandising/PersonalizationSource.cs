@@ -1,10 +1,33 @@
 ﻿namespace Common.Enumerations.Merchandising
 {
+    /// <summary>
+    /// Personalization data sources
+    /// مصادر البيانات للمحتوى الشخصي
+    /// </summary>
     public enum PersonalizationSource
     {
-        ViewHistory = 1,        // بناءً على المشاهدات
-        PurchaseHistory = 2,    // بناءً على المشتريات
-        RecentlyViewed = 3,     // آخر ما شافه
-        Wishlist = 4            // من الـ Wishlist
+        /// <summary>
+        /// Based on user's view history
+        /// بناءً على سجل المشاهدات
+        /// </summary>
+        ViewHistory = 1,
+
+        /// <summary>
+        /// Based on user's purchase history
+        /// بناءً على سجل المشتريات
+        /// </summary>
+        PurchaseHistory = 2,
+
+        /// <summary>
+        /// Recently viewed products
+        /// المنتجات المشاهدة مؤخراً
+        /// </summary>
+        RecentlyViewed = 3,
+
+        /// <summary>
+        /// Products from user's wishlist
+        /// المنتجات من قائمة المفضلة
+        /// </summary>
+        Wishlist = 4
     }
 }

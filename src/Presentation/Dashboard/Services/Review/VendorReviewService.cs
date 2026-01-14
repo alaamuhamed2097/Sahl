@@ -1,4 +1,5 @@
 ﻿using Dashboard.Contracts.General;
+using Dashboard.Contracts.Review;
 
 namespace Dashboard.Services.Review
 {

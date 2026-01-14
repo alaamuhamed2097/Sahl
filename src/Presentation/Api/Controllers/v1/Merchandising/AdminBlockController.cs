@@ -1,11 +1,13 @@
 ﻿using Api.Controllers.v1.Base;
 using Asp.Versioning;
+using AutoMapper;
 using BL.Contracts.Service.Merchandising;
 using Common.Enumerations.User;
 using Domains.Entities.Merchandising.HomePage;
 using Domains.Entities.Merchandising.HomePageBlocks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Shared.DTOs.Merchandising.Homepage;
 using Shared.GeneralModels;
 using System.Security.Claims;
 
@@ -22,10 +24,12 @@ namespace Api.Controllers.v1.Merchandising
     public class AdminBlockController : BaseController
     {
         private readonly IAdminBlockService _adminBlockService;
+        private readonly IMapper _mapper;
 
-        public AdminBlockController(IAdminBlockService adminBlockService)
+        public AdminBlockController(IAdminBlockService adminBlockService, IMapper mapper)
         {
             _adminBlockService = adminBlockService;
+            _mapper = mapper;
         }
 
         /// <summary>
@@ -43,9 +47,9 @@ namespace Api.Controllers.v1.Merchandising
         /// Create Homepage Block
         /// </summary>
         [HttpPost]
-        [ProducesResponseType(typeof(ResponseModel<TbHomepageBlock>), StatusCodes.Status201Created)]
+        [ProducesResponseType(typeof(ResponseModel<AdminBlockCreateDto>), StatusCodes.Status201Created)]
         [ProducesResponseType(typeof(ResponseModel<object>), StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> CreateBlock([FromBody] TbHomepageBlock block)
+        public async Task<IActionResult> CreateBlock([FromBody] AdminBlockCreateDto blockDto)
         {
             if (!ModelState.IsValid)
             {
@@ -63,18 +67,20 @@ namespace Api.Controllers.v1.Merchandising
 
             try
             {
+                var block = _mapper.Map<TbHomepageBlock>(blockDto);
                 var userId = GetUserId();
                 var createdBlock = await _adminBlockService.CreateBlockAsync(block, userId);
+                var createdBlockDto = _mapper.Map<AdminBlockCreateDto>(createdBlock);
 
                 return CreatedAtAction(
                     nameof(GetBlock),
                     new { blockId = createdBlock.Id },
-                    new ResponseModel<TbHomepageBlock>
+                    new ResponseModel<AdminBlockCreateDto>
                     {
                         Success = true,
                         StatusCode = StatusCodes.Status201Created,
                         Message = "Block created successfully.",
-                        Data = createdBlock
+                        Data = createdBlockDto
                     });
             }
             catch (ArgumentException ex)
@@ -104,7 +110,7 @@ namespace Api.Controllers.v1.Merchandising
         /// Get Block by ID (Admin)
         /// </summary>
         [HttpGet("{blockId}")]
-        [ProducesResponseType(typeof(ResponseModel<TbHomepageBlock>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ResponseModel<AdminBlockCreateDto>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ResponseModel<object>), StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetBlock(Guid blockId)
         {
@@ -120,12 +126,13 @@ namespace Api.Controllers.v1.Merchandising
                 });
             }
 
-            return Ok(new ResponseModel<TbHomepageBlock>
+            var blockDto = _mapper.Map<AdminBlockCreateDto>(block);
+            return Ok(new ResponseModel<AdminBlockCreateDto>
             {
                 Success = true,
                 StatusCode = StatusCodes.Status200OK,
                 Message = "Block retrieved successfully.",
-                Data = block
+                Data = blockDto
             });
         }
 
@@ -135,18 +142,40 @@ namespace Api.Controllers.v1.Merchandising
         /// Get All Blocks (Admin)
         /// </summary>
         [HttpGet]
-        [ProducesResponseType(typeof(ResponseModel<List<TbHomepageBlock>>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ResponseModel<List<AdminBlockListDto>>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ResponseModel<object>), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetAllBlocks()
         {
-            var blocks = await _adminBlockService.GetAllBlocksAsync();
-
-            return Ok(new ResponseModel<List<TbHomepageBlock>>
+            try
             {
-                Success = true,
-                StatusCode = StatusCodes.Status200OK,
-                Message = "Blocks retrieved successfully.",
-                Data = blocks
-            });
+                var blocks = await _adminBlockService.GetAllBlocksAsync();
+                
+                if (blocks == null)
+                {
+                    blocks = new List<TbHomepageBlock>();
+                }
+
+                // Map entities to DTOs
+                var blockDtos = _mapper.Map<List<AdminBlockListDto>>(blocks);
+
+                return Ok(new ResponseModel<List<AdminBlockListDto>>
+                {
+                    Success = true,
+                    StatusCode = StatusCodes.Status200OK,
+                    Message = "Blocks retrieved successfully.",
+                    Data = blockDtos
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, new ResponseModel<object>
+                {
+                    Success = false,
+                    StatusCode = StatusCodes.Status500InternalServerError,
+                    Message = "An error occurred while retrieving blocks.",
+                    Errors = new List<string> { ex.Message, ex.InnerException?.Message }
+                });
+            }
         }
 
         // ==================== PUT /api/v1/admin/blocks/{blockId} ====================
@@ -155,14 +184,14 @@ namespace Api.Controllers.v1.Merchandising
         /// Update Homepage Block
         /// </summary>
         [HttpPut("{blockId}")]
-        [ProducesResponseType(typeof(ResponseModel<TbHomepageBlock>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ResponseModel<AdminBlockListDto>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ResponseModel<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ResponseModel<object>), StatusCodes.Status404NotFound)]
         public async Task<IActionResult> UpdateBlock(
             Guid blockId,
-            [FromBody] TbHomepageBlock block)
+            [FromBody] AdminBlockCreateDto blockDto)
         {
-            if (blockId != block.Id)
+            if (blockId != blockDto.Id && blockDto.Id != null && blockDto.Id != Guid.Empty)
             {
                 return BadRequest(new ResponseModel<object>
                 {
@@ -174,15 +203,18 @@ namespace Api.Controllers.v1.Merchandising
 
             try
             {
+                var block = _mapper.Map<TbHomepageBlock>(blockDto);
+                block.Id = blockId; // Ensure the correct ID is used
                 var userId = GetUserId();
                 var updatedBlock = await _adminBlockService.UpdateBlockAsync(block, userId);
+                var updatedBlockDto = _mapper.Map<AdminBlockListDto>(updatedBlock);
 
-                return Ok(new ResponseModel<TbHomepageBlock>
+                return Ok(new ResponseModel<AdminBlockListDto>
                 {
                     Success = true,
                     StatusCode = StatusCodes.Status200OK,
                     Message = "Block updated successfully.",
-                    Data = updatedBlock
+                    Data = updatedBlockDto
                 });
             }
             catch (KeyNotFoundException ex)
@@ -253,11 +285,40 @@ namespace Api.Controllers.v1.Merchandising
         /// Update Block Display Order
         /// </summary>
         [HttpPatch("{blockId}/display-order")]
+        [HttpPut("{blockId}/display-order")]
         [ProducesResponseType(typeof(ResponseModel<object>), StatusCodes.Status200OK)]
         public async Task<IActionResult> UpdateDisplayOrder(
             Guid blockId,
-            [FromBody] int newOrder)
+            [FromBody] dynamic request)
         {
+            int newOrder;
+            
+            // Handle both raw int and { newOrder: value } formats
+            if (request is int intValue)
+            {
+                newOrder = intValue;
+            }
+            else if (request is System.Text.Json.JsonElement jsonElement)
+            {
+                if (jsonElement.TryGetProperty("newOrder", out var newOrderProp))
+                {
+                    newOrder = newOrderProp.GetInt32();
+                }
+                else
+                {
+                    newOrder = jsonElement.GetInt32();
+                }
+            }
+            else
+            {
+                return BadRequest(new ResponseModel<object>
+                {
+                    Success = false,
+                    StatusCode = StatusCodes.Status400BadRequest,
+                    Message = "Invalid display order format"
+                });
+            }
+
             var userId = GetUserId();
             var result = await _adminBlockService.UpdateDisplayOrderAsync(blockId, newOrder, userId);
 

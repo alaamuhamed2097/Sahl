@@ -1,20 +1,39 @@
 ﻿namespace Common.Enumerations.Merchandising
 {
+    /// <summary>
+    /// Homepage block types - determines content source
+    /// أنواع البلوكات في الصفحة الرئيسية - يحدد مصدر المحتوى
+    /// </summary>
     public enum HomepageBlockType
     {
-        // 1. Manual - Admin يختار المنتجات يدوي
+        /// <summary>
+        /// Manually selected items
+        /// منتجات مختارة يدوياً
+        /// </summary>
         ManualItems = 1,
 
-        // 2. Campaign - من حملة معينة
-        Campaign = 2,
+        /// <summary>
+        /// Manually selected categories
+        /// فئات مختارة يدوياً
+        /// </summary>
+        ManualCategories = 2,
 
-        // 3. Dynamic - System يجيب تلقائي
-        Dynamic = 3,
+        /// <summary>
+        /// Campaign-based products
+        /// منتجات من حملة تسويقية
+        /// </summary>
+        Campaign = 3,
 
-        // 4. Personalized - لكل User
-        Personalized = 4,
+        /// <summary>
+        /// Dynamic rule-based content
+        /// محتوى ديناميكي بناءً على قواعد
+        /// </summary>
+        Dynamic = 4,
 
-        // 5. CategoryShowcase - عرض فئات
-        ManualCategories = 5
+        /// <summary>
+        /// Personalized content for each user
+        /// محتوى شخصي لكل مستخدم
+        /// </summary>
+        Personalized = 5
     }
 }
