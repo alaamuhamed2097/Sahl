@@ -18,12 +18,12 @@ namespace BL.Services.Order.Fulfillment;
 /// </summary>
 public class ShippingCalculationService : IShippingCalculationService
 {
-    private readonly IOfferRepository _offerRepository;
+    private readonly IVendorItemRepository _offerRepository;
     private readonly ISystemSettingsService _systemSettings;
     private readonly ILogger _logger;
 
     public ShippingCalculationService(
-        IOfferRepository offerRepository,
+        IVendorItemRepository offerRepository,
         ISystemSettingsService systemSettings,
         ILogger logger)
     {

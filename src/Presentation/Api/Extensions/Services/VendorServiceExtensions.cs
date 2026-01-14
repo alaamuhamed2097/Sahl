@@ -16,6 +16,7 @@ namespace Api.Extensions.Services
 
             // Vendor Items Services
             services.AddScoped<IVendorItemService, VendorItemService>();
+            services.AddScoped<IBuyBoxHelperService, BuyBoxHelperService>();
 
             // Additional vendor-related services
             services.AddScoped<IVendorItemConditionService, VendorItemConditionService>();

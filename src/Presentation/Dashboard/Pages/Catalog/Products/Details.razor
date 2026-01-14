@@ -378,7 +378,8 @@
                         </div>
 
                         <!-- Step 5: Pricing -->
-                        <div id="step-5" class="tab-pane" role="tabpanel">
+
+                         <div id="step-5" class="tab-pane" role="tabpanel">
                             <h5 class="text-primary mb-4">@ECommerceResources.PricingInformation</h5>
                             <p class="text-muted">@ECommerceResources.SetDefaultPricing</p>
 
@@ -453,12 +454,51 @@
                                 </div>
                             }
                             </div>
-                            @if (currentCategory.PricingSystemType == PricingStrategyType.Simple)
+                            @* @if (currentCategory.PricingSystemType == PricingStrategyType.Simple)
                             {
                                 <div class="alert alert-info mt-4">
                                     <i class="fas fa-info-circle me-2"></i>
                                     <strong>@GeneralResources.Note:</strong> @ECommerceResources.DefaultPricingNote
                                 </div>
+                            } *@
+                            @if (currentCategory.Id != Guid.Empty)
+                            {
+                                @if (currentCategory.PricingSystemType == PricingStrategyType.Simple)
+                                {
+                                    <div class="alert alert-info mt-4">
+                                        <div class="d-flex align-items-start">
+                                            <i class="fas fa-info-circle me-2 mt-1"></i>
+                                            <div>
+                                                <strong>@GeneralResources.Note:</strong>
+                                                <p class="mb-0">@GetPricingStrategyMessage()</p>
+                                                <small class="text-muted mt-2 d-block">
+                                                    💡 Barcode and SKU will be stored in the default offer pricing.
+                                                </small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                                else if (currentCategory.PricingSystemType == PricingStrategyType.CombinationBased ||
+                                currentCategory.PricingSystemType == PricingStrategyType.Hybrid)
+                                {
+                                    <div class="alert alert-warning mt-4">
+                                        <div class="d-flex align-items-start">
+                                            <i class="fas fa-exclamation-triangle me-2 mt-1"></i>
+                                            <div>
+                                                <strong>Important:</strong>
+                                                <p class="mb-2">@GetPricingStrategyMessage()</p>
+                                                <small class="text-muted">
+                                                    ⚠️ After saving, navigate to <strong>Item Management → Combinations</strong> to:
+                                                </small>
+                                                <ul class="small mt-2 mb-0">
+                                                    <li>Create combinations with specific attribute values</li>
+                                                    <li>Set prices for each combination</li>
+                                                    <li>Add combination-specific images (optional)</li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
                             }
 
                             <div class="d-flex justify-content-between mt-4">
@@ -469,7 +509,7 @@
                                     @ActionsResources.Next<i class="fas fa-arrow-right ms-2"></i>
                                 </button>
                             </div>
-                        </div>
+                        </div> 
 
                         <!-- Step 6: Attribute Values -->
                         <div id="step-6" class="tab-pane" role="tabpanel">

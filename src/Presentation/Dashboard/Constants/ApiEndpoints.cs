@@ -275,6 +275,11 @@
             public const string MaintenanceMode = $"{Base}/maintenance-mode";
             public const string MinimumOrderAmount = $"{Base}/minimum-order-amount";
         }
+        public static class DevelopmentSettings 
+        {
+            public const string Get = "api/v1/development-settings";
+            public const string IsMultiVendorEnabled = "api/v1/development-settings/multi-vendor-enabled";
+        }
         public static class Page
         {
             public const string Get = "api/v1/PageStatic";

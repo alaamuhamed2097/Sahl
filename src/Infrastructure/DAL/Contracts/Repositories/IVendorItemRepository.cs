@@ -5,12 +5,12 @@ using Domains.Views.Offer;
 namespace DAL.Contracts.Repositories;
 
 /// <summary>
-/// Interface for offer repository operations
+/// Interface for vendor item repository operations
 /// </summary>
-public interface IOfferRepository : ITableRepository<TbOffer>
+public interface IVendorItemRepository : ITableRepository<TbOffer>
 {
     /// <summary>
-    /// Get offer with all related data (item, user, pricing combinations)
+    /// Get vendor item with all related data (item, user, pricing combinations)
     /// </summary>
     Task<VwOffer> GetOfferWithDetailsAsync(Guid offerId, CancellationToken cancellationToken = default);
 
@@ -30,7 +30,7 @@ public interface IOfferRepository : ITableRepository<TbOffer>
     Task<IEnumerable<TbOffer>> GetAvailableOffersAsync(CancellationToken cancellationToken = default);
 
     /// <summary>
-    /// Get offer combination pricing by ID
+    /// Get vendor item combination pricing by ID
     /// </summary>
     Task<TbOfferCombinationPricing> GetOfferCombinationPricingAsync(Guid pricingId, CancellationToken cancellationToken = default);
 
@@ -40,7 +40,7 @@ public interface IOfferRepository : ITableRepository<TbOffer>
     Task<IEnumerable<TbOfferCombinationPricing>> GetOfferPricingCombinationsAsync(Guid offerId, CancellationToken cancellationToken = default);
 
     /// <summary>
-    /// Update offer pricing and stock quantities
+    /// Update vendor item pricing and stock quantities
     /// </summary>
     /// <param name="pricingId"></param>
     /// <param name="newPrice"></param>
@@ -72,12 +72,12 @@ public interface IOfferRepository : ITableRepository<TbOffer>
         CancellationToken cancellationToken = default);
 
     /// <summary>
-    /// Check if an offer has sufficient stock for a requested quantity
+    /// Check if an vendor item has sufficient stock for a requested quantity
     /// </summary>
     Task<bool> CheckOfferStockAsync(Guid offerId, Guid itemCombinationId, int quantity, CancellationToken cancellationToken = default);
 
     /// <summary>
-    /// Reserve stock for an offer (typically during checkout)
+    /// Reserve stock for an vendor item (typically during checkout)
     /// </summary>
     Task<OfferTransactionResult> ReserveStockAsync(
         Guid offerId,
@@ -97,7 +97,7 @@ public interface IOfferRepository : ITableRepository<TbOffer>
         CancellationToken cancellationToken = default);
 
     /// <summary>
-    /// Create a new offer with its pricing combinations
+    /// Create a new vendor item with its pricing combinations
     /// </summary>
     /// <param name="offer"></param>
     /// <param name="pricingList"></param>
@@ -111,7 +111,7 @@ public interface IOfferRepository : ITableRepository<TbOffer>
     CancellationToken cancellationToken = default);
 
     /// <summary>
-    /// Update an existing offer and its pricing combinations
+    /// Update an existing vendor item and its pricing combinations
     /// </summary>
     /// <param name="offer"></param>
     /// <param name="pricingList"></param>

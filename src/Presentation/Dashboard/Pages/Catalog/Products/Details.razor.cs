@@ -4,6 +4,7 @@ using Dashboard.Contracts.Brand;
 using Dashboard.Contracts.ECommerce.Category;
 using Dashboard.Contracts.ECommerce.Item;
 using Dashboard.Contracts.General;
+using Dashboard.Contracts.Setting;
 using Dashboard.Pages.Catalog.Products.Components;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
@@ -38,7 +39,7 @@ namespace Dashboard.Pages.Catalog.Products
         [Inject] protected IAttributeService AttributeService { get; set; } = null!;
         [Inject] protected IUnitService UnitService { get; set; } = null!;
         [Inject] protected IResourceLoaderService ResourceLoaderService { get; set; } = null!;
-        //   [Inject] protected IVideoProviderService VideoProviderService { get; set; } = null!
+        [Inject] protected IDevelopmentSettingsService DevelopmentSettingsService { get; set; } = null!;
         [Inject] protected IJSRuntime JSRuntime { get; set; } = null!;
         [Inject] protected NavigationManager Navigation { get; set; } = null!;
         [Inject] protected IOptions<ApiSettings> ApiOptions { get; set; } = default!;
@@ -47,6 +48,7 @@ namespace Dashboard.Pages.Catalog.Products
 
         // Wizard state
         protected bool isWizardInitialized { get; set; }
+        protected bool isMultiVendorEnabled { get; set; }
         protected int currentStep = 0;
         protected const int TotalSteps = 6;
 
@@ -63,8 +65,6 @@ namespace Dashboard.Pages.Catalog.Products
             //    // Initialize with a default combination
             //    new ItemCombinationDto
             //    {
-            //        Barcode = "1111111",
-            //        SKU = "DEFAULT",
             //        BasePrice = 0,
             //        CombinationAttributes = new List<CombinationAttributeDto>(),
             //        IsDefault = true
@@ -152,7 +152,8 @@ namespace Dashboard.Pages.Catalog.Products
                 {
                     LoadCategoriesAsync(),
                     LoadUnitsAsync(),
-                    LoadBrands()
+                    LoadBrands(),
+                    CheckIsMultiVendorEnabled()
                 };
 
                 await Task.WhenAll(tasks);
@@ -169,6 +170,15 @@ namespace Dashboard.Pages.Catalog.Products
             if (result?.Success == true)
             {
                 categories = result.Data ?? Array.Empty<CategoryDto>();
+            }
+        }
+
+        private async Task CheckIsMultiVendorEnabled()
+        {
+            var result = await DevelopmentSettingsService.CheckIsMultiVendorEnabledAsync();
+            if (result?.Success == true)
+            {
+                isMultiVendorEnabled = result.Data ;
             }
         }
 
@@ -618,7 +628,7 @@ namespace Dashboard.Pages.Catalog.Products
                 //    return;
                 //}
 
-                // Step 4: Check if form is valid
+                // Step 3: Check if form is valid
                 if (!IsFormValid())
                 {
                     Console.WriteLine("  ❌ IsFormValid() FAILED");
@@ -644,6 +654,9 @@ namespace Dashboard.Pages.Catalog.Products
 
                 isSaving = true;
                 StateHasChanged();
+
+                // Step 4: Prepare the model based on pricing strategy
+                PrepareModelForSave();
 
                 //if (Model.Id == Guid.Empty)
                 //{
@@ -686,6 +699,80 @@ namespace Dashboard.Pages.Catalog.Products
         }
 
         /// <summary>
+        /// Prepares the model for saving based on the category's pricing strategy
+        /// This method handles the business logic for what should be created during item save
+        /// </summary>
+        private void PrepareModelForSave()
+        {
+            Console.WriteLine("📦 PrepareModelForSave - Start");
+            Console.WriteLine($"   Category Pricing Type: {currentCategory.PricingSystemType}");
+
+            // The backend will handle creation of:
+            // 1. Default combination (for Simple pricing only)
+            // 2. Default offer (for Single-vendor + Simple pricing only)
+            // 3. Default offer combination pricing (for Single-vendor + Simple pricing only)
+
+            // For the admin dashboard, we just need to ensure the basic item data is correct
+            // The ItemService.SaveAsync will handle the rest based on:
+            // - isMultiVendorMode (from settings)
+            // - category.PricingSystemType (from selected category)
+
+            // Ensure item attributes are properly set
+            if (attributeValuesSectionRef != null)
+            {
+                var attributeData = attributeValuesSectionRef.GetAllAttributeData();
+
+                Model.ItemAttributes = new List<ItemAttributeDto>();
+
+                foreach (var kvp in attributeData)
+                {
+                    if (!string.IsNullOrWhiteSpace(kvp.Value))
+                    {
+                        Model.ItemAttributes.Add(new ItemAttributeDto
+                        {
+                            AttributeId = kvp.Key,
+                            Value = kvp.Value
+                        });
+                    }
+                }
+
+                Console.WriteLine($"   ✅ Prepared {Model.ItemAttributes.Count} item attributes");
+            }
+
+            // For Simple pricing, ensure base price is set
+            if (currentCategory.PricingSystemType == PricingStrategyType.Simple)
+            {
+                if (!Model.BasePrice.HasValue || Model.BasePrice <= 0)
+                {
+                    Console.WriteLine("   ⚠️ Base price not set for Simple pricing - this will fail validation");
+                }
+                else
+                {
+                    Console.WriteLine($"   ✅ Base price set: {Model.BasePrice}");
+                }
+            }
+
+            // Log what will be created on the backend
+            Console.WriteLine("📋 Expected backend behavior:");
+            Console.WriteLine($"   - Item will be created with {Model.Images?.Count ?? 0} images");
+            Console.WriteLine($"   - Item has {Model.ItemAttributes?.Count ?? 0} attributes");
+
+            if (currentCategory.PricingSystemType == PricingStrategyType.Simple)
+            {
+                Console.WriteLine($"   - Default combination will be created (BasePrice: {Model.BasePrice})");
+                Console.WriteLine($"   - Default offer creation depends on multi-vendor mode");
+            }
+            else
+            {
+                Console.WriteLine($"   - No default combination/offer will be created");
+                Console.WriteLine($"   - Combinations must be created separately");
+            }
+
+            Console.WriteLine("📦 PrepareModelForSave - Complete");
+        }
+
+
+        /// <summary>
         /// Validates all required attributes have values
         /// </summary>
         private bool ValidateAttributes()
@@ -693,18 +780,15 @@ namespace Dashboard.Pages.Catalog.Products
             if (Model.CategoryId == Guid.Empty || !categoryAttributes.Any())
                 return true; // No attributes to validate
 
-            // Pricing attributes are validated separately in combinations
+            // Only validate non-pricing attributes (pricing attributes are handled in combinations)
             foreach (var categoryAttr in categoryAttributes.Where(ca => ca.IsRequired && !ca.AffectsPricing))
             {
                 var itemAttr = Model.ItemAttributes?.FirstOrDefault(ia => ia.AttributeId == categoryAttr.AttributeId);
-                Console.WriteLine($"Validate Attribute {categoryAttr.TitleAr} with value : {itemAttr?.Value}");
                 if (itemAttr == null || string.IsNullOrWhiteSpace(itemAttr.Value))
                 {
                     return false;
                 }
             }
-
-            Console.WriteLine($"✅ All required non-pricing attributes are valid");
             return true;
         }
 
@@ -760,6 +844,31 @@ namespace Dashboard.Pages.Catalog.Products
                     return true;
             }
         }
+
+        /// <summary>
+        /// Gets a user-friendly message explaining what will be created
+        /// </summary>
+        private string GetPricingStrategyMessage()
+        {
+            if (currentCategory.PricingSystemType == PricingStrategyType.Simple)
+            {
+                return "A default combination and pricing will be created automatically. " +
+                       "This item will be available for sale immediately after approval.";
+            }
+            else if (currentCategory.PricingSystemType == PricingStrategyType.CombinationBased)
+            {
+                return "You will need to create item combinations with specific attribute values " +
+                       "after saving this item. Vendors can then add their offers to these combinations.";
+            }
+            else if (currentCategory.PricingSystemType == PricingStrategyType.Hybrid)
+            {
+                return "This category supports both simple and combination-based pricing. " +
+                       "You can create multiple combinations with different attribute values.";
+            }
+
+            return "Item will be created based on the category's pricing strategy.";
+        }
+
 
         protected async Task MoveToNextStep()
         {

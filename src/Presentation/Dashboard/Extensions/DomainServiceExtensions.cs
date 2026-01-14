@@ -71,8 +71,9 @@ namespace Dashboard.Extensions
 			services.AddScoped<IReportReviewService, ReportReviewService>();
 			services.AddScoped<IHomePageSliderService, HomePageSliderService>();
 			services.AddScoped<ISystemSettingsService, SystemSettingsService>();
-			// Excel Template Service
-			services.AddScoped<ExcelTemplateService>();
+            services.AddScoped<IDevelopmentSettingsService, DevelopmentSettingsService>();
+            // Excel Template Service
+            services.AddScoped<ExcelTemplateService>();
 
             services.AddScoped<IWithdrawalMethodService, WithdrawalMethodService>();
 
