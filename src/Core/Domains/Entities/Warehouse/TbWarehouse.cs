@@ -7,8 +7,6 @@ namespace Domains.Entities.Warehouse
 {
     public class TbWarehouse : BaseEntity
     {
-        
-
         [MaxLength(500)]
         public string? Address { get; set; }
 

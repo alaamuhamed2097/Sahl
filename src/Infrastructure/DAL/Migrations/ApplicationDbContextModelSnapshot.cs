@@ -1308,11 +1308,6 @@ namespace DAL.Migrations
                         .HasColumnType("uniqueidentifier")
                         .HasDefaultValueSql("NEWID()");
 
-                    b.Property<string>("Barcode")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
-
                     b.Property<decimal>("BasePrice")
                         .HasColumnType("decimal(18,2)");
 
@@ -1335,11 +1330,6 @@ namespace DAL.Migrations
                     b.Property<Guid>("ItemId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("SKU")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
-
                     b.Property<Guid?>("UpdatedBy")
                         .HasColumnType("uniqueidentifier");
 
@@ -1348,15 +1338,9 @@ namespace DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("Barcode")
-                        .IsUnique();
-
                     b.HasIndex("IsDeleted");
 
                     b.HasIndex("ItemId");
-
-                    b.HasIndex("SKU")
-                        .IsUnique();
 
                     b.HasIndex("ItemId", "IsDefault")
                         .IsUnique()
@@ -4492,6 +4476,11 @@ namespace DAL.Migrations
                         .HasColumnType("int")
                         .HasDefaultValue(0);
 
+                    b.Property<string>("Barcode")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
                     b.Property<decimal?>("CostPrice")
                         .HasColumnType("decimal(18,2)");
 
@@ -4555,6 +4544,11 @@ namespace DAL.Migrations
                     b.Property<int>("ReturnedQuantity")
                         .HasColumnType("int");
 
+                    b.Property<string>("SKU")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
                     b.Property<decimal>("SalesPrice")
                         .HasColumnType("decimal(18,2)");
 
@@ -4569,6 +4563,9 @@ namespace DAL.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("Barcode")
+                        .IsUnique();
+
                     b.HasIndex("IsBuyBoxWinner")
                         .HasDatabaseName("IX_TbOfferPricing_BuyBoxWinner_Filtered_NC")
                         .HasFilter("[IsBuyBoxWinner] = 1");
@@ -4580,6 +4577,9 @@ namespace DAL.Migrations
                     b.HasIndex("OfferConditionId");
 
                     b.HasIndex("OfferId");
+
+                    b.HasIndex("SKU")
+                        .IsUnique();
 
                     b.HasIndex("SalesPrice")
                         .HasDatabaseName("IX_TbOfferPricing_SalesPrice_NC");

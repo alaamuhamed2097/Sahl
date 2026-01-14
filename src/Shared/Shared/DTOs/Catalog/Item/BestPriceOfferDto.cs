@@ -11,6 +11,8 @@ namespace Shared.DTOs.Catalog.Item
         public decimal? VendorRating { get; set; }
         public decimal Price { get; set; }
         public decimal SalesPrice { get; set; }
+        public string? SKU { get; set; }
+        public string? Barcode { get; set; }
         public decimal DiscountPercentage { get; set; }
         public int AvailableQuantity { get; set; }
         public StockStatus StockStatus { get; set; }

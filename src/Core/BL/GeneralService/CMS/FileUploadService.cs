@@ -1,16 +1,18 @@
 ﻿using BL.Contracts.GeneralService.CMS;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Serilog;
 
 namespace BL.GeneralService.CMS;
 
 public class FileUploadService : IFileUploadService
 {
     private readonly IWebHostEnvironment _env;
-
-    public FileUploadService(IWebHostEnvironment env)
+    private readonly ILogger _logger;
+    public FileUploadService(IWebHostEnvironment env, ILogger logger)
     {
         _env = env;
+        _logger = logger;
     }
 
     public async Task<byte[]> GetFileBytesAsync(IFormFile file)
@@ -116,6 +118,24 @@ public class FileUploadService : IFileUploadService
         catch (FormatException)
         {
             return (false, "File is not a valid base64 string.");
+        }
+    }
+    public async Task DeleteFileAsync(string filePath)
+    {
+        if (string.IsNullOrEmpty(filePath))
+            return;
+
+        try
+        {
+            if (File.Exists(filePath))
+            {
+                await Task.Run(() => File.Delete(filePath));
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.Error(ex, "Error when deleting file: {FilePath}", filePath);
+            throw new ApplicationException($"Error deleting file: {filePath}", ex);
         }
     }
 }

@@ -1,0 +1,142 @@
+﻿<div class="tab-pane fade show active" id="v-pills-home" role="tabpanel"
+                 aria-labelledby="v-pills-home-tab">
+                <div class="card">
+                    <div class="card-body">
+
+                        <!-- Name & Email & Sponsor -->
+                        <div class="row align-items-center">
+                            <div class="col-md-9 align-self-end">
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">@ECommerceResources.Name:</label>
+                                    <input type="text" class="form-control"
+                                           value="@Model.FullName" disabled>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">@ECommerceResources.Email:</label>
+                                    <input type="text" class="form-control"
+                                           value="@Model.Email" disabled>
+                                </div>
+                            </div>
+                            <div class="col-md-3 text-center">
+                                <p class="fw-bold mb-1">@ECommerceResources.Sponsor</p>
+                                <img src="@(baseUrl + Model.SponsorProfileImagePath)"
+                                     class="img-fluid rounded-circle mb-1" alt="@ECommerceResources.Sponsor">
+                                <p class="mb-0">@Model.SponsorFullName</p>
+                            </div>
+                        </div>
+
+                        <!-- username & Zip Code -->
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">@FormResources.Username:</label>
+                                <input type="text" class="form-control"
+                                       value="@Model.UserName" disabled>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">@FormResources.ZipCode:</label>
+                                <input type="text" class="form-control" value="@Model.ZipCode"
+                                       disabled>
+                            </div>
+                        </div>
+
+                        <!-- Address -->
+                        <div class="row mb-3">
+                            <div class="col">
+                                <label class="form-label fw-bold">@FormResources.Address:</label>
+                                <input type="text" class="form-control"
+                                       value="@Model.Address"
+                                       disabled>
+                            </div>
+                        </div>
+
+                        <!-- Phone Numbers -->
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">@FormResources.PhoneNumber:</label>
+                                <input type="text" class="form-control" value="@Model.FullNumber"
+                                       disabled>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">@FormResources.AlternativePhoneNumber:</label>
+                                <input type="text" class="form-control" value="@(Model.FullAlternativeNumber ?? GeneralResources.NotAvailable)"
+                                       disabled>
+                            </div>
+                        </div>
+
+                        <!-- Country / State / City -->
+                        <div class="row mb-3">
+                            <div class="col-md-4">
+                                <label class="form-label fw-bold">@ECommerceResources.Country:</label>
+                                <input type="text" class="form-control" value="@Model.Country"
+                                       disabled>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label fw-bold">@ECommerceResources.State:</label>
+                                <input type="text" class="form-control" value="@Model.State"
+                                       disabled>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label fw-bold">@ECommerceResources.City:</label>
+                                <input type="text" class="form-control" value="@Model.City"
+                                       disabled>
+                            </div>
+                        </div>
+
+                        <!-- National ID / Passport -->
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">
+                                @ECommerceResources.NationalIdPassport:
+                            </label>
+                            <div class="row">
+                                <div class="col-md-6 mb-2">
+                                    <div class="border d-flex justify-content-center align-items-center"
+                                         style="height:200px;">
+                                        <img src="@(baseUrl + Model.NationalIdImagePath1)"
+                                             class="w-100 h-100 object-fit-cover" alt="@ECommerceResources.Id1">
+                                    </div>
+                                </div>
+                                @if (Model.NationalIdImagePath2 != null)
+                                {
+                                    <div class="col-md-6 mb-2">
+                                        <div class="border d-flex justify-content-center align-items-center"
+                                             style="height:200px;">
+                                            <img src="@(baseUrl + Model.NationalIdImagePath2)"
+                                                 class="w-100 h-100 object-fit-cover" alt="@ECommerceResources.Id2">
+                                        </div>
+                                    </div>                                    
+                                }
+                            </div>
+                        </div>
+
+                        <!-- Join Date / PVs -->
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">@ECommerceResources.JoinDate:</label>
+                                <input type="text" class="form-control" value="@Model.JoinDate.ToString("d MMM. yyyy")"
+                                       disabled>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">@ECommerceResources.TotalPVs:</label>
+                                <input type="text" class="form-control" value="@Model.TotalPVs.ToString("N0")"
+                                       disabled>
+                            </div>
+                        </div>
+
+                        <!-- Rank &Commission -->
+                        <div class="row">
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">@ECommerceResources.CurrentRank:</label>
+                                <input type="text" class="form-control" 
+                                       value="@(Model.RankTitle)" 
+                                       disabled>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">
+                                    @ECommerceResources.TotalCommissionEarned:
+                                </label>
+                                <input type="text" class="form-control" value="@Model.TotalCommissionAmount $" disabled>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>

@@ -9,6 +9,6 @@ public interface IUserRegistrationService
 {
     Task<OperationResult> RegisterAdminAsync(AdminRegistrationDto userDto, Guid CreatorId);
     Task<ServiceResult<CustomerRegistrationResponseDto>> RegisterCustomerAsync(CustomerRegistrationDto userDto, string clientType);
-    Task<ServiceResult<VendorRegistrationResponseDto>> RegisterVendorAsync(RegisterVendorRequestDto request, string clientType);
+    Task<ServiceResult<VendorRegistrationResponseDto>> RegisterVendorAsync(VendorRegistrationRequestDto request, string clientType);
 }
 

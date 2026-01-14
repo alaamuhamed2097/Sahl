@@ -1,5 +1,4 @@
-﻿using Common.Enumerations.FieldType;
-using Common.Enumerations.Pricing;
+﻿using Common.Enumerations.Pricing;
 
 namespace Shared.DTOs.Catalog.Item
 {
@@ -34,67 +33,5 @@ namespace Shared.DTOs.Catalog.Item
 
         // Pricing for default combination
         public PricingDto Pricing { get; set; }
-    }
-
-    public class CategoryInfoDto
-    {
-        public Guid Id { get; set; }
-        public string NameAr { get; set; }
-        public string NameEn { get; set; }
-    }
-
-    public class BrandInfoDto
-    {
-        public Guid? Id { get; set; }
-        public string NameAr { get; set; }
-        public string NameEn { get; set; }
-        public string LogoUrl { get; set; }
-    }
-
-    //public class ItemImageDto
-    //{
-    //    public string ImageUrl { get; set; }
-    //    public int DisplayOrder { get; set; }
-    //    public bool IsDefault { get; set; }
-    //}
-
-    // <summary>
-    // Can be either pricing attribute(with options) or spec attribute(with value)
-    // </summary>
-    public class ItemAttributeDefinitionDto
-    {
-        public Guid AttributeId { get; set; }
-        public string NameAr { get; set; } = null!;
-        public string NameEn { get; set; } = null!;
-        public FieldType FieldType { get; set; }
-        public int DisplayOrder { get; set; }
-        public string ValueAr { get; set; }
-        public string ValueEn { get; set; }
-    }
-
-    public class ItemAttributeOptionDto
-    {
-        public Guid ValueId { get; set; }
-        public string ValueAr { get; set; }
-        public string ValueEn { get; set; }
-        public int DisplayOrder { get; set; }
-        public bool IsAvailable { get; set; }
-    }
-
-    public class AttributeValueDto
-    {
-        public string ValueAr { get; set; }
-        public string ValueEn { get; set; }
-    }
-
-    public class CurrentCombinationDto
-    {
-        public Guid CombinationId { get; set; }
-        public string? SKU { get; set; }
-        public string? Barcode { get; set; }
-        public bool IsDefault { get; set; }
-        public Guid CreatedBy { get; set; }
-        public List<PricingAttributeDto>? PricingAttributes { get; set; }
-        public List<ImageDto>? Images { get; set; }
     }
 }

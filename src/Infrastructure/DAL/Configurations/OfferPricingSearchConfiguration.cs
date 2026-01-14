@@ -34,6 +34,12 @@ namespace DAL.Configurations
             builder.Property(e => e.StockStatus).IsRequired();
 
             builder.Property(e => e.IsBuyBoxWinner).IsRequired().HasDefaultValue(false);
+           
+            builder.Property(e => e.Barcode)
+             .HasMaxLength(200);
+
+            builder.Property(e => e.SKU)
+                .HasMaxLength(200);
 
             // ============================================================================
             // STRATEGIC INDEXES FOR PRICE AND STOCK QUERIES
@@ -82,6 +88,10 @@ namespace DAL.Configurations
                 .HasDatabaseName("IX_TbOfferPricing_BuyBoxWinner_Filtered_NC")
                 .IsUnique(false)
                 .HasFilter("[IsBuyBoxWinner] = 1");
+
+            // Unique indexes for SKU and Barcode across table
+            builder.HasIndex(e => e.SKU).IsUnique(true);
+            builder.HasIndex(e => e.Barcode).IsUnique(true);
 
             // ============================================================================
             // Foreign Key Relationships

@@ -11,7 +11,7 @@ namespace Shared.DTOs.Order.Fulfillment.Shipment
         public required string ItemNameAr { get; set; } = string.Empty;
         public required string ItemNameEn { get; set; } = string.Empty;
         public string SellerName { get; set; } = string.Empty;
-        public OfferDto Offer { get; set; }
+        public VendorItemDto Offer { get; set; }
         public int Quantity { get; set; }
         public decimal SubTotal { get; set; }
     }

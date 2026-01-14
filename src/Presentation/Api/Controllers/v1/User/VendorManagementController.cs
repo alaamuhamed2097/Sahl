@@ -21,22 +21,21 @@ namespace Api.Controllers.v1.User
     public class VendorManagementController : BaseController
     {
         private readonly IVendorManagementService _vendorService;
-		private readonly IWarehouseService _warehouseService;
+        private readonly IWarehouseService _warehouseService;
 
+        public VendorManagementController(IVendorManagementService vendorService, IWarehouseService warehouseService)
+        {
+            _vendorService = vendorService;
+            _warehouseService = warehouseService;
+        }
 
-		public VendorManagementController(IVendorManagementService vendorService, IWarehouseService warehouseService)
-		{
-			_vendorService = vendorService;
-			_warehouseService = warehouseService;
-		}
-
-		/// <summary>
-		/// Retrieves all vendors.
-		/// </summary>
-		/// <remarks>
-		/// API Version: 1.0+
-		/// </remarks>
-		[HttpGet]
+        /// <summary>
+        /// Retrieves all vendors.
+        /// </summary>
+        /// <remarks>
+        /// API Version: 1.0+
+        /// </remarks>
+        [HttpGet]
         public async Task<IActionResult> Get()
         {
             var vendor = await _vendorService.GetAllAsync();
@@ -83,6 +82,25 @@ namespace Api.Controllers.v1.User
         }
 
         /// <summary>
+        /// Get all vendors with their user information
+        /// </summary>
+        [HttpGet("with-users")]
+        [ProducesResponseType(typeof(IEnumerable<VendorWithUserDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<ActionResult<IEnumerable<VendorWithUserDto>>> GetVendorsWithUsers()
+        {
+            try
+            {
+                var vendors = await _warehouseService.GetVendorUsersAsync();
+                return Ok(vendors);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "An error occurred while retrieving vendors");
+            }
+        }
+
+        /// <summary>
         /// Searches vendors with pagination and filtering.
         /// </summary>
         /// <remarks>
@@ -115,97 +133,101 @@ namespace Api.Controllers.v1.User
             });
         }
 
-        /// <summary>
-        /// Adds a new vendor or updates an existing one.
-        /// </summary>
-        /// <remarks>
-        /// API Version: 1.0+
-        /// </remarks>
-        /// <param name="dto">The vendor data.</param>
-        [HttpPost("save")]
-        public async Task<IActionResult> Save([FromBody] VendorDto dto)
+        [HttpPost("update")]
+        public async Task<IActionResult> Update(VendorUpdateRequestDto request)
         {
+            // Validate model state
             if (!ModelState.IsValid)
-                return BadRequest(new ResponseModel<string>
+            {
+                var errors = ModelState.Values
+                    .SelectMany(v => v.Errors)
+                    .Select(e => e.ErrorMessage)
+                    .ToList();
+
+                return Ok(new ResponseModel<VendorRegistrationResponseDto>
                 {
                     Success = false,
-                    Message = "Invalid vendor data."
+                    Errors = errors,
+                    Message = ValidationResources.PleaseFixValidationErrors
                 });
+            }
 
-            var result = await _vendorService.SaveAsync(dto, GuidUserId);
-            if (!result.Success)
-                return Ok(new ResponseModel<string>
+            var success = await _vendorService.UpdateVendorAsync(request, UserId);
+            if (!success.Success)
+                return Ok(new ResponseModel<VendorUpdateResponseDto>
                 {
                     Success = false,
-                    Message = GetResource<NotifiAndAlertsResources>(nameof(NotifiAndAlertsResources.SaveFailed))
+                    Message = GetResource<NotifiAndAlertsResources>(nameof(NotifiAndAlertsResources.SaveFailed)),
+                    Errors = success.Errors
                 });
 
-            return Ok(new ResponseModel<string>
+
+            return Ok(new ResponseModel<VendorUpdateResponseDto>
             {
                 Success = true,
+                Data = success.Data,
                 Message = GetResource<NotifiAndAlertsResources>(nameof(NotifiAndAlertsResources.SavedSuccessfully))
             });
         }
 
-		[HttpPost("add-warehouse")]
-		[Authorize(Roles = nameof(UserRole.Vendor))]
-		public async Task<IActionResult> AddWarehouse([FromBody] WarehouseDto dto)
-		{
-			if (!ModelState.IsValid)
-				return BadRequest(new ResponseModel<string>
-				{
-					Success = false,
-					Message = "Invalid warehouse data."
-				});
-
-			var success = await _warehouseService.SaveAsync(dto, GuidUserId);
-			if (!success)
-
-				return Ok(new ResponseModel<string>
-				{
-					Success = false,
-					Message = GetResource<NotifiAndAlertsResources>(nameof(NotifiAndAlertsResources.WarehouseAlreadyExists))
-				});
-            
-
-			return Ok(new ResponseModel<string>
-			{
-				Success = true,
-				Message = GetResource<NotifiAndAlertsResources>(nameof(NotifiAndAlertsResources.SavedSuccessfully))
-			});
-		}
-		
         /// <summary>
-		/// Get all vendors with their user information
-		/// </summary>
-		[HttpGet("with-users")]
-		[ProducesResponseType(typeof(IEnumerable<VendorWithUserDto>), StatusCodes.Status200OK)]
-		[ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<ActionResult<IEnumerable<VendorWithUserDto>>> GetVendorsWithUsers()
-		{
-			try
-			{
-				var vendors = await _warehouseService.GetVendorUsersAsync();
-				return Ok(vendors);
-			}
-			catch (Exception ex)
-			{
-				return StatusCode(500, "An error occurred while retrieving vendors");
-			}
-		}
-		
+        /// Updates the vendor status.
+        /// </summary>
+        [HttpPost("update-vendor-status")]
+        public async Task<IActionResult> UpdateVendorStatus([FromBody] UpdateVendorStatusDto dto)
+        {
+            var result = await _vendorService.UpdateVendorStatusAsync(dto.VendorId, dto.Status);
+            if (result)
+            {
+                return Ok(new ResponseModel<bool>
+                {
+                    Success = true,
+                    Message = GetResource<NotifiAndAlertsResources>(nameof(NotifiAndAlertsResources.SavedSuccessfully))
+                });
+            }
+
+            return BadRequest(new ResponseModel<bool>
+            {
+                Success = false,
+                Message = GetResource<NotifiAndAlertsResources>(nameof(NotifiAndAlertsResources.SaveFailed))
+            });
+        }
+
         /// <summary>
-		/// Deletes a vendor by ID (soft delete).
-		/// </summary>
-		/// <remarks>
-		/// API Version: 1.0+
-		/// </remarks>
-		/// <param name="id">The ID of the vendor to delete.</param>
-		[HttpPost("delete")]
+        /// Updates the user status associated with the vendor.
+        /// </summary>
+        [HttpPost("update-user-status")]
+        public async Task<IActionResult> UpdateUserStatus([FromBody] UpdateUserStatusDto dto)
+        {
+            var result = await _vendorService.UpdateUserStatusAsync(dto.VendorId, dto.Status);
+            if (result)
+            {
+                return Ok(new ResponseModel<bool>
+                {
+                    Success = true,
+                    Message = GetResource<NotifiAndAlertsResources>(nameof(NotifiAndAlertsResources.SavedSuccessfully))
+                });
+            }
+
+            return BadRequest(new ResponseModel<bool>
+            {
+                Success = false,
+                Message = GetResource<NotifiAndAlertsResources>(nameof(NotifiAndAlertsResources.SaveFailed))
+            });
+        }
+
+        /// <summary>
+        /// Deletes a vendor by ID (soft delete).
+        /// </summary>
+        /// <remarks>
+        /// API Version: 1.0+
+        /// </remarks>
+        /// <param name="id">The ID of the vendor to delete.</param>
+        [HttpPost("delete")]
         public async Task<IActionResult> Delete([FromBody] Guid id)
         {
             if (id == Guid.Empty)
-                return BadRequest(new ResponseModel<string>
+                return BadRequest(new ResponseModel<bool>
                 {
                     Success = false,
                     Message = "Invalid vendor ID."
@@ -213,16 +235,45 @@ namespace Api.Controllers.v1.User
 
             var success = await _vendorService.DeleteAsync(id, GuidUserId);
             if (!success)
-                return BadRequest(new ResponseModel<string>
+                return BadRequest(new ResponseModel<bool>
                 {
                     Success = false,
                     Message = GetResource<NotifiAndAlertsResources>(nameof(NotifiAndAlertsResources.DeleteFailed))
                 });
 
-            return Ok(new ResponseModel<string>
+            return Ok(new ResponseModel<bool>
             {
                 Success = true,
                 Message = GetResource<NotifiAndAlertsResources>(nameof(NotifiAndAlertsResources.DeletedSuccessfully))
+            });
+        }
+
+
+        [HttpPost("add-warehouse")]
+        [Authorize(Roles = nameof(UserRole.Vendor))]
+        public async Task<IActionResult> AddWarehouse([FromBody] WarehouseDto dto)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(new ResponseModel<string>
+                {
+                    Success = false,
+                    Message = "Invalid warehouse data."
+                });
+
+            var success = await _warehouseService.SaveAsync(dto, GuidUserId);
+            if (!success)
+
+                return Ok(new ResponseModel<string>
+                {
+                    Success = false,
+                    Message = GetResource<NotifiAndAlertsResources>(nameof(NotifiAndAlertsResources.WarehouseAlreadyExists))
+                });
+
+
+            return Ok(new ResponseModel<string>
+            {
+                Success = true,
+                Message = GetResource<NotifiAndAlertsResources>(nameof(NotifiAndAlertsResources.SavedSuccessfully))
             });
         }
     }

@@ -8,7 +8,7 @@ namespace Domains.Procedures
     {
         public Guid ItemId { get; set; }
         public Guid ItemCombinationId { get; set; }
-        public Guid OfferCombinationPricingId { get; set; }
+        public Guid? OfferCombinationPricingId { get; set; }
         public string TitleAr { get; set; }
         public string TitleEn { get; set; }
         public string ShortDescriptionAr { get; set; }

@@ -10,7 +10,6 @@ public interface IWarehouseService
 {
     Task<IEnumerable<WarehouseDto>> GetAllAsync();
     Task<IEnumerable<WarehouseDto>> GetActiveWarehousesAsync();
-    Task<WarehouseDto> GetMarketWarehousesAsync();
     Task<WarehouseDto?> GetByIdAsync(Guid id);
     Task<PagedResult<WarehouseDto>> SearchAsync(WarehouseSearchCriteriaModel criteria);
     Task<PagedResult<WarehouseDto>> SearchVendorAsync(WarehouseSearchCriteriaModel criteria);
