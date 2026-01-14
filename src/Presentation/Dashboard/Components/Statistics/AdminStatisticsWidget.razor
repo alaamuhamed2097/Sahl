@@ -6,243 +6,934 @@
 
 @if (isLoading)
 {
-    <div class="text-center p-5">
-        <div class="spinner-border text-primary" role="status">
-            <span class="visually-hidden">Loading...</span>
+    <div class="modern-loading-state">
+        <div class="loading-spinner-modern">
+            <div class="spinner-ring"></div>
+            <div class="spinner-ring"></div>
+            <div class="spinner-ring"></div>
         </div>
-        <p class="mt-2 text-muted">Loading dashboard data...</p>
+        <p class="loading-text">@NotifiAndAlertsResources.LoadingInsights</p>
     </div>
 }
 else if (dashboardSummary != null)
 {
-    <div class="row g-4 fade-in">
+    <!-- Primary Metrics Grid -->
+    <div class="metrics-grid primary-metrics">
         <!-- Total Users Card -->
-        <div class="col-xl-3 col-md-6">
-            <div class="card dashboard-widget stat-widget">
-                <div class="card-body">
-                    <div class="stat-widget-icon stat-primary">
-                        <i class="fas fa-users"></i>
-                    </div>
-                    <div class="stat-widget-number">@dashboardSummary.TotalActiveUsers</div>
-                    <div class="stat-widget-label">Total Users</div>
-                    <div class="stat-widget-change @(dashboardSummary.UsersChangePercentage >= 0 ? "positive" : "negative")">
-                        <i class="fas fa-arrow-@(dashboardSummary.UsersChangePercentage >= 0 ? "up" : "down")"></i>
-                        <span>@dashboardSummary.UsersChangePercentage.ToString("F1")%</span>
-                    </div>
+        <div class="metric-card metric-card-primary">
+            <div class="metric-icon-wrapper">
+                <div class="metric-icon">
+                    <i class="fas fa-users"></i>
+                </div>
+                <div class="metric-badge @(dashboardSummary.UsersChangePercentage >= 0 ? "badge-success" : "badge-danger")">
+                    <i class="fas fa-arrow-@(dashboardSummary.UsersChangePercentage >= 0 ? "up" : "down")"></i>
+                    @Math.Abs(dashboardSummary.UsersChangePercentage).ToString("F1")%
                 </div>
             </div>
+            <div class="metric-content">
+                <div class="metric-value">@dashboardSummary.TotalActiveUsers.ToString("N0")</div>
+                <div class="metric-label">@GeneralResources.TotalUsers</div>
+                <div class="metric-footer">
+                    <span class="metric-trend @(dashboardSummary.UsersChangePercentage >= 0 ? "trend-up" : "trend-down")">
+                        @(dashboardSummary.UsersChangePercentage >= 0 ? "+" : "")@dashboardSummary.UsersChangePercentage.ToString("F1")% @GeneralResources.FromLastPeriod
+                    </span>
+                </div>
+            </div>
+            <div class="metric-decoration metric-decoration-primary"></div>
         </div>
 
         <!-- Total Orders Card -->
-        <div class="col-xl-3 col-md-6">
-            <div class="card dashboard-widget stat-widget">
-                <div class="card-body">
-                    <div class="stat-widget-icon stat-success">
-                        <i class="fas fa-shopping-cart"></i>
-                    </div>
-                    <div class="stat-widget-number">@dashboardSummary.TotalOrders</div>
-                    <div class="stat-widget-label">Total Orders</div>
-                    <div class="stat-widget-change @(dashboardSummary.OrdersChangePercentage >= 0 ? "positive" : "negative")">
-                        <i class="fas fa-arrow-@(dashboardSummary.OrdersChangePercentage >= 0 ? "up" : "down")"></i>
-                        <span>@dashboardSummary.OrdersChangePercentage.ToString("F1")%</span>
-                    </div>
+        <div class="metric-card metric-card-success">
+            <div class="metric-icon-wrapper">
+                <div class="metric-icon">
+                    <i class="fas fa-shopping-cart"></i>
+                </div>
+                <div class="metric-badge @(dashboardSummary.OrdersChangePercentage >= 0 ? "badge-success" : "badge-danger")">
+                    <i class="fas fa-arrow-@(dashboardSummary.OrdersChangePercentage >= 0 ? "up" : "down")"></i>
+                    @Math.Abs(dashboardSummary.OrdersChangePercentage).ToString("F1")%
                 </div>
             </div>
+            <div class="metric-content">
+                <div class="metric-value">@dashboardSummary.TotalOrders.ToString("N0")</div>
+                <div class="metric-label">@ECommerceResources.TotalOrders</div>
+                <div class="metric-footer">
+                    <span class="metric-trend @(dashboardSummary.OrdersChangePercentage >= 0 ? "trend-up" : "trend-down")">
+                        @(dashboardSummary.OrdersChangePercentage >= 0 ? "+" : "")@dashboardSummary.OrdersChangePercentage.ToString("F1")% @GeneralResources.FromLastPeriod
+                    </span>
+                </div>
+            </div>
+            <div class="metric-decoration metric-decoration-success"></div>
         </div>
 
         <!-- Total Revenue Card -->
-        <div class="col-xl-3 col-md-6">
-            <div class="card dashboard-widget stat-widget">
-                <div class="card-body">
-                    <div class="stat-widget-icon stat-warning">
-                        <i class="fas fa-dollar-sign"></i>
-                    </div>
-                    <div class="stat-widget-number">@dashboardSummary.TotalRevenue.ToString("C0")</div>
-                    <div class="stat-widget-label">Total Revenue</div>
-                    <div class="stat-widget-change @(dashboardSummary.RevenueChangePercentage >= 0 ? "positive" : "negative")">
-                        <i class="fas fa-arrow-@(dashboardSummary.RevenueChangePercentage >= 0 ? "up" : "down")"></i>
-                        <span>@dashboardSummary.RevenueChangePercentage.ToString("F1")%</span>
-                    </div>
+        <div class="metric-card metric-card-warning">
+            <div class="metric-icon-wrapper">
+                <div class="metric-icon">
+                    <i class="fas fa-dollar-sign"></i>
+                </div>
+                <div class="metric-badge @(dashboardSummary.RevenueChangePercentage >= 0 ? "badge-success" : "badge-danger")">
+                    <i class="fas fa-arrow-@(dashboardSummary.RevenueChangePercentage >= 0 ? "up" : "down")"></i>
+                    @Math.Abs(dashboardSummary.RevenueChangePercentage).ToString("F1")%
                 </div>
             </div>
+            <div class="metric-content">
+                <div class="metric-value">@dashboardSummary.TotalRevenue.ToString("C0")</div>
+                <div class="metric-label">@ECommerceResources.TotalRevenue</div>
+                <div class="metric-footer">
+                    <span class="metric-trend @(dashboardSummary.RevenueChangePercentage >= 0 ? "trend-up" : "trend-down")">
+                        @(dashboardSummary.RevenueChangePercentage >= 0 ? "+" : "")@dashboardSummary.RevenueChangePercentage.ToString("F1")% @GeneralResources.FromLastPeriod
+                    </span>
+                </div>
+            </div>
+            <div class="metric-decoration metric-decoration-warning"></div>
         </div>
 
         <!-- Total Products Card -->
-        <div class="col-xl-3 col-md-6">
-            <div class="card dashboard-widget stat-widget">
-                <div class="card-body">
-                    <div class="stat-widget-icon stat-info">
-                        <i class="fas fa-box"></i>
-                    </div>
-                    <div class="stat-widget-number">@dashboardSummary.TotalProducts</div>
-                    <div class="stat-widget-label">Total Products</div>
-                    <div class="stat-widget-change positive">
-                        <i class="fas fa-arrow-up"></i>
-                        <span>+@dashboardSummary.NewProductsThisPeriod</span>
-                    </div>
+        <div class="metric-card metric-card-info">
+            <div class="metric-icon-wrapper">
+                <div class="metric-icon">
+                    <i class="fas fa-box"></i>
+                </div>
+                <div class="metric-badge badge-info">
+                    <i class="fas fa-plus"></i>
+                    @dashboardSummary.NewProductsThisPeriod
                 </div>
             </div>
+            <div class="metric-content">
+                <div class="metric-value">@dashboardSummary.TotalProducts.ToString("N0")</div>
+                <div class="metric-label">@ECommerceResources.TotalProducts</div>
+                <div class="metric-footer">
+                    <span class="metric-trend trend-neutral">
+                        +@dashboardSummary.NewProductsThisPeriod @GeneralResources.NewThisPeriod
+                    </span>
+                </div>
+            </div>
+            <div class="metric-decoration metric-decoration-info"></div>
         </div>
     </div>
 
-    <!-- Secondary Stats Row -->
-    <div class="row g-4 mt-3">
+    <!-- Secondary Metrics Grid -->
+    <div class="metrics-grid secondary-metrics">
         <!-- Vendors Card -->
-        <div class="col-xl-4 col-md-6">
-            <div class="card dashboard-widget stat-widget">
-                <div class="card-body">
-                    <div class="stat-widget-icon stat-secondary">
-                        <i class="fas fa-store"></i>
-                    </div>
-                    <div class="stat-widget-number">@dashboardSummary.TotalVendors</div>
-                    <div class="stat-widget-label">Active Vendors</div>
-                    <div class="stat-widget-info">
-                        <small class="text-muted">@dashboardSummary.NewUsersThisPeriod new this period</small>
-                    </div>
+        <div class="metric-card metric-card-secondary">
+            <div class="metric-icon-wrapper">
+                <div class="metric-icon metric-icon-sm">
+                    <i class="fas fa-store"></i>
+                </div>
+            </div>
+            <div class="metric-content">
+                <div class="metric-value-sm">@dashboardSummary.TotalVendors.ToString("N0")</div>
+                <div class="metric-label">@ECommerceResources.ActiveVendors</div>
+                <div class="metric-detail">
+                    <i class="fas fa-user-plus"></i>
+                    <span>@dashboardSummary.NewUsersThisPeriod @GeneralResources.NewThisPeriod</span>
                 </div>
             </div>
         </div>
 
         <!-- Pending Orders Card -->
-        <div class="col-xl-4 col-md-6">
-            <div class="card dashboard-widget stat-widget">
-                <div class="card-body">
-                    <div class="stat-widget-icon stat-danger">
-                        <i class="fas fa-hourglass-end"></i>
-                    </div>
-                    <div class="stat-widget-number">@dashboardSummary.PendingOrders</div>
-                    <div class="stat-widget-label">Pending Orders</div>
-                    <div class="stat-widget-info">
-                        <small class="text-muted">Awaiting processing</small>
-                    </div>
+        <div class="metric-card metric-card-danger">
+            <div class="metric-icon-wrapper">
+                <div class="metric-icon metric-icon-sm">
+                    <i class="fas fa-hourglass-half"></i>
+                </div>
+            </div>
+            <div class="metric-content">
+                <div class="metric-value-sm">@dashboardSummary.PendingOrders.ToString("N0")</div>
+                <div class="metric-label">@ECommerceResources.PendingOrders</div>
+                <div class="metric-detail">
+                    <i class="fas fa-clock"></i>
+                    <span>@GeneralResources.AwaitingProcessing</span>
                 </div>
             </div>
         </div>
 
         <!-- Average Rating Card -->
-        <div class="col-xl-4 col-md-6">
-            <div class="card dashboard-widget stat-widget">
-                <div class="card-body">
-                    <div class="stat-widget-icon stat-accent">
-                        <i class="fas fa-star"></i>
-                    </div>
-                    <div class="stat-widget-number">@dashboardSummary.AverageCustomerRating.ToString("F1")</div>
-                    <div class="stat-widget-label">Avg. Rating</div>
-                    <div class="stat-widget-info">
-                        <small class="text-muted">@dashboardSummary.TotalReviews reviews</small>
-                    </div>
+        <div class="metric-card metric-card-accent">
+            <div class="metric-icon-wrapper">
+                <div class="metric-icon metric-icon-sm">
+                    <i class="fas fa-star"></i>
+                </div>
+            </div>
+            <div class="metric-content">
+                <div class="metric-value-sm">@dashboardSummary.AverageCustomerRating.ToString("F1")</div>
+                <div class="metric-label">@ECommerceResources.AverageRating</div>
+                <div class="metric-detail">
+                    <i class="fas fa-comment-dots"></i>
+                    <span>@dashboardSummary.TotalReviews.ToString("N0") @ECommerceResources.Reviews</span>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Charts and Lists Row -->
-    <div class="row g-4 mt-3">
-        <!-- Top Products -->
-        <div class="col-xl-6">
-            <div class="card dashboard-widget">
-                <div class="card-body">
-                    <div class="dashboard-widget-header">
-                        <h5 class="dashboard-widget-title">Top Selling Products</h5>
-                    </div>
-                    <div class="table-responsive">
-                        <table class="table table-hover mb-0">
-                            <thead>
+    <!-- Data Tables Section -->
+    <div class="data-tables-grid">
+        <!-- Top Products Table -->
+        <div class="data-card">
+            <div class="data-card-header">
+                <div class="data-card-title">
+                    <i class="fas fa-trophy"></i>
+                    <h3>@ECommerceResources.TopSellingProducts</h3>
+                </div>
+                <button class="btn-icon" title="@ActionsResources.ViewAll">
+                    <i class="fas fa-external-link-alt"></i>
+                </button>
+            </div>
+            <div class="data-card-body">
+                <div class="modern-table-wrapper">
+                    <table class="modern-table">
+                        <thead>
+                            <tr>
+                                <th>@ECommerceResources.Product</th>
+                                <th>@GeneralResources.Units</th>
+                                <th>@ECommerceResources.Revenue</th>
+                                <th>@ECommerceResources.Rating</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var product in dashboardSummary.TopProducts.Take(5))
+                            {
                                 <tr>
-                                    <th>Product</th>
-                                    <th>Units Sold</th>
-                                    <th>Revenue</th>
-                                    <th>Rating</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach (var product in dashboardSummary.TopProducts.Take(5))
-                                {
-                                    <tr>
-                                        <td>
-                                            <div class="product-name">
-                                                <span>@product.ProductName</span>
-                                                <small class="text-muted d-block">@product.VendorName</small>
+                                    <td>
+                                        <div class="table-product-cell">
+                                            <div class="product-avatar">@product.ProductName.Substring(0, 1)</div>
+                                            <div class="product-info">
+                                                <span class="product-name">@product.ProductName</span>
+                                                <span class="product-vendor">@product.VendorName</span>
                                             </div>
-                                        </td>
-                                        <td><span class="badge bg-primary">@product.UnitsSold</span></td>
-                                        <td class="fw-bold">@product.Revenue.ToString("C0")</td>
-                                        <td>
-                                            <span class="text-warning">
-                                                <i class="fas fa-star"></i> @product.Rating.ToString("F1")
-                                            </span>
-                                        </td>
-                                    </tr>
-                                }
-                            </tbody>
-                        </table>
-                    </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="table-badge badge-primary">@product.UnitsSold</span>
+                                    </td>
+                                    <td>
+                                        <span class="table-revenue">@product.Revenue.ToString("C0")</span>
+                                    </td>
+                                    <td>
+                                        <div class="table-rating">
+                                            <i class="fas fa-star"></i>
+                                            <span>@product.Rating.ToString("F1")</span>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
 
-        <!-- Top Vendors -->
-        <div class="col-xl-6">
-            <div class="card dashboard-widget">
-                <div class="card-body">
-                    <div class="dashboard-widget-header">
-                        <h5 class="dashboard-widget-title">Top Performing Vendors</h5>
-                    </div>
-                    <div class="table-responsive">
-                        <table class="table table-hover mb-0">
-                            <thead>
+        <!-- Top Vendors Table -->
+        <div class="data-card">
+            <div class="data-card-header">
+                <div class="data-card-title">
+                    <i class="fas fa-medal"></i>
+                    <h3>@ECommerceResources.TopPerformingVendors</h3>
+                </div>
+                <button class="btn-icon" title="@ActionsResources.ViewAll">
+                    <i class="fas fa-external-link-alt"></i>
+                </button>
+            </div>
+            <div class="data-card-body">
+                <div class="modern-table-wrapper">
+                    <table class="modern-table">
+                        <thead>
+                            <tr>
+                                <th>@ECommerceResources.Vendor</th>
+                                <th>@ECommerceResources.Orders</th>
+                                <th>@ECommerceResources.Revenue</th>
+                                <th>@ECommerceResources.Rating</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var vendor in dashboardSummary.TopVendors.Take(5))
+                            {
                                 <tr>
-                                    <th>Vendor</th>
-                                    <th>Orders</th>
-                                    <th>Revenue</th>
-                                    <th>Rating</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach (var vendor in dashboardSummary.TopVendors.Take(5))
-                                {
-                                    <tr>
-                                        <td>
+                                    <td>
+                                        <div class="table-vendor-cell">
+                                            <div class="vendor-avatar">@vendor.VendorName.Substring(0, 1)</div>
                                             <div class="vendor-info">
-                                                <span class="fw-bold">@vendor.VendorName</span>
-                                                <small class="text-muted d-block">@vendor.ProductCount products</small>
+                                                <span class="vendor-name">@vendor.VendorName</span>
+                                                <span class="vendor-products">@vendor.ProductCount @GeneralResources.Products</span>
                                             </div>
-                                        </td>
-                                        <td><span class="badge bg-info">@vendor.OrderCount</span></td>
-                                        <td class="fw-bold">@vendor.Revenue.ToString("C0")</td>
-                                        <td>
-                                            <span class="text-warning">
-                                                <i class="fas fa-star"></i> @vendor.Rating.ToString("F1")
-                                            </span>
-                                        </td>
-                                    </tr>
-                                }
-                            </tbody>
-                        </table>
-                    </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="table-badge badge-info">@vendor.OrderCount</span>
+                                    </td>
+                                    <td>
+                                        <span class="table-revenue">@vendor.Revenue.ToString("C0")</span>
+                                    </td>
+                                    <td>
+                                        <div class="table-rating">
+                                            <i class="fas fa-star"></i>
+                                            <span>@vendor.Rating.ToString("F1")</span>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Period and Refresh Info -->
-    <div class="row g-4 mt-2">
-        <div class="col-12">
-            <div class="alert alert-light border">
-                <small class="text-muted">
-                    <strong>Period:</strong> @dashboardSummary.Period | 
-                    <strong>Last Updated:</strong> @dashboardSummary.GeneratedAt.ToString("g")
-                </small>
+    <!-- Period Info Footer -->
+    <div class="dashboard-footer">
+        <div class="footer-info">
+            <div class="info-item">
+                <i class="fas fa-calendar-alt"></i>
+                <span><strong>@GeneralResources.Period:</strong> @dashboardSummary.Period</span>
+            </div>
+            <div class="info-separator"></div>
+            <div class="info-item">
+                <i class="fas fa-sync-alt"></i>
+                <span><strong>@GeneralResources.LastUpdated:</strong> @dashboardSummary.GeneratedAt.ToString("MMM dd, yyyy • HH:mm")</span>
             </div>
         </div>
     </div>
 }
 else
 {
-    <div class="alert alert-danger">
-        <strong>Error:</strong> Failed to load dashboard data. Please try refreshing the page.
+    <div class="error-state">
+        <div class="error-icon">
+            <i class="fas fa-exclamation-triangle"></i>
+        </div>
+        <h3>@NotifiAndAlertsResources.ErrorLoadingDashboard</h3>
+        <p>@NotifiAndAlertsResources.ErrorLoadingMessage</p>
+        <button class="btn-modern btn-primary" onclick="window.location.reload()">
+            <i class="fas fa-refresh"></i>
+            <span>@ActionsResources.RefreshPage</span>
+        </button>
     </div>
 }
+
+<style>
+    /* Loading State */
+    .modern-loading-state {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 4rem 2rem;
+        min-height: 400px;
+    }
+
+    .loading-spinner-modern {
+        position: relative;
+        width: 80px;
+        height: 80px;
+    }
+
+    .spinner-ring {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        border: 4px solid transparent;
+        border-top-color: var(--primary);
+        border-radius: 50%;
+        animation: spin 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+    }
+
+        .spinner-ring:nth-child(1) {
+            animation-delay: -0.45s;
+        }
+
+        .spinner-ring:nth-child(2) {
+            animation-delay: -0.3s;
+            border-top-color: var(--primary-light);
+        }
+
+        .spinner-ring:nth-child(3) {
+            animation-delay: -0.15s;
+            border-top-color: var(--primary-lighter);
+        }
+
+    .loading-text {
+        margin-top: 1.5rem;
+        color: var(--neutral-medium);
+        font-size: 1rem;
+    }
+
+    @@keyframes spin {
+        0% {
+            transform: rotate(0deg);
+        }
+
+        100% {
+            transform: rotate(360deg);
+        }
+    }
+
+    /* Metrics Grid */
+    .metrics-grid {
+        display: grid;
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .primary-metrics {
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    }
+
+    .secondary-metrics {
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    }
+
+    /* Metric Cards */
+    .metric-card {
+        background: var(--white);
+        border-radius: var(--radius-lg);
+        padding: 1.75rem;
+        box-shadow: var(--shadow-md);
+        position: relative;
+        overflow: hidden;
+        transition: var(--transition);
+        border: 1px solid transparent;
+    }
+
+        .metric-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-xl);
+        }
+
+    .metric-card-primary:hover {
+        border-color: var(--primary-light);
+    }
+
+    .metric-card-success:hover {
+        border-color: var(--success-light);
+    }
+
+    .metric-card-warning:hover {
+        border-color: var(--accent-warning);
+    }
+
+    .metric-card-info:hover {
+        border-color: var(--accent-info);
+    }
+
+    .metric-card-secondary:hover {
+        border-color: var(--neutral-light);
+    }
+
+    .metric-card-danger:hover {
+        border-color: var(--accent-error);
+    }
+
+    .metric-card-accent:hover {
+        border-color: #fbbf24;
+    }
+
+    .metric-icon-wrapper {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 1.25rem;
+    }
+
+    .metric-icon {
+        width: 56px;
+        height: 56px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: var(--radius-md);
+        font-size: 1.5rem;
+        box-shadow: var(--shadow-sm);
+    }
+
+    .metric-icon-sm {
+        width: 48px;
+        height: 48px;
+        font-size: 1.25rem;
+    }
+
+    .metric-card-primary .metric-icon {
+        background: linear-gradient(135deg, var(--primary-lighter) 0%, var(--primary-light) 100%);
+        color: var(--primary-dark);
+    }
+
+    .metric-card-success .metric-icon {
+        background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+        color: var(--success-dark);
+    }
+
+    .metric-card-warning .metric-icon {
+        background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+        color: #b45309;
+    }
+
+    .metric-card-info .metric-icon {
+        background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+        color: #1e40af;
+    }
+
+    .metric-card-secondary .metric-icon {
+        background: linear-gradient(135deg, var(--neutral-lighter) 0%, var(--neutral-light) 100%);
+        color: var(--neutral-dark);
+    }
+
+    .metric-card-danger .metric-icon {
+        background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+        color: #b91c1c;
+    }
+
+    .metric-card-accent .metric-icon {
+        background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+        color: #b45309;
+    }
+
+    .metric-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.25rem;
+        padding: 0.375rem 0.75rem;
+        border-radius: var(--radius-sm);
+        font-size: 0.75rem;
+        font-weight: 700;
+        line-height: 1;
+    }
+
+    .badge-success {
+        background: var(--success-light);
+        color: var(--success-dark);
+    }
+
+    .badge-danger {
+        background: #fee2e2;
+        color: var(--accent-error);
+    }
+
+    .badge-info {
+        background: #dbeafe;
+        color: var(--accent-info);
+    }
+
+    .metric-content {
+        position: relative;
+        z-index: 1;
+    }
+
+    .metric-value {
+        font-size: 2.25rem;
+        font-weight: 800;
+        color: var(--neutral-darkest);
+        line-height: 1.2;
+        margin-bottom: 0.5rem;
+        letter-spacing: -0.02em;
+    }
+
+    .metric-value-sm {
+        font-size: 1.75rem;
+        font-weight: 700;
+        color: var(--neutral-darkest);
+        line-height: 1.2;
+        margin-bottom: 0.375rem;
+    }
+
+    .metric-label {
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: var(--neutral-medium);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        margin-bottom: 0.75rem;
+    }
+
+    .metric-footer {
+        padding-top: 0.75rem;
+        border-top: 1px solid var(--neutral-lighter);
+    }
+
+    .metric-trend {
+        font-size: 0.8125rem;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+    }
+
+    .trend-up {
+        color: var(--success);
+    }
+
+    .trend-down {
+        color: var(--accent-error);
+    }
+
+    .trend-neutral {
+        color: var(--neutral-medium);
+    }
+
+    .metric-detail {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: var(--neutral-medium);
+        font-size: 0.8125rem;
+        margin-top: 0.5rem;
+    }
+
+        .metric-detail i {
+            font-size: 0.75rem;
+            opacity: 0.7;
+        }
+
+    .metric-decoration {
+        position: absolute;
+        bottom: -20px;
+        right: -20px;
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+        opacity: 0.05;
+        pointer-events: none;
+    }
+
+    .metric-decoration-primary {
+        background: var(--primary);
+    }
+
+    .metric-decoration-success {
+        background: var(--success);
+    }
+
+    .metric-decoration-warning {
+        background: var(--accent-warning);
+    }
+
+    .metric-decoration-info {
+        background: var(--accent-info);
+    }
+
+    /* Data Tables */
+    .data-tables-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .data-card {
+        background: var(--white);
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-md);
+        overflow: hidden;
+        border: 1px solid var(--neutral-lighter);
+        transition: var(--transition);
+    }
+
+        .data-card:hover {
+            box-shadow: var(--shadow-lg);
+            border-color: var(--neutral-light);
+        }
+
+    .data-card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1.5rem;
+        border-bottom: 1px solid var(--neutral-lighter);
+        background: linear-gradient(to bottom, var(--neutral-lightest) 0%, var(--white) 100%);
+    }
+
+    .data-card-title {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+        .data-card-title i {
+            font-size: 1.25rem;
+            color: var(--primary);
+        }
+
+        .data-card-title h3 {
+            margin: 0;
+            font-size: 1.125rem;
+            font-weight: 700;
+            color: var(--neutral-darkest);
+        }
+
+    .btn-icon {
+        width: 36px;
+        height: 36px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: none;
+        background: var(--neutral-lighter);
+        color: var(--neutral-dark);
+        border-radius: var(--radius-sm);
+        cursor: pointer;
+        transition: var(--transition-fast);
+    }
+
+        .btn-icon:hover {
+            background: var(--primary);
+            color: var(--white);
+            transform: scale(1.05);
+        }
+
+    .data-card-body {
+        padding: 1.5rem;
+    }
+
+    .modern-table-wrapper {
+        overflow-x: auto;
+    }
+
+    .modern-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+    }
+
+        .modern-table thead th {
+            padding: 0.75rem 1rem;
+            text-align: left;
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: var(--neutral-medium);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            border-bottom: 2px solid var(--neutral-lighter);
+        }
+
+        .modern-table tbody tr {
+            transition: var(--transition-fast);
+        }
+
+            .modern-table tbody tr:hover {
+                background: var(--neutral-lightest);
+            }
+
+        .modern-table tbody td {
+            padding: 1rem;
+            border-bottom: 1px solid var(--neutral-lighter);
+        }
+
+        .modern-table tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+    .table-product-cell,
+    .table-vendor-cell {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+    .product-avatar,
+    .vendor-avatar {
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: var(--radius-md);
+        font-weight: 700;
+        font-size: 1rem;
+        flex-shrink: 0;
+    }
+
+    .product-avatar {
+        background: linear-gradient(135deg, var(--primary-lighter) 0%, var(--primary-light) 100%);
+        color: var(--primary-dark);
+    }
+
+    .vendor-avatar {
+        background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+        color: var(--accent-info);
+    }
+
+    .product-info,
+    .vendor-info {
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+    }
+
+    .product-name,
+    .vendor-name {
+        font-weight: 600;
+        color: var(--neutral-darkest);
+        font-size: 0.875rem;
+    }
+
+    .product-vendor,
+    .vendor-products {
+        font-size: 0.75rem;
+        color: var(--neutral-medium);
+    }
+
+    .table-badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0.375rem 0.75rem;
+        border-radius: var(--radius-sm);
+        font-size: 0.8125rem;
+        font-weight: 600;
+        white-space: nowrap;
+    }
+
+    .badge-primary {
+        background: var(--primary-lighter);
+        color: var(--primary-dark);
+    }
+
+    .badge-info {
+        background: #dbeafe;
+        color: var(--accent-info);
+    }
+
+    .table-revenue {
+        font-weight: 700;
+        color: var(--neutral-darkest);
+        font-size: 0.9375rem;
+    }
+
+    .table-rating {
+        display: flex;
+        align-items: center;
+        gap: 0.375rem;
+        color: #f59e0b;
+        font-weight: 600;
+    }
+
+        .table-rating i {
+            font-size: 0.875rem;
+        }
+
+    /* Dashboard Footer */
+    .dashboard-footer {
+        background: var(--neutral-lightest);
+        border: 1px solid var(--neutral-lighter);
+        border-radius: var(--radius-md);
+        padding: 1.25rem 1.5rem;
+    }
+
+    .footer-info {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 1.5rem;
+        flex-wrap: wrap;
+    }
+
+    .info-item {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: var(--neutral-dark);
+        font-size: 0.875rem;
+    }
+
+        .info-item i {
+            color: var(--neutral-medium);
+            font-size: 0.875rem;
+        }
+
+    .info-separator {
+        width: 1px;
+        height: 20px;
+        background: var(--neutral-light);
+    }
+
+    /* Error State */
+    .error-state {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 4rem 2rem;
+        text-align: center;
+        min-height: 400px;
+    }
+
+    .error-icon {
+        width: 80px;
+        height: 80px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        background: #fee2e2;
+        color: var(--accent-error);
+        font-size: 2rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .error-state h3 {
+        color: var(--neutral-darkest);
+        font-size: 1.5rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+    }
+
+    .error-state p {
+        color: var(--neutral-medium);
+        font-size: 1rem;
+        margin-bottom: 1.5rem;
+        max-width: 400px;
+    }
+
+    /* Responsive Design */
+    @@media (max-width: 1200px) {
+        .data-tables-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    @@media (max-width: 768px) {
+        .metrics-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .metric-card {
+            padding: 1.5rem;
+        }
+
+        .metric-value {
+            font-size: 1.875rem;
+        }
+
+        .data-card-header {
+            padding: 1.25rem;
+        }
+
+        .data-card-body {
+            padding: 1.25rem;
+        }
+
+        .modern-table thead th,
+        .modern-table tbody td {
+            padding: 0.75rem 0.5rem;
+            font-size: 0.8125rem;
+        }
+
+        .product-avatar,
+        .vendor-avatar {
+            width: 36px;
+            height: 36px;
+            font-size: 0.875rem;
+        }
+    }
+
+    @@media (max-width: 576px) {
+        .footer-info {
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .info-separator {
+            display: none;
+        }
+    }
+</style>
 
 @code {
     [Inject] private IAdminDashboardService DashboardService { get; set; } = null!;
@@ -262,7 +953,7 @@ else
         {
             isLoading = true;
             var result = await DashboardService.GetDashboardSummaryAsync();
-            
+
             if (result.Success && result.Data != null)
             {
                 dashboardSummary = result.Data;

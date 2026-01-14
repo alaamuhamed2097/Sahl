@@ -1358,4 +1358,26 @@
   <data name="Verified" xml:space="preserve">
     <value>Verified</value>
   </data>
+	<data name="WelcomeMessage" xml:space="preserve">
+  <value>Welcome</value>
+</data>
+	<data name="Products" xml:space="preserve">
+  <value>Products</value>
+</data>
+	<data name="Period" xml:space="preserve">
+  <value>Period</value>
+</data>
+	<data name="NewThisPeriod" xml:space="preserve">
+  <value>New this period</value>
+</data>
+	<data name="FromLastPeriod" xml:space="preserve">
+  <value>From last period</value>
+</data>
+	<data name="ExportReport" xml:space="preserve">
+  <value>Export Report</value>
+</data>
+	<data name="AwaitingProcessing" xml:space="preserve">
+  <value>Awaiting Processing</value>
+</data>
+
 </root>

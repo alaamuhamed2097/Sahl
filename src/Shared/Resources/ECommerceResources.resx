@@ -957,4 +957,32 @@
   <data name="CatalogManagement" xml:space="preserve">
     <value>إدارة الكتالوج</value>
   </data>
+	<data name="Revenue" xml:space="preserve">
+  <value>الإيرادات</value>
+</data>
+	<data name="TotalRevenue" xml:space="preserve">
+  <value>إجمالي الإيرادات</value>
+</data>
+	<data name="TotalProducts" xml:space="preserve">
+  <value>إجمالي المنتجات</value>
+</data>
+	<data name="TopSellingProducts" xml:space="preserve">
+  <value>المنتجات الأكثر مبيعًا</value>
+</data>
+	<data name="TopPerformingVendors" xml:space="preserve">
+  <value>أفضل التجار أداءً</value>
+</data>
+	<data name="PendingOrders" xml:space="preserve">
+  <value>الطلبات المعلقة</value>
+</data>
+	<data name="ActiveVendors" xml:space="preserve">
+  <value>التجار النشطون</value>
+</data>
+	<data name="Reviews" xml:space="preserve">
+  <value>التقييمات</value>
+</data>
+	<data name="AverageRating" xml:space="preserve">
+  <value>متوسط التقييم</value>
+</data>
+
 </root>

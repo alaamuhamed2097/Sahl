@@ -1327,7 +1327,6 @@
   <data name="ManageReviews" xml:space="preserve">
     <value>ادارة التقييمات</value>
 </data>
-  </data>
   <data name="WithdrawalMethod" xml:space="preserve">
     <value>طريقة السحب</value>
   </data>
@@ -1359,4 +1358,26 @@
   <data name="Verified" xml:space="preserve">
     <value>مشتري</value>
   </data>
+	<data name="WelcomeMessage" xml:space="preserve">
+  <value>مرحبًا</value>
+</data>
+	<data name="Products" xml:space="preserve">
+  <value>المنتجات</value>
+</data>
+	<data name="Period" xml:space="preserve">
+  <value>الفترة</value>
+</data>
+	<data name="NewThisPeriod" xml:space="preserve">
+  <value>جديد خلال هذه الفترة</value>
+</data>
+	<data name="FromLastPeriod" xml:space="preserve">
+  <value>مقارنة بالفترة السابقة</value>
+</data>
+	<data name="ExportReport" xml:space="preserve">
+  <value>تصدير التقرير</value>
+</data>
+	<data name="AwaitingProcessing" xml:space="preserve">
+  <value>بانتظار المعالجة</value>
+</data>
+
 </root>

@@ -295,6 +295,15 @@ namespace Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to بانتظار المعالجة.
+        /// </summary>
+        public static string AwaitingProcessing {
+            get {
+                return ResourceManager.GetString("AwaitingProcessing", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to 🏠 العودة للرئيسية.
         /// </summary>
         public static string BackToHome {
@@ -1285,6 +1294,15 @@ namespace Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to تصدير التقرير.
+        /// </summary>
+        public static string ExportReport {
+            get {
+                return ResourceManager.GetString("ExportReport", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to رابط الفيسبوك.
         /// </summary>
         public static string FacebookURL {
@@ -1371,6 +1389,15 @@ namespace Resources {
         public static string FreeShippingThreshold {
             get {
                 return ResourceManager.GetString("FreeShippingThreshold", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to مقارنة بالفترة السابقة.
+        /// </summary>
+        public static string FromLastPeriod {
+            get {
+                return ResourceManager.GetString("FromLastPeriod", resourceCulture);
             }
         }
         
@@ -1708,6 +1735,15 @@ namespace Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to جاري تحميل الإعدادات....
+        /// </summary>
+        public static string LoadingSettings_Duplicate_1_ {
+            get {
+                return ResourceManager.GetString("LoadingSettings_Duplicate[1]", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to الموقع.
         /// </summary>
         public static string Location {
@@ -1965,6 +2001,15 @@ namespace Resources {
         public static string NewPassword {
             get {
                 return ResourceManager.GetString("NewPassword", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to جديد خلال هذه الفترة.
+        /// </summary>
+        public static string NewThisPeriod {
+            get {
+                return ResourceManager.GetString("NewThisPeriod", resourceCulture);
             }
         }
         
@@ -2392,6 +2437,15 @@ namespace Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to الفترة.
+        /// </summary>
+        public static string Period {
+            get {
+                return ResourceManager.GetString("Period", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to المعلومات الشخصية.
         /// </summary>
         public static string PersonalInfo {
@@ -2496,6 +2550,15 @@ namespace Resources {
         public static string ProductBarcode {
             get {
                 return ResourceManager.GetString("ProductBarcode", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to المنتجات.
+        /// </summary>
+        public static string Products {
+            get {
+                return ResourceManager.GetString("Products", resourceCulture);
             }
         }
         
@@ -2887,7 +2950,7 @@ namespace Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to السلايدر.
+        ///   Looks up a localized string similar to عرض الهوم.
         /// </summary>
         public static string Sliders {
             get {
@@ -3495,6 +3558,15 @@ namespace Resources {
         public static string Welcome {
             get {
                 return ResourceManager.GetString("Welcome", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to مرحبًا.
+        /// </summary>
+        public static string WelcomeMessage {
+            get {
+                return ResourceManager.GetString("WelcomeMessage", resourceCulture);
             }
         }
         

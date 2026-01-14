@@ -516,4 +516,14 @@
   <data name="NoSelection" xml:space="preserve">
     <value>لم يتم تحديد أي خيار</value>
   </data>
+	<data name="LoadingInsights" xml:space="preserve">
+  <value>جارٍ تحميل التحليلات...</value>
+</data>
+<data name="ErrorLoadingMessage" xml:space="preserve">
+  <value>حدث خطأ أثناء تحميل الرسالة</value>
+</data>
+<data name="ErrorLoadingDashboard" xml:space="preserve">
+  <value>حدث خطأ أثناء تحميل لوحة التحكم</value>
+</data>
+
 </root>

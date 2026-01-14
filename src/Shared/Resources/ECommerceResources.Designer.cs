@@ -115,6 +115,15 @@ namespace Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to التجار النشطون.
+        /// </summary>
+        public static string ActiveVendors {
+            get {
+                return ResourceManager.GetString("ActiveVendors", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to أضف خاصية.
         /// </summary>
         public static string AddAttribute {
@@ -381,6 +390,15 @@ namespace Resources {
         public static string AutoLocked {
             get {
                 return ResourceManager.GetString("AutoLocked", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to متوسط التقييم.
+        /// </summary>
+        public static string AverageRating {
+            get {
+                return ResourceManager.GetString("AverageRating", resourceCulture);
             }
         }
         
@@ -1699,6 +1717,15 @@ namespace Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to الطلبات المعلقة.
+        /// </summary>
+        public static string PendingOrders {
+            get {
+                return ResourceManager.GetString("PendingOrders", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to الإعلانات المعلقة.
         /// </summary>
         public static string PendingRequests {
@@ -1965,6 +1992,24 @@ namespace Resources {
         public static string Returned {
             get {
                 return ResourceManager.GetString("Returned", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to الإيرادات.
+        /// </summary>
+        public static string Revenue {
+            get {
+                return ResourceManager.GetString("Revenue", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to التقييمات.
+        /// </summary>
+        public static string Reviews {
+            get {
+                return ResourceManager.GetString("Reviews", resourceCulture);
             }
         }
         
@@ -2347,6 +2392,24 @@ namespace Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to أفضل التجار أداءً.
+        /// </summary>
+        public static string TopPerformingVendors {
+            get {
+                return ResourceManager.GetString("TopPerformingVendors", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to المنتجات الأكثر مبيعًا.
+        /// </summary>
+        public static string TopSellingProducts {
+            get {
+                return ResourceManager.GetString("TopSellingProducts", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to إجمالي الإعلانات.
         /// </summary>
         public static string TotalAdverts {
@@ -2370,6 +2433,24 @@ namespace Resources {
         public static string TotalOrdersCount {
             get {
                 return ResourceManager.GetString("TotalOrdersCount", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to إجمالي المنتجات.
+        /// </summary>
+        public static string TotalProducts {
+            get {
+                return ResourceManager.GetString("TotalProducts", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to إجمالي الإيرادات.
+        /// </summary>
+        public static string TotalRevenue {
+            get {
+                return ResourceManager.GetString("TotalRevenue", resourceCulture);
             }
         }
         

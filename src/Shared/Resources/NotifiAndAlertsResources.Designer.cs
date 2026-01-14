@@ -358,6 +358,24 @@ namespace Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to حدث خطأ أثناء تحميل لوحة التحكم.
+        /// </summary>
+        public static string ErrorLoadingDashboard {
+            get {
+                return ResourceManager.GetString("ErrorLoadingDashboard", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to حدث خطأ أثناء تحميل الرسالة.
+        /// </summary>
+        public static string ErrorLoadingMessage {
+            get {
+                return ResourceManager.GetString("ErrorLoadingMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to حدث خطأ أثناء المعالجة. يُرجى المحاولة مرة أخرى..
         /// </summary>
         public static string ErrorWhileProcessing {
@@ -543,6 +561,15 @@ namespace Resources {
         public static string Loading {
             get {
                 return ResourceManager.GetString("Loading", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to جارٍ تحميل التحليلات....
+        /// </summary>
+        public static string LoadingInsights {
+            get {
+                return ResourceManager.GetString("LoadingInsights", resourceCulture);
             }
         }
         
