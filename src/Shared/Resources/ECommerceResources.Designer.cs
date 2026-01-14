@@ -2167,6 +2167,15 @@ namespace Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to الحالة.
+        /// </summary>
+        public static string Status {
+            get {
+                return ResourceManager.GetString("Status", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to الخطوة 1: اختيار الفئة.
         /// </summary>
         public static string Step1SelectCategory {
@@ -2334,15 +2343,6 @@ namespace Resources {
         public static string TreeView {
             get {
                 return ResourceManager.GetString("TreeView", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to الحالة.
-        /// </summary>
-        public static string Status {
-            get {
-                return ResourceManager.GetString("Status", resourceCulture);
             }
         }
         

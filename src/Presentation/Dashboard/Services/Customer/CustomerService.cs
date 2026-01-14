@@ -1,10 +1,10 @@
-﻿using Common.Filters;
+using Common.Enumerations.User;
+using Common.Filters;
 using Dashboard.Constants;
 using Dashboard.Contracts.Customer;
 using Dashboard.Contracts.General;
 using Dashboard.Models.pagintion;
 using Resources;
-using Shared.DTOs.Customer;
 using Shared.DTOs.Customer;
 using Shared.GeneralModels;
 
@@ -29,7 +29,6 @@ namespace Dashboard.Services.Customer
 			}
 			catch (Exception ex)
 			{
-				// Log error here
 				return new ResponseModel<IEnumerable<CustomerDto>>
 				{
 					Success = false,
@@ -49,7 +48,6 @@ namespace Dashboard.Services.Customer
 			}
 			catch (Exception ex)
 			{
-				// Log error here
 				return new ResponseModel<CustomerDto>
 				{
 					Success = false,
@@ -57,8 +55,6 @@ namespace Dashboard.Services.Customer
 				};
 			}
 		}
-
-
 
 		/// <summary>
 		/// Search Customers with pagination and filtering.
@@ -74,7 +70,6 @@ namespace Dashboard.Services.Customer
 			}
 			catch (Exception ex)
 			{
-				// Log error here
 				return new ResponseModel<PaginatedDataModel<CustomerDto>>
 				{
 					Success = false,
@@ -96,7 +91,6 @@ namespace Dashboard.Services.Customer
 			}
 			catch (Exception ex)
 			{
-				// Log error here
 				return new ResponseModel<CustomerDto>
 				{
 					Success = false,
@@ -130,11 +124,108 @@ namespace Dashboard.Services.Customer
 			}
 			catch (Exception ex)
 			{
-				// Log error here
 				return new ResponseModel<bool>
 				{
 					Success = false,
 					Message = NotifiAndAlertsResources.DeleteFailed
+				};
+			}
+		}
+
+		/// <summary>
+		/// Change customer account status (Lock, Suspend, Activate, etc).
+		/// </summary>
+		public async Task<ResponseModel<bool>> ChangeStatusAsync(Guid customerId, UserStateType newStatus)
+		{
+			try
+			{
+				var request = new { customerId, status = newStatus };
+				return await _apiService.PostAsync<object, bool>(ApiEndpoints.Customer.ChangeStatus, request);
+			}
+			catch (Exception ex)
+			{
+				return new ResponseModel<bool>
+				{
+					Success = false,
+					Message = ex.Message
+				};
+			}
+		}
+
+		/// <summary>
+		/// Get customer account status.
+		/// </summary>
+		public async Task<ResponseModel<UserStateType>> GetStatusAsync(Guid customerId)
+		{
+			try
+			{
+				return await _apiService.GetAsync<UserStateType>($"{ApiEndpoints.Customer.GetUserStatus}/{customerId}");
+			}
+			catch (Exception ex)
+			{
+				return new ResponseModel<UserStateType>
+				{
+					Success = false,
+					Message = ex.Message
+				};
+			}
+		}
+
+		/// <summary>
+		/// Get customer wallet balance.
+		/// </summary>
+		public async Task<ResponseModel<decimal>> GetWalletBalanceAsync(Guid customerId)
+		{
+			try
+			{
+				return await _apiService.GetAsync<decimal>($"{ApiEndpoints.Customer.Get}/{customerId}/wallet-balance");
+			}
+			catch (Exception ex)
+			{
+				return new ResponseModel<decimal>
+				{
+					Success = false,
+					Message = ex.Message
+				};
+			}
+		}
+
+		/// <summary>
+		/// Get customer order history with pagination.
+		/// </summary>
+		public async Task<ResponseModel<PaginatedDataModel<object>>> GetOrderHistoryAsync(Guid customerId, BaseSearchCriteriaModel criteria)
+		{
+			try
+			{
+				return await _apiService.PostAsync<BaseSearchCriteriaModel, PaginatedDataModel<object>>(
+					$"{ApiEndpoints.Customer.Get}/{customerId}/orders", criteria);
+			}
+			catch (Exception ex)
+			{
+				return new ResponseModel<PaginatedDataModel<object>>
+				{
+					Success = false,
+					Message = ex.Message
+				};
+			}
+		}
+
+		/// <summary>
+		/// Get customer wallet transaction history with pagination.
+		/// </summary>
+		public async Task<ResponseModel<PaginatedDataModel<object>>> GetWalletHistoryAsync(Guid customerId, BaseSearchCriteriaModel criteria)
+		{
+			try
+			{
+				return await _apiService.PostAsync<BaseSearchCriteriaModel, PaginatedDataModel<object>>(
+					$"{ApiEndpoints.Customer.Get}/{customerId}/wallet-history", criteria);
+			}
+			catch (Exception ex)
+			{
+				return new ResponseModel<PaginatedDataModel<object>>
+				{
+					Success = false,
+					Message = ex.Message
 				};
 			}
 		}

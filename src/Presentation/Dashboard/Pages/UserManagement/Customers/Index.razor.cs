@@ -1,4 +1,4 @@
-﻿using Common.Enumerations.User;
+using Common.Enumerations.User;
 using Common.Enumerations.VendorType;
 using Dashboard.Constants;
 using Dashboard.Contracts.Currency;
@@ -25,7 +25,9 @@ namespace Dashboard.Pages.UserManagement.Customers
 		 {
 			 [ECommerceResources.Email] = x => x.Email,
 			 [ECommerceResources.Name] = x => $"{x.FirstName} {x.LastName}",
-			
+			 ["Status"] = x => x.UserStatus.ToString(),
+			 ["Orders"] = x => x.OrderCount,
+			 ["Wallet Balance"] = x => x.WalletBalance,
 		 };
 
 		[Inject] protected ICustomerService _custumerService { get; set; } = null!;
