@@ -1708,6 +1708,15 @@ namespace Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to جاري التحميل....
+        /// </summary>
+        public static string Loading___ {
+            get {
+                return ResourceManager.GetString("Loading...", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to جاري تحميل الخصائص....
         /// </summary>
         public static string LoadingAttributes {
@@ -2235,6 +2244,15 @@ namespace Resources {
         public static string OopsPageNotFound {
             get {
                 return ResourceManager.GetString("OopsPageNotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to اختياري.
+        /// </summary>
+        public static string Optional {
+            get {
+                return ResourceManager.GetString("Optional", resourceCulture);
             }
         }
         

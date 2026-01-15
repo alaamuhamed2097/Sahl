@@ -526,4 +526,34 @@
   <value>Error loading dashboard</value>
 </data>
 
+  <data name="ErrorOccurred" xml:space="preserve">
+    <value>Error Occurred</value>
+  </data>
+	<data name="RegistrationSuccessful" xml:space="preserve">
+  <value>Customer registered successfully!</value>
+</data>
+<data name="RegistrationFailed" xml:space="preserve">
+  <value>Failed to register customer. Please try again.</value>
+</data>
+<data name="SomethingWentWrong" xml:space="preserve">
+  <value>Something went wrong. Please try again later.</value>
+</data>
+<data name="Error" xml:space="preserve">
+  <value>Error</value>
+</data>
+<data name="NoDataFound" xml:space="preserve">
+  <value>No data found</value>
+</data>
+<data name="DeletedSuccessfully" xml:space="preserve">
+  <value>Deleted successfully</value>
+</data>
+<data name="DeleteFailed" xml:space="preserve">
+  <value>Failed to delete</value>
+</data>
+<data name="AreYouSure" xml:space="preserve">
+  <value>Are you sure?</value>
+</data>
+<data name="ConfirmDeleteAlert" xml:space="preserve">
+  <value>This action cannot be undone!</value>
+</data>
 </root>

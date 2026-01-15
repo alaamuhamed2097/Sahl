@@ -22,16 +22,17 @@ namespace Dashboard.Pages.UserManagement.Customers
 
 		private CustomerDto Customer { get; set; } = new();
 		private bool IsLoading { get; set; } = true;
-		private string ActiveTab { get; set; } = "profile";
+		private string ActiveTab { get; set; } = "orders";
 		private UserStateType CurrentUserStatus { get; set; } = UserStateType.Active;
 		protected string baseUrl { get; set; } = null!;
-		private IEnumerable<object> OrderHistory { get; set; } = Enumerable.Empty<object>();
+		private IEnumerable<OrderHistoryDto> OrderHistory { get; set; } = Enumerable.Empty<OrderHistoryDto>();
 		private IEnumerable<object> WalletHistory { get; set; } = Enumerable.Empty<object>();
 
 		protected override async Task OnInitializedAsync()
 		{
 			baseUrl = ApiOptions.Value.BaseUrl;
 			await LoadData();
+			await LoadOrderHistory();
 		}
 
 		private async Task LoadData()
@@ -82,7 +83,7 @@ namespace Dashboard.Pages.UserManagement.Customers
 				var response = await CustomerService.GetOrderHistoryAsync(Id, criteria);
 				if (response.Success && response.Data != null)
 				{
-					OrderHistory = response.Data.Items ?? Enumerable.Empty<object>();
+					OrderHistory = response.Data.Items ?? Enumerable.Empty<OrderHistoryDto>();
 				}
 				StateHasChanged();
 			}

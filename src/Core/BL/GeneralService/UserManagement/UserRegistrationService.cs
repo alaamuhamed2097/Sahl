@@ -5,6 +5,8 @@ using BL.Utils;
 using Common.Enumerations.User;
 using Common.Enumerations.VendorStatus;
 using DAL.Contracts.Repositories;
+using DAL.Contracts.Repositories.Customer;
+using Domains.Entities.ECommerceSystem.Customer;
 using Domains.Entities.ECommerceSystem.Vendor;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -28,25 +30,28 @@ public class UserRegistrationService : IUserRegistrationService
     private readonly IBaseMapper _mapper;
     private readonly Serilog.ILogger _logger;
     private readonly IVendorManagementRepository _vendorRepository;
+    private readonly ICustomerRepository _customerRepository;
 
-    public UserRegistrationService(UserManager<ApplicationUser> userManager,
-        IFileUploadService fileUploadService,
-        IUserAuthenticationService userAuthenticationService,
-        IImageProcessingService imageProcessingService,
-        IBaseMapper mapper,
-        Serilog.ILogger logger,
-        IVendorManagementRepository vendorRepository)
-    {
-        _userManager = userManager;
-        _fileUploadService = fileUploadService;
-        _userAuthenticationService = userAuthenticationService;
-        _imageProcessingService = imageProcessingService;
-        _mapper = mapper;
-        _logger = logger;
-        _vendorRepository = vendorRepository;
-    }
+	public UserRegistrationService(UserManager<ApplicationUser> userManager,
+		IFileUploadService fileUploadService,
+		IUserAuthenticationService userAuthenticationService,
+		IImageProcessingService imageProcessingService,
+		IBaseMapper mapper,
+		Serilog.ILogger logger,
+		IVendorManagementRepository vendorRepository,
+		ICustomerRepository customerRepository)
+	{
+		_userManager = userManager;
+		_fileUploadService = fileUploadService;
+		_userAuthenticationService = userAuthenticationService;
+		_imageProcessingService = imageProcessingService;
+		_mapper = mapper;
+		_logger = logger;
+		_vendorRepository = vendorRepository;
+		_customerRepository = customerRepository;
+	}
 
-    public async Task<OperationResult> RegisterAdminAsync(AdminRegistrationDto userDto, Guid CreatorId)
+	public async Task<OperationResult> RegisterAdminAsync(AdminRegistrationDto userDto, Guid CreatorId)
     {
         // Check if the email is already registered
         var existingUser = await _userManager.Users.SingleOrDefaultAsync(u => u.Email == userDto.Email);
@@ -228,9 +233,17 @@ public class UserRegistrationService : IUserRegistrationService
                 _logger.Error("Failed to add user {UserId} to Customer role", applicationUser.Id);
                 throw new InvalidOperationException("Failed to add user to the specified role.");
             }
+			var customer = new TbCustomer
+			{
+				Id = Guid.NewGuid(),
+				UserId = applicationUser.Id,
+				
+			};
 
-            // Sign in the user automatically using email or username
-            var signInIdentifier = !string.IsNullOrWhiteSpace(userDto.Email)
+			    await _customerRepository.CreateAsync(customer);
+			
+			// Sign in the user automatically using email or username
+			var signInIdentifier = !string.IsNullOrWhiteSpace(userDto.Email)
                 ? userDto.Email
                 : username;
 

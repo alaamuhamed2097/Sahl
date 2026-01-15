@@ -6,6 +6,7 @@ using Dashboard.Contracts.General;
 using Dashboard.Models.pagintion;
 using Resources;
 using Shared.DTOs.Customer;
+using Shared.DTOs.User.Customer;
 using Shared.GeneralModels;
 
 namespace Dashboard.Services.Customer
@@ -55,6 +56,7 @@ namespace Dashboard.Services.Customer
 				};
 			}
 		}
+
 
 		/// <summary>
 		/// Search Customers with pagination and filtering.
@@ -193,16 +195,16 @@ namespace Dashboard.Services.Customer
 		/// <summary>
 		/// Get customer order history with pagination.
 		/// </summary>
-		public async Task<ResponseModel<PaginatedDataModel<object>>> GetOrderHistoryAsync(Guid customerId, BaseSearchCriteriaModel criteria)
+		public async Task<ResponseModel<PaginatedDataModel<OrderHistoryDto>>> GetOrderHistoryAsync(Guid customerId, BaseSearchCriteriaModel criteria)
 		{
 			try
 			{
-				return await _apiService.PostAsync<BaseSearchCriteriaModel, PaginatedDataModel<object>>(
+				return await _apiService.PostAsync<BaseSearchCriteriaModel, PaginatedDataModel<OrderHistoryDto>>(
 					$"{ApiEndpoints.Customer.Get}/{customerId}/orders", criteria);
 			}
 			catch (Exception ex)
 			{
-				return new ResponseModel<PaginatedDataModel<object>>
+				return new ResponseModel<PaginatedDataModel<OrderHistoryDto>>
 				{
 					Success = false,
 					Message = ex.Message
@@ -223,6 +225,51 @@ namespace Dashboard.Services.Customer
 			catch (Exception ex)
 			{
 				return new ResponseModel<PaginatedDataModel<object>>
+				{
+					Success = false,
+					Message = ex.Message
+				};
+			}
+		}
+
+
+		/// <summary>
+		/// Register a new customer (Admin creates customer account).
+		/// </summary>
+		public async Task<ResponseModel<CustomerRegistrationResponseDto>> RegisterCustomerAsync(CustomerRegistrationDto dto)
+		{
+			if (dto == null) throw new ArgumentNullException(nameof(dto));
+
+			try
+			{
+				return await _apiService.PostAsync<CustomerRegistrationDto, CustomerRegistrationResponseDto>(
+					ApiEndpoints.Customer.Register, dto);
+			}
+			catch (Exception ex)
+			{
+				return new ResponseModel<CustomerRegistrationResponseDto>
+				{
+					Success = false,
+					Message = ex.Message
+				};
+			}
+		}
+
+		/// <summary>
+		/// Update customer information.
+		/// </summary>
+		public async Task<ResponseModel<CustomerDto>> UpdateAsync(Guid id, CustomerDto dto)
+		{
+			if (dto == null) throw new ArgumentNullException(nameof(dto));
+
+			try
+			{
+				return await _apiService.PutAsync<CustomerDto, CustomerDto>(
+					$"{ApiEndpoints.Customer.Update}/{id}", dto);
+			}
+			catch (Exception ex)
+			{
+				return new ResponseModel<CustomerDto>
 				{
 					Success = false,
 					Message = ex.Message

@@ -195,11 +195,12 @@
         {
             public const string Get = "api/v1/Customer";
             public const string Create = "api/v1/Customer";
-            public const string Update = "api/v1/Customer";
+            //public const string Update = "api/v1/Customer";
             public const string Delete = "api/v1/Customer/delete";
             public const string Save = "api/v1/Customer/Save";
-
-            public const string Search = "api/v1/Customer/search";
+			public const string Register = "api/v1/UserRegistration/register-customer";
+			public const string Update = "api/Customer/Update";
+			public const string Search = "api/v1/Customer/search";
             public const string FindById = "api/v1/Customer";
             public const string GetForSelect = "api/v1/Customer/forSelect";
             public const string ChangeStatus = "api/v1/Customer/changeStatus";

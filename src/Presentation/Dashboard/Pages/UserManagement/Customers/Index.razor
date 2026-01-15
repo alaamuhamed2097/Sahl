@@ -40,8 +40,8 @@
                 <ul class="navbar-nav d-flex flex-row align-items-center gap-3 mb-3 px-0 w-100">
                     <!-- Search -->
                     <li class="nav-item col-md-6">
-                        <EditForm Model="searchModel" OnSubmit="@Search">
-                            <div class="input-group rounded search-box">
+                        <EditForm Model="searchModel" class="  d-flex flex-row " OnSubmit="@Search">
+                            <div class="input-group me-2 rounded search-box">
                                 <input type="text" @bind="searchModel.SearchTerm"
                                        id="searchInput"
                                        class="form-control text-center border-0 @(ResourceManager.CurrentLanguage == Language.Arabic ? "rounded-end" : "rounded-start")"
@@ -50,22 +50,23 @@
                                         class="btn btn-danger d-flex align-items-center justify-content-center border-0 @(ResourceManager.CurrentLanguage == Language.Arabic ? "rounded-start" : "rounded-end")">
                                     <i class="fas fa-search text-white m-0"></i>
                                 </button>
+                                <div class="d-flex align-items-center gap-2">
+                                    <select class="form-select rounded-3 shadow-sm border-light text-primary fw-bold text-center custom-dropdown"
+                                            style="width: 130px; height: 40px; padding-right: 30px;"
+                                            @onchange="OnPageSizeChanged">
+                                        <option value="10" selected="@(searchModel.PageSize == 10)">10</option>
+                                        <option value="15" selected="@(searchModel.PageSize == 15)">15</option>
+                                        <option value="20" selected="@(searchModel.PageSize == 20)">20</option>
+                                        <option value="30" selected="@(searchModel.PageSize == 30)">30</option>
+                                    </select>
+                                </div>
                             </div>
                         </EditForm>
                     </li>
 
                     <!-- Page Size -->
                     <li class="nav-item">
-                        <div class="d-flex align-items-center gap-2">
-                            <select class="form-select rounded-3 shadow-sm border-light text-primary fw-bold text-center custom-dropdown"
-                                    style="width: 130px; height: 40px; padding-right: 30px;"
-                                    @onchange="OnPageSizeChanged">
-                                <option value="10" selected="@(searchModel.PageSize == 10)">10</option>
-                                <option value="15" selected="@(searchModel.PageSize == 15)">15</option>
-                                <option value="20" selected="@(searchModel.PageSize == 20)">20</option>
-                                <option value="30" selected="@(searchModel.PageSize == 30)">30</option>
-                            </select>
-                        </div>
+                      
                     </li>
 
                     <!-- Export -->
@@ -104,7 +105,7 @@
                                     <i class="@GetSortIconClass("Email")"></i>
                                 </th>
 
-                                <th class="text-center">
+                                <th class="text-center" >
                                     Status
                                 </th>
 
@@ -116,8 +117,9 @@
                                     Wallet Balance
                                 </th>
 
-                                <th class="text-center">
+                                <th class="text-center"  @onclick='() => SortByColumn("LastLogin")'>
                                     Last Login
+                                    <i class="@GetSortIconClass("LastLogin")"></i>
                                 </th>
 
                                 <th class="text-center">@ECommerceResources.Actions</th>
@@ -146,15 +148,19 @@
                                         <td class="text-center align-middle">
                                             @(item.LastLoginDate?.ToString("g") ?? "Never")
                                         </td>
-                                        <td class="text-center align-middle">
+                                        <td class="text-center m-r-10 align-middle">
                                             <div class="btn-group" role="group">
-                                                <button type="button" class="btn btn-sm btn-primary" @onclick="() => ViewDetails(item)">
+                                                <!-- View Button -->
+                                                <button type="button" class="btn me-2 btn-sm btn-primary" @onclick="() => ViewDetails(item)">
                                                     <i class="fas fa-eye"></i>
                                                 </button>
-                                                <button type="button" class="btn btn-sm btn-warning" @onclick="() => Edit(item)">
-                                                    <i class="fas fa-edit"></i>
+
+                                                <!-- Edit Button - جرب واحدة من هذه -->
+                                                <button type="button" class="btn me-2 btn-sm btn-warning" @onclick="() => Edit(item)">
+                                                    <i class="fas fa-pen"></i> <!-- الحل الأول -->
                                                 </button>
-                                                <button type="button" class="btn btn-sm btn-danger" @onclick="() => Delete(item.Id)">
+
+                                                <button type="button" class="btn me-2 btn-sm btn-danger" @onclick="() => Delete(item.Id)">
                                                     <i class="fas fa-trash"></i>
                                                 </button>
                                             </div>
@@ -296,7 +302,7 @@
 
     private void ViewDetails(CustomerDto customer)
     {
-        Navigation.NavigateTo($"/users/customers/details/{customer.Id}");
+        Navigation.NavigateTo($"/users/customer/details/{customer.Id}");
     }
 
     private async Task GoToPage(int pageNumber)
