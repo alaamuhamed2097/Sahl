@@ -59,7 +59,7 @@ namespace Api.Controllers.v1.User
         public async Task<IActionResult> Get(Guid id)
         {
             if (id == Guid.Empty)
-                return BadRequest(new ResponseModel<string>
+                return BadRequest(new ResponseModel<VendorDto>
                 {
                     Success = false,
                     Message = GetResource<NotifiAndAlertsResources>(nameof(NotifiAndAlertsResources.InvalidInputAlert))
@@ -67,7 +67,7 @@ namespace Api.Controllers.v1.User
 
             var vendor = await _vendorService.FindByIdAsync(id);
             if (vendor == null)
-                return NotFound(new ResponseModel<string>
+                return NotFound(new ResponseModel<VendorDto>
                 {
                     Success = false,
                     Message = GetResource<NotifiAndAlertsResources>(nameof(NotifiAndAlertsResources.NoDataFound))

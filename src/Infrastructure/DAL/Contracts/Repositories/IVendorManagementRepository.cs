@@ -11,7 +11,6 @@ namespace DAL.Contracts.Repositories
         Task<(bool Success, IEnumerable<string> Errors)> RegisterVendorWithUserAsync(ApplicationUser user, string password, TbVendor vendor);
         Task<(bool Success, IEnumerable<string> Errors)> UpdateVendorWithUserAsync(ApplicationUser user, TbVendor vendor, string? oldFrontImagePath = null, string? oldBackImagePath = null);
         Task<PagedResult<TbVendor>> GetPageAsync(BaseSearchCriteriaModel criteriaModel, CancellationToken cancellationToken);
-        Task<TbVendor> FindByVendorIdAsync(Guid vendorId, CancellationToken cancellationToken);
         Task<bool> UpdateUserStateAsync(Guid vendorId, UserStateType newType, CancellationToken cancellationToken);
     }
 }

@@ -35,11 +35,18 @@ namespace Shared.DTOs.Vendor
         public string PostalCode { get; set; } = null!;
         public Guid CityId { get; set; }
 
+        public string CountryName { get; set; } = null!;
+        public string StateName { get; set; } = null!;
+        public string CityName { get; set; } = null!;
+
         // Additional Info
         public string? Notes { get; set; }
         public decimal? AverageRating { get; set; }
         public VendorStatus Status { get; set; } = VendorStatus.Pending;
-        public UserStateType UserStatus { get; set; }
+        public UserStateType UserState { get; set; }
+
+        public bool EmailConformed { get; set; }
+        public bool PhoneNumberConfirmed { get; set; }
 
         public DateTime RegistrationDate => CreatedDateUtc;
         public string AdministratorFullName => AdministratorFirstName + ' ' + AdministratorLastName;
