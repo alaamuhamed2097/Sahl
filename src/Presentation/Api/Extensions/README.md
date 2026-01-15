@@ -22,14 +22,12 @@ Extensions/
 ?   ??? SwaggerExtensions.cs
 ?   ??? InfrastructureExtensions.cs
 ?
-??? Services/                                    # Business/domain services
-    ??? README.md
-    ??? AdditionalServicesExtensions.cs
+??? Domain Services/ (All in root, organized by domain)
+    ??? AdditionalServicesExtensions.cs         # Main orchestrator (calls all others)
     ??? AutoMapperExtensions.cs
     ??? CatalogServiceExtensions.cs
     ??? CmsServicesExtensions.cs
     ??? CurrencyAndShippingExtensions.cs
-    ??? GeneralServiceExtensions.cs
     ??? GeneralServicesExtensions.cs
     ??? HangfireExtensions.cs
     ??? LocationServicesExtensions.cs
@@ -43,6 +41,7 @@ Extensions/
     ??? UserManagementServicesExtensions.cs
     ??? VendorServiceExtensions.cs
     ??? WalletServiceExtensions.cs
+    ??? WithdrawalMethodServiceExtensions.cs
 ```
 
 ## ?? Quick Start

@@ -133,7 +133,7 @@ namespace Api.Controllers.v1.Catalog
             if (!ModelState.IsValid)
                 return BadRequest(CreateErrorResponse(NotifiAndAlertsResources.InvalidInputAlert));
 
-            var success = await _itemService.Save(itemDto, GuidUserId);
+            var success = await _itemService.SaveAsync(itemDto, GuidUserId);
             if (!success)
                 return BadRequest(CreateErrorResponse(NotifiAndAlertsResources.SaveFailed));
 
@@ -151,7 +151,7 @@ namespace Api.Controllers.v1.Catalog
                 return BadRequest(CreateErrorResponse(NotifiAndAlertsResources.InvalidInputAlert));
 
             itemDto.Id = id;
-            var success = await _itemService.Save(itemDto, GuidUserId);
+            var success = await _itemService.SaveAsync(itemDto, GuidUserId);
             if (!success)
                 return BadRequest(CreateErrorResponse(NotifiAndAlertsResources.SaveFailed));
 

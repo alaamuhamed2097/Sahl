@@ -110,7 +110,7 @@ public class NotificationChannelService : BaseService<TbNotificationChannel, Not
 
     public async Task<bool> DeleteAsync(Guid id, Guid userId)
     {
-        return await _channelRepository.UpdateCurrentStateAsync(id, userId, true);
+        return await _channelRepository.UpdateIsDeletedAsync(id, userId, true);
     }
 
     public async Task<bool> ToggleActiveStatusAsync(Guid id, Guid userId)

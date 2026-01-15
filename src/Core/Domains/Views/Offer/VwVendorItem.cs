@@ -7,7 +7,7 @@ namespace Domains.Views.Offer
         // Offer basic fields
         public Guid VendorItemId { get; set; }
         public DateTime CreatedDateUtc { get; set; }
-        public int EstimatedDeliveryDays { get; set; }
+        public int? EstimatedDeliveryDays { get; set; }
         public OfferVisibilityScope VisibilityScope { get; set; }
 
         public int FulfillmentType { get; set; }

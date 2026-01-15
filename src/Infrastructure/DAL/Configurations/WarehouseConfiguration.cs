@@ -15,22 +15,22 @@ namespace DAL.Configurations
             builder.Property(x => x.Id)
                 .HasDefaultValueSql("NEWID()");
 
-            builder.Property(x => x.TitleAr)
-                .IsRequired()
-                .HasMaxLength(200);
+            //builder.Property(x => x.TitleAr)
+            //    .IsRequired()
+            //    .HasMaxLength(200);
 
-            builder.Property(x => x.TitleEn)
-                .IsRequired()
-                .HasMaxLength(200);
+            //builder.Property(x => x.TitleEn)
+            //    .IsRequired()
+            //    .HasMaxLength(200);
 
             builder.Property(x => x.Address)
                 .HasMaxLength(500);
 
-            builder.Property(x => x.PhoneNumber)
-                .HasMaxLength(20);
+            //builder.Property(x => x.PhoneNumber)
+            //    .HasMaxLength(20);
 
-            builder.Property(x => x.PhoneCode)
-                .HasMaxLength(4);
+            //builder.Property(x => x.PhoneCode)
+            //    .HasMaxLength(4);
 
             builder.Property(x => x.IsDefaultPlatformWarehouse)
                 .HasDefaultValue(false);

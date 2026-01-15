@@ -71,21 +71,21 @@ namespace DAL.Contracts.Repositories
         Task<SaveResult> UpdateAsync(T model, CancellationToken cancellationToken = default);
 
         /// <summary>
-        /// Updates the CurrentState of an entity (soft delete/restore)
+        /// Updates the IsDeleted of an entity (soft delete/restore)
         /// </summary>
-        Task<bool> UpdateCurrentStateAsync(
+        Task<bool> UpdateIsDeletedAsync(
             Guid entityId,
             Guid updaterId,
             bool newState = true,
             CancellationToken cancellationToken = default);
 
         /// <summary>
-        /// Soft deletes an entity by setting CurrentState to 0
+        /// Soft deletes an entity by setting IsDeleted to 0
         /// </summary>
         Task<bool> SoftDeleteAsync(Guid entityId, Guid updaterId, CancellationToken cancellationToken = default);
 
         /// <summary>
-        /// Restores a soft-deleted entity by setting CurrentState to 1
+        /// Restores a soft-deleted entity by setting IsDeleted to 1
         /// </summary>
         Task<bool> RestoreAsync(Guid entityId, Guid updaterId, CancellationToken cancellationToken = default);
 

@@ -2,10 +2,12 @@
 using Dashboard.Contracts.Notification;
 using Dashboard.Contracts.Page;
 using Dashboard.Contracts.Setting;
+using Dashboard.Contracts.Dashboard;
 using Dashboard.Services.General;
 using Dashboard.Services.Notification;
 using Dashboard.Services.Page;
 using Dashboard.Services.Setting;
+using Dashboard.Services.Dashboard;
 
 namespace Dashboard.Extensions
 {
@@ -13,14 +15,19 @@ namespace Dashboard.Extensions
     {
         public static IServiceCollection AddGeneralServices(this IServiceCollection services)
         {
-            //services.AddScoped<INotificationService, NotificationService>();
+            services.AddScoped<INotificationService, NotificationService>();
             services.AddScoped<INotificationStateService, NotificationStateService>();
             services.AddScoped<IUserNotificationService, UserNotificationService>();
             services.AddScoped<ISettingService, SettingService>();
             services.AddScoped<IPageService, PageService>();
             services.AddScoped(typeof(ISearchService<>), typeof(SearchService<>));
             services.AddScoped<IResourceLoaderService, ResourceLoaderService>();
+            services.AddScoped<IDateTimeService, DateTimeService>();
+            services.AddScoped<IAdminDashboardService, AdminDashboardService>();
             return services;
         }
     }
 }
+
+
+

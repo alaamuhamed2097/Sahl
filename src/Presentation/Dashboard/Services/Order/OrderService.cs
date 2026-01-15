@@ -26,7 +26,7 @@ namespace Dashboard.Services.Order
         {
             try
             {
-                return await _apiService.GetAsync<IEnumerable<OrderDto>>($"{ApiEndpoints.Order.Get}");
+                return await _apiService.GetAsync<IEnumerable<OrderDto>>($"{ApiEndpoints.Order.All}");
             }
             catch (Exception ex)
             {
@@ -46,13 +46,29 @@ namespace Dashboard.Services.Order
         {
             try
             {
-                var queryString = $"UserId={searchModel.UserId}&PageNumber={searchModel.PageNumber}&PageSize={searchModel.PageSize}&SearchTerm={searchModel.SearchTerm}";
-                string url = $"{ApiEndpoints.Order.SearchForUserId}?{queryString}";
-                return await _apiService.GetAsync<PaginatedDataModel<OrderDto>>(url);
+                // Convert OrderSearchCriteriaModel to match API requirements
+                var requestBody = new
+                {
+                    searchTerm = searchModel.SearchTerm ?? string.Empty,
+                    pageNumber = searchModel.PageNumber,
+                    pageSize = searchModel.PageSize,
+                    sortBy = searchModel.SortBy ?? "createdDateUtc",
+                    sortDirection = searchModel.SortDirection ?? "desc"
+                };
+
+                var result = await _apiService.PostAsync<object, PaginatedDataModel<OrderDto>>(
+                    ApiEndpoints.Order.Search,
+                    requestBody);
+
+                return new ResponseModel<PaginatedDataModel<OrderDto>>
+                {
+                    Success = result.Success,
+                    Message = result.Message,
+                    Data = result.Data
+                };
             }
             catch (Exception ex)
             {
-                // Log error here
                 return new ResponseModel<PaginatedDataModel<OrderDto>>
                 {
                     Success = false,

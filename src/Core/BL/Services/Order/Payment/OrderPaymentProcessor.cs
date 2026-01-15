@@ -1,4 +1,5 @@
-﻿using BL.Contracts.Service.Order.Payment;
+﻿using BL.Contracts.Service.Currency;
+using BL.Contracts.Service.Order.Payment;
 using BL.Contracts.Service.Wallet.Customer;
 using Common.Enumerations.Payment;
 using DAL.Contracts.Repositories.Order;
@@ -19,6 +20,8 @@ public class OrderPaymentProcessor : IOrderPaymentProcessor
     private readonly ICustomerWalletService _walletService;
     private readonly IOrderRepository _orderRepository;
     private readonly IOrderPaymentRepository _paymentRepository;
+    private readonly ICurrencyService _currencyService;
+    private readonly IPaymentMethodService _paymentMethodService;
     private readonly ILogger _logger;
 
     public OrderPaymentProcessor(
@@ -26,12 +29,16 @@ public class OrderPaymentProcessor : IOrderPaymentProcessor
         ICustomerWalletService walletService,
         IOrderRepository orderRepository,
         IOrderPaymentRepository paymentRepository,
+        ICurrencyService currencyService,
+        IPaymentMethodService paymentMethodService,
         ILogger logger)
     {
         _paymentService = paymentService ?? throw new ArgumentNullException(nameof(paymentService));
         _walletService = walletService ?? throw new ArgumentNullException(nameof(walletService));
         _orderRepository = orderRepository ?? throw new ArgumentNullException(nameof(orderRepository));
         _paymentRepository = paymentRepository ?? throw new ArgumentNullException(nameof(paymentRepository));
+        _currencyService = currencyService ?? throw new ArgumentNullException(nameof(currencyService));
+        _paymentMethodService = paymentMethodService ?? throw new ArgumentNullException(nameof(paymentMethodService));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
@@ -45,18 +52,32 @@ public class OrderPaymentProcessor : IOrderPaymentProcessor
     {
         try
         {
+            var baseCurrency = await _currencyService.GetBaseCurrencyAsync();
+            
+            // Get COD payment method ID by type
+            var codPaymentMethod = await _paymentMethodService.GetPaymentMethodByTypeAsync(
+                PaymentMethodType.CashOnDelivery);
+
+            if (codPaymentMethod == null)
+            {
+                _logger.Error("Cash on Delivery payment method not found in system");
+                return PaymentResult.CreateFailure("Cash on Delivery payment method is not configured");
+            }
+
             // Create payment record with pending status
             var payment = new TbOrderPayment
             {
                 Id = Guid.NewGuid(),
                 OrderId = orderId,
+                PaymentMethodId = codPaymentMethod.Id,
                 PaymentMethodType = PaymentMethodType.CashOnDelivery,
                 Amount = amount,
                 PaymentStatus = PaymentStatus.Pending,
                 TransactionId = $"COD-{DateTime.UtcNow:yyyyMMdd}-{Guid.NewGuid():N}"[..30],
+                CurrencyId = baseCurrency.Id,
                 CreatedDateUtc = DateTime.UtcNow,
                 CreatedBy = Guid.Empty,
-                IsDeleted = false
+                IsDeleted = false,
             };
 
             await _paymentRepository.CreateAsync(payment, cancellationToken);
@@ -84,6 +105,18 @@ public class OrderPaymentProcessor : IOrderPaymentProcessor
     {
         try
         {
+            var baseCurrency = await _currencyService.GetBaseCurrencyAsync();
+            
+            // Get wallet payment method ID by type
+            var walletPaymentMethod = await _paymentMethodService.GetPaymentMethodByTypeAsync(
+                PaymentMethodType.Wallet);
+
+            if (walletPaymentMethod == null)
+            {
+                _logger.Error("Wallet payment method not found in system");
+                return PaymentResult.CreateFailure("Wallet payment method is not configured");
+            }
+
             // 1. Check wallet balance
             var balance = await _walletService.GetBalanceAsync(customerId);
 
@@ -109,11 +142,13 @@ public class OrderPaymentProcessor : IOrderPaymentProcessor
             {
                 Id = Guid.NewGuid(),
                 OrderId = orderId,
+                PaymentMethodId = walletPaymentMethod.Id,
                 PaymentMethodType = PaymentMethodType.Wallet,
                 Amount = amount,
                 PaymentStatus = PaymentStatus.Completed,
                 TransactionId = $"WALLET-{DateTime.UtcNow:yyyyMMdd}-{Guid.NewGuid():N}"[..30],
                 PaidAt = DateTime.UtcNow,
+                CurrencyId = baseCurrency.Id,
                 CreatedDateUtc = DateTime.UtcNow,
                 CreatedBy = Guid.Empty,
                 IsDeleted = false
@@ -143,22 +178,34 @@ public class OrderPaymentProcessor : IOrderPaymentProcessor
     /// </summary>
     public async Task<PaymentResult> ProcessCardPaymentAsync(
         Guid orderId,
-        Guid paymentMethodId,
         decimal amount,
         string customerId,
         CancellationToken cancellationToken = default)
     {
         try
         {
+            var baseCurrency = await _currencyService.GetBaseCurrencyAsync();
+            
+            // Get payment method ID by type
+            var cardPaymentMethod = await _paymentMethodService.GetPaymentMethodByTypeAsync(
+                PaymentMethodType.Card);
+
+            if (cardPaymentMethod == null)
+            {
+                _logger.Error("Card payment method not found in system");
+                return PaymentResult.CreateFailure("Card payment method is not configured");
+            }
+
             // 1. Create pending payment record
             var payment = new TbOrderPayment
             {
                 Id = Guid.NewGuid(),
                 OrderId = orderId,
-                PaymentMethodId = paymentMethodId,
+                PaymentMethodId = cardPaymentMethod.Id,
                 PaymentMethodType = PaymentMethodType.Card,
                 Amount = amount,
                 PaymentStatus = PaymentStatus.Pending,
+                CurrencyId = baseCurrency.Id,
                 CreatedDateUtc = DateTime.UtcNow,
                 CreatedBy = Guid.Empty,
                 IsDeleted = false
@@ -171,7 +218,7 @@ public class OrderPaymentProcessor : IOrderPaymentProcessor
                 new OrderPaymentProcessRequest
                 {
                     OrderId = orderId,
-                    PaymentMethodId = paymentMethodId,
+                    PaymentMethodId = cardPaymentMethod.Id,
                     Amount = amount
                 });
 
@@ -230,13 +277,33 @@ public class OrderPaymentProcessor : IOrderPaymentProcessor
     /// </summary>
     public async Task<PaymentResult> ProcessMixedPaymentAsync(
         Guid orderId,
-        Guid paymentMethodId,
         decimal totalAmount,
         string customerId,
         CancellationToken cancellationToken = default)
     {
         try
         {
+            var baseCurrency = await _currencyService.GetBaseCurrencyAsync();
+            
+            // Get wallet and card payment methods
+            var walletPaymentMethod = await _paymentMethodService.GetPaymentMethodByTypeAsync(
+                PaymentMethodType.Wallet);
+
+            if (walletPaymentMethod == null)
+            {
+                _logger.Error("Wallet payment method not found in system for mixed payment");
+                return PaymentResult.CreateFailure("Wallet payment method is not configured");
+            }
+
+            var cardPaymentMethod = await _paymentMethodService.GetPaymentMethodByTypeAsync(
+                PaymentMethodType.Card);
+
+            if (cardPaymentMethod == null)
+            {
+                _logger.Error("Card payment method not found in system for mixed payment");
+                return PaymentResult.CreateFailure("Card payment method is not configured");
+            }
+
             // 1. Get wallet balance
             var walletBalance = await _walletService.GetBalanceAsync(customerId);
 
@@ -245,7 +312,6 @@ public class OrderPaymentProcessor : IOrderPaymentProcessor
                 // No wallet balance - process as full card payment
                 return await ProcessCardPaymentAsync(
                     orderId,
-                    paymentMethodId,
                     totalAmount,
                     customerId,
                     cancellationToken);
@@ -271,11 +337,13 @@ public class OrderPaymentProcessor : IOrderPaymentProcessor
             {
                 Id = Guid.NewGuid(),
                 OrderId = orderId,
+                PaymentMethodId = walletPaymentMethod.Id,
                 PaymentMethodType = PaymentMethodType.Wallet,
                 Amount = walletAmount,
                 PaymentStatus = PaymentStatus.Completed,
                 TransactionId = $"WALLET-{DateTime.UtcNow:yyyyMMdd}-{Guid.NewGuid():N}"[..30],
                 PaidAt = DateTime.UtcNow,
+                CurrencyId = baseCurrency.Id,
                 CreatedDateUtc = DateTime.UtcNow,
                 CreatedBy = Guid.Empty,
                 IsDeleted = false
@@ -302,10 +370,11 @@ public class OrderPaymentProcessor : IOrderPaymentProcessor
             {
                 Id = Guid.NewGuid(),
                 OrderId = orderId,
-                PaymentMethodId = paymentMethodId,
+                PaymentMethodId = cardPaymentMethod.Id,
                 PaymentMethodType = PaymentMethodType.Card,
                 Amount = cardAmount,
                 PaymentStatus = PaymentStatus.Pending,
+                CurrencyId = baseCurrency.Id,
                 CreatedDateUtc = DateTime.UtcNow,
                 CreatedBy = Guid.Empty,
                 IsDeleted = false
@@ -318,7 +387,7 @@ public class OrderPaymentProcessor : IOrderPaymentProcessor
                 new OrderPaymentProcessRequest
                 {
                     OrderId = orderId,
-                    PaymentMethodId = paymentMethodId,
+                    PaymentMethodId = cardPaymentMethod.Id,
                     Amount = cardAmount
                 });
 

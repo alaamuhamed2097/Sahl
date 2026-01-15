@@ -8,7 +8,6 @@ namespace Dashboard.Pages
     {
         // Lazy loading state
         private bool isInitialLoading = true;
-        private bool loadAdminWidget = false;
 
         [Inject] protected NavigationManager Navigation { get; set; } = null!;
         [Inject] protected IJSRuntime JS { get; set; } = null!;
@@ -16,8 +15,8 @@ namespace Dashboard.Pages
 
         protected override async Task OnInitializedAsync()
         {
-            // Simulate initial loading
-            await Task.Delay(500);
+            // Simulate initial loading with a minimal delay for optimal UX
+            await Task.Delay(300);
             isInitialLoading = false;
             await base.OnInitializedAsync();
         }
@@ -26,10 +25,10 @@ namespace Dashboard.Pages
         {
             if (firstRender && !isInitialLoading)
             {
-                // Preload critical resources and initialize charts
+                // Initialize charts after components are rendered
                 try
                 {
-                    await Task.Delay(300);
+                    await Task.Delay(100);
                     await JS.InvokeVoidAsync("eval", @"
                         if (typeof floatchart === 'function') {
                             floatchart();
@@ -39,26 +38,6 @@ namespace Dashboard.Pages
                 catch (Exception ex)
                 {
                     Console.WriteLine($"Error initializing charts: {ex.Message}");
-                }
-            }
-        }
-
-        protected async Task LoadAdminWidget()
-        {
-            if (!loadAdminWidget)
-            {
-                loadAdminWidget = true;
-                StateHasChanged();
-
-                // Wait for the component to render and then initialize charts
-                await Task.Delay(200);
-                try
-                {
-                    await JS.InvokeVoidAsync("eval", "if (typeof floatchart === 'function') { floatchart(); }");
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine($"Error loading admin widget: {ex.Message}");
                 }
             }
         }

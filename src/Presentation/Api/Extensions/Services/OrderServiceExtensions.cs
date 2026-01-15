@@ -11,17 +11,8 @@ using BL.Services.Order.Payment;
 
 namespace Api.Extensions.Services
 {
-    /// <summary>
-    /// Extension methods for registering order-related services (cart, checkout, payment).
-    /// </summary>
     public static class OrderServiceExtensions
     {
-        /// <summary>
-        /// Adds order processing, cart, checkout, and payment services.
-        /// </summary>
-        /// <param name="services">The IServiceCollection instance.</param>
-        /// <param name="configuration">The application configuration.</param>
-        /// <returns>The IServiceCollection for chaining.</returns>
         public static IServiceCollection AddOrderServices(this IServiceCollection services, IConfiguration configuration)
         {
             // Order Services

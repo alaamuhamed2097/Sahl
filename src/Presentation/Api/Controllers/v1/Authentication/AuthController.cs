@@ -174,18 +174,7 @@ namespace Api.Controllers.v1.Authentication
 
             if (result.Success)
             {
-                var role = result.Role ?? string.Empty;
-                if (!string.Equals(role, "customer", StringComparison.OrdinalIgnoreCase))
-                {
-                    return Ok(new ResponseModel<VendorSignInResult>
-                    {
-                        Success = false,
-                        Message = "This endpoint is for customers only. Please use the appropriate login for vendors or administrators."
-                    });
-                }
-
                 SetAuthCookies(result.Token, result.RefreshToken);
-
                 var response = new ResponseModel<VendorSignInResult>
                 {
                     Data = result

@@ -1,4 +1,5 @@
 ﻿using Common.Enumerations.Order;
+using Resources;
 
 namespace Shared.DTOs.Order.CouponCode
 {
@@ -11,6 +12,7 @@ namespace Shared.DTOs.Order.CouponCode
         public string Code { get; set; } = string.Empty;
         public string TitleAr { get; set; } = string.Empty;
         public string TitleEn { get; set; } = string.Empty;
+        public string Title => ResourceManager.CurrentLanguage == Resources.Enumerations.Language.English ? TitleEn : TitleAr;
         public string? DescriptionAr { get; set; }
         public string? DescriptionEn { get; set; }
 

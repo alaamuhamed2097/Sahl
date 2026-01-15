@@ -258,4 +258,103 @@ public class OrderRepository : TableRepository<TbOrder>, IOrderRepository
             throw;
         }
     }
+
+    /// <summary>
+    /// Search orders with pagination and filtering
+    /// </summary>
+    public async Task<(List<TbOrder> Items, int TotalCount)> SearchAsync(
+        string? searchTerm = null,
+        int pageNumber = 1,
+        int pageSize = 10,
+        string sortBy = "CreatedDateUtc",
+        string sortDirection = "desc",
+        CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            // Validate pagination parameters
+            pageNumber = Math.Max(1, pageNumber);
+            pageSize = Math.Max(1, Math.Min(pageSize, 100));
+
+            var query = _dbContext.Set<TbOrder>()
+                .AsNoTracking()
+                .Where(o => !o.IsDeleted);
+
+            // Apply search filter
+            if (!string.IsNullOrWhiteSpace(searchTerm))
+            {
+                var searchLower = searchTerm.ToLower();
+
+                // Check if it's a status filter (status:value format)
+                if (searchLower.StartsWith("status:"))
+                {
+                    var statusPart = searchLower.Replace("status:", "").Trim();
+                    if (int.TryParse(statusPart, out int statusValue))
+                    {
+                        query = query.Where(o => (int)o.OrderStatus == statusValue);
+                    }
+                }
+                // Check if it's a payment status filter (payment:value format)
+                else if (searchLower.StartsWith("payment:"))
+                {
+                    var paymentStatusPart = searchLower.Replace("payment:", "").Trim();
+                    if (int.TryParse(paymentStatusPart, out int paymentStatusValue))
+                    {
+                        query = query.Where(o => (int)o.PaymentStatus == paymentStatusValue);
+                    }
+                }
+                // Regular search by order number or customer name
+                else
+                {
+                    query = query.Where(o =>
+                        o.Number.ToLower().Contains(searchLower) ||
+                        o.User.FirstName.ToLower().Contains(searchLower) ||
+                        o.User.LastName.ToLower().Contains(searchLower));
+                }
+            }
+
+            // Get total count before pagination
+            var totalCount = await query.CountAsync(cancellationToken);
+
+            // Apply sorting
+            query = sortBy.ToLower() switch
+            {
+                "number" or "ordernumber" => sortDirection == "desc"
+                    ? query.OrderByDescending(o => o.Number)
+                    : query.OrderBy(o => o.Number),
+                "customername" => sortDirection == "desc"
+                    ? query.OrderByDescending(o => o.User.FirstName).ThenByDescending(o => o.User.LastName)
+                    : query.OrderBy(o => o.User.FirstName).ThenBy(o => o.User.LastName),
+                "createddateutc" or "orderdate" => sortDirection == "desc"
+                    ? query.OrderByDescending(o => o.CreatedDateUtc)
+                    : query.OrderBy(o => o.CreatedDateUtc),
+                "orderstatus" or "currentstate" => sortDirection == "desc"
+                    ? query.OrderByDescending(o => o.OrderStatus)
+                    : query.OrderBy(o => o.OrderStatus),
+                "price" => sortDirection == "desc"
+                    ? query.OrderByDescending(o => o.Price)
+                    : query.OrderBy(o => o.Price),
+                "paymentstatus" => sortDirection == "desc"
+                    ? query.OrderByDescending(o => o.PaymentStatus)
+                    : query.OrderBy(o => o.PaymentStatus),
+                _ => sortDirection == "desc"
+                    ? query.OrderByDescending(o => o.CreatedDateUtc)
+                    : query.OrderBy(o => o.CreatedDateUtc)
+            };
+
+            // Apply pagination
+            var orders = await query
+                .Include(o => o.User)
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync(cancellationToken);
+
+            return (orders, totalCount);
+        }
+        catch (Exception ex)
+        {
+            _logger.Error(ex, "Error searching orders with term: {SearchTerm}, page: {PageNumber}", searchTerm, pageNumber);
+            throw;
+        }
+    }
 }

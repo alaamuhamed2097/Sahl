@@ -295,6 +295,15 @@ namespace Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to بانتظار المعالجة.
+        /// </summary>
+        public static string AwaitingProcessing {
+            get {
+                return ResourceManager.GetString("AwaitingProcessing", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to 🏠 العودة للرئيسية.
         /// </summary>
         public static string BackToHome {
@@ -516,15 +525,6 @@ namespace Resources {
         public static string BusinessSettings {
             get {
                 return ResourceManager.GetString("BusinessSettings", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to إعدادات العمل.
-        /// </summary>
-        public static string BusinessSettings_Duplicate_1_ {
-            get {
-                return ResourceManager.GetString("BusinessSettings_Duplicate[1]", resourceCulture);
             }
         }
         
@@ -849,6 +849,24 @@ namespace Resources {
         public static string Content {
             get {
                 return ResourceManager.GetString("Content", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to مناطق المحتوى.
+        /// </summary>
+        public static string ContentAreas {
+            get {
+                return ResourceManager.GetString("ContentAreas", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to إدارة المحتوى.
+        /// </summary>
+        public static string ContentManagement {
+            get {
+                return ResourceManager.GetString("ContentManagement", resourceCulture);
             }
         }
         
@@ -1276,6 +1294,15 @@ namespace Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to تصدير التقرير.
+        /// </summary>
+        public static string ExportReport {
+            get {
+                return ResourceManager.GetString("ExportReport", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to رابط الفيسبوك.
         /// </summary>
         public static string FacebookURL {
@@ -1366,6 +1393,15 @@ namespace Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to مقارنة بالفترة السابقة.
+        /// </summary>
+        public static string FromLastPeriod {
+            get {
+                return ResourceManager.GetString("FromLastPeriod", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to الصفحات العامة.
         /// </summary>
         public static string GeneralPages {
@@ -1443,6 +1479,15 @@ namespace Resources {
         public static string Home {
             get {
                 return ResourceManager.GetString("Home", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to سلايدر الصفحة الرئيسية.
+        /// </summary>
+        public static string HomePageSlider {
+            get {
+                return ResourceManager.GetString("HomePageSlider", resourceCulture);
             }
         }
         
@@ -1753,6 +1798,15 @@ namespace Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to ادارة التقييمات.
+        /// </summary>
+        public static string ManageReviews {
+            get {
+                return ResourceManager.GetString("ManageReviews", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to مارس.
         /// </summary>
         public static string March {
@@ -1839,6 +1893,15 @@ namespace Resources {
         public static string Media {
             get {
                 return ResourceManager.GetString("Media", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to مكتبة الوسائط.
+        /// </summary>
+        public static string MediaLibrary {
+            get {
+                return ResourceManager.GetString("MediaLibrary", resourceCulture);
             }
         }
         
@@ -1938,6 +2001,15 @@ namespace Resources {
         public static string NewPassword {
             get {
                 return ResourceManager.GetString("NewPassword", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to جديد خلال هذه الفترة.
+        /// </summary>
+        public static string NewThisPeriod {
+            get {
+                return ResourceManager.GetString("NewThisPeriod", resourceCulture);
             }
         }
         
@@ -2091,6 +2163,15 @@ namespace Resources {
         public static string NoTopMarketersFound {
             get {
                 return ResourceManager.GetString("NoTopMarketersFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to غير مشتري.
+        /// </summary>
+        public static string NotVerified {
+            get {
+                return ResourceManager.GetString("NotVerified", resourceCulture);
             }
         }
         
@@ -2356,6 +2437,15 @@ namespace Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to الفترة.
+        /// </summary>
+        public static string Period {
+            get {
+                return ResourceManager.GetString("Period", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to المعلومات الشخصية.
         /// </summary>
         public static string PersonalInfo {
@@ -2460,6 +2550,15 @@ namespace Resources {
         public static string ProductBarcode {
             get {
                 return ResourceManager.GetString("ProductBarcode", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to المنتجات.
+        /// </summary>
+        public static string Products {
+            get {
+                return ResourceManager.GetString("Products", resourceCulture);
             }
         }
         
@@ -2779,6 +2878,15 @@ namespace Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to الإعدادات والتهيئة.
+        /// </summary>
+        public static string SettingsAndConfiguration {
+            get {
+                return ResourceManager.GetString("SettingsAndConfiguration", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to صفحات الإعدادات.
         /// </summary>
         public static string SettingsPages {
@@ -2842,7 +2950,7 @@ namespace Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to السلايدر.
+        ///   Looks up a localized string similar to عرض الهوم.
         /// </summary>
         public static string Sliders {
             get {
@@ -3364,6 +3472,15 @@ namespace Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to مشتري.
+        /// </summary>
+        public static string Verified {
+            get {
+                return ResourceManager.GetString("Verified", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to المحفظة والمدفوعات.
         /// </summary>
         public static string WalletAndPayments {
@@ -3418,6 +3535,15 @@ namespace Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to المخزن.
+        /// </summary>
+        public static string Warehouses {
+            get {
+                return ResourceManager.GetString("Warehouses", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to الأسبوع.
         /// </summary>
         public static string Week {
@@ -3432,6 +3558,15 @@ namespace Resources {
         public static string Welcome {
             get {
                 return ResourceManager.GetString("Welcome", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to مرحبًا.
+        /// </summary>
+        public static string WelcomeMessage {
+            get {
+                return ResourceManager.GetString("WelcomeMessage", resourceCulture);
             }
         }
         

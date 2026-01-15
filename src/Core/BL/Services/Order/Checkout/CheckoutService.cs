@@ -95,10 +95,10 @@ public class CheckoutService : ICheckoutService
         }
 
         // Map offers to DTOs for easier access
-        var offerDtos = _mapper.MapList<TbOffer, OfferDto>(offersEntities);
+        var offerDtos = _mapper.MapList<TbOffer, VendorItemDto>(offersEntities);
 
         // Create a mapping from OfferCombinationPricingId to OfferDto
-        var pricingIdToOfferDictionary = new Dictionary<Guid, OfferDto>();
+        var pricingIdToOfferDictionary = new Dictionary<Guid, VendorItemDto>();
         foreach (var offer in offerDtos)
         {
             if (offer.OfferCombinationPricings == null || !offer.OfferCombinationPricings.Any())

@@ -1,12 +1,39 @@
 ﻿namespace Common.Enumerations.Merchandising
 {
-    // بدل ما نعمل enum لكل نوع، نعمل enum للـ source
+    /// <summary>
+    /// Dynamic block data sources
+    /// مصادر البيانات للبلوكات الديناميكية
+    /// </summary>
     public enum DynamicBlockSource
     {
-        BestSellers = 1,        // من المبيعات
-        NewArrivals = 2,        // من تاريخ الإضافة
-        TopRated = 3,           // من التقييمات
-        Trending = 4,           // من الـ Views
-        MostWishlisted = 5     // من الـ Wishlist
+        /// <summary>
+        /// Best selling products (based on sales)
+        /// الأكثر مبيعاً (بناءً على المبيعات)
+        /// </summary>
+        BestSellers = 1,
+
+        /// <summary>
+        /// New arrivals (based on creation date)
+        /// الوافدات الجديدة (بناءً على تاريخ الإضافة)
+        /// </summary>
+        NewArrivals = 2,
+
+        /// <summary>
+        /// Top rated products (based on ratings)
+        /// الأعلى تقييماً (بناءً على التقييمات)
+        /// </summary>
+        TopRated = 3,
+
+        /// <summary>
+        /// Trending products (based on views)
+        /// المنتجات الرائجة (بناءً على المشاهدات)
+        /// </summary>
+        Trending = 4,
+
+        /// <summary>
+        /// Most wishlisted products
+        /// الأكثر إضافة للمفضلة
+        /// </summary>
+        MostWishlisted = 5
     }
 }

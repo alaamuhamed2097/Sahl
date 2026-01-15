@@ -11,11 +11,13 @@ namespace Shared.DTOs.Catalog.Item
         public decimal? VendorRating { get; set; }
         public decimal Price { get; set; }
         public decimal SalesPrice { get; set; }
+        public string? SKU { get; set; }
+        public string? Barcode { get; set; }
         public decimal DiscountPercentage { get; set; }
         public int AvailableQuantity { get; set; }
         public StockStatus StockStatus { get; set; }
         public bool IsFreeShipping { get; set; }
-        public int EstimatedDeliveryDays { get; set; }
+        public int? EstimatedDeliveryDays { get; set; }
         public bool IsBuyBoxWinner { get; set; }
         public int MinOrderQuantity { get; set; }
         public int MaxOrderQuantity { get; set; }

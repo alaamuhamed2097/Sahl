@@ -441,4 +441,11 @@
   <data name="AddValue" xml:space="preserve">
     <value>إضافة قيمة</value>
   </data>
+	<data name="ViewAll" xml:space="preserve">
+  <value>عرض الكل</value>
+</data>
+	<data name="RefreshPage" xml:space="preserve">
+  <value>تحديث الصفحة</value>
+</data>
+
 </root>

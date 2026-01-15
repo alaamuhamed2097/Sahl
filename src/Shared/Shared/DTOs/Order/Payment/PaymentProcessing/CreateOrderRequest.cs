@@ -18,11 +18,6 @@ public class CreateOrderRequest
     public PaymentMethodType PaymentMethod { get; set; }
 
     /// <summary>
-    /// Payment method ID (required for Card and WalletAndCard)
-    /// </summary>
-    public Guid? PaymentMethodId { get; set; }
-
-    /// <summary>
     /// Coupon code (optional)
     /// </summary>
     public string? CouponCode { get; set; }

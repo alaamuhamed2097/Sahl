@@ -55,8 +55,6 @@ namespace Api.Extensions.Infrastructure
                 }
             });
 
-            services.ConfigureOptions<ConfigureSwaggerOptions>();
-
             return services;
         }
 

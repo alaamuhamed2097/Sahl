@@ -19,7 +19,7 @@ namespace Resources {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "17.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "18.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     public class NotifiAndAlertsResources {
@@ -358,6 +358,24 @@ namespace Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to حدث خطأ أثناء تحميل لوحة التحكم.
+        /// </summary>
+        public static string ErrorLoadingDashboard {
+            get {
+                return ResourceManager.GetString("ErrorLoadingDashboard", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to حدث خطأ أثناء تحميل الرسالة.
+        /// </summary>
+        public static string ErrorLoadingMessage {
+            get {
+                return ResourceManager.GetString("ErrorLoadingMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to حدث خطأ أثناء المعالجة. يُرجى المحاولة مرة أخرى..
         /// </summary>
         public static string ErrorWhileProcessing {
@@ -543,6 +561,15 @@ namespace Resources {
         public static string Loading {
             get {
                 return ResourceManager.GetString("Loading", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to جارٍ تحميل التحليلات....
+        /// </summary>
+        public static string LoadingInsights {
+            get {
+                return ResourceManager.GetString("LoadingInsights", resourceCulture);
             }
         }
         
@@ -741,6 +768,15 @@ namespace Resources {
         public static string NoDataToPrint {
             get {
                 return ResourceManager.GetString("NoDataToPrint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to لم يتم تحديد أي خيار.
+        /// </summary>
+        public static string NoSelection {
+            get {
+                return ResourceManager.GetString("NoSelection", resourceCulture);
             }
         }
         
@@ -1200,6 +1236,15 @@ namespace Resources {
         public static string UpdateImageFailed {
             get {
                 return ResourceManager.GetString("UpdateImageFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to يوجد مخزن مسجل بالفعل لهذا المورد.
+        /// </summary>
+        public static string WarehouseAlreadyExists {
+            get {
+                return ResourceManager.GetString("WarehouseAlreadyExists", resourceCulture);
             }
         }
         

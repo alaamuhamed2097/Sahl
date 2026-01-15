@@ -5,6 +5,7 @@ using DAL.Contracts.Repositories.Catalog.Item;
 using DAL.Contracts.Repositories.Configuration;
 using DAL.Contracts.Repositories.Customer;
 using DAL.Contracts.Repositories.Merchandising;
+using DAL.Contracts.Repositories.Offer;
 using DAL.Contracts.Repositories.Order;
 using DAL.Contracts.Repositories.Review;
 using DAL.Contracts.UnitOfWork;
@@ -13,6 +14,7 @@ using DAL.Repositories.Catalog.Item;
 using DAL.Repositories.Configuration;
 using DAL.Repositories.Customer;
 using DAL.Repositories.Merchandising;
+using DAL.Repositories.Offer;
 using DAL.Repositories.Order;
 using DAL.Repositories.Review;
 using DAL.UnitOfWork;
@@ -35,6 +37,7 @@ namespace Api.Extensions
 
             services.AddScoped<ICartRepository, CartRepository>();
             services.AddScoped<IOfferRepository, OfferRepository>();
+            services.AddScoped<IVendorItemConditionRepository, VendorItemConditionRepository>();
             services.AddScoped<IOrderRepository, OrderRepository>();
             services.AddScoped<IOrderPaymentRepository, OrderPaymentRepository>();
             services.AddScoped<IItemSearchRepository, ItemSearchRepository>();
@@ -60,12 +63,13 @@ namespace Api.Extensions
             services.AddScoped<ICouponCodeRepository, CouponCodeRepository>();
 
             services.AddScoped<IItemCombinationRepository, ItemCombinationRepository>();
-            services.AddScoped<IVendorRepository, VendorRepository>();
+            services.AddScoped<IVendorManagementRepository, VendorManagementRepository>();
 
             services.AddScoped<IOrderRepository, OrderRepository>();
             services.AddScoped<IShipmentRepository, ShipmentRepository>();
 
             services.AddScoped<ISystemSettingsRepository, SystemSettingsRepository>();
+            services.AddScoped<IDevelopmentSettingsRepository, DevelopmentSettingsRepository>();
 
             return services;
         }

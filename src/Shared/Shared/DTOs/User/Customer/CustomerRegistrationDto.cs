@@ -1,3 +1,5 @@
+using Resources;
+using Shared.Attributes;
 using System.ComponentModel.DataAnnotations;
 
 namespace Shared.DTOs.User.Customer
@@ -24,6 +26,7 @@ namespace Shared.DTOs.User.Customer
         [Required(ErrorMessage = "Phone number is required")]
         [StringLength(15, MinimumLength = 6)]
         [RegularExpression(@"^[0-9\s\(\)\-\+]{6,15}$", ErrorMessage = "Invalid phone number format")]
+        [PhoneNumber(nameof(PhoneCode), ErrorMessageResourceName = "InvalidPhoneNumber", ErrorMessageResourceType = typeof(ValidationResources))]
         public string PhoneNumber { get; set; } = null!;
 
         [Required(ErrorMessage = "Password is required")]

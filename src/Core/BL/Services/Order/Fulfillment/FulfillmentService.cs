@@ -285,14 +285,14 @@ public class FulfillmentService : IFulfillmentService
             if (warehouse == null)
             {
                 // Default to merchant fulfillment if warehouse not found
-                return FulfillmentType.Seller;
+                return FulfillmentType.Vendor;
             }
 
             // Platform/marketplace warehouse = FBA
             // Vendor warehouse = FBM
             return warehouse.IsDefaultPlatformWarehouse
                 ? FulfillmentType.Marketplace
-                : FulfillmentType.Seller;
+                : FulfillmentType.Vendor;
         }
         catch (Exception ex)
         {

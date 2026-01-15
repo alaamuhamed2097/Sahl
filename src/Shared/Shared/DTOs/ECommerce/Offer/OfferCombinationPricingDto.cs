@@ -15,28 +15,15 @@ namespace Shared.DTOs.ECommerce.Offer
 
         public Guid OfferConditionId { get; set; }
 
+        public string Barcode { get; set; } = "Default";
+
+        public string SKU { get; set; } = "Default";
+
         public decimal Price { get; set; }
 
         public decimal SalesPrice { get; set; }
 
-        public decimal? CostPrice { get; set; }
-
         public int AvailableQuantity { get; set; }
-
-        public int ReservedQuantity { get; set; }
-
-        public int RefundedQuantity { get; set; }
-
-        public int DamagedQuantity { get; set; }
-
-        public int InTransitQuantity { get; set; }
-
-        public int ReturnedQuantity { get; set; }
-
-        public int LockedQuantity { get; set; }
-
-        public StockStatus StockStatus { get; set; }
-        public DateTime? LastStockUpdate { get; set; }
 
         // Stock Management
         public int MinOrderQuantity { get; set; } = 1;
@@ -44,7 +31,7 @@ namespace Shared.DTOs.ECommerce.Offer
         public int LowStockThreshold { get; set; } = 5;
 
         // Navigation properties
-        public virtual List<ItemCombinationDto> ItemCombinationDtos  { get; set; } = new List<ItemCombinationDto>();
+        public virtual List<ItemCombinationDto>? ItemCombinationDtos  { get; set; } 
     }
 
 }

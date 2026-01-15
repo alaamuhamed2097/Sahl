@@ -202,9 +202,4 @@ public class VendorService : BaseService<TbVendor, VendorDto>, IVendorService
 
         return new PagedResult<VendorDto>(dtoList, entitiesList.TotalRecords);
     }
-
-    public async Task<TbVendor> GetByUserIdAsync(string userId)
-    {
-        return await _vendorRepository.FindAsync(v => v.UserId == userId);
-    }
 }

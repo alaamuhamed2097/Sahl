@@ -21,14 +21,14 @@ public class UserAuthenticationService : IUserAuthenticationService
     private readonly IUserTokenService _tokenService;
     private readonly IEmailService _emailService;
     private readonly IVerificationCodeService _verificationCodeService;
-    private readonly IVendorService _vendorService;
+    private readonly IVendorManagementService _vendorService;
 
     public UserAuthenticationService(UserManager<ApplicationUser> userManager,
         SignInManager<ApplicationUser> signInManager,
         IUserTokenService tokenService,
         IEmailService emailService,
         IVerificationCodeService verificationCodeService,
-        IVendorService vendorService)
+        IVendorManagementService vendorService)
     {
         _userManager = userManager;
         _signInManager = signInManager;

@@ -11,6 +11,11 @@ namespace Dashboard.Contracts.Campaign
         #region Campaign Queries
 
         /// <summary>
+        /// Get all campaigns (admin)
+        /// </summary>
+        Task<ResponseModel<List<CampaignDto>>> GetAllAsync();
+
+        /// <summary>
         /// Get active campaigns
         /// </summary>
         Task<ResponseModel<List<CampaignDto>>> GetActiveCampaignsAsync();

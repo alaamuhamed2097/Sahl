@@ -23,8 +23,8 @@
                     <!-- Personal Information -->
                     <div class="col-md-6">
                         <div class="form-group">
-                            <label>@ECommerceResources.CompanyName</label>
-                            <InputText type="text" placeholder="@($"{FormResources.Write} {ECommerceResources.CompanyName}")"
+                            <label>@ECommerceResources.StoreName</label>
+                            <InputText type="text" placeholder="@($"{FormResources.Write} {ECommerceResources.StoreName}")"
                                        class="form-control" @bind-Value="Model.CompanyName" />
                             <ValidationMessage For="@(() => Model.CompanyName)" />
                         </div>

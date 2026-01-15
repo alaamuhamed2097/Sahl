@@ -382,7 +382,7 @@
     <value>ضمن التصنيف المميز</value>
   </data>
   <data name="CurrentPosition" xml:space="preserve">
-    <value>الموضع الحالي</value>
+    <value>الموقع الحالي</value>
   </data>
   <data name="Level" xml:space="preserve">
     <value>المستوى</value>
@@ -457,10 +457,10 @@
     <value>التحكم في الإعلانات</value>
   </data>
   <data name="MainBanners" xml:space="preserve">
-    <value>البنرات الرئيسية</value>
+    <value>البانرات الرئيسية</value>
   </data>
   <data name="MainBanner" xml:space="preserve">
-    <value>البنر الرئيسي</value>
+    <value>البانر الرئيسي</value>
   </data>
   <data name="AdvertViews" xml:space="preserve">
     <value>مشاهدات الإعلان</value>
@@ -768,9 +768,6 @@
   <data name="Vendors" xml:space="preserve">
     <value>البائعون</value>
   </data>
-  <data name="CompanyName" xml:space="preserve">
-    <value>اسم الشركة</value>
-  </data>
   <data name="ContactName" xml:space="preserve">
     <value>اسم المسؤول</value>
   </data>
@@ -852,76 +849,140 @@
   <data name="WithdrawalMethods" xml:space="preserve">
     <value>طرق السحب</value>
   </data>
-	<data name="AttributeValues" xml:space="preserve">
-  <value>قيم الخصائص</value>
+  <data name="DisplayOrder">
+    <value>ترتيب العرض</value>
+  </data>
+  <data name="SliderImage">
+    <value>صورة السلايدر</value>
+  </data>
+  <data name="SliderTitle">
+    <value>عنوان السلايدر</value>
+  </data>
+  <data name="BannerDuration">
+    <value>مدة البانر</value>
+  </data>
+  <data name="Sales" xml:space="preserve">
+    <value>المبيعات</value>
+  </data>
+  <data name="DisplayOrder_Duplicate[1]" xml:space="preserve">
+    <value>ترتيب العرض</value>
+  </data>
+  <data name="BannerDuration_Duplicate[1]" xml:space="preserve">
+    <value>مدة البانر</value>
+  </data>
+  <data name="StoreName" xml:space="preserve">
+    <value>اسم المتجر</value>
+    <comment>Store Name</comment>
+  </data>
+  <data name="NoRating" xml:space="preserve">
+    <value>لا يوجد تقييم</value>
+    <comment>No Rating</comment>
+  </data>
+  <data name="ComingSoon" xml:space="preserve">
+    <value>قريباً</value>
+    <comment>Coming Soon</comment>
+  </data>
+  <data name="YesRealEstateRegistered" xml:space="preserve">
+    <value>نعم، مسجل عقارياً</value>
+  </data>
+  <data name="IdentificationType" xml:space="preserve">
+    <value>نوع الهوية</value>
+  </data>
+  <data name="IdentificationNumber" xml:space="preserve">
+    <value>رقم الهوية</value>
+  </data>
+  <data name="IdentificationImageFront" xml:space="preserve">
+    <value>صورة الهوية (أمام)</value>
+  </data>
+  <data name="IdentificationImageBack" xml:space="preserve">
+    <value>صورة الهوية (خلف)</value>
+  </data>
+  <data name="BusinessInformation" xml:space="preserve">
+    <value>معلومات العمل</value>
+  </data>
+  <data name="IsRealEstateRegistered" xml:space="preserve">
+    <value>هل مسجل عقارياً</value>
+  </data>
+  <data name="VendorDetails" xml:space="preserve">
+    <value>تفاصيل البائع</value>
+  </data>
+  <data name="ManageVendorDetailsDescription" xml:space="preserve">
+    <value>إدارة تفاصيل البائع وحالته</value>
+  </data>
+  <data name="ManageUserStatus" xml:space="preserve">
+    <value>إدارة حالة الحساب</value>
+  </data>
+  <data name="ManageVendorStatus" xml:space="preserve">
+    <value>إدارة حالة البائع</value>
+  </data>
+  <data name="VendorInformation" xml:space="preserve">
+    <value>معلومات البائع</value>
+  </data>
+  <data name="AdministratorName" xml:space="preserve">
+    <value>اسم المسؤول</value>
+  </data>
+  <data name="IdentificationInformation" xml:space="preserve">
+    <value>معلومات الهوية</value>
+  </data>
+  <data name="RegistrationInfo" xml:space="preserve">
+    <value>معلومات التسجيل</value>
+  </data>
+  <data name="RegistrationDate" xml:space="preserve">
+    <value>تاريخ التسجيل</value>
+  </data>
+  <data name="Suspended" xml:space="preserve">
+    <value>موقوف</value>
+  </data>
+  <data name="Restricted" xml:space="preserve">
+    <value>مقيد</value>
+  </data>
+  <data name="AutoLocked" xml:space="preserve">
+    <value>مغلق تلقائياً</value>
+  </data>
+  <data name="Approved" xml:space="preserve">
+    <value>معتمد</value>
+  </data>
+  <data name="UnderReview" xml:space="preserve">
+    <value>قيد المراجعة</value>
+  </data>
+  <data name="Status" xml:space="preserve">
+    <value>الحالة</value>
+  </data>
+  <data name="OrderManagement" xml:space="preserve">
+    <value>إدارة الطلبات</value>
+  </data>
+  <data name="LogisticsAndShipping" xml:space="preserve">
+    <value>الخدمات اللوجستية والشحن</value>
+  </data>
+  <data name="CatalogManagement" xml:space="preserve">
+    <value>إدارة الكتالوج</value>
+  </data>
+	<data name="Revenue" xml:space="preserve">
+  <value>الإيرادات</value>
 </data>
-	<data name="DefaultPricingNote" xml:space="preserve">
-  <value>سيتم استخدام التسعير الافتراضي إذا لم يتم تعيين أسعار للخيارات.</value>
+	<data name="TotalRevenue" xml:space="preserve">
+  <value>إجمالي الإيرادات</value>
 </data>
-	<data name="MaximumPrice" xml:space="preserve">
-  <value>السعر الأقصى</value>
+	<data name="TotalProducts" xml:space="preserve">
+  <value>إجمالي المنتجات</value>
 </data>
-	<data name="MinimumPrice" xml:space="preserve">
-  <value>السعر الأدنى</value>
+	<data name="TopSellingProducts" xml:space="preserve">
+  <value>المنتجات الأكثر مبيعًا</value>
 </data>
-	<data name="BasePrice" xml:space="preserve">
-  <value>السعر الأساسي</value>
+	<data name="TopPerformingVendors" xml:space="preserve">
+  <value>أفضل التجار أداءً</value>
 </data>
-	<data name="StockKeepingUnit" xml:space="preserve">
-  <value>وحدة حفظ المخزون (SKU)</value>
+	<data name="PendingOrders" xml:space="preserve">
+  <value>الطلبات المعلقة</value>
 </data>
-	<data name="SetDefaultPricing" xml:space="preserve">
-  <value>تعيين التسعير الافتراضي</value>
+	<data name="ActiveVendors" xml:space="preserve">
+  <value>التجار النشطون</value>
 </data>
-	<data name="PricingInformation" xml:space="preserve">
-  <value>معلومات التسعير</value>
+	<data name="Reviews" xml:space="preserve">
+  <value>التقييمات</value>
 </data>
-	<data name="Barcode" xml:space="preserve">
-  <value>الباركود</value>
+	<data name="AverageRating" xml:space="preserve">
+  <value>متوسط التقييم</value>
 </data>
-	<data name="ConfigureAttributes" xml:space="preserve">
-  <value>قم بتكوين الخصائص لهذا المنتج</value>
-</data>
-	<data name="AffectsPricingListTypeOnly" xml:space="preserve">
-  <value>خاصية "تؤثر على التسعير" متوفرة فقط للسمات من نوع القائمة</value>
-</data>
-	<data name="MainBanners">
-	<value>البانرات الرئيسية</value>
-</data>
-<data name="HomePageSlider">
-	<value>سلايدر الصفحة الرئيسية</value>
-</data>
-<data name="DisplayOrder">
-	<value>ترتيب العرض</value>
-</data>
-<data name="SliderImage">
-	<value>صورة السلايدر</value>
-</data>
-<data name="SliderTitle">
-	<value>عنوان السلايدر</value>
-</data>
-	<data name="MainBanners">
-		<value>البانرات الرئيسية</value>
-	</data>
-	<data name="HomePageSlider">
-		<value>سلايدر الصفحة الرئيسية</value>
-	</data>
-	<data name="DisplayOrder">
-		<value>ترتيب العرض</value>
-	</data>
-	<data name="SliderImage">
-		<value>صورة السلايدر</value>
-	</data>
-	<data name="SliderTitle">
-		<value>عنوان السلايدر</value>
-	</data>
-	<data name="BannerDuration">
-		<value>مدة البانر</value>
-	</data>
-	<data name="CurrentPosition">
-		<value>الموقع الحالي</value>
-	</data>
-	<data name="MainBanner">
-		<value>البانر الرئيسي</value>
-	</data>
+
 </root>

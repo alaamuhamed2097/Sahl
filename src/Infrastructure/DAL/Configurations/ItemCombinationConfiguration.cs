@@ -15,17 +15,7 @@ namespace DAL.Configurations
 
             entity.HasKey(e => e.Id);
 
-            entity.Property(e => e.Barcode)
-                .HasMaxLength(200);
-
-            entity.Property(e => e.SKU)
-                .HasMaxLength(200);
-
             entity.HasIndex(e => e.ItemId).IsUnique(false);
-
-            // Unique indexes for SKU and Barcode across table
-            entity.HasIndex(e => e.SKU).IsUnique(true);
-            entity.HasIndex(e => e.Barcode).IsUnique(true);
 
             // Filtered unique index: only one default combination per item when not deleted
             entity.HasIndex(e => new { e.ItemId, e.IsDefault })
@@ -38,8 +28,6 @@ namespace DAL.Configurations
                 .HasForeignKey(ic => ic.ItemId)
                 .HasConstraintName("FK_TbItemCombinations_TbItems_ItemId")
                 .OnDelete(DeleteBehavior.Cascade);
-
-
         }
     }
 }

@@ -231,7 +231,7 @@ namespace BL.GeneralService.Notification
             try
             {
                 // Soft delete the notification
-                await _unitOfWork.TableRepository<TbNotification>().UpdateCurrentStateAsync(id, userId);
+                await _unitOfWork.TableRepository<TbNotification>().UpdateIsDeletedAsync(id, userId);
 
                 // Soft delete associated user notifications
                 var userNotifications = await _unitOfWork.TableRepository<TbUserNotification>()
@@ -240,7 +240,7 @@ namespace BL.GeneralService.Notification
                 foreach (var userNotification in userNotifications)
                 {
                     await _unitOfWork.TableRepository<TbUserNotification>()
-                        .UpdateCurrentStateAsync(userNotification.Id, userId);
+                        .UpdateIsDeletedAsync(userNotification.Id, userId);
                 }
 
                 await _unitOfWork.CommitAsync();

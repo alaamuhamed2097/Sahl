@@ -89,7 +89,7 @@ public class NotificationPreferencesService : BaseService<TbNotificationPreferen
 
     public async Task<bool> DeleteAsync(Guid id, Guid userId)
     {
-        return await _preferencesRepository.UpdateCurrentStateAsync(id, userId, true);
+        return await _preferencesRepository.UpdateIsDeletedAsync(id, userId, true);
     }
 
     public async Task<bool> UpdatePreferenceAsync(

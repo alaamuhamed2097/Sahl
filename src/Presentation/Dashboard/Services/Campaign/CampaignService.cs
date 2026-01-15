@@ -21,6 +21,14 @@ namespace Dashboard.Services.Campaign
         #region Campaign Queries
 
         /// <summary>
+        /// Get all campaigns (admin)
+        /// </summary>
+        public async Task<ResponseModel<List<CampaignDto>>> GetAllAsync()
+        {
+            return await _apiService.GetAsync<List<CampaignDto>>($"{BaseEndpoint}");
+        }
+
+        /// <summary>
         /// Get active campaigns
         /// </summary>
         public async Task<ResponseModel<List<CampaignDto>>> GetActiveCampaignsAsync()

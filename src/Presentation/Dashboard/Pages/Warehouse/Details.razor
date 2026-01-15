@@ -1,102 +1,164 @@
-@page "/warehouse"
-@page "/warehouse/{id:guid}"
+﻿@page "/warehouse/{type}/add"
+@page "/warehouse/{type}/{id:guid}"
 
 @using Common.Enumerations.User
 @using Resources
 @attribute [Authorize(Roles = nameof(UserRole.Admin))]
 
-<PageTitle>Warehouse Management</PageTitle>
+<PageTitle>@PageTitle Warehouse</PageTitle>
 
 <div class="container-fluid p-0">
     <div class="card shadow-sm border-0">
         <div class="card-header d-flex justify-content-between bg-primary align-items-center">
-            <h4 class="modal-title text-white">
-                @(Model.Id == Guid.Empty ? $"? {ActionsResources.Add}" : $"?? {ActionsResources.Edit}") Warehouse
+            <h4 class="modal-title text-white mb-0">
+                <i class="fas fa-@(IsPlatformWarehouse ? "building" : "store") me-2"></i>
+                @PageTitle @(IsPlatformWarehouse ? "Platform" : "Vendor") Warehouse
             </h4>
+            <span class="badge bg-light text-primary">
+                @(IsPlatformWarehouse ? "Platform" : "Vendor") Warehouse
+            </span>
         </div>
+
         <EditForm Model="@Model" OnValidSubmit="Save">
             <DataAnnotationsValidator />
-            
+
             <div class="card-body p-4">
-                <!-- Name Fields -->
-                <div class="row">
-                    <div class="col-md-6 mb-3">
-                        <label class="form-label">@FormResources.NameAr:</label>
-                        <InputText class="form-control" @bind-Value="Model.TitleAr"
-                                   placeholder="@String.Format(FormResources.Placeholder, FormResources.NameAr)" />
-                        <ValidationMessage For="@(() => Model.TitleAr)" />
+
+                @* <!-- Debug Info -->
+                <div class="alert alert-warning mb-3">
+                    <strong>Debug Info:</strong><br />
+                    Model.Id: @Model.Id<br />
+                    IsVendorWarehouse: @IsVendorWarehouse<br />
+                    IsEditMode: @IsEditMode<br />
+                    Type: @Type<br />
+                    Vendors Count: @(vendors?.Count() ?? 0)
+                </div> *@
+
+                <!-- Warehouse Type Info (Read-only for edit) -->
+                @if (Model.Id != Guid.Empty)
+                {
+                    <div class="alert alert-info mb-4">
+                        <i class="fas fa-info-circle me-2"></i>
+                        This is a <strong>@(IsPlatformWarehouse ? "Platform" : "Vendor")</strong> warehouse
                     </div>
-                    <div class="col-md-6 mb-3">
-                        <label class="form-label">@FormResources.NameEn:</label>
-                        <InputText class="form-control" @bind-Value="Model.TitleEn"
-                                   placeholder="@String.Format(FormResources.Placeholder, FormResources.NameEn)" />
-                        <ValidationMessage For="@(() => Model.TitleEn)" />
-                    </div>
-                </div>
+                }
+
+                <!-- Vendor Selection (Only for Vendor Warehouses and Only for Add Mode) -->
+                @if (IsVendorWarehouse)
+                {
+                    @if (!IsEditMode)
+                    {
+                        <!-- Add Mode: Show Vendor Select -->
+                        <div class="row">
+                            <div class="col-md-12 mb-3">
+                                <label class="form-label">
+                                    <i class="fas fa-store me-2"></i>
+                                    Add Vendor: <span class="text-danger">*</span>
+                                </label>
+                                <select class="form-control select2"
+                                        value="@(Model.VendorId?.ToString() ?? Guid.Empty.ToString())"
+                                        @onchange="OnVendorSelectionChanged">
+                                    <option value="@Guid.Empty.ToString()">@WarehouseResource.SelectVendor</option>
+                                    @if (vendors != null && vendors.Any())
+                                    {
+                                        @foreach (var vendor in vendors)
+                                        {
+                                            <option value="@vendor.VendorId.ToString()"
+                                                    selected="@(Model.VendorId == vendor.VendorId)">
+                                                @vendor.UserName - @vendor.Email
+                                            </option>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <option disabled>No vendors available</option>
+                                    }
+                                </select>
+                                @if (showVendorValidation)
+                                {
+                                    <div class="text-danger small mt-1">Please select a vendor</div>
+                                }
+                            </div>
+                        </div>
+                    }
+                    else
+                    {
+                        <!-- Edit Mode: Show Email (Read-only) -->
+                        <div class="row">
+                            <div class="col-md-12 mb-3">
+                                <label class="form-label">
+                                    <i class="fas fa-envelope me-2"></i>
+                                    Vendor Email:
+                                </label>
+                                <InputText class="form-control"
+                                           @bind-Value="Model.Email"
+                                           type="email"
+                                           readonly />
+                                <ValidationMessage For="@(() => Model.Email)" />
+                            </div>
+                        </div>
+                    }
+                }
 
                 <!-- Address -->
                 <div class="row">
                     <div class="col-md-12 mb-3">
-                        <label class="form-label">@FormResources.Address:</label>
-                        <InputTextArea class="form-control" @bind-Value="Model.Address" rows="3"
+                        <label class="form-label">
+                            <i class="fas fa-map-marker-alt me-2"></i>
+                            @FormResources.Address:
+                        </label>
+                        <InputTextArea class="form-control"
+                                       @bind-Value="Model.Address"
+                                       rows="3"
                                        placeholder="@String.Format(FormResources.Placeholder, FormResources.Address)" />
                         <ValidationMessage For="@(() => Model.Address)" />
                     </div>
                 </div>
 
-                <!-- Phone Number -->
-                <div class="row">
-                    <div class="col-md-3 mb-3">
-                        <label class="form-label">Phone Code:</label>
-                        <select class="form-select" @bind="Model.PhoneCode">
-                            <option value="">Select Code</option>
-                            @if (countries != null)
-                            {
-                                @foreach (var country in countries)
-                                {
-                                    <option value="@country.PhoneCode">
-                                        @country.Flag @country.PhoneCode (@country.NameEn)
-                                    </option>
-                                }
-                            }
-                        </select>
-                        <ValidationMessage For="@(() => Model.PhoneCode)" />
-                    </div>
-                    <div class="col-md-9 mb-3">
-                        <label class="form-label">@FormResources.PhoneNumber:</label>
-                        <InputText class="form-control" @bind-Value="Model.PhoneNumber"
-                                   placeholder="@String.Format(FormResources.Placeholder, FormResources.PhoneNumber)" />
-                        <ValidationMessage For="@(() => Model.PhoneNumber)" />
-                    </div>
-                </div>
-
-                <!-- Status -->
-                <div class="row">
-                    <div class="col-md-6 mb-3">
-                        <div class="form-check form-switch mt-4">
-                            <InputCheckbox class="form-check-input" @bind-Value="Model.IsActive" />
-                            <label class="form-check-label">Active</label>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Show creation date for existing records -->
+                <!-- Additional Info for Existing Records -->
                 @if (Model.Id != Guid.Empty)
                 {
+                    <hr class="my-4" />
+
                     <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label">@FormResources.CreationDate:</label>
-                            <input type="text" class="form-control" readonly value="Created" />
+                        <div class="col-md-6">
+                            <div class="card bg-light border-0">
+                                <div class="card-body">
+                                    <h6 class="card-subtitle mb-2 text-muted">
+                                        <i class="fas fa-info-circle me-2"></i>
+                                        Warehouse Information
+                                    </h6>
+                                    <p class="card-text mb-1">
+                                        <strong>Type:</strong>
+                                        <span class="badge bg-@(IsPlatformWarehouse ? "primary" : "info")">
+                                            @(IsPlatformWarehouse ? "Platform" : "Vendor")
+                                        </span>
+                                    </p>
+                                    <p class="card-text mb-0">
+                                        <strong>Status:</strong>
+                                        <span class="badge bg-@(Model.IsActive ? "success" : "secondary")">
+                                            @(Model.IsActive ? "Active" : "Inactive")
+                                        </span>
+                                    </p>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 }
             </div>
-            
+
             <div class="card-footer bg-light py-3 d-flex justify-content-end gap-2">
-                <button type="button" class="btn btn-secondary" @onclick="CloseModal">
-                    <i class="fas fa-times me-2 ms-2"></i>@ActionsResources.Cancel
+                <button type="button"
+                        class="btn btn-secondary"
+                        @onclick="CloseModal"
+                        disabled="@isSaving">
+                    <i class="fas fa-times me-2"></i>
+                    @ActionsResources.Cancel
                 </button>
-                <button type="submit" class="btn btn-primary" disabled="@isSaving">
+
+                <button type="submit"
+                        class="btn btn-primary"
+                        disabled="@isSaving">
                     @if (isSaving)
                     {
                         <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
@@ -104,7 +166,7 @@
                     }
                     else
                     {
-                        <i class="fas fa-save me-2 ms-2"></i>
+                        <i class="fas fa-save me-2"></i>
                         @ActionsResources.Save
                     }
                 </button>
@@ -112,3 +174,21 @@
         </EditForm>
     </div>
 </div>
+
+<style>
+    .badge {
+        font-size: 0.85rem;
+        padding: 0.5rem 1rem;
+    }
+
+    .form-check-input:checked {
+        background-color: #198754;
+        border-color: #198754;
+    }
+
+    .alert-info {
+        background-color: #e7f3ff;
+        border-color: #b6d4fe;
+        color: #084298;
+    }
+</style>

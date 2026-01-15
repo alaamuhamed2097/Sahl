@@ -1,17 +1,13 @@
-﻿using BL.Contracts.Service.Base;
-using Common.Filters;
+﻿using Common.Filters;
 using DAL.Models;
-using Domains.Entities.ECommerceSystem.Vendor;
 using Shared.DTOs.Vendor;
 
-namespace BL.Contracts.Service.Vendor;
-
-public interface IVendorService : IBaseService<TbVendor, VendorDto>
+namespace BL.Contracts.Service.Vendor
 {
-    Task<PagedResult<VendorDto>> GetPage(BaseSearchCriteriaModel criteriaModel);
-    Task<PagedResult<VendorDto>> GetPageAsync(BaseSearchCriteriaModel criteriaModel);
-    Task<PagedResult<VendorDto>> SearchAsync(BaseSearchCriteriaModel criteriaModel);
-    Task<TbVendor> GetByUserIdAsync(string userId);
-    //Task<PaginatedDataModel<VendorDto>> SearchAsync(BaseSearchCriteriaModel criteriaModel);
-
+    public interface IVendorService
+    {
+        Task<PagedResult<VendorDto>> GetPage(BaseSearchCriteriaModel criteriaModel);
+        Task<PagedResult<VendorDto>> GetPageAsync(BaseSearchCriteriaModel criteriaModel);
+        Task<PagedResult<VendorDto>> SearchAsync(BaseSearchCriteriaModel criteriaModel);
+    }
 }

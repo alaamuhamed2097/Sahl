@@ -1,15 +1,8 @@
-﻿using Common.Enumerations.User;
-using Common.Enumerations.VendorType;
 using Dashboard.Constants;
-using Dashboard.Contracts.Currency;
 using Dashboard.Contracts.Customer;
-using Dashboard.Contracts.User;
-using Dashboard.Contracts.Vendor;
 using Microsoft.AspNetCore.Components;
 using Resources;
 using Shared.DTOs.Customer;
-using Shared.DTOs.User.Admin;
-using Shared.DTOs.Vendor;
 using Shared.GeneralModels;
 
 namespace Dashboard.Pages.UserManagement.Customers
@@ -21,14 +14,16 @@ namespace Dashboard.Pages.UserManagement.Customers
         protected override string EditRouteTemplate { get; } = "/users/customers/edit/{id}";
         protected override string SearchEndpoint { get; } = ApiEndpoints.Customer.Search;
         protected override Dictionary<string, Func<CustomerDto, object>> ExportColumns { get; }
-		 = new Dictionary<string, Func<CustomerDto, object>>
-		 {
-			 [ECommerceResources.Email] = x => x.Email,
-			 [ECommerceResources.Name] = x => $"{x.FirstName} {x.LastName}",
-			
-		 };
+         = new Dictionary<string, Func<CustomerDto, object>>
+         {
+             [ECommerceResources.Email] = x => x.Email,
+             [ECommerceResources.Name] = x => $"{x.FirstName} {x.LastName}",
+             ["Status"] = x => x.UserStatus.ToString(),
+             ["Orders"] = x => x.OrderCount,
+             ["Wallet Balance"] = x => x.WalletBalance,
+         };
 
-		[Inject] protected ICustomerService _custumerService { get; set; } = null!;
+        [Inject] protected ICustomerService _custumerService { get; set; } = null!;
 
         protected override async Task<ResponseModel<IEnumerable<CustomerDto>>> GetAllItemsAsync()
         {
@@ -42,7 +37,7 @@ namespace Dashboard.Pages.UserManagement.Customers
                 return result;
             }
         }
-      
+
         protected override async Task<string> GetItemId(CustomerDto item)
         {
             var result = await _custumerService.GetByIdAsync(item.Id);
@@ -56,11 +51,11 @@ namespace Dashboard.Pages.UserManagement.Customers
                 return string.Empty;
             }
         }
-		protected override async Task<ResponseModel<bool>> DeleteItemAsync(Guid id)
-		{
-			return await _custumerService.DeleteAsync(id);
-		}
+        protected override async Task<ResponseModel<bool>> DeleteItemAsync(Guid id)
+        {
+            return await _custumerService.DeleteAsync(id);
+        }
 
 
-	}
+    }
 }

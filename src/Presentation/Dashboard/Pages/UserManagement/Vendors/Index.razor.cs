@@ -1,11 +1,8 @@
-﻿using Common.Enumerations.User;
-using Common.Enumerations.VendorType;
+﻿using Common.Enumerations.VendorType;
 using Dashboard.Constants;
-using Dashboard.Contracts.User;
 using Dashboard.Contracts.Vendor;
 using Microsoft.AspNetCore.Components;
 using Resources;
-using Shared.DTOs.User.Admin;
 using Shared.DTOs.Vendor;
 using Shared.GeneralModels;
 
@@ -20,18 +17,20 @@ namespace Dashboard.Pages.UserManagement.Vendors
         protected override Dictionary<string, Func<VendorDto, object>> ExportColumns { get; }
         = new Dictionary<string, Func<VendorDto, object>>
         {
-            [ECommerceResources.CompanyName] = x => x.CompanyName,
-            [ECommerceResources.ContactName] = x => x.ContactName,
-            
-			[ECommerceResources.VendorType] = x => x.VendorType switch
+            [ECommerceResources.StoreName] = x => x.StoreName,
+            [ECommerceResources.ContactName] = x => x.AdministratorFullName,
+            [ECommerceResources.VendorType] = x => x.VendorType switch
             {
-				VendorType.Company => UserResources.Company,
-				VendorType.Individual => UserResources.Individual,
+                VendorType.Company => UserResources.Company,
+                VendorType.Individual => UserResources.Individual,
                 _ => x.VendorType.ToString()
-            }
+            },
+            [UserResources.RegistrationDate] = x => x.RegistrationDate.ToString("dd/MM/yyyy"),
+            [ECommerceResources.Rating] = x => x.AverageRating.HasValue ? x.AverageRating.Value.ToString("0.0") : ECommerceResources.NoRating
         };
 
         [Inject] protected IVendorService _vendorService { get; set; } = null!;
+        [Inject] private NavigationManager Navigation { get; set; } = default!;
 
         protected override async Task<ResponseModel<IEnumerable<VendorDto>>> GetAllItemsAsync()
         {
@@ -45,7 +44,7 @@ namespace Dashboard.Pages.UserManagement.Vendors
                 return result;
             }
         }
-      
+
         protected override async Task<string> GetItemId(VendorDto item)
         {
             var result = await _vendorService.GetByIdAsync(item.Id);
@@ -59,11 +58,15 @@ namespace Dashboard.Pages.UserManagement.Vendors
                 return string.Empty;
             }
         }
-		protected override async Task<ResponseModel<bool>> DeleteItemAsync(Guid id)
-		{
-			return await _vendorService.DeleteAsync(id);
-		}
 
+        protected override async Task<ResponseModel<bool>> DeleteItemAsync(Guid id)
+        {
+            return await _vendorService.DeleteAsync(id);
+        }
 
-	}
+        private void GoToDetails(VendorDto item)
+        {
+            Navigation.NavigateTo($"/users/vendors/details/{item.Id}");
+        }
+    }
 }

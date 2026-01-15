@@ -11,17 +11,8 @@ using BL.Services.Customer;
 
 namespace Api.Extensions.Services
 {
-    /// <summary>
-    /// Extension methods for registering catalog-related services (categories, items, brands).
-    /// </summary>
     public static class CatalogServiceExtensions
     {
-        /// <summary>
-        /// Adds all catalog and item-related services.
-        /// </summary>
-        /// <param name="services">The IServiceCollection instance.</param>
-        /// <param name="configuration">The application configuration.</param>
-        /// <returns>The IServiceCollection for chaining.</returns>
         public static IServiceCollection AddCatalogServices(this IServiceCollection services, IConfiguration configuration)
         {
             // Category Services

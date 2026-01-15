@@ -1,7 +1,10 @@
 ﻿using BL.Contracts.GeneralService.CMS;
 using BL.Contracts.IMapper;
+using BL.Contracts.Service.Setting;
 using BL.Contracts.Service.VendorItem;
+using BL.Contracts.Service.VendorWarehouse;
 using BL.Extensions;
+using Common.Enumerations.Fulfillment;
 using Common.Enumerations.Offer;
 using Common.Enumerations.Pricing;
 using Common.Enumerations.Visibility;
@@ -14,6 +17,7 @@ using Domains.Entities.Catalog.Item;
 using Domains.Entities.Catalog.Item.ItemAttributes;
 using Domains.Entities.ECommerceSystem.Vendor;
 using Domains.Entities.Offer;
+using Domains.Entities.Warehouse;
 using Domains.Views.Offer;
 using Microsoft.EntityFrameworkCore;
 using Resources;
@@ -24,6 +28,9 @@ using Shared.GeneralModels.SearchCriteriaModels;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Numerics;
+using System.Reflection.Metadata;
+using System.Security.Cryptography;
 
 namespace BL.Services.VendorItem
 {
@@ -31,8 +38,9 @@ namespace BL.Services.VendorItem
     {
         private const int MaxImageCount = 10;
         private readonly IOfferRepository _vendorItemRepository;
-
-		private readonly ITableRepository<TbCategory> _categoryRepository;
+        private readonly IDevelopmentSettingsService _developmentSettingsService;
+        private readonly IVendorWarehouseService _vendorWarehouseService;
+        private readonly ITableRepository<TbCategory> _categoryRepository;
         private readonly IFileUploadService _fileUploadService;
         private readonly IImageProcessingService _imageProcessingService;
         private readonly IUnitOfWork _unitOfWork;
@@ -43,27 +51,31 @@ namespace BL.Services.VendorItem
 
 
 
-		public VendorItemService(IBaseMapper mapper,
-			IUnitOfWork unitOfWork,
-			IFileUploadService fileUploadService,
-			IImageProcessingService imageProcessingService,
-			ILogger logger,
-			ITableRepository<TbCategory> categoryRepository,
-			IOfferRepository vendorItemRepository
+        public VendorItemService(IBaseMapper mapper,
+            IUnitOfWork unitOfWork,
+            IFileUploadService fileUploadService,
+            IImageProcessingService imageProcessingService,
+            ILogger logger,
+            ITableRepository<TbCategory> categoryRepository,
+            IOfferRepository vendorItemRepository
 ,
-			IRepository<VwVendorItem> vwVendorItemRepository)
-		{
-			_mapper = mapper;
-			_unitOfWork = unitOfWork;
-			_fileUploadService = fileUploadService;
-			_imageProcessingService = imageProcessingService;
-			_logger = logger;
-			_categoryRepository = categoryRepository;
-			_vendorItemRepository = vendorItemRepository;
-			_VwVendorItemRepository = vwVendorItemRepository;
-		}
+            IRepository<VwVendorItem> vwVendorItemRepository,
+            IDevelopmentSettingsService developmentSettingsService,
+            IVendorWarehouseService vendorWarehouseService)
+        {
+            _mapper = mapper;
+            _unitOfWork = unitOfWork;
+            _fileUploadService = fileUploadService;
+            _imageProcessingService = imageProcessingService;
+            _logger = logger;
+            _categoryRepository = categoryRepository;
+            _vendorItemRepository = vendorItemRepository;
+            _VwVendorItemRepository = vwVendorItemRepository;
+            _developmentSettingsService = developmentSettingsService;
+            _vendorWarehouseService = vendorWarehouseService;
+        }
 
-		public async Task<PagedResult<OfferDto>> GetPage(ItemSearchCriteriaModel criteriaModel)
+        public async Task<PagedResult<VendorItemDto>> GetPage(ItemSearchCriteriaModel criteriaModel)
         {
             if (criteriaModel == null)
                 throw new ArgumentNullException(nameof(criteriaModel));
@@ -108,9 +120,9 @@ namespace BL.Services.VendorItem
                 orderBy: q => q.OrderByDescending(x => x.CreatedDateUtc)
             );
 
-            var itemsDto = _mapper.MapList<TbOffer, OfferDto>(items.Items);
+            var itemsDto = _mapper.MapList<TbOffer, VendorItemDto>(items.Items);
 
-            return new PagedResult<OfferDto>(itemsDto, items.TotalRecords);
+            return new PagedResult<VendorItemDto>(itemsDto, items.TotalRecords);
         }
 
 		public async Task<PagedResult<VendorItemDetailsDto>> GetPageVendor(ItemstatusSearchCriteriaModel criteriaModel)
@@ -265,137 +277,559 @@ namespace BL.Services.VendorItem
 
             return _mapper.MapModel<TbOffer, ItemDto>(item);
         }
-        public new async Task<bool> Save(ItemDto dto, Guid userId)
+        public async Task<bool> SaveAsync(SaveVendorItemDto dto, string userId)
         {
+            // Input validations
             if (dto == null)
                 throw new ArgumentNullException(nameof(dto));
-            if (userId == Guid.Empty)
+            if (string.IsNullOrEmpty(userId))
                 throw new ArgumentException(UserResources.UserNotFound, nameof(userId));
+            if (dto.ItemId == Guid.Empty)
+                throw new ValidationException("Item is required");
+            if (dto.OfferCombinationPricings == null || !dto.OfferCombinationPricings.Any())
+                throw new ValidationException("At least one offer combination pricing is required");
+            if (dto.WarehouseId == Guid.Empty)
+                throw new ValidationException("Warehouse is required");
 
-            // Fix: Check if Images is null or empty, but allow saving without image count validation for updates
-            if (dto.Images == null)
-                dto.Images = new List<ItemImageDto>();
+            // Validate vendor
+            var vendor = await _unitOfWork.TableRepository<TbVendor>()
+                .FindAsync(v=>v.UserId == userId);
+            if (vendor == null)
+                throw new ValidationException("Vendor not found for this user");
 
-            // Only validate image count for new items
-            if (dto.Id == Guid.Empty && (!dto.Images.Any() || dto.Images.Count > MaxImageCount))
-                throw new ArgumentException($"{ValidationResources.MaximumOf} {MaxImageCount} {ValidationResources.ImagesAllowed}", nameof(dto.Images));
-            if (dto.CategoryId == Guid.Empty)
-                throw new ValidationException("Category is required !! ");
+            // Validate vendor warehouse
+            var vendorAvailableWarehouses = await _vendorWarehouseService.GetVendorAvailableWarehousesByVendorIdAsync(vendor.Id);
+            var selectedWarehouse = vendorAvailableWarehouses.FirstOrDefault(vw => vw.Id == dto.WarehouseId);
+            
+            if (selectedWarehouse == null )
+                    throw new ValidationException("Selected warehouse is not available for this vendor");
 
-            // Fetch category to validate pricing system
-            var category = await _categoryRepository.FindByIdAsync(dto.CategoryId) ?? throw new ValidationException("Category not found!! ");
+            // Determine fulfillment type based on warehouse
+            dto.FulfillmentType = selectedWarehouse.IsDefaultPlatformWarehouse
+                ? FulfillmentType.Marketplace 
+                : FulfillmentType.Vendor;
 
-            // Validate BasePrice for Standard pricing system
-            if (category.PricingSystemType == PricingStrategyType.Simple && (dto.BasePrice == null || dto.BasePrice <= 0))
-                throw new ValidationException("Base Price is required!! ");
+            // Fetch item to validate
+            var item = await _unitOfWork.TableRepository<TbItem>().FindByIdAsync(dto.ItemId)
+                ?? throw new ValidationException("Item not found");
 
-            var categoryAttributes = await _unitOfWork.TableRepository<TbCategoryAttribute>()
-                                                      .GetAsync(ca => ca.CategoryId == dto.CategoryId, includeProperties: "Attribute");
+            // Fetch category to determine pricing system
+            var category = await _categoryRepository.FindByIdAsync(item.CategoryId)
+                ?? throw new ValidationException("Category not found");
+
+            var isMultiVendorMode = await _developmentSettingsService.IsMultiVendorModeEnabledAsync();
+
+            bool isCombinationBasedPricing = category.PricingSystemType == PricingStrategyType.CombinationBased ||
+                                             category.PricingSystemType == PricingStrategyType.Hybrid;
 
             try
             {
                 await _unitOfWork.BeginTransactionAsync();
-
-                // Handle thumbnail image
-                if (!string.IsNullOrEmpty(dto.ThumbnailImage) && _fileUploadService.ValidateFile(dto.ThumbnailImage).isValid)
-                    dto.ThumbnailImage = await SaveImageSync(dto.ThumbnailImage);
-
-                // Process images
-                var imageEntities = new List<TbItemImage>();
-                if (dto.Images?.Any() == true)
+                
+                bool result;
+                
+                // ===== SCENARIO 1: Multi-Vendor Mode with Combination-Based Pricing =====
+                // Vendors can create their own combinations and offers
+                if (isMultiVendorMode && isCombinationBasedPricing)
                 {
-                    foreach (var image in dto.Images)
-                    {
-                        if (image.IsNew && !string.IsNullOrEmpty(image.Path) && _fileUploadService.ValidateFile(image.Path).isValid)
-                        {
-                            image.Path = await SaveImageSync(image.Path);
-                            imageEntities.Add(_mapper.MapModel<ItemImageDto, TbItemImage>(image));
-                        }
-                    }
+                    result = await SaveMultiVendorCombinationBasedOfferAsync(dto, item,vendor.Id,Guid.Parse(userId));
+                    if (!result)
+                        throw new ValidationException("Failed to save vendor item for multi-vendor combination-based pricing");
+                }
+                // ===== SCENARIO 2: Multi-Vendor Mode with Simple Pricing =====
+                // Vendors can only add offers to existing default combination
+                else if (isMultiVendorMode && !isCombinationBasedPricing)
+                {
+                    result = await SaveMultiVendorSimpleOfferAsync(dto, item, vendor.Id, Guid.Parse(userId));
+                    if (!result)
+                        throw new ValidationException("Failed to save vendor item for multi-vendor simple pricing");
+                }
+                // ===== SCENARIO 3: Single-Vendor Mode with Combination-Based Pricing =====
+                // Admin/Owner creates combinations and offers
+                else if (!isMultiVendorMode && isCombinationBasedPricing)
+                {
+                    result = await SaveSingleVendorCombinationBasedOfferAsync(dto, item, vendor.Id,Guid.Parse(userId));
+                    if (!result)
+                        throw new ValidationException("Failed to save vendor item for single-vendor combination-based pricing");
+                }
+                // ===== SCENARIO 4: Single-Vendor Mode with Simple Pricing =====
+                // Update existing default offer
+                else
+                {
+                    result = await SaveSingleVendorSimpleOfferAsync(dto, item, Guid.Parse(userId));
+                    if (!result)
+                        throw new ValidationException("Failed to save vendor item for single-vendor simple pricing");
                 }
 
-                // Update deletion handling
-                if (dto.Id != Guid.Empty)
+                // Recalculate Buy Box winner for this item (especially important in multi-vendor mode)
+                if (isMultiVendorMode)
                 {
-                    // Delete removed images
-                    var existingImages = await _unitOfWork.TableRepository<TbItemImage>().GetAsync(ii => ii.ItemId == dto.Id);
-                    var newImagePaths = dto.Images.Select(i => i.Path);
-                    var imagesToRemove = existingImages.Where(i => !newImagePaths.Contains(i.Path));
-
-                    foreach (var img in imagesToRemove)
-                        await _unitOfWork.TableRepository<TbItemImage>().HardDeleteAsync(img.Id);
-
-                    // Delete existing item attributes
-                    var existingAttributes = await _unitOfWork.TableRepository<TbItemAttribute>().GetAsync(a => a.ItemId == dto.Id);
-                    foreach (var attr in existingAttributes)
-                        await _unitOfWork.TableRepository<TbItemAttribute>().HardDeleteAsync(attr.Id);
-
-                    // Delete old combinations (unchanged logic)
-                    //if (category.PricingSystemType == PricingSystemType.CombinationWithQuantity ||
-                    //    category.PricingSystemType == PricingSystemType.Combination)
-                    //{
-                    //    var oldCombinations = await _unitOfWork.TableRepository<TbItemCombination>()
-                    //                                           .GetAsync(c => c.ItemId == dto.Id, includeProperties: "CombinationAttributes");
-
-                    //    foreach (var combo in oldCombinations)
-                    //    {
-                    //        var comboAttrIds = combo.CombinationAttributes.Select(c => c.Id).ToList();
-                    //        var comboValuesIds = (await _unitOfWork.TableRepository<TbCombinationAttributesValue>()
-                    //                                .GetAsync(v => comboAttrIds.Contains(v.CombinationAttributeId)))
-                    //                                .Select(v => v.Id);
-
-                    //        var priceModifierIds = (await _unitOfWork.TableRepository<TbAttributeValuePriceModifier>()
-                    //                                .GetAsync(v => comboValuesIds.Contains(v.CombinationAttributeValueId)))
-                    //                                .Select(v => v.Id);
-
-                    //        await _unitOfWork.TableRepository<TbAttributeValuePriceModifier>().BulkHardDeleteByIdsAsync(priceModifierIds);
-                    //        await _unitOfWork.TableRepository<TbCombinationAttributesValue>().BulkHardDeleteByIdsAsync(comboValuesIds);
-                    //        await _unitOfWork.TableRepository<TbCombinationAttribute>().BulkHardDeleteByIdsAsync(comboAttrIds);
-                    //    }
-                    //}
+                    //await RecalculateBuyBoxWinnerAsync(dto.ItemId);
                 }
-
-                var entity = _mapper.MapModel<ItemDto, TbItem>(dto);
-                // Detach navigation properties to avoid EF Core tracking issues
-                entity.Brand = null;
-                entity.Category = null;
-                entity.ItemAttributes = null;
-                entity.ItemCombinations = null;
-                entity.ItemImages = null;
-                entity.VisibilityScope = (int)ProductVisibilityStatus.PendingApproval;
-                entity.ItemAttributes = null;
-                entity.ItemCombinations = null;
-                entity.ItemImages = null;
-                entity.Unit = null;
-                var itemSaved = await _unitOfWork.TableRepository<TbItem>().SaveAsync(entity, userId);
-                var itemId = itemSaved.Id;
-
-                // Save new images
-                if (imageEntities.Any()) foreach (var img in imageEntities) img.ItemId = itemId;
-
-                var imagesSaved = dto.Images?.Count(x => x.IsNew) > 0
-                    ? await _unitOfWork.TableRepository<TbItemImage>().AddRangeAsync(imageEntities, userId)
-                    : true;
-
-                // Save item attributes
-                var attributesSaved = await SaveItemAttributesAsync(itemId, dto.ItemAttributes ?? new List<ItemAttributeDto>(), categoryAttributes.ToList(), userId);
-
-                // Save item combinations
-                //var combinationsSaved = await ProcessItemCombinationsAsync(itemId, dto.ItemCombinations ?? new List<ItemCombinationDto>(), category, categoryAttributes.ToList(), userId);
 
                 await _unitOfWork.CommitAsync();
-                return itemSaved.Success && imagesSaved && attributesSaved;
+                return true;
             }
             catch (Exception ex)
             {
                 await _unitOfWork.RollbackAsync();
-                _logger.Error(ex, "Error saving item {ItemId}", dto.Id);
+                _logger.Error(ex, "Error saving vendor item {VendorItemId} for Item {ItemId}", dto.Id, dto.ItemId);
                 throw;
             }
         }
 
+        /// <summary>
+        /// SCENARIO 1: Multi-Vendor + Combination-Based Pricing
+        /// Vendors create their own combinations with attributes and offers
+        /// </summary>
+        private async Task<bool> SaveMultiVendorCombinationBasedOfferAsync(SaveVendorItemDto dto, TbItem item, Guid vendorId, Guid userId)
+        {
+            // Save or update the offer
+            TbOffer offer;
+            if (dto.Id == Guid.Empty)
+            {
+                // Create new offer
+                offer = new TbOffer
+                {
+                    ItemId = dto.ItemId,
+                    VendorId = vendorId,
+                    WarehouseId = dto.WarehouseId,
+                    FulfillmentType = dto.FulfillmentType,
+                    IsFreeShipping = dto.IsFreeShipping,
+                    EstimatedDeliveryDays = dto.EstimatedDeliveryDays,
+                    VisibilityScope = OfferVisibilityScope.Pending,
+                    WarrantyId = dto.WarrantyId
+                };
+            }
+            else
+            {
+                // Update existing offer
+                offer = await _unitOfWork.TableRepository<TbOffer>().FindByIdAsync(dto.Id)
+                    ?? throw new ValidationException("Vendor item not found");
+
+                // Ensure vendor can only update their own offers
+                if (offer.VendorId != vendorId)
+                    throw new ValidationException("You can only update your own offers");
+
+                offer.WarehouseId = dto.WarehouseId;
+                offer.FulfillmentType = dto.FulfillmentType;
+                offer.IsFreeShipping = dto.IsFreeShipping;
+                offer.EstimatedDeliveryDays = dto.EstimatedDeliveryDays;
+                offer.VisibilityScope = OfferVisibilityScope.Pending;
+                offer.WarrantyId = dto.WarrantyId;
+            }
+
+            var offerSaved = await _unitOfWork.TableRepository<TbOffer>().SaveAsync(offer, userId);
+            if (!offerSaved.Success)
+                return false;
+
+            var offerId = offerSaved.Id;
+
+            // Process each combination pricing
+            foreach (var pricingDto in dto.OfferCombinationPricings ?? new List<OfferCombinationPricingDto>())
+            {
+                Guid combinationId;
+
+                // Check if vendor is creating a new combination or using existing one
+                if (pricingDto.ItemCombinationId == Guid.Empty)
+                {
+                    // Vendor is creating a NEW combination with specific attributes
+                    if (pricingDto.ItemCombinationDtos == null || !pricingDto.ItemCombinationDtos.Any())
+                        throw new ValidationException("Combination attributes are required when creating new combinations");
+                    
+                    var combinationDto = pricingDto.ItemCombinationDtos.First();
+                    if (combinationDto.CombinationAttributes == null || !combinationDto.CombinationAttributes.Any())
+                        throw new ValidationException("At least one combination attribute is required");
+                    
+                    var newCombination = new TbItemCombination
+                    {
+                        ItemId = dto.ItemId,
+                        BasePrice = pricingDto.Price, // Use the pricing as base
+                        IsDefault = false // Vendor combinations are never default
+                    };
+
+                    var combinationSaved = await _unitOfWork.TableRepository<TbItemCombination>()
+                        .SaveAsync(newCombination, userId);
+
+                    if (!combinationSaved.Success)
+                        return false;
+
+                    combinationId = combinationSaved.Id;
+
+                    // Save combination attributes
+                    var attributesSaved = await SaveCombinationAttributesAsync(
+                        combinationId,
+                        pricingDto.ItemCombinationDtos.First().CombinationAttributes,
+                        userId);
+
+                    if (!attributesSaved)
+                        return false;
+
+                    // Save combination images if provided
+                    if (combinationDto.ItemCombinationImages != null && combinationDto.ItemCombinationImages.Any())
+                    {
+                        var imagesSaved = await SaveCombinationImagesAsync(
+                            combinationId,
+                            combinationDto.ItemCombinationImages,
+                            userId);
+
+                        if (!imagesSaved)
+                            return false;
+                    }
+                }
+                else
+                {
+                    // Vendor is using an EXISTING combination
+                    combinationId = pricingDto.ItemCombinationId;
+
+                    // Validate combination exists and belongs to this item
+                    var existingCombination = await _unitOfWork.TableRepository<TbItemCombination>()
+                        .FindByIdAsync(combinationId);
+
+                    if (existingCombination == null || existingCombination.ItemId != dto.ItemId)
+                        throw new ValidationException("Invalid combination for this item");
+                }
+
+                // Save or update the offer combination pricing
+                var pricingSaved = await SaveOfferCombinationPricingAsync(
+                    pricingDto,
+                    offerId,
+                    combinationId,
+                    userId);
+
+                if (!pricingSaved)
+                    return false;
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// SCENARIO 2: Multi-Vendor + Simple Pricing
+        /// Vendors can only add offers to the default combination (no custom combinations allowed)
+        /// </summary>
+        private async Task<bool> SaveMultiVendorSimpleOfferAsync(SaveVendorItemDto dto, TbItem item, Guid vendorId, Guid userId)
+        {
+            // Get the default combination (should exist, created when item was saved)
+            var defaultCombination = (await _unitOfWork.TableRepository<TbItemCombination>()
+                .GetAsync(c => c.ItemId == dto.ItemId && c.IsDefault == true))
+                .FirstOrDefault();
+
+            if (defaultCombination == null)
+                throw new ValidationException("Default combination not found. Item may not be properly configured.");
+
+            // Ensure vendor is only trying to add ONE pricing (simple pricing = one combination)
+            if (dto.OfferCombinationPricings?.Count > 1)
+                throw new ValidationException("Only one offer is allowed for simple pricing items");
+
+            var pricingDto = dto.OfferCombinationPricings?.First();
+
+            // Validate that vendor is using the default combination
+            if (pricingDto?.ItemCombinationId != Guid.Empty && pricingDto?.ItemCombinationId != defaultCombination.Id)
+                throw new ValidationException("Only the default combination can be used in simple pricing mode");
+
+            // Save or update the offer
+            TbOffer offer;
+            if (dto.Id == Guid.Empty)
+            {
+                offer = new TbOffer
+                {
+                    ItemId = dto.ItemId,
+                    VendorId = vendorId,
+                    WarehouseId = dto.WarehouseId,
+                    FulfillmentType = dto.FulfillmentType,
+                    IsFreeShipping = dto.IsFreeShipping,
+                    EstimatedDeliveryDays = dto.EstimatedDeliveryDays,
+                    VisibilityScope = OfferVisibilityScope.Pending,
+                    WarrantyId = dto.WarrantyId
+                };
+            }
+            else
+            {
+                offer = await _unitOfWork.TableRepository<TbOffer>().FindByIdAsync(dto.Id)
+                    ?? throw new ValidationException("Vendor item not found");
+
+                // Ensure vendor can only update their own offers
+                if (offer.VendorId != vendorId)
+                    throw new ValidationException("You can only update your own offers");
+
+                offer.WarehouseId = dto.WarehouseId;
+                offer.FulfillmentType = dto.FulfillmentType;
+                offer.IsFreeShipping = dto.IsFreeShipping;
+                offer.EstimatedDeliveryDays = dto.EstimatedDeliveryDays;
+                offer.VisibilityScope = OfferVisibilityScope.Pending;
+                offer.WarrantyId = dto.WarrantyId;
+            }
+
+            var offerSaved = await _unitOfWork.TableRepository<TbOffer>().SaveAsync(offer, userId);
+            if (!offerSaved.Success)
+                return false;
+
+            // Save the pricing for the default combination
+            var pricingSaved = await SaveOfferCombinationPricingAsync(
+                pricingDto,
+                offerSaved.Id,
+                defaultCombination.Id,
+                userId);
+
+            return pricingSaved;
+        }
+
+        /// <summary>
+        /// SCENARIO 3: Single-Vendor + Combination-Based Pricing
+        /// Admin creates multiple combinations with attributes
+        /// </summary>
+        private async Task<bool> SaveSingleVendorCombinationBasedOfferAsync(SaveVendorItemDto dto, TbItem item, Guid vendorId, Guid userId)
+        {
+            // Similar to multi-vendor combination-based, but with admin privileges
+            // Allow creating/updating combinations and offers
+            return await SaveMultiVendorCombinationBasedOfferAsync(dto, item, vendorId, userId);
+        }
+
+        /// <summary>
+        /// SCENARIO 4: Single-Vendor + Simple Pricing
+        /// Update the default offer that was created with the item
+        /// </summary>
+        private async Task<bool> SaveSingleVendorSimpleOfferAsync(SaveVendorItemDto dto, TbItem item, Guid userId)
+        {
+            // Get the default combination
+            var defaultCombination = (await _unitOfWork.TableRepository<TbItemCombination>()
+                .GetAsync(c => c.ItemId == dto.ItemId && c.IsDefault == true))
+                .FirstOrDefault();
+
+            if (defaultCombination == null)
+                throw new ValidationException("Default combination not found");
+
+            // Get the existing default offer
+            var existingOffer = (await _unitOfWork.TableRepository<TbOffer>()
+                .GetAsync(o => o.ItemId == dto.ItemId))
+                .FirstOrDefault();
+
+            if (existingOffer == null)
+                throw new ValidationException("Default offer not found. Item may not be properly configured.");
+
+            // Update the offer
+            existingOffer.WarehouseId = dto.WarehouseId;
+            existingOffer.FulfillmentType = dto.FulfillmentType;
+            existingOffer.IsFreeShipping = dto.IsFreeShipping;
+            existingOffer.EstimatedDeliveryDays = dto.EstimatedDeliveryDays;
+            existingOffer.VisibilityScope = OfferVisibilityScope.Pending;
+            existingOffer.WarrantyId = dto.WarrantyId;
+
+            var offerSaved = await _unitOfWork.TableRepository<TbOffer>().SaveAsync(existingOffer, userId);
+            if (!offerSaved.Success)
+                return false;
+
+            // Update the pricing
+            if (dto.OfferCombinationPricings != null && dto.OfferCombinationPricings.Any())
+            {
+                var pricingDto = dto.OfferCombinationPricings.First();
+                var pricingSaved = await SaveOfferCombinationPricingAsync(
+                    pricingDto,
+                    existingOffer.Id,
+                    defaultCombination.Id,
+                    userId);
+
+                return pricingSaved;
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// Helper method to save offer combination pricing
+        /// </summary>
+        private async Task<bool> SaveOfferCombinationPricingAsync(
+            OfferCombinationPricingDto pricingDto,
+            Guid offerId,
+            Guid combinationId,
+            Guid userId)
+        {
+            // Validate required fields
+            if (pricingDto.OfferConditionId == Guid.Empty)
+                throw new ValidationException("Offer condition is required");
+            if (pricingDto.Price <= 0)
+                throw new ValidationException("Price must be greater than zero");
+            if (pricingDto.SalesPrice < 0)
+                throw new ValidationException("Sales price cannot be negative");
+
+            TbOfferCombinationPricing pricing;
+
+            if (pricingDto.Id == Guid.Empty)
+            {
+                // Check if pricing already exists for this offer and combination
+                var existingPricing = (await _unitOfWork.TableRepository<TbOfferCombinationPricing>()
+                    .GetAsync(p => p.OfferId == offerId && p.ItemCombinationId == combinationId))
+                    .FirstOrDefault();
+
+                if (existingPricing != null)
+                    throw new ValidationException("An offer already exists for this combination. Please update the existing offer instead.");
+
+                // Create new pricing
+                pricing = new TbOfferCombinationPricing
+                {
+                    OfferId = offerId,
+                    ItemCombinationId = combinationId,
+                    OfferConditionId = pricingDto.OfferConditionId,
+                    Barcode = pricingDto.Barcode ?? "DEFAULT",
+                    SKU = pricingDto.SKU ?? "DEFAULT",
+                    Price = pricingDto.Price,
+                    SalesPrice = pricingDto.SalesPrice,
+                    AvailableQuantity = pricingDto.AvailableQuantity,
+                    MinOrderQuantity = pricingDto.MinOrderQuantity,
+                    MaxOrderQuantity = pricingDto.MaxOrderQuantity,
+                    LowStockThreshold = pricingDto.LowStockThreshold,
+                    StockStatus = pricingDto.AvailableQuantity > 0 ? StockStatus.InStock : StockStatus.OutOfStock,
+                    IsBuyBoxWinner = false // Will be calculated later by buy box algorithm
+                };
+            }
+            else
+            {
+                // Update existing pricing
+                pricing = await _unitOfWork.TableRepository<TbOfferCombinationPricing>()
+                    .FindByIdAsync(pricingDto.Id)
+                    ?? throw new ValidationException("Offer combination pricing not found");
+
+                pricing.OfferConditionId = pricingDto.OfferConditionId;
+                pricing.Barcode = pricingDto.Barcode ?? pricing.Barcode;
+                pricing.SKU = pricingDto.SKU ?? pricing.SKU;
+                pricing.Price = pricingDto.Price;
+                pricing.SalesPrice = pricingDto.SalesPrice;
+                pricing.AvailableQuantity = pricingDto.AvailableQuantity;
+                pricing.MinOrderQuantity = pricingDto.MinOrderQuantity;
+                pricing.MaxOrderQuantity = pricingDto.MaxOrderQuantity;
+                pricing.LowStockThreshold = pricingDto.LowStockThreshold;
+                pricing.StockStatus = pricingDto.AvailableQuantity > 0 ? StockStatus.InStock : StockStatus.OutOfStock;
+            }
+
+            var result = await _unitOfWork.TableRepository<TbOfferCombinationPricing>()
+                .SaveAsync(pricing, userId);
+
+            return result.Success;
+        }
+
+        /// <summary>
+        /// Helper method to save combination attributes
+        /// </summary>
+        private async Task<bool> SaveCombinationAttributesAsync(
+            Guid combinationId,
+            List<CombinationAttributeDto> attributes,
+            Guid userId)
+        {
+            if (attributes == null || !attributes.Any())
+                throw new ValidationException("Combination attributes are required");
+
+            // Validate all attribute values exist
+            foreach (var attr in attributes)
+            {
+                var attributeValue = await _unitOfWork.TableRepository<TbCombinationAttributesValue>()
+                    .FindByIdAsync(attr.AttributeValueId);
+
+                if (attributeValue == null)
+                    throw new ValidationException($"Attribute value {attr.AttributeValueId} not found");
+            }
+
+            // Delete existing attributes if updating
+            var existingAttributes = await _unitOfWork.TableRepository<TbCombinationAttribute>()
+                .GetAsync(ca => ca.ItemCombinationId == combinationId);
+
+            foreach (var attr in existingAttributes)
+                await _unitOfWork.TableRepository<TbCombinationAttribute>().HardDeleteAsync(attr.Id);
+
+            // Save new attributes
+            var attributeEntities = attributes.Select(a => new TbCombinationAttribute
+            {
+                ItemCombinationId = combinationId,
+                AttributeValueId = a.AttributeValueId
+            }).ToList();
+
+            var result = await _unitOfWork.TableRepository<TbCombinationAttribute>()
+                .AddRangeAsync(attributeEntities, userId);
+
+            return result;
+        }
 
         // Helper functions
+        /// <summary>
+        /// Helper method to save combination images
+        /// </summary>
+        private async Task<bool> SaveCombinationImagesAsync(
+            Guid combinationId,
+            List<ItemCombinationImageDto> images,
+            Guid userId)
+        {
+            if (images == null || !images.Any())
+                return true;
+
+            // Delete existing images if updating
+            var existingImages = await _unitOfWork.TableRepository<TbItemCombinationImage>()
+                .GetAsync(img => img.ItemCombinationId == combinationId);
+
+            foreach (var img in existingImages)
+            {
+                // Delete the physical file if it exists
+                if (!string.IsNullOrEmpty(img.Path))
+                {
+                    try
+                    {
+                        await _fileUploadService.DeleteFileAsync(img.Path);
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.Warning(ex, "Failed to delete image file: {Path}", img.Path);
+                        // Continue even if file deletion fails
+                    }
+                }
+                await _unitOfWork.TableRepository<TbItemCombinationImage>().HardDeleteAsync(img.Id);
+            }
+
+            // Process and save new images
+            var imageEntities = new List<TbItemCombinationImage>();
+
+            foreach (var imageDto in images.OrderBy(i => i.Order))
+            {
+                if (string.IsNullOrEmpty(imageDto.Path))
+                    continue;
+
+                string savedImagePath;
+
+                // Check if the path is a new base64 image or existing path
+                if (_fileUploadService.ValidateFile(imageDto.Path).isValid)
+                {
+                    // New image - process and save
+                    savedImagePath = await SaveImageSync(imageDto.Path);
+                }
+                else
+                {
+                    // Existing image path - keep as is
+                    savedImagePath = imageDto.Path;
+                }
+
+                imageEntities.Add(new TbItemCombinationImage
+                {
+                    ItemCombinationId = combinationId,
+                    Path = savedImagePath,
+                    Order = imageDto.Order
+                });
+            }
+
+            if (imageEntities.Any())
+            {
+                var result = await _unitOfWork.TableRepository<TbItemCombinationImage>()
+                    .AddRangeAsync(imageEntities, userId);
+                return result;
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        ///  Helper method to save and process an image
+        /// </summary>
+        /// <param name="image"></param>
+        /// <returns></returns>
+        /// <exception cref="ValidationException"></exception>
+        /// <exception cref="ApplicationException"></exception>
         private async Task<string> SaveImageSync(string image)
         {
             // Check if the file is null or empty
@@ -435,243 +869,47 @@ namespace BL.Services.VendorItem
                 throw new ApplicationException(ValidationResources.ErrorProcessingImage, ex);
             }
         }
-
-        private async Task<bool> SaveItemAttributesAsync(
-    Guid itemId,
-    List<ItemAttributeDto> itemAttributes,
-    List<TbCategoryAttribute> categoryAttributes,
-    Guid userId)
+       
+        /// <summary>
+        /// Recalculates the Buy Box winner for all combinations of an item
+        /// </summary>
+        private async Task RecalculateBuyBoxWinnerAsync(Guid itemId)
         {
-            if (itemAttributes == null || !itemAttributes.Any())
-                return true; // nothing to save
+            // Get all combinations for this item
+            var combinations = await _unitOfWork.TableRepository<TbItemCombination>()
+                .GetAsync(c => c.ItemId == itemId);
 
-            var attributeEntities = new List<TbItemAttribute>();
-
-            foreach (var attr in itemAttributes)
+            foreach (var combination in combinations)
             {
-                var attribute = categoryAttributes.FirstOrDefault(ca => ca.AttributeId == attr.AttributeId)?.Attribute;
+                // Get all offers for this combination
+                var offerPricings = await _unitOfWork.TableRepository<TbOfferCombinationPricing>()
+                    .GetAsync(
+                        p => p.ItemCombinationId == combination.Id && p.StockStatus == StockStatus.InStock,
+                        includeProperties: "Offer");
 
-                // Only save attributes with values
-                if (!string.IsNullOrWhiteSpace(attr.Value) && attribute != null)
+                // Reset all to non-winner
+                foreach (var pricing in offerPricings)
                 {
-                    var attributeEntity = _mapper.MapModel<ItemAttributeDto, TbItemAttribute>(attr);
-                    attributeEntity.ItemId = itemId;
-                    attributeEntity.FieldType = attribute.FieldType;
-                    attributeEntity.IsRangeFieldType = attribute.IsRangeFieldType;
-                    attributeEntity.MaxLength = attribute.MaxLength ?? 100;
-                    attributeEntity.TitleAr = attribute.TitleAr;
-                    attributeEntity.TitleEn = attribute.TitleEn;
+                    pricing.IsBuyBoxWinner = false;
+                }
 
-                    attributeEntities.Add(attributeEntity);
+                if (offerPricings.Any())
+                {
+                    // Simple Buy Box algorithm: lowest price + fastest delivery wins
+                    // You can make this more sophisticated based on your business rules
+                    var winner = offerPricings
+                        .OrderBy(p => p.Price)
+                        .ThenBy(p => p.Offer?.EstimatedDeliveryDays ?? 999)
+                        .FirstOrDefault();
+
+                    if (winner != null)
+                    {
+                        winner.IsBuyBoxWinner = true;
+                        await _unitOfWork.TableRepository<TbOfferCombinationPricing>()
+                            .UpdateAsync(winner);
+                    }
                 }
             }
-
-            if (!attributeEntities.Any())
-                return true;
-
-            return await _unitOfWork
-                .TableRepository<TbItemAttribute>()
-                .AddRangeAsync(attributeEntities, userId);
         }
-
-	
-		//private async Task<bool> ProcessItemCombinationsAsync(Guid itemId, List<ItemCombinationDto> itemCombinations, TbCategory category, List<TbCategoryAttribute> categoryAttributes, Guid userId)
-		//{
-		//    if (itemCombinations == null || !itemCombinations.Any())
-		//        return true;
-
-		//    var comboEntitiesToCreate = new List<TbItemCombination>();
-		//    var comboEntitiesToUpdate = new List<TbItemCombination>();
-		//    var comboEntityPerDto = new List<TbItemCombination>();
-
-		//    // Handle pricing system types
-		//    var pricingType = category.PricingSystemType;
-
-		//    // For standard-like pricing systems
-		//    if (pricingType == PricingSystemType.Standard || pricingType == PricingSystemType.Quantity || pricingType == PricingSystemType.CustomerSegmentPricing)
-		//    {
-		//        var singleDto = itemCombinations.FirstOrDefault();
-		//        if (singleDto == null)
-		//        {
-		//            singleDto = new ItemCombinationDto { ItemId = itemId, Barcode = "111111", SKU = "DEFAULT", IsDefault = true };
-		//            itemCombinations = new List<ItemCombinationDto> { singleDto };
-		//        }
-
-		//        if (singleDto.Id != Guid.Empty)
-		//        {
-		//            var comboToUpdate = _mapper.MapModel<ItemCombinationDto, TbItemCombination>(singleDto);
-		//            comboToUpdate.ItemId = itemId;
-		//            comboEntitiesToUpdate.Add(comboToUpdate);
-		//            comboEntityPerDto.Add(comboToUpdate);
-		//        }
-		//        else
-		//        {
-		//            var comboToCreate = _mapper.MapModel<ItemCombinationDto, TbItemCombination>(singleDto);
-		//            comboToCreate.ItemId = itemId;
-		//            comboEntitiesToCreate.Add(comboToCreate);
-		//            comboEntityPerDto.Add(comboToCreate);
-		//        }
-
-		//        if (comboEntitiesToCreate.Any())
-		//            await _unitOfWork.TableRepository<TbItemCombination>().AddRangeAsync(comboEntitiesToCreate, userId);
-
-		//        if (comboEntitiesToUpdate.Any())
-		//            await _unitOfWork.TableRepository<TbItemCombination>().UpdateRangeAsync(comboEntitiesToUpdate, userId);
-		//    }
-		//    else
-		//    {
-		//        // Combination-based systems
-		//        for (int i = 0; i < itemCombinations.Count; i++)
-		//        {
-		//            var comboDto = itemCombinations[i];
-		//            var comboEntityModel = _mapper.MapModel<ItemCombinationDto, TbItemCombination>(comboDto);
-		//            comboEntityModel.ItemId = itemId;
-
-		//            if (comboDto.Id != Guid.Empty)
-		//            {
-		//                comboEntityModel.Id = comboDto.Id;
-		//                comboEntitiesToUpdate.Add(comboEntityModel);
-		//                comboEntityPerDto.Add(comboEntityModel);
-		//            }
-		//            else
-		//            {
-		//                comboEntitiesToCreate.Add(comboEntityModel);
-		//                comboEntityPerDto.Add(comboEntityModel);
-		//            }
-		//        }
-
-		//        if (comboEntitiesToCreate.Any())
-		//            await _unitOfWork.TableRepository<TbItemCombination>().AddRangeAsync(comboEntitiesToCreate, userId);
-
-		//        if (comboEntitiesToUpdate.Any())
-		//            await _unitOfWork.TableRepository<TbItemCombination>().UpdateRangeAsync(comboEntitiesToUpdate, userId);
-
-		//        // Create combination attributes/values/modifiers
-		//        var combinationAttributeEntities = new List<TbCombinationAttribute>();
-		//        var createdAttrEntitiesPerCombo = new List<List<TbCombinationAttribute>>();
-
-		//        for (int comboIndex = 0; comboIndex < itemCombinations.Count; comboIndex++)
-		//        {
-		//            var comboDto = itemCombinations[comboIndex];
-		//            var comboEntity = comboEntityPerDto[comboIndex];
-		//            var createdForCombo = new List<TbCombinationAttribute>();
-
-		//            if (comboDto.CombinationAttributes?.Any() == true)
-		//            {
-		//                foreach (var attrDto in comboDto.CombinationAttributes)
-		//                {
-		//                    var hasPricingValues = attrDto.combinationAttributeValueDtos?.Any(v => categoryAttributes.Any(ca => ca.AttributeId == v.AttributeId && ca.AffectsPricing)) == true;
-		//                    if (!hasPricingValues)
-		//                        continue;
-
-		//                    var attrEntity = new TbCombinationAttribute { ItemCombinationId = comboEntity.Id };
-		//                    combinationAttributeEntities.Add(attrEntity);
-		//                    createdForCombo.Add(attrEntity);
-		//                }
-		//            }
-
-		//            createdAttrEntitiesPerCombo.Add(createdForCombo);
-		//        }
-
-		//        if (combinationAttributeEntities.Any())
-		//            await _unitOfWork.TableRepository<TbCombinationAttribute>().AddRangeAsync(combinationAttributeEntities, userId);
-
-		//        var combinationAttributeValueEntities = new List<TbCombinationAttributesValue>();
-		//        var createdValuesPerAttrPerCombo = new List<List<List<TbCombinationAttributesValue>>>();
-
-		//        for (int comboIndex = 0; comboIndex < itemCombinations.Count; comboIndex++)
-		//        {
-		//            var comboDto = itemCombinations[comboIndex];
-		//            var attrDtos = comboDto.CombinationAttributes;
-		//            var createdAttrs = createdAttrEntitiesPerCombo.ElementAtOrDefault(comboIndex) ?? new List<TbCombinationAttribute>();
-		//            var valuesPerAttr = new List<List<TbCombinationAttributesValue>>();
-
-		//            if (attrDtos?.Any() == true)
-		//            {
-		//                for (int attrIndex = 0; attrIndex < attrDtos.Count; attrIndex++)
-		//                {
-		//                    var attrDto = attrDtos[attrIndex];
-		//                    var createdAttrEntity = createdAttrs.ElementAtOrDefault(attrIndex);
-		//                    var createdValuesForAttr = new List<TbCombinationAttributesValue>();
-
-		//                    if (attrDto?.combinationAttributeValueDtos?.Any() == true && createdAttrEntity != null)
-		//                    {
-		//                        foreach (var valDto in attrDto.combinationAttributeValueDtos)
-		//                        {
-		//                            if (!categoryAttributes.Any(ca => ca.AttributeId == valDto.AttributeId && ca.AffectsPricing))
-		//                                continue;
-
-		//                            var valEntity = new TbCombinationAttributesValue
-		//                            {
-		//                                CombinationAttributeId = createdAttrEntity.Id,
-		//                                AttributeId = valDto.AttributeId,
-		//                                Value = valDto.Value
-		//                            };
-		//                            combinationAttributeValueEntities.Add(valEntity);
-		//                            createdValuesForAttr.Add(valEntity);
-		//                        }
-		//                    }
-
-		//                    valuesPerAttr.Add(createdValuesForAttr);
-		//                }
-		//            }
-
-		//            createdValuesPerAttrPerCombo.Add(valuesPerAttr);
-		//        }
-
-		//        if (combinationAttributeValueEntities.Any())
-		//            await _unitOfWork.TableRepository<TbCombinationAttributesValue>().AddRangeAsync(combinationAttributeValueEntities, userId);
-
-		//        var attributeValuePriceModifierEntities = new List<TbAttributeValuePriceModifier>();
-
-		//        for (int comboIndex = 0; comboIndex < itemCombinations.Count; comboIndex++)
-		//        {
-		//            var comboDto = itemCombinations[comboIndex];
-		//            var attrDtos = comboDto.CombinationAttributes;
-		//            var valuesPerAttr = createdValuesPerAttrPerCombo.ElementAtOrDefault(comboIndex) ?? new List<List<TbCombinationAttributesValue>>();
-
-		//            if (attrDtos?.Any() == true)
-		//            {
-		//                for (int attrIndex = 0; attrIndex < attrDtos.Count; attrIndex++)
-		//                {
-		//                    var attrDto = attrDtos[attrIndex];
-		//                    var createdValuesForAttr = valuesPerAttr.ElementAtOrDefault(attrIndex) ?? new List<TbCombinationAttributesValue>();
-
-		//                    if (attrDto?.combinationAttributeValueDtos?.Any() == true)
-		//                    {
-		//                        for (int valIndex = 0; valIndex < attrDto.combinationAttributeValueDtos.Count; valIndex++)
-		//                        {
-		//                            var valDto = attrDto.combinationAttributeValueDtos[valIndex];
-		//                            var createdValEntity = createdValuesForAttr.ElementAtOrDefault(valIndex);
-
-		//                            if (createdValEntity != null && valDto.AttributeValuePriceModifiers?.Any() == true)
-		//                            {
-		//                                foreach (var modDto in valDto.AttributeValuePriceModifiers)
-		//                                {
-		//                                    var modEntity = new TbAttributeValuePriceModifier
-		//                                    {
-		//                                        CombinationAttributeValueId = createdValEntity.Id,
-		//                                        AttributeId = valDto.AttributeId,
-		//                                        ModifierType = modDto.ModifierType,
-		//                                        PriceModifierCategory = modDto.PriceModifierCategory,
-		//                                        ModifierValue = modDto.ModifierValue,
-		//                                        DisplayOrder = modDto.DisplayOrder
-		//                                    };
-		//                                    attributeValuePriceModifierEntities.Add(modEntity);
-		//                                }
-		//                            }
-		//                        }
-		//                    }
-		//                }
-		//            }
-		//        }
-
-		//        if (attributeValuePriceModifierEntities.Any())
-		//            await _unitOfWork.TableRepository<TbAttributeValuePriceModifier>().AddRangeAsync(attributeValuePriceModifierEntities, userId);
-		//    }
-
-		//    return true;
-		//}
-
-	}
+    }
 }

@@ -36,6 +36,12 @@ public interface IOrderManagementService
         CancellationToken cancellationToken = default);
 
     /// <summary>
+    /// Get all orders (for admin/dashboard)
+    /// </summary>
+    Task<IEnumerable<OrderDto>> GetAllOrdersAsync(
+        CancellationToken cancellationToken = default);
+
+    /// <summary>
     /// Get customer orders with pagination
     /// Returns one DTO per order detail (for display in list)
     /// </summary>
@@ -59,6 +65,17 @@ public interface IOrderManagementService
     Task<ResponseOrderDetailsDto?> GetOrderDetailsByIdAsync(
         Guid orderDetailsId,
         string userId,
+        CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Search orders with pagination and filtering (for admin dashboard)
+    /// </summary>
+    Task<(List<OrderDto> Items, int TotalRecords)> SearchOrdersAsync(
+        string? searchTerm = null,
+        int pageNumber = 1,
+        int pageSize = 10,
+        string sortBy = "CreatedDateUtc",
+        string sortDirection = "desc",
         CancellationToken cancellationToken = default);
 
     // ============================================

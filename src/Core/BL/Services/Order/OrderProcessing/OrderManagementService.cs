@@ -146,6 +146,32 @@ public class OrderManagementService : IOrderManagementService
     }
 
     /// <summary>
+    /// Get all orders (for admin/dashboard)
+    /// </summary>
+    public async Task<IEnumerable<OrderDto>> GetAllOrdersAsync(
+        CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var orders = await _orderRepository.GetAsync(
+                o => !o.IsDeleted,
+                cancellationToken);
+
+            if (!orders.Any())
+            {
+                return Enumerable.Empty<OrderDto>();
+            }
+
+            return _mapper.Map<IEnumerable<OrderDto>>(orders);
+        }
+        catch (Exception ex)
+        {
+            _logger.Error(ex, "Error getting all orders");
+            throw;
+        }
+    }
+
+    /// <summary>
     /// Get customer orders with pagination
     /// Returns one DTO per order detail (for display in list)
     /// </summary>
@@ -568,6 +594,44 @@ public class OrderManagementService : IOrderManagementService
         catch (Exception ex)
         {
             _logger.Error(ex, "Error validating order {OrderId}", orderId);
+            throw;
+        }
+    }
+
+    /// <summary>
+    /// Search orders with pagination and filtering (for admin dashboard)
+    /// </summary>
+    public async Task<(List<OrderDto> Items, int TotalRecords)> SearchOrdersAsync(
+        string? searchTerm = null,
+        int pageNumber = 1,
+        int pageSize = 10,
+        string sortBy = "CreatedDateUtc",
+        string sortDirection = "desc",
+        CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            // Delegate to repository for data access
+            var (orders, totalCount) = await _orderRepository.SearchAsync(
+                searchTerm,
+                pageNumber,
+                pageSize,
+                sortBy,
+                sortDirection,
+                cancellationToken);
+
+            if (!orders.Any())
+            {
+                return (new List<OrderDto>(), totalCount);
+            }
+
+            // Map to DTOs
+            var orderDtos = _mapper.Map<List<OrderDto>>(orders);
+            return (orderDtos, totalCount);
+        }
+        catch (Exception ex)
+        {
+            _logger.Error(ex, "Error searching orders with term: {SearchTerm}, page: {PageNumber}", searchTerm, pageNumber);
             throw;
         }
     }

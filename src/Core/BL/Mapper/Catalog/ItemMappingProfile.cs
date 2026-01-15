@@ -213,8 +213,6 @@ public partial class MappingProfile
             return new CurrentCombinationDto
             {
                 CombinationId = combo.CombinationId,
-                SKU = combo.SKU,
-                Barcode = combo.Barcode,
                 IsDefault = combo.IsDefault,
                 CreatedBy = combo.CreatedBy,
                 PricingAttributes = combo.PricingAttributes?.Select(sa => new PricingAttributeDto
@@ -296,6 +294,8 @@ public partial class MappingProfile
                         VendorRating = bestOffer.VendorRating ?? 0.0m,
                         Price = bestOffer.Price,
                         SalesPrice = bestOffer.SalesPrice,
+                        SKU = bestOffer.SKU,
+                        Barcode = bestOffer.Barcode,
                         DiscountPercentage = bestOffer.DiscountPercentage,
                         AvailableQuantity = bestOffer.AvailableQuantity,
                         StockStatus = bestOffer.StockStatus,

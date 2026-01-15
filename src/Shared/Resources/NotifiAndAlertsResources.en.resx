@@ -510,4 +510,20 @@
   <data name="EntityCannotBeDeletedInUse" xml:space="preserve">
     <value>This {0} cannot be deleted because it is used by the following {1}: {2}</value>
   </data>
+  <data name="WarehouseAlreadyExists" xml:space="preserve">
+    <value>A warehouse already exists for this vendor</value>
+  </data>
+  <data name="NoSelection" xml:space="preserve">
+    <value>No selection</value>
+  </data>
+	<data name="LoadingInsights" xml:space="preserve">
+  <value>Loading insights...</value>
+</data>
+	<data name="ErrorLoadingMessage" xml:space="preserve">
+  <value>Error loading message</value>
+</data>
+	<data name="ErrorLoadingDashboard" xml:space="preserve">
+  <value>Error loading dashboard</value>
+</data>
+
 </root>

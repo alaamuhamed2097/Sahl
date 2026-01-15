@@ -18,7 +18,7 @@ window.httpClientHelper = {
         try {
             // ? Get token from localStorage
             const token = this.getAuthToken();
-            
+
             const options = {
                 method: method || 'GET',
                 credentials: 'include', // ? CRITICAL: This ensures cookies are sent with requests
@@ -71,7 +71,7 @@ window.httpClientHelper = {
             // ? For HttpOnly cookies, we can't check document.cookie
             // Instead, we check localStorage for auth state flag
             const hasAuthState = localStorage.getItem('isAuthenticated') === 'true';
-            
+
             return hasAuthState;
         } catch (error) {
             console.error('[HttpClientHelper] Error checking cookie:', error);

@@ -1,22 +1,21 @@
 using BL.Contracts.GeneralService.Location;
+using BL.Contracts.Service.Location;
 using BL.GeneralService.Location;
+using BL.Services.Location;
 
 namespace Api.Extensions.Services
 {
-    /// <summary>
-    /// Extension methods for registering location-based services.
-    /// </summary>
     public static class LocationServicesExtensions
     {
-        /// <summary>
-        /// Adds location and IP geolocation services.
-        /// </summary>
-        /// <param name="services">The IServiceCollection instance.</param>
-        /// <returns>The IServiceCollection for chaining.</returns>
         public static IServiceCollection AddLocationServices(this IServiceCollection services)
         {
-            // Location Services
+            // Location Geolocation Services
             services.AddScoped<IIpGeolocationService, IpGeolocationService>();
+
+            // Location Country/State/City Services
+            services.AddScoped<ICountryService, CountryService>();
+            services.AddScoped<IStateService, StateService>();
+            services.AddScoped<ICityService, CityService>();
 
             return services;
         }

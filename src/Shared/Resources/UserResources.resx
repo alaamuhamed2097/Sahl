@@ -363,4 +363,29 @@
   <data name="InValidDate" xml:space="preserve">
     <value>تاريخ غير صالح</value>
   </data>
+  <data name="RegistrationDate" xml:space="preserve">
+    <value>تاريخ التسجيل</value>
+    <comment>Registration Date</comment>
+  </data>
+  <data name="ChangePassword" xml:space="preserve">
+    <value>تغيير كلمة المرور</value>
+  </data>
+  <data name="ChangeEmail" xml:space="preserve">
+    <value>تغيير البريد الإلكتروني</value>
+  </data>
+  <data name="InvalidPassword" xml:space="preserve">
+    <value>كلمة المرور غير صالحة</value>
+  </data>
+  <data name="Password" xml:space="preserve">
+    <value>كلمة المرور</value>
+  </data>
+  <data name="ConfirmPassword" xml:space="preserve">
+    <value>تأكيد كلمة المرور</value>
+  </data>
+  <data name="NewEmail" xml:space="preserve">
+    <value>البريد الإلكتروني الجديد</value>
+  </data>
+  <data name="PasswordMismatch" xml:space="preserve">
+    <value>كلمة المرور غير متطابقة</value>
+  </data>
 </root>

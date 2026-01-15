@@ -1,4 +1,5 @@
-﻿using Resources;
+using Common.Enumerations.User;
+using Resources;
 using Shared.DTOs.Base;
 using System.ComponentModel.DataAnnotations;
 
@@ -23,10 +24,10 @@ namespace Shared.DTOs.Customer
 		[StringLength(100, ErrorMessageResourceName = "OutOfMaxLength", ErrorMessageResourceType = typeof(ValidationResources))]
 		public string Email { get; set; } = null!;
 
-		
-
-		//[Required(ErrorMessageResourceName = "FieldRequired", ErrorMessageResourceType = typeof(ValidationResources))]
-		//public UserStateType UserState { get; set; }
+		public UserStateType UserStatus { get; set; } = UserStateType.Active;
+		public DateTime? LastLoginDate { get; set; }
+		public decimal WalletBalance { get; set; }
+		public int OrderCount { get; set; }
 		public string? Notes { get; set; }   
 	}
 }

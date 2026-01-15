@@ -8,10 +8,6 @@ namespace Shared.GeneralModels.SearchCriteriaModels
 {
 	public class VendorReviewSearchCriteriaModel : BaseSearchCriteriaModel
 	{
-		/// <summary>
-		/// Gets or sets the vendor identifier to filter reviews for a specific vendor.
-		/// </summary>
-		public Guid? VendorId { get; set; }
 
 		/// <summary>
 		/// Gets or sets the customer identifier to filter reviews by a specific customer.
