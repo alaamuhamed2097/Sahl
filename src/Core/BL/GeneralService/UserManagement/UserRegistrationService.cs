@@ -329,7 +329,7 @@ public class UserRegistrationService : IUserRegistrationService
             }
 
             // Auto-generate username from phone number
-            var username = request.PhoneNumber;
+            var username = request.Email;
             var existingUserByUsername = await _userManager.Users
                 .FirstOrDefaultAsync(u => u.UserName == username);
 

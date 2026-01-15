@@ -49,7 +49,7 @@ namespace Dashboard.Pages.UserManagement.Vendors
                 if (response.Success && response.Data != null)
                 {
                     Vendor = response.Data;
-                    CurrentUserStatus = Vendor.UserStatus;
+                    CurrentUserStatus = Vendor.UserState;
                 }
                 else
                 {
