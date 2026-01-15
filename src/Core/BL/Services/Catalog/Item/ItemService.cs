@@ -4,6 +4,7 @@ using BL.Contracts.Service.Catalog.Item;
 using BL.Contracts.Service.Setting;
 using BL.Contracts.Service.Vendor;
 using BL.Contracts.Service.VendorItem;
+using BL.Contracts.Service.VendorWarehouse;
 using BL.Contracts.Service.Warehouse;
 using BL.Extensions;
 using BL.Services.Base;
@@ -38,7 +39,7 @@ public class ItemService : BaseService<TbItem, ItemDto>, IItemService
     private readonly ITableRepository<TbItem> _tableRepository;
     private readonly IRepository<VwItem> _repository;
     private readonly ITableRepository<TbCategory> _categoryRepository;
-    private readonly IWarehouseService _warehouseService;
+    private readonly IVendorWarehouseService _vendorWarehouseService;
     private readonly IVendorManagementService _vendorService;
     private readonly IFileUploadService _fileUploadService;
     private readonly IImageProcessingService _imageProcessingService;
@@ -56,10 +57,10 @@ public class ItemService : BaseService<TbItem, ItemDto>, IItemService
         IImageProcessingService imageProcessingService,
         ILogger logger,
         ITableRepository<TbCategory> categoryRepository,
-        IWarehouseService warehouseService,
         IVendorManagementService vendorService,
         IVendorItemConditionService vendorItemConditionService,
-        IDevelopmentSettingsService developmentSettingsService)
+        IDevelopmentSettingsService developmentSettingsService,
+        IVendorWarehouseService vendorWarehouseService)
         : base(tableRepository, mapper)
     {
         _mapper = mapper;
@@ -70,10 +71,10 @@ public class ItemService : BaseService<TbItem, ItemDto>, IItemService
         _imageProcessingService = imageProcessingService;
         _logger = logger;
         _categoryRepository = categoryRepository;
-        _warehouseService = warehouseService;
         _vendorService = vendorService;
         _vendorItemConditionService = vendorItemConditionService;
         _developmentSettingsService = developmentSettingsService;
+        _vendorWarehouseService = vendorWarehouseService;
     }
 
     public async Task<PagedResult<ItemDto>> GetPage(ItemSearchCriteriaModel criteriaModel)
@@ -311,7 +312,7 @@ public class ItemService : BaseService<TbItem, ItemDto>, IItemService
                         throw new ValidationException("Failed to save item combinations");
 
                     // Create default offer
-                    var defaultWarehouse = await _warehouseService.GetMarketWarehousesAsync()
+                    var defaultWarehouse = await _vendorWarehouseService.GetMarketWarehousesAsync()
                         ?? throw new ValidationException("Market warehouse not found");
 
                     var defaultVendorItem = new TbOffer()

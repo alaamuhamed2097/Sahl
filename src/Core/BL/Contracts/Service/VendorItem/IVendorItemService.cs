@@ -9,8 +9,8 @@ namespace BL.Contracts.Service.VendorItem
     {
         Task<ItemDto> FindByIdAsync(Guid Id);
         Task<IEnumerable<VendorItemDetailsDto>> FindByItemCombinationIdAsync(Guid itemCombinationId, CancellationToken token = default);
-        Task<PagedResult<OfferDto>> GetPage(ItemSearchCriteriaModel criteriaModel);
-        Task<bool> Save(ItemDto dto, Guid userId);
+        Task<PagedResult<VendorItemDto>> GetPage(ItemSearchCriteriaModel criteriaModel);
+        Task<bool> SaveAsync(SaveVendorItemDto dto, string userId);
         Task<PagedResult<VendorItemDetailsDto>> GetPageVendor(ItemstatusSearchCriteriaModel criteriaModel);
 
 	}

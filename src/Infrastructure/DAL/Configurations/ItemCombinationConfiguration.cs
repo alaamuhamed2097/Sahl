@@ -28,8 +28,6 @@ namespace DAL.Configurations
                 .HasForeignKey(ic => ic.ItemId)
                 .HasConstraintName("FK_TbItemCombinations_TbItems_ItemId")
                 .OnDelete(DeleteBehavior.Cascade);
-
-
         }
     }
 }

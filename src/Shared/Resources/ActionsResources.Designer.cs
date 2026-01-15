@@ -97,6 +97,15 @@ namespace Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to إضافة قيمة.
+        /// </summary>
+        public static string AddValue {
+            get {
+                return ResourceManager.GetString("AddValue", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to تطبيق.
         /// </summary>
         public static string Apply {
@@ -727,6 +736,15 @@ namespace Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to تحديث الصفحة.
+        /// </summary>
+        public static string RefreshPage {
+            get {
+                return ResourceManager.GetString("RefreshPage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to تسجيل.
         /// </summary>
         public static string Register {
@@ -1002,6 +1020,15 @@ namespace Resources {
         public static string View {
             get {
                 return ResourceManager.GetString("View", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to عرض الكل.
+        /// </summary>
+        public static string ViewAll {
+            get {
+                return ResourceManager.GetString("ViewAll", resourceCulture);
             }
         }
         

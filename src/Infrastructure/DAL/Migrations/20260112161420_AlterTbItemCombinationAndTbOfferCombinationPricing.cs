@@ -43,13 +43,13 @@ namespace DAL.Migrations
                 defaultValue: "");
             // ✅ Populate unique values BEFORE creating indexes
             migrationBuilder.Sql(@"
-        UPDATE TbOfferCombinationPricings
-        SET 
-            SKU = CONCAT('SKU-', REPLACE(CONVERT(varchar(36), Id), '-', '')),
-            Barcode = CONCAT('BAR-', REPLACE(CONVERT(varchar(36), Id), '-', ''))
-        WHERE 
-            SKU = '' OR Barcode = '';
-    ");
+                UPDATE TbOfferCombinationPricings
+                SET 
+                    SKU = CONCAT('SKU-', REPLACE(CONVERT(varchar(36), Id), '-', '')),
+                    Barcode = CONCAT('BAR-', REPLACE(CONVERT(varchar(36), Id), '-', ''))
+                WHERE 
+                    SKU = '' OR Barcode = '';
+            ");
 
             migrationBuilder.CreateIndex(
                 name: "IX_TbOfferCombinationPricings_Barcode",

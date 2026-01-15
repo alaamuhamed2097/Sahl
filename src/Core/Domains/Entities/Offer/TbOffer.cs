@@ -21,7 +21,7 @@ namespace Domains.Entities.Offer
         public int? EstimatedDeliveryDays { get; set; }
         public bool IsFreeShipping { get; set; } = false;
         public OfferVisibilityScope VisibilityScope { get; set; }
-        public FulfillmentType FulfillmentType { get; set; } = FulfillmentType.Seller;
+        public FulfillmentType FulfillmentType { get; set; } = FulfillmentType.Vendor;
 
         // Optional properties
         public Guid? WarrantyId { get; set; }

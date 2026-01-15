@@ -199,7 +199,7 @@
     <value>طلب الخدمة</value>
   </data>
   <data name="Sliders" xml:space="preserve">
-    <value>السلايدر</value>
+    <value>عرض الهوم</value>
   </data>
   <data name="Testimonials" xml:space="preserve">
     <value>شهادات نعتز بها</value>
@@ -1180,161 +1180,204 @@
     <value>يجب أن يكون السعر أكبر من 0</value>
   </data>
   <data name="Note" xml:space="preserve">
-  <value>ملاحظة</value>
-</data>
+    <value>ملاحظة</value>
+  </data>
   <data name="MaximumPrice" xml:space="preserve">
-  <value>السعر الأقصى {0}</value>
-</data>
+    <value>السعر الأقصى {0}</value>
+  </data>
   <data name="MinimumPrice" xml:space="preserve">
-  <value>السعر الأدنى {0}</value>
-</data>
+    <value>السعر الأدنى {0}</value>
+  </data>
   <data name="StartingPrice" xml:space="preserve">
-  <value>السعر الابتدائي {0}</value>
-</data>
+    <value>السعر الابتدائي {0}</value>
+  </data>
   <data name="ProductBarcode" xml:space="preserve">
-  <value>باركود المنتج</value>
-</data>
-  <!-- System Settings -->
+    <value>باركود المنتج</value>
+  </data>
   <data name="SystemSettings" xml:space="preserve">
     <value>إعدادات النظام</value>
-</data>
-  <!-- Tax Settings -->
+  </data>
   <data name="TaxSettings" xml:space="preserve">
     <value>إعدادات الضرائب</value>
-</data>
+  </data>
   <data name="TaxIncludedInPrice" xml:space="preserve">
     <value>الضريبة مضمنة في السعر</value>
-</data>
+  </data>
   <data name="TaxIncludedHelpText" xml:space="preserve">
     <value>فعّل هذا الخيار إذا كانت أسعار المنتجات تتضمن الضريبة بالفعل</value>
-</data>
-  <!-- Shipping Settings -->
+  </data>
   <data name="ShippingSettings" xml:space="preserve">
     <value>إعدادات الشحن</value>
-</data>
+  </data>
   <data name="ShippingPerKg" xml:space="preserve">
     <value>تكلفة الشحن لكل كجم</value>
-</data>
+  </data>
   <data name="FreeShippingThreshold" xml:space="preserve">
     <value>حد الشحن المجاني</value>
-</data>
+  </data>
   <data name="FreeShippingHelpText" xml:space="preserve">
     <value>الطلبات التي تتجاوز هذا المبلغ ستحصل على شحن مجاني</value>
-</data>
+  </data>
   <data name="EstimatedDeliveryDays" xml:space="preserve">
     <value>أيام التوصيل المتوقعة</value>
-</data>
-  <!-- Payment Settings -->
+  </data>
   <data name="PaymentSettings" xml:space="preserve">
     <value>إعدادات الدفع</value>
-</data>
+  </data>
   <data name="PaymentGateway" xml:space="preserve">
     <value>بوابة الدفع</value>
-</data>
+  </data>
   <data name="EnablePaymentGateway" xml:space="preserve">
     <value>تفعيل بوابة الدفع</value>
-</data>
+  </data>
   <data name="PaymentGatewayHelpText" xml:space="preserve">
     <value>السماح للعملاء بالدفع عبر الإنترنت باستخدام بطاقات الائتمان/الخصم</value>
-</data>
+  </data>
   <data name="CashOnDelivery" xml:space="preserve">
     <value>الدفع عند الاستلام</value>
-</data>
+  </data>
   <data name="EnableCashOnDelivery" xml:space="preserve">
     <value>تفعيل الدفع عند الاستلام</value>
-</data>
+  </data>
   <data name="CashOnDeliveryHelpText" xml:space="preserve">
     <value>السماح للعملاء بالدفع عند استلام الطلب</value>
 </data>
   <!-- Business Settings -->
   <data name="MaintenanceMode" xml:space="preserve">
     <value>وضع الصيانة</value>
-</data>
+  </data>
   <data name="EnableMaintenanceMode" xml:space="preserve">
     <value>تفعيل وضع الصيانة</value>
-</data>
+  </data>
   <data name="MaintenanceModeWarning" xml:space="preserve">
     <value>تحذير: تفعيل هذا الخيار سيجعل الموقع غير متاح للعملاء</value>
-</data>
+  </data>
   <data name="GuestCheckout" xml:space="preserve">
     <value>الدفع كزائر</value>
-</data>
+  </data>
   <data name="AllowGuestCheckout" xml:space="preserve">
     <value>السماح بالدفع كزائر</value>
-</data>
+  </data>
   <data name="GuestCheckoutHelpText" xml:space="preserve">
     <value>السماح للعملاء بإتمام الطلب دون إنشاء حساب</value>
-</data>
-  <!-- Order Settings -->
+  </data>
   <data name="MinimumOrderAmount" xml:space="preserve">
     <value>الحد الأدنى لقيمة الطلب</value>
-</data>
+  </data>
   <data name="MaximumOrderAmount" xml:space="preserve">
     <value>الحد الأقصى لقيمة الطلب</value>
-</data>
+  </data>
   <data name="OrderCancellationPeriod" xml:space="preserve">
     <value>فترة إلغاء الطلب</value>
-</data>
+  </data>
   <data name="CancellationPeriodHelpText" xml:space="preserve">
     <value>عدد الساعات التي يمكن للعملاء خلالها إلغاء طلباتهم</value>
-</data>
-  <!-- Notification Settings -->
+  </data>
   <data name="NotificationSettings" xml:space="preserve">
     <value>إعدادات الإشعارات</value>
-</data>
+  </data>
   <data name="EmailNotifications" xml:space="preserve">
     <value>إشعارات البريد الإلكتروني</value>
-</data>
+  </data>
   <data name="EnableEmailNotifications" xml:space="preserve">
     <value>تفعيل إشعارات البريد الإلكتروني</value>
-</data>
+  </data>
   <data name="EmailNotifHelpText" xml:space="preserve">
     <value>إرسال إشعارات بريد إلكتروني للطلبات والتحديثات</value>
-</data>
+  </data>
   <data name="SMSNotifications" xml:space="preserve">
     <value>إشعارات الرسائل النصية</value>
-</data>
+  </data>
   <data name="EnableSMSNotifications" xml:space="preserve">
     <value>تفعيل إشعارات الرسائل النصية</value>
-</data>
+  </data>
   <data name="SMSNotifHelpText" xml:space="preserve">
     <value>إرسال رسائل نصية للتحديثات الهامة</value>
-</data>
-  <!-- Security Settings -->
+  </data>
   <data name="SecuritySettings" xml:space="preserve">
     <value>إعدادات الأمان</value>
-</data>
+  </data>
   <data name="MaxLoginAttempts" xml:space="preserve">
     <value>الحد الأقصى لمحاولات تسجيل الدخول</value>
-</data>
+  </data>
   <data name="SessionTimeout" xml:space="preserve">
     <value>مهلة الجلسة</value>
-</data>
+  </data>
   <data name="PasswordMinLength" xml:space="preserve">
     <value>الحد الأدنى لطول كلمة المرور</value>
 </data>
   <!-- Loading States -->
+  <data name="LoadingSettings_Duplicate[1]" xml:space="preserve">
+    <value>جاري تحميل الإعدادات...</value>
+</data>
   <!-- Messages -->
   <data name="SettingsResetSuccess" xml:space="preserve">
     <value>تم إعادة تعيين الإعدادات إلى القيم الافتراضية. لا تنس الحفظ!</value>
-</data>
+  </data>
   <data name="ConfirmResetSettings" xml:space="preserve">
     <value>هل أنت متأكد من إعادة تعيين جميع الإعدادات إلى القيم الافتراضية؟ لا يمكن التراجع عن هذا الإجراء.</value>
 </data>
-	<data name="Warehouses" xml:space="preserve">
+  <data name="Warehouses" xml:space="preserve">
+  </data>
+  <data name="Warehouses" xml:space="preserve">
     <value>المخزن</value>
 </data>
-	<data name="ManageReviews" xml:space="preserve">
+  <data name="ManageReviews" xml:space="preserve">
+  </data>
+  <data name="ManageReviews" xml:space="preserve">
     <value>ادارة التقييمات</value>
 </data>
-	<data name="Sliders" xml:space="preserve">
-    <value>عرض الهوم</value>
-</data>
-	
   <data name="WithdrawalMethod" xml:space="preserve">
     <value>طريقة السحب</value>
   </data>
   <data name="WithdrawalMethods" xml:space="preserve">
     <value>طرق السحب</value>
   </data>
+  <data name="HomePageSlider" xml:space="preserve">
+    <value>سلايدر الصفحة الرئيسية</value>
+  </data>
+  <data name="ContentManagement" xml:space="preserve">
+    <value>إدارة المحتوى</value>
+  </data>
+	<!-- Navigation / Menu -->
+	<data name="ContentAreas" xml:space="preserve">
+  <value>مناطق المحتوى</value>
+</data>
+
+	<data name="MediaLibrary" xml:space="preserve">
+  <value>مكتبة الوسائط</value>
+</data>
+
+	<data name="SettingsAndConfiguration" xml:space="preserve">
+  <value>الإعدادات والتهيئة</value>
+</data>
+
+  <data name="NotVerified" xml:space="preserve">
+    <value>غير مشتري</value>
+  </data>
+  <data name="Verified" xml:space="preserve">
+    <value>مشتري</value>
+  </data>
+	<data name="WelcomeMessage" xml:space="preserve">
+  <value>مرحبًا</value>
+</data>
+	<data name="Products" xml:space="preserve">
+  <value>المنتجات</value>
+</data>
+	<data name="Period" xml:space="preserve">
+  <value>الفترة</value>
+</data>
+	<data name="NewThisPeriod" xml:space="preserve">
+  <value>جديد خلال هذه الفترة</value>
+</data>
+	<data name="FromLastPeriod" xml:space="preserve">
+  <value>مقارنة بالفترة السابقة</value>
+</data>
+	<data name="ExportReport" xml:space="preserve">
+  <value>تصدير التقرير</value>
+</data>
+	<data name="AwaitingProcessing" xml:space="preserve">
+  <value>بانتظار المعالجة</value>
+</data>
+
 </root>

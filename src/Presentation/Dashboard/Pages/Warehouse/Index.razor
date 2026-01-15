@@ -93,7 +93,7 @@
                                                         @(platformWarehouse.IsActive ? "Active" : "Inactive")
                                                     </span>
                                                     <button class="btn btn-sm btn-@(platformWarehouse.IsActive ? "warning" : "success")"
-                                                            @onclick="() => ToggleStatus(platformWarehouse)">
+                                                            @onclick="() => ShowToggleStatusConfirmation(platformWarehouse)">
                                                         <i class="feather icon-power me-1"></i>
                                                         @(platformWarehouse.IsActive ? "Deactivate" : "Activate")
                                                     </button>
@@ -174,7 +174,7 @@
                                     {
                                         @foreach (var vendor in vendors)
                                         {
-
+                                            <option value="@vendor.Id">@vendor.StoreName</option>
                                         }
                                     }
                                 </select>
@@ -242,7 +242,121 @@
     </div>
 </div>
 
+<!-- Custom Alert Modal -->
+<div class="modal fade @(showAlert ? "show d-block" : "")"
+     tabindex="-1"
+     style="@(showAlert ? "background-color: rgba(0,0,0,0.5);" : "")"
+     @onclick="CloseAlert">
+    <div class="modal-dialog modal-dialog-centered" @onclick:stopPropagation="true">
+        <div class="modal-content">
+            <div class="modal-header border-0 pb-0">
+                <h5 class="modal-title">
+                    @if (alertType == "warning")
+                    {
+                        <i class="fas fa-exclamation-triangle text-warning me-2"></i>
+                    }
+                    else if (alertType == "success")
+                    {
+                        <i class="fas fa-check-circle text-success me-2"></i>
+                    }
+                    else if (alertType == "danger")
+                    {
+                        <i class="fas fa-times-circle text-danger me-2"></i>
+                    }
+                    else
+                    {
+                        <i class="fas fa-info-circle text-info me-2"></i>
+                    }
+                    @alertTitle
+                </h5>
+                <button type="button" class="btn-close" @onclick="CloseAlert"></button>
+            </div>
+            <div class="modal-body">
+                <p class="mb-0">@alertMessage</p>
+            </div>
+            <div class="modal-footer border-0">
+                @if (alertType == "warning" && pendingAction != null)
+                {
+                    <button type="button" class="btn btn-secondary" @onclick="CloseAlert">
+                        <i class="fas fa-times me-1"></i>
+                        Cancel
+                    </button>
+                    <button type="button" class="btn btn-@alertButtonClass" @onclick="ConfirmAction">
+                        <i class="fas fa-check me-1"></i>
+                        Confirm
+                    </button>
+                }
+                else
+                {
+                    <button type="button" class="btn btn-primary" @onclick="CloseAlert">
+                        <i class="fas fa-check me-1"></i>
+                        OK
+                    </button>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
 @code {
+    // Alert properties
+    private bool showAlert = false;
+    private string alertType = "info"; // info, success, warning, danger
+    private string alertTitle = "";
+    private string alertMessage = "";
+    private string alertButtonClass = "primary";
+    private Action? pendingAction = null;
+
+    // Methods for showing alerts
+    private void ShowAlert(string type, string title, string message, string buttonClass = "primary")
+    {
+        alertType = type;
+        alertTitle = title;
+        alertMessage = message;
+        alertButtonClass = buttonClass;
+        showAlert = true;
+        pendingAction = null;
+        StateHasChanged();
+    }
+
+    private void ShowConfirmationAlert(string title, string message, Action onConfirm, string buttonClass = "warning")
+    {
+        alertType = "warning";
+        alertTitle = title;
+        alertMessage = message;
+        alertButtonClass = buttonClass;
+        pendingAction = onConfirm;
+        showAlert = true;
+        StateHasChanged();
+    }
+
+    private void CloseAlert()
+    {
+        showAlert = false;
+        pendingAction = null;
+        StateHasChanged();
+    }
+
+    private void ConfirmAction()
+    {
+        pendingAction?.Invoke();
+        CloseAlert();
+    }
+
+    // Wrapper method for toggle status with confirmation
+    private void ShowToggleStatusConfirmation(WarehouseDto warehouse)
+    {
+        string action = warehouse.IsActive ? "deactivate" : "activate";
+        string message = $"Are you sure you want to {action} this warehouse?";
+
+        ShowConfirmationAlert(
+            "Confirm Action",
+            message,
+            () => ToggleStatus(warehouse),
+            warehouse.IsActive ? "warning" : "success"
+        );
+    }
+
     private RenderFragment RenderTable(IEnumerable<WarehouseDto> items, int currentPage, int pageSize, int totalRecords, bool showVendorColumn = false) => __builder =>
     {
         <!-- Desktop Table -->
@@ -254,10 +368,23 @@
                             <th class="text-center">#</th>
                             @if (showVendorColumn)
                             {
-                                <th class="text-center">Vendor</th>
+                                <th class="text-center sortable-header" @onclick='() => SortByColumn("VendorName")' style="cursor: pointer;">
+                                    Vendor Name
+                                    <i class="@GetSortIcon("VendorName") ms-1"></i>
+                                </th>
+                                <th class="text-center sortable-header" @onclick='() => SortByColumn("Email")' style="cursor: pointer;">
+                                    Vendor Email
+                                    <i class="@GetSortIcon("Email") ms-1"></i>
+                                </th>
                             }
-                            <th class="text-center">Address</th>
-                            <th class="text-center">Status</th>
+                            <th class="text-center sortable-header" @onclick='() => SortByColumn("Address")' style="cursor: pointer;">
+                                Address
+                                <i class="@GetSortIcon("Address") ms-1"></i>
+                            </th>
+                            <th class="text-center sortable-header" @onclick='() => SortByColumn("IsActive")' style="cursor: pointer;">
+                                Status
+                                <i class="@GetSortIcon("IsActive") ms-1"></i>
+                            </th>
                             <th class="text-center">Actions</th>
                         </tr>
                     </thead>
@@ -273,6 +400,19 @@
                                     @if (showVendorColumn)
                                     {
                                         <td class="text-center align-middle">
+                                            @(item.VendorName ?? "-")
+                                        </td>
+                                        <td class="text-center align-middle">
+                                            @if (!string.IsNullOrEmpty(item.Email))
+                                            {
+                                                <a href="mailto:@item.Email" class="text-decoration-none">
+                                                    @item.Email
+                                                </a>
+                                            }
+                                            else
+                                            {
+                                                <span>-</span>
+                                            }
                                         </td>
                                     }
 
@@ -295,7 +435,7 @@
                                             </button>
 
                                             <button class="btn btn-sm btn-@(item.IsActive ? "warning" : "success")"
-                                                    @onclick="() => ToggleStatus(item)">
+                                                    @onclick="() => ShowToggleStatusConfirmation(item)">
                                                 <i class="feather icon-power"></i>
                                             </button>
                                         </div>
@@ -306,7 +446,7 @@
                         else
                         {
                             <tr>
-                                <td colspan="@(showVendorColumn ? "5" : "4")" class="text-center py-5">
+                                <td colspan="@(showVendorColumn ? "6" : "4")" class="text-center py-5">
                                     <div class="text-muted">
                                         <i class="fas fa-warehouse fa-3x mb-3"></i>
                                         <p class="mb-0">No warehouses found</p>
@@ -330,8 +470,19 @@
                             <div class="d-flex justify-content-between align-items-start mb-3">
                                 @if (showVendorColumn)
                                 {
-                                    <h6 class="mb-0">
-                                    </h6>
+                                    <div>
+                                        <h6 class="mb-1">
+                                            <i class="fas fa-user me-1"></i>
+                                            @(item.VendorName ?? "Unknown")
+                                        </h6>
+                                        @if (!string.IsNullOrEmpty(item.Email))
+                                        {
+                                            <small class="text-muted">
+                                                <i class="fas fa-envelope me-1"></i>
+                                                <a href="mailto:@item.Email">@item.Email</a>
+                                            </small>
+                                        }
+                                    </div>
                                 }
                                 <span class="badge bg-@(item.IsActive ? "success" : "secondary")">
                                     @(item.IsActive ? "Active" : "Inactive")
@@ -350,7 +501,7 @@
                                 </button>
 
                                 <button class="btn btn-@(item.IsActive ? "warning" : "success") btn-sm flex-fill"
-                                        @onclick="() => ToggleStatus(item)">
+                                        @onclick="() => ShowToggleStatusConfirmation(item)">
                                     <i class="feather icon-power me-1"></i>
                                     @(item.IsActive ? "Deactivate" : "Activate")
                                 </button>

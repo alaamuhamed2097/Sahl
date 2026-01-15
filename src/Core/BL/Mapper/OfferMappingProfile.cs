@@ -13,7 +13,9 @@ public partial class MappingProfile
     private void ConfigureOfferMappings()
     {
         // Core item mappings
-        CreateMap<TbOffer, OfferDto>()
+        CreateMap<TbOffer, SaveVendorItemDto>()
+            .ReverseMap();
+        CreateMap<TbOffer, VendorItemDto>()
             .ReverseMap();
 
             CreateMap<VwOffer, VwOfferDto>()

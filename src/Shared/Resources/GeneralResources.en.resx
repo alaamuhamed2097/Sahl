@@ -1321,14 +1321,11 @@
   <data name="ConfirmResetSettings" xml:space="preserve">
     <value>Are you sure you want to reset all settings to their default values? This action cannot be undone.</value>
 </data>
-	<data name="Warehouses" xml:space="preserve">
+  <data name="Warehouses" xml:space="preserve">
     <value>Warehouse</value>
 </data>
-	<data name="ManageReviews" xml:space="preserve">
+  <data name="ManageReviews" xml:space="preserve">
     <value>ManageReview</value>
-</data>
-	<data name="Sliders" xml:space="preserve">
-    <value>Slider</value>
 </data>
   <data name="WithdrawalMethod" xml:space="preserve">
     <value>Withdrawal Method</value>
@@ -1336,4 +1333,51 @@
   <data name="WithdrawalMethods" xml:space="preserve">
     <value>Withdrawal Methods</value>
   </data>
+  <data name="HomePageSlider" xml:space="preserve">
+    <value>Home Page Slider</value>
+  </data>
+  <data name="ContentManagement" xml:space="preserve">
+    <value>Content Management</value>
+  </data>
+	<!-- Navigation / Menu -->
+	<data name="ContentAreas" xml:space="preserve">
+  <value>Content Areas</value>
+</data>
+
+	<data name="MediaLibrary" xml:space="preserve">
+  <value>Media Library</value>
+</data>
+
+	<data name="SettingsAndConfiguration" xml:space="preserve">
+  <value>Settings &amp; Configuration</value>
+</data>
+
+  <data name="NotVerified" xml:space="preserve">
+    <value>Not Verified</value>
+  </data>
+  <data name="Verified" xml:space="preserve">
+    <value>Verified</value>
+  </data>
+	<data name="WelcomeMessage" xml:space="preserve">
+  <value>Welcome</value>
+</data>
+	<data name="Products" xml:space="preserve">
+  <value>Products</value>
+</data>
+	<data name="Period" xml:space="preserve">
+  <value>Period</value>
+</data>
+	<data name="NewThisPeriod" xml:space="preserve">
+  <value>New this period</value>
+</data>
+	<data name="FromLastPeriod" xml:space="preserve">
+  <value>From last period</value>
+</data>
+	<data name="ExportReport" xml:space="preserve">
+  <value>Export Report</value>
+</data>
+	<data name="AwaitingProcessing" xml:space="preserve">
+  <value>Awaiting Processing</value>
+</data>
+
 </root>

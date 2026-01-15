@@ -1,5 +1,4 @@
-﻿@page "/warehouse/platform/add"
-@page "/warehouse/vendor/add"
+﻿@page "/warehouse/{type}/add"
 @page "/warehouse/{type}/{id:guid}"
 
 @using Common.Enumerations.User
@@ -25,6 +24,16 @@
 
             <div class="card-body p-4">
 
+                @* <!-- Debug Info -->
+                <div class="alert alert-warning mb-3">
+                    <strong>Debug Info:</strong><br />
+                    Model.Id: @Model.Id<br />
+                    IsVendorWarehouse: @IsVendorWarehouse<br />
+                    IsEditMode: @IsEditMode<br />
+                    Type: @Type<br />
+                    Vendors Count: @(vendors?.Count() ?? 0)
+                </div> *@
+
                 <!-- Warehouse Type Info (Read-only for edit) -->
                 @if (Model.Id != Guid.Empty)
                 {
@@ -33,7 +42,7 @@
                         This is a <strong>@(IsPlatformWarehouse ? "Platform" : "Vendor")</strong> warehouse
                     </div>
                 }
-              
+
                 <!-- Vendor Selection (Only for Vendor Warehouses and Only for Add Mode) -->
                 @if (IsVendorWarehouse)
                 {
@@ -44,18 +53,25 @@
                             <div class="col-md-12 mb-3">
                                 <label class="form-label">
                                     <i class="fas fa-store me-2"></i>
-                                    Vendor: <span class="text-danger">*</span>
+                                    Add Vendor: <span class="text-danger">*</span>
                                 </label>
-                                <select class="form-select" @onchange="OnVendorSelectionChanged">
-                                    <option value="">-- Select Vendor --</option>
+                                <select class="form-control select2"
+                                        value="@(Model.VendorId?.ToString() ?? Guid.Empty.ToString())"
+                                        @onchange="OnVendorSelectionChanged">
+                                    <option value="@Guid.Empty.ToString()">@WarehouseResource.SelectVendor</option>
                                     @if (vendors != null && vendors.Any())
                                     {
                                         @foreach (var vendor in vendors)
                                         {
-                                            <option value="@vendor.VendorId" selected="@(selectedVendorId == vendor.VendorId)">
+                                            <option value="@vendor.VendorId.ToString()"
+                                                    selected="@(Model.VendorId == vendor.VendorId)">
                                                 @vendor.UserName - @vendor.Email
                                             </option>
                                         }
+                                    }
+                                    else
+                                    {
+                                        <option disabled>No vendors available</option>
                                     }
                                 </select>
                                 @if (showVendorValidation)
@@ -64,21 +80,6 @@
                                 }
                             </div>
                         </div>
-                        @* <div class="col-md-6">
-                            <div class="form-group">
-                                <label>@ECommerceResources.Category</label>
-                                <select id="parentCategorySelect"
-                                        class="form-control select2-parent select2-bootstrap"
-                                        value="@(.VendorId.ToString() ?? Guid.Empty.ToString())"
-                                        @onchange="OnParentCategoryChanged">
-                                    <option value="@Guid.Empty.ToString()">@($"{FormResources.Select} {ECommerceResources.CategoryParent}")</option>
-                                    @foreach (var item in Model.Where(p => p.Id != Model.Id))
-                                    {
-                                        <option value="@item.Id.ToString()" selected="@(Model.VendorId == item.Id)">@item.Title</option>
-                                    }
-                                </select>
-                            </div>
-                        </div> *@
                     }
                     else
                     {

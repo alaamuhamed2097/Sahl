@@ -1,0 +1,602 @@
+﻿@page "/home-blocks/new"
+@page "/home-blocks/{id:guid}"
+@using Resources
+@using Shared.DTOs.Merchandising.Homepage
+@using Dashboard.Contracts.Merchandising
+@using Dashboard.Contracts.ECommerce.Item
+@using Dashboard.Contracts.ECommerce.Category
+@using Microsoft.AspNetCore.Components.Forms
+@using Common.Enumerations.Merchandising
+
+<PageTitle>@(IsEditMode? MerchandisingResources.EditBlock: MerchandisingResources.CreateBlock)</PageTitle>
+
+<div class="container-fluid p-0">
+    <div class="card shadow-sm border-0">
+        <!-- Card Header -->
+        <div class="card-header d-flex justify-content-between bg-primary align-items-center">
+            <h4 class="modal-title text-white mb-0">
+                <i class="feather @(IsEditMode ? "icon-edit-2" : "icon-plus-circle") me-2"></i>
+                @(IsEditMode? MerchandisingResources.EditBlock: MerchandisingResources.CreateNewHomepageBlock)
+            </h4>
+        </div>
+
+        @if (IsLoading)
+        {
+            <div class="card-body text-center py-5">
+                <div class="spinner-border" role="status">
+                    <span class="sr-only">@MerchandisingResources.Loading</span>
+                </div>
+                <p class="mt-3 text-muted">@MerchandisingResources.Loading</p>
+            </div>
+        }
+        else
+        {
+            <EditForm Model="formModel" OnValidSubmit="HandleSubmit">
+                <DataAnnotationsValidator />
+
+                <div class="card-body p-4">
+                    <!-- Basic Information Section -->
+                    <div class="mb-4">
+                        <h5 class="mb-3">
+                            <i class="feather icon-file-text text-primary me-2"></i>@MerchandisingResources.BasicInformation
+                        </h5>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">@MerchandisingResources.TitleEnglish <span class="text-danger">*</span></label>
+                                <InputText class="form-control" @bind-Value="formModel.TitleEn" placeholder="@MerchandisingResources.EnterEnglishTitle" />
+                                <ValidationMessage For="() => formModel.TitleEn" class="text-danger small" />
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">@MerchandisingResources.TitleArabic <span class="text-danger">*</span></label>
+                                <InputText class="form-control" dir="rtl" @bind-Value="formModel.TitleAr" placeholder="@MerchandisingResources.EnterArabicTitle" />
+                                <ValidationMessage For="() => formModel.TitleAr" class="text-danger small" />
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">@MerchandisingResources.SubtitleEnglish</label>
+                                <InputText class="form-control" @bind-Value="formModel.SubtitleEn" placeholder="@MerchandisingResources.OptionalSubtitle" />
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">@MerchandisingResources.SubtitleArabic</label>
+                                <InputText class="form-control" dir="rtl" @bind-Value="formModel.SubtitleAr" placeholder="@MerchandisingResources.OptionalSubtitleArabic" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Block Type & Layout Section -->
+                    <div class="mb-4">
+                        <h5 class="mb-3">
+                            <i class="feather icon-layout text-primary me-2"></i>@MerchandisingResources.BlockTypeAndLayout
+                        </h5>
+
+                        <!-- Block Type Selection -->
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">@MerchandisingResources.SelectBlockType <span class="text-danger">*</span></label>
+                            <p class="text-muted small mb-3">
+                                <i class="feather icon-info me-1"></i>@MerchandisingResources.ChooseHowProductsSelected
+                            </p>
+                            <div class="row g-3">
+                                @foreach (HomepageBlockType blockType in Enum.GetValues(typeof(HomepageBlockType)))
+                                {
+                                    <div class="col-lg-6 col-md-6">
+                                        <div class="card type-card h-100 border-2 @(formModel.Type == blockType.ToString() ? "border-primary selected-type" : "border-light") cursor-pointer"
+                                             @onclick='() => formModel.Type = blockType.ToString()'>
+                                            <div class="card-body p-3">
+                                                <div class="d-flex align-items-start gap-3">
+                                                    <div class="type-icon">
+                                                        <i class="feather @GetBlockTypeIcon(blockType) text-primary"></i>
+                                                    </div>
+                                                    <div class="flex-grow-1">
+                                                        <div class="d-flex align-items-center justify-content-between mb-2">
+                                                            <h6 class="card-title mb-0 fw-bold">@GetBlockTypeLabel(blockType)</h6>
+                                                            @if (formModel.Type == blockType.ToString())
+                                                            {
+                                                                <span class="badge bg-primary">
+                                                                    <i class="feather icon-check-circle"></i> @MerchandisingResources.Active
+                                                                </span>
+                                                            }
+                                                        </div>
+                                                        <p class="card-text text-muted small mb-0">@GetBlockTypeDescription(blockType)</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+
+                        <!-- Display Layout -->
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">@MerchandisingResources.DisplayLayout <span class="text-danger">*</span></label>
+                            <p class="text-muted small mb-3">
+                                <i class="feather icon-info me-1"></i>@MerchandisingResources.ChooseHowProductsDisplayed
+                            </p>
+                            <div class="row g-3">
+                                @foreach (BlockLayout layout in Enum.GetValues(typeof(BlockLayout)))
+                                {
+                                    <div class="col-lg-4 col-md-6">
+                                        <div class="card layout-card border-2 @(formModel.Layout == layout ? "border-primary selected-layout" : "border-light") cursor-pointer h-100"
+                                             @onclick='() => formModel.Layout = layout'>
+                                            @if (formModel.Layout == layout)
+                                            {
+                                                <div class="position-absolute top-0 end-0 m-2">
+                                                    <span class="badge bg-primary">
+                                                        <i class="feather icon-check-circle"></i> @MerchandisingResources.Selected
+                                                    </span>
+                                                </div>
+                                            }
+                                            <div class="card-body p-3">
+                                                <div class="text-center mb-3">
+                                                    <i class="feather @GetLayoutIcon(layout) layout-icon text-primary"></i>
+                                                </div>
+                                                <h6 class="card-title text-center mb-2 fw-bold">@GetLayoutLabel(layout)</h6>
+                                                <p class="card-text text-muted small text-center mb-3">@GetLayoutDescription(layout)</p>
+
+                                                <!-- Visual Preview -->
+                                                @if (layout == BlockLayout.Carousel)
+                                                {
+                                                    <div class="layout-preview p-2 bg-white rounded border position-relative">
+                                                        <div class="carousel-arrow carousel-arrow-left">
+                                                            <i class="feather icon-chevron-left"></i>
+                                                        </div>
+                                                        <div class="preview-carousel">
+                                                            <div class="preview-item"></div>
+                                                            <div class="preview-item"></div>
+                                                            <div class="preview-item"></div>
+                                                            <div class="preview-item"></div>
+                                                        </div>
+                                                        <div class="carousel-arrow carousel-arrow-right">
+                                                            <i class="feather icon-chevron-right"></i>
+                                                        </div>
+                                                    </div>
+                                                }
+                                                else if (layout == BlockLayout.TwoRows)
+                                                {
+                                                    <div class="layout-preview p-2 bg-white rounded border">
+                                                        <div class="preview-grid-2">
+                                                            <div class="preview-item"></div>
+                                                            <div class="preview-item"></div>
+                                                        </div>
+                                                    </div>
+                                                }
+                                                else if (layout == BlockLayout.Featured)
+                                                {
+                                                    <div class="layout-preview p-2 bg-white rounded border">
+                                                        <div class="preview-featured">
+                                                            <div class="preview-item-large"></div>
+                                                        </div>
+                                                    </div>
+                                                }
+                                                else if (layout == BlockLayout.Compact)
+                                                {
+                                                    <div class="layout-preview p-2 bg-white rounded border">
+                                                        <div class="preview-compact">
+                                                            <div class="preview-item-small"></div>
+                                                            <div class="preview-item-small"></div>
+                                                            <div class="preview-item-small"></div>
+                                                            <div class="preview-item-small"></div>
+                                                        </div>
+                                                    </div>
+                                                }
+                                                else if (layout == BlockLayout.FullWidth)
+                                                {
+                                                    <div class="layout-preview p-2 bg-white rounded border">
+                                                        <div class="preview-fullwidth">
+                                                            <div class="preview-item-full"></div>
+                                                        </div>
+                                                    </div>
+                                                }
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Type-Specific Options Section -->
+                    <div class="mb-4">
+                        <h5 class="mb-3">
+                            <i class="feather icon-settings text-primary me-2"></i>@MerchandisingResources.TypeSpecificConfiguration
+                        </h5>
+
+                        @if (formModel.Type == HomepageBlockType.ManualItems.ToString())
+                        {
+                            <div class="alert alert-info mb-3">
+                                <i class="feather icon-info me-2"></i>@MerchandisingResources.ManualItemsDescription
+                            </div>
+                            <ManualItemsSelector SelectedItems="selectedItems" SelectedItemsChanged="OnSelectedItemsChanged" />
+                        }
+                        else if (formModel.Type == HomepageBlockType.ManualCategories.ToString())
+                        {
+                            <div class="alert alert-info mb-3">
+                                <i class="feather icon-info me-2"></i>@MerchandisingResources.ManualCategoriesDescription
+                            </div>
+                            <ManualCategoriesSelector SelectedCategories="selectedCategories" SelectedCategoriesChanged="OnSelectedCategoriesChanged" />
+                        }
+                        else if (formModel.Type == HomepageBlockType.Campaign.ToString())
+                        {
+                            <div class="mb-3">
+                                <label class="form-label">@MerchandisingResources.SelectCampaign <span class="text-danger">*</span></label>
+                                <select class="form-control" @onchange="OnCampaignSelected">
+                                    <option value="">-- @MerchandisingResources.ChooseACampaign --</option>
+                                    @foreach (var campaign in campaigns)
+                                    {
+                                        <option value="@campaign.Id" selected="@(formModel.CampaignId == campaign.Id)">
+                                            @campaign.NameEn (@campaign.NameAr)
+                                        </option>
+                                    }
+                                </select>
+                                <small class="text-muted d-block mt-2">
+                                    <i class="feather icon-info me-1"></i>@MerchandisingResources.SelectWhichCampaignProducts
+                                </small>
+                            </div>
+                        }
+                        else if (formModel.Type == HomepageBlockType.Dynamic.ToString())
+                        {
+                            <div class="mb-3">
+                                <label class="form-label">@MerchandisingResources.DataSource <span class="text-danger">*</span></label>
+                                <select class="form-control" @bind="formModel.DynamicSource">
+                                    <option value="">-- @MerchandisingResources.SelectSource --</option>
+                                    @foreach (DynamicBlockSource source in Enum.GetValues(typeof(DynamicBlockSource)))
+                                    {
+                                        <option value="@((int)source)">@GetDynamicSourceLabel(source)</option>
+                                    }
+                                </select>
+                                <small class="text-muted d-block mt-2">
+                                    <i class="feather icon-info me-1"></i>@MerchandisingResources.ProductsWillBeAutoUpdated
+                                </small>
+                            </div>
+                        }
+                        else if (formModel.Type == HomepageBlockType.Personalized.ToString())
+                        {
+                            <div class="mb-3">
+                                <label class="form-label">@MerchandisingResources.PersonalizationType <span class="text-danger">*</span></label>
+                                <select class="form-control" @bind="formModel.PersonalizationSource">
+                                    <option value="">-- @MerchandisingResources.SelectType --</option>
+                                    @foreach (PersonalizationSource source in Enum.GetValues(typeof(PersonalizationSource)))
+                                    {
+                                        <option value="@((int)source)">@GetPersonalizationSourceLabel(source)</option>
+                                    }
+                                </select>
+                                <small class="text-muted d-block mt-2">
+                                    <i class="feather icon-info me-1"></i>@MerchandisingResources.EachUserWillSeePersonalized
+                                </small>
+                            </div>
+                        }
+                    </div>
+
+                    <!-- Display Settings Section -->
+                    <div class="mb-4">
+                        <h5 class="mb-3">
+                            <i class="feather icon-eye text-primary me-2"></i>@MerchandisingResources.DisplaySettings
+                        </h5>
+
+                        <div class="row">
+                            <div class="col-md-12 mb-3">
+                                <label class="form-label">@MerchandisingResources.BlockVisibility</label>
+                                <div class="form-check form-switch">
+                                    <InputCheckbox class="form-check-input" @bind-Value="formModel.IsVisible" id="visibilitySwitch" />
+                                    <label class="form-check-label" for="visibilitySwitch">
+                                        @(formModel.IsVisible? MerchandisingResources.BlockIsVisible: MerchandisingResources.BlockIsHidden)
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">@MerchandisingResources.VisibleFrom</label>
+                                <InputDate Type="InputDateType.DateTimeLocal" class="form-control" @bind-Value="formModel.VisibleFrom" />
+                                <small class="text-muted d-block mt-2">
+                                    <i class="feather icon-calendar me-1"></i>@MerchandisingResources.WhenBlockBecomesVisible
+                                </small>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">@MerchandisingResources.VisibleTo</label>
+                                <InputDate Type="InputDateType.DateTimeLocal" class="form-control" @bind-Value="formModel.VisibleTo" />
+                                <small class="text-muted d-block mt-2">
+                                    <i class="feather icon-calendar me-1"></i>@MerchandisingResources.WhenBlockStopsShowing
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- View All Link Section -->
+                    <div class="mb-4">
+                        <h5 class="mb-3">
+                            <i class="feather icon-link text-primary me-2"></i>@MerchandisingResources.ViewAllLink
+                        </h5>
+
+                        <div class="form-check form-switch mb-3">
+                            <InputCheckbox class="form-check-input" @bind-Value="formModel.ShowViewAllLink" id="viewAllSwitch" />
+                            <label class="form-check-label" for="viewAllSwitch">
+                                @MerchandisingResources.ShowViewAllLink
+                            </label>
+                        </div>
+
+                        @if (formModel.ShowViewAllLink)
+                        {
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">@MerchandisingResources.LinkTextEnglish</label>
+                                    <InputText class="form-control" @bind-Value="formModel.ViewAllLinkTitleEn" placeholder="@MerchandisingResources.ViewAllProducts" />
+                                </div>
+
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">@MerchandisingResources.LinkTextArabic</label>
+                                    <InputText class="form-control" dir="rtl" @bind-Value="formModel.ViewAllLinkTitleAr" placeholder="@MerchandisingResources.ViewAllProductsArabic" />
+                                </div>
+                            </div>
+                        }
+                    </div>
+
+                    <!-- Metadata Section (for edit mode) -->
+                    @if (IsEditMode && formModel.Id != Guid.Empty)
+                    {
+                        <hr class="my-4" />
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">@MerchandisingResources.CreatedDate:</label>
+                                <input type="text" class="form-control" readonly
+                                       value="@(CreatedDate?.ToString("dd/MM/yyyy HH:mm:ss") ?? "N/A")" />
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">@MerchandisingResources.LastModified:</label>
+                                <input type="text" class="form-control" readonly
+                                       value="@(LastModifiedDate?.ToString("dd/MM/yyyy HH:mm:ss") ?? "N/A")" />
+                            </div>
+                        </div>
+                    }
+                </div>
+
+                <div class="card-footer bg-light py-3 d-flex justify-content-end gap-2">
+                    <a href="/home-blocks" class="btn btn-secondary">
+                        <i class="feather icon-x me-2"></i>@MerchandisingResources.Cancel
+                    </a>
+                    <button type="submit" class="btn btn-primary" disabled="@IsSaving">
+                        @if (IsSaving)
+                        {
+                            <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                            <span>@MerchandisingResources.Saving</span>
+                        }
+                        else
+                        {
+                            <i class="feather @(IsEditMode ? "icon-save" : "icon-plus-circle") me-2"></i>
+                            <span>@(IsEditMode? MerchandisingResources.UpdateBlock: MerchandisingResources.CreateBlock)</span>
+                        }
+                    </button>
+                </div>
+            </EditForm>
+        }
+    </div>
+</div>
+
+<style>
+    /* General Styles */
+    .cursor-pointer {
+        cursor: pointer;
+        user-select: none;
+    }
+
+    /* Type Card Styles */
+    .type-card {
+        transition: all 0.3s ease;
+        border-width: 2px !important;
+        position: relative;
+        overflow: hidden;
+    }
+
+        .type-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(13, 110, 253, 0.15);
+        }
+
+        .type-card.border-light {
+            background-color: #fff;
+        }
+
+            .type-card.border-light:hover {
+                border-color: #0d6efd !important;
+            }
+
+        .type-card.selected-type {
+            background: linear-gradient(135deg, #f0f7ff 0%, #e3f2fd 100%);
+            box-shadow: 0 4px 16px rgba(13, 110, 253, 0.2);
+        }
+
+    .type-icon {
+        width: 48px;
+        height: 48px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(135deg, #e3f2fd 0%, #f0f7ff 100%);
+        border-radius: 12px;
+        flex-shrink: 0;
+    }
+
+        .type-icon i {
+            font-size: 24px;
+        }
+
+    /* Layout Card Styles */
+    .layout-card {
+        transition: all 0.3s ease;
+        border-width: 2px !important;
+        position: relative;
+    }
+
+        .layout-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 6px 16px rgba(13, 110, 253, 0.15);
+        }
+
+        .layout-card.border-light {
+            background-color: #fff;
+        }
+
+            .layout-card.border-light:hover {
+                border-color: #0d6efd !important;
+            }
+
+        .layout-card.selected-layout {
+            background: linear-gradient(135deg, #f0f7ff 0%, #e3f2fd 100%);
+            box-shadow: 0 6px 20px rgba(13, 110, 253, 0.25);
+        }
+
+    .layout-icon {
+        font-size: 3rem;
+    }
+
+    /* Layout Preview Styles */
+    .layout-preview {
+        min-height: 80px;
+    }
+
+    /* Carousel Preview */
+    .preview-carousel {
+        display: flex;
+        gap: 6px;
+        overflow-x: auto;
+        padding: 4px;
+    }
+
+        .preview-carousel .preview-item {
+            min-width: 45px;
+            height: 50px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 8px;
+            flex-shrink: 0;
+        }
+
+    .carousel-arrow {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 24px;
+        height: 24px;
+        background: rgba(13, 110, 253, 0.9);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 12px;
+        z-index: 10;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+    }
+
+    .carousel-arrow-left {
+        left: 8px;
+    }
+
+    .carousel-arrow-right {
+        right: 8px;
+    }
+
+    .carousel-arrow i {
+        font-size: 14px;
+    }
+
+    /* Grid 2 Rows Preview */
+    .preview-grid-2 {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+    }
+
+        .preview-grid-2 .preview-item {
+            height: 35px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 6px;
+        }
+
+            .preview-grid-2 .preview-item:nth-child(2) {
+                background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            }
+
+    /* Featured Preview */
+    .preview-featured {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+    }
+
+        .preview-featured .preview-item-large {
+            height: 70px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 8px;
+        }
+
+    /* Compact Preview */
+    .preview-compact {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 6px;
+    }
+
+        .preview-compact .preview-item-small {
+            height: 32px;
+            border-radius: 6px;
+        }
+
+            .preview-compact .preview-item-small:nth-child(1) {
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            }
+
+            .preview-compact .preview-item-small:nth-child(2) {
+                background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            }
+
+            .preview-compact .preview-item-small:nth-child(3) {
+                background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            }
+
+            .preview-compact .preview-item-small:nth-child(4) {
+                background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+            }
+
+    /* Full Width Preview */
+    .preview-fullwidth .preview-item-full {
+        height: 45px;
+        background: linear-gradient(90deg, #667eea 0%, #764ba2 50%, #f5576c 100%);
+        border-radius: 8px;
+        width: 100%;
+    }
+
+    /* Badge Styles */
+    .badge {
+        font-size: 0.7rem;
+        padding: 0.35rem 0.65rem;
+        font-weight: 600;
+    }
+
+    /* Form Elements */
+    .form-check-label {
+        cursor: pointer;
+        user-select: none;
+    }
+
+    /* Responsive adjustments */
+    @@media (max-width: 768px) {
+        .layout-icon {
+            font-size: 2rem;
+        }
+
+        .type-icon {
+            width: 40px;
+            height: 40px;
+        }
+
+            .type-icon i {
+                font-size: 20px;
+            }
+    }
+</style>

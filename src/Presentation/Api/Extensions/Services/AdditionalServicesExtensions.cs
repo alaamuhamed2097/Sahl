@@ -1,4 +1,5 @@
 using BL.Contracts.Service.Notification;
+using BL.Contracts.Service.VendorWarehouse;
 using BL.Contracts.Service.Warehouse;
 using BL.Services.Notification;
 using BL.Services.Warehouse;
@@ -33,7 +34,7 @@ namespace Api.Extensions.Services
         {
             // Warehouse Services
             services.AddScoped<IWarehouseService, WarehouseService>();
-
+            services.AddScoped<IVendorWarehouseService, VendorWarehouseService>();
             return services;
         }
 

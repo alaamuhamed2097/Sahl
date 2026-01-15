@@ -31,6 +31,9 @@ builder.Services.AddRepositoryServices();
 // AddDomainServices includes all business services (catalog, vendor, currency, order, pricing, merchandising, review, wallet, settings)
 builder.Services.AddDomainServices(builder.Configuration);
 
+// Configure Admin Dashboard Services
+builder.Services.AddAdminDashboardServices(builder.Configuration);
+
 // Configure Additional Services
 builder.Services.AddWarehouseAndInventoryServices();
 builder.Services.AddEnhancedNotificationServices();

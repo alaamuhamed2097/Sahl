@@ -1,7 +1,7 @@
+using Dashboard.Contracts.General;
+
 namespace Dashboard.Services.General
 {
-    using Dashboard.Contracts.General;
-
     /// <summary>
     /// Dashboard implementation of DateTime service
     /// Converts UTC times from API to local timezone (Egypt Standard Time by default)

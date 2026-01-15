@@ -1,7 +1,9 @@
 using AutoMapper;
 using BL.Contracts.Service.Merchandising.Campaign;
+using Common.Filters;
 using DAL.Contracts.Repositories.Merchandising;
 using Domains.Entities.Campaign;
+using Microsoft.EntityFrameworkCore;
 using Shared.DTOs.Campaign;
 
 namespace BL.Services.Merchandising.Campaign;
@@ -31,6 +33,48 @@ public class CampaignService : ICampaignService
     {
         var campaign = await _campaignRepository.GetCampaignByIdAsync(id);
         return campaign != null ? _mapper.Map<CampaignDto>(campaign) : null;
+    }
+
+    /// <summary>
+    /// Get all campaigns (admin)
+    /// </summary>
+    public async Task<List<CampaignDto>> GetAllCampaignsAsync()
+    {
+        var campaigns = await _campaignRepository.GetAsync();
+        return _mapper.Map<List<CampaignDto>>(campaigns.ToList());
+    }
+
+    /// <summary>
+    /// Search campaigns with pagination
+    /// </summary>
+    public async Task<(List<CampaignDto> Campaigns, int TotalCount)> SearchCampaignsAsync(BaseSearchCriteriaModel searchCriteria)
+    {
+        var query = _campaignRepository.GetQueryable().Where(c => !c.IsDeleted);
+
+        // Apply search filter
+        if (!string.IsNullOrWhiteSpace(searchCriteria.SearchTerm))
+        {
+            var searchTerm = searchCriteria.SearchTerm.ToLower();
+            query = query.Where(c => 
+                c.NameEn.ToLower().Contains(searchTerm) || 
+                c.NameAr.ToLower().Contains(searchTerm));
+        }
+
+        // Get total count before pagination
+        var totalCount = query.Count();
+
+        // Apply sorting
+        query = ApplySorting(query, searchCriteria.SortBy, searchCriteria.SortDirection);
+
+        // Apply pagination
+        var pageNumber = searchCriteria.PageNumber > 0 ? searchCriteria.PageNumber : 1;
+        var pageSize = searchCriteria.PageSize > 0 ? searchCriteria.PageSize : 10;
+        var skip = (pageNumber - 1) * pageSize;
+
+        var campaigns = await query.Skip(skip).Take(pageSize).ToListAsync();
+        var campaignDtos = _mapper.Map<List<CampaignDto>>(campaigns);
+
+        return (campaignDtos, totalCount);
     }
 
     /// <summary>
@@ -200,6 +244,25 @@ public class CampaignService : ICampaignService
         {
             throw new ArgumentException($"Validation failed: {string.Join(", ", errors)}");
         }
+    }
+
+    private IQueryable<TbCampaign> ApplySorting(IQueryable<TbCampaign> query, string? sortBy, string sortDirection)
+    {
+        if (string.IsNullOrWhiteSpace(sortBy))
+            sortBy = nameof(TbCampaign.CreatedDateUtc);
+
+        var isAscending = sortDirection.Equals("asc", StringComparison.OrdinalIgnoreCase);
+
+        query = sortBy.ToLower() switch
+        {
+            "name" => isAscending ? query.OrderBy(c => c.NameEn) : query.OrderByDescending(c => c.NameEn),
+            "startdate" => isAscending ? query.OrderBy(c => c.StartDate) : query.OrderByDescending(c => c.StartDate),
+            "enddate" => isAscending ? query.OrderBy(c => c.EndDate) : query.OrderByDescending(c => c.EndDate),
+            "isactive" => isAscending ? query.OrderBy(c => c.IsActive) : query.OrderByDescending(c => c.IsActive),
+            _ => isAscending ? query.OrderBy(c => c.CreatedDateUtc) : query.OrderByDescending(c => c.CreatedDateUtc)
+        };
+
+        return query;
     }
 
     #endregion

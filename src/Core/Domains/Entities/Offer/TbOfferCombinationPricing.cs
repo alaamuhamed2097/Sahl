@@ -19,10 +19,10 @@ namespace Domains.Entities.Offer
         public Guid OfferConditionId { get; set; }
         
         [StringLength(200)]
-        public string Barcode { get; set; }
+        public string Barcode { get; set; } = null!;
 
         [StringLength(200)]
-        public string SKU { get; set; }
+        public string SKU { get; set; } = null!;
 
         [Column(TypeName = "decimal(18,2)")]
 		public decimal Price { get; set; }

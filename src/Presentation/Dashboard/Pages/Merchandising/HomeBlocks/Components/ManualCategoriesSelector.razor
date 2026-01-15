@@ -1,0 +1,450 @@
+@using Resources
+@using Shared.DTOs.Merchandising.Homepage
+@using Shared.DTOs.Catalog.Category
+
+<div class="manual-categories-selector">
+    <div class="mb-3">
+        <label class="form-label">@MerchandisingResources.SelectCategories <span class="text-danger">*</span></label>
+        <div class="input-group mb-3">
+            <input type="text" class="form-control" placeholder="Search categories by name..."
+                   @bind="SearchQuery" @bind:event="oninput" @onkeyup="OnSearchInputChanged" />
+            <button class="btn btn-outline-secondary" type="button" @onclick="ClearSearch" title="Clear search">
+                <i class="feather icon-x"></i>
+            </button>
+            <button class="btn btn-primary" type="button" @onclick="ToggleDropdown">
+                <i class="feather @(ShowDropdown ? "icon-chevron-up" : "icon-chevron-down")"></i>
+            </button>
+        </div>
+
+        @if (ShowDropdown)
+        {
+            <div class="dropdown-menu show w-100 d-block categories-dropdown">
+                <!-- Search Results Info -->
+                <div class="dropdown-header d-flex justify-content-between align-items-center">
+                    <span>
+                        @if (IsLoadingCategories)
+                        {
+                            <span>Loading...</span>
+                        }
+                        else if (FilteredCategories?.Count == 0 && !string.IsNullOrWhiteSpace(SearchQuery))
+                        {
+                            <span>No categories found matching "<strong>@SearchQuery</strong>"</span>
+                        }
+                        else if (FilteredCategories?.Count == 0)
+                        {
+                            <span>No categories available</span>
+                        }
+                        else
+                        {
+                            <span>@FilteredCategories.Count categories found</span>
+                        }
+                    </span>
+                </div>
+
+                @if (IsLoadingCategories)
+                {
+                    <div class="dropdown-item text-center py-4">
+                        <div class="spinner-border spinner-border-sm mb-2" role="status"></div>
+                        <div>Loading categories...</div>
+                    </div>
+                }
+                else if (FilteredCategories?.Count > 0)
+                {
+                    <div class="categories-list-container">
+                        @foreach (var category in PaginatedCategories)
+                        {
+                            <button class="dropdown-item category-row d-flex align-items-center gap-3" type="button"
+                                    @onclick='() => SelectCategory(category)'
+                                    title="Click to select this category">
+                                <div class="category-image">
+                                    @if (!string.IsNullOrEmpty(category.ImageUrl))
+                                    {
+                                        <img src="@category.ImageUrl" alt="@category.TitleEn" />
+                                    }
+                                    else
+                                    {
+                                        <div class="placeholder-image"></div>
+                                    }
+                                </div>
+                                <div class="category-info flex-grow-1">
+                                    <div class="fw-bold category-title">@category.TitleEn</div>
+                                    <small class="text-muted d-block">@category.TitleAr</small>
+                                    @if (category.DisplayOrder > 0)
+                                    {
+                                        <small class="text-secondary d-block">Order: @category.DisplayOrder</small>
+                                    }
+                                </div>
+                            </button>
+                        }
+                    </div>
+
+                    <!-- Pagination Controls -->
+                    @if (TotalPages > 1)
+                    {
+                        <div class="dropdown-divider"></div>
+                        <div class="d-flex justify-content-between align-items-center px-3 py-2">
+                            <small class="text-muted">
+                                Page @CurrentPage of @TotalPages
+                            </small>
+                            <div class="btn-group btn-group-sm" role="group">
+                                <button type="button" class="btn btn-outline-secondary"
+                                        @onclick="PreviousPage" disabled="@(CurrentPage <= 1)">
+                                    <i class="feather icon-chevron-left"></i>
+                                </button>
+                                <button type="button" class="btn btn-outline-secondary"
+                                        @onclick="NextPage" disabled="@(CurrentPage >= TotalPages)">
+                                    <i class="feather icon-chevron-right"></i>
+                                </button>
+                            </div>
+                        </div>
+                    }
+                }
+                else
+                {
+                    <div class="dropdown-item text-center text-muted py-4">
+                        @if (string.IsNullOrWhiteSpace(SearchQuery))
+                        {
+                            <span>No categories available</span>
+                        }
+                        else
+                        {
+                            <span>No categories match your search</span>
+                        }
+                    </div>
+                }
+            </div>
+        }
+    </div>
+
+    <!-- Selected Categories Display -->
+    <div class="selected-categories mt-4">
+        <h6 class="mb-3">@MerchandisingResources.SelectedCategories <span class="badge bg-primary">@SelectedCategories.Count</span></h6>
+        @if (SelectedCategories.Count == 0)
+        {
+            <div class="alert alert-info mb-0">
+                <i class="feather icon-info me-2"></i>No categories selected yet
+            </div>
+        }
+        else
+        {
+            <div class="list-group">
+                @foreach (var (category, index) in SelectedCategories.Select((cat, idx) => (cat, idx)))
+                {
+                    <div class="list-group-item d-flex align-items-center justify-content-between">
+                        <div class="d-flex align-items-center gap-3 flex-grow-1">
+                            <div class="drag-handle" title="Drag to reorder">
+                                <i class="feather icon-menu"></i>
+                            </div>
+                            <div class="selected-category-image">
+                                @if (!string.IsNullOrEmpty(category.ImageUrl))
+                                {
+                                    <img src="@category.ImageUrl" alt="@category.TitleEn" />
+                                }
+                                else
+                                {
+                                    <div class="placeholder-image"></div>
+                                }
+                            </div>
+                            <div class="flex-grow-1">
+                                <div class="fw-bold">@category.TitleEn</div>
+                                <small class="text-muted">@category.TitleAr</small>
+                            </div>
+                            <div class="order-badge">
+                                <span class="badge bg-secondary">#@(index + 1)</span>
+                            </div>
+                        </div>
+                        <button type="button" class="btn btn-sm btn-outline-danger ms-2"
+                                @onclick="() => RemoveCategory(category.Id)"
+                                title="Remove category">
+                            <i class="feather icon-trash-2"></i>
+                        </button>
+                    </div>
+                }
+            </div>
+        }
+    </div>
+</div>
+
+<style>
+    .manual-categories-selector {
+        border: 1px solid #e0e0e0;
+        border-radius: 8px;
+        padding: 20px;
+        background-color: #f9f9f9;
+    }
+
+    .categories-dropdown {
+        position: relative !important;
+        margin-top: 0.5rem;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        max-height: 600px;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        border: 1px solid #dee2e6;
+        border-radius: 4px;
+    }
+
+    .categories-list-container {
+        overflow-y: auto;
+        flex: 1;
+        min-height: 200px;
+    }
+
+    .dropdown-header {
+        padding: 12px 16px;
+        background-color: #f8f9fa;
+        border-bottom: 1px solid #dee2e6;
+        font-weight: 500;
+        flex-shrink: 0;
+    }
+
+    .category-row {
+        padding: 12px 16px;
+        border: none;
+        text-align: left;
+        background: none;
+        cursor: pointer;
+        border-bottom: 1px solid #f0f0f0;
+        transition: background-color 0.15s ease;
+    }
+
+        .category-row:hover {
+            background-color: #f5f5f5;
+        }
+
+        .category-row:active {
+            background-color: #e9ecef;
+        }
+
+    .category-image {
+        flex-shrink: 0;
+        width: 45px;
+        height: 45px;
+        overflow: hidden;
+        border-radius: 4px;
+    }
+
+        .category-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+    .placeholder-image {
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(135deg, #e9ecef 0%, #f0f0f0 100%);
+        border: 1px solid #dee2e6;
+        border-radius: 4px;
+    }
+
+    .category-info {
+        min-width: 0;
+    }
+
+    .category-title {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 300px;
+    }
+
+    .selected-categories {
+        padding-top: 20px;
+        border-top: 1px solid #e0e0e0;
+    }
+
+    .list-group-item {
+        border: 1px solid #e0e0e0;
+        padding: 15px;
+        margin-bottom: 10px;
+        border-radius: 4px;
+        transition: background-color 0.15s ease;
+    }
+
+        .list-group-item:hover {
+            background-color: #f9f9f9;
+        }
+
+    .selected-category-image {
+        flex-shrink: 0;
+        width: 50px;
+        height: 50px;
+        overflow: hidden;
+        border-radius: 4px;
+    }
+
+        .selected-category-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+    .drag-handle {
+        color: #999;
+        cursor: grab;
+        flex-shrink: 0;
+    }
+
+        .drag-handle:active {
+            cursor: grabbing;
+        }
+
+    .order-badge {
+        flex-shrink: 0;
+    }
+
+    .btn-group-sm .btn {
+        padding: 0.25rem 0.5rem;
+        font-size: 0.875rem;
+    }
+
+    .input-group .btn-outline-secondary {
+        border-color: #dee2e6;
+    }
+
+        .input-group .btn-outline-secondary:hover {
+            border-color: #adb5bd;
+            background-color: #f8f9fa;
+        }
+</style>
+
+@code {
+    [Parameter]
+    public List<CategoryDto> SelectedCategories { get; set; } = new();
+
+    [Parameter]
+    public EventCallback<List<CategoryDto>> SelectedCategoriesChanged { get; set; }
+
+    [Inject]
+    protected Dashboard.Contracts.ECommerce.Category.ICategoryService CategoryService { get; set; } = null!;
+
+    protected List<CategoryDto> AllCategories = new();
+    protected List<CategoryDto> FilteredCategories = new();
+    protected List<CategoryDto> PaginatedCategories = new();
+    protected string SearchQuery = string.Empty;
+    protected bool ShowDropdown = false;
+    protected bool IsLoadingCategories = false;
+
+    // Pagination
+    protected int CurrentPage = 1;
+    protected int PageSize = 10;
+    protected int TotalPages => Math.Max(1, (FilteredCategories.Count + PageSize - 1) / PageSize);
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadAvailableCategories();
+    }
+
+    protected async Task LoadAvailableCategories()
+    {
+        try
+        {
+            IsLoadingCategories = true;
+            var response = await CategoryService.GetAllAsync();
+            if (response.Success && response.Data != null)
+            {
+                AllCategories = response.Data.ToList();
+                FilterCategories();
+            }
+        }
+        finally
+        {
+            IsLoadingCategories = false;
+        }
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        FilterCategories();
+        await base.OnParametersSetAsync();
+    }
+
+    protected void OnSearchInputChanged(KeyboardEventArgs e)
+    {
+        CurrentPage = 1; // Reset to first page when searching
+        FilterCategories();
+    }
+
+    protected void FilterCategories()
+    {
+        if (string.IsNullOrWhiteSpace(SearchQuery))
+        {
+            FilteredCategories = AllCategories
+                .Where(c => !SelectedCategories.Any(s => s.Id == c.Id))
+                .OrderBy(c => c.TitleEn)
+                .ToList();
+        }
+        else
+        {
+            var query = SearchQuery.ToLower();
+            FilteredCategories = AllCategories
+                .Where(c => !SelectedCategories.Any(s => s.Id == c.Id) &&
+                           (c.TitleEn.ToLower().Contains(query) ||
+                            c.TitleAr.ToLower().Contains(query)))
+                .OrderBy(c => c.TitleEn)
+                .ToList();
+        }
+
+        UpdatePaginatedCategories();
+    }
+
+    protected void UpdatePaginatedCategories()
+    {
+        var skip = (CurrentPage - 1) * PageSize;
+        PaginatedCategories = FilteredCategories.Skip(skip).Take(PageSize).ToList();
+    }
+
+    protected void NextPage()
+    {
+        if (CurrentPage < TotalPages)
+        {
+            CurrentPage++;
+            UpdatePaginatedCategories();
+        }
+    }
+
+    protected void PreviousPage()
+    {
+        if (CurrentPage > 1)
+        {
+            CurrentPage--;
+            UpdatePaginatedCategories();
+        }
+    }
+
+    protected void ClearSearch()
+    {
+        SearchQuery = string.Empty;
+        CurrentPage = 1;
+        FilterCategories();
+    }
+
+    protected void ToggleDropdown()
+    {
+        ShowDropdown = !ShowDropdown;
+        if (ShowDropdown && FilteredCategories.Count == 0)
+        {
+            FilterCategories();
+        }
+    }
+
+    protected async Task SelectCategory(CategoryDto category)
+    {
+        if (!SelectedCategories.Any(s => s.Id == category.Id))
+        {
+            SelectedCategories.Add(category);
+            await SelectedCategoriesChanged.InvokeAsync(SelectedCategories);
+            FilterCategories();
+            // Don't clear search - user might want to select more categories
+        }
+    }
+
+    protected async Task RemoveCategory(Guid categoryId)
+    {
+        SelectedCategories.RemoveAll(c => c.Id == categoryId);
+        await SelectedCategoriesChanged.InvokeAsync(SelectedCategories);
+        FilterCategories();
+    }
+}

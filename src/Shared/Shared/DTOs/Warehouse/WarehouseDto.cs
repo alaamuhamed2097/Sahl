@@ -14,7 +14,10 @@ namespace Shared.DTOs.Warehouse
 
 		[EmailAddress(ErrorMessage = "InvalidEmail")]
 		[StringLength(100)]
-		public string? Email { get; set; } 
+		public string? Email { get; set; }
+		[StringLength(100)]
+		public string? VendorName { get; set; } 
+
 
 		public bool IsActive { get; set; } = true;
 

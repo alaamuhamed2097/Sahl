@@ -8,7 +8,7 @@ using System.ComponentModel.DataAnnotations;
 using Common.Enumerations;
 using Dashboard.Contracts.Page;
 
-namespace UI.Pages.StaticPage
+namespace Dashboard.Pages.StaticPage
 {
     public partial class StaticPageModal : ComponentBase
     {
