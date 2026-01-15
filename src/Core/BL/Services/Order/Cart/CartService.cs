@@ -447,7 +447,8 @@ public class CartService : ICartService
                     throw new InvalidOperationException($"Pricing not found for offer combination pricing ID {ci.OfferCombinationPricingId}");
                 }
 
-                var currentPrice = pricing.Price;
+                var originalPrice = pricing.Price;
+                var currentPrice = pricing.SalesPrice;
                 var isAvailable = pricing.AvailableQuantity >= ci.Quantity;
 
                 items.Add(new CartItemDto
@@ -458,12 +459,12 @@ public class CartService : ICartService
                     ItemNameEn = ci.Item?.TitleEn,
                     OfferCombinationPricingId = ci.OfferCombinationPricingId,
                     SellerName = ci.OfferCombinationPricing?.Offer?.Vendor?.StoreName,
+                    UnitOriginalPrice = originalPrice,
                     Quantity = ci.Quantity,
                     UnitPrice = currentPrice,
                     SubTotal = currentPrice * ci.Quantity,
                     IsAvailable = isAvailable,
                     ImageUrl = ci.Item?.ThumbnailImage
-
                 });
             }
         }

@@ -82,6 +82,40 @@ namespace Api.Controllers.v1.User
         }
 
         /// <summary>
+        /// Retrieves a vendor preview by ID.
+        /// </summary>
+        /// <remarks>
+        /// API Version: 1.0+
+        /// </remarks>
+        /// <param name="id">The ID of the vendor.</param>
+        [HttpGet("preview/{id}")]
+        [AllowAnonymous]
+        public async Task<IActionResult> GetPreview(Guid id)
+        {
+            if (id == Guid.Empty)
+                return BadRequest(new ResponseModel<VendorPreviewDto>
+                {
+                    Success = false,
+                    Message = GetResource<NotifiAndAlertsResources>(nameof(NotifiAndAlertsResources.InvalidInputAlert))
+                });
+
+            var vendor = await _vendorService.FindPreviewByIdAsync(id);
+            if (vendor == null)
+                return NotFound(new ResponseModel<VendorPreviewDto>
+                {
+                    Success = false,
+                    Message = GetResource<NotifiAndAlertsResources>(nameof(NotifiAndAlertsResources.NoDataFound))
+                });
+
+            return Ok(new ResponseModel<VendorPreviewDto>
+            {
+                Success = true,
+                Message = GetResource<NotifiAndAlertsResources>(nameof(NotifiAndAlertsResources.DataRetrieved)),
+                Data = vendor
+            });
+        }
+
+        /// <summary>
         /// Get all vendors with their user information
         /// </summary>
         [HttpGet("with-users")]

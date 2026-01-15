@@ -12,6 +12,7 @@
         public Guid OfferCombinationPricingId { get; set; }
         public string SellerName { get; set; } = string.Empty;
 
+        public decimal UnitOriginalPrice { get; set; }
         public int Quantity { get; set; }
         public decimal UnitPrice { get; set; }
         public decimal SubTotal { get; set; }

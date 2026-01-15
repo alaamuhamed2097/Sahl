@@ -43,6 +43,11 @@ public class VendorManagementService : BaseService<TbVendor, VendorDto>, IVendor
         return _mapper.MapModel<TbVendor, VendorDto>(await _vendorRepository.FindAsync(v => v.Id == Id));
     }
 
+    public async Task<VendorPreviewDto> FindPreviewByIdAsync(Guid Id)
+    {
+        return _mapper.MapModel<TbVendor, VendorPreviewDto>(await _vendorRepository.FindAsync(v => v.Id == Id));
+    }
+
     public async Task<VendorDto> FindByUserIdAsync(string userId)
     {
         return _mapper.MapModel<TbVendor, VendorDto>(await _vendorRepository.FindAsync(v => v.User.Id == userId));
