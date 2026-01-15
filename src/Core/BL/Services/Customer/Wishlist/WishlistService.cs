@@ -484,7 +484,9 @@ public class WishlistService : IWishlistService
             ItemShortDescriptionAr = product?.ShortDescriptionAr,
             ItemShortDescriptionEn = product?.ShortDescriptionEn,
             ThumbnailImage = product?.ThumbnailImage,
-            OfferPricingId = buyBoxOffer?.OfferPricingId
+            OfferPricingId = buyBoxOffer?.OfferPricingId,
+            Price = buyBoxOffer?.Price ?? 0,
+            SalesPrice = buyBoxOffer?.SalesPrice ?? 0,
         };
     }
 }

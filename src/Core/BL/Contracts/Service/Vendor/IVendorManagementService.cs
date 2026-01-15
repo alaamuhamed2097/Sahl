@@ -12,6 +12,7 @@ namespace BL.Contracts.Service.Vendor;
 public interface IVendorManagementService : IBaseService<TbVendor, VendorDto>
 {
     Task<PagedResult<VendorDto>> SearchAsync(BaseSearchCriteriaModel criteriaModel);
+    Task<VendorPreviewDto> FindPreviewByIdAsync(Guid Id);
     Task<VendorDto> FindByUserIdAsync(string userId);
     Task<TbVendor> GetByUserIdAsync(string userId);
     Task<bool> UpdateVendorStatusAsync(Guid vendorId, VendorStatus status);
