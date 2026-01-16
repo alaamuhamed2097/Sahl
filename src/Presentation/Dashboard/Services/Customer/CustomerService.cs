@@ -6,6 +6,8 @@ using Dashboard.Contracts.General;
 using Dashboard.Models.pagintion;
 using Resources;
 using Shared.DTOs.Customer;
+using Shared.DTOs.User.Customer;
+using Shared.DTOs.Wallet.Customer;
 using Shared.GeneralModels;
 
 namespace Dashboard.Services.Customer
@@ -55,6 +57,7 @@ namespace Dashboard.Services.Customer
 				};
 			}
 		}
+
 
 		/// <summary>
 		/// Search Customers with pagination and filtering.
@@ -193,16 +196,45 @@ namespace Dashboard.Services.Customer
 		/// <summary>
 		/// Get customer order history with pagination.
 		/// </summary>
-		public async Task<ResponseModel<PaginatedDataModel<object>>> GetOrderHistoryAsync(Guid customerId, BaseSearchCriteriaModel criteria)
+		public async Task<ResponseModel<PaginatedDataModel<OrderHistoryDto>>> GetOrderHistoryAsync(Guid customerId, BaseSearchCriteriaModel criteria)
 		{
 			try
 			{
-				return await _apiService.PostAsync<BaseSearchCriteriaModel, PaginatedDataModel<object>>(
+				return await _apiService.PostAsync<BaseSearchCriteriaModel, PaginatedDataModel<OrderHistoryDto>>(
 					$"{ApiEndpoints.Customer.Get}/{customerId}/orders", criteria);
 			}
 			catch (Exception ex)
 			{
-				return new ResponseModel<PaginatedDataModel<object>>
+				return new ResponseModel<PaginatedDataModel<OrderHistoryDto>>
+				{
+					Success = false,
+					Message = ex.Message
+				};
+			}
+		}
+
+		public async Task<ResponseModel<PaginatedDataModel<CustomerWalletTransactionsDto>>> GetWalletHistoryAsync(
+	Guid customerId,
+	BaseSearchCriteriaModel criteria)
+		{
+			try
+			{
+				
+				var queryString = $"?PageNumber={criteria.PageNumber}&PageSize={criteria.PageSize}";
+
+				
+				if (!string.IsNullOrEmpty(criteria.SearchTerm))
+					queryString += $"&SearchTerm={Uri.EscapeDataString(criteria.SearchTerm)}";
+
+				var endpoint = $"api/v1/CustomerWalletTransaction/SearchWalletTransactions{queryString}";
+
+				return await _apiService.PostAsync<Guid, PaginatedDataModel<CustomerWalletTransactionsDto>>(
+					endpoint,
+					customerId);
+			}
+			catch (Exception ex)
+			{
+				return new ResponseModel<PaginatedDataModel<CustomerWalletTransactionsDto>>
 				{
 					Success = false,
 					Message = ex.Message
@@ -211,18 +243,42 @@ namespace Dashboard.Services.Customer
 		}
 
 		/// <summary>
-		/// Get customer wallet transaction history with pagination.
+		/// Register a new customer (Admin creates customer account).
 		/// </summary>
-		public async Task<ResponseModel<PaginatedDataModel<object>>> GetWalletHistoryAsync(Guid customerId, BaseSearchCriteriaModel criteria)
+		public async Task<ResponseModel<CustomerRegistrationResponseDto>> RegisterCustomerAsync(CustomerRegistrationDto dto)
 		{
+			if (dto == null) throw new ArgumentNullException(nameof(dto));
+
 			try
 			{
-				return await _apiService.PostAsync<BaseSearchCriteriaModel, PaginatedDataModel<object>>(
-					$"{ApiEndpoints.Customer.Get}/{customerId}/wallet-history", criteria);
+				return await _apiService.PostAsync<CustomerRegistrationDto, CustomerRegistrationResponseDto>(
+					ApiEndpoints.Customer.Register, dto);
 			}
 			catch (Exception ex)
 			{
-				return new ResponseModel<PaginatedDataModel<object>>
+				return new ResponseModel<CustomerRegistrationResponseDto>
+				{
+					Success = false,
+					Message = ex.Message
+				};
+			}
+		}
+
+		/// <summary>
+		/// Update customer information.
+		/// </summary>
+		public async Task<ResponseModel<CustomerDto>> UpdateAsync(Guid id, CustomerDto dto)
+		{
+			if (dto == null) throw new ArgumentNullException(nameof(dto));
+
+			try
+			{
+				return await _apiService.PutAsync<CustomerDto, CustomerDto>(
+					$"{ApiEndpoints.Customer.Update}/{id}", dto);
+			}
+			catch (Exception ex)
+			{
+				return new ResponseModel<CustomerDto>
 				{
 					Success = false,
 					Message = ex.Message

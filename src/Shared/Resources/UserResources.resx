@@ -388,4 +388,52 @@
   <data name="PasswordMismatch" xml:space="preserve">
     <value>كلمة المرور غير متطابقة</value>
   </data>
+	<!-- User Fields -->
+	<data name="FirstName" xml:space="preserve">
+  <value>الاسم الأول</value>
+</data>
+	<data name="LastName" xml:space="preserve">
+  <value>الاسم الأخير</value>
+</data>
+	<data name="Email" xml:space="preserve">
+  <value>البريد الإلكتروني</value>
+</data>
+	<data name="PhoneCode" xml:space="preserve">
+  <value>كود الهاتف</value>
+</data>
+	<data name="PhoneNumber" xml:space="preserve">
+  <value>رقم الهاتف</value>
+</data>
+	<data name="Password" xml:space="preserve">
+  <value>كلمة المرور</value>
+</data>
+	<data name="ConfirmPassword" xml:space="preserve">
+  <value>تأكيد كلمة المرور</value>
+</data>
+	<data name="PasswordMinLength" xml:space="preserve">
+  <value>يجب أن تكون كلمة المرور 8 أحرف على الأقل</value>
+</data>
+
+	<!-- User Status -->
+	<data name="UserStatus" xml:space="preserve">
+  <value>حالة المستخدم</value>
+</data>
+	<data name="Active" xml:space="preserve">
+  <value>نشط</value>
+</data>
+	<data name="Inactive" xml:space="preserve">
+  <value>غير نشط</value>
+</data>
+	<data name="Pending" xml:space="preserve">
+  <value>قيد الانتظار</value>
+</data>
+	<data name="Suspended" xml:space="preserve">
+  <value>معلق</value>
+</data>
+	<data name="Banned" xml:space="preserve">
+  <value>محظور</value>
+</data>
+	<data name="Deleted" xml:space="preserve">
+  <value>محذوف</value>
+</data>
 </root>

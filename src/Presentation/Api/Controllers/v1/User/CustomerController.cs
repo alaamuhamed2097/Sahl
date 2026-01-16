@@ -218,28 +218,27 @@ namespace Api.Controllers.v1.User
         /// <param name="pageNumber">Page number (optional, default 1)</param>
         /// <param name="pageSize">Page size (optional, default 10)</param>
         /// <returns>Paginated order history</returns>
-        [HttpGet("{id:guid}/orders")]
+        [HttpPost("{id:guid}/orders")]
         public async Task<IActionResult> GetOrderHistory(
             Guid id,
-            [FromQuery] int pageNumber = 1,
-            [FromQuery] int pageSize = 10)
+            [FromQuery] BaseSearchCriteriaModel criteria)
         {
             try
             {
-                var searchCriteria = new BaseSearchCriteriaModel
-                {
-                    PageNumber = pageNumber,
-                    PageSize = pageSize,
-                    SearchTerm = string.Empty
-                };
+                //var searchCriteria = new BaseSearchCriteriaModel
+                //{
+                //    PageNumber = pageNumber,
+                //    PageSize = pageSize,
+                //    SearchTerm = string.Empty
+                //};
 
-                ValidateBaseSearchCriteriaModel(searchCriteria);
+                ValidateBaseSearchCriteriaModel(criteria);
 
-                var result = await _customerService.GetOrderHistoryAsync(id, searchCriteria);
+                var result = await _customerService.GetOrderHistoryAsync(id, criteria);
                 if (result.Success && result.Data != null)
                     return Ok(CreateSuccessResponse(result.Data, "Orders retrieved successfully"));
 
-                return Ok(CreateSuccessResponse(new AdvancedPagedResult<object>(), "No orders found"));
+                return Ok(CreateSuccessResponse(new AdvancedPagedResult<OrderHistoryDto>(), "No orders found"));
             }
             catch (Exception ex)
             {

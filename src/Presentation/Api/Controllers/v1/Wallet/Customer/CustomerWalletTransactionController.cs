@@ -1,4 +1,5 @@
 ﻿using Api.Controllers.v1.Base;
+using Asp.Versioning;
 using BL.Contracts.Service.Wallet.Customer;
 using Common.Enumerations.User;
 using Common.Filters;
@@ -11,9 +12,11 @@ using Shared.GeneralModels;
 
 namespace Api.Controllers.v1.Wallet.Customer
 {
-    [Route("api/[controller]")]
+    
     [ApiController]
-    [Authorize(Roles = nameof(UserType.Customer))]
+	[ApiVersion("1.0")]
+	[Route("api/v{version:apiVersion}/[controller]")]
+	[Authorize(Roles = $"{nameof(UserRole.Customer)},{nameof(UserRole.Admin)}")]
     public class CustomerWalletTransactionController : BaseController
     {
         private readonly ICustomerWalletTransactionService _walletTransactionService;
