@@ -7,6 +7,7 @@ using Dashboard.Models.pagintion;
 using Resources;
 using Shared.DTOs.Customer;
 using Shared.DTOs.User.Customer;
+using Shared.DTOs.Wallet.Customer;
 using Shared.GeneralModels;
 
 namespace Dashboard.Services.Customer
@@ -212,26 +213,34 @@ namespace Dashboard.Services.Customer
 			}
 		}
 
-		/// <summary>
-		/// Get customer wallet transaction history with pagination.
-		/// </summary>
-		public async Task<ResponseModel<PaginatedDataModel<object>>> GetWalletHistoryAsync(Guid customerId, BaseSearchCriteriaModel criteria)
+		public async Task<ResponseModel<PaginatedDataModel<CustomerWalletTransactionsDto>>> GetWalletHistoryAsync(
+	Guid customerId,
+	BaseSearchCriteriaModel criteria)
 		{
 			try
 			{
-				return await _apiService.PostAsync<BaseSearchCriteriaModel, PaginatedDataModel<object>>(
-					$"{ApiEndpoints.Customer.Get}/{customerId}/wallet-history", criteria);
+				
+				var queryString = $"?PageNumber={criteria.PageNumber}&PageSize={criteria.PageSize}";
+
+				
+				if (!string.IsNullOrEmpty(criteria.SearchTerm))
+					queryString += $"&SearchTerm={Uri.EscapeDataString(criteria.SearchTerm)}";
+
+				var endpoint = $"api/v1/CustomerWalletTransaction/SearchWalletTransactions{queryString}";
+
+				return await _apiService.PostAsync<Guid, PaginatedDataModel<CustomerWalletTransactionsDto>>(
+					endpoint,
+					customerId);
 			}
 			catch (Exception ex)
 			{
-				return new ResponseModel<PaginatedDataModel<object>>
+				return new ResponseModel<PaginatedDataModel<CustomerWalletTransactionsDto>>
 				{
 					Success = false,
 					Message = ex.Message
 				};
 			}
 		}
-
 
 		/// <summary>
 		/// Register a new customer (Admin creates customer account).

@@ -5,6 +5,7 @@ using Shared.DTOs.Brand;
 using Shared.DTOs.Customer;
 using Shared.DTOs.Location;
 using Shared.DTOs.User.Customer;
+using Shared.DTOs.Wallet.Customer;
 using Shared.GeneralModels;
 using Shared.GeneralModels.ResultModels;
 
@@ -62,6 +63,8 @@ namespace Dashboard.Contracts.Customer
 		/// <summary>
 		/// Get customer wallet transaction history with pagination.
 		/// </summary>
-		Task<ResponseModel<PaginatedDataModel<object>>> GetWalletHistoryAsync(Guid customerId, BaseSearchCriteriaModel criteria);
+		Task<ResponseModel<PaginatedDataModel<CustomerWalletTransactionsDto>>> GetWalletHistoryAsync(
+			Guid customerId,
+			BaseSearchCriteriaModel criteria);
 	}
 }

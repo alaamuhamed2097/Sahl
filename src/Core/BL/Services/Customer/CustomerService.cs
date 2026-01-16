@@ -488,7 +488,7 @@ namespace BL.Services.Customer
 				return new ResponseModel<AdvancedPagedResult<OrderHistoryDto>>
 				{
 					Success = false,
-					Message = NotifiAndAlertsResources.ErrorOccurred
+					Message = NotifiAndAlertsResources.Error
 				};
 			}
 		}
