@@ -4,7 +4,7 @@
 .loading-logo-img{width:80px;height:80px;margin-bottom:20px;display:block;animation:pulse 2s ease-in-out infinite;object-fit:contain;contain:layout style paint;will-change:transform,opacity}
 
 /* Fallback for old background-based logo (if needed for compatibility) */
-.loading-logo{width:80px;height:80px;margin-bottom:20px;background:url('/assets/images/logo-icon.svg') center/contain no-repeat;animation:pulse 2s ease-in-out infinite;display:none}
+.loading-logo{width:80px;height:80px;margin-bottom:20px;background:url('/assets/images/favicon.png') center/contain no-repeat;animation:pulse 2s ease-in-out infinite;display:none}
 
 .loading-spinner{width:60px;height:60px;border:3px solid rgba(255,255,255,.3);border-radius:50%;border-top-color:#fff;animation:spin 1s ease-in-out infinite;margin-bottom:20px;will-change:transform}
 

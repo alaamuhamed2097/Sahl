@@ -1,0 +1,220 @@
+/* ===================================
+   تحسينات البطاقات الإحصائية
+   =================================== */
+
+/* البطاقات الرئيسية - تصميم أكثر حيوية */
+.dashboard-card {
+    background: var(--white) !important;
+    border-radius: var(--radius-lg) !important;
+    border: 1px solid var(--neutral-light) !important;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    overflow: hidden;
+    position: relative;
+}
+
+/* تأثير Hover محسّن */
+.dashboard-card:hover {
+    transform: translateY(-8px) !important;
+    box-shadow: 0 12px 28px rgba(13, 84, 73, 0.15) !important;
+    border-color: var(--primary-light) !important;
+}
+
+/* تأثير Shimmer عند التحميل */
+.dashboard-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(255, 255, 255, 0.3),
+        transparent
+    );
+    transition: left 0.5s;
+}
+
+.dashboard-card:hover::before {
+    left: 100%;
+}
+
+/* أيقونات محسّنة بألوان متدرجة */
+.icon-wrapper {
+    width: 70px !important;
+    height: 70px !important;
+    border-radius: 18px !important;
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    font-size: 32px !important;
+    position: relative;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.12) !important;
+}
+
+/* تأثير النبض للأيقونات */
+.dashboard-card:hover .icon-wrapper {
+    transform: scale(1.15) rotate(5deg);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.18) !important;
+}
+
+/* أيقونة الإيرادات - ذهبي متدرج */
+.icon-wrapper.bg-gradient-revenue {
+    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%) !important;
+}
+
+.icon-wrapper.bg-gradient-revenue::after {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, rgba(251, 191, 36, 0.3), transparent);
+    border-radius: 18px;
+    animation: pulse-glow 2s ease-in-out infinite;
+}
+
+/* أيقونة الطلبات - أخضر نعناعي */
+.icon-wrapper.bg-gradient-orders {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
+}
+
+.icon-wrapper.bg-gradient-orders::after {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.3), transparent);
+    border-radius: 18px;
+    animation: pulse-glow 2s ease-in-out infinite 0.5s;
+}
+
+/* أيقونة المستخدمين - أزرق سماوي */
+.icon-wrapper.bg-gradient-users {
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%) !important;
+}
+
+.icon-wrapper.bg-gradient-users::after {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.3), transparent);
+    border-radius: 18px;
+    animation: pulse-glow 2s ease-in-out infinite 1s;
+}
+
+/* أيقونة المخزون - بنفسجي */
+.icon-wrapper.bg-gradient-inventory {
+    background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%) !important;
+}
+
+.icon-wrapper.bg-gradient-inventory::after {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, rgba(139, 92, 246, 0.3), transparent);
+    border-radius: 18px;
+    animation: pulse-glow 2s ease-in-out infinite 1.5s;
+}
+
+/* تحسين صندوق النص */
+.text-box {
+    background: linear-gradient(145deg, #ffffff, #f8fafc) !important;
+    border: 1px solid rgba(226, 232, 240, 0.6) !important;
+    border-radius: var(--radius-md) !important;
+    padding: 16px 20px !important;
+    box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04) !important;
+    transition: all 0.3s ease !important;
+}
+
+.dashboard-card:hover .text-box {
+    background: linear-gradient(145deg, #ffffff, #f1f5f9) !important;
+    box-shadow: 0 4px 12px rgba(13, 84, 73, 0.08) !important;
+    transform: translateY(-2px);
+}
+
+/* تحسين الأرقام */
+.text-box h2,
+.text-box h3 {
+    font-size: 2.5rem !important;
+    font-weight: 800 !important;
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 8px !important;
+}
+
+/* تحسين العناوين */
+.text-box p,
+.text-box small {
+    color: var(--neutral-medium) !important;
+    font-weight: 600 !important;
+    font-size: 14px !important;
+    letter-spacing: 0.3px;
+}
+
+/* شارة النسبة المئوية */
+.percentage-badge {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: var(--radius-sm);
+    font-size: 13px;
+    font-weight: 700;
+    margin-top: 8px;
+    transition: all 0.3s ease;
+}
+
+.percentage-badge.positive {
+    background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+    color: var(--success-dark);
+}
+
+.percentage-badge.negative {
+    background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+    color: var(--accent-error);
+}
+
+.percentage-badge.neutral {
+    background: linear-gradient(135deg, var(--neutral-lighter) 0%, var(--neutral-light) 100%);
+    color: var(--neutral-dark);
+}
+
+/* Animation للنبض */
+@keyframes pulse-glow {
+    0%, 100% {
+        opacity: 0.3;
+    }
+    50% {
+        opacity: 0.6;
+    }
+}
+
+/* Responsive للموبايل */
+@media (max-width: 768px) {
+    .icon-wrapper {
+        width: 55px !important;
+        height: 55px !important;
+        font-size: 24px !important;
+    }
+    
+    .text-box h2,
+    .text-box h3 {
+        font-size: 2rem !important;
+    }
+    
+    .dashboard-card:hover {
+        transform: translateY(-4px) !important;
+    }
+}
+
+/* Dark Mode Support (إذا كان موجود) */
+@media (prefers-color-scheme: dark) {
+    .text-box {
+        background: linear-gradient(145deg, #1e293b, #0f172a) !important;
+        border-color: rgba(255, 255, 255, 0.1) !important;
+    }
+}

@@ -71,13 +71,11 @@ namespace Dashboard.Extensions
             services.AddScoped<IContentAreaService, ContentAreaService>();
             services.AddScoped<IMediaContentService, MediaContentService>();
 
-			services.AddScoped<IItemReviewService, ItemReviewService>();
-			services.AddScoped<IVendorReviewService, VendorReviewService>();
-			services.AddScoped<IReportReviewService, ReportReviewService>();
-			services.AddScoped<IHomePageSliderService, HomePageSliderService>();
-			services.AddScoped<ISystemSettingsService, SystemSettingsService>();
-			// Excel Template Service
-			services.AddScoped<ExcelTemplateService>();
+            services.AddScoped<IItemReviewService, ItemReviewService>();
+            services.AddScoped<IVendorReviewService, VendorReviewService>();
+            services.AddScoped<IReportReviewService, ReportReviewService>();
+            services.AddScoped<IHomePageSliderService, HomePageSliderService>();
+            services.AddScoped<ISystemSettingsService, SystemSettingsService>();
             services.AddScoped<ICampaignService, CampaignService>();
             services.AddScoped<IAdminBlockService, AdminBlockService>();
             services.AddScoped<IVendorPromoCodeParticipationAdminService, VendorPromoCodeParticipationAdminService>();
@@ -85,8 +83,6 @@ namespace Dashboard.Extensions
             services.AddScoped<IReportReviewService, ReportReviewService>();
             services.AddScoped<IHomePageSliderService, HomePageSliderService>();
             services.AddScoped<ISystemSettingsService, SystemSettingsService>();
-            // Excel Template Service
-            services.AddScoped<ExcelTemplateService>();
 
             services.AddScoped<IWithdrawalMethodService, WithdrawalMethodService>();
 

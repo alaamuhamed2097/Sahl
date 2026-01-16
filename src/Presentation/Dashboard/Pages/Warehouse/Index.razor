@@ -154,14 +154,18 @@
                             <!-- Search Box -->
                             <div class="col-md-3">
                                 <EditForm Model="vendorSearchModel" OnSubmit="@(() => Search())">
-                                    <div class="input-group">
-                                        <input type="text"
-                                               @bind="vendorSearchModel.SearchTerm"
-                                               class="form-control"
-                                               placeholder="Search by address..." />
-                                        <button type="submit" class="btn btn-danger">
-                                            <i class="fas fa-search"></i>
-                                        </button>
+                                    <div class="search-container">
+                                        <div class="input-group search-box">
+                                            <input type="text"
+                                                   @bind="searchModel.SearchTerm"
+                                                   id="searchInput"
+                                                   class="form-control search-input"
+                                                   placeholder="@ActionsResources.Search" />
+                                            <button type="submit"
+                                                    class="btn btn-search">
+                                                <i class="fas fa-search"></i>
+                                            </button>
+                                        </div>
                                     </div>
                                 </EditForm>
                             </div>
