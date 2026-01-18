@@ -474,6 +474,9 @@
   <data name="RequestRejected" xml:space="preserve">
     <value>Request Rejected</value>
   </data>
+  <data name="RequestAccepted" xml:space="preserve">
+    <value>Request Accepted</value>
+  </data>
   <data name="FailedToProcessRequest" xml:space="preserve">
     <value>Failed to process request. Please try again.</value>
   </data>

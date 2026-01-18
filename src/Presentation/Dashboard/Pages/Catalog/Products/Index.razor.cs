@@ -53,5 +53,9 @@ namespace Dashboard.Pages.Catalog.Products
         {
             Navigation.NavigateTo("/products/import");
         }
+        protected void GoToNewProductRequests()
+        {
+            Navigation.NavigateTo("/products/requests");
+        }
     }
 }

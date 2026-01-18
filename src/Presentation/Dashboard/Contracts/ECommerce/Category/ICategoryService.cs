@@ -11,6 +11,12 @@ namespace Dashboard.Contracts.ECommerce.Category
         Task<ResponseModel<IEnumerable<CategoryDto>>> GetAllAsync();
 
         /// <summary>
+        /// Get all final categories.
+        /// </summary>
+        /// <returns></returns>
+        Task<ResponseModel<IEnumerable<CategoryDto>>> GetAllFinalCategoriesAsync();
+
+        /// <summary>
         /// Get category by ID.
         /// </summary>
         Task<ResponseModel<CategoryDto>> GetByIdAsync(Guid id);

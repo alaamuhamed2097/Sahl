@@ -385,6 +385,15 @@ namespace Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to الكمية المتاحة.
+        /// </summary>
+        public static string AvailableQuantity {
+            get {
+                return ResourceManager.GetString("AvailableQuantity", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to مدة البانر.
         /// </summary>
         public static string BannerDuration {
@@ -547,6 +556,15 @@ namespace Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to الخيارات.
+        /// </summary>
+        public static string Combinations {
+            get {
+                return ResourceManager.GetString("Combinations", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to قريباً.
         /// </summary>
         public static string ComingSoon {
@@ -579,6 +597,15 @@ namespace Resources {
         public static string CompletedOrders {
             get {
                 return ResourceManager.GetString("CompletedOrders", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to الحالة.
+        /// </summary>
+        public static string Condition {
+            get {
+                return ResourceManager.GetString("Condition", resourceCulture);
             }
         }
         
@@ -871,6 +898,15 @@ namespace Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to أيام التسليم المقدرة.
+        /// </summary>
+        public static string EstimatedDeliveryDays {
+            get {
+                return ResourceManager.GetString("EstimatedDeliveryDays", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to ملف Excel.
         /// </summary>
         public static string ExcelFile {
@@ -939,6 +975,15 @@ namespace Resources {
         public static string ForEveryWeek {
             get {
                 return ResourceManager.GetString("ForEveryWeek", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to شحن مجاني.
+        /// </summary>
+        public static string FreeShipping {
+            get {
+                return ResourceManager.GetString("FreeShipping", resourceCulture);
             }
         }
         
@@ -1249,6 +1294,15 @@ namespace Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to عتبة نقص المخزون.
+        /// </summary>
+        public static string LowStockThreshold {
+            get {
+                return ResourceManager.GetString("LowStockThreshold", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to تحذير: الكمية منخفضة.
         /// </summary>
         public static string LowStockWarning {
@@ -1348,11 +1402,29 @@ namespace Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to الحد الأقصى للطلب.
+        /// </summary>
+        public static string MaxOrderQuantity {
+            get {
+                return ResourceManager.GetString("MaxOrderQuantity", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to السعر الأدنى.
         /// </summary>
         public static string MinimumPrice {
             get {
                 return ResourceManager.GetString("MinimumPrice", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to الحد الأدنى للطلب.
+        /// </summary>
+        public static string MinOrderQuantity {
+            get {
+                return ResourceManager.GetString("MinOrderQuantity", resourceCulture);
             }
         }
         
@@ -1407,6 +1479,15 @@ namespace Resources {
         public static string NewOrder {
             get {
                 return ResourceManager.GetString("NewOrder", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to طلبات إضافة منتجات جديدة.
+        /// </summary>
+        public static string NewProductRequests {
+            get {
+                return ResourceManager.GetString("NewProductRequests", resourceCulture);
             }
         }
         
@@ -1677,6 +1758,15 @@ namespace Resources {
         public static string PostalCode {
             get {
                 return ResourceManager.GetString("PostalCode", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to السعر.
+        /// </summary>
+        public static string Price {
+            get {
+                return ResourceManager.GetString("Price", resourceCulture);
             }
         }
         
@@ -2167,6 +2257,15 @@ namespace Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to الحالة.
+        /// </summary>
+        public static string Status {
+            get {
+                return ResourceManager.GetString("Status", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to الخطوة 1: اختيار الفئة.
         /// </summary>
         public static string Step1SelectCategory {
@@ -2334,15 +2433,6 @@ namespace Resources {
         public static string TreeView {
             get {
                 return ResourceManager.GetString("TreeView", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to الحالة.
-        /// </summary>
-        public static string Status {
-            get {
-                return ResourceManager.GetString("Status", resourceCulture);
             }
         }
         

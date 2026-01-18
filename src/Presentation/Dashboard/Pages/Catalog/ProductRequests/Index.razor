@@ -1,4 +1,4 @@
-﻿@page "/products"
+﻿@page "/products/requests"
 
 @using Common.Enumerations
 @using Common.Enumerations.FieldType
@@ -10,12 +10,12 @@
 
 @attribute [Authorize(Roles = nameof(UserRole.Admin))]
 
-<PageTitle>@ECommerceResources.Products</PageTitle>
+<PageTitle>@ECommerceResources.NewProductRequests</PageTitle>
 
 <div class="container-fluid p-0">
 	<div class="card shadow-sm border-0">
 		<div class="card-header bg-primary text-white py-3 d-flex justify-content-between align-items-center">
-			<h5 class="mb-0 fw-semibold text-white">🛍️ @ECommerceResources.Products</h5>
+			<h5 class="mb-0 fw-semibold text-white">🛍️ @ECommerceResources.NewProductRequests</h5>
 		</div>
 		<div class="card-body">
 			<div class="dt-responsive table-responsive">
@@ -48,10 +48,10 @@
 						</div>
 					</li>
 					<li class="nav-item ms-auto d-flex flex-row align-items-center gap-2">
-						<!-- New products requests buttons-->
-						<button class="btn btn-primary" @onclick="GoToNewProductRequests">
-							<i class="fas fa-file-alt mx-1"></i>
-							<span class="fw-bold">@ECommerceResources.NewProductRequests</span>
+						<!-- Go to Products List -->
+						<button class="btn btn-primary" @onclick="GoToMainList">
+							<i class="fas fa-boxes me-2"></i>
+							<span class="fw-bold">@ECommerceResources.Products</span>
 						</button>
 						<!-- Export Buttons -->
 						<div class="dropdown">
@@ -64,18 +64,6 @@
 								<li><a class="dropdown-item" href="javascript:void(0)" @onclick="ExportToPrint"><i class="fas fa-print mx-2"></i>Print</a></li>
 							</ul>
 						</div>
-
-						<!-- Import Button -->
-						@* <button class="btn btn-warning" @onclick="GoToImport">
-							<i class="fas fa-file-import mx-1"></i>
-							<span class="fw-bold">@ActionsResources.Import</span>
-						</button> *@
-
-						<!-- Add Button -->
-						<button class="btn btn-success" @onclick="Add">
-							<i class="feather icon-plus-circle mx-1"></i>
-							<span class="fw-bold">@ActionsResources.Add</span>
-						</button>
 					</li>
 				</ul>
 				<!-- Responsive Table Container -->
@@ -123,15 +111,25 @@
 										</td>
 										<td class="d-flex gap-1 justify-content-center align-items-center">
 											<div class="d-flex justify-content-center gap-2 my-2 pt-2">
-												<!-- زر إدارة المراجعات -->
-												<button class="btn btn-primary" @onclick="() => GoToItemReviews(item.Id)">
-													<i class="fas fa-star mx-1 ms-2"></i>
-													@ReviewResources.ManageReviews
+												
+												<!-- Accept -->
+												<button class="btn btn-success" @onclick="() => Accept(item.Id)">
+													<i class="fas fa-check me-2"></i>
+													@ActionsResources.Accept
 												</button>
+
+												<!-- Reject -->
+												<button class="btn btn-outline-danger" @onclick="() => Reject(item.Id)">
+													<i class="fas fa-times me-2"></i>
+													@ActionsResources.Reject
+												</button>
+
+												<!-- Edit -->
 												<button class="btn btn-primary" @onclick="() => Edit(item)">
 													<i class="fas fa-pencil-alt mx-1 ms-2"></i>
 													@ActionsResources.Edit
 												</button>
+												<!-- Delete -->
 												<button class="btn btn-danger" @onclick="() => Delete(item.Id)">
 													<i class="feather icon-trash-2 mx-1 ms-2"></i>
 													@ActionsResources.Delete
@@ -146,10 +144,8 @@
 								<tr>
 									<td colspan="5" class="p-0 no-data-container">
 										<div class=" d-flex flex-column justify-content-center align-items-center text-center" style="height: 60vh;">
-											<!-- أيقونة كبيرة -->
 											<i class="fas fa-database text-muted" style="font-size: 60px;"></i>
 
-											<!-- نص -->
 											<p class="text-muted mt-3" style="font-size: 18px;">
 												@NotifiAndAlertsResources.NoDataFound
 											</p>

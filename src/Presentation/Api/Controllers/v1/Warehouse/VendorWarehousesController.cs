@@ -45,20 +45,20 @@ namespace Api.Controllers.v1.Warehouse
         }
 
         /// <summary>
-        /// Get all available (active, not deleted) warehouses that the vendor can use them.
+        /// Get market warehouse.
         /// </summary>
         /// <returns>List of warehouses</returns>
-        [HttpGet("{vendorId:guid}/warehouses")]
+        [HttpGet("market/warehouse")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [Authorize(Roles =  nameof(UserRole.Admin))]
-        public async Task<IActionResult> GetVendorAvailableWarehousesAsync( Guid vendorId)
+        public async Task<IActionResult> GetMarketWarehousesAsync()
         {
-            var warehouses = await _warehouseService
-                .GetVendorAvailableWarehousesByVendorIdAsync(vendorId);
+            var warehouse = await _warehouseService
+                .GetMarketWarehousesAsync();
 
-            return Ok(warehouses);
+            return Ok(warehouse);
         }
     }
 }

@@ -9,6 +9,7 @@ using Resources;
 using Shared.DTOs.Catalog.Item;
 using Shared.GeneralModels;
 using Shared.GeneralModels.SearchCriteriaModels;
+using Shared.Parameters;
 
 namespace Api.Controllers.v1.Catalog
 {
@@ -40,7 +41,7 @@ namespace Api.Controllers.v1.Catalog
             var items = await _itemService.GetAllAsync();
 
             if (items?.Any() != true)
-                return NotFound(CreateErrorResponse(NotifiAndAlertsResources.NoDataFound));
+                return NotFound(CreateErrorResponse<IEnumerable<ItemDto>>(NotifiAndAlertsResources.NoDataFound));
 
             return Ok(CreateSuccessResponse(items, NotifiAndAlertsResources.DataRetrieved));
         }
@@ -57,14 +58,14 @@ namespace Api.Controllers.v1.Catalog
         public async Task<IActionResult> Get(Guid id)
         {
             if (id == Guid.Empty)
-                return BadRequest(CreateErrorResponse(NotifiAndAlertsResources.InvalidInputAlert));
+                return BadRequest(CreateErrorResponse<ItemDto>(NotifiAndAlertsResources.InvalidInputAlert));
 
             //var clientIp = HttpContext.GetClientIpAddress();
             //var shouldApplyConversion = ShouldApplyCurrencyConversion();
             var item = await _itemService.FindByIdAsync(id);
 
             if (item == null)
-                return NotFound(CreateErrorResponse(NotifiAndAlertsResources.NoDataFound));
+                return NotFound(CreateErrorResponse<ItemDto>(NotifiAndAlertsResources.NoDataFound));
 
             return Ok(CreateSuccessResponse(item, NotifiAndAlertsResources.DataRetrieved));
         }
@@ -85,6 +86,27 @@ namespace Api.Controllers.v1.Catalog
             var clientIp = HttpContext.GetClientIpAddress();
             var shouldApplyConversion = ShouldApplyCurrencyConversion();
             var result = await _itemService.GetPage(criteria);
+
+            if (result?.Items?.Any() != true)
+                return Ok(CreateSuccessResponse(result, NotifiAndAlertsResources.NoDataFound));
+
+            return Ok(CreateSuccessResponse(result, NotifiAndAlertsResources.DataRetrieved));
+        }
+
+        /// <summary>
+        /// Searches new items requests with pagination and filtering.
+        /// </summary>
+        /// <remarks>
+        /// API Version: 1.0+
+        /// </remarks>
+        /// <param name="criteria">Search criteria including pagination parameters.</param>
+        [HttpGet("search/requests")]
+        [AllowAnonymous]
+        public async Task<IActionResult> SearchNewItemRequests([FromQuery] ItemSearchCriteriaModel criteria)
+        {
+            ValidateAndNormalizePagination(criteria);
+
+            var result = await _itemService.GetNewItemRequestsPage(criteria);
 
             if (result?.Items?.Any() != true)
                 return Ok(CreateSuccessResponse(result, NotifiAndAlertsResources.NoDataFound));
@@ -127,15 +149,33 @@ namespace Api.Controllers.v1.Catalog
         /// Adds a new item.
         /// </summary>
         [HttpPost("save")]
-        [Authorize(Roles = nameof(UserRole.Admin))]
+        [Authorize(Roles = $"{nameof(UserRole.Admin)},{nameof(UserRole.Vendor)}")]
         public async Task<IActionResult> Save([FromBody] ItemDto itemDto)
         {
             if (!ModelState.IsValid)
-                return BadRequest(CreateErrorResponse(NotifiAndAlertsResources.InvalidInputAlert));
+                return BadRequest(CreateErrorResponse<bool>(NotifiAndAlertsResources.InvalidInputAlert));
 
             var success = await _itemService.SaveAsync(itemDto, GuidUserId);
             if (!success)
-                return BadRequest(CreateErrorResponse(NotifiAndAlertsResources.SaveFailed));
+                return BadRequest(CreateErrorResponse<bool>(NotifiAndAlertsResources.SaveFailed));
+
+            return Ok(CreateSuccessResponse<bool>(success, NotifiAndAlertsResources.SavedSuccessfully));
+        }
+
+        /// <summary>
+        /// Updates an existing item.
+        /// </summary>
+        [HttpPost("update/{id:guid}")]
+        [Authorize(Roles = $"{nameof(UserRole.Admin)},{nameof(UserRole.Vendor)}")]
+        public async Task<IActionResult> Update(Guid id, [FromBody] ItemDto itemDto)
+        {
+            if (id == Guid.Empty || !ModelState.IsValid)
+                return BadRequest(CreateErrorResponse<bool>(NotifiAndAlertsResources.InvalidInputAlert));
+
+            itemDto.Id = id;
+            var success = await _itemService.SaveAsync(itemDto, GuidUserId);
+            if (!success)
+                return BadRequest(CreateErrorResponse<bool>(NotifiAndAlertsResources.SaveFailed));
 
             return Ok(CreateSuccessResponse<string>(null, NotifiAndAlertsResources.SavedSuccessfully));
         }
@@ -143,19 +183,18 @@ namespace Api.Controllers.v1.Catalog
         /// <summary>
         /// Updates an existing item.
         /// </summary>
-        [HttpPost("update/{id:guid}")]
-        [Authorize(Roles = nameof(UserRole.Admin))]
-        public async Task<IActionResult> Update(Guid id, [FromBody] ItemDto itemDto)
+        [HttpPost("update/status")]
+        [Authorize(Roles = $"{nameof(UserRole.Admin)}")]
+        public async Task<IActionResult> UpdateStatus([FromBody] UpdateItemVisibilityRequest updateItemVisibility)
         {
-            if (id == Guid.Empty || !ModelState.IsValid)
-                return BadRequest(CreateErrorResponse(NotifiAndAlertsResources.InvalidInputAlert));
+            if (updateItemVisibility.ItemId == Guid.Empty || !ModelState.IsValid)
+                return BadRequest(CreateErrorResponse<bool>(NotifiAndAlertsResources.InvalidInputAlert));
 
-            itemDto.Id = id;
-            var success = await _itemService.SaveAsync(itemDto, GuidUserId);
-            if (!success)
-                return BadRequest(CreateErrorResponse(NotifiAndAlertsResources.SaveFailed));
+            var result = await _itemService.UpdateVisibilityScope(updateItemVisibility, GuidUserId);
+            if (!result.Success)
+                return BadRequest(CreateErrorResponse<bool>(NotifiAndAlertsResources.SaveFailed));
 
-            return Ok(CreateSuccessResponse<string>(null, NotifiAndAlertsResources.SavedSuccessfully));
+            return Ok(CreateSuccessResponse<bool>(result.Success, NotifiAndAlertsResources.SavedSuccessfully));
         }
 
         /// <summary>
@@ -170,11 +209,11 @@ namespace Api.Controllers.v1.Catalog
         public async Task<IActionResult> Delete([FromBody] Guid id)
         {
             if (id == Guid.Empty)
-                return BadRequest(CreateErrorResponse(NotifiAndAlertsResources.InvalidInputAlert));
+                return BadRequest(CreateErrorResponse<bool>(NotifiAndAlertsResources.InvalidInputAlert));
 
             var success = await _itemService.DeleteAsync(id, GuidUserId);
             if (!success)
-                return BadRequest(CreateErrorResponse(NotifiAndAlertsResources.DeleteFailed));
+                return BadRequest(CreateErrorResponse<bool>(NotifiAndAlertsResources.DeleteFailed));
 
             return Ok(CreateSuccessResponse(true, NotifiAndAlertsResources.DeletedSuccessfully));
         }
@@ -201,32 +240,6 @@ namespace Api.Controllers.v1.Catalog
             criteria.PageNumber = Math.Max(criteria.PageNumber, 1);
             criteria.PageSize = Math.Clamp(criteria.PageSize, 1, 100);
         }
-
-        /// <summary>
-        /// Creates a standardized success response
-        /// </summary>
-        private ResponseModel<T> CreateSuccessResponse<T>(T data, string message)
-        {
-            return new ResponseModel<T>
-            {
-                Success = true,
-                Message = message,
-                Data = data
-            };
-        }
-
-        /// <summary>
-        /// Creates a standardized error response
-        /// </summary>
-        private ResponseModel<string> CreateErrorResponse(string message)
-        {
-            return new ResponseModel<string>
-            {
-                Success = false,
-                Message = message
-            };
-        }
-
         #endregion
     }
 }

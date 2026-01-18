@@ -45,6 +45,7 @@ namespace Dashboard.Extensions
             services.AddScoped<IVendorService, VendorService>();
             services.AddScoped<ICustomerService, CustomerService>();
             services.AddScoped<IItemService, ItemService>();
+            services.AddScoped<IItemConditionService, ItemConditionService>();
             services.AddScoped<IAttributeService, AttributeService>();
             services.AddScoped<ICategoryService, CategoryService>();
             services.AddScoped<IOrderService, OrderService>();
@@ -62,6 +63,7 @@ namespace Dashboard.Extensions
 
 			// Warehouse & Inventory Services
 			services.AddScoped<IWarehouseService, WarehouseService>();
+			services.AddScoped<IVendorWarehouseService, VendorWarehouseService>();
 
             // Content Management Services
             services.AddScoped<IContentAreaService, ContentAreaService>();

@@ -10,14 +10,9 @@ namespace Dashboard.Services.Setting
     public class DevelopmentSettingsService : IDevelopmentSettingsService
     {
         private readonly IApiService _apiService;
-        private readonly ILogger _logger;
-
-        public DevelopmentSettingsService(
-            IApiService apiService,
-            ILogger logger)
+        public DevelopmentSettingsService(IApiService apiService)
         {
             _apiService = apiService;
-            _logger = logger;
         }
 
 
