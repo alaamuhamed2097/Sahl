@@ -1,0 +1,240 @@
+@page "/campaigns/new"
+@page "/campaigns/{CampaignId}"
+
+@using Common.Enumerations.User
+@attribute [Authorize(Roles = nameof(UserRole.Admin))]
+@using Dashboard.Contracts.Campaign
+@using Dashboard.Contracts.General
+@using Microsoft.AspNetCore.Components
+@using Shared.DTOs.Campaign
+@using Shared.GeneralModels
+@using Resources
+
+<PageTitle>@(Model.Id == Guid.Empty ? MerchandisingResources.CreateNewCampaign : MerchandisingResources.EditCampaign)</PageTitle>
+
+<div class="container-fluid p-0">
+    <div class="card shadow-sm border-0">
+        <div class="card-header d-flex justify-content-between bg-primary align-items-center">
+            <h4 class="modal-title text-white">
+                @(Model.Id == Guid.Empty ? $"{MerchandisingResources.CreateNewCampaign}" : $"{MerchandisingResources.EditCampaign}")
+            </h4>
+        </div>
+
+        @if (IsLoading)
+        {
+            <div class="card-body text-center py-5">
+                <div class="spinner-border" role="status">
+                    <span class="sr-only">Loading...</span>
+                </div>
+                <p class="mt-3 text-muted">@MerchandisingResources.Loading</p>
+            </div>
+        }
+        else
+        {
+            <EditForm Model="@Model" OnValidSubmit="@Save">
+                <DataAnnotationsValidator />
+
+                <div class="card-body p-4">
+                    <!-- Basic Information Section -->
+                    <div class="mb-4">
+                        <h5 class="mb-3">
+                            <i class="fas fa-info-circle text-primary me-2"></i>@MerchandisingResources.BasicInformation
+                        </h5>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">@FormResources.NameEn: <span class="text-danger">*</span></label>
+                                <InputText class="form-control" @bind-Value="Model.NameEn"
+                                           placeholder="@String.Format(FormResources.Placeholder, FormResources.NameEn)" />
+                                <ValidationMessage For="@(() => Model.NameEn)" />
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">@FormResources.NameAr: <span class="text-danger">*</span></label>
+                                <InputText class="form-control" @bind-Value="Model.NameAr"
+                                           placeholder="@String.Format(FormResources.Placeholder, FormResources.NameAr)" />
+                                <ValidationMessage For="@(() => Model.NameAr)" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Campaign Duration -->
+                    <div class="mb-4">
+                        <h5 class="mb-3">
+                            <i class="fas fa-calendar-alt text-primary me-2"></i>@MerchandisingResources.CampaignDuration
+                        </h5>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Start Date: <span class="text-danger">*</span></label>
+                                <InputDate class="form-control" @bind-Value="Model.StartDate" />
+                                <ValidationMessage For="@(() => Model.StartDate)" />
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">End Date: <span class="text-danger">*</span></label>
+                                <InputDate class="form-control" @bind-Value="Model.EndDate" />
+                                <ValidationMessage For="@(() => Model.EndDate)" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Flash Sale Configuration -->
+                    <div class="mb-4">
+                        <h5 class="mb-3">
+                            <i class="fas fa-bolt text-warning me-2"></i>@MerchandisingResources.FlashSaleConfiguration
+                        </h5>
+                        <div class="form-check form-switch mb-3">
+                            <InputCheckbox id="isFlashSale" class="form-check-input" @bind-Value="Model.IsFlashSale" />
+                            <label class="form-check-label" for="isFlashSale">
+                                Enable Flash Sale Mode
+                            </label>
+                        </div>
+                        <small class="text-muted d-block mb-3">
+                            <i class="fas fa-lightbulb text-info me-1"></i>Mark this campaign as a flash sale with limited-time and limited-quantity offers
+                        </small>
+
+                        @if (Model.IsFlashSale)
+                        {
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Flash Sale End Time:</label>
+                                    <InputDate class="form-control" @bind-Value="Model.FlashSaleEndTime" />
+                                    <small class="text-muted">When should the flash sale end?</small>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Max Quantity Per User:</label>
+                                    <InputNumber class="form-control" @bind-Value="Model.MaxQuantityPerUser" min="1" />
+                                    <small class="text-muted">Maximum items a customer can buy</small>
+                                </div>
+                            </div>
+                        }
+                    </div>
+
+                    <!-- Badge Configuration -->
+                    <div class="mb-4">
+                        <h5 class="mb-3">
+                            <i class="fas fa-tag text-success me-2"></i>Badge Configuration
+                        </h5>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Badge Text (EN):</label>
+                                <InputText class="form-control" @bind-Value="Model.BadgeTextEn"
+                                           placeholder="e.g., HOT DEAL" />
+                                <small class="text-muted">Short badge text in English</small>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Badge Text (AR):</label>
+                                <InputText class="form-control" @bind-Value="Model.BadgeTextAr"
+                                           placeholder="e.g., ??? ????" />
+                                <small class="text-muted">Short badge text in Arabic</small>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Badge Color:</label>
+                                <div class="input-group">
+                                    <InputText type="color" class="form-control form-control-color" @bind-Value="Model.BadgeColor" />
+                                    <InputText class="form-control" @bind-Value="Model.BadgeColor"
+                                               placeholder="#FF0000" />
+                                </div>
+                                <small class="text-muted">Choose a color for the campaign badge</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Status -->
+                    <div class="mb-4">
+                        <h5 class="mb-3">
+                            <i class="fas fa-sliders-h text-secondary me-2"></i>Status
+                        </h5>
+                        <div class="form-check form-switch">
+                            <InputCheckbox id="isActive" class="form-check-input" @bind-Value="Model.IsActive" />
+                            <label class="form-check-label" for="isActive">
+                                @(Model.IsActive ? "Campaign is Active" : "Campaign is Inactive")
+                            </label>
+                        </div>
+                        <small class="text-muted d-block mt-2">
+                            <i class="fas fa-info-circle me-1"></i>Inactive campaigns won't be displayed to customers
+                        </small>
+                    </div>
+
+                    <!-- Metadata Section (for edit mode) -->
+                    @if (Model.Id != Guid.Empty)
+                    {
+                        <hr class="my-4" />
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Created Date:</label>
+                                <input type="text" class="form-control" readonly
+                                       value="@Model.CreatedDateUtc.ToString("dd/MM/yyyy HH:mm:ss")" />
+                            </div>
+                        </div>
+                    }
+                </div>
+
+                <div class="card-footer bg-light py-3 d-flex justify-content-end gap-2">
+                    <button type="button" class="btn btn-secondary" @onclick="Cancel">
+                        <i class="fas fa-times me-2"></i>@ActionsResources.Cancel
+                    </button>
+                    <button type="submit" class="btn btn-primary" disabled="@IsSaving">
+                        @if (IsSaving)
+                        {
+                            <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                            <span>@FormResources.Saving...</span>
+                        }
+                        else
+                        {
+                            <i class="fas fa-save me-2"></i>
+                            @ActionsResources.Save
+                        }
+                    </button>
+                </div>
+            </EditForm>
+        }
+    </div>
+
+    <!-- Campaign Items Section (if editing) -->
+    @if (Model.Id != Guid.Empty && CampaignItems.Any())
+    {
+        <div class="card shadow-sm border-0 mt-4">
+            <div class="card-header bg-light">
+                <h5 class="mb-0">
+                    <i class="fas fa-list text-primary me-2"></i>Campaign Items (@CampaignItems.Count)
+                </h5>
+            </div>
+            <div class="card-body p-4">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Item Name (EN)</th>
+                                <th>Item Name (AR)</th>
+                                <th>Display Order</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in CampaignItems)
+                            {
+                                <tr>
+                                    <td>
+                                        <span class="badge bg-info">@item.ItemNameEn</span>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-info">@item.ItemNameAr</span>
+                                    </td>
+                                    <td>@item.DisplayOrder</td>
+                                    <td>
+                                        <button type="button" class="btn btn-sm btn-danger"
+                                                @onclick="() => RemoveItem(item.Id)"
+                                                title="Remove item from campaign">
+                                            <i class="fas fa-trash-alt"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    }
+</div>

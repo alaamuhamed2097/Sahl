@@ -9,6 +9,7 @@ namespace Shared.DTOs.Campaign
         public string NameEn { get; set; } = string.Empty;
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
+        public bool IsActive { get; set; } = true;
 
         // Flash Sale properties (optional)
         public bool IsFlashSale { get; set; }

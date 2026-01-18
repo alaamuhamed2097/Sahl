@@ -5,7 +5,7 @@ using Resources;
 using Shared.DTOs.WithdrawalMethod;
 using Shared.GeneralModels;
 
-namespace UI.Services.Withdrawal
+namespace Dashboard.Services.WithdrawalMethod
 {
     public class WithdrawalMethodService : IWithdrawalMethodService
     {

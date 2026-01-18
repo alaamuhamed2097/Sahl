@@ -513,7 +513,50 @@
   <data name="EntityCannotBeDeletedInUse" xml:space="preserve">
     <value>لا يمكن حذف {0} لأنه مستخدم من قبل {1} التالية: {2}</value>
   </data>
-	<data name="WarehouseAlreadyExists" xml:space="preserve">
-  <value>يوجد مخزن مسجل بالفعل لهذا المورد</value>
+  <data name="WarehouseAlreadyExists" xml:space="preserve">
+    <value>يوجد مخزن مسجل بالفعل لهذا المورد</value>
+  </data>
+  <data name="NoSelection" xml:space="preserve">
+    <value>لم يتم تحديد أي خيار</value>
+  </data>
+	<data name="LoadingInsights" xml:space="preserve">
+  <value>جارٍ تحميل التحليلات...</value>
+</data>
+<data name="ErrorLoadingMessage" xml:space="preserve">
+  <value>حدث خطأ أثناء تحميل الرسالة</value>
+</data>
+<data name="ErrorLoadingDashboard" xml:space="preserve">
+  <value>حدث خطأ أثناء تحميل لوحة التحكم</value>
+</data>
+
+	<data name="ErrorOccurred" xml:space="preserve">
+    <value>حدث خطأ</value>
+  </data>
+	<data name="RegistrationSuccessful" xml:space="preserve">
+  <value>تم تسجيل العميل بنجاح!</value>
+</data>
+	<data name="RegistrationFailed" xml:space="preserve">
+  <value>فشل تسجيل العميل. حاول مرة أخرى.</value>
+</data>
+	<data name="SomethingWentWrong" xml:space="preserve">
+  <value>حدث خطأ ما. حاول مرة أخرى لاحقاً.</value>
+</data>
+	<data name="Error" xml:space="preserve">
+  <value>خطأ</value>
+</data>
+	<data name="NoDataFound" xml:space="preserve">
+  <value>لا توجد بيانات</value>
+</data>
+	<data name="DeletedSuccessfully" xml:space="preserve">
+  <value>تم الحذف بنجاح</value>
+</data>
+	<data name="DeleteFailed" xml:space="preserve">
+  <value>فشل الحذف</value>
+</data>
+	<data name="AreYouSure" xml:space="preserve">
+  <value>هل أنت متأكد؟</value>
+</data>
+	<data name="ConfirmDeleteAlert" xml:space="preserve">
+  <value>لا يمكن التراجع عن هذا الإجراء!</value>
 </data>
 </root>

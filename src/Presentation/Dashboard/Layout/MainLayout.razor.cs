@@ -18,7 +18,7 @@ namespace Dashboard.Layout
     {
         protected bool NotificationChanged { get; set; } = false;
         protected string baseUrl = string.Empty;
-        protected string UserImage { get; set; } = "uploads/Images/ProfileImages/Vendors/default.png";
+        protected string UserImage { get; set; } = "Images/ProfileImages/default.png";
         protected string fullName { get; set; } = "User Name";
 
         [Inject] protected AuthenticationStateProvider AuthenticationStateProvider { get; set; } = null!;

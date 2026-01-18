@@ -206,11 +206,14 @@
         {
             public const string Get = "api/v1/Customer";
             public const string Create = "api/v1/Customer";
-            public const string Update = "api/v1/Customer";
-            public const string Delete = "api/v1/Customer/delete";
-            public const string Save = "api/v1/Customer/Save";
+			//public const string Update = "api/v1/Customer";
+			public const string SearchSearchWallet = "api/v1/CustomerWalletTransaction/SearchWalletTransactions";
 
-            public const string Search = "api/v1/Customer/search";
+			public const string Delete = "api/v1/Customer/delete";
+            public const string Save = "api/v1/Customer/Save";
+			public const string Register = "api/v1/UserRegistration/register-customer";
+			public const string Update = "api/Customer/Update";
+			public const string Search = "api/v1/Customer/search";
             public const string FindById = "api/v1/Customer";
             public const string GetForSelect = "api/v1/Customer/forSelect";
             public const string ChangeStatus = "api/v1/Customer/changeStatus";
@@ -225,6 +228,11 @@
             public const string Delete = "api/v1/CouponCode/delete";
             public const string Search = "api/v1/CouponCode/search";
             public const string GetByVendor = "api/v1/CouponCode/vendor/{vendorId}";
+        }
+
+        public static class VendorPromoCodeParticipation
+        {
+            public const string AdminList = "api/v1/merchandising/vendorpromocodeparticipation/admin/list";
         }
 
         public static class ShippingCompany
@@ -330,7 +338,7 @@
             public const string GetActive = "api/v1/Warehouse/active";
             public const string Search = "api/v1/Warehouse/search";
             public const string SearchVendor = "api/v1/Warehouse/search-vendor";
-            public const string withUsers = "api/v1/Warehouse/with-users";
+            public const string withUsers = "api/v1/Warehouse/vendors-select";
             public const string Save = "api/v1/Warehouse/save";
             public const string Delete = "api/v1/Warehouse/delete";
             public const string ToggleStatus = "api/v1/Warehouse/toggle-status";
@@ -435,6 +443,64 @@
             public const string Reject = $"{Base}/reject";
 
         }
+
+        public static class VendorReview
+        {
+            private const string BaseUrl = "api/v1/VendorReview";
+
+            // Get Operations
+            public static string GetById(Guid reviewId) => $"{BaseUrl}/{reviewId}";
+            public static string GetByVendorId(Guid vendorId) => $"{BaseUrl}/vendorReviews-by/{vendorId}";
+            public static string GetVendorReviews(Guid vendorId) => $"{BaseUrl}/vendor-by/{vendorId}";
+            public static string GetCustomerReviews(Guid customerId) => $"{BaseUrl}/customer/{customerId}";
+            public static string GetVerified(Guid vendorId) => $"{BaseUrl}/vendor/{vendorId}/verified";
+            public static string GetNonVerified(Guid vendorId) => $"{BaseUrl}/vendor/{vendorId}/non-verified";
+
+            // Search & Filter
+            public static string Search => $"{BaseUrl}/search-admin-vendorreviews";
+
+            // Statistics
+            public static string GetStats(Guid vendorId) => $"{BaseUrl}/vendor-review-stats-by/{vendorId}";
+            public static string GetAverageRating(Guid vendorId) => $"{BaseUrl}/average-rating-by/{vendorId}";
+            public static string GetReviewCount(Guid vendorId) => $"{BaseUrl}/vendorReview-count/{vendorId}";
+
+            // Admin Operations
+            public static string GetPending => $"{BaseUrl}/pending";
+            public static string Approve => $"{BaseUrl}/approve";
+            public static string Reject => $"{BaseUrl}/reject";
+            public static string Delete => $"{BaseUrl}/delete";
+        }
+  //      public static class VendorReview
+		//{
+		//	private const string Base = "api/v1/VendorReview";
+
+		//	// Basic Operations
+		//	public const string Get = Base;
+		//	public const string Update = $"{Base}/update";
+		//	public const string Delete = $"{Base}/delete";
+
+		//	// Get Operations
+		//	public const string GetByVendorId = $"{Base}/vendorReviews-by";
+		//	public const string GetVendorReviews = $"{Base}/vendor-by";
+		//	public const string GetCustomerReviews = $"{Base}/customer";
+		//	public const string GetVerified = $"{Base}/vendor/verified";
+		//	public const string GetNonVerified = $"{Base}/vendor/non-verified";
+
+		//	// Search & Filter
+		//	public const string Search = $"{Base}/searchVendorReviews";
+
+		//	// Statistics
+		//	public const string GetStats = $"{Base}/vendor-review-stats-by";
+		//	public const string GetAverageRating = $"{Base}/average-rating-by";
+		//	public const string GetReviewCount = $"{Base}/vendorReview-count";
+
+		//	// Admin Operations
+		//	public const string GetPending = $"{Base}/pending";
+		//	public const string Approve = $"{Base}/approve";
+		//	public const string Reject = $"{Base}/reject";
+		//}
+		
+        
         public static class HomePageSlider
         {
             private const string Base = "api/v1/HomePageSlider";
@@ -497,6 +563,16 @@
             public const string Withdrawal = "api/v1/Wallet/withdrawal";
             public const string Treasury = "api/v1/Wallet/treasury";
             public const string TreasuryUpdate = "api/v1/Wallet/treasury/update";
+        }
+
+        public static class AdminDashboard
+        {
+            private const string Base = "api/v1/admin/dashboard";
+            public const string Summary = $"{Base}/summary";
+            public static string SummaryByPeriod(string period) => $"{Base}/summary/{period}";
+            public const string TopProducts = $"{Base}/top-products";
+            public const string TopVendors = $"{Base}/top-vendors";
+            public const string Statistics = $"{Base}/statistics";
         }
     }
 }

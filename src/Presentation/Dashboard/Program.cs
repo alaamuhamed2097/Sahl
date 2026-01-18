@@ -32,7 +32,6 @@ var supportedCultures = new List<CultureInfo>
     new CultureInfo("ar-EG")
 };
 
-
 var host = builder.Build();
 var languageService = host.Services.GetRequiredService<LanguageService>();
 ResourceManager.SetLanguageService(languageService);

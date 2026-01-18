@@ -196,7 +196,7 @@ namespace Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to تنبيه: هل أنت متأكد أنك تريد الحذف؟.
+        ///   Looks up a localized string similar to لا يمكن التراجع عن هذا الإجراء!.
         /// </summary>
         public static string ConfirmDeleteAlert {
             get {
@@ -295,7 +295,7 @@ namespace Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to فشل الحذف !.
+        ///   Looks up a localized string similar to فشل الحذف.
         /// </summary>
         public static string DeleteFailed {
             get {
@@ -354,6 +354,24 @@ namespace Resources {
         public static string Error {
             get {
                 return ResourceManager.GetString("Error", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to حدث خطأ أثناء تحميل لوحة التحكم.
+        /// </summary>
+        public static string ErrorLoadingDashboard {
+            get {
+                return ResourceManager.GetString("ErrorLoadingDashboard", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to حدث خطأ أثناء تحميل الرسالة.
+        /// </summary>
+        public static string ErrorLoadingMessage {
+            get {
+                return ResourceManager.GetString("ErrorLoadingMessage", resourceCulture);
             }
         }
         
@@ -547,6 +565,15 @@ namespace Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to جارٍ تحميل التحليلات....
+        /// </summary>
+        public static string LoadingInsights {
+            get {
+                return ResourceManager.GetString("LoadingInsights", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to فشل تسجيل الدخول.
         /// </summary>
         public static string LoginFailed {
@@ -718,7 +745,7 @@ namespace Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to لم يتم العثور على بيانات.
+        ///   Looks up a localized string similar to لا توجد بيانات.
         /// </summary>
         public static string NoDataFound {
             get {
@@ -741,6 +768,15 @@ namespace Resources {
         public static string NoDataToPrint {
             get {
                 return ResourceManager.GetString("NoDataToPrint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to لم يتم تحديد أي خيار.
+        /// </summary>
+        public static string NoSelection {
+            get {
+                return ResourceManager.GetString("NoSelection", resourceCulture);
             }
         }
         
@@ -979,7 +1015,7 @@ namespace Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to فشل التسجيل.
+        ///   Looks up a localized string similar to فشل تسجيل العميل. حاول مرة أخرى..
         /// </summary>
         public static string RegistrationFailed {
             get {
@@ -997,7 +1033,7 @@ namespace Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to تم التسجيل بنجاح.
+        ///   Looks up a localized string similar to تم تسجيل العميل بنجاح!.
         /// </summary>
         public static string RegistrationSuccessful {
             get {
@@ -1087,7 +1123,7 @@ namespace Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to حدث خطأ ما!.
+        ///   Looks up a localized string similar to حدث خطأ ما. حاول مرة أخرى لاحقاً..
         /// </summary>
         public static string SomethingWentWrong {
             get {

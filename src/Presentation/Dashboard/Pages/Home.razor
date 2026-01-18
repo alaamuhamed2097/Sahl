@@ -2,102 +2,404 @@
 @page "/home"
 @page "/dashboard"
 
-@attribute [Authorize(Roles = "Admin,Vendor")]
+@attribute [Authorize(Roles = "Admin")]
 @using Common.Enumerations.User
 @using Microsoft.AspNetCore.Components.Authorization
-@using Microsoft.AspNetCore.Components.Web.Virtualization
 @using Dashboard.Components
 @using Dashboard.Components.Statistics
+@using Resources
 <PageTitle>@GeneralResources.Home</PageTitle>
 
-<!-- [ breadcrumb ] start -->
-<div class="page-header">
-	<div class="page-block">
-		<div class="row align-items-center">
-			<div class="col-md-12">
-				<div class="page-header-title">
-					<h5>@GeneralResources.Home</h5>
-				</div>
-				<ul class="breadcrumb">
-					<li class="breadcrumb-item">
-						<a href="/">
-							<i class="feather icon-home"></i>
-						</a>
-					</li>
-					<li class="breadcrumb-item"><a href="#!">@GeneralResources.Analytics</a></li>
-				</ul>
-			</div>
-		</div>
-	</div>
-</div>
-<!-- [ breadcrumb ] end -->
+<!-- Modern Hero Header -->
+<div class="modern-page-header">
+    <div class="header-content">
+        <div class="header-text">
+            <h1 class="header-title text-white">
+                <i class="feather icon-trending-up me-2"></i>
+                @GeneralResources.Home
+            </h1>
+            <p class="header-subtitle">@GeneralResources.WelcomeMessage</p>
+        </div>
+        <div class="header-actions">
+            <button class="btn-modern btn-outline" onclick="window.location.reload()">
+                <i class="feather icon-refresh-cw"></i>
+                <span>@GeneralResources.Refresh</span>
+            </button>
+            <button class="btn-modern btn-primary">
+                <i class="feather icon-download"></i>
+                <span>@GeneralResources.ExportReport</span>
+            </button>
+        </div>
+    </div>
 
-<div class="container-fluid py-4 dashboard-page">
-    <!-- Loading Skeleton -->
+    <!-- Modern Breadcrumb -->
+    <nav class="modern-breadcrumb">
+        <a href="/" class="breadcrumb-link">
+            <i class="feather icon-home"></i>
+            <span>@GeneralResources.Home</span>
+        </a>
+        <i class="feather icon-chevron-right breadcrumb-separator"></i>
+        <span class="breadcrumb-current">@GeneralResources.Analytics</span>
+    </nav>
+</div>
+
+<div class="modern-dashboard-container">
     @if (isInitialLoading)
     {
-        <div class="loading-skeleton">
-            <div class="row g-3">
+        <!-- Enhanced Loading State -->
+        <div class="modern-loading-skeleton">
+            <div class="skeleton-grid">
                 @for (int i = 0; i < 4; i++)
                 {
-                    <div class="col-lg-3 col-md-6">
-                        <div class="card skeleton-card">
-                            <div class="card-body">
-                                <div class="skeleton-avatar"></div>
-                                <div class="skeleton-text skeleton-title"></div>
-                                <div class="skeleton-text skeleton-subtitle"></div>
-                            </div>
+                    <div class="skeleton-card">
+                        <div class="skeleton-header">
+                            <div class="skeleton-icon"></div>
+                            <div class="skeleton-badge"></div>
+                        </div>
+                        <div class="skeleton-body">
+                            <div class="skeleton-number"></div>
+                            <div class="skeleton-label"></div>
+                            <div class="skeleton-trend"></div>
                         </div>
                     </div>
                 }
+            </div>
+
+            <div class="skeleton-charts-row">
+                <div class="skeleton-chart-large"></div>
+                <div class="skeleton-chart-medium"></div>
             </div>
         </div>
     }
     else
     {
-        <!-- [ Main Content ] start -->
-        
-        <!-- Vendor Section -->
-  @*       <AuthorizeView Roles="@nameof(UserRole.Vendor)">
-            <Authorized> *@
-                <LazyComponent LoadingText="@GeneralResources.LoadingDots">
-                    <VendorStatisticsWidget />
-                </LazyComponent>
-          @*   </Authorized>
-        </AuthorizeView>
- *@
-        <!-- Admin Section -->
-        @* <AuthorizeView Roles="@nameof(UserRole.Admin)">
+        <!-- Main Dashboard Content -->
+        <AuthorizeView Roles="@nameof(UserRole.Admin)">
             <Authorized>
-                @if (loadAdminWidget)
-                {
-                    <LazyComponent LoadingText="Loading Dashboard...">
+                <div class="fade-in-content">
+                    <LazyComponent LoadingText="@GeneralResources.LoadingDots">
                         <AdminStatisticsWidget />
                     </LazyComponent>
-                }
-                else
-                {
-                    <div class="text-center p-5">
-                        <div class="card border-0 shadow-sm">
-                            <div class="card-body p-5">
-                                <i class="fas fa-tachometer-alt text-primary mb-3" style="font-size: 3rem;"></i>
-                                <h4 class="mb-3">Admin Dashboard</h4>
-                                <p class="text-muted mb-4">View comprehensive analytics and system overview</p>
-                                <button class="btn btn-primary btn-lg" @onclick="LoadAdminWidget">
-                                    <i class="fas fa-chart-line me-2"></i>
-                                    Load Admin Dashboard
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                }
+                </div>
             </Authorized>
-        </AuthorizeView> *@
-        
-        <!-- [ Main Content ] end -->
+        </AuthorizeView>
     }
 </div>
 
-@* <link href="/css/home-lazy-loading.min.css" rel="stylesheet" />
-<script src="/assets/js/pages/statistic.js"></script> *@
+<style>
+    /* Modern Dashboard Styles */
+    .modern-page-header {
+        background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+        padding: 2rem 2.5rem;
+        margin: -1.5rem -1.5rem 2rem -1.5rem;
+        border-radius: 0 0 var(--radius-xl) var(--radius-xl);
+        box-shadow: var(--shadow-lg);
+        position: relative;
+        overflow: hidden;
+    }
 
+        .modern-page-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            border-radius: 50%;
+            transform: translate(30%, -30%);
+        }
+
+    .header-content {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 1.5rem;
+        position: relative;
+        z-index: 1;
+    }
+
+    .header-text {
+        flex: 1;
+    }
+
+    .header-title {
+        color: var(--white);
+        font-size: 2rem;
+        font-weight: 700;
+        margin: 0 0 0.5rem 0;
+        display: flex;
+        align-items: center;
+        letter-spacing: -0.02em;
+    }
+
+    .header-subtitle {
+        color: rgba(255, 255, 255, 0.9);
+        font-size: 1rem;
+        margin: 0;
+        font-weight: 400;
+    }
+
+    .header-actions {
+        display: flex;
+        gap: 0.75rem;
+    }
+
+    .btn-modern {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.625rem 1.25rem;
+        border-radius: var(--radius-md);
+        font-weight: 600;
+        font-size: 0.875rem;
+        border: none;
+        cursor: pointer;
+        transition: var(--transition);
+        white-space: nowrap;
+    }
+
+    .btn-outline {
+        background: rgba(255, 255, 255, 0.15);
+        color: var(--white);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+        .btn-outline:hover {
+            background: rgba(255, 255, 255, 0.25);
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-md);
+        }
+
+    .btn-primary {
+        background: var(--white);
+        color: var(--primary-dark);
+        box-shadow: var(--shadow-sm);
+    }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+    .modern-breadcrumb {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        position: relative;
+        z-index: 1;
+    }
+
+    .breadcrumb-link {
+        display: flex;
+        align-items: center;
+        gap: 0.375rem;
+        color: rgba(255, 255, 255, 0.9);
+        text-decoration: none;
+        font-size: 0.875rem;
+        padding: 0.25rem 0.5rem;
+        border-radius: var(--radius-sm);
+        transition: var(--transition-fast);
+    }
+
+        .breadcrumb-link:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--white);
+        }
+
+    .breadcrumb-separator {
+        color: rgba(255, 255, 255, 0.5);
+        font-size: 0.75rem;
+    }
+
+    .breadcrumb-current {
+        color: var(--white);
+        font-size: 0.875rem;
+        font-weight: 600;
+    }
+
+    .modern-dashboard-container {
+        padding: 0 0.5rem;
+    }
+
+    /* Enhanced Loading Skeleton */
+    .modern-loading-skeleton {
+        animation: fadeIn 0.3s ease-in;
+    }
+
+    .skeleton-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .skeleton-card {
+        background: var(--white);
+        border-radius: var(--radius-lg);
+        padding: 1.5rem;
+        box-shadow: var(--shadow-md);
+        animation: pulse 1.5s ease-in-out infinite;
+    }
+
+    .skeleton-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1rem;
+    }
+
+    .skeleton-icon {
+        width: 48px;
+        height: 48px;
+        background: linear-gradient(90deg, var(--neutral-lighter) 0%, var(--neutral-light) 50%, var(--neutral-lighter) 100%);
+        background-size: 200% 100%;
+        border-radius: var(--radius-md);
+        animation: shimmer 1.5s ease-in-out infinite;
+    }
+
+    .skeleton-badge {
+        width: 60px;
+        height: 24px;
+        background: linear-gradient(90deg, var(--neutral-lighter) 0%, var(--neutral-light) 50%, var(--neutral-lighter) 100%);
+        background-size: 200% 100%;
+        border-radius: var(--radius-sm);
+        animation: shimmer 1.5s ease-in-out infinite;
+    }
+
+    .skeleton-body {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+
+    .skeleton-number {
+        width: 120px;
+        height: 36px;
+        background: linear-gradient(90deg, var(--neutral-lighter) 0%, var(--neutral-light) 50%, var(--neutral-lighter) 100%);
+        background-size: 200% 100%;
+        border-radius: var(--radius-sm);
+        animation: shimmer 1.5s ease-in-out infinite;
+    }
+
+    .skeleton-label {
+        width: 100px;
+        height: 20px;
+        background: linear-gradient(90deg, var(--neutral-lighter) 0%, var(--neutral-light) 50%, var(--neutral-lighter) 100%);
+        background-size: 200% 100%;
+        border-radius: var(--radius-sm);
+        animation: shimmer 1.5s ease-in-out infinite;
+    }
+
+    .skeleton-trend {
+        width: 80px;
+        height: 20px;
+        background: linear-gradient(90deg, var(--neutral-lighter) 0%, var(--neutral-light) 50%, var(--neutral-lighter) 100%);
+        background-size: 200% 100%;
+        border-radius: var(--radius-sm);
+        animation: shimmer 1.5s ease-in-out infinite;
+    }
+
+    .skeleton-charts-row {
+        display: grid;
+        grid-template-columns: 2fr 1fr;
+        gap: 1.5rem;
+    }
+
+    .skeleton-chart-large,
+    .skeleton-chart-medium {
+        background: var(--white);
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-md);
+        animation: pulse 1.5s ease-in-out infinite;
+    }
+
+    .skeleton-chart-large {
+        height: 350px;
+    }
+
+    .skeleton-chart-medium {
+        height: 350px;
+    }
+
+    /* Animations */
+    @@keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .fade-in-content {
+        animation: fadeIn 0.5s ease-out;
+    }
+
+    @@keyframes pulse {
+        0%, 100% {
+            opacity: 1;
+        }
+
+        50% {
+            opacity: 0.6;
+        }
+    }
+
+    @@keyframes shimmer {
+        0% {
+            background-position: -200% 0;
+        }
+
+        100% {
+            background-position: 200% 0;
+        }
+    }
+
+    /* Responsive Design */
+    @@media (max-width: 768px) {
+        .modern-page-header {
+            padding: 1.5rem;
+            margin: -1rem -1rem 1.5rem -1rem;
+        }
+
+        .header-content {
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .header-title {
+            font-size: 1.5rem;
+        }
+
+        .header-actions {
+            width: 100%;
+        }
+
+        .btn-modern {
+            flex: 1;
+        }
+
+        .skeleton-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .skeleton-charts-row {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    @@media (max-width: 576px) {
+        .header-actions {
+            flex-direction: column;
+        }
+
+        .btn-modern span {
+            display: inline;
+        }
+    }
+</style>

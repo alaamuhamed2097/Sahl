@@ -1,0 +1,320 @@
+﻿@page "/home-blocks"
+@using Microsoft.AspNetCore.Components.Authorization
+@using Resources
+@using Shared.DTOs.Merchandising.Homepage
+@using Dashboard.Contracts.Merchandising
+@using Dashboard.Contracts.Notification
+@inherits BaseListPage<AdminBlockListDto>
+
+<PageTitle>@MerchandisingResources.HomePageBlocksTitle</PageTitle>
+
+<div class="container-fluid p-0">
+    <div class="card shadow-sm border-0">
+        <!-- Header -->
+        <div class="card-header bg-primary text-white py-3 d-flex justify-content-between align-items-center">
+            <h5 class="mb-0 fw-semibold text-white">
+                <i class="feather icon-layout me-2"></i>@MerchandisingResources.HomePageBlocksTitle
+            </h5>
+            <AuthorizeView>
+                <Authorized>
+                    <a href="/home-blocks/new" class="btn btn-light rounded-pill px-3 shadow-sm">
+                        <i class="feather icon-plus-circle"></i>
+                        <span class="fw-bold">@MerchandisingResources.AddBlock</span>
+                    </a>
+                </Authorized>
+            </AuthorizeView>
+        </div>
+
+        <div class="card-body p-4">
+            <div class="dt-responsive">
+                <!-- Filtration & Search -->
+                <div class="d-flex flex-wrap align-items-center gap-3 mb-4">
+                    <EditForm Model="searchModel" OnSubmit="@Search">
+                        <!-- Search Box -->
+                        <div class="search-container">
+                            <div class="input-group search-box">
+                                <input type="text"
+                                       @bind="searchModel.SearchTerm"
+                                       id="searchInput"
+                                       class="form-control search-input"
+                                       placeholder="@ActionsResources.Search" />
+                                <button type="submit"
+                                        class="btn btn-search">
+                                    <i class="fas fa-search"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </EditForm>
+
+                    <!-- Status Filter -->
+                    <div class="d-flex align-items-center gap-2">
+                        <select class="form-select rounded-3 shadow-sm border-light text-primary fw-bold text-center custom-dropdown"
+                                style="width: 140px; height: 40px; padding-right: 30px;"
+                                @onchange="@((ChangeEventArgs e) => OnStatusFilterChanged(e.Value?.ToString() ?? string.Empty))">
+                            <option value="">@MerchandisingResources.AllStatus</option>
+                            <option value="Active">@MerchandisingResources.Active</option>
+                            <option value="Hidden">Hidden</option>
+                            <option value="Scheduled">Scheduled</option>
+                        </select>
+                    </div>
+
+                    <!-- Page Size -->
+                    <div class="d-flex align-items-center gap-2 ms-auto">
+                        <select class="form-select rounded-3 shadow-sm border-light text-primary fw-bold text-center custom-dropdown"
+                                style="width: 100px; height: 40px; padding-right: 30px;"
+                                @onchange="OnPageSizeChanged">
+                            <option value="10" selected="@(searchModel.PageSize == 10)">10</option>
+                            <option value="15" selected="@(searchModel.PageSize == 15)">15</option>
+                            <option value="20" selected="@(searchModel.PageSize == 20)">20</option>
+                            <option value="30" selected="@(searchModel.PageSize == 30)">30</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Desktop Table View -->
+                <div class="table-responsive border rounded-3 overflow-hidden d-none d-md-block">
+                    @if (items == null)
+                    {
+                        <div class="text-center p-5">
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="sr-only">Loading...</span>
+                            </div>
+                        </div>
+                    }
+                    else if (!items.Any())
+                    {
+                        <div class="text-center p-5">
+                            <i class="fas fa-inbox text-muted" style="font-size: 60px;"></i>
+                            <p class="text-muted mt-3" style="font-size: 16px;">@MerchandisingResources.NoBlocksFound</p>
+                        </div>
+                    }
+                    else
+                    {
+                        <table class="table table-hover mb-0">
+                            <thead class="bg-light">
+                                <tr>
+                                    <th class="text-center p-3 align-middle">@MerchandisingResources.Order</th>
+                                    <th class="text-center p-3 align-middle">@MerchandisingResources.BlockName</th>
+                                    <th class="text-center p-3 align-middle">@MerchandisingResources.Type</th>
+                                    <th class="text-center p-3 align-middle">@MerchandisingResources.Layout</th>
+                                    <th class="text-center p-3 align-middle">@MerchandisingResources.Created</th>
+                                    <th class="text-center p-3 align-middle">@MerchandisingResources.Status</th>
+                                    <th class="text-center p-3 align-middle" style="width: 200px;">@MerchandisingResources.Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var block in items.OrderBy(b => b.DisplayOrder).DistinctBy(b => b.Id))
+                                {
+                                    <tr class="align-middle">
+                                        <td class="text-center p-3">
+                                            <span class="badge bg-secondary">@(block.DisplayOrder + 1)</span>
+                                        </td>
+                                        <td class="text-center p-3">
+                                            <div class="fw-semibold text-primary">@block.TitleEn</div>
+                                            <small class="text-muted" dir="rtl">@block.TitleAr</small>
+                                        </td>
+                                        <td class="text-center p-3">
+                                            <span class="badge bg-info">
+                                                <i class="feather icon-layout me-1"></i>@block.Type
+                                            </span>
+                                        </td>
+                                        <td class="text-center p-3">
+                                            <span class="badge bg-light-primary">
+                                                @block.Layout
+                                            </span>
+                                        </td>
+                                        <td class="text-center p-3">
+                                            <small>@block.CreatedDateUtc.ToString("MMM dd, yyyy")</small>
+                                        </td>
+                                        <td class="text-center p-3">
+                                            @{
+                                                var statusClass = block.StatusBadge switch
+                                                {
+                                                    "Active" => "bg-success",
+                                                    "Hidden" => "bg-danger",
+                                                    "Scheduled" => "bg-warning",
+                                                    _ => "bg-secondary"
+                                                };
+                                                var statusIcon = block.StatusBadge switch
+                                                {
+                                                    "Active" => "check-circle",
+                                                    "Hidden" => "eye-off",
+                                                    "Scheduled" => "clock",
+                                                    _ => "info"
+                                                };
+                                            }
+                                            <span class="badge @statusClass">
+                                                <i class="feather @($"icon-{statusIcon}") me-1"></i>@block.StatusBadge
+                                            </span>
+                                        </td>
+                                        <td class="text-center p-3">
+                                            <!-- Move Up -->
+                                            <button class="btn btn-warning btn-sm mx-1"
+                                                    @onclick='async () => await MoveBlockUp(block)'
+                                                    title="@MerchandisingResources.MoveUp">
+                                                <i class="feather icon-arrow-up m-0"></i>
+                                            </button>
+                                            <!-- Move Down -->
+                                            <button class="btn btn-warning btn-sm mx-1"
+                                                    @onclick='async () => await MoveBlockDown(block)'
+                                                    title="@MerchandisingResources.MoveDown">
+                                                <i class="feather icon-arrow-down m-0"></i>
+                                            </button>
+                                            <!-- Edit -->
+                                            <a class="btn btn-primary btn-sm mx-1"
+                                               href="/home-blocks/@block.Id"
+                                               title="@MerchandisingResources.EditBlock">
+                                                <i class="fas fa-pencil-alt m-0"></i>
+                                            </a>
+                                            <!-- Delete -->
+                                            <button class="btn btn-danger btn-sm mx-1"
+                                                    @onclick='async () => await ConfirmDelete(block.Id)'
+                                                    title="@MerchandisingResources.DeleteBlock">
+                                                <i class="feather icon-trash-2 m-0"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    }
+                </div>
+
+                <!-- Mobile View (Card Layout) -->
+                <div class="d-md-none">
+                    @if (items == null)
+                    {
+                        <div class="text-center p-5">
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="sr-only">Loading...</span>
+                            </div>
+                        </div>
+                    }
+                    else if (!items.Any())
+                    {
+                        <div class="text-center p-5">
+                            <i class="fas fa-inbox text-muted" style="font-size: 60px;"></i>
+                            <p class="text-muted mt-3" style="font-size: 16px;">@MerchandisingResources.NoBlocksFound</p>
+                        </div>
+                    }
+                    else
+                    {
+                        @foreach (var block in items.OrderBy(b => b.DisplayOrder).DistinctBy(b => b.Id))
+                        {
+                            <div class="card mb-3 border-0 shadow-sm">
+                                <div class="card-body p-3">
+                                    <div class="d-flex justify-content-between align-items-start mb-3">
+                                        <div class="flex-grow-1 me-2">
+                                            <h6 class="mb-1 fw-bold text-primary">@block.TitleEn</h6>
+                                            <small class="text-muted" dir="rtl">@block.TitleAr</small>
+                                        </div>
+                                        <div>
+                                            @{
+                                                var statusClass = block.StatusBadge switch
+                                                {
+                                                    "Active" => "bg-success",
+                                                    "Hidden" => "bg-danger",
+                                                    "Scheduled" => "bg-warning",
+                                                    _ => "bg-secondary"
+                                                };
+                                            }
+                                            <span class="badge @statusClass">@block.StatusBadge</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <small class="text-muted">
+                                            <strong>Type:</strong> @block.Type |
+                                            <strong>Layout:</strong> @block.Layout |
+                                            <strong>Order:</strong> #@block.DisplayOrder
+                                        </small>
+                                        <br />
+                                        <small class="text-muted">
+                                            <strong>Created:</strong> @block.CreatedDateUtc.ToString("MMM dd, yyyy")
+                                        </small>
+                                    </div>
+
+                                    <div class="d-flex gap-2 flex-wrap">
+                                        <button class="btn btn-warning btn-sm flex-grow-1"
+                                                @onclick='async () => await MoveBlockUp(block)'>
+                                            <i class="feather icon-arrow-up me-1"></i>@MerchandisingResources.MoveUp
+                                        </button>
+                                        <button class="btn btn-warning btn-sm flex-grow-1"
+                                                @onclick='async () => await MoveBlockDown(block)'>
+                                            <i class="feather icon-arrow-down me-1"></i>@MerchandisingResources.MoveDown
+                                        </button>
+                                        <a class="btn btn-primary btn-sm flex-grow-1"
+                                           href="/home-blocks/@block.Id">
+                                            <i class="fas fa-pencil-alt me-1"></i>@MerchandisingResources.Edit
+                                        </a>
+                                        <button class="btn btn-danger btn-sm flex-grow-1"
+                                                @onclick='async () => await ConfirmDelete(block.Id)'>
+                                            <i class="feather icon-trash-2 me-1"></i>@MerchandisingResources.Delete
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    }
+                </div>
+
+                <!-- Pagination -->
+                @if (totalPages > 1)
+                {
+                    <div class="d-flex justify-content-center align-items-center gap-2 mt-4">
+                        <button class="btn btn-outline-primary" @onclick="PreviousPage" disabled="@(currentPage <= 1)">
+                            <i class="feather icon-chevron-left"></i>
+                        </button>
+
+                        @for (int i = 1; i <= totalPages; i++)
+                        {
+                            var pageNum = i;
+                            <button class="btn @(currentPage == pageNum ? "btn-primary" : "btn-outline-primary")"
+                                    @onclick='() => GoToPage(pageNum)'>
+                                @pageNum
+                            </button>
+                        }
+
+                        <button class="btn btn-outline-primary" @onclick="NextPage" disabled="@(currentPage >= totalPages)">
+                            <i class="feather icon-chevron-right"></i>
+                        </button>
+
+                        <span class="ms-3 text-muted">
+                            Showing @((currentPage - 1) * searchModel.PageSize + 1)-@Math.Min(currentPage * searchModel.PageSize, totalRecords) of @totalRecords
+                        </span>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+}
+
+<style>
+    .custom-dropdown {
+        appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%230d6efd' d='M1 4l5 5 5-5z'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 0.75rem center;
+        background-size: 12px 12px;
+        padding-right: 2rem;
+    }
+
+    .table-hover tbody tr:hover {
+        background-color: #f8f9fa;
+    }
+
+    .badge {
+        padding: 0.5rem 0.75rem;
+        font-size: 0.8rem;
+        font-weight: 600;
+    }
+
+    .bg-light-primary {
+        background-color: #e7f1ff !important;
+        color: #0d6efd;
+        font-weight: 600;
+    }
+</style>

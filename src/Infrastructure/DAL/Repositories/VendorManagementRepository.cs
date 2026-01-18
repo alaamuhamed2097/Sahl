@@ -183,27 +183,35 @@ namespace DAL.Repositories
             }
         }
 
-        public async Task<TbVendor> FindByVendorIdAsync(Guid vendorId, CancellationToken cancellationToken)
+        public override async Task<TbVendor> FindAsync(Expression<Func<TbVendor, bool>> predicate, string includeProperties = "", CancellationToken cancellationToken = default)
         {
             try
             {
-                var data = await _dbContext.Set<TbVendor>()
-                    .AsNoTracking()
+                IQueryable<TbVendor> query = DbSet
                     .Include(v => v.User)
-                    .FirstOrDefaultAsync(e => e.Id == vendorId && !e.IsDeleted, cancellationToken);
+                    .Include(c => c.City)
+                    .ThenInclude(c => c.State)
+                    .ThenInclude(c => c.Country)
+                    .AsNoTracking();
 
-                if (data == null)
-                    throw new NotFoundException($"Entity of type {typeof(TbVendor).Name} with ID {vendorId} not found.", _logger);
+                if (predicate != null)
+                {
+                    query = query.Where(predicate);
+                }
 
-                return data;
-            }
-            catch (NotFoundException)
-            {
-                throw;
+                if (!string.IsNullOrEmpty(includeProperties))
+                {
+                    foreach (var includeProperty in includeProperties.Split(',', StringSplitOptions.RemoveEmptyEntries))
+                    {
+                        query = query.Include(includeProperty.Trim());
+                    }
+                }
+
+                return await query.FirstOrDefaultAsync(cancellationToken);
             }
             catch (Exception ex)
             {
-                HandleException(nameof(FindByIdAsync), $"Error occurred while finding an entity of type {typeof(TbVendor).Name} with ID {vendorId}.", ex);
+                HandleException(nameof(FindAsync), $"Error occurred while finding an entity of type {typeof(TbVendor).Name}.", ex);
                 return null;
             }
         }

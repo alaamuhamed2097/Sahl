@@ -40,7 +40,22 @@ public class VendorManagementService : BaseService<TbVendor, VendorDto>, IVendor
 
     public override async Task<VendorDto> FindByIdAsync(Guid Id)
     {
-        return _mapper.MapModel<TbVendor, VendorDto>(await _vendorRepository.FindByVendorIdAsync(Id, new CancellationToken()));
+        return _mapper.MapModel<TbVendor, VendorDto>(await _vendorRepository.FindAsync(v => v.Id == Id));
+    }
+
+    public async Task<VendorPreviewDto> FindPreviewByIdAsync(Guid Id)
+    {
+        return _mapper.MapModel<TbVendor, VendorPreviewDto>(await _vendorRepository.FindAsync(v => v.Id == Id));
+    }
+
+    public async Task<VendorDto> FindByUserIdAsync(string userId)
+    {
+        return _mapper.MapModel<TbVendor, VendorDto>(await _vendorRepository.FindAsync(v => v.User.Id == userId));
+    }
+
+    public async Task<TbVendor> GetByUserIdAsync(string userId)
+    {
+        return await _vendorRepository.FindAsync(v => v.UserId == userId);
     }
 
     public async Task<PagedResult<VendorDto>> SearchAsync(BaseSearchCriteriaModel criteriaModel)
@@ -60,11 +75,6 @@ public class VendorManagementService : BaseService<TbVendor, VendorDto>, IVendor
         var dtoList = _mapper.MapList<TbVendor, VendorDto>(entitiesList.Items);
 
         return new PagedResult<VendorDto>(dtoList, entitiesList.TotalRecords);
-    }
-
-    public async Task<TbVendor> GetByUserIdAsync(string userId)
-    {
-        return await _vendorRepository.FindAsync(v => v.UserId == userId);
     }
 
     public async Task<bool> UpdateVendorStatusAsync(Guid vendorId, VendorStatus status)
@@ -221,6 +231,107 @@ public class VendorManagementService : BaseService<TbVendor, VendorDto>, IVendor
         catch (Exception ex)
         {
             return new ServiceResult<VendorUpdateResponseDto>
+            {
+                Success = false,
+                Message = NotifiAndAlertsResources.SomethingWentWrong,
+                Errors = new List<string> { ex.Message }
+            };
+        }
+    }
+
+    public async Task<ServiceResult<bool>> UpdateVendorPartialAsync(string userId, VendorPartialUpdateRequestDto request)
+    {
+        try
+        {
+            // Get the vendor profile
+            var vendor = await GetByUserIdAsync(userId);
+
+            if (vendor == null)
+            {
+                return new ServiceResult<bool>
+                {
+                    Success = false,
+                    Message = "Vendor profile not found",
+                    Errors = new List<string> { "Vendor profile does not exist" }
+                };
+            }
+
+            if (vendor.User == null)
+            {
+                return new ServiceResult<bool>
+                {
+                    Success = false,
+                    Message = "User not found",
+                    Errors = new List<string> { "User does not exist" }
+                };
+            }
+
+            // Validate BirthDate
+            if (request.BirthDate >= DateOnly.FromDateTime(DateTime.UtcNow))
+            {
+                return new ServiceResult<bool>
+                {
+                    Success = false,
+                    Message = string.Format(UserResources.InValidDate, request.BirthDate),
+                    Errors = new List<string> { string.Format(UserResources.InValidDate, request.BirthDate) }
+                };
+            }
+
+            // Get a fresh tracked instance of the user from UserManager
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null)
+            {
+                return new ServiceResult<bool>
+                {
+                    Success = false,
+                    Message = "User not found",
+                    Errors = new List<string> { "User does not exist" }
+                };
+            }
+
+            // Update ApplicationUser info
+            user.FirstName = request.FirstName;
+            user.LastName = request.LastName;
+            user.UpdatedBy = Guid.Parse(userId);
+            user.UpdatedDateUtc = DateTime.UtcNow;
+
+            // Update Vendor Profile
+            vendor.User = null;
+            vendor.BirthDate = request.BirthDate;
+            vendor.Address = request.Address;
+            vendor.PostalCode = request.PostalCode;
+            vendor.CityId = request.CityId;
+            vendor.UpdatedBy = Guid.Parse(userId);
+            vendor.UpdatedDateUtc = DateTime.UtcNow;
+
+            // Execute update in transaction
+            var updateResult = await _vendorRepository.UpdateVendorWithUserAsync(
+                user, vendor, null, null);
+
+            if (!updateResult.Success)
+            {
+                var friendlyErrors = updateResult.Errors
+                    .Select(e => GetUserFriendlyErrorMessage(e))
+                    .ToList();
+
+                return new ServiceResult<bool>
+                {
+                    Success = false,
+                    Message = "Failed to update vendor profile",
+                    Errors = friendlyErrors
+                };
+            }
+
+            return new ServiceResult<bool>
+            {
+                Success = true,
+                Message = "Vendor profile updated successfully",
+                Data = true
+            };
+        }
+        catch (Exception ex)
+        {
+            return new ServiceResult<bool>
             {
                 Success = false,
                 Message = NotifiAndAlertsResources.SomethingWentWrong,

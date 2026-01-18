@@ -61,6 +61,20 @@ namespace Api.Controllers.v1.Warehouse
 			});
 		}
 
+		[HttpGet("vendors-select")]
+		[Authorize(Roles = nameof(UserRole.Admin))]
+		public async Task<IActionResult> GetVendorsSelect()
+		{
+			var vendors = await _warehouseService.GetVendorUsersAsync();
+
+			return Ok(new ResponseModel<IEnumerable<VendorWithUserDto>>
+			{
+				Success = true,
+				Message = GetResource<NotifiAndAlertsResources>(nameof(NotifiAndAlertsResources.DataRetrieved)),
+				Data = vendors
+			});
+		}
+
 		[HttpGet("multi-vendor-enabled")]
 		[Authorize(Roles = nameof(UserRole.Admin))]
 		public async Task<IActionResult> IsMultiVendorEnabled()

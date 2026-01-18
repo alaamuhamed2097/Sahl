@@ -1,34 +1,43 @@
-﻿using Common.Enumerations.User;
-using Common.Enumerations.VendorType;
+using Common.Filters;
 using Dashboard.Constants;
-using Dashboard.Contracts.Currency;
 using Dashboard.Contracts.Customer;
-using Dashboard.Contracts.User;
-using Dashboard.Contracts.Vendor;
+using Dashboard.Models.pagintion;
 using Microsoft.AspNetCore.Components;
 using Resources;
 using Shared.DTOs.Customer;
-using Shared.DTOs.User.Admin;
-using Shared.DTOs.Vendor;
 using Shared.GeneralModels;
+using Shared.GeneralModels.SearchCriteriaModels;
 
 namespace Dashboard.Pages.UserManagement.Customers
 {
     public partial class Index : BaseListPage<CustomerDto>
     {
         protected override string EntityName { get; } = ECommerceResources.Customers;
-        protected override string AddRoute { get; } = "/users/customers/create";
-        protected override string EditRouteTemplate { get; } = "/users/customers/edit/{id}";
+        protected override string AddRoute { get; } = "/users/customer/create";
+        protected override string EditRouteTemplate { get; } = "/users/customer/edit/{id}";
         protected override string SearchEndpoint { get; } = ApiEndpoints.Customer.Search;
-        protected override Dictionary<string, Func<CustomerDto, object>> ExportColumns { get; }
-		 = new Dictionary<string, Func<CustomerDto, object>>
-		 {
-			 [ECommerceResources.Email] = x => x.Email,
-			 [ECommerceResources.Name] = x => $"{x.FirstName} {x.LastName}",
-			
-		 };
+		//private BaseSearchCriteriaModel searchModel = new BaseSearchCriteriaModel
+		//{
+		//	PageNumber = 1,
+		//	PageSize = 10,
+		//};
+		protected override Dictionary<string, Func<CustomerDto, object>> ExportColumns { get; }
+         = new Dictionary<string, Func<CustomerDto, object>>
+         {
+             [ECommerceResources.Email] = x => x.Email,
+             [ECommerceResources.Name] = x => $"{x.FirstName} {x.LastName}",
+             ["Status"] = x => x.UserStatus.ToString(),
+             ["Orders"] = x => x.OrderCount,
+             ["Wallet Balance"] = x => x.WalletBalance,
+         };
 
-		[Inject] protected ICustomerService _custumerService { get; set; } = null!;
+        [Inject] protected ICustomerService _custumerService { get; set; } = null!;
+		protected override async Task OnInitializedAsync()
+		{
+			baseUrl = ApiOptions.Value.BaseUrl;
+			await Search();
+			
+		}
 
         protected override async Task<ResponseModel<IEnumerable<CustomerDto>>> GetAllItemsAsync()
         {
@@ -42,8 +51,26 @@ namespace Dashboard.Pages.UserManagement.Customers
                 return result;
             }
         }
-      
-        protected override async Task<string> GetItemId(CustomerDto item)
+		//protected virtual async Task SortByColumn(string columnName)
+		//{
+		//	if (searchModel.SortBy == columnName)
+		//	{
+		//		// Toggle sort direction if same column
+		//		searchModel.SortDirection = searchModel.SortDirection == "asc" ? "desc" : "asc";
+		//	}
+		//	else
+		//	{
+		//		// New column, default to ascending
+		//		searchModel.SortBy = columnName;
+		//		searchModel.SortDirection = "asc";
+		//	}
+
+		//	// Reset to first page when sorting changes
+		//	currentPage = 1;
+		//	searchModel.PageNumber = 1;
+		//	await Search();
+		//}
+		protected override async Task<string> GetItemId(CustomerDto item)
         {
             var result = await _custumerService.GetByIdAsync(item.Id);
             if (result.Success)
@@ -56,11 +83,11 @@ namespace Dashboard.Pages.UserManagement.Customers
                 return string.Empty;
             }
         }
-		protected override async Task<ResponseModel<bool>> DeleteItemAsync(Guid id)
-		{
-			return await _custumerService.DeleteAsync(id);
-		}
+        protected override async Task<ResponseModel<bool>> DeleteItemAsync(Guid id)
+        {
+            return await _custumerService.DeleteAsync(id);
+        }
 
 
-	}
+    }
 }

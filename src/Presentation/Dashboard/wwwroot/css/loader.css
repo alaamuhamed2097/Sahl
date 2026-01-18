@@ -24,7 +24,7 @@
     width: 80px;
     height: 80px;
     margin-bottom: 20px;
-    background: url('/assets/images/logo-icon.svg') center/contain no-repeat;
+    background: url('/assets/images/favicon.png') center/contain no-repeat;
     animation: pulse 2s ease-in-out infinite;
 }
 

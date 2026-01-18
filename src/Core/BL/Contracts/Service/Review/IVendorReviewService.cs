@@ -12,7 +12,11 @@ namespace BL.Contracts.Service.Review
 {
 	public interface IVendorReviewService : IBaseService<TbVendorReview, VendorReviewDto>
 	{
-		
+
+		Task<PagedResult<VendorReviewDto>> GetPaginatedReviewsAsync(
+	Guid userId,
+	VendorReviewSearchCriteriaModel criteriaModel,
+	CancellationToken cancellationToken = default);
 			/// <summary>
 			/// Retrieves the details of a specific Vendor review by its unique identifier.
 			/// </summary>
@@ -75,7 +79,7 @@ namespace BL.Contracts.Service.Review
 			/// <param name="cancellationToken">Cancellation token.</param>
 			/// <returns>Paginated result containing reviews and total count.</returns>
 			Task<PagedResult<VendorReviewDto>> GetPaginatedReviewsAsync(
-				VendorReviewSearchCriteriaModel criteriaModel,
+				AdminVendorReviewSearchCriteriaModel criteriaModel,
 				CancellationToken cancellationToken = default);
 
 			/// <summary>

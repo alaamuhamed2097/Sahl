@@ -49,6 +49,35 @@ namespace Api.Controllers.v1.Merchandising
 
         }
         /// <summary>
+        /// Get all sliders (Admin only)
+        /// </summary>
+        /// <remarks>
+        /// API Version: 1.0+
+        /// Requires Admin role.
+        /// </remarks>
+        [HttpGet]
+        [Authorize(Roles = nameof(UserRole.Admin))]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetAllSliders()
+        {
+            var sliders = await _homePageSliderService.GetAllAsync();
+
+            if (sliders == null)
+                return NotFound(new ResponseModel<string>
+                {
+                    Success = false,
+                    Message = NotifiAndAlertsResources.NoDataFound
+                });
+
+            return Ok(new ResponseModel<IEnumerable<HomePageSliderDto>>
+            {
+                Success = true,
+                Message = NotifiAndAlertsResources.DataRetrieved,
+                Data = sliders
+            });
+        }
+
+        /// <summary>
         /// Get slider by ID with full details
         /// </summary>
         /// <remarks>
@@ -74,35 +103,6 @@ namespace Api.Controllers.v1.Merchandising
                 Success = true,
                 Message = NotifiAndAlertsResources.DataRetrieved,
                 Data = slider
-            });
-        }
-
-        /// <summary>
-        /// Get all sliders (Admin only)
-        /// </summary>
-        /// <remarks>
-        /// API Version: 1.0+
-        /// Requires Admin role.
-        /// </remarks>
-        [HttpGet("all")]
-        [Authorize(Roles = nameof(UserRole.Admin))]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<IActionResult> GetAllSliders()
-        {
-            var sliders = await _homePageSliderService.GetAllAsync();
-
-            if (sliders == null)
-                return NotFound(new ResponseModel<string>
-                {
-                    Success = false,
-                    Message = NotifiAndAlertsResources.NoDataFound
-                });
-
-            return Ok(new ResponseModel<IEnumerable<HomePageSliderDto>>
-            {
-                Success = true,
-                Message = NotifiAndAlertsResources.DataRetrieved,
-                Data = sliders
             });
         }
 

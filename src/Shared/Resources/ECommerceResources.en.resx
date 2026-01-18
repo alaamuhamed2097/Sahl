@@ -811,60 +811,6 @@
     <value>Sales Price</value>
   </data>
   <data name="AttributeValues" xml:space="preserve">
-  <value>Attribute Values</value>
-</data>
-  <data name="DefaultPricingNote" xml:space="preserve">
-  <value>Default pricing will be used if no variant prices are set.</value>
-</data>
-  <data name="MaximumPrice" xml:space="preserve">
-  <value>Maximum Price</value>
-</data>
-  <data name="MinimumPrice" xml:space="preserve">
-  <value>Minimum Price</value>
-</data>
-  <data name="BasePrice" xml:space="preserve">
-  <value>Base Price</value>
-</data>
-  <data name="StockKeepingUnit" xml:space="preserve">
-  <value>Stock Keeping Unit (SKU)</value>
-</data>
-  <data name="SetDefaultPricing" xml:space="preserve">
-  <value>Set Default Pricing</value>
-</data>
-  <data name="PricingInformation" xml:space="preserve">
-  <value>Pricing Information</value>
-</data>
-  <data name="Barcode" xml:space="preserve">
-  <value>Barcode</value>
-</data>
-  <data name="ConfigureAttributes" xml:space="preserve">
-  <value>Configure attributes for this product</value>
-</data>
-  <data name="AffectsPricingListTypeOnly" xml:space="preserve">
-  <value>Affects Pricing is only available for List type attributes</value>
-</data>
-  <data name="HomePageSlider">
-    <value>Home Page Slider</value>
-  </data>
-  <data name="DisplayOrder">
-    <value>Display Order</value>
-  </data>
-  <data name="SliderImage">
-    <value>Slider Image</value>
-  </data>
-  <data name="SliderTitle">
-    <value>Slider Title</value>
-  </data>
-  <data name="BannerDuration">
-    <value>Banner Duration</value>
-  </data>
-  <data name="NoWithdrawalMethodsAvailable" xml:space="preserve">
-    <value>No Withdrawal Methods Available</value>
-  </data>
-  <data name="WithdrawalMethods" xml:space="preserve">
-    <value>Withdrawal Methods</value>
-  </data>
-  <data name="AttributeValues" xml:space="preserve">
     <value>Attribute Values</value>
   </data>
   <data name="DefaultPricingNote" xml:space="preserve">
@@ -903,9 +849,6 @@
   <data name="WithdrawalMethods" xml:space="preserve">
     <value>Withdrawal Methods</value>
   </data>
-  <data name="HomePageSlider" xml:space="preserve">
-    <value>Home Page Slider</value>
-  </data>
   <data name="DisplayOrder" xml:space="preserve">
     <value>Display Order</value>
   </data>
@@ -916,6 +859,15 @@
     <value>Slider Title</value>
   </data>
   <data name="BannerDuration" xml:space="preserve">
+    <value>Banner Duration</value>
+  </data>
+  <data name="Sales" xml:space="preserve">
+    <value>Sales</value>
+  </data>
+  <data name="DisplayOrder_Duplicate[1]" xml:space="preserve">
+    <value>Display Order</value>
+  </data>
+  <data name="BannerDuration_Duplicate[1]" xml:space="preserve">
     <value>Banner Duration</value>
   </data>
   <data name="StoreName" xml:space="preserve">
@@ -1020,4 +972,44 @@
   <data name="NewProductRequests" xml:space="preserve">
   <value>New Product Requests</value>
 </data>
+  <data name="OrderManagement" xml:space="preserve">
+    <value>Order Management</value>
+  </data>
+  <data name="LogisticsAndShipping" xml:space="preserve">
+    <value>Logistics &amp; Shipping</value>
+  </data>
+  <data name="CatalogManagement" xml:space="preserve">
+    <value>Catalog Management</value>
+  </data>
+  <data name="ActiveVendors" xml:space="preserve">
+    <value>Active Vendors</value>
+  </data>
+	<data name="Revenue" xml:space="preserve">
+  <value>Revenue</value>
+</data>
+	<data name="TotalRevenue" xml:space="preserve">
+  <value>Total Revenue</value>
+</data>
+	<data name="TotalProducts" xml:space="preserve">
+  <value>Total Products</value>
+</data>
+	<data name="TopSellingProducts" xml:space="preserve">
+  <value>Top Selling Products</value>
+</data>
+	<data name="TopPerformingVendors" xml:space="preserve">
+  <value>Top Performing Vendors</value>
+</data>
+	<data name="PendingOrders" xml:space="preserve">
+  <value>Pending Orders</value>
+</data>
+	<data name="ActiveVendors" xml:space="preserve">
+  <value>Active Vendors</value>
+</data>
+	<data name="Reviews" xml:space="preserve">
+  <value>Reviews</value>
+</data>
+	<data name="AverageRating" xml:space="preserve">
+  <value>Average Rating</value>
+</data>
+
 </root>

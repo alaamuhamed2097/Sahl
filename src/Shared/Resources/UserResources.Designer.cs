@@ -68,72 +68,9 @@ namespace Resources {
                 return ResourceManager.GetString("ActivationCodeResent", resourceCulture);
             }
         }
-
-        /// <summary>
-        ///   Looks up a localized string similar to Change Email.
-        /// </summary>
-        public static string ChangeEmail {
-            get {
-                return ResourceManager.GetString("ChangeEmail", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to Change Password.
-        /// </summary>
-        public static string ChangePassword {
-            get {
-                return ResourceManager.GetString("ChangePassword", resourceCulture);
-            }
-        }
         
         /// <summary>
-        ///   Looks up a localized string similar to Confirm Password.
-        /// </summary>
-        public static string ConfirmPassword {
-            get {
-                return ResourceManager.GetString("ConfirmPassword", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to Invalid Password.
-        /// </summary>
-        public static string InvalidPassword {
-            get {
-                return ResourceManager.GetString("InvalidPassword", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to New Email.
-        /// </summary>
-        public static string NewEmail {
-            get {
-                return ResourceManager.GetString("NewEmail", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to Password.
-        /// </summary>
-        public static string Password {
-            get {
-                return ResourceManager.GetString("Password", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Password Mismatch.
-        /// </summary>
-        public static string PasswordMismatch {
-            get {
-                return ResourceManager.GetString("PasswordMismatch", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to مفعل.
+        ///   Looks up a localized string similar to نشط.
         /// </summary>
         public static string Active {
             get {
@@ -178,11 +115,38 @@ namespace Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to تغيير البريد الإلكتروني.
+        /// </summary>
+        public static string ChangeEmail {
+            get {
+                return ResourceManager.GetString("ChangeEmail", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to تغيير كلمة المرور.
+        /// </summary>
+        public static string ChangePassword {
+            get {
+                return ResourceManager.GetString("ChangePassword", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to شركات.
         /// </summary>
         public static string Company {
             get {
                 return ResourceManager.GetString("Company", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to تأكيد كلمة المرور.
+        /// </summary>
+        public static string ConfirmPassword {
+            get {
+                return ResourceManager.GetString("ConfirmPassword", resourceCulture);
             }
         }
         
@@ -232,6 +196,15 @@ namespace Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to البريد الإلكتروني.
+        /// </summary>
+        public static string Email {
+            get {
+                return ResourceManager.GetString("Email", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to البريد الإلكتروني &apos;{0}&apos; مستخدم بالفعل..
         /// </summary>
         public static string Email_Duplicate {
@@ -277,6 +250,15 @@ namespace Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to الاسم الأول.
+        /// </summary>
+        public static string FirstName {
+            get {
+                return ResourceManager.GetString("FirstName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to هل نسيت كلمة المرور؟.
         /// </summary>
         public static string ForgetPasswordText {
@@ -309,6 +291,15 @@ namespace Resources {
         public static string HappyToSeeYouMessage {
             get {
                 return ResourceManager.GetString("HappyToSeeYouMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to غير نشط.
+        /// </summary>
+        public static string Inactive {
+            get {
+                return ResourceManager.GetString("Inactive", resourceCulture);
             }
         }
         
@@ -367,11 +358,29 @@ namespace Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to كلمة المرور غير صالحة.
+        /// </summary>
+        public static string InvalidPassword {
+            get {
+                return ResourceManager.GetString("InvalidPassword", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to أبقني مسجل الدخول.
         /// </summary>
         public static string KeepMeSignedIn {
             get {
                 return ResourceManager.GetString("KeepMeSignedIn", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to الاسم الأخير.
+        /// </summary>
+        public static string LastName {
+            get {
+                return ResourceManager.GetString("LastName", resourceCulture);
             }
         }
         
@@ -403,6 +412,15 @@ namespace Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to البريد الإلكتروني الجديد.
+        /// </summary>
+        public static string NewEmail {
+            get {
+                return ResourceManager.GetString("NewEmail", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to كلمة المرور الجديدة مطلوبة..
         /// </summary>
         public static string NewPassword_Required {
@@ -426,6 +444,15 @@ namespace Resources {
         public static string NewPasswordPlaceholder {
             get {
                 return ResourceManager.GetString("NewPasswordPlaceholder", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to كلمة المرور.
+        /// </summary>
+        public static string Password {
+            get {
+                return ResourceManager.GetString("Password", resourceCulture);
             }
         }
         
@@ -529,6 +556,24 @@ namespace Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to يجب أن تكون كلمة المرور 8 أحرف على الأقل.
+        /// </summary>
+        public static string PasswordMinLength {
+            get {
+                return ResourceManager.GetString("PasswordMinLength", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to كلمة المرور غير متطابقة.
+        /// </summary>
+        public static string PasswordMismatch {
+            get {
+                return ResourceManager.GetString("PasswordMismatch", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to كلمة المرور.
         /// </summary>
         public static string PasswordPlaceholder {
@@ -547,6 +592,15 @@ namespace Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to قيد الانتظار.
+        /// </summary>
+        public static string Pending {
+            get {
+                return ResourceManager.GetString("Pending", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to غير مفعل.
         /// </summary>
         public static string PendingActivation {
@@ -561,6 +615,24 @@ namespace Resources {
         public static string PersonalInfo {
             get {
                 return ResourceManager.GetString("PersonalInfo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to كود الهاتف.
+        /// </summary>
+        public static string PhoneCode {
+            get {
+                return ResourceManager.GetString("PhoneCode", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to رقم الهاتف.
+        /// </summary>
+        public static string PhoneNumber {
+            get {
+                return ResourceManager.GetString("PhoneNumber", resourceCulture);
             }
         }
         
@@ -804,6 +876,15 @@ namespace Resources {
         public static string UserNotFound {
             get {
                 return ResourceManager.GetString("UserNotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to حالة المستخدم.
+        /// </summary>
+        public static string UserStatus {
+            get {
+                return ResourceManager.GetString("UserStatus", resourceCulture);
             }
         }
         

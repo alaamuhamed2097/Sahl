@@ -1,4 +1,3 @@
-
 using Dashboard.Contracts.Warehouse;
 using Microsoft.AspNetCore.Components;
 using Resources;
@@ -13,10 +12,15 @@ namespace Dashboard.Pages.Warehouse
 	{
 		[Inject] private IWarehouseService WarehouseService { get; set; } = null!;
 
+
 		// Tab management
 		private string activeTab = "platform";
 		private bool isMultiVendorEnabled = false;
 		private bool isLoading = false;
+
+		// Sorting properties
+		private string currentSortColumn = "Address";
+		private bool isAscending = true;
 
 		// Platform Tab - Single Warehouse (Details View)
 		private WarehouseDto? platformWarehouse = null;
@@ -25,7 +29,9 @@ namespace Dashboard.Pages.Warehouse
 		private WarehouseSearchCriteriaModel platformSearchModel = new()
 		{
 			IsDefaultPlatformWarehouse = true,
-			PageSize = 10
+			PageSize = 10,
+			SortBy = "Address",
+			SortDirection = "asc"
 		};
 		private IEnumerable<WarehouseDto> platformItems = new List<WarehouseDto>();
 		private int platformTotalRecords = 0;
@@ -36,7 +42,9 @@ namespace Dashboard.Pages.Warehouse
 		private WarehouseSearchCriteriaModel vendorSearchModel = new()
 		{
 			IsDefaultPlatformWarehouse = false,
-			PageSize = 10
+			PageSize = 10,
+			SortBy = "Address",
+			SortDirection = "asc"
 		};
 		private IEnumerable<WarehouseDto> vendorItems = new List<WarehouseDto>();
 		private int vendorTotalRecords = 0;
@@ -47,6 +55,7 @@ namespace Dashboard.Pages.Warehouse
 		private IEnumerable<VendorDto> vendors = new List<VendorDto>();
 		private Guid? selectedVendorId = null;
 
+		
 		// Override base properties to use active tab data
 		protected new IEnumerable<WarehouseDto> items => activeTab == "platform" ? platformItems : vendorItems;
 		protected new int totalRecords => activeTab == "platform" ? platformTotalRecords : vendorTotalRecords;
@@ -66,6 +75,7 @@ namespace Dashboard.Pages.Warehouse
 			{ "Email", item => item.Email ?? "-" },
 			{ "Status", item => item.IsActive ? "Active" : "Inactive" }
 		};
+
 
 		protected override async Task OnCustomInitializeAsync()
 		{
@@ -132,13 +142,10 @@ namespace Dashboard.Pages.Warehouse
 				isLoading = true;
 				StateHasChanged();
 
-				Console.WriteLine($"LoadPlatformWarehouse - IsDefaultPlatformWarehouse: {platformSearchModel.IsDefaultPlatformWarehouse}");
-
 				var result = await WarehouseService.SearchAsync(platformSearchModel);
 
 				if (result.Success && result.Data != null && result.Data.Items != null && result.Data.Items.Any())
 				{
-					// Get the first (and should be only) platform warehouse
 					platformWarehouse = result.Data.Items.FirstOrDefault();
 				}
 				else
@@ -167,8 +174,6 @@ namespace Dashboard.Pages.Warehouse
 				isLoading = true;
 				StateHasChanged();
 
-				Console.WriteLine($"SearchPlatformWarehouses - IsDefaultPlatformWarehouse: {platformSearchModel.IsDefaultPlatformWarehouse}");
-
 				var result = await WarehouseService.SearchAsync(platformSearchModel);
 
 				if (result.Success && result.Data != null)
@@ -176,8 +181,6 @@ namespace Dashboard.Pages.Warehouse
 					platformItems = result.Data.Items ?? new List<WarehouseDto>();
 					platformTotalRecords = result.Data.TotalRecords;
 					platformTotalPages = (int)Math.Ceiling((double)platformTotalRecords / platformSearchModel.PageSize);
-
-					// Update the single warehouse reference
 					platformWarehouse = platformItems.FirstOrDefault();
 				}
 				else
@@ -210,7 +213,7 @@ namespace Dashboard.Pages.Warehouse
 				isLoading = true;
 				StateHasChanged();
 
-				Console.WriteLine($"SearchVendorWarehouses - IsDefaultPlatformWarehouse: {vendorSearchModel.IsDefaultPlatformWarehouse}");
+				Console.WriteLine($"[UI] SearchVendorWarehouses - SortBy: {vendorSearchModel.SortBy}, Direction: {vendorSearchModel.SortDirection}");
 
 				var result = await WarehouseService.SearchVendorAsync(vendorSearchModel);
 
@@ -219,6 +222,8 @@ namespace Dashboard.Pages.Warehouse
 					vendorItems = result.Data.Items ?? new List<WarehouseDto>();
 					vendorTotalRecords = result.Data.TotalRecords;
 					vendorTotalPages = (int)Math.Ceiling((double)vendorTotalRecords / vendorSearchModel.PageSize);
+
+					Console.WriteLine($"[UI] Loaded {vendorItems.Count()} items");
 				}
 				else
 				{
@@ -240,6 +245,57 @@ namespace Dashboard.Pages.Warehouse
 			}
 		}
 
+		// Sorting method
+		private async Task SortByColumn(string columnName)
+		{
+			Console.WriteLine($"=== SORT DEBUG ===");
+			Console.WriteLine($"Column Name: {columnName}");
+			Console.WriteLine($"Current Sort Column: {currentSortColumn}");
+			Console.WriteLine($"Is Ascending Before: {isAscending}");
+
+			Console.WriteLine($"[UI] SortByColumn called with: {columnName}");
+			Console.WriteLine($"[UI] Current sort column: {currentSortColumn}, IsAscending: {isAscending}");
+
+			if (currentSortColumn == columnName)
+			{
+				isAscending = !isAscending;
+			}
+			else
+			{
+				currentSortColumn = columnName;
+				isAscending = true;
+			}
+			Console.WriteLine($"Is Ascending After: {isAscending}");
+			Console.WriteLine($"Active Tab: {activeTab}");
+
+			Console.WriteLine($"[UI] New IsAscending: {isAscending}");
+
+			//if (activeTab == "platform")
+			//{
+			//	platformSearchModel.SortDirection = isAscending ? "asc" : "desc";
+			//	platformSearchModel.SortBy = columnName;
+			//	Console.WriteLine($"[UI] Platform sort - SortBy: {platformSearchModel.SortBy}, Direction: {platformSearchModel.SortDirection}");
+			//	await SearchPlatformWarehouses();
+			//}
+			//else
+			//{
+				vendorSearchModel.SortDirection = isAscending ? "asc" : "desc";
+				vendorSearchModel.SortBy = columnName;
+				Console.WriteLine($"[UI] Vendor sort - SortBy: {vendorSearchModel.SortBy}, Direction: {vendorSearchModel.SortDirection}");
+				await SearchVendorWarehouses();
+			//}
+		}
+
+		// Get sort icon for column
+		private string GetSortIcon(string columnName)
+		{
+			if (currentSortColumn != columnName)
+			{
+				return "fas fa-sort text-muted";
+			}
+			return isAscending ? "fas fa-sort-up text-primary" : "fas fa-sort-down text-primary";
+		}
+
 		// Override base Search method
 		protected override async Task Search()
 		{
@@ -247,12 +303,16 @@ namespace Dashboard.Pages.Warehouse
 			{
 				platformCurrentPage = 1;
 				platformSearchModel.PageNumber = 1;
+				platformSearchModel.SortBy = currentSortColumn;
+				platformSearchModel.SortDirection = isAscending ? "asc" : "desc";
 				await SearchPlatformWarehouses();
 			}
 			else
 			{
 				vendorCurrentPage = 1;
 				vendorSearchModel.PageNumber = 1;
+				vendorSearchModel.SortBy = currentSortColumn;
+				vendorSearchModel.SortDirection = isAscending ? "asc" : "desc";
 				await SearchVendorWarehouses();
 			}
 		}
@@ -387,7 +447,6 @@ namespace Dashboard.Pages.Warehouse
 				{
 					await ShowSuccessNotification("Status updated successfully");
 
-					// Refresh the correct tab
 					if (activeTab == "platform")
 					{
 						await LoadPlatformWarehouse();
@@ -427,7 +486,6 @@ namespace Dashboard.Pages.Warehouse
 			Navigation.NavigateTo(editRoute);
 		}
 
-		// Computed properties for pagination
 		protected int StartRecord => totalRecords == 0 ? 0 : ((currentPage - 1) * searchModel.PageSize) + 1;
 		protected int EndRecord => Math.Min(currentPage * searchModel.PageSize, totalRecords);
 		protected bool CanGoToPreviousPage => currentPage > 1;
@@ -452,12 +510,22 @@ namespace Dashboard.Pages.Warehouse
 //		// Tab management
 //		private string activeTab = "platform";
 //		private bool isMultiVendorEnabled = false;
+//		private bool isLoading = false;
 
-//		// Platform Tab Search Model & Data
+//		// Sorting properties
+//		private string currentSortColumn = "Address";
+//		private bool isAscending = true;
+
+//		// Platform Tab - Single Warehouse (Details View)
+//		private WarehouseDto? platformWarehouse = null;
+
+//		// Platform Tab Search Model & Data (kept for compatibility)
 //		private WarehouseSearchCriteriaModel platformSearchModel = new()
 //		{
 //			IsDefaultPlatformWarehouse = true,
-//			PageSize = 10
+//			PageSize = 10,
+//			SortBy = "Address",
+//			SortDirection = "asc"
 //		};
 //		private IEnumerable<WarehouseDto> platformItems = new List<WarehouseDto>();
 //		private int platformTotalRecords = 0;
@@ -468,7 +536,9 @@ namespace Dashboard.Pages.Warehouse
 //		private WarehouseSearchCriteriaModel vendorSearchModel = new()
 //		{
 //			IsDefaultPlatformWarehouse = false,
-//			PageSize = 10
+//			PageSize = 10,
+//			SortBy = "Address",
+//			SortDirection = "asc"
 //		};
 //		private IEnumerable<WarehouseDto> vendorItems = new List<WarehouseDto>();
 //		private int vendorTotalRecords = 0;
@@ -510,8 +580,8 @@ namespace Dashboard.Pages.Warehouse
 //				await LoadVendors();
 //			}
 
-//			// Load Platform warehouses
-//			await SearchPlatformWarehouses();
+//			// Load Platform warehouse (single warehouse)
+//			await LoadPlatformWarehouse();
 
 //			// Load Vendor warehouses if multi-vendor enabled
 //			if (isMultiVendorEnabled)
@@ -556,12 +626,47 @@ namespace Dashboard.Pages.Warehouse
 //			}
 //		}
 
-//		// Platform Warehouses Search
+//		// Load Platform Warehouse (Single Warehouse)
+//		private async Task LoadPlatformWarehouse()
+//		{
+//			try
+//			{
+//				isLoading = true;
+//				StateHasChanged();
+
+//				Console.WriteLine($"LoadPlatformWarehouse - IsDefaultPlatformWarehouse: {platformSearchModel.IsDefaultPlatformWarehouse}");
+
+//				var result = await WarehouseService.SearchAsync(platformSearchModel);
+
+//				if (result.Success && result.Data != null && result.Data.Items != null && result.Data.Items.Any())
+//				{
+//					// Get the first (and should be only) platform warehouse
+//					platformWarehouse = result.Data.Items.FirstOrDefault();
+//				}
+//				else
+//				{
+//					platformWarehouse = null;
+//				}
+//			}
+//			catch (Exception ex)
+//			{
+//				Console.WriteLine($"Error in LoadPlatformWarehouse: {ex.Message}");
+//				await ShowErrorNotification("Error", "Failed to load platform warehouse");
+//				platformWarehouse = null;
+//			}
+//			finally
+//			{
+//				isLoading = false;
+//				StateHasChanged();
+//			}
+//		}
+
+//		// Platform Warehouses Search (kept for compatibility)
 //		private async Task SearchPlatformWarehouses()
 //		{
 //			try
 //			{
-//				//isLoading = true;
+//				isLoading = true;
 //				StateHasChanged();
 
 //				Console.WriteLine($"SearchPlatformWarehouses - IsDefaultPlatformWarehouse: {platformSearchModel.IsDefaultPlatformWarehouse}");
@@ -573,12 +678,16 @@ namespace Dashboard.Pages.Warehouse
 //					platformItems = result.Data.Items ?? new List<WarehouseDto>();
 //					platformTotalRecords = result.Data.TotalRecords;
 //					platformTotalPages = (int)Math.Ceiling((double)platformTotalRecords / platformSearchModel.PageSize);
+
+//					// Update the single warehouse reference
+//					platformWarehouse = platformItems.FirstOrDefault();
 //				}
 //				else
 //				{
 //					platformItems = new List<WarehouseDto>();
 //					platformTotalRecords = 0;
 //					platformTotalPages = 0;
+//					platformWarehouse = null;
 //				}
 //			}
 //			catch (Exception ex)
@@ -586,10 +695,11 @@ namespace Dashboard.Pages.Warehouse
 //				Console.WriteLine($"Error in SearchPlatformWarehouses: {ex.Message}");
 //				await ShowErrorNotification("Error", "Failed to load platform warehouses");
 //				platformItems = new List<WarehouseDto>();
+//				platformWarehouse = null;
 //			}
 //			finally
 //			{
-//				//isLoading = false;
+//				isLoading = false;
 //				StateHasChanged();
 //			}
 //		}
@@ -599,7 +709,7 @@ namespace Dashboard.Pages.Warehouse
 //		{
 //			try
 //			{
-//				//isLoading = true;
+//				isLoading = true;
 //				StateHasChanged();
 
 //				Console.WriteLine($"SearchVendorWarehouses - IsDefaultPlatformWarehouse: {vendorSearchModel.IsDefaultPlatformWarehouse}");
@@ -627,9 +737,46 @@ namespace Dashboard.Pages.Warehouse
 //			}
 //			finally
 //			{
-//				//isLoading = false;
+//				isLoading = false;
 //				StateHasChanged();
 //			}
+//		}
+
+//		// Sorting method
+//		private async Task SortByColumn(string columnName)
+//		{
+//			if (currentSortColumn == columnName)
+//			{
+//				isAscending = !isAscending;
+//			}
+//			else
+//			{
+//				currentSortColumn = columnName;
+//				isAscending = true;
+//			}
+
+//			if (activeTab == "platform")
+//			{
+//				platformSearchModel.SortDirection = isAscending ? "asc" : "desc";
+//				platformSearchModel.SortBy = columnName;
+//				await SearchPlatformWarehouses();
+//			}
+//			else
+//			{
+//				vendorSearchModel.SortDirection = isAscending ? "asc" : "desc";
+//				vendorSearchModel.SortBy = columnName;
+//				await SearchVendorWarehouses();
+//			}
+//		}
+
+//		// Get sort icon for column
+//		private string GetSortIcon(string columnName)
+//		{
+//			if (currentSortColumn != columnName)
+//			{
+//				return "fas fa-sort text-muted";
+//			}
+//			return isAscending ? "fas fa-sort-up text-primary" : "fas fa-sort-down text-primary";
 //		}
 
 //		// Override base Search method
@@ -639,12 +786,16 @@ namespace Dashboard.Pages.Warehouse
 //			{
 //				platformCurrentPage = 1;
 //				platformSearchModel.PageNumber = 1;
+//				platformSearchModel.SortBy = currentSortColumn;
+//				platformSearchModel.SortDirection = isAscending ? "asc" : "desc";
 //				await SearchPlatformWarehouses();
 //			}
 //			else
 //			{
 //				vendorCurrentPage = 1;
 //				vendorSearchModel.PageNumber = 1;
+//				vendorSearchModel.SortBy = currentSortColumn;
+//				vendorSearchModel.SortDirection = isAscending ? "asc" : "desc";
 //				await SearchVendorWarehouses();
 //			}
 //		}
@@ -782,7 +933,7 @@ namespace Dashboard.Pages.Warehouse
 //					// Refresh the correct tab
 //					if (activeTab == "platform")
 //					{
-//						await SearchPlatformWarehouses();
+//						await LoadPlatformWarehouse();
 //					}
 //					else
 //					{
@@ -804,6 +955,449 @@ namespace Dashboard.Pages.Warehouse
 //		{
 //			var route = activeTab == "platform" ? "/warehouse/platform/add" : "/warehouse/vendor/add";
 //			Navigation.NavigateTo(route);
+//		}
+
+//		protected void CreatePlatformWarehouse()
+//		{
+//			Navigation.NavigateTo("/warehouse/platform/add");
+//		}
+
+//		protected override async Task Edit(WarehouseDto item)
+//		{
+//			var id = await GetItemId(item);
+//			var type = item.IsDefaultPlatformWarehouse ? "platform" : "vendor";
+//			var editRoute = $"/warehouse/{type}/{id}";
+//			Navigation.NavigateTo(editRoute);
+//		}
+
+//		// Computed properties for pagination
+//		protected int StartRecord => totalRecords == 0 ? 0 : ((currentPage - 1) * searchModel.PageSize) + 1;
+//		protected int EndRecord => Math.Min(currentPage * searchModel.PageSize, totalRecords);
+//		protected bool CanGoToPreviousPage => currentPage > 1;
+//		protected bool CanGoToNextPage => currentPage < totalPages;
+//	}
+//}
+//using Dashboard.Contracts.Warehouse;
+//using Microsoft.AspNetCore.Components;
+//using Resources;
+//using Shared.DTOs.Vendor;
+//using Shared.DTOs.Warehouse;
+//using Shared.GeneralModels;
+//using Shared.GeneralModels.SearchCriteriaModels;
+
+//namespace Dashboard.Pages.Warehouse
+//{
+//	public partial class Index : BaseListPage<WarehouseDto>
+//	{
+//		[Inject] private IWarehouseService WarehouseService { get; set; } = null!;
+
+//		// Tab management
+//		private string activeTab = "platform";
+//		private bool isMultiVendorEnabled = false;
+//		private bool isLoading = false;
+
+//		// Platform Tab - Single Warehouse (Details View)
+//		private WarehouseDto? platformWarehouse = null;
+
+//		// Platform Tab Search Model & Data (kept for compatibility)
+//		private WarehouseSearchCriteriaModel platformSearchModel = new()
+//		{
+//			IsDefaultPlatformWarehouse = true,
+//			PageSize = 10,
+
+//		};
+//		private IEnumerable<WarehouseDto> platformItems = new List<WarehouseDto>();
+//		private int platformTotalRecords = 0;
+//		private int platformCurrentPage = 1;
+//		private int platformTotalPages = 0;
+
+//		// Vendor Tab Search Model & Data
+//		private WarehouseSearchCriteriaModel vendorSearchModel = new()
+//		{
+//			IsDefaultPlatformWarehouse = false,
+//			PageSize = 10
+//		};
+//		private IEnumerable<WarehouseDto> vendorItems = new List<WarehouseDto>();
+//		private int vendorTotalRecords = 0;
+//		private int vendorCurrentPage = 1;
+//		private int vendorTotalPages = 0;
+
+//		// Vendors list
+//		private IEnumerable<VendorDto> vendors = new List<VendorDto>();
+//		private Guid? selectedVendorId = null;
+
+//		// Override base properties to use active tab data
+//		protected new IEnumerable<WarehouseDto> items => activeTab == "platform" ? platformItems : vendorItems;
+//		protected new int totalRecords => activeTab == "platform" ? platformTotalRecords : vendorTotalRecords;
+//		protected new int currentPage => activeTab == "platform" ? platformCurrentPage : vendorCurrentPage;
+//		protected new int totalPages => activeTab == "platform" ? platformTotalPages : vendorTotalPages;
+//		protected new WarehouseSearchCriteriaModel searchModel => activeTab == "platform" ? platformSearchModel : vendorSearchModel;
+
+//		protected override string EntityName => "Warehouse Management";
+//		protected override string AddRoute => activeTab == "platform" ? "/warehouse/platform/add" : "/warehouse/vendor/add";
+//		protected override string EditRouteTemplate => "/warehouse/{id}";
+//		protected override string SearchEndpoint => "api/v1/Warehouse/search";
+
+//		protected override Dictionary<string, Func<WarehouseDto, object>> ExportColumns => new()
+//		{
+//			{ "Type", item => item.IsDefaultPlatformWarehouse ? "Platform" : "Vendor" },
+//			{ "Address", item => item.Address ?? "-" },
+//			{ "Email", item => item.Email ?? "-" },
+//			{ "Status", item => item.IsActive ? "Active" : "Inactive" }
+//		};
+
+//		protected override async Task OnCustomInitializeAsync()
+//		{
+//			// Check if multi-vendor is enabled
+//			await CheckMultiVendorStatus();
+
+//			// Load vendors if multi-vendor is enabled
+//			if (isMultiVendorEnabled)
+//			{
+//				await LoadVendors();
+//			}
+
+//			// Load Platform warehouse (single warehouse)
+//			await LoadPlatformWarehouse();
+
+//			// Load Vendor warehouses if multi-vendor enabled
+//			if (isMultiVendorEnabled)
+//			{
+//				await SearchVendorWarehouses();
+//			}
+
+//			StateHasChanged();
+//		}
+
+//		private async Task CheckMultiVendorStatus()
+//		{
+//			try
+//			{
+//				var result = await WarehouseService.IsMultiVendorEnabledAsync();
+//				if (result.Success)
+//				{
+//					isMultiVendorEnabled = result.Data;
+//					StateHasChanged();
+//				}
+//			}
+//			catch (Exception ex)
+//			{
+//				Console.WriteLine($"Error checking multi-vendor status: {ex.Message}");
+//			}
+//		}
+
+//		private async Task LoadVendors()
+//		{
+//			try
+//			{
+//				var result = await WarehouseService.GetVendorsAsync();
+//				if (result.Success && result.Data != null)
+//				{
+//					vendors = result.Data;
+//					StateHasChanged();
+//				}
+//			}
+//			catch (Exception ex)
+//			{
+//				await ShowErrorNotification("Error", "Failed to load vendors");
+//			}
+//		}
+
+//		// Load Platform Warehouse (Single Warehouse)
+//		private async Task LoadPlatformWarehouse()
+//		{
+//			try
+//			{
+//				isLoading = true;
+//				StateHasChanged();
+
+//				Console.WriteLine($"LoadPlatformWarehouse - IsDefaultPlatformWarehouse: {platformSearchModel.IsDefaultPlatformWarehouse}");
+
+//				var result = await WarehouseService.SearchAsync(platformSearchModel);
+
+//				if (result.Success && result.Data != null && result.Data.Items != null && result.Data.Items.Any())
+//				{
+//					// Get the first (and should be only) platform warehouse
+//					platformWarehouse = result.Data.Items.FirstOrDefault();
+//				}
+//				else
+//				{
+//					platformWarehouse = null;
+//				}
+//			}
+//			catch (Exception ex)
+//			{
+//				Console.WriteLine($"Error in LoadPlatformWarehouse: {ex.Message}");
+//				await ShowErrorNotification("Error", "Failed to load platform warehouse");
+//				platformWarehouse = null;
+//			}
+//			finally
+//			{
+//				isLoading = false;
+//				StateHasChanged();
+//			}
+//		}
+
+//		// Platform Warehouses Search (kept for compatibility)
+//		private async Task SearchPlatformWarehouses()
+//		{
+//			try
+//			{
+//				isLoading = true;
+//				StateHasChanged();
+
+//				Console.WriteLine($"SearchPlatformWarehouses - IsDefaultPlatformWarehouse: {platformSearchModel.IsDefaultPlatformWarehouse}");
+
+//				var result = await WarehouseService.SearchAsync(platformSearchModel);
+
+//				if (result.Success && result.Data != null)
+//				{
+//					platformItems = result.Data.Items ?? new List<WarehouseDto>();
+//					platformTotalRecords = result.Data.TotalRecords;
+//					platformTotalPages = (int)Math.Ceiling((double)platformTotalRecords / platformSearchModel.PageSize);
+
+//					// Update the single warehouse reference
+//					platformWarehouse = platformItems.FirstOrDefault();
+//				}
+//				else
+//				{
+//					platformItems = new List<WarehouseDto>();
+//					platformTotalRecords = 0;
+//					platformTotalPages = 0;
+//					platformWarehouse = null;
+//				}
+//			}
+//			catch (Exception ex)
+//			{
+//				Console.WriteLine($"Error in SearchPlatformWarehouses: {ex.Message}");
+//				await ShowErrorNotification("Error", "Failed to load platform warehouses");
+//				platformItems = new List<WarehouseDto>();
+//				platformWarehouse = null;
+//			}
+//			finally
+//			{
+//				isLoading = false;
+//				StateHasChanged();
+//			}
+//		}
+
+//		// Vendor Warehouses Search
+//		private async Task SearchVendorWarehouses()
+//		{
+//			try
+//			{
+//				isLoading = true;
+//				StateHasChanged();
+
+//				Console.WriteLine($"SearchVendorWarehouses - IsDefaultPlatformWarehouse: {vendorSearchModel.IsDefaultPlatformWarehouse}");
+
+//				var result = await WarehouseService.SearchVendorAsync(vendorSearchModel);
+
+//				if (result.Success && result.Data != null)
+//				{
+//					vendorItems = result.Data.Items ?? new List<WarehouseDto>();
+//					vendorTotalRecords = result.Data.TotalRecords;
+//					vendorTotalPages = (int)Math.Ceiling((double)vendorTotalRecords / vendorSearchModel.PageSize);
+//				}
+//				else
+//				{
+//					vendorItems = new List<WarehouseDto>();
+//					vendorTotalRecords = 0;
+//					vendorTotalPages = 0;
+//				}
+//			}
+//			catch (Exception ex)
+//			{
+//				Console.WriteLine($"Error in SearchVendorWarehouses: {ex.Message}");
+//				await ShowErrorNotification("Error", "Failed to load vendor warehouses");
+//				vendorItems = new List<WarehouseDto>();
+//			}
+//			finally
+//			{
+//				isLoading = false;
+//				StateHasChanged();
+//			}
+//		}
+
+//		// Override base Search method
+//		protected override async Task Search()
+//		{
+//			if (activeTab == "platform")
+//			{
+//				platformCurrentPage = 1;
+//				platformSearchModel.PageNumber = 1;
+//				platformSearchModel.SortBy = ;
+//				await SearchPlatformWarehouses();
+//			}
+//			else
+//			{
+//				vendorCurrentPage = 1;
+//				vendorSearchModel.PageNumber = 1;
+//				vendorSearchModel.SortBy = ;
+//				await SearchVendorWarehouses();
+//			}
+//		}
+
+//		protected async Task SwitchToPlatform()
+//		{
+//			activeTab = "platform";
+//			StateHasChanged();
+//		}
+
+//		protected async Task SwitchToVendor()
+//		{
+//			activeTab = "vendor";
+//			StateHasChanged();
+//		}
+
+//		protected async Task OnVendorFilterChanged(ChangeEventArgs e)
+//		{
+//			if (Guid.TryParse(e.Value?.ToString(), out Guid vendorId))
+//			{
+//				selectedVendorId = vendorId;
+//				vendorSearchModel.VendorId = vendorId;
+//			}
+//			else
+//			{
+//				selectedVendorId = null;
+//				vendorSearchModel.VendorId = null;
+//			}
+
+//			vendorCurrentPage = 1;
+//			vendorSearchModel.PageNumber = 1;
+//			await SearchVendorWarehouses();
+//		}
+
+//		protected async Task OnFilterChanged(ChangeEventArgs e)
+//		{
+//			var filterValue = e.Value?.ToString();
+
+//			if (activeTab == "platform")
+//			{
+//				platformSearchModel.IsActive = filterValue switch
+//				{
+//					"active" => true,
+//					"inactive" => false,
+//					_ => null
+//				};
+//				platformCurrentPage = 1;
+//				platformSearchModel.PageNumber = 1;
+//				await SearchPlatformWarehouses();
+//			}
+//			else
+//			{
+//				vendorSearchModel.IsActive = filterValue switch
+//				{
+//					"active" => true,
+//					"inactive" => false,
+//					_ => null
+//				};
+//				vendorCurrentPage = 1;
+//				vendorSearchModel.PageNumber = 1;
+//				await SearchVendorWarehouses();
+//			}
+//		}
+
+//		protected override async Task OnPageSizeChanged(ChangeEventArgs e)
+//		{
+//			if (int.TryParse(e.Value?.ToString(), out int pageSize))
+//			{
+//				if (activeTab == "platform")
+//				{
+//					platformSearchModel.PageSize = pageSize;
+//					platformCurrentPage = 1;
+//					platformSearchModel.PageNumber = 1;
+//					await SearchPlatformWarehouses();
+//				}
+//				else
+//				{
+//					vendorSearchModel.PageSize = pageSize;
+//					vendorCurrentPage = 1;
+//					vendorSearchModel.PageNumber = 1;
+//					await SearchVendorWarehouses();
+//				}
+//			}
+//		}
+
+//		protected override async Task GoToPage(int page)
+//		{
+//			if (activeTab == "platform")
+//			{
+//				if (page < 1 || page > platformTotalPages) return;
+//				platformCurrentPage = page;
+//				platformSearchModel.PageNumber = page;
+//				await SearchPlatformWarehouses();
+//			}
+//			else
+//			{
+//				if (page < 1 || page > vendorTotalPages) return;
+//				vendorCurrentPage = page;
+//				vendorSearchModel.PageNumber = page;
+//				await SearchVendorWarehouses();
+//			}
+//		}
+
+//		protected override async Task<ResponseModel<IEnumerable<WarehouseDto>>> GetAllItemsAsync()
+//		{
+//			return await WarehouseService.GetAllAsync();
+//		}
+
+//		protected override async Task<ResponseModel<bool>> DeleteItemAsync(Guid id)
+//		{
+//			var result = await WarehouseService.DeleteAsync(id);
+//			return new ResponseModel<bool>
+//			{
+//				Success = result.Success,
+//				Message = result.Message,
+//				Data = result.Success,
+//				Errors = result.Errors
+//			};
+//		}
+
+//		protected override async Task<string> GetItemId(WarehouseDto item)
+//		{
+//			return await Task.FromResult(item.Id.ToString());
+//		}
+
+//		protected async Task ToggleStatus(WarehouseDto warehouse)
+//		{
+//			try
+//			{
+//				var result = await WarehouseService.ToggleStatusAsync(warehouse.Id);
+//				if (result.Success)
+//				{
+//					await ShowSuccessNotification("Status updated successfully");
+
+//					// Refresh the correct tab
+//					if (activeTab == "platform")
+//					{
+//						await LoadPlatformWarehouse();
+//					}
+//					else
+//					{
+//						await SearchVendorWarehouses();
+//					}
+//				}
+//				else
+//				{
+//					await ShowErrorNotification(ValidationResources.Error, result.Message ?? "Failed to update status");
+//				}
+//			}
+//			catch (Exception)
+//			{
+//				await ShowErrorNotification(ValidationResources.Error, "Error updating warehouse status");
+//			}
+//		}
+
+//		protected void AddWarehouse()
+//		{
+//			var route = activeTab == "platform" ? "/warehouse/platform/add" : "/warehouse/vendor/add";
+//			Navigation.NavigateTo(route);
+//		}
+
+//		protected void CreatePlatformWarehouse()
+//		{
+//			Navigation.NavigateTo("/warehouse/platform/add");
 //		}
 
 //		protected override async Task Edit(WarehouseDto item)
@@ -837,27 +1431,50 @@ namespace Dashboard.Pages.Warehouse
 ////		[Inject] private IWarehouseService WarehouseService { get; set; } = null!;
 
 ////		// Tab management
-////		private string activeTab = "platform"; // "platform" or "vendor"
+////		private string activeTab = "platform";
 ////		private bool isMultiVendorEnabled = false;
 
-////		protected new WarehouseSearchCriteriaModel searchModel = new()
+////		// Platform Tab Search Model & Data
+////		private WarehouseSearchCriteriaModel platformSearchModel = new()
 ////		{
-////			IsDefaultPlatformWarehouse = true  
+////			IsDefaultPlatformWarehouse = true,
+////			PageSize = 10
 ////		};
+////		private IEnumerable<WarehouseDto> platformItems = new List<WarehouseDto>();
+////		private int platformTotalRecords = 0;
+////		private int platformCurrentPage = 1;
+////		private int platformTotalPages = 0;
+
+////		// Vendor Tab Search Model & Data
+////		private WarehouseSearchCriteriaModel vendorSearchModel = new()
+////		{
+////			IsDefaultPlatformWarehouse = false,
+////			PageSize = 10
+////		};
+////		private IEnumerable<WarehouseDto> vendorItems = new List<WarehouseDto>();
+////		private int vendorTotalRecords = 0;
+////		private int vendorCurrentPage = 1;
+////		private int vendorTotalPages = 0;
 
 ////		// Vendors list
 ////		private IEnumerable<VendorDto> vendors = new List<VendorDto>();
 ////		private Guid? selectedVendorId = null;
 
+////		// Override base properties to use active tab data
+////		protected new IEnumerable<WarehouseDto> items => activeTab == "platform" ? platformItems : vendorItems;
+////		protected new int totalRecords => activeTab == "platform" ? platformTotalRecords : vendorTotalRecords;
+////		protected new int currentPage => activeTab == "platform" ? platformCurrentPage : vendorCurrentPage;
+////		protected new int totalPages => activeTab == "platform" ? platformTotalPages : vendorTotalPages;
+////		protected new WarehouseSearchCriteriaModel searchModel => activeTab == "platform" ? platformSearchModel : vendorSearchModel;
+
 ////		protected override string EntityName => "Warehouse Management";
-////		protected override string AddRoute => activeTab == "platform" ? "/warehouse/platform" : "/warehouse/vendor";
+////		protected override string AddRoute => activeTab == "platform" ? "/warehouse/platform/add" : "/warehouse/vendor/add";
 ////		protected override string EditRouteTemplate => "/warehouse/{id}";
 ////		protected override string SearchEndpoint => "api/v1/Warehouse/search";
 
 ////		protected override Dictionary<string, Func<WarehouseDto, object>> ExportColumns => new()
 ////		{
 ////			{ "Type", item => item.IsDefaultPlatformWarehouse ? "Platform" : "Vendor" },
-////			//{ "Vendor", item => item.VendorName ?? "-" },
 ////			{ "Address", item => item.Address ?? "-" },
 ////			{ "Email", item => item.Email ?? "-" },
 ////			{ "Status", item => item.IsActive ? "Active" : "Inactive" }
@@ -865,9 +1482,6 @@ namespace Dashboard.Pages.Warehouse
 
 ////		protected override async Task OnCustomInitializeAsync()
 ////		{
-////			searchModel.PageSize = 10;
-
-////			searchModel.IsDefaultPlatformWarehouse = true; // Start with platform warehouses
 ////			// Check if multi-vendor is enabled
 ////			await CheckMultiVendorStatus();
 
@@ -877,23 +1491,18 @@ namespace Dashboard.Pages.Warehouse
 ////				await LoadVendors();
 ////			}
 
-////			// Set initial filter based on active tab
+////			// Load Platform warehouses
+////			await SearchPlatformWarehouses();
 
-////			await base.OnCustomInitializeAsync();
+////			// Load Vendor warehouses if multi-vendor enabled
+////			if (isMultiVendorEnabled)
+////			{
+////				await SearchVendorWarehouses();
+////			}
+
+////			StateHasChanged();
 ////		}
-////		protected async Task SwitchToPlatform()
-////		{
-////			searchModel.IsDefaultPlatformWarehouse = true; // Start with platform warehouses
 
-////			await SwitchTab("platform");
-////		}
-
-////		protected async Task SwitchToVendor()
-////		{
-////			searchModel.IsDefaultPlatformWarehouse = false; // Start with platform warehouses
-
-////			await SwitchTab("vendor");
-////		}
 ////		private async Task CheckMultiVendorStatus()
 ////		{
 ////			try
@@ -902,8 +1511,6 @@ namespace Dashboard.Pages.Warehouse
 ////				if (result.Success)
 ////				{
 ////					isMultiVendorEnabled = result.Data;
-////					searchModel.IsDefaultPlatformWarehouse = true;
-////					//isMultiVendorEnabled = true;
 ////					StateHasChanged();
 ////				}
 ////			}
@@ -930,34 +1537,108 @@ namespace Dashboard.Pages.Warehouse
 ////			}
 ////		}
 
-////		protected async Task SwitchTab(string tab)
+////		// Platform Warehouses Search
+////		private async Task SearchPlatformWarehouses()
 ////		{
-////			if (activeTab == tab) return;
-
-////			activeTab = tab;
-
-////			// Reset filters
-////			searchModel.SearchTerm = "";
-////			searchModel.IsActive = null;
-////			selectedVendorId = null;
-////			searchModel.VendorId = null;
-
-////			// Set warehouse type filter based on tab
-////			if (tab == "platform")
+////			try
 ////			{
-////				searchModel.IsDefaultPlatformWarehouse = true;
+////				//isLoading = true;
+////				StateHasChanged();
+
+////				Console.WriteLine($"SearchPlatformWarehouses - IsDefaultPlatformWarehouse: {platformSearchModel.IsDefaultPlatformWarehouse}");
+
+////				var result = await WarehouseService.SearchAsync(platformSearchModel);
+
+////				if (result.Success && result.Data != null)
+////				{
+////					platformItems = result.Data.Items ?? new List<WarehouseDto>();
+////					platformTotalRecords = result.Data.TotalRecords;
+////					platformTotalPages = (int)Math.Ceiling((double)platformTotalRecords / platformSearchModel.PageSize);
+////				}
+////				else
+////				{
+////					platformItems = new List<WarehouseDto>();
+////					platformTotalRecords = 0;
+////					platformTotalPages = 0;
+////				}
 ////			}
-////			else if (tab == "vendor")
+////			catch (Exception ex)
 ////			{
-////				searchModel.IsDefaultPlatformWarehouse = false;
+////				Console.WriteLine($"Error in SearchPlatformWarehouses: {ex.Message}");
+////				await ShowErrorNotification("Error", "Failed to load platform warehouses");
+////				platformItems = new List<WarehouseDto>();
 ////			}
+////			finally
+////			{
+////				//isLoading = false;
+////				StateHasChanged();
+////			}
+////		}
 
-////			// Reset pagination
-////			searchModel.PageNumber = 1;
-////			currentPage = 1;
+////		// Vendor Warehouses Search
+////		private async Task SearchVendorWarehouses()
+////		{
+////			try
+////			{
+////				//isLoading = true;
+////				StateHasChanged();
 
-////			// Search with new filter
-////			await Search();
+////				Console.WriteLine($"SearchVendorWarehouses - IsDefaultPlatformWarehouse: {vendorSearchModel.IsDefaultPlatformWarehouse}");
+
+////				var result = await WarehouseService.SearchVendorAsync(vendorSearchModel);
+
+////				if (result.Success && result.Data != null)
+////				{
+////					vendorItems = result.Data.Items ?? new List<WarehouseDto>();
+////					vendorTotalRecords = result.Data.TotalRecords;
+////					vendorTotalPages = (int)Math.Ceiling((double)vendorTotalRecords / vendorSearchModel.PageSize);
+////				}
+////				else
+////				{
+////					vendorItems = new List<WarehouseDto>();
+////					vendorTotalRecords = 0;
+////					vendorTotalPages = 0;
+////				}
+////			}
+////			catch (Exception ex)
+////			{
+////				Console.WriteLine($"Error in SearchVendorWarehouses: {ex.Message}");
+////				await ShowErrorNotification("Error", "Failed to load vendor warehouses");
+////				vendorItems = new List<WarehouseDto>();
+////			}
+////			finally
+////			{
+////				//isLoading = false;
+////				StateHasChanged();
+////			}
+////		}
+
+////		// Override base Search method
+////		protected override async Task Search()
+////		{
+////			if (activeTab == "platform")
+////			{
+////				platformCurrentPage = 1;
+////				platformSearchModel.PageNumber = 1;
+////				await SearchPlatformWarehouses();
+////			}
+////			else
+////			{
+////				vendorCurrentPage = 1;
+////				vendorSearchModel.PageNumber = 1;
+////				await SearchVendorWarehouses();
+////			}
+////		}
+
+////		protected async Task SwitchToPlatform()
+////		{
+////			activeTab = "platform";
+////			StateHasChanged();
+////		}
+
+////		protected async Task SwitchToVendor()
+////		{
+////			activeTab = "vendor";
 ////			StateHasChanged();
 ////		}
 
@@ -966,40 +1647,86 @@ namespace Dashboard.Pages.Warehouse
 ////			if (Guid.TryParse(e.Value?.ToString(), out Guid vendorId))
 ////			{
 ////				selectedVendorId = vendorId;
-////				searchModel.VendorId = vendorId;
+////				vendorSearchModel.VendorId = vendorId;
 ////			}
 ////			else
 ////			{
 ////				selectedVendorId = null;
-////				searchModel.VendorId = null;
+////				vendorSearchModel.VendorId = null;
 ////			}
 
-////			searchModel.PageNumber = 1;
-////			currentPage = 1;
-////			await Search();
+////			vendorCurrentPage = 1;
+////			vendorSearchModel.PageNumber = 1;
+////			await SearchVendorWarehouses();
 ////		}
 
 ////		protected async Task OnFilterChanged(ChangeEventArgs e)
 ////		{
 ////			var filterValue = e.Value?.ToString();
 
-////			if (!string.IsNullOrEmpty(filterValue))
+////			if (activeTab == "platform")
 ////			{
-////				searchModel.IsActive = filterValue switch
+////				platformSearchModel.IsActive = filterValue switch
 ////				{
 ////					"active" => true,
 ////					"inactive" => false,
 ////					_ => null
 ////				};
+////				platformCurrentPage = 1;
+////				platformSearchModel.PageNumber = 1;
+////				await SearchPlatformWarehouses();
 ////			}
 ////			else
 ////			{
-////				searchModel.IsActive = null;
+////				vendorSearchModel.IsActive = filterValue switch
+////				{
+////					"active" => true,
+////					"inactive" => false,
+////					_ => null
+////				};
+////				vendorCurrentPage = 1;
+////				vendorSearchModel.PageNumber = 1;
+////				await SearchVendorWarehouses();
 ////			}
+////		}
 
-////			searchModel.PageNumber = 1;
-////			currentPage = 1;
-////			await Search();
+////		protected override async Task OnPageSizeChanged(ChangeEventArgs e)
+////		{
+////			if (int.TryParse(e.Value?.ToString(), out int pageSize))
+////			{
+////				if (activeTab == "platform")
+////				{
+////					platformSearchModel.PageSize = pageSize;
+////					platformCurrentPage = 1;
+////					platformSearchModel.PageNumber = 1;
+////					await SearchPlatformWarehouses();
+////				}
+////				else
+////				{
+////					vendorSearchModel.PageSize = pageSize;
+////					vendorCurrentPage = 1;
+////					vendorSearchModel.PageNumber = 1;
+////					await SearchVendorWarehouses();
+////				}
+////			}
+////		}
+
+////		protected override async Task GoToPage(int page)
+////		{
+////			if (activeTab == "platform")
+////			{
+////				if (page < 1 || page > platformTotalPages) return;
+////				platformCurrentPage = page;
+////				platformSearchModel.PageNumber = page;
+////				await SearchPlatformWarehouses();
+////			}
+////			else
+////			{
+////				if (page < 1 || page > vendorTotalPages) return;
+////				vendorCurrentPage = page;
+////				vendorSearchModel.PageNumber = page;
+////				await SearchVendorWarehouses();
+////			}
 ////		}
 
 ////		protected override async Task<ResponseModel<IEnumerable<WarehouseDto>>> GetAllItemsAsync()
@@ -1032,7 +1759,16 @@ namespace Dashboard.Pages.Warehouse
 ////				if (result.Success)
 ////				{
 ////					await ShowSuccessNotification("Status updated successfully");
-////					await Search();
+
+////					// Refresh the correct tab
+////					if (activeTab == "platform")
+////					{
+////						await SearchPlatformWarehouses();
+////					}
+////					else
+////					{
+////						await SearchVendorWarehouses();
+////					}
 ////				}
 ////				else
 ////				{
@@ -1045,12 +1781,12 @@ namespace Dashboard.Pages.Warehouse
 ////			}
 ////		}
 
-////		// Override Add to include warehouse type
 ////		protected void AddWarehouse()
 ////		{
 ////			var route = activeTab == "platform" ? "/warehouse/platform/add" : "/warehouse/vendor/add";
 ////			Navigation.NavigateTo(route);
 ////		}
+
 ////		protected override async Task Edit(WarehouseDto item)
 ////		{
 ////			var id = await GetItemId(item);
@@ -1058,106 +1794,351 @@ namespace Dashboard.Pages.Warehouse
 ////			var editRoute = $"/warehouse/{type}/{id}";
 ////			Navigation.NavigateTo(editRoute);
 ////		}
+
+////		// Computed properties for pagination
+////		protected int StartRecord => totalRecords == 0 ? 0 : ((currentPage - 1) * searchModel.PageSize) + 1;
+////		protected int EndRecord => Math.Min(currentPage * searchModel.PageSize, totalRecords);
+////		protected bool CanGoToPreviousPage => currentPage > 1;
+////		protected bool CanGoToNextPage => currentPage < totalPages;
 ////	}
 ////}
 
-////using Dashboard.Contracts.Warehouse;
-////using Microsoft.AspNetCore.Components;
-////using Resources;
-////using Shared.DTOs.Warehouse;
-////using Shared.GeneralModels;
+//////using Dashboard.Contracts.Warehouse;
+//////using Microsoft.AspNetCore.Components;
+//////using Resources;
+//////using Shared.DTOs.Vendor;
+//////using Shared.DTOs.Warehouse;
+//////using Shared.GeneralModels;
+//////using Shared.GeneralModels.SearchCriteriaModels;
 
-////namespace Dashboard.Pages.Warehouse
-////{
-////    public partial class Index : BaseListPage<WarehouseDto>
-////    {
-////        [Inject] private IWarehouseService WarehouseService { get; set; } = null!;
+//////namespace Dashboard.Pages.Warehouse
+//////{
+//////	public partial class Index : BaseListPage<WarehouseDto>
+//////	{
+//////		[Inject] private IWarehouseService WarehouseService { get; set; } = null!;
 
-////        protected override string EntityName => "Warehouse Management";
-////        protected override string AddRoute => "/warehouse";
-////        protected override string EditRouteTemplate => "/warehouse/{id}";
-////        protected override string SearchEndpoint => "api/v1/Warehouse/search";
+//////		// Tab management
+//////		private string activeTab = "platform"; // "platform" or "vendor"
+//////		private bool isMultiVendorEnabled = false;
 
-////        protected override Dictionary<string, Func<WarehouseDto, object>> ExportColumns => new()
-////        {
-////            //{ "English Name", item => item.TitleEn ?? "-" },
-////            //{ "Arabic Name", item => item.TitleAr ?? "-" },
-////            { "Address", item => item.Address ?? "-" },
-////            //{ "Phone", item => !string.IsNullOrEmpty(item.PhoneNumber) ? $"{item.PhoneCode} {item.PhoneNumber}" : "-" },
-////            { "Status", item => item.IsActive ? "Active" : "Inactive" }
-////        };
+//////		protected new WarehouseSearchCriteriaModel searchModel = new()
+//////		{
+//////			IsDefaultPlatformWarehouse = true  
+//////		};
 
-////        protected override async Task<ResponseModel<IEnumerable<WarehouseDto>>> GetAllItemsAsync()
-////        {
-////            return await WarehouseService.GetAllAsync();
-////        }
+//////		// Vendors list
+//////		private IEnumerable<VendorDto> vendors = new List<VendorDto>();
+//////		private Guid? selectedVendorId = null;
 
-////        protected override async Task<ResponseModel<bool>> DeleteItemAsync(Guid id)
-////        {
-////            var result = await WarehouseService.DeleteAsync(id);
-////            return new ResponseModel<bool>
-////            {
-////                Success = result.Success,
-////                Message = result.Message,
-////                Data = result.Success,
-////                Errors = result.Errors
-////            };
-////        }
+//////		protected override string EntityName => "Warehouse Management";
+//////		protected override string AddRoute => activeTab == "platform" ? "/warehouse/platform" : "/warehouse/vendor";
+//////		protected override string EditRouteTemplate => "/warehouse/{id}";
+//////		protected override string SearchEndpoint => "api/v1/Warehouse/search";
 
-////        protected override async Task<string> GetItemId(WarehouseDto item)
-////        {
-////            return await Task.FromResult(item.Id.ToString());
-////        }
+//////		protected override Dictionary<string, Func<WarehouseDto, object>> ExportColumns => new()
+//////		{
+//////			{ "Type", item => item.IsDefaultPlatformWarehouse ? "Platform" : "Vendor" },
+//////			//{ "Vendor", item => item.VendorName ?? "-" },
+//////			{ "Address", item => item.Address ?? "-" },
+//////			{ "Email", item => item.Email ?? "-" },
+//////			{ "Status", item => item.IsActive ? "Active" : "Inactive" }
+//////		};
 
-////        protected async Task ToggleStatus(WarehouseDto warehouse)
-////        {
-////            try
-////            {
-////                var result = await WarehouseService.ToggleStatusAsync(warehouse.Id);
-////                if (result.Success)
-////                {
-////                    await ShowSuccessNotification("Status updated successfully");
-////                    await Search();
-////                }
-////                else
-////                {
-////                    await ShowErrorNotification(ValidationResources.Error, result.Message ?? "Failed to update status");
-////                }
-////            }
-////            catch (Exception)
-////            {
-////                await ShowErrorNotification(ValidationResources.Error, "Error updating warehouse status");
-////            }
-////        }
+//////		protected override async Task OnCustomInitializeAsync()
+//////		{
+//////			searchModel.PageSize = 10;
 
-////        protected async Task OnFilterChanged(ChangeEventArgs e)
-////        {
-////            var filterValue = e.Value?.ToString();
+//////			searchModel.IsDefaultPlatformWarehouse = true; // Start with platform warehouses
+//////			// Check if multi-vendor is enabled
+//////			await CheckMultiVendorStatus();
 
-////            await Search();
+//////			// Load vendors if multi-vendor is enabled
+//////			if (isMultiVendorEnabled)
+//////			{
+//////				await LoadVendors();
+//////			}
 
-////            if (!string.IsNullOrEmpty(filterValue) && items != null)
-////            {
-////                items = filterValue switch
-////                {
-////                    "active" => items.Where(w => w.IsActive),
-////                    "inactive" => items.Where(w => !w.IsActive),
-////                    _ => items
-////                };
+//////			// Set initial filter based on active tab
 
-////                totalRecords = items.Count();
-////                totalPages = (int)Math.Ceiling((double)totalRecords / searchModel.PageSize);
-////                currentPage = 1;
-////                searchModel.PageNumber = 1;
+//////			await base.OnCustomInitializeAsync();
+//////		}
+//////		protected async Task SwitchToPlatform()
+//////		{
+//////			searchModel.IsDefaultPlatformWarehouse = true; // Start with platform warehouses
 
-////                StateHasChanged();
-////            }
-////        }
+//////			await SwitchTab("platform");
+//////		}
 
-////        protected override async Task OnCustomInitializeAsync()
-////        {
-////            searchModel.PageSize = 10;
-////            await base.OnCustomInitializeAsync();
-////        }
-////    }
-////}
+//////		protected async Task SwitchToVendor()
+//////		{
+//////			searchModel.IsDefaultPlatformWarehouse = false; // Start with platform warehouses
+
+//////			await SwitchTab("vendor");
+//////		}
+//////		private async Task CheckMultiVendorStatus()
+//////		{
+//////			try
+//////			{
+//////				var result = await WarehouseService.IsMultiVendorEnabledAsync();
+//////				if (result.Success)
+//////				{
+//////					isMultiVendorEnabled = result.Data;
+//////					searchModel.IsDefaultPlatformWarehouse = true;
+//////					//isMultiVendorEnabled = true;
+//////					StateHasChanged();
+//////				}
+//////			}
+//////			catch (Exception ex)
+//////			{
+//////				Console.WriteLine($"Error checking multi-vendor status: {ex.Message}");
+//////			}
+//////		}
+
+//////		private async Task LoadVendors()
+//////		{
+//////			try
+//////			{
+//////				var result = await WarehouseService.GetVendorsAsync();
+//////				if (result.Success && result.Data != null)
+//////				{
+//////					vendors = result.Data;
+//////					StateHasChanged();
+//////				}
+//////			}
+//////			catch (Exception ex)
+//////			{
+//////				await ShowErrorNotification("Error", "Failed to load vendors");
+//////			}
+//////		}
+
+//////		protected async Task SwitchTab(string tab)
+//////		{
+//////			if (activeTab == tab) return;
+
+//////			activeTab = tab;
+
+//////			// Reset filters
+//////			searchModel.SearchTerm = "";
+//////			searchModel.IsActive = null;
+//////			selectedVendorId = null;
+//////			searchModel.VendorId = null;
+
+//////			// Set warehouse type filter based on tab
+//////			if (tab == "platform")
+//////			{
+//////				searchModel.IsDefaultPlatformWarehouse = true;
+//////			}
+//////			else if (tab == "vendor")
+//////			{
+//////				searchModel.IsDefaultPlatformWarehouse = false;
+//////			}
+
+//////			// Reset pagination
+//////			searchModel.PageNumber = 1;
+//////			currentPage = 1;
+
+//////			// Search with new filter
+//////			await Search();
+//////			StateHasChanged();
+//////		}
+
+//////		protected async Task OnVendorFilterChanged(ChangeEventArgs e)
+//////		{
+//////			if (Guid.TryParse(e.Value?.ToString(), out Guid vendorId))
+//////			{
+//////				selectedVendorId = vendorId;
+//////				searchModel.VendorId = vendorId;
+//////			}
+//////			else
+//////			{
+//////				selectedVendorId = null;
+//////				searchModel.VendorId = null;
+//////			}
+
+//////			searchModel.PageNumber = 1;
+//////			currentPage = 1;
+//////			await Search();
+//////		}
+
+//////		protected async Task OnFilterChanged(ChangeEventArgs e)
+//////		{
+//////			var filterValue = e.Value?.ToString();
+
+//////			if (!string.IsNullOrEmpty(filterValue))
+//////			{
+//////				searchModel.IsActive = filterValue switch
+//////				{
+//////					"active" => true,
+//////					"inactive" => false,
+//////					_ => null
+//////				};
+//////			}
+//////			else
+//////			{
+//////				searchModel.IsActive = null;
+//////			}
+
+//////			searchModel.PageNumber = 1;
+//////			currentPage = 1;
+//////			await Search();
+//////		}
+
+//////		protected override async Task<ResponseModel<IEnumerable<WarehouseDto>>> GetAllItemsAsync()
+//////		{
+//////			return await WarehouseService.GetAllAsync();
+//////		}
+
+//////		protected override async Task<ResponseModel<bool>> DeleteItemAsync(Guid id)
+//////		{
+//////			var result = await WarehouseService.DeleteAsync(id);
+//////			return new ResponseModel<bool>
+//////			{
+//////				Success = result.Success,
+//////				Message = result.Message,
+//////				Data = result.Success,
+//////				Errors = result.Errors
+//////			};
+//////		}
+
+//////		protected override async Task<string> GetItemId(WarehouseDto item)
+//////		{
+//////			return await Task.FromResult(item.Id.ToString());
+//////		}
+
+//////		protected async Task ToggleStatus(WarehouseDto warehouse)
+//////		{
+//////			try
+//////			{
+//////				var result = await WarehouseService.ToggleStatusAsync(warehouse.Id);
+//////				if (result.Success)
+//////				{
+//////					await ShowSuccessNotification("Status updated successfully");
+//////					await Search();
+//////				}
+//////				else
+//////				{
+//////					await ShowErrorNotification(ValidationResources.Error, result.Message ?? "Failed to update status");
+//////				}
+//////			}
+//////			catch (Exception)
+//////			{
+//////				await ShowErrorNotification(ValidationResources.Error, "Error updating warehouse status");
+//////			}
+//////		}
+
+//////		// Override Add to include warehouse type
+//////		protected void AddWarehouse()
+//////		{
+//////			var route = activeTab == "platform" ? "/warehouse/platform/add" : "/warehouse/vendor/add";
+//////			Navigation.NavigateTo(route);
+//////		}
+//////		protected override async Task Edit(WarehouseDto item)
+//////		{
+//////			var id = await GetItemId(item);
+//////			var type = item.IsDefaultPlatformWarehouse ? "platform" : "vendor";
+//////			var editRoute = $"/warehouse/{type}/{id}";
+//////			Navigation.NavigateTo(editRoute);
+//////		}
+//////	}
+//////}
+
+//////using Dashboard.Contracts.Warehouse;
+//////using Microsoft.AspNetCore.Components;
+//////using Resources;
+//////using Shared.DTOs.Warehouse;
+//////using Shared.GeneralModels;
+
+//////namespace Dashboard.Pages.Warehouse
+//////{
+//////    public partial class Index : BaseListPage<WarehouseDto>
+//////    {
+//////        [Inject] private IWarehouseService WarehouseService { get; set; } = null!;
+
+//////        protected override string EntityName => "Warehouse Management";
+//////        protected override string AddRoute => "/warehouse";
+//////        protected override string EditRouteTemplate => "/warehouse/{id}";
+//////        protected override string SearchEndpoint => "api/v1/Warehouse/search";
+
+//////        protected override Dictionary<string, Func<WarehouseDto, object>> ExportColumns => new()
+//////        {
+//////            //{ "English Name", item => item.TitleEn ?? "-" },
+//////            //{ "Arabic Name", item => item.TitleAr ?? "-" },
+//////            { "Address", item => item.Address ?? "-" },
+//////            //{ "Phone", item => !string.IsNullOrEmpty(item.PhoneNumber) ? $"{item.PhoneCode} {item.PhoneNumber}" : "-" },
+//////            { "Status", item => item.IsActive ? "Active" : "Inactive" }
+//////        };
+
+//////        protected override async Task<ResponseModel<IEnumerable<WarehouseDto>>> GetAllItemsAsync()
+//////        {
+//////            return await WarehouseService.GetAllAsync();
+//////        }
+
+//////        protected override async Task<ResponseModel<bool>> DeleteItemAsync(Guid id)
+//////        {
+//////            var result = await WarehouseService.DeleteAsync(id);
+//////            return new ResponseModel<bool>
+//////            {
+//////                Success = result.Success,
+//////                Message = result.Message,
+//////                Data = result.Success,
+//////                Errors = result.Errors
+//////            };
+//////        }
+
+//////        protected override async Task<string> GetItemId(WarehouseDto item)
+//////        {
+//////            return await Task.FromResult(item.Id.ToString());
+//////        }
+
+//////        protected async Task ToggleStatus(WarehouseDto warehouse)
+//////        {
+//////            try
+//////            {
+//////                var result = await WarehouseService.ToggleStatusAsync(warehouse.Id);
+//////                if (result.Success)
+//////                {
+//////                    await ShowSuccessNotification("Status updated successfully");
+//////                    await Search();
+//////                }
+//////                else
+//////                {
+//////                    await ShowErrorNotification(ValidationResources.Error, result.Message ?? "Failed to update status");
+//////                }
+//////            }
+//////            catch (Exception)
+//////            {
+//////                await ShowErrorNotification(ValidationResources.Error, "Error updating warehouse status");
+//////            }
+//////        }
+
+//////        protected async Task OnFilterChanged(ChangeEventArgs e)
+//////        {
+//////            var filterValue = e.Value?.ToString();
+
+//////            await Search();
+
+//////            if (!string.IsNullOrEmpty(filterValue) && items != null)
+//////            {
+//////                items = filterValue switch
+//////                {
+//////                    "active" => items.Where(w => w.IsActive),
+//////                    "inactive" => items.Where(w => !w.IsActive),
+//////                    _ => items
+//////                };
+
+//////                totalRecords = items.Count();
+//////                totalPages = (int)Math.Ceiling((double)totalRecords / searchModel.PageSize);
+//////                currentPage = 1;
+//////                searchModel.PageNumber = 1;
+
+//////                StateHasChanged();
+//////            }
+//////        }
+
+//////        protected override async Task OnCustomInitializeAsync()
+//////        {
+//////            searchModel.PageSize = 10;
+//////            await base.OnCustomInitializeAsync();
+//////        }
+//////    }
+//////}

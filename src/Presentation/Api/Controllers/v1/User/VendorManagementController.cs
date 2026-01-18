@@ -59,7 +59,7 @@ namespace Api.Controllers.v1.User
         public async Task<IActionResult> Get(Guid id)
         {
             if (id == Guid.Empty)
-                return BadRequest(new ResponseModel<string>
+                return BadRequest(new ResponseModel<VendorDto>
                 {
                     Success = false,
                     Message = GetResource<NotifiAndAlertsResources>(nameof(NotifiAndAlertsResources.InvalidInputAlert))
@@ -67,13 +67,47 @@ namespace Api.Controllers.v1.User
 
             var vendor = await _vendorService.FindByIdAsync(id);
             if (vendor == null)
-                return NotFound(new ResponseModel<string>
+                return NotFound(new ResponseModel<VendorDto>
                 {
                     Success = false,
                     Message = GetResource<NotifiAndAlertsResources>(nameof(NotifiAndAlertsResources.NoDataFound))
                 });
 
             return Ok(new ResponseModel<VendorDto>
+            {
+                Success = true,
+                Message = GetResource<NotifiAndAlertsResources>(nameof(NotifiAndAlertsResources.DataRetrieved)),
+                Data = vendor
+            });
+        }
+
+        /// <summary>
+        /// Retrieves a vendor preview by ID.
+        /// </summary>
+        /// <remarks>
+        /// API Version: 1.0+
+        /// </remarks>
+        /// <param name="id">The ID of the vendor.</param>
+        [HttpGet("preview/{id}")]
+        [AllowAnonymous]
+        public async Task<IActionResult> GetPreview(Guid id)
+        {
+            if (id == Guid.Empty)
+                return BadRequest(new ResponseModel<VendorPreviewDto>
+                {
+                    Success = false,
+                    Message = GetResource<NotifiAndAlertsResources>(nameof(NotifiAndAlertsResources.InvalidInputAlert))
+                });
+
+            var vendor = await _vendorService.FindPreviewByIdAsync(id);
+            if (vendor == null)
+                return NotFound(new ResponseModel<VendorPreviewDto>
+                {
+                    Success = false,
+                    Message = GetResource<NotifiAndAlertsResources>(nameof(NotifiAndAlertsResources.NoDataFound))
+                });
+
+            return Ok(new ResponseModel<VendorPreviewDto>
             {
                 Success = true,
                 Message = GetResource<NotifiAndAlertsResources>(nameof(NotifiAndAlertsResources.DataRetrieved)),

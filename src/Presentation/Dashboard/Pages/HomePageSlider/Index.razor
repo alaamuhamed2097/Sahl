@@ -2,12 +2,12 @@
 
 @using Shared.DTOs.HomeSlider
 @inherits BaseListPage<HomePageSliderDto>
-<PageTitle>@ECommerceResources.HomePageSlider</PageTitle>
+<PageTitle>@GeneralResources.HomePageSlider</PageTitle>
 
 <div class="container-fluid p-0">
     <div class="card shadow-sm border-0">
         <div class="card-header bg-primary text-white py-3 d-flex justify-content-between align-items-center">
-            <h5 class="mb-0 fw-semibold">@ECommerceResources.HomePageSlider</h5>
+            <h5 class="mb-0 fw-semibold">@GeneralResources.HomePageSlider</h5>
         </div>
         <div class="card-body">
             <div class="dt-responsive table-responsive">
@@ -16,17 +16,18 @@
                     <li class="nav-item col-md-6 w-auto d-flex flex-row align-items-center gap-3">
                         <EditForm Model="searchModel" OnSubmit="@Search">
                             <!-- Search Box -->
-                            <div class="input-group rounded-3 border" style="width: 170px; height: 38px;">
-                                <InputText @bind-Value="searchModel.SearchTerm"
+                            <div class="search-container">
+                                <div class="input-group search-box">
+                                    <input type="text"
+                                           @bind="searchModel.SearchTerm"
                                            id="searchInput"
-                                           class="form-control rounded-end-3 text-center border-0"
-                                           placeholder="@ActionsResources.Search"
-                                           style="height: 38px;" />
-                                <button type="submit"
-                                        class="btn btn-danger rounded-start-3 d-flex align-items-center justify-content-center border-0"
-                                        style="width: 40px; height: 38px;">
-                                    <i class="fas fa-search text-white m-0"></i>
-                                </button>
+                                           class="form-control search-input"
+                                           placeholder="@ActionsResources.Search" />
+                                    <button type="submit"
+                                            class="btn btn-search">
+                                        <i class="fas fa-search"></i>
+                                    </button>
+                                </div>
                             </div>
                         </EditForm>
 

@@ -10,13 +10,11 @@ namespace Dashboard.Layout
 {
     public partial class NavMenu : IDisposable
     {
-
         private HashSet<string> _openSubmenus = new HashSet<string>();
         private string ComponentId = Guid.NewGuid().ToString("N")[..8];
         protected bool IsCollapsed = false;
         protected string baseUrl = string.Empty;
         protected string _ecommerceUrl = "";
-        //private string currentUrl;
 
         private string NavMenuClass => IsCollapsed ? "pcoded-navbar menupos-fixed navbar-collapsed" : "pcoded-navbar menupos-fixed";
         private string MobileMenuClass => IsCollapsed ? "mobile-menu on" : "mobile-menu";
@@ -76,6 +74,10 @@ namespace Dashboard.Layout
             NavigationManager.LocationChanged -= OnLocationChanged;
         }
 
+        // =========================
+        // Toggle Submenu Methods
+        // =========================
+
         private void ToggleSubmenu(string submenuName)
         {
             if (_openSubmenus.Contains(submenuName))
@@ -89,66 +91,77 @@ namespace Dashboard.Layout
             StateHasChanged();
         }
 
+        // Individual toggle methods for each submenu
+        private void ToggleCatalogSubmenu() => ToggleSubmenu("catalog");
+        private void ToggleOrdersSubmenu() => ToggleSubmenu("orders");
+        private void ToggleUsersManagementSubmenu() => ToggleSubmenu("users-management");
+        private void ToggleLogisticsSubmenu() => ToggleSubmenu("logistics");
+        private void ToggleMerchandisingSubmenu() => ToggleSubmenu("merchandising");
+        private void ToggleContentSubmenu() => ToggleSubmenu("content");
+        private void ToggleSettingsSubmenu() => ToggleSubmenu("settings");
+        private void ToggleVendorOrdersRewardsSubmenu() => ToggleSubmenu("vendor-orders-rewards");
+        private void ToggleVendorAccountSettingsSubmenu() => ToggleSubmenu("vendor-account-settings");
+
         private bool IsSubmenuOpen(string submenuName)
         {
             return _openSubmenus.Contains(submenuName);
         }
+
         private void EnsureSubmenuForCurrentRoute()
         {
-            // امسح القوائم القديمة أولًا
+            // Clear old submenus first
             _openSubmenus.Clear();
 
-            //var relativePath = NavigationManager.ToBaseRelativePath(NavigationManager.Uri).Trim('/');
             var relativePath = NavigationManager.ToBaseRelativePath(NavigationManager.Uri ?? string.Empty);
 
             // =========================
-            // Admin / E-Commerce
+            // ADMIN MENU ROUTES
             // =========================
-            if (StartsWithAny(relativePath, new[] { "product", "category", "brand", "attribute", "unit", "shippingCompany" }))
+
+            // 📦 Catalog Management
+            if (StartsWithAny(relativePath, new[] { "products", "categories", "brands", "attributes", "units" }))
                 _openSubmenus.Add("catalog");
 
-            if (StartsWithAny(relativePath, new[] { "users/administrators", "users/vendors" }))
+            // 🛒 Orders
+            if (StartsWithAny(relativePath, new[] { "sales/orders", "refunds" }))
+                _openSubmenus.Add("orders");
+
+            // 👥 User Management
+            if (StartsWithAny(relativePath, new[] { "users/administrators", "users/vendors", "users/customers" }))
                 _openSubmenus.Add("users-management");
 
-            if (StartsWithAny(relativePath, new[] { "promocode", "testimonial" }))
-                _openSubmenus.Add("marketing");
+            // 🚚 Logistics & Shipping
+            if (StartsWithAny(relativePath, new[] { "warehouses", "shippingCompanies", "countries", "states", "cities" }))
+                _openSubmenus.Add("logistics");
 
-            if (StartsWithAny(relativePath, new[] { "country", "state", "city" }))
-                _openSubmenus.Add("shipping");
+            // 📢 Merchandising
+            if (StartsWithAny(relativePath, new[] { "campaigns", "couponCodes", "HomepageSlider", "home-blocks" }))
+                _openSubmenus.Add("merchandising");
 
-            if (StartsWithAny(relativePath, new[] { "content/pages" }))
+            // 🎨 Content & CMS
+            if (StartsWithAny(relativePath, new[] { "content/pages", "content/areas", "content/media" }))
                 _openSubmenus.Add("content");
 
-
-			if (StartsWithAny(relativePath, new[] { "ReviewManagement" }))
-				_openSubmenus.Add("ReviewManagement");
-
-			if (StartsWithAny(relativePath, new[] { "HomePageSlider" }))
-				_openSubmenus.Add("HomePageSlider");
-
-			if (StartsWithAny(relativePath, new[] { "settings", "currencies" }))
+            // ⚙️ Settings & Configuration
+            if (StartsWithAny(relativePath, new[] { "settings", "system-settings" }))
                 _openSubmenus.Add("settings");
 
+            // =========================
+            // VENDOR MENU ROUTES
+            // =========================
 
-            //=========================
-            //Vendor
-            //=========================
+            // 📦 Orders & Rewards
+            if (StartsWithAny(relativePath, new[] { "vendor/orders" }))
+                _openSubmenus.Add("vendor-orders-rewards");
 
-            //if (StartsWithAny(relativePath, new[] { "commissions", "VendorBusinessPoints", "top-earners", "myTeam" }))
-            //    _openSubmenus.Add("Vendor-earnings-network");
+            // 👤 Account & Settings
+            if (StartsWithAny(relativePath, new[] { "vendor/personal-info", "vendor/account-details", "vendor/settings" }))
+                _openSubmenus.Add("vendor-account-settings");
 
-            //if (StartsWithAny(relativePath, new[] { "VendorOrders", "VendorGifts", "Vendor-events" }))
-            //    _openSubmenus.Add("vendor-orders-rewards");
-
-            //if (StartsWithAny(relativePath, new[] { "walletinfo", "VendorPaymentMethods" }))
-            //    _openSubmenus.Add("vendor-wallet-payments");
-
-            //if (StartsWithAny(relativePath, new[] { "PersonalInfo", "accountDetails", "VendorSettings" }))
-            //    _openSubmenus.Add("vendor-account-settings");
             InvokeAsync(StateHasChanged);
-
         }
-        // ميثود مساعدة لفحص البادئات
+
+        // Helper method to check prefixes
         private static bool StartsWithAny(string path, IEnumerable<string> prefixes)
         {
             foreach (var prefix in prefixes)
@@ -158,81 +171,5 @@ namespace Dashboard.Layout
             }
             return false;
         }
-        // ميثود مساعدة لفحص البادئات
-        //private static bool StartsWithAny(string path, IEnumerable<string> prefixes)
-        //{
-        //	foreach (var prefix in prefixes)
-        //	{
-        //		if (path.StartsWith(prefix, StringComparison.OrdinalIgnoreCase))
-        //			return true;
-        //	}
-        //	return false;
-        //}
-
-        //private void EnsureSubmenuForCurrentRoute()
-        //{
-        //	// امسح القوائم القديمة أولًا
-        //	_openSubmenus.Clear();
-
-        //	var relativePath = NavigationManager.ToBaseRelativePath(NavigationManager.Uri).Trim('/');
-
-        //	// هنا تحدد القوائم الفرعية اللي تتفتح حسب الـ Route
-        //	if (relativePath.StartsWith("products") || relativePath.StartsWith("categories"))
-        //		_openSubmenus.Add("catalog");
-
-        //	if (relativePath.StartsWith("users"))
-        //		_openSubmenus.Add("users-management");
-
-        //	if (relativePath.StartsWith("marketing"))
-        //		_openSubmenus.Add("marketing");
-
-        //	if (relativePath.StartsWith("settings") || relativePath.StartsWith("currencies"))
-        //		_openSubmenus.Add("settings");
-
-        //	// وأي submenu آخر حسب حاجتك
-        //}
-
-
-        //private void EnsureSubmenuForCurrentRoute()
-        //{
-        //    var relativePath = NavigationManager.ToBaseRelativePath(NavigationManager.Uri ?? string.Empty);
-        //    var trimmed = relativePath.Trim('/');
-        //    var submenu = GetSubmenuForPath(trimmed);
-        //    if (!string.IsNullOrWhiteSpace(submenu))
-        //    {
-        //        _openSubmenus.Add(submenu);
-        //    }
-        //}
-
-        private static string? GetSubmenuForPath(string relativePath)
-        {
-            if (string.IsNullOrWhiteSpace(relativePath)) return null;
-
-            if (StartsWithAny(relativePath, new[] { "commissions", "VendorBusinessPoints", "top-earners", "myTeam" }))
-                return "Vendor-earnings-network";
-
-            if (StartsWithAny(relativePath, new[] { "VendorOrders", "VendorGifts", "Vendor-events" }))
-                return "Vendor-orders-rewards";
-
-            if (StartsWithAny(relativePath, new[] { "walletinfo", "VendorPaymentMethods" }))
-                return "Vendor-wallet-payments";
-
-            if (StartsWithAny(relativePath, new[] { "PersonalInfo", "accountDetails", "VendorSettings" }))
-                return "Vendor-account-settings";
-
-            return null;
-        }
-
-        //private static bool StartsWithAny(string path, IEnumerable<string> prefixes)
-        //{
-        //    foreach (var prefix in prefixes)
-        //    {
-        //        if (path.StartsWith(prefix, StringComparison.OrdinalIgnoreCase))
-        //        {
-        //            return true;
-        //        }
-        //    }
-        //    return false;
-        //}
     }
 }
