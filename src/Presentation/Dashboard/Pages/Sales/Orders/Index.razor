@@ -44,15 +44,18 @@
                         <select class="form-select rounded-3 shadow-sm border-light text-primary fw-bold text-center custom-dropdown"
                                 style="width: 140px; height: 40px; padding-right: 30px;"
                                 @onchange="OnOrderStatusFilterChanged">
-                            <option value="">@ECommerceResources.OrderStatus</option>
-                            <option value="@((int)OrderStatus.Pending)">@ECommerceResources.Pending</option>
-                            <option value="@((int)OrderStatus.Accepted)">@ECommerceResources.Accepted</option>
-                            <option value="@((int)OrderStatus.InProgress)">@ECommerceResources.InProgress</option>
-                            <option value="@((int)OrderStatus.Shipping)">@ECommerceResources.Shipping</option>
-                            <option value="@((int)OrderStatus.Delivered)">@ECommerceResources.Delivered</option>
-                            <option value="@((int)OrderStatus.Rejected)">@ECommerceResources.Rejected</option>
-                            <option value="@((int)OrderStatus.Canceled)">@ECommerceResources.Canceled</option>
-                            <option value="@((int)OrderStatus.Returned)">@ECommerceResources.Returned</option>
+                            <option value="">@OrderResources.OrderStatus</option>
+                            <option value="@((int)OrderProgressStatus.Pending)">@OrderResources.Pending</option>
+                            <option value="@((int)OrderProgressStatus.Confirmed)">@OrderResources.Accepted</option>
+                            <option value="@((int)OrderProgressStatus.Processing)">@OrderResources.InProgress</option>
+                            <option value="@((int)OrderProgressStatus.Shipped)">@OrderResources.Shipping</option>
+                            <option value="@((int)OrderProgressStatus.Delivered)">@OrderResources.Delivered</option>
+                            <option value="@((int)OrderProgressStatus.Completed)">@OrderResources.Completed</option>
+                            <option value="@((int)OrderProgressStatus.PaymentFailed)">@OrderResources.PaymentFailed</option>
+                            <option value="@((int)OrderProgressStatus.RefundRequested)">@OrderResources.RefundRequested</option>
+                            <option value="@((int)OrderProgressStatus.Refunded)">@OrderResources.Refunded</option>
+                            <option value="@((int)OrderProgressStatus.Cancelled)">@OrderResources.Canceled</option>
+                            <option value="@((int)OrderProgressStatus.Returned)">@OrderResources.Returned</option>
                         </select>
                     </li>
 

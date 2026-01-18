@@ -416,6 +416,115 @@ public class OrderController : BaseController
             Data = new { OrderId = orderId }
         });
     }
+
+    /// <summary>
+    /// Update Order (Admin Dashboard)
+    /// Used by Details.razor to save order changes (e.g., delivery date)
+    /// </summary>
+    /// <remarks>
+    /// API Version: 1.0+<br/>
+    /// Requires Admin role.<br/>
+    /// Updates order details like delivery date.
+    /// </remarks>
+    [HttpPut("{orderId}")]
+    [Authorize(Roles = nameof(UserRole.Admin))]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    public async Task<IActionResult> UpdateOrder(
+        Guid orderId,
+        [FromBody] OrderDto orderDto)
+    {
+        try
+        {
+            if (orderId != orderDto.Id)
+            {
+                return BadRequest(new ResponseModel<bool>
+                {
+                    Success = false,
+                    Message = "Order ID mismatch",
+                    Data = false
+                });
+            }
+
+            var result = await _orderManagementService.SaveAsync(orderDto);
+
+            if (!result.Success)
+            {
+                return BadRequest(result);
+            }
+
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new ResponseModel<bool>
+            {
+                Success = false,
+                Message = ex.Message,
+                Data = false
+            });
+        }
+    }
+
+    /// <summary>
+    /// Change Order Status (Admin Dashboard)
+    /// Used by Details.razor to change order status (Pending → Accepted → InProgress → Shipping → Delivered)
+    /// </summary>
+    /// <remarks>
+    /// API Version: 1.0+<br/>
+    /// Requires Admin role.<br/>
+    /// Changes order status with validation.
+    /// </remarks>
+    [HttpPost("{orderId}/change-status")]
+    [Authorize(Roles = nameof(UserRole.Admin))]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    public async Task<IActionResult> ChangeOrderStatus(
+        Guid orderId,
+        [FromBody] ChangeOrderStatusRequest request)
+    {
+        try
+        {
+            if (orderId == Guid.Empty)
+            {
+                return BadRequest(new ResponseModel<bool>
+                {
+                    Success = false,
+                    Message = "Invalid order ID",
+                    Data = false
+                });
+            }
+
+            // Create OrderDto with the new status
+            var orderDto = new OrderDto
+            {
+                Id = orderId,
+                CurrentState = request.NewStatus
+            };
+
+            var result = await _orderManagementService.ChangeOrderStatusAsync(orderDto);
+
+            if (!result.Success)
+            {
+                return BadRequest(result);
+            }
+
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new ResponseModel<bool>
+            {
+                Success = false,
+                Message = ex.Message,
+                Data = false
+            });
+        }
+    }
 }
 
 /// <summary>

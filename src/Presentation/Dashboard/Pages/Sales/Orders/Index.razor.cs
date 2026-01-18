@@ -24,14 +24,17 @@ namespace Dashboard.Pages.Sales.Orders
                 [ECommerceResources.OrderDate] = x => x.CreatedDateLocalFormatted,
                 [ECommerceResources.OrderStatus] = x => x.CurrentState switch
                 {
-                    OrderStatus.Accepted => ECommerceResources.Accepted,
-                    OrderStatus.Rejected => ECommerceResources.Rejected,
-                    OrderStatus.InProgress => ECommerceResources.InProgress,
-                    OrderStatus.Shipping => ECommerceResources.Shipping,
-                    OrderStatus.Delivered => ECommerceResources.Delivered,
-                    OrderStatus.Pending => ECommerceResources.Pending,
-                    OrderStatus.Canceled => ECommerceResources.Canceled,
-                    OrderStatus.Returned => ECommerceResources.Returned,
+                    OrderProgressStatus.Pending => OrderResources.Pending,
+                    OrderProgressStatus.Confirmed => OrderResources.Accepted,
+                    OrderProgressStatus.Processing => OrderResources.InProgress,
+                    OrderProgressStatus.Shipped => OrderResources.Shipping,
+                    OrderProgressStatus.Delivered => OrderResources.Delivered,
+                    OrderProgressStatus.Completed => OrderResources.Completed,
+                    OrderProgressStatus.Cancelled => OrderResources.Canceled,
+                    OrderProgressStatus.PaymentFailed => OrderResources.PaymentFailed,
+                    OrderProgressStatus.RefundRequested => OrderResources.RefundRequested,
+                    OrderProgressStatus.Refunded => OrderResources.Refunded,
+                    OrderProgressStatus.Returned => OrderResources.Returned,
                     _ => x.CurrentState.ToString()
                 },
                 [ECommerceResources.PaymentStatus] = x => x.PaymentStatus switch
@@ -60,34 +63,40 @@ namespace Dashboard.Pages.Sales.Orders
             return item.Id.ToString();
         }
 
-        protected string GetOrderStatusClass(OrderStatus status)
+        protected string GetOrderStatusClass(OrderProgressStatus status)
         {
             return status switch
             {
-                OrderStatus.Accepted => "badge bg-warning",
-                OrderStatus.Rejected => "badge bg-danger",
-                OrderStatus.InProgress => "badge bg-primary",
-                OrderStatus.Shipping => "badge bg-info",
-                OrderStatus.Delivered => "badge bg-success",
-                OrderStatus.Pending => "badge bg-secondary",
-                OrderStatus.Canceled => "badge bg-dark",
-                OrderStatus.Returned => "badge bg-secondary",
+                OrderProgressStatus.Pending => "badge bg-secondary",
+                OrderProgressStatus.Confirmed => "badge bg-warning",
+                OrderProgressStatus.Processing => "badge bg-primary",
+                OrderProgressStatus.Shipped => "badge bg-info",
+                OrderProgressStatus.Delivered => "badge bg-success",
+                OrderProgressStatus.Completed => "badge bg-success",
+                OrderProgressStatus.Cancelled => "badge bg-dark",
+                OrderProgressStatus.PaymentFailed => "badge bg-danger",
+                OrderProgressStatus.RefundRequested => "badge bg-warning",
+                OrderProgressStatus.Refunded => "badge bg-secondary",
+                OrderProgressStatus.Returned => "badge bg-secondary",
                 _ => "badge bg-secondary"
             };
         }
 
-        protected string GetOrderStatusText(OrderStatus status)
+        protected string GetOrderStatusText(OrderProgressStatus status)
         {
             return status switch
             {
-                OrderStatus.Accepted => ECommerceResources.Accepted,
-                OrderStatus.Rejected => ECommerceResources.Rejected,
-                OrderStatus.InProgress => ECommerceResources.InProgress,
-                OrderStatus.Shipping => ECommerceResources.Shipping,
-                OrderStatus.Delivered => ECommerceResources.Delivered,
-                OrderStatus.Pending => ECommerceResources.Pending,
-                OrderStatus.Canceled => ECommerceResources.Canceled,
-                OrderStatus.Returned => ECommerceResources.Returned,
+                OrderProgressStatus.Pending => OrderResources.Pending,
+                OrderProgressStatus.Confirmed => OrderResources.Accepted,
+                OrderProgressStatus.Processing => OrderResources.InProgress,
+                OrderProgressStatus.Shipped => OrderResources.Shipping,
+                OrderProgressStatus.Delivered => OrderResources.Delivered,
+                OrderProgressStatus.Completed => OrderResources.Completed,
+                OrderProgressStatus.Cancelled => OrderResources.Canceled,
+                OrderProgressStatus.PaymentFailed => OrderResources.PaymentFailed,
+                OrderProgressStatus.RefundRequested => OrderResources.RefundRequested,
+                OrderProgressStatus.Refunded => OrderResources.Refunded,
+                OrderProgressStatus.Returned => OrderResources.Returned,
                 _ => status.ToString()
             };
         }
@@ -159,4 +168,3 @@ namespace Dashboard.Pages.Sales.Orders
         }
     }
 }
-

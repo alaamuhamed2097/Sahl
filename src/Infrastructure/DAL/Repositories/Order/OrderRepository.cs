@@ -291,7 +291,7 @@ public class OrderRepository : TableRepository<TbOrder>, IOrderRepository
                     var statusPart = searchLower.Replace("status:", "").Trim();
                     if (int.TryParse(statusPart, out int statusValue))
                     {
-                        query = query.Where(o => (int)o.OrderStatus == statusValue);
+                        query = query.Where((System.Linq.Expressions.Expression<Func<TbOrder, bool>>)(o => (int)o.OrderStatus == statusValue));
                     }
                 }
                 // Check if it's a payment status filter (payment:value format)
@@ -329,8 +329,8 @@ public class OrderRepository : TableRepository<TbOrder>, IOrderRepository
                     ? query.OrderByDescending(o => o.CreatedDateUtc)
                     : query.OrderBy(o => o.CreatedDateUtc),
                 "orderstatus" or "currentstate" => sortDirection == "desc"
-                    ? query.OrderByDescending(o => o.OrderStatus)
-                    : query.OrderBy(o => o.OrderStatus),
+                    ? query.OrderByDescending((System.Linq.Expressions.Expression<Func<TbOrder, OrderProgressStatus>>)(o => (OrderProgressStatus)o.OrderStatus))
+                    : query.OrderBy((System.Linq.Expressions.Expression<Func<TbOrder, OrderProgressStatus>>)(o => (OrderProgressStatus)o.OrderStatus)),
                 "price" => sortDirection == "desc"
                     ? query.OrderByDescending(o => o.Price)
                     : query.OrderBy(o => o.Price),

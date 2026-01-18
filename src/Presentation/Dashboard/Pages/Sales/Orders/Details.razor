@@ -3,301 +3,1422 @@
 
 @attribute [Authorize(Roles = nameof(UserRole.Admin))]
 @using Common.Enumerations
-@using Common.Enumerations
 @using Common.Enumerations.FieldType
 @using Common.Enumerations.Order
 @using Common.Enumerations.Payment
 @using Common.Enumerations.User
 @using Shared.DTOs.User
 
-<PageTitle>@ECommerceResources.OrderDetails</PageTitle>
+<PageTitle>@ECommerceResources.OrderDetails - #@Model.Number</PageTitle>
+
 <div class="container-fluid p-0">
-    <div class="card shadow-sm border-0">
-        <div class="card-header d-flex justify-content-between align-items-center">
-            <h4 class="modal-title" >
-                @ECommerceResources.OrderDetails
+    @* Unified Header Card *@
+    <div class="card shadow-sm border-0 mb-4">
+        <div class="card-header d-flex flex-wrap justify-content-between bg-primary align-items-center py-3 gap-3">
+            <h4 class="modal-title text-white mb-0 d-flex align-items-center gap-2">
+                <i class="fas fa-shopping-cart"></i>
+                <span class="d-none d-md-inline">@ECommerceResources.OrderDetails - </span>
+                <span class="fw-bold">#@Model.Number</span>
             </h4>
         </div>
-            <div class="card-body p-4">
-                <div class="page-wrapper">
-                    <div class="bg-white p-4">
-                        <div class="row g-0">
-                            <div class="col-md-6 mb-3">
-                                <div class="card h-100">
-                                    <div class="card-body p-0">
-                                        <div class="my-3">
-                                            <span class="px-3 d-block">
-                                                <i class="fas fa-circle text-c-blue f-10 m-r-5"></i><strong class="fw-bold">@ECommerceResources.CustomerName : </strong>
-                                                @Model.FirstName @Model.LastName
-                                            </span>
-                                            <hr />
-                                            <span class="px-3 d-block">
-                                                <i class="fas fa-circle text-c-green f-10 m-r-5"></i><strong class="fw-bold">@FormResources.Email : </strong>
-                                                @Model.Email
-                                            </span>
-                                            <hr />
-                                            <span class="px-3 d-block">
-                                                <i class="fas fa-circle text-c-green f-10 m-r-5"></i><strong class="fw-bold">@FormResources.Price : </strong>
-                                                @Model.Price $
-                                            </span>
-                                            <hr />
-                                            <span class="px-3 d-block">
-                                                <i class="fas fa-circle text-c-green f-10 m-r-5"></i><strong class="fw-bold">@FormResources.Address : </strong>
-                                                @Model.Address
-                                            </span>
-                                            <hr />
-                                        </div>
-                                    </div>
+
+        @* Order Info Bar with Better Visual *@
+        <div class="order-info-bar">
+            <div class="info-item">
+                <div class="info-icon">
+                    <i class="fas fa-hashtag"></i>
+                </div>
+                <div class="info-content">
+                    <small class="info-label">@OrderResources.OrderNumber</small>
+                    <strong class="info-value text-primary">@Model.Number</strong>
+                </div>
+            </div>
+            <div class="info-item">
+                <div class="info-icon">
+                    <i class="fas fa-calendar"></i>
+                </div>
+                <div class="info-content">
+                    <small class="info-label">@FormResources.Date</small>
+                    <strong class="info-value">@Model.CreatedDateLocalFormatted</strong>
+                </div>
+            </div>
+            <div class="info-item">
+                <div class="info-icon">
+                    <i class="fas fa-tasks"></i>
+                </div>
+                <div class="info-content">
+                    <small class="info-label">@ECommerceResources.Status</small>
+                    <span class="badge bg-@GetOrderStatusBadgeClass(Model.CurrentState) fs-6">
+                        @GetLocalizedOrderProgressStatus(Model.CurrentState)
+                    </span>
+                </div>
+            </div>
+            <div class="info-item">
+                <div class="info-icon">
+                    <i class="fas fa-credit-card"></i>
+                </div>
+                <div class="info-content">
+                    <small class="info-label">@ECommerceResources.PaymentStatus</small>
+                    <span class="badge bg-@GetPaymentStatusClass(Model.PaymentStatus) fs-6">
+                        @GetLocalizedPaymentStatus(Model.PaymentStatus)
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        @* Left Column: Order Details *@
+        <div class="col-lg-8">
+
+            @* Customer Information Card *@
+            <div class="card shadow-sm border-0 mb-4">
+                <div class="card-header bg-gradient-primary text-white py-3">
+                    <h5 class="mb-0 fw-bold d-flex align-items-center gap-2">
+                        <i class="fas fa-user"></i>
+                        @OrderResources.CustomerInformation
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <div class="info-box">
+                                <label class="text-muted small mb-1 d-flex align-items-center gap-1">
+                                    <i class="fas fa-user-circle text-primary"></i>
+                                    @ECommerceResources.CustomerName
+                                </label>
+                                <div class="fw-bold fs-5">
+                                    @if (!string.IsNullOrEmpty(Model.FirstName) || !string.IsNullOrEmpty(Model.LastName))
+                                    {
+                                        <span>@Model.FirstName @Model.LastName</span>
+                                    }
+                                    else if (!string.IsNullOrEmpty(Model.UserName))
+                                    {
+                                        <span>@Model.UserName</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted fst-italic">@GeneralResources.NotAvailable</span>
+                                    }
                                 </div>
                             </div>
-                            <div class="col-md-6 mb-3">
-                                <div class="card h-100">
-                                    <div class="card-body p-0">
-                                        <div class="my-3">
-                                            <span class="px-3 d-block">
-                                                <i class="fas fa-circle text-c-blue f-10 m-r-5"></i><strong class="fw-bold">@FormResources.PhoneNumber : </strong>
-                                                @Model.PhoneNumber
-                                            </span>
-                                            <hr />
-                                            <span class="px-3 d-block">
-                                                <i class="fas fa-circle text-c-green f-10 m-r-5"></i><strong class="fw-bold">@ECommerceResources.OrderDate : </strong>
-                                                @Model.CreatedDateLocalFormatted
-                                            </span>
-                                            <hr />
-                                            <span class="px-3 d-block">
-                                                <i class="fas fa-circle text-c-green f-10 m-r-5"></i><strong class="fw-bold">@ECommerceResources.OrderID : </strong>
-                                                @Model.Number
-                                            </span>
-                                            <hr />
-                                            <span class="px-3 d-block">
-                                                <i class="fas fa-circle text-c-red f-10 m-r-5"></i><strong class="fw-bold">@ECommerceResources.PaymentStatus : </strong>
-                                                @switch (Model.PaymentStatus)
-                                            {
-                                                case PaymentStatus.Completed:
-                                                    <span class="text-success">@ECommerceResources.Paid</span>
-                                                    break;
-                                                case PaymentStatus.Pending:
-                                                    <span class="text-primary">@ECommerceResources.Pending</span>
-                                                    break;
-                                                default:
-                                                    <span class="text-secondary">@Model.PaymentStatus.ToString()</span>
-                                                    break;
-                                            }
-                                        </span>
-                                        <hr />
-                                    </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="info-box">
+                                <label class="text-muted small mb-1 d-flex align-items-center gap-1">
+                                    <i class="fas fa-envelope text-primary"></i>
+                                    @FormResources.Email
+                                </label>
+                                <div class="fw-bold">
+                                    @if (!string.IsNullOrEmpty(Model.Email))
+                                    {
+                                        <a href="mailto:@Model.Email" class="text-decoration-none text-primary">@Model.Email</a>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted fst-italic">@GeneralResources.NotAvailable</span>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="info-box">
+                                <label class="text-muted small mb-1 d-flex align-items-center gap-1">
+                                    <i class="fas fa-phone text-primary"></i>
+                                    @FormResources.PhoneNumber
+                                </label>
+                                <div class="fw-bold">
+                                    @if (!string.IsNullOrEmpty(Model.PhoneNumber))
+                                    {
+                                        <a href="tel:@Model.PhoneNumber" class="text-decoration-none text-primary">@Model.PhoneNumber</a>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted fst-italic">@GeneralResources.NotAvailable</span>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="info-box">
+                                <label class="text-muted small mb-1">@ECommerceResources.CustomerType</label>
+                                <div>
+                                    <span class="badge bg-info fs-6">@(string.IsNullOrEmpty(Model.RoleName) ? ECommerceResources.Customer : Model.RoleName)</span>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <h3>@ECommerceResources.Products :</h3>
-                    <div class="table-border-style">
-                        <div class="table-responsive">
-                            <table class="table">
-                                <thead>
-                                    <tr>
-                                        <th>@FormResources.Image</th>
-                                        <th>@ECommerceResources.Product</th>
-                                        <th>@ECommerceResources.Quantity</th>
-                                        <th>@ECommerceResources.UnitPrice</th>
-                                        <th>@ECommerceResources.SubTotal</th>
-                                    </tr>
-                                </thead>
-                                <tbody style="color: white">
-                                    @if (Model.OrderDetails != null && Model.OrderDetails.Count > 0 )
+                </div>
+            </div>
+
+            @* Shipping Information Card *@
+            <div class="card shadow-sm border-0 mb-4">
+                <div class="card-header bg-gradient-info text-white py-3">
+                    <h5 class="mb-0 fw-bold d-flex align-items-center gap-2">
+                        <i class="fas fa-map-marker-alt"></i>
+                        @OrderResources.ShippingInformation
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-12">
+                            <div class="info-box">
+                                <label class="text-muted small mb-1 d-flex align-items-center gap-1">
+                                    <i class="fas fa-location-arrow text-info"></i>
+                                    @FormResources.Address
+                                </label>
+                                <div class="fw-bold">
+                                    @if (!string.IsNullOrEmpty(Model.Address))
                                     {
-                                         @foreach (var item in Model.OrderDetails)
-                                    {
-                                        <tr>
-                                            <td><img src="@baseUrl/@item.ItemImage" alt="Item Image" style="width: 50px; height: 50px;" /></td> 
-                                            <td>@item.ItemName</td>
-                                            <td>@item.Quantity</td>
-                                            <td>@item.UnitPrice $</td>
-                                            <td>@item.SubTotal $</td>
-                                        </tr>
-                                    }
+                                        <span>@Model.Address</span>
                                     }
                                     else
                                     {
+                                        <span class="text-muted fst-italic">@GeneralResources.NotAvailable</span>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="info-box">
+                                <label class="text-muted small mb-1 d-flex align-items-center gap-1">
+                                    <i class="far fa-calendar-check text-success"></i>
+                                    @ECommerceResources.ExpectedDelivery
+                                </label>
+                                <div class="fw-bold">
+                                    @if (Model.OrderDeliveryDate.HasValue)
+                                    {
+                                        <span class="text-success">@Model.OrderDeliveryDate.Value.ToString("dd MMM yyyy")</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted fst-italic">@GeneralResources.NotSet</span>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="info-box">
+                                <label class="text-muted small mb-1 d-flex align-items-center gap-1">
+                                    <i class="fas fa-shipping-fast text-warning"></i>
+                                    @OrderResources.ShippingCost
+                                </label>
+                                <div class="fw-bold">
+                                    @if (Model.ShippingAmount > 0)
+                                    {
+                                        <span class="text-warning">@Model.ShippingAmount.ToString("C2")</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-success">@OrderResources.Free</span>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            @* Shipments Section *@
+            @if (Shipments != null && Shipments.Any())
+            {
+                <div class="card shadow-sm border-0 mb-4">
+                    <div class="card-header bg-gradient-success text-white py-3">
+                        <h5 class="mb-0 fw-bold d-flex align-items-center gap-2">
+                            <i class="fas fa-boxes"></i>
+                            @OrderResources.Shipments <span class="badge bg-white text-success rounded-pill">@Shipments.Count</span>
+                        </h5>
+                    </div>
+                    <div class="card-body p-0">
+                        @foreach (var shipment in Shipments)
+                        {
+                            <div class="shipment-card">
+                                @* Shipment Header *@
+                                <div class="shipment-header">
+                                    <div class="shipment-info">
+                                        <h6 class="shipment-number">
+                                            <i class="fas fa-box me-2"></i>@shipment.ShipmentNumber
+                                        </h6>
+                                        <div class="shipment-meta">
+                                            <span><i class="fas fa-store me-1"></i>@shipment.VendorName</span>
+                                            @if (!string.IsNullOrEmpty(shipment.ShippingCompanyName))
+                                            {
+                                                <span><i class="fas fa-shipping-fast me-1"></i>@shipment.ShippingCompanyName</span>
+                                            }
+                                        </div>
+                                    </div>
+                                    <span class="shipment-status-badge badge-@GetShipmentStatusBadgeClass(shipment.ShipmentStatus)">
+                                        @GetLocalizedShipmentStatus(shipment.ShipmentStatus)
+                                    </span>
+                                </div>
+
+                                @* Shipment Items Table *@
+                                @if (shipment.Items != null && shipment.Items.Any())
+                                {
+                                    <div class="shipment-items-table">
+                                        <table class="table table-sm table-hover mb-0">
+                                            <thead>
+                                                <tr>
+                                                    <th>@ECommerceResources.Product</th>
+                                                    <th class="text-center">@ECommerceResources.Quantity</th>
+                                                    <th class="text-end">@ECommerceResources.UnitPrice</th>
+                                                    <th class="text-end">@ECommerceResources.SubTotal</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @foreach (var item in shipment.Items)
+                                                {
+                                                    <tr>
+                                                        <td>
+                                                            <div class="d-flex align-items-center gap-3">
+                                                                @if (!string.IsNullOrEmpty(item.ItemImage))
+                                                                {
+                                                                    <img src="@baseUrl/@item.ItemImage" class="item-image" alt="@item.ItemName">
+                                                                }
+                                                                else
+                                                                {
+                                                                    <div class="item-image-placeholder">
+                                                                        <i class="fas fa-image"></i>
+                                                                    </div>
+                                                                }
+                                                                <div>
+                                                                    <div class="item-name">@item.ItemName</div>
+                                                                    @if (!string.IsNullOrEmpty(item.TitleEn))
+                                                                    {
+                                                                        <small class="text-muted">@item.TitleEn</small>
+                                                                    }
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                        <td class="text-center">
+                                                            <span class="quantity-badge">×@item.Quantity</span>
+                                                        </td>
+                                                        <td class="text-end">@item.UnitPrice.ToString("C2")</td>
+                                                        <td class="text-end fw-bold text-primary">@item.SubTotal.ToString("C2")</td>
+                                                    </tr>
+                                                }
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                }
+
+                                @* Shipment Footer *@
+                                <div class="shipment-footer">
+                                    @if (!string.IsNullOrEmpty(shipment.TrackingNumber))
+                                    {
+                                        <div class="tracking-number">
+                                            <i class="fas fa-barcode"></i>
+                                            <span>@OrderResources.TrackingNumber:</span>
+                                            <code>@shipment.TrackingNumber</code>
+                                        </div>
+                                    }
+                                    <div class="shipment-total">
+                                        <span>@OrderResources.ShipmentTotal:</span>
+                                        <strong>@shipment.TotalAmount.ToString("C2")</strong>
+                                    </div>
+                                </div>
+
+                                @* Tracking History *@
+                                @if (shipment.StatusHistory != null && shipment.StatusHistory.Any())
+                                {
+                                    <div class="tracking-history">
+                                        <button class="history-toggle-btn" type="button" data-bs-toggle="collapse" data-bs-target="#history_@shipment.Id">
+                                            <i class="fas fa-history"></i>
+                                            <span>@OrderResources.ViewHistory</span>
+                                            <i class="fas fa-chevron-down ms-auto"></i>
+                                        </button>
+                                        <div id="history_@shipment.Id" class="collapse">
+                                            <div class="history-timeline">
+                                                @foreach (var history in shipment.StatusHistory.OrderByDescending(x => x.StatusDate))
+                                                {
+                                                    <div class="timeline-event">
+                                                        <div class="timeline-dot"></div>
+                                                        <div class="timeline-card">
+                                                            <div class="timeline-header">
+                                                                <strong class="timeline-status">
+                                                                    @{
+                                                                        if (Enum.TryParse<Common.Enumerations.Shipping.ShipmentStatus>(history.Status, true, out var statusEnum))
+                                                                        {
+                                                                            @GetLocalizedShipmentStatus(statusEnum)
+                                                                        }
+                                                                        else
+                                                                        {
+
+                                                                            @history.Status
+                                                                        }
+                                                                    }
+                                                                </strong>
+                                                                <small class="timeline-date">@history.StatusDate.ToString("dd MMM, HH:mm")</small>
+                                                            </div>
+                                                            @if (!string.IsNullOrEmpty(history.Location))
+                                                            {
+                                                                <div class="timeline-location">
+                                                                    <i class="fas fa-map-marker-alt"></i> @history.Location
+                                                                </div>
+                                                            }
+                                                            @if (!string.IsNullOrEmpty(history.Notes))
+                                                            {
+                                                                <div class="timeline-notes">@history.Notes</div>
+                                                            }
+                                                        </div>
+                                                    </div>
+                                                }
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        }
+                    </div>
+                </div>
+            }
+            else if (isLoadingShipments)
+            {
+                <div class="empty-state-card">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">@GeneralResources.Loading</span>
+                    </div>
+                    <p>@GeneralResources.Loading</p>
+                </div>
+            }
+            else
+            {
+                <div class="empty-state-card">
+                    <i class="fas fa-box-open fa-4x text-muted mb-3"></i>
+                    <h5>@OrderResources.NoShipments</h5>
+                    <p class="text-muted">@OrderResources.NoShipmentsYet</p>
+                </div>
+            }
+
+            @* Order Items Fallback *@
+            @if ((Shipments == null || !Shipments.Any()) && Model.OrderDetails != null && Model.OrderDetails.Any())
+            {
+                <div class="card shadow-sm border-0 mb-4">
+                    <div class="card-header bg-gradient-warning text-dark py-3">
+                        <h5 class="mb-0 fw-bold d-flex align-items-center gap-2">
+                            <i class="fas fa-shopping-bag"></i>
+                            @OrderResources.OrderItems <span class="badge bg-dark rounded-pill">@Model.OrderDetails.Count</span>
+                        </h5>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>@ECommerceResources.Product</th>
+                                        <th class="text-center">@ECommerceResources.Quantity</th>
+                                        <th class="text-end">@ECommerceResources.UnitPrice</th>
+                                        <th class="text-end">@ECommerceResources.SubTotal</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var item in Model.OrderDetails)
+                                    {
                                         <tr>
-                                            <td colspan="7" class="text-center">
-                                                       <div class="text-center p-4">
-    <!-- أيقونة كبيرة -->
-    <i class="fas fa-database text-muted" style="font-size: 60px;"></i>
-    
-    <!-- نص -->
-    <p class="text-muted mt-3" style="font-size: 18px;">
-        @NotifiAndAlertsResources.NoDataFound
-    </p>
-</div>
+                                            <td>
+                                                <div class="d-flex align-items-center gap-3">
+                                                    @if (!string.IsNullOrEmpty(item.ItemImage))
+                                                    {
+                                                        <img src="@baseUrl/@item.ItemImage" class="item-image" alt="@item.ItemName">
+                                                    }
+                                                    else
+                                                    {
+                                                        <div class="item-image-placeholder">
+                                                            <i class="fas fa-image"></i>
+                                                        </div>
+                                                    }
+                                                    <div class="item-name">@item.ItemName</div>
+                                                </div>
                                             </td>
+                                            <td class="text-center">
+                                                <span class="quantity-badge">×@item.Quantity</span>
+                                            </td>
+                                            <td class="text-end">
+                                                @if (item.UnitPrice > 0)
+                                                {
+                                                    <span>@item.UnitPrice.ToString("C2")</span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="text-muted">-</span>
+                                                }
+                                            </td>
+                                            <td class="text-end fw-bold text-primary">@item.SubTotal.ToString("C2")</td>
                                         </tr>
                                     }
                                 </tbody>
                             </table>
                         </div>
                     </div>
-                    @if(!isRefunded && Model.CurrentState!=OrderStatus.Returned)
-                    {
-                        <!-- [ Smart-Wizard ] start -->
-                        <div class="col-sm-12">
-                            <div class="card">
-                                <div class="card-header">
-                                    <h5>@ECommerceResources.OrderStatus</h5>
-                                </div>
-                                <div class="card-body">
-                                    <!-- [ SmartWizard html ] start -->
-                                    <div id="smartwizard" dir="ltr">
-                                        <ul class="nav d-flex justify-content-center align-items-center">
-                                            <li class="nav-item flex-grow-1 text-center">
-                                                <a class="nav-link" href="#step-1">
-                                                    <div class="num">1</div>
-                                                    @ECommerceResources.NewOrder
-                                                </a>
-                                            </li>
-                                            <li class="nav-item flex-grow-1 text-center">
-                                                <a class="nav-link " href="#step-2">
-                                                    <div class="num">2</div>
-                                                    @ECommerceResources.InProgress
-                                                </a>
-                                            </li>
-                                            <li class="nav-item flex-grow-1 text-center">
-                                                <a class="nav-link" href="#step-3">
-                                                    <div class="num">3</div>
-                                                    @ECommerceResources.Shipping
-                                                </a>
-                                            </li>
-                                            <li class="nav-item flex-grow-1 text-center">
-                                                <a class="nav-link" href="#step-4">
-                                                    <div class="num">4</div>
-                                                    @ECommerceResources.Delivered
-                                                </a>
-                                            </li>
-                                        </ul>
+                </div>
+            }
 
-                                        <div class="tab-content">
-                                            <div id="step-1" class="tab-pane" role="tabpanel">
-                                                <div class="text-center fw-bold fs-5">@ECommerceResources.NewOrder</div>
-                                                <div class="d-flex justify-content-center align-items-center my-3">
-                                                    <img src="assets/images/order/Step1.png" alt="New Order" style="width: 300px; height: 300px;" />
-                                                </div>
-                                                <div class="d-flex justify-content-center gap-2 align-items-center">
-                                                    <button class="btn btn-danger" @onclick="() => ChangeOrderStatus(OrderStatus.Rejected)">@ActionsResources.Reject</button>
-                                                    <button class="btn btn-primary" @onclick="() => ChangeOrderStatus(OrderStatus.Accepted)">@ActionsResources.Accept</button>
-                                                </div>
-                                                @if (Model.CurrentState == OrderStatus.Accepted || (int)Model.CurrentState>=4)
-                                                {
-                                                    <div class="d-flex justify-content-end">
-                                                        <button id="to-progress" class="btn btn-primary" @onclick="() => MoveToInProgress()">@ECommerceResources.MoveToInProgress</button>
-                                                    </div>
-                                                }
-                                            </div>
+        </div>
 
-                                            <div id="step-2" class="tab-pane" role="tabpanel">
-                                                <div class="text-center fw-bold fs-5">In Progress</div>
-                                                <div class="d-flex justify-content-center align-items-center my-3">
-                                                    <img src="assets/images/order/Step2.png" alt="In Progress" style="width: 300px; height: 300px;" />
-                                                </div>
-                                                <div class="d-flex justify-content-end">
-                                                    <button id="to-shipping" class="btn btn-primary status-btn" @onclick="() => MoveToShipping()">@ECommerceResources.MoveToShipping</button>
-                                                </div>
-                                            </div>
+        @* Right Column: Status & Actions *@
+        <div class="col-lg-4">
 
-                                            <div id="step-3" class="tab-pane" role="tabpanel">
-                                                <div class="text-center fw-bold fs-5">@ECommerceResources.Shipping</div>
-                                                <div class="d-flex justify-content-center align-items-center my-3">
-                                                    <img src="assets/images/order/Step3.jpg" alt="Shipping"  />
-                                                </div>
-                                                <div class="d-flex justify-content-between gap-2 align-items-center w-50 mx-auto mb-3">
-                                                    <div class="d-flex justify-content-center align-items-center flex-column">
-                                                        <label for="shippingDate" class="form-label d-block">@ECommerceResources.ExpectedDelivery</label>
-                                                        <InputDate class="form-control"  id="shippingDate" @bind-Value="Model.OrderDeliveryDate" />
-                                                    </div>
-                                                </div>
-                                                <div class="d-flex justify-content-end">
-                                                    <button id="to-delivered" class="btn btn-primary status-btn" @onclick="() => MoveToDelivered()">@ECommerceResources.MoveToDelivered</button>
-                                                </div>
-                                            </div>
+            @* Quick Status Change Card - الكارد الجديد للتحكم السريع *@
+            @if (!isRefunded && Model.CurrentState != OrderProgressStatus.Returned && Model.CurrentState != OrderProgressStatus.Cancelled)
+            {
+                <div class="card shadow-sm border-0 mb-4 status-control-card">
+                    <div class="card-header bg-gradient-primary text-white py-3">
+                        <h5 class="mb-0 fw-bold d-flex align-items-center gap-2">
+                            <i class="fas fa-sliders-h"></i>
+                            @OrderResources.OrderControl
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        @* Current Status Display *@
+                        <div class="current-status-box mb-3">
+                            <label class="small text-muted mb-2">@OrderResources.CurrentStatus</label>
+                            <div class="status-display badge-@GetOrderStatusBadgeClass(Model.CurrentState)">
+                                <i class="fas fa-circle-notch"></i>
+                                <span>@GetLocalizedOrderProgressStatus(Model.CurrentState)</span>
+                            </div>
+                        </div>
 
-                                            <div id="step-4" class="tab-pane" role="tabpanel">
-                                                <div class="text-center fw-bold fs-5">@ECommerceResources.Delivered</div>
-                                                <div class="d-flex justify-content-center align-items-center my-3">
-                                                    <img src="assets/images/order/Step4.png" alt="Delivered" style="width: 300px; height: 300px;" />
-                                                </div>
-                                                <div class="d-flex justify-content-center gap-2 align-items-center">
-                                                    <div class="badge bg-success p-2 mb-3">@ECommerceResources.SuccessfullyDelivered</div>
-                                                </div>
-                                                <div class="d-flex justify-content-end">
-                                                    <button id="order-complete" class="btn btn-success status-btn" @onclick="() =>CompleteOrder()">@ActionsResources.Done</button>
-                                                </div>
-                                            </div>
+                        @* Status Action Buttons *@
+                        <div class="status-actions">
+                            @if (isSaving)
+                            {
+                                <button class="btn btn-primary w-100" disabled>
+                                    <span class="spinner-border spinner-border-sm me-2"></span>
+                                    @GeneralResources.Saving
+                                </button>
+                            }
+                            else
+                            {
+                                @switch (Model.CurrentState)
+                                {
+                                    case OrderProgressStatus.Pending:
+                                        <button class="btn btn-success btn-lg w-100 mb-2" @onclick="() => ChangeOrderStatus(OrderProgressStatus.Confirmed)">
+                                            <i class="fas fa-check-circle me-2"></i>@ActionsResources.Accept
+                                        </button>
+                                        <button class="btn btn-danger btn-lg w-100" @onclick="() => ChangeOrderStatus(OrderProgressStatus.Cancelled)">
+                                            <i class="fas fa-times-circle me-2"></i>@ActionsResources.Reject
+                                        </button>
+                                        break;
+
+                                    case OrderProgressStatus.Confirmed:
+                                        <button class="btn btn-primary btn-lg w-100" @onclick="MoveToProcessing">
+                                            <i class="fas fa-play-circle me-2"></i>@OrderResources.StartProcessing
+                                        </button>
+                                        break;
+
+                                    case OrderProgressStatus.Processing:
+                                        <button class="btn btn-info btn-lg w-100" @onclick="MoveToShipped">
+                                            <i class="fas fa-truck me-2"></i>@OrderResources.MoveToShipping
+                                        </button>
+                                        break;
+
+                                    case OrderProgressStatus.Shipped:
+                                        <div class="mb-3">
+                                            <label class="form-label fw-bold">@OrderResources.DeliveryDate</label>
+                                            <InputDate class="form-control form-control-lg" @bind-Value="Model.OrderDeliveryDate" />
                                         </div>
-                                    </div>
+                                        <button class="btn btn-success btn-lg w-100" @onclick="MoveToDelivered">
+                                            <i class="fas fa-check-double me-2"></i>@OrderResources.MarkAsDelivered
+                                        </button>
+                                        break;
+
+                                    case OrderProgressStatus.Delivered:
+                                        <div class="alert alert-success">
+                                            <i class="fas fa-check-circle me-2"></i>
+                                            @OrderResources.OrderCompleted
+                                        </div>
+                                        <button class="btn btn-outline-primary w-100" @onclick="CompleteOrder">
+                                            <i class="fas fa-arrow-left me-2"></i>@OrderResources.BackToOrders
+                                        </button>
+                                        break;
+
+                                    case OrderProgressStatus.Cancelled:
+                                        <div class="alert alert-danger">
+                                            <i class="fas fa-ban me-2"></i>
+                                            @OrderResources.OrderRejected
+                                        </div>
+                                        break;
+                                }
+                            }
+                        </div>
+                    </div>
+                </div>
+
+                @* Status Timeline Card *@
+                <div class="card shadow-sm border-0 mb-4">
+                    <div class="card-header bg-white py-3">
+                        <h6 class="mb-0 fw-bold text-muted">@OrderResources.OrderProgress</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="progress-timeline">
+                            <div class="progress-step @(Model.CurrentState >= OrderProgressStatus.Pending ? "active" : "") @(Model.CurrentState == OrderProgressStatus.Pending ? "current" : "")">
+                                <div class="step-dot">
+                                    <i class="fas @(Model.CurrentState >= OrderProgressStatus.Pending ? "fa-check" : "fa-circle")"></i>
+                                </div>
+                                <div class="step-info">
+                                    <strong>@ECommerceResources.NewOrder</strong>
+                                    @if (Model.CurrentState == OrderProgressStatus.Pending)
+                                    {
+                                        <small>@OrderResources.AwaitingConfirmation</small>
+                                    }
+                                </div>
+                            </div>
+
+                            <div class="progress-step @(Model.CurrentState >= OrderProgressStatus.Processing ? "active" : "") @(Model.CurrentState == OrderProgressStatus.Processing ? "current" : "")">
+                                <div class="step-dot">
+                                    <i class="fas @(Model.CurrentState >= OrderProgressStatus.Processing ? "fa-check" : "fa-circle")"></i>
+                                </div>
+                                <div class="step-info">
+                                    <strong>@ECommerceResources.InProgress</strong>
+                                    @if (Model.CurrentState == OrderProgressStatus.Processing)
+                                    {
+                                        <small>@OrderResources.Processing</small>
+                                    }
+                                </div>
+                            </div>
+
+                            <div class="progress-step @(Model.CurrentState >= OrderProgressStatus.Shipped ? "active" : "") @(Model.CurrentState == OrderProgressStatus.Shipped ? "current" : "")">
+                                <div class="step-dot">
+                                    <i class="fas @(Model.CurrentState >= OrderProgressStatus.Shipped ? "fa-check" : "fa-circle")"></i>
+                                </div>
+                                <div class="step-info">
+                                    <strong>@ECommerceResources.Shipping</strong>
+                                    @if (Model.CurrentState == OrderProgressStatus.Shipped)
+                                    {
+                                        <small>@OrderResources.OnTheWay</small>
+                                    }
+                                </div>
+                            </div>
+
+                            <div class="progress-step @(Model.CurrentState >= OrderProgressStatus.Delivered ? "active completed" : "")">
+                                <div class="step-dot">
+                                    <i class="fas @(Model.CurrentState >= OrderProgressStatus.Delivered ? "fa-check" : "fa-circle")"></i>
+                                </div>
+                                <div class="step-info">
+                                    <strong>@ECommerceResources.Delivered</strong>
                                 </div>
                             </div>
                         </div>
-                    }
-                    else
+                    </div>
+                </div>
+            }
+
+            @* Payment Information Card *@
+            <div class="card shadow-sm border-0 mb-4">
+                <div class="card-header bg-gradient-success text-white py-3">
+                    <h5 class="mb-0 fw-bold d-flex align-items-center gap-2">
+                        <i class="fas fa-credit-card"></i>
+                        @OrderResources.PaymentInformation
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="info-box mb-3">
+                        <label class="text-muted small mb-1">@OrderResources.PaymentMethod</label>
+                        <div class="fw-bold">
+                            @if (!string.IsNullOrEmpty(Model.PaymentGatewayMethodTitleAr))
+                            {
+                                <span>@Model.PaymentGatewayMethodTitleAr</span>
+                            }
+                            else if (!string.IsNullOrEmpty(Model.PaymentGatewayMethodTitleEn))
+                            {
+                                <span>@Model.PaymentGatewayMethodTitleEn</span>
+                            }
+                            else
+                            {
+                                <span class="text-muted fst-italic">@GeneralResources.NotAvailable</span>
+                            }
+                        </div>
+                    </div>
+                    <div class="info-box mb-3">
+                        <label class="text-muted small mb-1">@ECommerceResources.PaymentStatus</label>
+                        <div>
+                            <span class="badge bg-@GetPaymentStatusClass(Model.PaymentStatus) fs-6">
+                                @GetLocalizedPaymentStatus(Model.PaymentStatus)
+                            </span>
+                        </div>
+                    </div>
+                    @if (!string.IsNullOrEmpty(Model.InvoiceId))
                     {
-                        <div class="col-sm-12">
-                            <div class="card">
-                                <div class="card-header">
-                                    <h5>@ECommerceResources.RefundStatus</h5>
-                                </div>
-                                <div class="card-body">
-                                    @switch (RefundModel.RefundStatus)
-                                    {
-                                        case RefundStatus.Approved:
-                                            <div class="d-flex justify-content-center">
-                                                <span class="badge bg-success px-3 py-2 fs-6">@ECommerceResources.Accepted</span>
-                                            </div>
-                                            break;
-                                        case RefundStatus.Rejected:
-                                            <div class="d-flex justify-content-center">
-                                                <span class="badge bg-danger px-3 py-2 fs-6">@ECommerceResources.Rejected</span>
-                                            </div>
-                                            break;
-                                        case RefundStatus.Open:
-                                            <div class="row justify-content-center">
-                                                <div class="col-12 col-sm-10 col-md-8 col-lg-6 col-xl-4">
-                                                    <div class="mb-3">
-                                                        <label class="form-label mb-1">@FormResources.Amount</label>
-                                                        <input class="form-control"
-                                                               @bind-value="RefundResponseModel.RefundAmount"
-                                                               placeholder="@String.Format(FormResources.Placeholder, FormResources.Amount)"
-                                                               aria-label="@FormResources.Amount" />
-                                                    </div>
-
-                                                    <div class="mb-3">
-                                                        <label class="form-label mb-1">
-                                                            @FormResources.Comments
-                                                            <small class="text-muted"> (@FormResources.optional)</small>
-                                                        </label>
-                                                        <InputText class="form-control"
-                                                                   @bind-Value="RefundResponseModel.AdminComments"
-                                                                   placeholder="@String.Format(FormResources.Placeholder, FormResources.Comments)"
-                                                                   aria-label="@FormResources.Comments" />
-                                                    </div>
-
-                                                    <div class="d-flex justify-content-center gap-2">
-                                                        <button class="btn btn-danger" @onclick="() => ChangeRefundStatus(RefundStatus.Rejected)">
-                                                            @ActionsResources.Reject
-                                                        </button>
-                                                        <button class="btn btn-primary" @onclick="() => ChangeRefundStatus(RefundStatus.Approved)">
-                                                            @ActionsResources.Accept
-                                                        </button>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            break;
-                                    }
-                                </div>
-
-                           </div>
+                        <div class="info-box mb-3">
+                            <label class="text-muted small mb-1">@OrderResources.InvoiceNumber</label>
+                            <div>
+                                <code class="invoice-code">@Model.InvoiceId</code>
+                            </div>
                         </div>
                     }
+                    <div class="info-box">
+                        <label class="text-muted small mb-1">@OrderResources.CreatedDate</label>
+                        <div class="fw-bold">
+                            @Model.CreatedDateUtc.ToString("dd MMM yyyy HH:mm")
+                        </div>
+                    </div>
                 </div>
             </div>
+
+            @* Order Summary Card *@
+            <div class="card shadow-sm border-0 mb-4">
+                <div class="card-header bg-gradient-warning text-dark py-3">
+                    <h5 class="mb-0 fw-bold d-flex align-items-center gap-2">
+                        <i class="fas fa-file-invoice-dollar"></i>
+                        @OrderResources.OrderSummary
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="summary-row">
+                        <span>@OrderResources.Subtotal</span>
+                        <span>@Model.Price.ToString("C2")</span>
+                    </div>
+                    <div class="summary-row">
+                        <span>@ECommerceResources.Shipping</span>
+                        <span>
+                            @if (Model.ShippingAmount > 0)
+                            {
+                                <span>@Model.ShippingAmount.ToString("C2")</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-success">@OrderResources.Free</span>
+                            }
+                        </span>
+                    </div>
+                    <hr class="my-3">
+                    <div class="summary-total">
+                        <span>@GeneralResources.Total</span>
+                        <span>@((Model.Price + Model.ShippingAmount).ToString("C2"))</span>
+                    </div>
+                </div>
+            </div>
+
+            @* Refund Card *@
+            @if (isRefunded || Model.CurrentState == OrderProgressStatus.Returned)
+            {
+                <div class="card shadow-sm border-0 border-start border-danger border-4 mb-4">
+                    <div class="card-header bg-white py-3">
+                        <h5 class="mb-0 fw-bold text-danger d-flex align-items-center gap-2">
+                            <i class="fas fa-undo-alt"></i>
+                            @OrderResources.RefundRequest
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        @switch (RefundModel.RefundStatus)
+                        {
+                            case RefundStatus.Approved:
+                                <div class="alert alert-success mb-0">
+                                    <div class="d-flex align-items-start gap-3">
+                                        <i class="fas fa-check-circle fa-2x"></i>
+                                        <div>
+                                            <strong>@OrderResources.RefundApproved</strong>
+                                            @if (RefundModel.RefundAmount > 0)
+                                            {
+                                                <div class="mt-2">
+                                                    <span class="text-muted">@OrderResources.RefundAmount:</span>
+                                                    <strong class="ms-2">@RefundModel.RefundAmount.ToString("C2")</strong>
+                                                </div>
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+                                break;
+                            case RefundStatus.Rejected:
+                                <div class="alert alert-danger mb-0">
+                                    <div class="d-flex align-items-start gap-3">
+                                        <i class="fas fa-times-circle fa-2x"></i>
+                                        <div>
+                                            <strong>@OrderResources.RefundRejected</strong>
+                                            @if (!string.IsNullOrEmpty(RefundModel.RejectionReason))
+                                            {
+                                                <div class="mt-2 small">
+                                                    <em>@RefundModel.RejectionReason</em>
+                                                </div>
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+                                break;
+                            case RefundStatus.Open:
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">@OrderResources.RefundAmount</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text">$</span>
+                                        <input type="number" class="form-control" @bind-value="RefundResponseModel.RefundAmount" step="0.01" placeholder="0.00" />
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">@FormResources.Comments</label>
+                                    <InputText class="form-control" @bind-Value="RefundResponseModel.AdminComments" placeholder="@OrderResources.AddComment" />
+                                </div>
+                                <div class="row g-2">
+                                    <div class="col-6">
+                                        <button class="btn btn-danger w-100" @onclick="() => ChangeRefundStatus(RefundStatus.Rejected)">
+                                            <i class="fas fa-times me-1"></i>@ActionsResources.Reject
+                                        </button>
+                                    </div>
+                                    <div class="col-6">
+                                        <button class="btn btn-success w-100" @onclick="() => ChangeRefundStatus(RefundStatus.Approved)">
+                                            <i class="fas fa-check me-1"></i>@ActionsResources.Accept
+                                        </button>
+                                    </div>
+                                </div>
+                                break;
+                        }
+                    </div>
+                </div>
+            }
+
         </div>
     </div>
 </div>
+
+<style>
+    /* ============================================
+               MODERN ORDER DETAILS STYLING
+               ============================================ */
+
+    /* Order Info Bar */
+    .order-info-bar {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1rem;
+        padding: 1.5rem;
+        background: #f8f9fa;
+        border-top: 1px solid #dee2e6;
+    }
+
+    .info-item {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 0.75rem;
+        background: white;
+        border-radius: 8px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+
+    .info-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 8px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+    }
+
+    .info-content {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .info-label {
+        display: block;
+        font-size: 0.75rem;
+        color: #6c757d;
+        margin-bottom: 0.25rem;
+    }
+
+    .info-value {
+        display: block;
+        font-size: 0.9375rem;
+        color: #212529;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    /* Gradient Headers */
+    .bg-gradient-primary {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+    }
+
+    .bg-gradient-info {
+        background: linear-gradient(135deg, #17a2b8 0%, #138496 100%) !important;
+    }
+
+    .bg-gradient-success {
+        background: linear-gradient(135deg, #28a745 0%, #218838 100%) !important;
+    }
+
+    .bg-gradient-warning {
+        background: linear-gradient(135deg, #ffc107 0%, #e0a800 100%) !important;
+    }
+
+    /* Info Box */
+    .info-box {
+        padding: 0.75rem;
+        background: #f8f9fa;
+        border-radius: 8px;
+        border-left: 3px solid #0d6efd;
+    }
+
+    /* Status Control Card */
+    .status-control-card {
+        border: 2px solid #0d6efd !important;
+    }
+
+    .current-status-box {
+        padding: 1rem;
+        background: #f8f9fa;
+        border-radius: 8px;
+    }
+
+    .status-display {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.75rem 1.25rem;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 1rem;
+    }
+
+        .status-display.badge-warning {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .status-display.badge-info {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+
+        .status-display.badge-primary {
+            background: #cfe2ff;
+            color: #084298;
+        }
+
+        .status-display.badge-success {
+            background: #d1e7dd;
+            color: #0f5132;
+        }
+
+        .status-display.badge-danger {
+            background: #f8d7da;
+            color: #842029;
+        }
+
+    .status-actions {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+
+    /* Progress Timeline */
+    .progress-timeline {
+        position: relative;
+        padding-left: 1rem;
+    }
+
+    .progress-step {
+        position: relative;
+        display: flex;
+        align-items: flex-start;
+        gap: 1rem;
+        padding-bottom: 1.75rem;
+        opacity: 0.4;
+    }
+
+        .progress-step.active {
+            opacity: 1;
+        }
+
+        .progress-step.current {
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+    @@keyframes pulse {
+        0%, 100% {
+            opacity: 1;
+        }
+
+        50% {
+            opacity: 0.7;
+        }
+    }
+
+    .progress-step:not(:last-child)::before {
+        content: '';
+        position: absolute;
+        left: 13px;
+        top: 32px;
+        bottom: 0;
+        width: 2px;
+        background: #dee2e6;
+    }
+
+    .progress-step.active:not(:last-child)::before {
+        background: #0d6efd;
+    }
+
+    .step-dot {
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        background: #e9ecef;
+        color: #6c757d;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        font-size: 0.875rem;
+        border: 3px solid white;
+        box-shadow: 0 0 0 2px #e9ecef;
+    }
+
+    .progress-step.active .step-dot {
+        background: #0d6efd;
+        color: white;
+        box-shadow: 0 0 0 2px #0d6efd;
+    }
+
+    .progress-step.completed .step-dot {
+        background: #198754;
+        box-shadow: 0 0 0 2px #198754;
+    }
+
+    .step-info {
+        flex: 1;
+    }
+
+        .step-info strong {
+            display: block;
+            margin-bottom: 0.25rem;
+        }
+
+        .step-info small {
+            display: block;
+            color: #6c757d;
+            font-size: 0.8125rem;
+        }
+
+    /* Shipment Cards */
+    .shipment-card {
+        border-bottom: 1px solid #dee2e6;
+        padding: 1.5rem;
+    }
+
+        .shipment-card:last-child {
+            border-bottom: none;
+        }
+
+    .shipment-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.25rem;
+        gap: 1rem;
+    }
+
+    .shipment-number {
+        margin: 0 0 0.5rem 0;
+        color: #0d6efd;
+        font-size: 1.125rem;
+        font-weight: 700;
+    }
+
+    .shipment-meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
+        font-size: 0.875rem;
+        color: #6c757d;
+    }
+
+    .shipment-status-badge {
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 0.875rem;
+        white-space: nowrap;
+    }
+
+        .shipment-status-badge.badge-warning {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .shipment-status-badge.badge-info {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+
+        .shipment-status-badge.badge-primary {
+            background: #cfe2ff;
+            color: #084298;
+        }
+
+        .shipment-status-badge.badge-success {
+            background: #d1e7dd;
+            color: #0f5132;
+        }
+
+        .shipment-status-badge.badge-danger {
+            background: #f8d7da;
+            color: #842029;
+        }
+
+    /* Shipment Items Table */
+    .shipment-items-table {
+        margin: 1.5rem 0;
+    }
+
+        .shipment-items-table thead {
+            background: #f8f9fa;
+        }
+
+        .shipment-items-table th {
+            padding: 0.75rem;
+            font-weight: 600;
+            font-size: 0.875rem;
+            color: #6c757d;
+            border-bottom: 2px solid #dee2e6;
+        }
+
+        .shipment-items-table td {
+            padding: 1rem 0.75rem;
+            vertical-align: middle;
+        }
+
+    .item-image {
+        width: 48px;
+        height: 48px;
+        border-radius: 8px;
+        object-fit: cover;
+        border: 1px solid #dee2e6;
+    }
+
+    .item-image-placeholder {
+        width: 48px;
+        height: 48px;
+        border-radius: 8px;
+        background: #f8f9fa;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #adb5bd;
+        border: 1px solid #dee2e6;
+    }
+
+    .item-name {
+        font-weight: 600;
+        color: #212529;
+    }
+
+    .quantity-badge {
+        display: inline-flex;
+        align-items: center;
+        padding: 0.375rem 0.75rem;
+        background: #f8f9fa;
+        border: 1px solid #dee2e6;
+        border-radius: 6px;
+        font-weight: 600;
+        color: #495057;
+    }
+
+    /* Shipment Footer */
+    .shipment-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1rem;
+        background: #f8f9fa;
+        border-radius: 8px;
+        margin-top: 1.5rem;
+        gap: 1rem;
+        flex-wrap: wrap;
+    }
+
+    .tracking-number {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.875rem;
+        color: #6c757d;
+    }
+
+        .tracking-number code {
+            padding: 0.25rem 0.5rem;
+            background: white;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            color: #212529;
+            font-weight: 600;
+        }
+
+    .shipment-total {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        font-size: 0.875rem;
+    }
+
+        .shipment-total strong {
+            font-size: 1.25rem;
+            color: #0d6efd;
+        }
+
+    /* Tracking History */
+    .tracking-history {
+        margin-top: 1rem;
+        border-top: 1px solid #dee2e6;
+        padding-top: 1rem;
+    }
+
+    .history-toggle-btn {
+        width: 100%;
+        padding: 0.75rem 1rem;
+        background: #f8f9fa;
+        border: 1px solid #dee2e6;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-weight: 500;
+        color: #495057;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+        .history-toggle-btn:hover {
+            background: #e9ecef;
+        }
+
+    .history-timeline {
+        padding: 1.5rem 0 0.5rem 1rem;
+        position: relative;
+    }
+
+    .timeline-event {
+        position: relative;
+        display: flex;
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+    }
+
+        .timeline-event:not(:last-child)::before {
+            content: '';
+            position: absolute;
+            left: 6px;
+            top: 24px;
+            bottom: -1.5rem;
+            width: 2px;
+            background: #dee2e6;
+        }
+
+    .timeline-dot {
+        width: 14px;
+        height: 14px;
+        border-radius: 50%;
+        background: #0d6efd;
+        border: 3px solid white;
+        box-shadow: 0 0 0 2px #0d6efd;
+        flex-shrink: 0;
+        margin-top: 4px;
+    }
+
+    .timeline-card {
+        flex: 1;
+        padding: 0.75rem 1rem;
+        background: #f8f9fa;
+        border-radius: 8px;
+    }
+
+    .timeline-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 0.5rem;
+        gap: 1rem;
+    }
+
+    .timeline-status {
+        color: #212529;
+        font-size: 0.9375rem;
+    }
+
+    .timeline-date {
+        color: #6c757d;
+        font-size: 0.8125rem;
+    }
+
+    .timeline-location,
+    .timeline-notes {
+        font-size: 0.875rem;
+        color: #6c757d;
+        margin-top: 0.25rem;
+    }
+
+    .timeline-notes {
+        font-style: italic;
+    }
+
+    /* Summary Rows */
+    .summary-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.75rem 0;
+        border-bottom: 1px solid #f1f3f5;
+    }
+
+    .summary-total {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1rem 0 0;
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: #212529;
+    }
+
+        .summary-total span:last-child {
+            color: #0d6efd;
+        }
+
+    /* Invoice Code */
+    .invoice-code {
+        display: inline-block;
+        padding: 0.5rem 0.75rem;
+        background: #f8f9fa;
+        border: 1px solid #dee2e6;
+        border-radius: 6px;
+        font-family: 'Courier New', monospace;
+        font-size: 0.9375rem;
+        color: #212529;
+        font-weight: 600;
+    }
+
+    /* Empty State */
+    .empty-state-card {
+        background: white;
+        border-radius: 12px;
+        padding: 4rem 2rem;
+        text-align: center;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    }
+
+        .empty-state-card i {
+            color: #dee2e6;
+        }
+
+    /* Responsive */
+    @@media (max-width: 992px) {
+        .order-info-bar {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+
+    @@media (max-width: 768px) {
+        .order-info-bar {
+            grid-template-columns: 1fr;
+        }
+
+        .shipment-header {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .shipment-footer {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .item-image,
+        .item-image-placeholder {
+            width: 40px;
+            height: 40px;
+        }
+    }
+
+    /* Print Styles */
+    @@media print {
+        .btn, button, .history-toggle-btn {
+            display: none !important;
+        }
+
+        .card {
+            box-shadow: none !important;
+            border: 1px solid #dee2e6 !important;
+            page-break-inside: avoid;
+        }
+
+        .status-control-card {
+            display: none !important;
+        }
+    }
+</style>
+
+@code {
+    // These methods should be in Details.razor.cs file
+    // Renamed methods to avoid conflicts with C# file
+
+    private string GetOrderStatusBadgeClass(OrderProgressStatus status)
+    {
+        return status switch
+        {
+            OrderProgressStatus.Pending => "warning",
+            OrderProgressStatus.Confirmed => "info",
+            OrderProgressStatus.Processing => "info",
+            OrderProgressStatus.Shipped => "primary",
+            OrderProgressStatus.Delivered => "success",
+            OrderProgressStatus.Completed => "success",
+            OrderProgressStatus.Cancelled => "danger",
+            OrderProgressStatus.PaymentFailed => "danger",
+            OrderProgressStatus.RefundRequested => "warning",
+            OrderProgressStatus.Refunded => "info",
+            OrderProgressStatus.Returned => "secondary",
+            _ => "secondary"
+        };
+    }
+
+    private string GetShipmentStatusBadgeClass(Common.Enumerations.Shipping.ShipmentStatus status)
+    {
+        return status switch
+        {
+            Common.Enumerations.Shipping.ShipmentStatus.Pending => "warning",
+            Common.Enumerations.Shipping.ShipmentStatus.Processing => "info",
+            Common.Enumerations.Shipping.ShipmentStatus.Shipped => "primary",
+            Common.Enumerations.Shipping.ShipmentStatus.InTransit => "primary",
+            Common.Enumerations.Shipping.ShipmentStatus.OutForDelivery => "primary",
+            Common.Enumerations.Shipping.ShipmentStatus.Delivered => "success",
+            Common.Enumerations.Shipping.ShipmentStatus.Returned => "danger",
+            Common.Enumerations.Shipping.ShipmentStatus.Cancelled => "danger",
+            _ => "secondary"
+        };
+    }
+
+    private string GetLocalizedOrderProgressStatus(OrderProgressStatus status)
+    {
+        return status switch
+        {
+            OrderProgressStatus.Pending => ECommerceResources.Pending,
+            OrderProgressStatus.Confirmed => ECommerceResources.Accepted,
+            OrderProgressStatus.Processing => ECommerceResources.InProgress,
+            OrderProgressStatus.Shipped => ECommerceResources.Shipping,
+            OrderProgressStatus.Delivered => ECommerceResources.Delivered,
+            OrderProgressStatus.Completed => ECommerceResources.Delivered,
+            OrderProgressStatus.Cancelled => ECommerceResources.Canceled,
+            OrderProgressStatus.PaymentFailed => ECommerceResources.Rejected,
+            OrderProgressStatus.Returned => ECommerceResources.Returned,
+            _ => status.ToString()
+        };
+    }
+
+    private string GetLocalizedShipmentStatus(Common.Enumerations.Shipping.ShipmentStatus status)
+    {
+        return status switch
+        {
+            Common.Enumerations.Shipping.ShipmentStatus.Pending => ECommerceResources.Pending,
+            Common.Enumerations.Shipping.ShipmentStatus.Processing => ECommerceResources.InProgress,
+            Common.Enumerations.Shipping.ShipmentStatus.Shipped => ECommerceResources.Shipping,
+            Common.Enumerations.Shipping.ShipmentStatus.InTransit => ECommerceResources.Shipping,
+            Common.Enumerations.Shipping.ShipmentStatus.OutForDelivery => ECommerceResources.Shipping,
+            Common.Enumerations.Shipping.ShipmentStatus.Delivered => ECommerceResources.Delivered,
+            Common.Enumerations.Shipping.ShipmentStatus.Returned => ECommerceResources.Returned,
+            Common.Enumerations.Shipping.ShipmentStatus.Cancelled => ECommerceResources.Canceled,
+            _ => status.ToString()
+        };
+    }
+}

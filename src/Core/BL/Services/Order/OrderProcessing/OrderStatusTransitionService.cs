@@ -14,36 +14,40 @@ public class OrderStatusTransitionService : IOrderStatusTransitionService
         _orderEventHandler = orderEventHandler;
     }
 
-    public async Task<bool> HandleStatusChangeAsync(Guid orderId, OrderStatus newStatus, string userId)
+    public async Task<bool> HandleStatusChangeAsync(Guid orderId, OrderProgressStatus newStatus, string userId)
     {
         OrderEvent orderEvent = new() { OrderId = orderId, UserId = userId };
+
         switch (newStatus)
         {
-            case OrderStatus.NotActive:
-                return await _orderEventHandler.OnOrderNotActive(orderEvent);
-
-            case OrderStatus.Pending:
+            case OrderProgressStatus.Pending:
                 return await _orderEventHandler.OnOrderPending(orderEvent);
 
-            case OrderStatus.Accepted:
+            case OrderProgressStatus.Confirmed:
                 return await _orderEventHandler.OnOrderAccepted(orderEvent);
 
-            case OrderStatus.Rejected:
-                return await _orderEventHandler.OnOrderRejected(orderEvent);
-
-            case OrderStatus.InProgress:
+            case OrderProgressStatus.Processing:
                 return await _orderEventHandler.OnOrderInProgress(orderEvent);
 
-            case OrderStatus.Shipping:
+            case OrderProgressStatus.Shipped:
                 return await _orderEventHandler.OnOrderShipping(orderEvent);
 
-            case OrderStatus.Delivered:
+            case OrderProgressStatus.Delivered:
+            case OrderProgressStatus.Completed:
                 return await _orderEventHandler.OnOrderCompleted(orderEvent);
 
-            case OrderStatus.Canceled:
+            case OrderProgressStatus.Cancelled:
                 return await _orderEventHandler.OnOrderCanceled(orderEvent);
 
-            case OrderStatus.Returned:
+            case OrderProgressStatus.Returned:
+            case OrderProgressStatus.Refunded:
+                return await _orderEventHandler.OnOrderRefund(orderEvent);
+
+            case OrderProgressStatus.PaymentFailed:
+                return await _orderEventHandler.OnOrderRejected(orderEvent);
+
+            case OrderProgressStatus.RefundRequested:
+                // Handle refund request - you may need a new handler method
                 return await _orderEventHandler.OnOrderRefund(orderEvent);
 
             default:

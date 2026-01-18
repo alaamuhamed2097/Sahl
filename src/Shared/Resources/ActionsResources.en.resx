@@ -438,11 +438,13 @@
   <data name="ExpandAll" xml:space="preserve">
     <value>Expand All</value>
   </data>
-	<data name="ViewAll" xml:space="preserve">
-  <value>View All</value>
-</data>
-	<data name="RefreshPage" xml:space="preserve">
-  <value>Refresh Page</value>
-</data>
-
+  <data name="AddValue" xml:space="preserve">
+    <value>Add value</value>
+  </data>
+  <data name="ViewAll" xml:space="preserve">
+    <value>View All</value>
+  </data>
+  <data name="RefreshPage" xml:space="preserve">
+    <value>Refresh Page</value>
+  </data>
 </root>

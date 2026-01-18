@@ -984,4 +984,7 @@
   <data name="AverageRating" xml:space="preserve">
     <value>متوسط التقييم</value>
   </data>
+  <data name="Total" xml:space="preserve">
+    <value>الإجمالي</value>
+  </data>
 </root>

@@ -53,6 +53,7 @@ namespace Dashboard.Extensions
             services.AddScoped<ICategoryService, CategoryService>();
             services.AddScoped<IOrderService, OrderService>();
             services.AddScoped<IRefundService, RefundService>();
+            services.AddScoped<IShipmentService, ShipmentService>();
             services.AddScoped<IUnitService, UnitService>();
             services.AddScoped<ICountryService, CountryService>();
             services.AddScoped<IStateService, StateService>();

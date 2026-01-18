@@ -37,10 +37,11 @@ namespace Api.Controllers.v1.Shipping
         {
             var companies = await _shippingCompanyService.GetAllAsync();
             if (companies == null || !companies.Any())
-                return NotFound(new ResponseModel<string>
+                return Ok(new ResponseModel<IEnumerable<ShippingCompanyDto>>
                 {
-                    Success = false,
-                    Message = "No companies found."
+                    Success = true,
+                    Message = "No companies found.",
+                    Data = new List<ShippingCompanyDto>()
                 });
 
             return Ok(new ResponseModel<IEnumerable<ShippingCompanyDto>>

@@ -2176,6 +2176,15 @@ namespace Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to غير محدد.
+        /// </summary>
+        public static string NotSet {
+            get {
+                return ResourceManager.GetString("NotSet", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to غير مشتري.
         /// </summary>
         public static string NotVerified {

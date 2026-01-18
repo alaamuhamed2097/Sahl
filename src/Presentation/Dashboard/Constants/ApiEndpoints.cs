@@ -232,6 +232,15 @@
             public const string Search = "api/v1/ShippingCompany/search";
         }
 
+        public static class Shipment
+        {
+            public const string GetOrderShipments = "api/v1/Shipment/order";
+            public const string Track = "api/v1/Shipment/track";
+            public const string GetById = "api/v1/Shipment";
+            public const string UpdateStatus = "api/v1/Shipment/{0}/status";
+            public const string AssignTracking = "api/v1/Shipment/{0}/tracking";
+        }
+
         public static class UserNotification
         {
             public const string Get = "api/v1/UserNotifications";
