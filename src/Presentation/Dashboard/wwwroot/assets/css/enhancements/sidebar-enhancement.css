@@ -47,7 +47,7 @@
 /* تحسين عناصر القائمة */
 .pcoded-navbar .pcoded-inner-navbar li a {
     color: rgba(255, 255, 255, 0.85) !important;
-    padding: 12px 20px !important;
+    padding: 12px 10px !important;
     margin: 5px 15px !important;
     border-radius: 10px !important;
     transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;

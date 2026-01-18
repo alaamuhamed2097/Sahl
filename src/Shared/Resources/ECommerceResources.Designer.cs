@@ -1285,7 +1285,7 @@ namespace Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to الخدمات اللوجستية والشحن.
+        ///   Looks up a localized string similar to اللوجستيات والشحن.
         /// </summary>
         public static string LogisticsAndShipping {
             get {
