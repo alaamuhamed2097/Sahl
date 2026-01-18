@@ -105,50 +105,45 @@ namespace Dashboard.Services.Warehouse
 
 			try
 			{
-				// ???? ??? query parameters
+				
 				var queryParams = new Dictionary<string, string>
 		{
 			{ nameof(criteria.PageNumber), criteria.PageNumber.ToString() },
 			{ nameof(criteria.PageSize), criteria.PageSize.ToString() }
 		};
 
-				// ????? SearchTerm
+				
 				if (!string.IsNullOrEmpty(criteria.SearchTerm))
 					queryParams.Add(nameof(criteria.SearchTerm), criteria.SearchTerm);
 
-				// ????? IsActive
+				
 				if (criteria.IsActive.HasValue)
 					queryParams.Add(nameof(criteria.IsActive), criteria.IsActive.Value.ToString());
 
-				// ????? IsDefaultPlatformWarehouse
+				
 				if (criteria.IsDefaultPlatformWarehouse.HasValue)
 					queryParams.Add(nameof(criteria.IsDefaultPlatformWarehouse), criteria.IsDefaultPlatformWarehouse.Value.ToString());
 
-				// ????? VendorId
+				
 				if (criteria.VendorId.HasValue)
 					queryParams.Add(nameof(criteria.VendorId), criteria.VendorId.Value.ToString());
 
-				// ????? Email
+				
 				if (!string.IsNullOrEmpty(criteria.Email))
 					queryParams.Add(nameof(criteria.Email), criteria.Email);
 
-				// ????? Address
 				if (!string.IsNullOrEmpty(criteria.Address))
 					queryParams.Add(nameof(criteria.Address), criteria.Address);
 
-				// ????? SortBy
 				if (!string.IsNullOrEmpty(criteria.SortBy))
 					queryParams.Add(nameof(criteria.SortBy), criteria.SortBy);
 
-				// ????? SortDirection
 				if (!string.IsNullOrEmpty(criteria.SortDirection))
 					queryParams.Add(nameof(criteria.SortDirection), criteria.SortDirection);
 
-				// ????? CreatedDateFrom
 				if (criteria.CreatedDateFrom.HasValue)
 					queryParams.Add(nameof(criteria.CreatedDateFrom), criteria.CreatedDateFrom.Value.ToString("O"));
 
-				// ????? CreatedDateTo
 				if (criteria.CreatedDateTo.HasValue)
 					queryParams.Add(nameof(criteria.CreatedDateTo), criteria.CreatedDateTo.Value.ToString("O"));
 

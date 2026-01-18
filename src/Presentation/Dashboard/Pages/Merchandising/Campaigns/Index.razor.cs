@@ -12,8 +12,8 @@ namespace Dashboard.Pages.Merchandising.Campaigns
         [Inject] protected ICampaignService CampaignService { get; set; } = null!;
 
         protected override string EntityName { get; } = "Campaign";
-        protected override string AddRoute { get; } = "/campaign/new";
-        protected override string EditRouteTemplate { get; } = "/campaign/{id}";
+        protected override string AddRoute { get; } = "/campaigns/new";
+        protected override string EditRouteTemplate { get; } = "/campaigns/{id}";
         protected override string SearchEndpoint { get; } = "api/v1/campaign/search";
 
         protected override Dictionary<string, Func<CampaignDto, object>> ExportColumns { get; } =

@@ -36,6 +36,27 @@ namespace Api.Controllers.v1.Campaign
 		}
 
 		#region Campaign Queries
+		/// <summary>
+		/// Get all campaigns (admin only)
+		/// </summary>
+		/// <remarks>
+		/// API Version: 1.0+
+		/// Requires Admin role.
+		/// </remarks>
+		[HttpGet]
+		[Authorize(Roles = nameof(UserRole.Admin))]
+		[ProducesResponseType(typeof(ResponseModel<List<CampaignDto>>), StatusCodes.Status200OK)]
+		public async Task<IActionResult> GetAllCampaigns()
+		{
+			var campaigns = await _campaignService.GetAllCampaignsAsync();
+
+			return Ok(new ResponseModel<IEnumerable<CampaignDto>>
+			{
+				Success = true,
+				Data = campaigns,
+				Message = NotifiAndAlertsResources.DataRetrieved
+			});
+		}
 
 		/// <summary>
 		/// Get active campaigns (public)
@@ -50,7 +71,7 @@ namespace Api.Controllers.v1.Campaign
 		{
 			var campaigns = await _campaignService.GetActiveCampaignsAsync();
 
-			return Ok(new ResponseModel<List<CampaignDto>>
+			return Ok(new ResponseModel<IEnumerable<CampaignDto>>
 			{
 				Success = true,
 				Data = campaigns,
@@ -71,7 +92,7 @@ namespace Api.Controllers.v1.Campaign
 		{
 			var flashSales = await _campaignService.GetActiveFlashSalesAsync();
 
-			return Ok(new ResponseModel<List<CampaignDto>>
+			return Ok(new ResponseModel<IEnumerable<CampaignDto>>
 			{
 				Success = true,
 				Data = flashSales,
@@ -79,27 +100,11 @@ namespace Api.Controllers.v1.Campaign
 			});
 		}
 
-		/// <summary>
-		/// Get all campaigns (admin only)
-		/// </summary>
-		/// <remarks>
-		/// API Version: 1.0+
-		/// Requires Admin role.
-		/// </remarks>
-		[HttpGet]
-		[Authorize(Roles = nameof(UserRole.Admin))]
-		[ProducesResponseType(typeof(ResponseModel<List<CampaignDto>>), StatusCodes.Status200OK)]
-		public async Task<IActionResult> GetAllCampaigns()
-		{
-			var campaigns = await _campaignService.GetAllCampaignsAsync();
 
-			return Ok(new ResponseModel<List<CampaignDto>>
-			{
-				Success = true,
-				Data = campaigns,
-				Message = NotifiAndAlertsResources.DataRetrieved
-			});
-		}
+
+
+
+
 
 		/// <summary>
 		/// Search campaigns with pagination (admin only)
@@ -111,20 +116,17 @@ namespace Api.Controllers.v1.Campaign
 		[HttpGet("search")]
 		[Authorize(Roles = nameof(UserRole.Admin))]
 		[ProducesResponseType(typeof(ResponseModel<PaginatedSearchResult<CampaignDto>>), StatusCodes.Status200OK)]
+		[ProducesResponseType(typeof(ResponseModel<PaginatedSearchResult<CampaignDto>>), StatusCodes.Status500InternalServerError)]
 		public async Task<IActionResult> SearchCampaigns([FromQuery] BaseSearchCriteriaModel searchCriteria)
 		{
-			var (campaigns, totalCount) = await _campaignService.SearchCampaignsAsync(searchCriteria);
+			var result = await _campaignService.SearchCampaignsAsync(searchCriteria);
 
-			return Ok(new ResponseModel<PaginatedSearchResult<CampaignDto>>
+			if (!result.Success)
 			{
-				Success = true,
-				Data = new PaginatedSearchResult<CampaignDto>
-				{
-					Items = campaigns,
-					TotalRecords = totalCount
-				},
-				Message = NotifiAndAlertsResources.DataRetrieved
-			});
+				return StatusCode(result.StatusCode, result);
+			}
+
+			return Ok(result);
 		}
 
 		/// <summary>

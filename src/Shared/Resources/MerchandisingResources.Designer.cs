@@ -124,6 +124,87 @@ namespace Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to لون الشارة:.
+        /// </summary>
+        public static string BadgeColor {
+            get {
+                return ResourceManager.GetString("BadgeColor", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to اختر لوناً لشارة الحملة.
+        /// </summary>
+        public static string BadgeColorHint {
+            get {
+                return ResourceManager.GetString("BadgeColorHint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to إعدادات الشارة.
+        /// </summary>
+        public static string BadgeConfiguration {
+            get {
+                return ResourceManager.GetString("BadgeConfiguration", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to نص الشارة (عربي):.
+        /// </summary>
+        public static string BadgeTextAr {
+            get {
+                return ResourceManager.GetString("BadgeTextAr", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to نص قصير للشارة بالعربية.
+        /// </summary>
+        public static string BadgeTextArHint {
+            get {
+                return ResourceManager.GetString("BadgeTextArHint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to مثال: عرض حار.
+        /// </summary>
+        public static string BadgeTextArPlaceholder {
+            get {
+                return ResourceManager.GetString("BadgeTextArPlaceholder", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to نص الشارة (إنجليزي):.
+        /// </summary>
+        public static string BadgeTextEn {
+            get {
+                return ResourceManager.GetString("BadgeTextEn", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to نص قصير للشارة بالإنجليزية.
+        /// </summary>
+        public static string BadgeTextEnHint {
+            get {
+                return ResourceManager.GetString("BadgeTextEnHint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to مثال: HOT DEAL.
+        /// </summary>
+        public static string BadgeTextEnPlaceholder {
+            get {
+                return ResourceManager.GetString("BadgeTextEnPlaceholder", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to بناءً على سجل الشراء.
         /// </summary>
         public static string BasedOnPurchaseHistory {
@@ -268,6 +349,33 @@ namespace Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to الحملة نشطة.
+        /// </summary>
+        public static string CampaignIsActive {
+            get {
+                return ResourceManager.GetString("CampaignIsActive", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to الحملة غير نشطة.
+        /// </summary>
+        public static string CampaignIsInactive {
+            get {
+                return ResourceManager.GetString("CampaignIsInactive", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to عناصر الحملة.
+        /// </summary>
+        public static string CampaignItems {
+            get {
+                return ResourceManager.GetString("CampaignItems", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to اسم الحملة.
         /// </summary>
         public static string CampaignName {
@@ -385,7 +493,7 @@ namespace Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to تاريخ الإنشاء.
+        ///   Looks up a localized string similar to تاريخ الإنشاء:.
         /// </summary>
         public static string CreatedDate {
             get {
@@ -453,6 +561,15 @@ namespace Resources {
         public static string DisplayLayout {
             get {
                 return ResourceManager.GetString("DisplayLayout", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ترتيب العرض.
+        /// </summary>
+        public static string DisplayOrder {
+            get {
+                return ResourceManager.GetString("DisplayOrder", resourceCulture);
             }
         }
         
@@ -529,7 +646,16 @@ namespace Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to تاريخ النهاية.
+        ///   Looks up a localized string similar to تفعيل وضع البيع السريع.
+        /// </summary>
+        public static string EnableFlashSaleMode {
+            get {
+                return ResourceManager.GetString("EnableFlashSaleMode", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to تاريخ الانتهاء:.
         /// </summary>
         public static string EndDate {
             get {
@@ -610,6 +736,33 @@ namespace Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to تمييز هذه الحملة كبيع سريع مع عروض محدودة الوقت والكمية.
+        /// </summary>
+        public static string FlashSaleDescription {
+            get {
+                return ResourceManager.GetString("FlashSaleDescription", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to وقت انتهاء البيع السريع:.
+        /// </summary>
+        public static string FlashSaleEndTime {
+            get {
+                return ResourceManager.GetString("FlashSaleEndTime", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to متى يجب أن ينتهي البيع السريع؟.
+        /// </summary>
+        public static string FlashSaleEndTimeHint {
+            get {
+                return ResourceManager.GetString("FlashSaleEndTimeHint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to من قائمة المفضلة.
         /// </summary>
         public static string FromWishlist {
@@ -660,6 +813,33 @@ namespace Resources {
         public static string Inactive {
             get {
                 return ResourceManager.GetString("Inactive", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to الحملات غير النشطة لن يتم عرضها للعملاء.
+        /// </summary>
+        public static string InactiveCampaignNote {
+            get {
+                return ResourceManager.GetString("InactiveCampaignNote", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to اسم العنصر (عربي).
+        /// </summary>
+        public static string ItemNameAr {
+            get {
+                return ResourceManager.GetString("ItemNameAr", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to اسم العنصر (إنجليزي).
+        /// </summary>
+        public static string ItemNameEn {
+            get {
+                return ResourceManager.GetString("ItemNameEn", resourceCulture);
             }
         }
         
@@ -750,6 +930,24 @@ namespace Resources {
         public static string ManualItemsSelection {
             get {
                 return ResourceManager.GetString("ManualItemsSelection", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to الحد الأقصى للكمية لكل مستخدم:.
+        /// </summary>
+        public static string MaxQuantityPerUser {
+            get {
+                return ResourceManager.GetString("MaxQuantityPerUser", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to الحد الأقصى للعناصر التي يمكن للعميل شراؤها.
+        /// </summary>
+        public static string MaxQuantityPerUserHint {
+            get {
+                return ResourceManager.GetString("MaxQuantityPerUserHint", resourceCulture);
             }
         }
         
@@ -934,6 +1132,15 @@ namespace Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to إزالة العنصر من الحملة.
+        /// </summary>
+        public static string RemoveItemFromCampaign {
+            get {
+                return ResourceManager.GetString("RemoveItemFromCampaign", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to حفظ.
         /// </summary>
         public static string Save {
@@ -1096,7 +1303,7 @@ namespace Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to تاريخ البداية.
+        ///   Looks up a localized string similar to تاريخ البدء:.
         /// </summary>
         public static string StartDate {
             get {
