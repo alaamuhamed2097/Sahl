@@ -128,6 +128,25 @@ namespace Api.Controllers.v1.Catalog
         }
 
         /// <summary>
+        /// Retrieves all final categories.
+        /// </summary>
+        /// <remarks>
+        /// API Version: 1.0+
+        /// </remarks>
+        [HttpGet("final-categories")]
+        [AllowAnonymous]
+        public async Task<IActionResult> GetFinalCategories()
+        {
+            var categories = await _categoryService.GetFinalCategoriesAsync();
+            return Ok(new ResponseModel<IEnumerable<CategoryDto>>
+            {
+                Success = true,
+                Message = NotifiAndAlertsResources.DataRetrieved,
+                Data = categories
+            });
+        }
+
+        /// <summary>
         /// Retrieves all featured categories.
         /// </summary>
         /// <remarks>

@@ -8,6 +8,7 @@ using DAL.Contracts.Repositories.Customer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Resources;
+using Shared.DTOs.Catalog.Item;
 using Shared.GeneralModels;
 
 namespace Api.Controllers.v1.Catalog
@@ -37,7 +38,7 @@ namespace Api.Controllers.v1.Catalog
         public async Task<IActionResult> SearchCustomerRecommendedItems([FromBody] BaseSearchCriteriaModel filter)
         {
             if (filter == null)
-                return BadRequest(CreateErrorResponse(NotifiAndAlertsResources.InvalidInputAlert));
+                return BadRequest(CreateErrorResponse<PagedSpSearchResultDto>(NotifiAndAlertsResources.InvalidInputAlert));
 
             // Validate and normalize filter parameters
             ValidateBaseSearchCriteriaModel(filter);

@@ -9,7 +9,7 @@ namespace BL.Contracts.Service.Setting;
 /// </summary>
 public interface IDevelopmentSettingsService
 {
-    Task<IEnumerable<DevelopmentSettingsDto>> GetAllAsync();
+    Task<DevelopmentSettingsDto> GetAsync();
     Task<DevelopmentSettingsDto?> GetByIdAsync(Guid id);
     Task<SaveResult> SaveAsync(DevelopmentSettingsDto dto, Guid userId);
     Task<bool> IsMultiVendorModeEnabledAsync();

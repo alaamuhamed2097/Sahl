@@ -21,8 +21,10 @@ namespace BL.Contracts.Service.Customer
 		/// <summary>
 		/// Search customers with pagination and filtering
 		/// </summary>
-		Task<ResponseModel<AdvancedPagedResult<CustomerDto>>> SearchAsync(BaseSearchCriteriaModel criteria);
-
+		//Task<ResponseModel<AdvancedPagedResult<CustomerDto>>> SearchAsync(BaseSearchCriteriaModel criteria);
+		Task<ResponseModel<AdvancedPagedResult<CustomerDto>>> SearchAsync(
+	BaseSearchCriteriaModel criteriaModel,
+	CancellationToken cancellationToken = default);
 		/// <summary>
 		/// Save or update customer
 		/// </summary>
@@ -46,7 +48,7 @@ namespace BL.Contracts.Service.Customer
 		/// <summary>
 		/// Get customer order history
 		/// </summary>
-		Task<ResponseModel<AdvancedPagedResult<object>>> GetOrderHistoryAsync(Guid customerId, BaseSearchCriteriaModel criteria);
+		Task<ResponseModel<AdvancedPagedResult<OrderHistoryDto>>> GetOrderHistoryAsync(Guid customerId, BaseSearchCriteriaModel criteria);
 
 		/// <summary>
 		/// Get customer wallet transaction history

@@ -4,6 +4,7 @@ using Dashboard.Contracts.General;
 using Resources;
 using Shared.DTOs.Catalog.Item;
 using Shared.GeneralModels;
+using Shared.Parameters;
 
 namespace Dashboard.Services.ECommerce.Item
 {
@@ -57,18 +58,40 @@ namespace Dashboard.Services.ECommerce.Item
         /// <summary>
         /// Save or update an item.
         /// </summary>
-        public async Task<ResponseModel<ItemDto>> SaveAsync(ItemDto item)
+        public async Task<ResponseModel<bool>> SaveAsync(ItemDto item)
         {
             if (item == null) throw new ArgumentNullException(nameof(item));
 
             try
             {
-                return await _apiService.PostAsync<ItemDto, ItemDto>($"{ApiEndpoints.Item.Save}", item);
+                return await _apiService.PostAsync<ItemDto, bool>($"{ApiEndpoints.Item.Save}", item);
             }
             catch (Exception ex)
             {
                 // Log error here
-                return new ResponseModel<ItemDto>
+                return new ResponseModel<bool>
+                {
+                    Success = false,
+                    Message = ex.Message
+                };
+            }
+        }
+
+        /// <summary>
+        /// Update status of an item.
+        /// </summary>
+        public async Task<ResponseModel<bool>> UpdateStatusAsync(UpdateItemVisibilityRequest updateItemVisibility)
+        {
+            if (updateItemVisibility == null) throw new ArgumentNullException(nameof(updateItemVisibility));
+
+            try
+            {
+                return await _apiService.PostAsync<UpdateItemVisibilityRequest, bool>($"{ApiEndpoints.Item.UpdateStatus}", updateItemVisibility);
+            }
+            catch (Exception ex)
+            {
+                // Log error here
+                return new ResponseModel<bool>
                 {
                     Success = false,
                     Message = ex.Message

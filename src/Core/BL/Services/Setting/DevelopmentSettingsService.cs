@@ -39,14 +39,14 @@ public class DevelopmentSettingsService : IDevelopmentSettingsService
         _mapper = mapper;
     }
 
-    public async Task<IEnumerable<DevelopmentSettingsDto>> GetAllAsync()
+    public async Task<DevelopmentSettingsDto> GetAsync()
     {
-        var brands = await _developmentSettingsRepository
-            .GetAsync(x => !x.IsDeleted, orderBy: q => q.OrderByDescending(x => x.CreatedDateUtc));
+        var brands = (await _developmentSettingsRepository
+            .GetAsync(x => !x.IsDeleted)).FirstOrDefault();
 
-        var brandDtos = _mapper.MapList<TbDevelopmentSettings, DevelopmentSettingsDto>(brands).ToList();
+        var brandDto = _mapper.MapModel<TbDevelopmentSettings, DevelopmentSettingsDto>(brands);
 
-        return brandDtos;
+        return brandDto;
     }
     public async Task<bool> IsMultiVendorModeEnabledAsync()
     {

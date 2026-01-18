@@ -79,9 +79,9 @@ namespace Api.Controllers.v1.Base
         /// <summary>
         /// Creates a standardized error response
         /// </summary>
-        protected ResponseModel<string> CreateErrorResponse(string message)
+        protected ResponseModel<T> CreateErrorResponse<T>(string message)
         {
-            return new ResponseModel<string>
+            return new ResponseModel<T>
             {
                 Success = false,
                 Message = message

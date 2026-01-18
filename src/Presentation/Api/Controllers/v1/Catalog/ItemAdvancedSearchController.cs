@@ -5,6 +5,7 @@ using Common.Filters;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Resources;
+using Shared.DTOs.Catalog.Item;
 using Shared.GeneralModels;
 
 namespace Api.Controllers.v1.Catalog
@@ -62,7 +63,7 @@ namespace Api.Controllers.v1.Catalog
         public async Task<IActionResult> Search([FromBody] ItemFilterQuery filter)
         {
             if (filter == null)
-                return BadRequest(CreateErrorResponse(NotifiAndAlertsResources.InvalidInputAlert));
+                return BadRequest(CreateErrorResponse<PagedSpSearchResultDto>(NotifiAndAlertsResources.InvalidInputAlert));
 
             // Validate and normalize filter parameters
             ValidateAndNormalizeItemFilter(filter);
@@ -97,7 +98,8 @@ namespace Api.Controllers.v1.Catalog
         public async Task<IActionResult> GetAvailableFilters([FromBody] AvailableFiltersQuery filter)
         {
             if (filter == null)
-                return BadRequest(CreateErrorResponse(NotifiAndAlertsResources.InvalidInputAlert));
+                return BadRequest(CreateErrorResponse<AvailableSearchFiltersDto>(NotifiAndAlertsResources.InvalidInputAlert));
+
 
             try
             {
@@ -108,7 +110,7 @@ namespace Api.Controllers.v1.Catalog
             }
             catch (Exception ex)
             {
-                return StatusCode(500, CreateErrorResponse($"Error retrieving filters: {ex.Message}"));
+                return StatusCode(500, CreateErrorResponse<AvailableSearchFiltersDto>($"Error retrieving filters: {ex.Message}"));
             }
         }
 
@@ -126,7 +128,7 @@ namespace Api.Controllers.v1.Catalog
         public async Task<IActionResult> GetBestPrices([FromBody] List<Guid> itemIds)
         {
             if (itemIds == null || !itemIds.Any())
-                return BadRequest(CreateErrorResponse("Item IDs are required"));
+                return BadRequest(CreateErrorResponse<List<ItemBestPriceDto>>("Item IDs are required"));
 
             try
             {
@@ -139,7 +141,7 @@ namespace Api.Controllers.v1.Catalog
             }
             catch (Exception ex)
             {
-                return StatusCode(500, CreateErrorResponse($"Error retrieving prices: {ex.Message}"));
+                return StatusCode(500, CreateErrorResponse<AvailableSearchFiltersDto>($"Error retrieving prices: {ex.Message}"));
             }
         }
 

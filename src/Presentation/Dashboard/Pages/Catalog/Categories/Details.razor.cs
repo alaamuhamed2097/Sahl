@@ -1,4 +1,5 @@
-﻿using Dashboard.Configuration;
+﻿using Common.Enumerations.Pricing;
+using Dashboard.Configuration;
 using Dashboard.Contracts.ECommerce.Category;
 using Dashboard.Contracts.General;
 using Microsoft.AspNetCore.Components;
@@ -380,15 +381,16 @@ public partial class Details : IDisposable
                 Model.CategoryAttributes.RemoveAll(attribute => attribute.AttributeId == Guid.Empty);
 
                 // Validate that AffectsPricing is only set for List type attributes
+                bool isPricingSystemValid = Model.PricingSystemType == PricingStrategyType.CombinationBased ||
+                                            Model.PricingSystemType == PricingStrategyType.Hybrid;
+
                 foreach (var attr in Model.CategoryAttributes)
                 {
-                    var fieldType = GetAttributeFieldType(attr.AttributeId);
-                    if (attr.AffectsPricing && fieldType != 6)
-                    {
-                        // Force disable if not a List type
-                        attr.AffectsPricing = false;
-                    }
+                    var isListType = GetAttributeFieldType(attr.AttributeId) == 6;
+
+                    attr.AffectsPricing = attr.AffectsPricing && isListType && isPricingSystemValid;
                 }
+
             }
 
             // Additional validation check

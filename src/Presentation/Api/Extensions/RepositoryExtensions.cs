@@ -36,7 +36,8 @@ namespace Api.Extensions
             services.AddScoped(typeof(IBaseMapper), typeof(BaseMapper));
 
             services.AddScoped<ICartRepository, CartRepository>();
-            services.AddScoped<IOfferRepository, OfferRepository>();
+            services.AddScoped<IVendorItemRepository, VendorItemRepository>();
+            services.AddScoped<IBuyBoxHelperRepository, BuyBoxHelperRepository>();
             services.AddScoped<IVendorItemConditionRepository, VendorItemConditionRepository>();
             services.AddScoped<IOrderRepository, OrderRepository>();
             services.AddScoped<IOrderPaymentRepository, OrderPaymentRepository>();

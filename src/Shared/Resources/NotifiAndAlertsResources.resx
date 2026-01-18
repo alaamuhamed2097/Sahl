@@ -474,6 +474,9 @@
   <data name="RequestRejected" xml:space="preserve">
     <value>تم رفض الطلب</value>
   </data>
+  <data name="RequestAccepted" xml:space="preserve">
+    <value>تم قبول الطلب</value>
+  </data>
   <data name="FailedToProcessRequest" xml:space="preserve">
     <value>تعذّرت معالجة الطلب. يُرجى المحاولة مجددًا.</value>
   </data>
@@ -526,4 +529,34 @@
   <value>حدث خطأ أثناء تحميل لوحة التحكم</value>
 </data>
 
+	<data name="ErrorOccurred" xml:space="preserve">
+    <value>حدث خطأ</value>
+  </data>
+	<data name="RegistrationSuccessful" xml:space="preserve">
+  <value>تم تسجيل العميل بنجاح!</value>
+</data>
+	<data name="RegistrationFailed" xml:space="preserve">
+  <value>فشل تسجيل العميل. حاول مرة أخرى.</value>
+</data>
+	<data name="SomethingWentWrong" xml:space="preserve">
+  <value>حدث خطأ ما. حاول مرة أخرى لاحقاً.</value>
+</data>
+	<data name="Error" xml:space="preserve">
+  <value>خطأ</value>
+</data>
+	<data name="NoDataFound" xml:space="preserve">
+  <value>لا توجد بيانات</value>
+</data>
+	<data name="DeletedSuccessfully" xml:space="preserve">
+  <value>تم الحذف بنجاح</value>
+</data>
+	<data name="DeleteFailed" xml:space="preserve">
+  <value>فشل الحذف</value>
+</data>
+	<data name="AreYouSure" xml:space="preserve">
+  <value>هل أنت متأكد؟</value>
+</data>
+	<data name="ConfirmDeleteAlert" xml:space="preserve">
+  <value>لا يمكن التراجع عن هذا الإجراء!</value>
+</data>
 </root>

@@ -49,6 +49,7 @@ namespace Dashboard.Extensions
             services.AddScoped<IVendorService, VendorService>();
             services.AddScoped<ICustomerService, CustomerService>();
             services.AddScoped<IItemService, ItemService>();
+            services.AddScoped<IItemConditionService, ItemConditionService>();
             services.AddScoped<IAttributeService, AttributeService>();
             services.AddScoped<ICategoryService, CategoryService>();
             services.AddScoped<IOrderService, OrderService>();
@@ -64,34 +65,28 @@ namespace Dashboard.Extensions
             services.AddScoped<ICurrencyService, CurrencyService>();
             services.AddScoped<IPageService, PageService>();
 
-            // Warehouse & Inventory Services
-            services.AddScoped<IWarehouseService, WarehouseService>();
+			// Warehouse & Inventory Services
+			services.AddScoped<IWarehouseService, WarehouseService>();
+			services.AddScoped<IVendorWarehouseService, VendorWarehouseService>();
 
             // Content Management Services
             services.AddScoped<IContentAreaService, ContentAreaService>();
             services.AddScoped<IMediaContentService, MediaContentService>();
 
-			services.AddScoped<IItemReviewService, ItemReviewService>();
-			services.AddScoped<IVendorReviewService, VendorReviewService>();
-			services.AddScoped<IReportReviewService, ReportReviewService>();
-			services.AddScoped<IHomePageSliderService, HomePageSliderService>();
-			services.AddScoped<ISystemSettingsService, SystemSettingsService>();
-			// Excel Template Service
-			services.AddScoped<ExcelTemplateService>();
-            services.AddScoped<ICampaignService, CampaignService>();
-            services.AddScoped<IAdminBlockService, AdminBlockService>();
-            services.AddScoped<IVendorPromoCodeParticipationAdminService, VendorPromoCodeParticipationAdminService>();
             services.AddScoped<IItemReviewService, ItemReviewService>();
+            services.AddScoped<IVendorReviewService, VendorReviewService>();
             services.AddScoped<IReportReviewService, ReportReviewService>();
             services.AddScoped<IHomePageSliderService, HomePageSliderService>();
             services.AddScoped<ISystemSettingsService, SystemSettingsService>();
+            services.AddScoped<ICampaignService, CampaignService>();
+            services.AddScoped<IAdminBlockService, AdminBlockService>();
+            services.AddScoped<IVendorPromoCodeParticipationAdminService, VendorPromoCodeParticipationAdminService>();
+            services.AddScoped<IDevelopmentSettingsService, DevelopmentSettingsService>();
             // Excel Template Service
             services.AddScoped<ExcelTemplateService>();
 
             services.AddScoped<IWithdrawalMethodService, WithdrawalMethodService>();
 
-            // Excel Template Service
-            services.AddScoped<ExcelTemplateService>();
 
             return services;
         }
