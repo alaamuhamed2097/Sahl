@@ -182,7 +182,7 @@
         margin-top: 0.5rem;
         box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
         max-height: 600px;
-        overflow: hidden;
+        overflow: auto;
         display: flex;
         flex-direction: column;
         border: 1px solid #dee2e6;
@@ -375,6 +375,9 @@
     {
         CurrentPage = 1; // Reset to first page when searching
         FilterItems();
+        
+        ShowDropdown = true;
+        StateHasChanged();
     }
 
     protected void FilterItems()
