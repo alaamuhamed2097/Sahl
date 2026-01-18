@@ -71,7 +71,7 @@ namespace DAL.Repositories.Catalog.Item
             List<AttributeSelection> selectedAttributes,
             CancellationToken cancellationToken = default)
         {
-            // ✅ ENHANCED: Better input validation
+            // Input validation
             if (selectedAttributes == null || !selectedAttributes.Any())
             {
                 throw new ArgumentException("At least one attribute must be selected", nameof(selectedAttributes));
@@ -81,7 +81,6 @@ namespace DAL.Repositories.Catalog.Item
             var selectedAttributeValueIds = selectedAttributes.Select(a => a.CombinationAttributeValueId).ToList();
             int expectedMatchCount = selectedAttributeValueIds.Count;
 
-            // ✅ IMPROVED: Using nullable Guid instead of Guid.Empty
             Guid? itemCombinationId = null;
 
             try
@@ -125,10 +124,7 @@ namespace DAL.Repositories.Catalog.Item
 
                 if (!combinationExists)
                 {
-                    throw new DataAccessException(
-                        "Selected combination is not available",
-                        null,
-                        _logger);
+                    return new SpGetItemDetails(); // Return empty result if combination is deleted
                 }
 
                 // Call the main method with the found combination ID
