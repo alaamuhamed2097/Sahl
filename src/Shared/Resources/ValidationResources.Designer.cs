@@ -1150,6 +1150,15 @@ namespace Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to يجب أن يكون بين {2} و {1} حرف.
+        /// </summary>
+        public static string Length {
+            get {
+                return ResourceManager.GetString("Length", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to يجب أن يكون الطول عددًا صحيحًا إيجابيًا..
         /// </summary>
         public static string LengthRange {

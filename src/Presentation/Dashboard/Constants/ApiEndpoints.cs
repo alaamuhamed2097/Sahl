@@ -408,16 +408,12 @@
         {
             private const string Base = "api/v1/ItemReview";
 
-            public const string Update = $"{Base}/update";
             public const string Get = Base;
+            public const string Update = $"{Base}/update";
             public const string Delete = $"{Base}/delete";
-            public const string GetByItemId = $"{Base}/reviews-by-Item";
             public const string Search = $"{Base}/search";
-            public const string GetStats = $"{Base}/Item-review-stats";
-            public const string GetPending = $"{Base}/pending";
-            public const string Approve = $"{Base}/approve";
-            public const string Reject = $"{Base}/reject";
-
+            public const string GetStats = $"{Base}/Item-review-summery";
+            public const string ChangeStatus = $"{Base}/changeStatus";
         }
 
         public static class VendorReview

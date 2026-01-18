@@ -119,8 +119,7 @@ namespace DAL.Repositories.Review
 
                 var counts = await GetVoteCountsAsync(reviewId, cancellationToken);
 
-                review.HelpfulCount = counts.helpful;
-                review.NotHelpfulCount = counts.notHelpful;
+                review.HelpfulVoteCount = counts.helpful;
                 review.UpdatedDateUtc = DateTime.UtcNow;
 
                 _dbContext.Set<TbItemReview>().Update(review);

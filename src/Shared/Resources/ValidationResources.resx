@@ -861,4 +861,7 @@
   <data name="CategorySelectionRequired" xml:space="preserve">
     <value>يرجى اختيار فئة في خطوة التصنيف لتكوين الخصائص.</value>
   </data>
+  <data name="Length" xml:space="preserve">
+    <value>يجب أن يكون بين {2} و {1} حرف</value>
+  </data>
 </root>

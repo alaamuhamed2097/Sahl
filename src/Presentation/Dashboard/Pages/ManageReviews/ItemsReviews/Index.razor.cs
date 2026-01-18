@@ -22,7 +22,7 @@ namespace Dashboard.Pages.ManageReviews.ItemsReviews
 		[Inject] protected IResourceLoaderService ResourceLoaderService { get; set; } = null!;
 
 
-		private IEnumerable<ResponseItemReviewDto> items = new List<ResponseItemReviewDto>();
+		private IEnumerable<ItemReviewResponseDto> items = new List<ItemReviewResponseDto>();
 		private ItemReviewSearchCriteriaModel searchModel = new ItemReviewSearchCriteriaModel
 		{
 			PageNumber = 1,
@@ -77,14 +77,14 @@ namespace Dashboard.Pages.ManageReviews.ItemsReviews
 				}
 				else
 				{
-					items = new List<ResponseItemReviewDto>();
+					items = new List<ItemReviewResponseDto>();
 					Console.WriteLine($"Error: {response.Message}");
 				}
 			}
 			catch (Exception ex)
 			{
 				Console.WriteLine($"Exception: {ex.Message}");
-				items = new List<ResponseItemReviewDto>();
+				items = new List<ItemReviewResponseDto>();
 			}
 		}
 
@@ -197,7 +197,7 @@ namespace Dashboard.Pages.ManageReviews.ItemsReviews
 
 			try
 			{
-				var response = await ItemReviewService.ApproveReviewAsync(reviewId);
+				var response = await ItemReviewService.ChangeReviewStatusAsync(reviewId, ReviewStatus.Approved);
 
 				if (response.Success)
 				{
@@ -224,7 +224,7 @@ namespace Dashboard.Pages.ManageReviews.ItemsReviews
 
 			try
 			{
-				var response = await ItemReviewService.RejectReviewAsync(reviewId);
+				var response = await ItemReviewService.ChangeReviewStatusAsync(reviewId, ReviewStatus.Rejected);
 
 				if (response.Success)
 				{
