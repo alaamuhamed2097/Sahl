@@ -26,6 +26,7 @@ namespace Api.Controllers.v1.Merchandising
         }
 
         [HttpGet("search")]
+        [Authorize(Roles = nameof(UserRole.Admin))]
         public async Task<IActionResult> Search([FromQuery] BaseSearchCriteriaModel criteria)
         {
 
@@ -48,6 +49,7 @@ namespace Api.Controllers.v1.Merchandising
             });
 
         }
+       
         /// <summary>
         /// Get all sliders (Admin only)
         /// </summary>
@@ -83,6 +85,7 @@ namespace Api.Controllers.v1.Merchandising
         /// API Version: 1.0+
         /// </remarks>
         [HttpGet("{sliderId}")]
+        [Authorize(Roles = nameof(UserRole.Admin))]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetSliderById(Guid sliderId)
