@@ -202,7 +202,10 @@
                                             </div>
                                         </div>
                                         <!-- Affects Pricing Switch -->
-                                        <div class="col-md-3" style="min-width:150px;">
+                                        @if (Model.PricingSystemType == PricingStrategyType.CombinationBased ||
+                                             Model.PricingSystemType== PricingStrategyType.Hybrid)
+                                        {
+                                            <div class="col-md-3" style="min-width:150px;">
                                             <div class="form-check form-switch d-flex justify-content-evenly align-items-center">
                                                 <label class="form-check-label m-0"
                                                        for="@($"attrIsAffectPrice_{index}")"
@@ -223,6 +226,7 @@
                                                 </small>
                                             }
                                         </div>
+                                        }
                                         <!-- Delete Button -->
                                         <div class="col-md-2 d-flex justify-content-center align-content-center">
                                             <button type="button" class="btn btn-danger btn-sm mx-1" title="@ActionsResources.Delete" @onclick="() => RemoveAttribute(index)">

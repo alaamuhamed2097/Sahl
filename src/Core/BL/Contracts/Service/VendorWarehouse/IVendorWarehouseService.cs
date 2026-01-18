@@ -6,6 +6,6 @@ namespace BL.Contracts.Service.VendorWarehouse
     {
         Task<WarehouseDto> GetMarketWarehousesAsync();
         Task<IEnumerable<WarehouseDto>> GetVendorAvailableWarehousesByUserIdAsync(string userId);
-        Task<IEnumerable<WarehouseDto>> GetVendorAvailableWarehousesByVendorIdAsync(Guid vendorId);
+        Task<IEnumerable<WarehouseDto>> GetVendorAvailableWarehousesByVendorIdAsync(Guid userId);
     }
 }

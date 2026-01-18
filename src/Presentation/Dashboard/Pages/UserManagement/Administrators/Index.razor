@@ -12,307 +12,310 @@
 <PageTitle>@ECommerceResources.Admins</PageTitle>
 
 <style>
-    .cursor-pointer {
-        cursor: pointer;
-        user-select: none;
-    }
+	.cursor-pointer {
+		cursor: pointer;
+		user-select: none;
+	}
 
-    .cursor-pointer:hover {
-        background-color: rgba(0, 0, 0, 0.05);
-    }
+		.cursor-pointer:hover {
+			background-color: rgba(0, 0, 0, 0.05);
+		}
 </style>
 
-<div class="col-sm-12">  
-    <div class="card">  
-        <div class="card-header bg-primary text-white py-3 d-flex justify-content-between align-items-center">
-            <h5 class="mb-0 fw-semibold text-white">🧑‍💼 @GeneralResources.Admins</h5>
-        </div>
-        <div class="card-body">
-            <div class="dt-responsive table-responsive">
-                <!-- Filtration start -->
-                <ul class="navbar-nav d-flex flex-row align-items-center gap-3 mb-2 px-0 w-100">
-                    <li class="nav-item col-md-6 w-auto d-flex flex-row align-items-center gap-3">
-                    <EditForm Model="searchModel" OnSubmit="@Search">
-    <!-- Search Box -->
-    <div class="input-group rounded search-box">
-        <input type="text" @bind="searchModel.SearchTerm"
-               id="searchInput"
-               class="form-control text-center border-0 @(ResourceManager.CurrentLanguage == Language.Arabic ? "rounded-end" : "rounded-start")"
-               placeholder="@ActionsResources.Search" />
-        <button type="submit"
-                class="btn btn-danger d-flex align-items-center justify-content-center border-0 @(ResourceManager.CurrentLanguage == Language.Arabic ? "rounded-start" : "rounded-end")">
-            <i class="fas fa-search text-white m-0"></i>
-        </button>
-    </div>
-</EditForm>
+<div class="col-sm-12">
+	<div class="card">
+		<div class="card-header bg-primary text-white py-3 d-flex justify-content-between align-items-center">
+			<h5 class="mb-0 fw-semibold text-white">🧑‍💼 @GeneralResources.Admins</h5>
+		</div>
+		<div class="card-body">
+			<div class="dt-responsive table-responsive">
+				<!-- Filtration start -->
+				<ul class="navbar-nav d-flex flex-row align-items-center gap-3 mb-2 px-0 w-100">
+					<li class="nav-item col-md-6 w-auto d-flex flex-row align-items-center gap-3">
+						<EditForm Model="searchModel" OnSubmit="@Search">
+							<!-- Search Box -->
+							<div class="search-container">
+								<div class="input-group search-box">
+									<input type="text"
+										   @bind="searchModel.SearchTerm"
+										   id="searchInput"
+										   class="form-control search-input"
+										   placeholder="@ActionsResources.Search" />
+									<button type="submit"
+											class="btn btn-search">
+										<i class="fas fa-search"></i>
+									</button>
+								</div>
+							</div>
+						</EditForm>
 
 
-                        <!-- Page Size -->
-                                                                <div class="d-flex align-items-center gap-2">
-                                            <select class="form-select rounded-3 shadow-sm border-light text-primary fw-bold text-center custom-dropdown"
-                                                    style="width: 130px; height: 40px; padding-right: 30px;"
-                                                    @onchange="OnPageSizeChanged">
-                                                <option value="10"selected="@(searchModel.PageSize == 10)">10</option>
-                                                <option value="15"selected="@(searchModel.PageSize == 15)">15</option>
-                                                <option value="20"selected="@(searchModel.PageSize == 20)">20</option>
-                                                <option value="30"selected="@(searchModel.PageSize == 30)">30</option>
-                                            </select>
-                                        </div>
-                    </li>
-                    <li class="nav-item ms-auto d-flex flex-row align-items-center gap-2">
-                        <!-- Export Buttons -->
-                        <div class="dropdown">
-                            <button class="btn btn-info" type="button" id="exportDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                                <i class="fas fa-file-export mx-1"></i>
-                                <span class="fw-bold">@ActionsResources.Export</span>
-                            </button>
-                            <ul class="dropdown-menu" aria-labelledby="exportDropdown">
-                                <li><a class="dropdown-item" href="javascript:void(0)" @onclick="ExportToExcel"><i class="far fa-file-excel mx-2"></i>@GeneralResources.Excel</a></li>
-                                <li><a class="dropdown-item" href="javascript:void(0)" @onclick="ExportToPrint"><i class="fas fa-print mx-2"></i>@ActionsResources.Print</a></li>
-                            </ul>
-                        </div>
+						<!-- Page Size -->
+						<div class="d-flex align-items-center gap-2">
+							<select class="form-select rounded-3 shadow-sm border-light text-primary fw-bold text-center custom-dropdown"
+									style="width: 130px; height: 40px; padding-right: 30px;"
+									@onchange="OnPageSizeChanged">
+								<option value="10" selected="@(searchModel.PageSize == 10)">10</option>
+								<option value="15" selected="@(searchModel.PageSize == 15)">15</option>
+								<option value="20" selected="@(searchModel.PageSize == 20)">20</option>
+								<option value="30" selected="@(searchModel.PageSize == 30)">30</option>
+							</select>
+						</div>
+					</li>
+					<li class="nav-item ms-auto d-flex flex-row align-items-center gap-2">
+						<!-- Export Buttons -->
+						<div class="dropdown">
+							<button class="btn btn-info" type="button" id="exportDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+								<i class="fas fa-file-export mx-1"></i>
+								<span class="fw-bold">@ActionsResources.Export</span>
+							</button>
+							<ul class="dropdown-menu" aria-labelledby="exportDropdown">
+								<li><a class="dropdown-item" href="javascript:void(0)" @onclick="ExportToExcel"><i class="far fa-file-excel mx-2"></i>@GeneralResources.Excel</a></li>
+								<li><a class="dropdown-item" href="javascript:void(0)" @onclick="ExportToPrint"><i class="fas fa-print mx-2"></i>@ActionsResources.Print</a></li>
+							</ul>
+						</div>
 
-                        <!-- Add Button -->
-                        <button class="btn btn-success" @onclick="Add">
-                            <i class="feather icon-plus-circle mx-1"></i>
-                            <span class="fw-bold">@ActionsResources.Add</span>
-                        </button>
-                    </li>
-                </ul>
+						<!-- Add Button -->
+						<button class="btn btn-success" @onclick="Add">
+							<i class="feather icon-plus-circle mx-1"></i>
+							<span class="fw-bold">@ActionsResources.Add</span>
+						</button>
+					</li>
+				</ul>
 
 
-<div class="d-none d-md-block">
-                <table id="order-table" class="table table-striped table-bordered nowrap">
-                    <thead>
-                        <tr>
-                            <th class="text-center cursor-pointer" @onclick='() => SortByColumn("UserName")'>
-                                @ECommerceResources.UserName
-                                <i class="@GetSortIconClass("UserName") ms-1"></i>
-                            </th>
-                            <th class="text-center cursor-pointer" @onclick='() => SortByColumn("Email")'>
-                                @ECommerceResources.Email
-                                <i class="@GetSortIconClass("Email") ms-1"></i>
-                            </th>
-                            <th class="text-center cursor-pointer" @onclick='() => SortByColumn("Name")'>
-                                @ECommerceResources.Name
-                                <i class="@GetSortIconClass("Name") ms-1"></i>
-                            </th>
-                            <th class="text-center cursor-pointer" @onclick='() => SortByColumn("UserState")'>
-                                @ECommerceResources.UserState
-                                <i class="@GetSortIconClass("UserState") ms-1"></i>
-                            </th>
-                            <th class="text-center">@ECommerceResources.Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @if (items != null && items.Count()!=0)
-                        {
-                            @foreach (var item in items)
-                            {
-                                <tr>
-                                    <td class="text-center align-middle">@item.UserName</td>
-                                    <td class="text-center align-middle">@item.Email</td>
-                                    <td class="text-center align-middle">@item.FirstName @item.LastName</td>
-                                    <td class="text-center align-middle">
-                                        @if(item.UserState == UserStateType.Active)
-                                        {
-                                            <span class="badge bg-success">@UserResources.Active</span>
-                                        }
-                                        else if (item.UserState == UserStateType.Inactive)
-                                        {
-                                            <span class="badge bg-secondary">@UserResources.PendingActivation</span>
-                                        }
-                                        else if (item.UserState == UserStateType.Auto_Locked)
-                                        {
-                                            <span class="badge bg-warning text-dark">@UserResources.Banned</span>
-                                        }
-                                        else if (item.UserState == UserStateType.Restricted)
-                                        {
-                                            <span class="badge bg-dark">@UserResources.Restricted</span>
-                                        }
-                                        else if (item.UserState == UserStateType.Deleted)
-                                        {
-                                            <span class="badge bg-danger">@FormResources.Deleted</span>
-                                        }
-                                        else
-                                        {
-                                            <span class="badge bg-light text-dark">@GeneralResources.Other</span>
-                                        }
-                                    </td>
-                                  <td class="d-flex justify-content-center gap-2 align-content-center">
-    <!-- زر التعديل -->
-    <button class="btn btn-primary d-flex align-items-center" @onclick="() => Edit(item)">
-        <i class="feather icon-edit me-2"></i>
-        <span class="d-none d-md-inline">@ActionsResources.Edit</span>
-    </button>
+				<div class="d-none d-md-block">
+					<table id="order-table" class="table table-striped table-bordered nowrap">
+						<thead>
+							<tr>
+								<th class="text-center cursor-pointer" @onclick='() => SortByColumn("UserName")'>
+									@ECommerceResources.UserName
+									<i class="@GetSortIconClass("UserName") ms-1"></i>
+								</th>
+								<th class="text-center cursor-pointer" @onclick='() => SortByColumn("Email")'>
+									@ECommerceResources.Email
+									<i class="@GetSortIconClass("Email") ms-1"></i>
+								</th>
+								<th class="text-center cursor-pointer" @onclick='() => SortByColumn("Name")'>
+									@ECommerceResources.Name
+									<i class="@GetSortIconClass("Name") ms-1"></i>
+								</th>
+								<th class="text-center cursor-pointer" @onclick='() => SortByColumn("UserState")'>
+									@ECommerceResources.UserState
+									<i class="@GetSortIconClass("UserState") ms-1"></i>
+								</th>
+								<th class="text-center">@ECommerceResources.Actions</th>
+							</tr>
+						</thead>
+						<tbody>
+							@if (items != null && items.Count() != 0)
+							{
+								@foreach (var item in items)
+								{
+									<tr>
+										<td class="text-center align-middle">@item.UserName</td>
+										<td class="text-center align-middle">@item.Email</td>
+										<td class="text-center align-middle">@item.FirstName @item.LastName</td>
+										<td class="text-center align-middle">
+											@if (item.UserState == UserStateType.Active)
+											{
+												<span class="badge bg-success">@UserResources.Active</span>
+											}
+											else if (item.UserState == UserStateType.Inactive)
+											{
+												<span class="badge bg-secondary">@UserResources.PendingActivation</span>
+											}
+											else if (item.UserState == UserStateType.Auto_Locked)
+											{
+												<span class="badge bg-warning text-dark">@UserResources.Banned</span>
+											}
+											else if (item.UserState == UserStateType.Restricted)
+											{
+												<span class="badge bg-dark">@UserResources.Restricted</span>
+											}
+											else if (item.UserState == UserStateType.Deleted)
+											{
+												<span class="badge bg-danger">@FormResources.Deleted</span>
+											}
+											else
+											{
+												<span class="badge bg-light text-dark">@GeneralResources.Other</span>
+											}
+										</td>
+										<td class="d-flex justify-content-center gap-2 align-content-center">
+											<!-- زر التعديل -->
+											<button class="btn btn-primary d-flex align-items-center" @onclick="() => Edit(item)">
+												<i class="feather icon-edit me-2"></i>
+												<span class="d-none d-md-inline">@ActionsResources.Edit</span>
+											</button>
 
-    <!-- زر الحذف -->
-    <button class="btn btn-danger d-flex align-items-center" @onclick="() => Delete(new Guid(item.Id))">
-        <i class="feather icon-trash-2 me-2"></i>
-        <span class="d-none d-md-inline">@ActionsResources.Delete</span>
-    </button>
-</td>
+											<!-- زر الحذف -->
+											<button class="btn btn-danger d-flex align-items-center" @onclick="() => Delete(new Guid(item.Id))">
+												<i class="feather icon-trash-2 me-2"></i>
+												<span class="d-none d-md-inline">@ActionsResources.Delete</span>
+											</button>
+										</td>
 
-                                </tr>
-                            }
-                        }
-                        else
-                        {
-                            <tr>
-                                <td colspan="7" class=" text-center">
-                                    <div class="text-center p-4 " style="height: 65vh;">
-    <!-- أيقونة كبيرة -->
-    <i class="fas fa-database text-muted" style="font-size: 60px;"></i>
-    
-    <!-- نص -->
-    <p class="text-muted mt-3" style="font-size: 18px;">
-          @NotifiAndAlertsResources.NoDataFound
-    </p>
-</div>
-                                    
-                                </td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
-                </div>
-  <!-- MOBILE CARDS (Hidden on Desktop) -->
-                <div class="d-block d-md-none">
+									</tr>
+								}
+							}
+							else
+							{
+								<tr>
+									<td colspan="7" class=" text-center">
+										<div class="text-center p-4 " style="height: 65vh;">
+											<!-- أيقونة كبيرة -->
+											<i class="fas fa-database text-muted" style="font-size: 60px;"></i>
 
-                    @if (items != null && items.Any())
-                    {
-                        foreach (var item in items)
-                        {
-                            <div class="card shadow-sm mb-3 border-0">
-                                <div class="card-body">
+											<!-- نص -->
+											<p class="text-muted mt-3" style="font-size: 18px;">
+												@NotifiAndAlertsResources.NoDataFound
+											</p>
+										</div>
 
-                                    <div class="d-flex justify-content-between">
-                                        <h5 class="fw-bold">@item.UserName</h5>
-                                        <span class="badge bg-primary">@item.UserState</span>
-                                    </div>
+									</td>
+								</tr>
+							}
+						</tbody>
+					</table>
+				</div>
+				<!-- MOBILE CARDS (Hidden on Desktop) -->
+				<div class="d-block d-md-none">
 
-                                    <p class="mb-1">
-                                        <i class="fas fa-envelope text-primary me-2"></i>
-                                        @item.Email
-                                    </p>
+					@if (items != null && items.Any())
+					{
+						foreach (var item in items)
+						{
+							<div class="card shadow-sm mb-3 border-0">
+								<div class="card-body">
 
-                                    <p class="mb-1">
-                                        <i class="fas fa-user text-success me-2"></i>
-                                        @item.FirstName @item.LastName
-                                    </p>
+									<div class="d-flex justify-content-between">
+										<h5 class="fw-bold">@item.UserName</h5>
+										<span class="badge bg-primary">@item.UserState</span>
+									</div>
 
-                                    <hr />
+									<p class="mb-1">
+										<i class="fas fa-envelope text-primary me-2"></i>
+										@item.Email
+									</p>
 
-                                    <div class="d-flex justify-content-between gap-2">
-                                        <button class="btn btn-primary w-50"
-                                                @onclick="() => Edit(item)">
-                                            <i class="feather icon-edit me-1"></i>
-                                            @ActionsResources.Edit
-                                        </button>
+									<p class="mb-1">
+										<i class="fas fa-user text-success me-2"></i>
+										@item.FirstName @item.LastName
+									</p>
 
-                                        <button class="btn btn-danger w-50"
-                                                @onclick="() => Delete(new Guid(item.Id))">
-                                            <i class="feather icon-trash-2 me-1"></i>
-                                            @ActionsResources.Delete
-                                        </button>
-                                    </div>
+									<hr />
 
-                                </div>
-                            </div>
-                        }
-                    }
-                    else
-                    {
-                        <div class="text-center p-4">
-                            <i class="fas fa-database text-muted" style="font-size: 50px;"></i>
-                            <p class="text-muted mt-3">@NotifiAndAlertsResources.NoDataFound</p>
-                        </div>
-                    }
+									<div class="d-flex justify-content-between gap-2">
+										<button class="btn btn-primary w-50"
+												@onclick="() => Edit(item)">
+											<i class="feather icon-edit me-1"></i>
+											@ActionsResources.Edit
+										</button>
 
-                </div>
-                <!-- Pagination start -->
-               <div class="pagination-wrapper d-flex flex-column justify-content-end flex-grow-1">
-    <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mt-4 pagination-container" dir="ltr">
+										<button class="btn btn-danger w-50"
+												@onclick="() => Delete(new Guid(item.Id))">
+											<i class="feather icon-trash-2 me-1"></i>
+											@ActionsResources.Delete
+										</button>
+									</div>
 
-        <!-- النص الإحصائي -->
-        <div class="text-muted small">
-            @string.Format(
-                ActionsResources.ShowingEntries,
-                ((currentPage - 1) * searchModel.PageSize + 1),
-                Math.Min(currentPage * searchModel.PageSize, totalRecords),
-                totalRecords
-            )
-        </div>
+								</div>
+							</div>
+						}
+					}
+					else
+					{
+						<div class="text-center p-4">
+							<i class="fas fa-database text-muted" style="font-size: 50px;"></i>
+							<p class="text-muted mt-3">@NotifiAndAlertsResources.NoDataFound</p>
+						</div>
+					}
 
-        <!-- الباجينيشن -->
-        <nav aria-label="Pagination">
-            <ul class="pagination pagination-sm mb-0 shadow-sm rounded-3 overflow-hidden">
+				</div>
+				<!-- Pagination start -->
+				<div class="pagination-wrapper d-flex flex-column justify-content-end flex-grow-1">
+					<div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mt-4 pagination-container" dir="ltr">
 
-                <!-- أول صفحة -->
-                <li class="page-item cursor-pointer @(currentPage == 1 ? "disabled" : "")">
-                    <a class="page-link" href="javascript:void(0)" @onclick="() => GoToPage(1)" title="@ActionsResources.First">
-                        <i class="fas fa-angle-double-left"></i>
-                    </a>
-                </li>
+						<!-- النص الإحصائي -->
+						<div class="text-muted small">
+							@string.Format(
+							ActionsResources.ShowingEntries,
+														((currentPage - 1) * searchModel.PageSize + 1),
+														Math.Min(currentPage * searchModel.PageSize, totalRecords),
+														totalRecords
+														)
+						</div>
 
-                <!-- السابقة -->
-                <li class="page-item cursor-pointer @(currentPage == 1 ? "disabled" : "")">
-                    <a class="page-link" href="javascript:void(0)" @onclick="() => GoToPage(currentPage - 1)">
-                        <i class="fas fa-angle-left"></i>
-                    </a>
-                </li>
+						<!-- الباجينيشن -->
+						<nav aria-label="Pagination">
+							<ul class="pagination pagination-sm mb-0 shadow-sm rounded-3 overflow-hidden">
 
-                @* أرقام الصفحات *@
-                @{
-                    const int maxVisiblePages = 5;
-                    int startPage = Math.Max(1, currentPage - 2);
-                    int endPage = Math.Min(totalPages, startPage + maxVisiblePages - 1);
-                    if (endPage - startPage + 1 < maxVisiblePages)
-                    {
-                        startPage = Math.Max(1, endPage - maxVisiblePages + 1);
-                    }
-                }
+								<!-- أول صفحة -->
+								<li class="page-item cursor-pointer @(currentPage == 1 ? "disabled" : "")">
+									<a class="page-link" href="javascript:void(0)" @onclick="() => GoToPage(1)" title="@ActionsResources.First">
+										<i class="fas fa-angle-double-left"></i>
+									</a>
+								</li>
 
-                @if (startPage > 1)
-                {
-                    <li class="page-item disabled"><span class="page-link">...</span></li>
-                }
+								<!-- السابقة -->
+								<li class="page-item cursor-pointer @(currentPage == 1 ? "disabled" : "")">
+									<a class="page-link" href="javascript:void(0)" @onclick="() => GoToPage(currentPage - 1)">
+										<i class="fas fa-angle-left"></i>
+									</a>
+								</li>
 
-                @for (int pag = startPage; pag <= endPage; pag++)
-                {
-                    int pageNumber = pag;
-                    <li class="page-item cursor-pointer @(pag == currentPage ? "active" : "")">
-                        <a class="page-link fw-bold" href="javascript:void(0)" @onclick="() => GoToPage(pageNumber)">@pag</a>
-                    </li>
-                }
+								@* أرقام الصفحات *@
+								@{
+																const int maxVisiblePages = 5;
+								int startPage = Math.Max(1, currentPage - 2);
+								int endPage = Math.Min(totalPages, startPage + maxVisiblePages - 1);
+								if (endPage - startPage + 1 < maxVisiblePages)
+								{
+									startPage = Math.Max(1, endPage - maxVisiblePages + 1);
+								}
+																}
 
-                @if (endPage < totalPages)
-                {
-                    <li class="page-item disabled"><span class="page-link">...</span></li>
-                }
+								@if (startPage > 1)
+								{
+									<li class="page-item disabled"><span class="page-link">...</span></li>
+								}
 
-                <!-- التالية -->
-                <li class="page-item cursor-pointer @(currentPage == totalPages ? "disabled" : "")">
-                    <a class="page-link" href="javascript:void(0)" @onclick="() => GoToPage(currentPage + 1)">
-                        <i class="fas fa-angle-right"></i>
-                    </a>
-                </li>
+								@for (int pag = startPage; pag <= endPage; pag++)
+								{
+									int pageNumber = pag;
+									<li class="page-item cursor-pointer @(pag == currentPage ? "active" : "")">
+										<a class="page-link fw-bold" href="javascript:void(0)" @onclick="() => GoToPage(pageNumber)">@pag</a>
+									</li>
+								}
 
-                <!-- آخر صفحة -->
-                <li class="page-item cursor-pointer @(currentPage == totalPages ? "disabled" : "")">
-                    <a class="page-link" href="javascript:void(0)" @onclick="() => GoToPage(totalPages)" title="@ActionsResources.Last">
-                        <i class="fas fa-angle-double-right"></i>
-                    </a>
-                </li>
+								@if (endPage < totalPages)
+								{
+									<li class="page-item disabled"><span class="page-link">...</span></li>
+								}
 
-            </ul>
-        </nav>
-    </div>
-</div>
+								<!-- التالية -->
+								<li class="page-item cursor-pointer @(currentPage == totalPages ? "disabled" : "")">
+									<a class="page-link" href="javascript:void(0)" @onclick="() => GoToPage(currentPage + 1)">
+										<i class="fas fa-angle-right"></i>
+									</a>
+								</li>
 
-                <!-- Pagination end -->
+								<!-- آخر صفحة -->
+								<li class="page-item cursor-pointer @(currentPage == totalPages ? "disabled" : "")">
+									<a class="page-link" href="javascript:void(0)" @onclick="() => GoToPage(totalPages)" title="@ActionsResources.Last">
+										<i class="fas fa-angle-double-right"></i>
+									</a>
+								</li>
 
-            </div> 
-        </div> 
-    </div> 
+							</ul>
+						</nav>
+					</div>
+				</div>
+
+				<!-- Pagination end -->
+
+			</div>
+		</div>
+	</div>
 </div>

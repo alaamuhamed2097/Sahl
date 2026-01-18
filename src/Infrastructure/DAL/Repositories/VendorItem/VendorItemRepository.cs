@@ -10,18 +10,18 @@ using Microsoft.EntityFrameworkCore;
 using Serilog;
 using System.Linq.Expressions;
 
-namespace DAL.Repositories
+namespace DAL.Repositories.Offer
 {
     /// <summary>
     /// Implementation of offer repository with transaction support
     /// </summary>
-    public class OfferRepository : TableRepository<TbOffer>, IOfferRepository
+    public class VendorItemRepository : TableRepository<TbOffer>, IVendorItemRepository
     {
         private readonly ApplicationDbContext _dbContext;
         private readonly ILogger _logger;
         private readonly DbSet<TbOfferCombinationPricing> _offerPricing;
 
-        public OfferRepository(ApplicationDbContext dbContext, ICurrentUserService currentUserService, ILogger logger)
+        public VendorItemRepository(ApplicationDbContext dbContext, ICurrentUserService currentUserService, ILogger logger)
             : base(dbContext, currentUserService, logger)
         {
             _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));

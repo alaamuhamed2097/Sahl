@@ -196,7 +196,7 @@ namespace Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to تنبيه: هل أنت متأكد أنك تريد الحذف؟.
+        ///   Looks up a localized string similar to لا يمكن التراجع عن هذا الإجراء!.
         /// </summary>
         public static string ConfirmDeleteAlert {
             get {
@@ -295,7 +295,7 @@ namespace Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to فشل الحذف !.
+        ///   Looks up a localized string similar to فشل الحذف.
         /// </summary>
         public static string DeleteFailed {
             get {
@@ -745,7 +745,7 @@ namespace Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to لم يتم العثور على بيانات.
+        ///   Looks up a localized string similar to لا توجد بيانات.
         /// </summary>
         public static string NoDataFound {
             get {
@@ -1015,7 +1015,7 @@ namespace Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to فشل التسجيل.
+        ///   Looks up a localized string similar to فشل تسجيل العميل. حاول مرة أخرى..
         /// </summary>
         public static string RegistrationFailed {
             get {
@@ -1033,7 +1033,7 @@ namespace Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to تم التسجيل بنجاح.
+        ///   Looks up a localized string similar to تم تسجيل العميل بنجاح!.
         /// </summary>
         public static string RegistrationSuccessful {
             get {
@@ -1047,6 +1047,15 @@ namespace Resources {
         public static string RegistrationSuccessfulAlert {
             get {
                 return ResourceManager.GetString("RegistrationSuccessfulAlert", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to تم قبول الطلب.
+        /// </summary>
+        public static string RequestAccepted {
+            get {
+                return ResourceManager.GetString("RequestAccepted", resourceCulture);
             }
         }
         
@@ -1114,7 +1123,7 @@ namespace Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to حدث خطأ ما!.
+        ///   Looks up a localized string similar to حدث خطأ ما. حاول مرة أخرى لاحقاً..
         /// </summary>
         public static string SomethingWentWrong {
             get {

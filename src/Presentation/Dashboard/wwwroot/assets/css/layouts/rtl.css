@@ -528,7 +528,7 @@ body {
 
 .pcoded-navbar .pcoded-inner-navbar > li a .pcoded-micon {
     margin-right: 0;
-    margin-left: 7px;
+    margin-left: 0px;
 }
 
 .pcoded-navbar .pcoded-inner-navbar > li.active:after, .pcoded-navbar .pcoded-inner-navbar > li.pcoded-trigger:after {

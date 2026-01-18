@@ -189,7 +189,7 @@ namespace Dashboard.Pages.ManageReviews.ItemsReviews
 		[Inject] protected NavigationManager NavigationManager { get; set; } = null!;
 		[Inject] protected IJSRuntime JSRuntime { get; set; } = null!;
 
-		private ResponseItemReviewDto? reviewItem;
+		private ItemReviewResponseDto? reviewItem;
 		private ReviewReportDto? reviewReport;
 		private IEnumerable<ReviewReportDto> reports = new List<ReviewReportDto>();
 		private bool isLoading = true;
@@ -299,7 +299,7 @@ namespace Dashboard.Pages.ManageReviews.ItemsReviews
 
 			try
 			{
-				var response = await ItemReviewService.ApproveReviewAsync(reviewItem.Id);
+				var response = await ItemReviewService.ChangeReviewStatusAsync(reviewItem.Id, ReviewStatus.Approved);
 
 				if (response.Success)
 				{
@@ -328,7 +328,7 @@ namespace Dashboard.Pages.ManageReviews.ItemsReviews
 
 			try
 			{
-				var response = await ItemReviewService.RejectReviewAsync(reviewItem.Id);
+				var response = await ItemReviewService.ChangeReviewStatusAsync(reviewItem.Id, ReviewStatus.Rejected);
 
 				if (response.Success)
 				{
@@ -353,7 +353,7 @@ namespace Dashboard.Pages.ManageReviews.ItemsReviews
 
 		private void GoBack()
 		{
-			NavigationManager.NavigateTo($"/ManageReviews/{reviewItem.ItemID}");
+			NavigationManager.NavigateTo($"/ManageReviews/{reviewItem.ItemId}");
 		}
 
 		private string GetStatusClass(ReviewReportStatus status)

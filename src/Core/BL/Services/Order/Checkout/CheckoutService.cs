@@ -26,7 +26,7 @@ public class CheckoutService : ICheckoutService
     private readonly ICustomerAddressService _addressService;
     private readonly IShippingCalculationService _shippingService;
     private readonly ICouponCodeRepository _couponRepository;
-    private readonly IOfferRepository _offerRepository;
+    private readonly IVendorItemRepository _offerRepository;
     private readonly ISystemSettingsService _systemSettings;
     private readonly IBaseMapper _mapper;
     private readonly ILogger _logger;
@@ -36,7 +36,7 @@ public class CheckoutService : ICheckoutService
         ICustomerAddressService addressService,
         IShippingCalculationService shippingService,
         ICouponCodeRepository couponRepository,
-        IOfferRepository offerRepository,
+        IVendorItemRepository offerRepository,
         ISystemSettingsService systemSettings,
         IBaseMapper mapper,
         ILogger logger)

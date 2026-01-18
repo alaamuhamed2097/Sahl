@@ -24,15 +24,18 @@
 					<li class="nav-item col-md-6 w-auto d-flex flex-row align-items-center gap-3">
 						<EditForm Model="searchModel" OnSubmit="@Search">
 							<!-- Search Box -->
-							<div class="input-group rounded search-box">
-								<input type="text" @bind="searchModel.SearchTerm"
-									   id="searchInput"
-									   class="form-control text-center border-0 @(ResourceManager.CurrentLanguage == Language.Arabic ? "rounded-end" : "rounded-start")"
-									   placeholder="@ActionsResources.Search" />
-								<button type="submit"
-										class="btn btn-danger d-flex align-items-center justify-content-center border-0 @(ResourceManager.CurrentLanguage == Language.Arabic ? "rounded-start" : "rounded-end")">
-									<i class="fas fa-search text-white m-0"></i>
-								</button>
+							<div class="search-container">
+								<div class="input-group search-box">
+									<input type="text"
+										   @bind="searchModel.SearchTerm"
+										   id="searchInput"
+										   class="form-control search-input"
+										   placeholder="@ActionsResources.Search" />
+									<button type="submit"
+											class="btn btn-search">
+										<i class="fas fa-search"></i>
+									</button>
+								</div>
 							</div>
 						</EditForm>
 						<!-- Page Size -->
@@ -48,6 +51,11 @@
 						</div>
 					</li>
 					<li class="nav-item ms-auto d-flex flex-row align-items-center gap-2">
+						<!-- New products requests buttons-->
+						<button class="btn btn-primary" @onclick="GoToNewProductRequests">
+							<i class="fas fa-file-alt mx-1"></i>
+							<span class="fw-bold">@ECommerceResources.NewProductRequests</span>
+						</button>
 						<!-- Export Buttons -->
 						<div class="dropdown">
 							<button class="btn btn-info" type="button" id="exportDropdown" data-bs-toggle="dropdown" aria-expanded="false">
@@ -61,10 +69,10 @@
 						</div>
 
 						<!-- Import Button -->
-						<button class="btn btn-warning" @onclick="GoToImport">
+						@* <button class="btn btn-warning" @onclick="GoToImport">
 							<i class="fas fa-file-import mx-1"></i>
 							<span class="fw-bold">@ActionsResources.Import</span>
-						</button>
+						</button> *@
 
 						<!-- Add Button -->
 						<button class="btn btn-success" @onclick="Add">

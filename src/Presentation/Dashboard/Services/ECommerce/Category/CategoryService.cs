@@ -38,6 +38,27 @@ namespace Dashboard.Services.ECommerce.Category
         }
 
         /// <summary>
+        /// Get all final categories with optional filters.
+        /// </summary>
+        public async Task<ResponseModel<IEnumerable<CategoryDto>>> GetAllFinalCategoriesAsync()
+        {
+            try
+            {
+                return await _apiService.GetAsync<IEnumerable<CategoryDto>>($"{ApiEndpoints.Category.GetFinalCategories}");
+            }
+            catch (Exception ex)
+            {
+                // Log error here
+                Console.WriteLine($"GetAllFinalCategoriesAsync Error: {ex}");
+                return new ResponseModel<IEnumerable<CategoryDto>>
+                {
+                    Success = false,
+                    Message = ex.Message
+                };
+            }
+        }
+
+        /// <summary>
         /// Get category by ID.
         /// </summary>
         public async Task<ResponseModel<CategoryDto>> GetByIdAsync(Guid id)

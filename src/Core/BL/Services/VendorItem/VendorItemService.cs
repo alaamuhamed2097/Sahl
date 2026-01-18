@@ -37,8 +37,9 @@ namespace BL.Services.VendorItem
 	public class VendorItemService : IVendorItemService
     {
         private const int MaxImageCount = 10;
-        private readonly IOfferRepository _vendorItemRepository;
+        private readonly IVendorItemRepository _vendorItemRepository;
         private readonly IDevelopmentSettingsService _developmentSettingsService;
+        private readonly IBuyBoxHelperService _buyBoxHelperService;
         private readonly IVendorWarehouseService _vendorWarehouseService;
         private readonly ITableRepository<TbCategory> _categoryRepository;
         private readonly IFileUploadService _fileUploadService;
@@ -48,20 +49,18 @@ namespace BL.Services.VendorItem
         private readonly ILogger _logger;
 		private readonly IRepository<VwVendorItem> _VwVendorItemRepository;
 
-
-
-
         public VendorItemService(IBaseMapper mapper,
             IUnitOfWork unitOfWork,
             IFileUploadService fileUploadService,
             IImageProcessingService imageProcessingService,
             ILogger logger,
             ITableRepository<TbCategory> categoryRepository,
-            IOfferRepository vendorItemRepository
+            IVendorItemRepository vendorItemRepository
 ,
             IRepository<VwVendorItem> vwVendorItemRepository,
             IDevelopmentSettingsService developmentSettingsService,
-            IVendorWarehouseService vendorWarehouseService)
+            IVendorWarehouseService vendorWarehouseService,
+            IBuyBoxHelperService buyBoxHelperService)
         {
             _mapper = mapper;
             _unitOfWork = unitOfWork;
@@ -73,6 +72,7 @@ namespace BL.Services.VendorItem
             _VwVendorItemRepository = vwVendorItemRepository;
             _developmentSettingsService = developmentSettingsService;
             _vendorWarehouseService = vendorWarehouseService;
+            _buyBoxHelperService = buyBoxHelperService;
         }
 
         public async Task<PagedResult<VendorItemDto>> GetPage(ItemSearchCriteriaModel criteriaModel)
@@ -199,56 +199,6 @@ namespace BL.Services.VendorItem
 			var itemsDto = _mapper.MapList<VwVendorItem, VendorItemDetailsDto>(items.Items);
 			return new PagedResult<VendorItemDetailsDto>(itemsDto, items.TotalRecords);
 		}
-		//public async Task<PagedResult<VendorItemDetailsDto>> GetPageVendor(ItemstatusSearchCriteriaModel criteriaModel)
-		//{
-		//    if (criteriaModel == null)
-		//        throw new ArgumentNullException(nameof(criteriaModel));
-
-		//    if (criteriaModel.PageNumber < 1)
-		//        throw new ArgumentOutOfRangeException(nameof(criteriaModel.PageNumber), ValidationResources.PageNumberGreaterThanZero);
-
-		//    if (criteriaModel.PageSize < 1 || criteriaModel.PageSize > 100)
-		//        throw new ArgumentOutOfRangeException(nameof(criteriaModel.PageSize), ValidationResources.PageSizeRange);
-
-		//    // Base filter
-		//    Expression<Func<VwVendorItem, bool>> filter;
-
-		//    // Combine expressions manually
-		//    var searchTerm = criteriaModel.SearchTerm?.Trim().ToLower();
-
-		//    if (!string.IsNullOrWhiteSpace(searchTerm))
-		//    {
-		//        filter = filter.And(x =>
-		//            (x. != null && x.TitleAr.ToLower().Contains(searchTerm)) ||
-		//            (x.TitleEn != null && x.TitleEn.ToLower().Contains(searchTerm)) ||
-		//            (x.ShortDescriptionAr != null && x.ShortDescriptionAr.ToLower().Contains(searchTerm)) ||
-		//            (x.ShortDescriptionEn != null && x.ShortDescriptionEn.ToLower().Contains(searchTerm))
-		//        );
-		//    }
-
-		//    //if (criteriaModel.CategoryIds?.Any() == true)
-		//    //{
-		//    //    filter = filter.And(x => criteriaModel.CategoryIds.Contains(x.CategoryId));
-		//    //}
-
-		//    // New Item Flags Filters
-		//    if (criteriaModel.IsNewArrival.HasValue)
-		//    {
-		//        filter = filter.And(x => x.CreatedDateUtc.Date >= DateTime.UtcNow.AddDays(-3).Date);
-		//    }
-
-		//    // Get paginated data from repository
-		//    var items = await _vendorItemRepository.GetPageAsync(
-		//        criteriaModel.PageNumber,
-		//        criteriaModel.PageSize,
-		//        filter,
-		//        orderBy: q => q.OrderByDescending(x => x.CreatedDateUtc)
-		//    );
-
-		//    var itemsDto = _mapper.MapList<TbOffer, OfferDto>(items.Items);
-
-		//    return new PagedResult<OfferDto>(itemsDto, items.TotalRecords);
-		//}
 
 		public async Task<IEnumerable<VendorItemDetailsDto>> FindByItemCombinationIdAsync(Guid itemCombinationId, CancellationToken token = default)
         {
@@ -361,10 +311,10 @@ namespace BL.Services.VendorItem
                         throw new ValidationException("Failed to save vendor item for single-vendor simple pricing");
                 }
 
-                // Recalculate Buy Box winner for this item (especially important in multi-vendor mode)
+                // Recalculate Buy Box winner for this item combination in multi-vendor mode
                 if (isMultiVendorMode)
                 {
-                    //await RecalculateBuyBoxWinnerAsync(dto.ItemId);
+                    await _buyBoxHelperService.RecalculateItemBuyBoxWinnersAsync(dto.ItemId);
                 }
 
                 await _unitOfWork.CommitAsync();
@@ -468,6 +418,8 @@ namespace BL.Services.VendorItem
                     // Save combination images if provided
                     if (combinationDto.ItemCombinationImages != null && combinationDto.ItemCombinationImages.Any())
                     {
+                        if (combinationDto.ItemCombinationImages.Count > MaxImageCount)
+                            throw new ValidationException($"A maximum of {MaxImageCount} images are allowed per combination");
                         var imagesSaved = await SaveCombinationImagesAsync(
                             combinationId,
                             combinationDto.ItemCombinationImages,
@@ -671,8 +623,8 @@ namespace BL.Services.VendorItem
                     OfferId = offerId,
                     ItemCombinationId = combinationId,
                     OfferConditionId = pricingDto.OfferConditionId,
-                    Barcode = pricingDto.Barcode ?? "DEFAULT",
-                    SKU = pricingDto.SKU ?? "DEFAULT",
+                    Barcode = pricingDto.Barcode ?? $"BAR-{Guid.NewGuid().ToString()}",
+                    SKU = pricingDto.SKU ?? $"SKU-{Guid.NewGuid().ToString()}",
                     Price = pricingDto.Price,
                     SalesPrice = pricingDto.SalesPrice,
                     AvailableQuantity = pricingDto.AvailableQuantity,
@@ -772,6 +724,11 @@ namespace BL.Services.VendorItem
                 {
                     try
                     {
+                        // Extract filename from URL if it's a full URL
+                        string fileName = Path.GetFileName(img.Path);
+
+                        // Construct the full file path (adjust path as needed for your setup)
+                        string filePath = Path.Combine("wwwroot/uploads/Images/ItemCombinations", fileName);
                         await _fileUploadService.DeleteFileAsync(img.Path);
                     }
                     catch (Exception ex)
@@ -857,7 +814,7 @@ namespace BL.Services.VendorItem
                 var webpImage = _imageProcessingService.ConvertToWebP(resizedImage);
 
                 // Upload the WebP image to the specified location
-                var imagePath = await _fileUploadService.UploadFileAsync(webpImage, "Images");
+                var imagePath = await _fileUploadService.UploadFileAsync(webpImage, "Images\\ItemCombinations");
 
                 // Return the path of the uploaded image
                 return imagePath;
@@ -867,48 +824,6 @@ namespace BL.Services.VendorItem
                 // Log the exception and rethrow it
                 _logger.Error(ex, ValidationResources.ErrorProcessingImage);
                 throw new ApplicationException(ValidationResources.ErrorProcessingImage, ex);
-            }
-        }
-       
-        /// <summary>
-        /// Recalculates the Buy Box winner for all combinations of an item
-        /// </summary>
-        private async Task RecalculateBuyBoxWinnerAsync(Guid itemId)
-        {
-            // Get all combinations for this item
-            var combinations = await _unitOfWork.TableRepository<TbItemCombination>()
-                .GetAsync(c => c.ItemId == itemId);
-
-            foreach (var combination in combinations)
-            {
-                // Get all offers for this combination
-                var offerPricings = await _unitOfWork.TableRepository<TbOfferCombinationPricing>()
-                    .GetAsync(
-                        p => p.ItemCombinationId == combination.Id && p.StockStatus == StockStatus.InStock,
-                        includeProperties: "Offer");
-
-                // Reset all to non-winner
-                foreach (var pricing in offerPricings)
-                {
-                    pricing.IsBuyBoxWinner = false;
-                }
-
-                if (offerPricings.Any())
-                {
-                    // Simple Buy Box algorithm: lowest price + fastest delivery wins
-                    // You can make this more sophisticated based on your business rules
-                    var winner = offerPricings
-                        .OrderBy(p => p.Price)
-                        .ThenBy(p => p.Offer?.EstimatedDeliveryDays ?? 999)
-                        .FirstOrDefault();
-
-                    if (winner != null)
-                    {
-                        winner.IsBuyBoxWinner = true;
-                        await _unitOfWork.TableRepository<TbOfferCombinationPricing>()
-                            .UpdateAsync(winner);
-                    }
-                }
             }
         }
     }

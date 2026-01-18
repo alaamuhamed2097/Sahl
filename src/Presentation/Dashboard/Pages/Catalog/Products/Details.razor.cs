@@ -4,6 +4,7 @@ using Dashboard.Contracts.Brand;
 using Dashboard.Contracts.ECommerce.Category;
 using Dashboard.Contracts.ECommerce.Item;
 using Dashboard.Contracts.General;
+using Dashboard.Contracts.Setting;
 using Dashboard.Pages.Catalog.Products.Components;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
@@ -14,6 +15,7 @@ using Shared.DTOs.Brand;
 using Shared.DTOs.Catalog.Category;
 using Shared.DTOs.Catalog.Item;
 using Shared.DTOs.Catalog.Unit;
+using Shared.DTOs.ECommerce.Offer;
 using Shared.DTOs.Media;
 using static Dashboard.Pages.Catalog.Products.Components.AttributeValuesSection;
 
@@ -34,11 +36,12 @@ namespace Dashboard.Pages.Catalog.Products
         // Injections
         [Inject] protected IItemService ItemService { get; set; } = null!;
         [Inject] protected IBrandService BrandService { get; set; } = null!;
+        [Inject] protected IItemConditionService ItemConditionService { get; set; } = null!;
         [Inject] protected ICategoryService CategoryService { get; set; } = null!;
         [Inject] protected IAttributeService AttributeService { get; set; } = null!;
         [Inject] protected IUnitService UnitService { get; set; } = null!;
         [Inject] protected IResourceLoaderService ResourceLoaderService { get; set; } = null!;
-        //   [Inject] protected IVideoProviderService VideoProviderService { get; set; } = null!
+        [Inject] protected IDevelopmentSettingsService DevelopmentSettingsService { get; set; } = null!;
         [Inject] protected IJSRuntime JSRuntime { get; set; } = null!;
         [Inject] protected NavigationManager Navigation { get; set; } = null!;
         [Inject] protected IOptions<ApiSettings> ApiOptions { get; set; } = default!;
@@ -47,6 +50,9 @@ namespace Dashboard.Pages.Catalog.Products
 
         // Wizard state
         protected bool isWizardInitialized { get; set; }
+        protected bool isMultiVendorEnabled { get; set; }
+        protected bool isCombinationPricing { get; set; }
+        protected bool showOfferDataSection { get; set; }
         protected int currentStep = 0;
         protected const int TotalSteps = 6;
 
@@ -57,19 +63,7 @@ namespace Dashboard.Pages.Catalog.Products
         protected ItemDto Model { get; set; } = new()
         {
             Images = new List<ItemImageDto>(),
-            ItemAttributes = new List<ItemAttributeDto>(),
-            //ItemCombinations = new List<ItemCombinationDto>
-            //{
-            //    // Initialize with a default combination
-            //    new ItemCombinationDto
-            //    {
-            //        Barcode = "1111111",
-            //        SKU = "DEFAULT",
-            //        BasePrice = 0,
-            //        CombinationAttributes = new List<CombinationAttributeDto>(),
-            //        IsDefault = true
-            //    }
-            //}
+            ItemAttributes = new List<ItemAttributeDto>()
         };
 
         // Validation states
@@ -80,6 +74,7 @@ namespace Dashboard.Pages.Catalog.Products
         private IEnumerable<CategoryDto> categories = Array.Empty<CategoryDto>();
         private CategoryDto currentCategory = new CategoryDto();
         private IEnumerable<UnitDto> units = Array.Empty<UnitDto>();
+        private IEnumerable<VendorItemConditionDto> itemConditions = Array.Empty<VendorItemConditionDto>();
         private IEnumerable<VideoProviderDto> videoProviders = Array.Empty<VideoProviderDto>();
         protected List<CategoryAttributeDto> categoryAttributes = new();
         private List<BrandDto> brands = new();
@@ -152,7 +147,8 @@ namespace Dashboard.Pages.Catalog.Products
                 {
                     LoadCategoriesAsync(),
                     LoadUnitsAsync(),
-                    LoadBrands()
+                    LoadBrands(),
+                    CheckIsMultiVendorEnabled()
                 };
 
                 await Task.WhenAll(tasks);
@@ -165,10 +161,19 @@ namespace Dashboard.Pages.Catalog.Products
 
         private async Task LoadCategoriesAsync()
         {
-            var result = await CategoryService.GetAllAsync();
+            var result = await CategoryService.GetAllFinalCategoriesAsync();
             if (result?.Success == true)
             {
                 categories = result.Data ?? Array.Empty<CategoryDto>();
+            }
+        }
+
+        private async Task CheckIsMultiVendorEnabled()
+        {
+            var result = await DevelopmentSettingsService.CheckIsMultiVendorEnabledAsync();
+            if (result?.Success == true)
+            {
+                isMultiVendorEnabled = result.Data ;
             }
         }
 
@@ -323,6 +328,30 @@ namespace Dashboard.Pages.Catalog.Products
             }
         }
 
+        private async Task LoadItemConditions()
+        {
+            try
+            {
+                var result = await ItemConditionService.GetAllAsync();
+
+                if (result?.Success == true)
+                {
+                    itemConditions = result.Data?.ToList() ?? new List<VendorItemConditionDto>();
+                    StateHasChanged();
+                }
+                else
+                {
+                    await ShowErrorMessage(
+                     ValidationResources.Failed,
+                NotifiAndAlertsResources.FailedToRetrieveData);
+                }
+            }
+            catch (Exception ex)
+            {
+                await ShowErrorMessage(ValidationResources.Error, ex.Message);
+            }
+        }
+
         private async Task LoadBrands()
         {
             try
@@ -355,8 +384,18 @@ namespace Dashboard.Pages.Catalog.Products
                 // Reset attribute values when category changes
                 attributeValues = new Dictionary<Guid, List<string>>();
                 currentCategory = categories.FirstOrDefault(c => c.Id == Model.CategoryId) ?? new CategoryDto();
+
+                // Determine if we should show offer data section
+                UpdateOfferDataSectionVisibility();
+
                 // Load category attributes
                 await LoadCategoryAttributes();
+
+                // Load offer conditions if needed
+                if (showOfferDataSection && !itemConditions.Any())
+                {
+                    await LoadItemConditions();
+                }
             }
             catch (Exception ex)
             {
@@ -365,7 +404,51 @@ namespace Dashboard.Pages.Catalog.Products
                 await ShowErrorMessage("Error", ex.Message);
             }
         }
+        private void UpdateOfferDataSectionVisibility()
+        {
+            // Show offer section if:
+            // - Single-vendor mode (NOT multi-vendor)
+            // - AND pricing is Combination-Based or Hybrid
+            isCombinationPricing = currentCategory.PricingSystemType == PricingStrategyType.CombinationBased ||
+                                        currentCategory.PricingSystemType == PricingStrategyType.Hybrid;
 
+            showOfferDataSection = !isMultiVendorEnabled ;
+
+            Console.WriteLine($"📋 Offer Data Section Visibility:");
+            Console.WriteLine($"   Multi-vendor: {isMultiVendorEnabled}");
+            Console.WriteLine($"   Pricing Type: {currentCategory.PricingSystemType}");
+            Console.WriteLine($"   Show Offer Section: {showOfferDataSection}");
+
+            // Initialize defaultOfferData if we need to show the section
+            if (showOfferDataSection)
+            {
+                if (Model.defaultOfferData == null)
+                { 
+                    Model.defaultOfferData = new SaveVendorItemDto
+                    {
+                        EstimatedDeliveryDays = 3,
+                        IsFreeShipping = false,
+                        OfferCombinationPricings = new List<OfferCombinationPricingDto>()
+                    };
+                }
+                else if (Model.defaultOfferData.OfferCombinationPricings == null)
+                {
+                    // Ensure the list is never null
+                    Model.defaultOfferData.OfferCombinationPricings = new List<OfferCombinationPricingDto>();
+                    Console.WriteLine("   ✅ Initialized OfferCombinationPricings list");
+                }
+                // Add one default combination pricing entry if empty
+                if (!Model.defaultOfferData.OfferCombinationPricings.Any())
+                {
+                    AddCombinationPricing();
+                }
+            }
+            else if (!showOfferDataSection)
+            {
+                // Clear offer data if we don't need it
+                Model.defaultOfferData = null;
+            }
+        }
         private async Task HandleThumbnailUpload(InputFileChangeEventArgs e)
         {
             try
@@ -609,16 +692,18 @@ namespace Dashboard.Pages.Catalog.Products
                         "Please fill in all required attributes before saving.");
                     return;
                 }
+                
+                // Validate offer data if section is shown
+                if (showOfferDataSection && !ValidateOfferData())
+                {
+                    showValidationErrors = true;
+                    await ShowErrorMessage(
+                        ValidationResources.ValidationError,
+                        "Please fill in all required offer information.");
+                    return;
+                }
 
-                // Step 3: Validate attribute combinations
-                //if (!(await ValidateAttributeCombinations()))
-                //{
-                //    Console.WriteLine("  ❌ ValidateAttributeCombinations() FAILED");
-                //    showValidationErrors = true;
-                //    return;
-                //}
-
-                // Step 4: Check if form is valid
+                // Step 3: Check if form is valid
                 if (!IsFormValid())
                 {
                     Console.WriteLine("  ❌ IsFormValid() FAILED");
@@ -645,13 +730,8 @@ namespace Dashboard.Pages.Catalog.Products
                 isSaving = true;
                 StateHasChanged();
 
-                //if (Model.Id == Guid.Empty)
-                //{
-                //    foreach (var comb in Model.ItemCombinations ?? new())
-                //    {
-                //        comb.Id = Guid.Empty;
-                //    }
-                //}
+                // Step 4: Prepare the model based on pricing strategy
+                PrepareModelForSave();
 
                 var result = await ItemService.SaveAsync(Model);
 
@@ -686,6 +766,110 @@ namespace Dashboard.Pages.Catalog.Products
         }
 
         /// <summary>
+        /// Prepares the model for saving based on the category's pricing strategy
+        /// This method handles the business logic for what should be created during item save
+        /// </summary>
+        private void PrepareModelForSave()
+        {
+            // Ensure item attributes are properly set
+            if (attributeValuesSectionRef != null)
+            {
+                var attributeData = attributeValuesSectionRef.GetAllAttributeData();
+
+                Model.ItemAttributes = new List<ItemAttributeDto>();
+
+                foreach (var kvp in attributeData)
+                {
+                    if (!string.IsNullOrWhiteSpace(kvp.Value))
+                    {
+                        Model.ItemAttributes.Add(new ItemAttributeDto
+                        {
+                            AttributeId = kvp.Key,
+                            Value = kvp.Value
+                        });
+                    }
+                }
+            }
+
+            // Rule-based preparation
+            if (isMultiVendorEnabled)
+            {
+                // Rule 1 & 2: Multi-vendor mode
+                // Rule 1: No default combination, no default offer
+                // Rule 2: Default combination (backend), but no default offer
+                Model.defaultOfferData = null;
+            }
+            else
+            {
+                // Single-vendor mode
+                // Rule 3: Default combination AND default offer
+                // Rule 4: Add combinations AND offers
+                // Ensure we have offer data with at least one combination pricing
+                if (Model.defaultOfferData == null ||
+                    Model.defaultOfferData.OfferCombinationPricings == null ||
+                    !Model.defaultOfferData.OfferCombinationPricings.Any())
+                {
+                    throw new InvalidOperationException("Default offer data with at least one combination is required.");
+                }
+            }
+        }
+
+        private bool ValidateOfferData()
+        {
+            if (!showOfferDataSection)
+                return true;
+
+            if (Model.defaultOfferData?.OfferCombinationPricings == null ||
+                !Model.defaultOfferData.OfferCombinationPricings.Any())
+            {
+                Console.WriteLine("❌ At least one combination pricing is required");
+                return false;
+            }
+
+            var pricingAttributes = categoryAttributes.Where(a => a.AffectsPricing).ToList();
+
+            foreach (var pricing in Model.defaultOfferData.OfferCombinationPricings)
+            {
+                if (pricing.OfferConditionId == Guid.Empty)
+                {
+                    Console.WriteLine("❌ Offer condition is required");
+                    return false;
+                }
+
+                if (pricing.Price <= 0)
+                {
+                    Console.WriteLine("❌ Price must be greater than 0");
+                    return false;
+                }
+
+                // Validate combination attributes if combination pricing is enabled
+                if (isCombinationPricing && pricingAttributes.Any())
+                {
+                    if (pricing.ItemCombinationDtos == null || !pricing.ItemCombinationDtos.Any())
+                    {
+                        Console.WriteLine("❌ Combination attributes are required");
+                        return false;
+                    }
+
+                    var combination = pricing.ItemCombinationDtos.First();
+
+                    foreach (var attr in pricingAttributes)
+                    {
+                        var attrValue = combination.CombinationAttributes?
+                            .FirstOrDefault(ca => ca.combinationAttributeValue.AttributeId == attr.AttributeId);
+
+                        if (attrValue == null || string.IsNullOrWhiteSpace(attrValue.combinationAttributeValue.Value))
+                        {
+                            Console.WriteLine($"❌ Required attribute '{attr.Title}' is missing value");
+                            return false;
+                        }
+                    }
+                }
+            }
+            return true;
+        }
+
+        /// <summary>
         /// Validates all required attributes have values
         /// </summary>
         private bool ValidateAttributes()
@@ -693,19 +877,65 @@ namespace Dashboard.Pages.Catalog.Products
             if (Model.CategoryId == Guid.Empty || !categoryAttributes.Any())
                 return true; // No attributes to validate
 
-            // Pricing attributes are validated separately in combinations
+            // Only validate non-pricing attributes (pricing attributes are handled in combinations)
             foreach (var categoryAttr in categoryAttributes.Where(ca => ca.IsRequired && !ca.AffectsPricing))
             {
                 var itemAttr = Model.ItemAttributes?.FirstOrDefault(ia => ia.AttributeId == categoryAttr.AttributeId);
-                Console.WriteLine($"Validate Attribute {categoryAttr.TitleAr} with value : {itemAttr?.Value}");
                 if (itemAttr == null || string.IsNullOrWhiteSpace(itemAttr.Value))
                 {
                     return false;
                 }
             }
-
-            Console.WriteLine($"✅ All required non-pricing attributes are valid");
             return true;
+        }
+        protected void AddCombinationPricing()
+        {
+            if (Model.defaultOfferData == null)
+            {
+                Model.defaultOfferData = new SaveVendorItemDto
+                {
+                    EstimatedDeliveryDays = 3,
+                    IsFreeShipping = false,
+                    OfferCombinationPricings = new List<OfferCombinationPricingDto>()
+                };
+            }
+
+            if (Model.defaultOfferData.OfferCombinationPricings == null)
+            {
+                Model.defaultOfferData.OfferCombinationPricings = new List<OfferCombinationPricingDto>();
+            }
+
+            var newPricing = new OfferCombinationPricingDto
+            {
+                Barcode = $"BAR-{Guid.NewGuid().ToString().Substring(0, 8)}",
+                SKU = $"SKU-{Guid.NewGuid().ToString().Substring(0, 8)}",
+                Price = 0,
+                SalesPrice = 0,
+                AvailableQuantity = 0,
+                MinOrderQuantity = 1,
+                MaxOrderQuantity = 999,
+                LowStockThreshold = 5,
+                ItemCombinationDtos = new List<ItemCombinationDto>
+                {
+                    new ItemCombinationDto
+                    {
+                        CombinationAttributes = new List<CombinationAttributeDto>()
+                    }
+                }
+            };
+
+            Model.defaultOfferData.OfferCombinationPricings.Add(newPricing);
+            StateHasChanged();
+        }
+
+        // Add method to remove combination pricing
+        protected void RemoveCombinationPricing(OfferCombinationPricingDto pricing)
+        {
+            if (Model.defaultOfferData?.OfferCombinationPricings != null)
+            {
+                Model.defaultOfferData.OfferCombinationPricings.Remove(pricing);
+                StateHasChanged();
+            }
         }
 
         protected void CloseModal()
@@ -740,13 +970,8 @@ namespace Dashboard.Pages.Catalog.Products
                     return !string.IsNullOrEmpty(Model.ThumbnailImage) ||
                            (Model.Images != null && Model.Images.Count > 0);
                 case 4: //Default pricing
-                    if (currentCategory.PricingSystemType == PricingStrategyType.Simple)
-                        return Model.BasePrice.HasValue &&
-                               Model.BasePrice.Value > 0;
-                    else
-                        return true;
-                case 5: // Attributes - FIXED VALIDATION
-                        // Sync the attribute values first
+                    return ValidateStep4Pricing();
+                case 5: // Attributes 
                     if (attributeValuesSectionRef != null)
                     {
                         await OnAttributeValuesChanged();
@@ -760,6 +985,179 @@ namespace Dashboard.Pages.Catalog.Products
                     return true;
             }
         }
+        private bool ValidateStep4Pricing()
+        {
+            Console.WriteLine("🔍 ValidateStep4Pricing - START");
+            Console.WriteLine($"   Multi-vendor: {isMultiVendorEnabled}");
+            Console.WriteLine($"   Combination pricing: {isCombinationPricing}");
+            Console.WriteLine($"   Show offer section: {showOfferDataSection}");
+
+            // Rule 1: Multi-vendor + Combination/Hybrid → No validation needed
+            // (Vendors will create their own combinations and pricing)
+            if (isMultiVendorEnabled && isCombinationPricing)
+            {
+                return true;
+            }
+
+            // Rule 2: Multi-vendor + Simple → Base price required
+            // (Default combination created by backend, vendors add offers)
+            if (isMultiVendorEnabled && !isCombinationPricing)
+            {
+                Console.WriteLine("   📋 Rule 2: Multi-vendor + Simple - Validating base price");
+
+                if (!Model.BasePrice.HasValue || Model.BasePrice.Value <= 0)
+                {
+                    Console.WriteLine("   ❌ Base price is required and must be > 0");
+                    return false;
+                }
+
+                return true;
+            }
+
+            // Rule 3 & 4: Single-vendor → Offer data required (regardless of pricing type)
+            if (!isMultiVendorEnabled)
+            {
+                Console.WriteLine("   📋 Single-vendor mode - Validating offer data");
+
+                // Check if offer data exists
+                if (Model.defaultOfferData == null)
+                {
+                    Console.WriteLine("   ❌ Default offer data is null");
+                    return false;
+                }
+
+                // Validate estimated delivery days
+                if (Model.defaultOfferData.EstimatedDeliveryDays <= 0)
+                {
+                    Console.WriteLine("   ❌ Estimated delivery days must be > 0");
+                    return false;
+                }
+
+                // Validate combination pricings exist
+                if (Model.defaultOfferData.OfferCombinationPricings == null ||
+                    !Model.defaultOfferData.OfferCombinationPricings.Any())
+                {
+                    Console.WriteLine("   ❌ At least one combination pricing is required");
+                    return false;
+                }
+
+                // Validate each combination pricing
+                foreach (var pricing in Model.defaultOfferData.OfferCombinationPricings)
+                {
+                    // Price validation
+                    if (pricing.Price <= 0)
+                    {
+                        Console.WriteLine($"   ❌ Pricing has invalid price: {pricing.Price}");
+                        return false;
+                    }
+
+                    // Condition validation
+                    if (pricing.OfferConditionId == Guid.Empty)
+                    {
+                        Console.WriteLine("   ❌ Offer condition is required");
+                        return false;
+                    }
+
+                    // Quantity validation
+                    if (pricing.AvailableQuantity <= 0)
+                    {
+                        Console.WriteLine($"   ❌ Available quantity must be > 0: {pricing.AvailableQuantity}");
+                        return false;
+                    }
+
+                    // For combination-based pricing, validate attributes
+                    if (isCombinationPricing)
+                    {
+                        var pricingAttributes = categoryAttributes.Where(a => a.AffectsPricing).ToList();
+
+                        if (pricingAttributes.Any())
+                        {
+                            if (pricing.ItemCombinationDtos == null || !pricing.ItemCombinationDtos.Any())
+                            {
+                                Console.WriteLine("   ❌ Combination data is missing");
+                                return false;
+                            }
+
+                            var combination = pricing.ItemCombinationDtos.First();
+
+                            foreach (var attr in pricingAttributes)
+                            {
+                                var attrValue = combination.CombinationAttributes?
+                                    .FirstOrDefault(ca => ca.combinationAttributeValue.AttributeId == attr.AttributeId);
+
+                                if (attrValue == null || string.IsNullOrWhiteSpace(attrValue.combinationAttributeValue.Value))
+                                {
+                                    Console.WriteLine($"   ❌ Required attribute '{attr.Title}' is missing value");
+                                    return false;
+                                }
+                            }
+                        }
+                    }
+                }
+
+                return true;
+            }
+
+            // Fallback - should never reach here
+            Console.WriteLine("   ⚠️ Unexpected validation path");
+            return false;
+        }
+
+        /// <summary>
+        /// Gets a user-friendly message explaining what will be created
+        /// </summary>
+        private string GetPricingStrategyMessage()
+        {
+           if(!isCombinationPricing)
+           {
+                if (isMultiVendorEnabled)
+                {
+                    // Rule 2
+                    return "A default combination will be created automatically. " +
+                           "Vendors can then add their own offers to this combination with their specific pricing.";
+                }
+                else
+                {
+                    // Rule 3
+                    return "A default combination and offer will be created automatically using the information below. " +
+                           "This item will be available for sale immediately after approval.";
+                }
+            }
+            else if (currentCategory.PricingSystemType == PricingStrategyType.CombinationBased)
+            {
+                if (isMultiVendorEnabled)
+                {
+                    // Rule 1
+                    return "No default combination will be created. " +
+                           "Vendors will create their own combinations with specific attribute values and pricing.";
+                }
+                else
+                {
+                    // Rule 4
+                    return "No default combination or offer will be created now. " +
+                           "After saving, navigate to Item Management → Combinations to create combinations. " +
+                           "Each combination will automatically get an offer.";
+                }
+            }
+            else if (currentCategory.PricingSystemType == PricingStrategyType.Hybrid)
+            {
+                if (isMultiVendorEnabled)
+                {
+                    // Rule 1
+                    return "This category supports flexible pricing. " +
+                           "Vendors can create multiple combinations with different attribute values and pricing.";
+                }
+                else
+                {
+                    // Rule 4
+                    return "Create combinations separately after saving the item. " +
+                           "Each combination will automatically get an offer with your warehouse.";
+                }
+            }
+
+            return "Item will be created based on the category's pricing strategy.";
+        }
+
 
         protected async Task MoveToNextStep()
         {
@@ -814,9 +1212,77 @@ namespace Dashboard.Pages.Catalog.Products
                 1 => ValidationResources.FillSEOFields,
                 2 => ValidationResources.SelectCategoryBrandUnit,
                 3 => ValidationResources.UploadThumbnailOrImages,
-                4 => "Please enter item base price.",
+                4 => GetStep4ValidationMessage(),
                 _ => ValidationResources.PleaseFixValidationErrors
             };
+        }
+        private string GetStep4ValidationMessage()
+        {
+            // Rule 1: Multi-vendor + Combination/Hybrid
+            if (isMultiVendorEnabled && isCombinationPricing)
+            {
+                // This should never fail, but just in case
+                return "Something went wrong with pricing validation.";
+            }
+
+            // Rule 2: Multi-vendor + Simple
+            if (isMultiVendorEnabled && !isCombinationPricing)
+            {
+                if (!Model.BasePrice.HasValue || Model.BasePrice.Value <= 0)
+                    return "Base price is required and must be greater than zero.";
+            }
+
+            // Rule 3 & 4: Single-vendor
+            if (!isMultiVendorEnabled)
+            {
+                if (Model.defaultOfferData == null)
+                    return "Default offer data is required for single-vendor mode.";
+
+                if (Model.defaultOfferData.EstimatedDeliveryDays <= 0)
+                    return "Estimated delivery days must be greater than zero.";
+
+                if (Model.defaultOfferData.OfferCombinationPricings == null ||
+                    !Model.defaultOfferData.OfferCombinationPricings.Any())
+                    return "At least one offer pricing combination is required.";
+
+                // Check individual pricing validations
+                foreach (var pricing in Model.defaultOfferData.OfferCombinationPricings)
+                {
+                    if (pricing.Price <= 0)
+                        return "Each combination must have a price greater than zero.";
+
+                    if (pricing.OfferConditionId == Guid.Empty)
+                        return "Each combination must have a condition selected.";
+
+                    if (pricing.AvailableQuantity <= 0)
+                        return "Each combination must have available quantity greater than zero.";
+
+                    // Check attributes for combination pricing
+                    if (isCombinationPricing)
+                    {
+                        var pricingAttributes = categoryAttributes.Where(a => a.AffectsPricing).ToList();
+
+                        if (pricingAttributes.Any())
+                        {
+                            if (pricing.ItemCombinationDtos == null || !pricing.ItemCombinationDtos.Any())
+                                return "Combination attribute data is missing.";
+
+                            var combination = pricing.ItemCombinationDtos.First();
+
+                            foreach (var attr in pricingAttributes)
+                            {
+                                var attrValue = combination.CombinationAttributes?
+                                    .FirstOrDefault(ca => ca.combinationAttributeValue.AttributeId == attr.AttributeId);
+
+                                if (attrValue == null || string.IsNullOrWhiteSpace(attrValue.combinationAttributeValue.Value))
+                                    return $"Required attribute '{attr.Title}' must have a value in all combinations.";
+                            }
+                        }
+                    }
+                }
+            }
+
+            return "Please fill in all required pricing information.";
         }
 
         protected async Task MoveToPreviousStep()
@@ -933,6 +1399,60 @@ namespace Dashboard.Pages.Catalog.Products
         (Model.Images != null && Model.Images.Count > 0);
 
             return basicValidations && imagesValid;
+        }
+
+        // Get attribute value for a specific combination
+        private string GetCombinationAttributeValue(OfferCombinationPricingDto pricing, Guid attributeId)
+        {
+            if (pricing?.ItemCombinationDtos == null || !pricing.ItemCombinationDtos.Any())
+                return string.Empty;
+
+            var combination = pricing.ItemCombinationDtos.First();
+            var attr = combination?.CombinationAttributes?
+                .FirstOrDefault(ca => ca.combinationAttributeValue.AttributeId == attributeId);
+
+            return attr?.combinationAttributeValue.Value ?? string.Empty;
+        }
+
+        // Update attribute value for a specific combination
+        private void UpdateCombinationAttribute(OfferCombinationPricingDto pricing, Guid attributeId, string value)
+        {
+            // Ensure structure exists
+            if (pricing.ItemCombinationDtos == null)
+            {
+                pricing.ItemCombinationDtos = new List<ItemCombinationDto>
+        {
+            new ItemCombinationDto { CombinationAttributes = new List<CombinationAttributeDto>() }
+        };
+            }
+
+            var combination = pricing.ItemCombinationDtos.First();
+            if (combination.CombinationAttributes == null)
+            {
+                combination.CombinationAttributes = new List<CombinationAttributeDto>();
+            }
+
+            // Find or create the attribute
+            var existingAttr = combination.CombinationAttributes
+                .FirstOrDefault(ca => ca.combinationAttributeValue.AttributeId == attributeId);
+
+            if (existingAttr != null)
+            {
+                existingAttr.combinationAttributeValue.Value = value;
+            }
+            else
+            {
+                combination.CombinationAttributes.Add(new CombinationAttributeDto
+                {
+                    combinationAttributeValue = new CombinationAttributeValueDto
+                    {
+                        AttributeId = attributeId,
+                        Value = value
+                    }
+                });
+            }
+
+            StateHasChanged();
         }
 
         //private string GetCombinationAttributesDisplay(ItemCombinationDto combination)

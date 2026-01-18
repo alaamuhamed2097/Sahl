@@ -849,16 +849,16 @@
   <data name="WithdrawalMethods" xml:space="preserve">
     <value>طرق السحب</value>
   </data>
-  <data name="DisplayOrder">
+  <data name="DisplayOrder" xml:space="preserve">
     <value>ترتيب العرض</value>
   </data>
-  <data name="SliderImage">
+  <data name="SliderImage" xml:space="preserve">
     <value>صورة السلايدر</value>
   </data>
-  <data name="SliderTitle">
+  <data name="SliderTitle" xml:space="preserve">
     <value>عنوان السلايدر</value>
   </data>
-  <data name="BannerDuration">
+  <data name="BannerDuration" xml:space="preserve">
     <value>مدة البانر</value>
   </data>
   <data name="Sales" xml:space="preserve">
@@ -952,37 +952,66 @@
     <value>إدارة الطلبات</value>
   </data>
   <data name="LogisticsAndShipping" xml:space="preserve">
-    <value>الخدمات اللوجستية والشحن</value>
+    <value>اللوجستيات والشحن</value>
   </data>
   <data name="CatalogManagement" xml:space="preserve">
     <value>إدارة الكتالوج</value>
   </data>
-	<data name="Revenue" xml:space="preserve">
-  <value>الإيرادات</value>
+  <data name="Revenue" xml:space="preserve">
+    <value>الإيرادات</value>
+  </data>
+  <data name="TotalRevenue" xml:space="preserve">
+    <value>إجمالي الإيرادات</value>
+  </data>
+  <data name="TotalProducts" xml:space="preserve">
+    <value>إجمالي المنتجات</value>
+  </data>
+  <data name="TopSellingProducts" xml:space="preserve">
+    <value>المنتجات الأكثر مبيعًا</value>
+  </data>
+  <data name="TopPerformingVendors" xml:space="preserve">
+    <value>أفضل التجار أداءً</value>
+  </data>
+  <data name="PendingOrders" xml:space="preserve">
+    <value>الطلبات المعلقة</value>
+  </data>
+  <data name="ActiveVendors" xml:space="preserve">
+    <value>التجار النشطون</value>
+  </data>
+  <data name="Reviews" xml:space="preserve">
+    <value>التقييمات</value>
+  </data>
+  <data name="AverageRating" xml:space="preserve">
+    <value>متوسط التقييم</value>
+  </data>
+  <data name="EstimatedDeliveryDays" xml:space="preserve">
+  <value>أيام التسليم المقدرة</value>
 </data>
-	<data name="TotalRevenue" xml:space="preserve">
-  <value>إجمالي الإيرادات</value>
+<data name="FreeShipping" xml:space="preserve">
+  <value>شحن مجاني</value>
 </data>
-	<data name="TotalProducts" xml:space="preserve">
-  <value>إجمالي المنتجات</value>
+<data name="Combinations" xml:space="preserve">
+  <value>الخيارات</value>
 </data>
-	<data name="TopSellingProducts" xml:space="preserve">
-  <value>المنتجات الأكثر مبيعًا</value>
+<data name="Condition" xml:space="preserve">
+  <value>الحالة</value>
 </data>
-	<data name="TopPerformingVendors" xml:space="preserve">
-  <value>أفضل التجار أداءً</value>
+<data name="Price" xml:space="preserve">
+  <value>السعر</value>
 </data>
-	<data name="PendingOrders" xml:space="preserve">
-  <value>الطلبات المعلقة</value>
+<data name="AvailableQuantity" xml:space="preserve">
+  <value>الكمية المتاحة</value>
 </data>
-	<data name="ActiveVendors" xml:space="preserve">
-  <value>التجار النشطون</value>
+<data name="MinOrderQuantity" xml:space="preserve">
+  <value>الحد الأدنى للطلب</value>
 </data>
-	<data name="Reviews" xml:space="preserve">
-  <value>التقييمات</value>
+<data name="MaxOrderQuantity" xml:space="preserve">
+  <value>الحد الأقصى للطلب</value>
 </data>
-	<data name="AverageRating" xml:space="preserve">
-  <value>متوسط التقييم</value>
+<data name="LowStockThreshold" xml:space="preserve">
+  <value>عتبة نقص المخزون</value>
 </data>
-
+  <data name="NewProductRequests" xml:space="preserve">
+  <value>طلبات إضافة منتجات جديدة</value>
+</data>
 </root>

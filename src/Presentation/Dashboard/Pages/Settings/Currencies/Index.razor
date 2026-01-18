@@ -12,255 +12,256 @@
 <PageTitle>@CurrencyResources.CurrencyManagement</PageTitle>
 
 <div class="container-fluid p-0">
-    <div class="card shadow-sm border-0">
-  <div class="card-header bg-primary text-white py-3 d-flex justify-content-between align-items-center">
-            <h5 class="mb-0 fw-semibold text-white">💰 @CurrencyResources.CurrencyManagement</h5>
-        </div>
-        <div class="card-body">
-   <div class="dt-responsive table-responsive">
-    <!-- Filtration start -->
-        <ul class="navbar-nav d-flex flex-row align-items-center gap-3 mb-2 px-0 w-100">
-    <li class="nav-item col-md-6 w-auto d-flex flex-row align-items-center gap-3">
-            <EditForm Model="searchModel" OnSubmit="@Search">
-                            <!-- Search Box -->
-                            <div class="input-group rounded" style="width: 170px; height: 38px;">
-                                <input type="text" @bind="searchModel.SearchTerm"
-                                       id="searchInput"
-                                       class="form-control text-center border-0 @(ResourceManager.CurrentLanguage == Language.Arabic ? "rounded-end" : "rounded-start")"
-                                       placeholder="@ActionsResources.Search"
-                                       style="height: 38px;" />
-                                <button type="submit"
-                                        class="btn btn-danger d-flex align-items-center justify-content-center border-0 @(ResourceManager.CurrentLanguage == Language.Arabic ? "rounded-start" : "rounded-end")"
-                                        style="width: 40px; height: 38px;">
-                                    <i class="fas fa-search text-white m-0"></i>
-                                </button>
-                            </div>
-                        </EditForm>
+	<div class="card shadow-sm border-0">
+		<div class="card-header bg-primary text-white py-3 d-flex justify-content-between align-items-center">
+			<h5 class="mb-0 fw-semibold text-white">💰 @CurrencyResources.CurrencyManagement</h5>
+		</div>
+		<div class="card-body">
+			<div class="dt-responsive table-responsive">
+				<!-- Filtration start -->
+				<ul class="navbar-nav d-flex flex-row align-items-center gap-3 mb-2 px-0 w-100">
+					<li class="nav-item col-md-6 w-auto d-flex flex-row align-items-center gap-3">
+						<EditForm Model="searchModel" OnSubmit="@Search">
+							<!-- Search Box -->
+							<div class="search-container">
+								<div class="input-group search-box">
+									<input type="text"
+										   @bind="searchModel.SearchTerm"
+										   id="searchInput"
+										   class="form-control search-input"
+										   placeholder="@ActionsResources.Search" />
+									<button type="submit"
+											class="btn btn-search">
+										<i class="fas fa-search"></i>
+									</button>
+								</div>
+							</div>
+						</EditForm>
 
- <!-- Page Size -->
-                                                                <div class="d-flex align-items-center gap-2">
-                                            <select class="form-select rounded-3 shadow-sm border-light text-primary fw-bold text-center custom-dropdown"
-                                                    style="width: 130px; height: 40px; padding-right: 30px;"
-                                                    @onchange="OnPageSizeChanged">
-                                                <option value="10"selected="@(searchModel.PageSize == 10)">10</option>
-                                                <option value="15"selected="@(searchModel.PageSize == 15)">15</option>
-                                                <option value="20"selected="@(searchModel.PageSize == 20)">20</option>
-                                                <option value="30"selected="@(searchModel.PageSize == 30)">30</option>
-                                            </select>
-                                        </div>
-      </li>
-         <li class="nav-item ms-auto d-flex flex-row align-items-center gap-2">
- <!-- Status Filter -->
-   <div class="d-flex align-items-center gap-2">
-                            <label class="form-label hidden  fw-semibold mb-0">@FormResources.Status:</label>
-                            <select class="form-select rounded-3 shadow-sm border-light text-primary fw-bold"
-                                    style="width: 120px; height: 38px;"
-                                    @bind="StatusFilter">
-                                <option value="">@GeneralResources.All</option>
-                                <option value="active">@GeneralResources.Active</option>
-                                <option value="inactive">@GeneralResources.Inactive</option>
-                            </select>
-                        </div>
-      <!-- Export Buttons -->
- <div class="dropdown">
-                            <button class="btn btn-info" type="button" id="exportDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                                <i class="fas fa-file-export me-2"></i>
-                                <span class="fw-bold">@ActionsResources.Export</span>
-                            </button>
-                            <ul class="dropdown-menu" aria-labelledby="exportDropdown">
-                                <li><a class="dropdown-item" href="javascript:void(0)" @onclick="ExportToExcel"><i class="far fa-file-excel mx-2"></i>@GeneralResources.Excel</a></li>
-                                <li><a class="dropdown-item" href="javascript:void(0)" @onclick="ExportToPrint"><i class="fas fa-print mx-2"></i>@ActionsResources.Print</a></li>
-                            </ul>
-                        </div>
-    <!-- Add Button -->
-      <NavLink href="/currencyModal" class="btn btn-success">
-     <i class="feather icon-plus-circle me-2"></i>
-   <span class="fw-bold">@ActionsResources.Add</span>
-       </NavLink>
-        
-   <!-- Update Exchange Rates Button -->
-  <button class="btn btn-info" @onclick="UpdateExchangeRates" disabled="@_isUpdatingRates">
-         @if (_isUpdatingRates)
-     {
-   <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
-    }
-         else
-         {
-             <i class="fas fa-sync-alt me-2"></i>
-          }
-          <span class="fw-bold">@GeneralResources.UpdateExchangeRates</span>
-   </button>
-                </li>
-    </ul>
-                <!-- Table -->
-                <div class="table-responsive dt-responsived table-container border rounded-3">
-                    <table id="currency-table" class="table table-striped table-hover mb-0 align-text-center">
-                        <thead class="bg-light">
-                            <tr>
-                                <th class="text-center align-middle">#</th>
-                                <th class="text-center align-middle">@CurrencyResources.Symbol</th>
-                                <th class="text-center align-middle">@CurrencyResources.Code</th>
-                                <th class="text-center align-middle">@FormResources.Name</th>
-                                <th class="text-center align-middle">@CurrencyResources.ExchangeRate</th>
-                                <th class="text-center align-middle">@FormResources.Status</th>
-                                <th class="text-center align-middle">@ECommerceResources.Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @if (items != null && items.Count() != 0)
-                            {
-                                int i = 0;
-                                @foreach (var currency in items)
-                                {
-                                    <tr class="@(currency.IsBaseCurrency ? "table-warning" : "")">
-                                        <td class="text-center align-middle">@(++i)</td>
-                                        <td class="text-center align-middle">
-                                            <span class="currency-symbol">@currency.Symbol</span>
-                                        </td>
-                                        <td class="text-center align-middle">
-                                            <strong>@currency.Code </strong>
-                                            @if (currency.IsBaseCurrency)
-                                            {
-                                                <span class="badge bg-primary ms-1">@CurrencyResources.Base</span>
-                                            }
-                                        </td>
-                                        <td class="text-center align-middle">@currency.Name</td>
-                                        <td class="text-center align-middle">
-                                            <strong>@currency.ExchangeRate.ToString("N2")</strong>
-                                        </td>
-                                        @if (currency.IsActive)
-                                        {
-                                            <td class="text-success text-center align-middle">@GeneralResources.Active</td>
-                                        }
-                                        else
-                                        {
-                                            <td class="text-danger text-center align-middle">@GeneralResources.Inactive</td>
-                                        }
-                                        <td class="d-flex gap-1 justify-content-center align-items-center">
-                                            <NavLink href="@($"/currencyModal/{currency.Id}")" class="btn btn-primary btn-sm mx-1">
-                                                <span class="fas fa-edit"></span>
-                                            </NavLink>
-                                            @if (!currency.IsBaseCurrency)
-                                            {
-                                                <button class="btn btn-warning btn-sm mx-1" @onclick="() => SetBaseCurrency(currency)" title="@CurrencyResources.SetAsBase">
-                                                    <span class="fas fa-star"></span>
-                                                </button>
-                                            }
-                                            <button class="btn btn-danger btn-sm mx-1" @onclick="() => DeleteCurrency(currency)">
-                                                <span class="fas fa-trash"></span>
-                                            </button>
-                                        </td>
-                                    </tr>
-                                }
-                            }
-                            else
-                            {
-                                <tr>
-                                    <td colspan="7" class="text-center">
-                                               <div class="text-center p-4">
-    <!-- أيقونة كبيرة -->
-    <i class="fas fa-database text-muted" style="font-size: 60px;"></i>
-    
-    <!-- نص -->
-    <p class="text-muted mt-3" style="font-size: 18px;">
-           @NotifiAndAlertsResources.NoDataFound
-    </p>
-</div>
-                                       
-                                    </td>
-                                </tr>
-                            }
-                        </tbody>
-                    </table>
-                </div>
+						<!-- Page Size -->
+						<div class="d-flex align-items-center gap-2">
+							<select class="form-select rounded-3 shadow-sm border-light text-primary fw-bold text-center custom-dropdown"
+									style="width: 130px; height: 40px; padding-right: 30px;"
+									@onchange="OnPageSizeChanged">
+								<option value="10" selected="@(searchModel.PageSize == 10)">10</option>
+								<option value="15" selected="@(searchModel.PageSize == 15)">15</option>
+								<option value="20" selected="@(searchModel.PageSize == 20)">20</option>
+								<option value="30" selected="@(searchModel.PageSize == 30)">30</option>
+							</select>
+						</div>
+					</li>
+					<li class="nav-item ms-auto d-flex flex-row align-items-center gap-2">
+						<!-- Status Filter -->
+						<div class="d-flex align-items-center gap-2">
+							<label class="form-label hidden  fw-semibold mb-0">@FormResources.Status:</label>
+							<select class="form-select rounded-3 shadow-sm border-light text-primary fw-bold"
+									style="width: 120px; height: 38px;"
+									@bind="StatusFilter">
+								<option value="">@GeneralResources.All</option>
+								<option value="active">@GeneralResources.Active</option>
+								<option value="inactive">@GeneralResources.Inactive</option>
+							</select>
+						</div>
+						<!-- Export Buttons -->
+						<div class="dropdown">
+							<button class="btn btn-info" type="button" id="exportDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+								<i class="fas fa-file-export me-2"></i>
+								<span class="fw-bold">@ActionsResources.Export</span>
+							</button>
+							<ul class="dropdown-menu" aria-labelledby="exportDropdown">
+								<li><a class="dropdown-item" href="javascript:void(0)" @onclick="ExportToExcel"><i class="far fa-file-excel mx-2"></i>@GeneralResources.Excel</a></li>
+								<li><a class="dropdown-item" href="javascript:void(0)" @onclick="ExportToPrint"><i class="fas fa-print mx-2"></i>@ActionsResources.Print</a></li>
+							</ul>
+						</div>
+						<!-- Add Button -->
+						<NavLink href="/currencyModal" class="btn btn-success">
+							<i class="feather icon-plus-circle me-2"></i>
+							<span class="fw-bold">@ActionsResources.Add</span>
+						</NavLink>
 
-                <!-- Pagination -->
-                <div class="d-flex justify-content-between mt-3" dir="ltr">
-                    <div class="d-flex align-items-center just flex-end">
-                        <span class="text-muted">
-                            @string.Format(ActionsResources.ShowingEntries, ((currentPage - 1) * searchModel.PageSize + 1), Math.Min(currentPage * searchModel.PageSize, totalRecords), totalRecords)
-                        </span>
-                    </div>
-                    <nav>
-                        <ul class="pagination mb-0">
-                            <!-- First Button -->
-                            <li class="page-item @(currentPage == 1 ? "disabled" : "")">
-                                <a class="page-link" @onclick="() => GoToPage(1)" title="@ActionsResources.First">
-                                    <i class="fas fa-angle-double-left"></i>
-                                </a>
-                            </li>
+						<!-- Update Exchange Rates Button -->
+						<button class="btn btn-info" @onclick="UpdateExchangeRates" disabled="@_isUpdatingRates">
+							@if (_isUpdatingRates)
+							{
+								<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+							}
+							else
+							{
+								<i class="fas fa-sync-alt me-2"></i>
+							}
+							<span class="fw-bold">@GeneralResources.UpdateExchangeRates</span>
+						</button>
+					</li>
+				</ul>
+				<!-- Table -->
+				<div class="table-responsive dt-responsived table-container border rounded-3">
+					<table id="currency-table" class="table table-striped table-hover mb-0 align-text-center">
+						<thead class="bg-light">
+							<tr>
+								<th class="text-center align-middle">#</th>
+								<th class="text-center align-middle">@CurrencyResources.Symbol</th>
+								<th class="text-center align-middle">@CurrencyResources.Code</th>
+								<th class="text-center align-middle">@FormResources.Name</th>
+								<th class="text-center align-middle">@CurrencyResources.ExchangeRate</th>
+								<th class="text-center align-middle">@FormResources.Status</th>
+								<th class="text-center align-middle">@ECommerceResources.Actions</th>
+							</tr>
+						</thead>
+						<tbody>
+							@if (items != null && items.Count() != 0)
+							{
+								int i = 0;
+								@foreach (var currency in items)
+								{
+									<tr class="@(currency.IsBaseCurrency ? "table-warning" : "")">
+										<td class="text-center align-middle">@(++i)</td>
+										<td class="text-center align-middle">
+											<span class="currency-symbol">@currency.Symbol</span>
+										</td>
+										<td class="text-center align-middle">
+											<strong>@currency.Code </strong>
+											@if (currency.IsBaseCurrency)
+											{
+												<span class="badge bg-primary ms-1">@CurrencyResources.Base</span>
+											}
+										</td>
+										<td class="text-center align-middle">@currency.Name</td>
+										<td class="text-center align-middle">
+											<strong>@currency.ExchangeRate.ToString("N2")</strong>
+										</td>
+										@if (currency.IsActive)
+										{
+											<td class="text-success text-center align-middle">@GeneralResources.Active</td>
+										}
+										else
+										{
+											<td class="text-danger text-center align-middle">@GeneralResources.Inactive</td>
+										}
+										<td class="d-flex gap-1 justify-content-center align-items-center">
+											<NavLink href="@($"/currencyModal/{currency.Id}")" class="btn btn-primary btn-sm mx-1">
+												<span class="fas fa-edit"></span>
+											</NavLink>
+											@if (!currency.IsBaseCurrency)
+											{
+												<button class="btn btn-warning btn-sm mx-1" @onclick="() => SetBaseCurrency(currency)" title="@CurrencyResources.SetAsBase">
+													<span class="fas fa-star"></span>
+												</button>
+											}
+											<button class="btn btn-danger btn-sm mx-1" @onclick="() => DeleteCurrency(currency)">
+												<span class="fas fa-trash"></span>
+											</button>
+										</td>
+									</tr>
+								}
+							}
+							else
+							{
+								<tr>
+									<td colspan="7" class="text-center">
+										<div class="text-center p-4">
+											<!-- أيقونة كبيرة -->
+											<i class="fas fa-database text-muted" style="font-size: 60px;"></i>
 
-                            <!-- Previous Button -->
-                            <li class="page-item @(currentPage == 1 ? "disabled" : "")">
-                                <a class="page-link" @onclick="() => GoToPage(currentPage - 1)">
-                                    @ActionsResources.Previous
-                                </a>
-                            </li>
-                            <!-- Dynamic Page Numbers -->
-                            @{
-                                const int maxVisiblePages = 5;
-                                int startPage = Math.Max(1, currentPage - 2);
-                                int endPage = Math.Min(totalPages, startPage + maxVisiblePages - 1);
-                                if (endPage - startPage + 1 < maxVisiblePages)
-                                {
-                                    startPage = Math.Max(1, endPage - maxVisiblePages + 1);
-                                }
-                            }
-                            @if (startPage > 1)
-                            {
-                                <li class="page-item disabled">
-                                    <a class="page-link">...</a>
-                                </li>
-                            }
-                            @for (int pag = startPage; pag <= endPage; pag++)
-                            {
-                                // Capture the loop variable in a local variable
-                                int pageNumber = pag;
-                                <li class="page-item @(pag == currentPage ? "active":"")">
-                                    <a class="page-link" @onclick="() => GoToPage(pageNumber)">@pag</a>
-                                </li>
-                            }
-                            @if (endPage < totalPages)
-                            {
-                                <li class="page-item disabled">
-                                    <a class="page-link">...</a>
-                                </li>
-                            }
-                            <!-- Next Button -->
-                            <li class="page-item @(currentPage == totalPages ? "disabled" : "")">
-                                <a class="page-link" @onclick="() => GoToPage(currentPage + 1)">
-                                    @ActionsResources.Next
-                                </a>
-                            </li>
+											<!-- نص -->
+											<p class="text-muted mt-3" style="font-size: 18px;">
+												@NotifiAndAlertsResources.NoDataFound
+											</p>
+										</div>
 
-                            <!-- Last Button -->
-                            <li class="page-item @(currentPage == totalPages ? "disabled" : "")">
-                                <a class="page-link" @onclick="() => GoToPage(totalPages)" title="@ActionsResources.Last">
-                                    <i class="fas fa-angle-double-right"></i>
-                                </a>
-                            </li>
-                        </ul>
-                    </nav>
-                </div>
-            </div>
-        </div>
-    </div>
+									</td>
+								</tr>
+							}
+						</tbody>
+					</table>
+				</div>
+
+				<!-- Pagination -->
+				<div class="d-flex justify-content-between mt-3" dir="ltr">
+					<div class="d-flex align-items-center just flex-end">
+						<span class="text-muted">
+							@string.Format(ActionsResources.ShowingEntries, ((currentPage - 1) * searchModel.PageSize + 1), Math.Min(currentPage * searchModel.PageSize, totalRecords), totalRecords)
+						</span>
+					</div>
+					<nav>
+						<ul class="pagination mb-0">
+							<!-- First Button -->
+							<li class="page-item @(currentPage == 1 ? "disabled" : "")">
+								<a class="page-link" @onclick="() => GoToPage(1)" title="@ActionsResources.First">
+									<i class="fas fa-angle-double-left"></i>
+								</a>
+							</li>
+
+							<!-- Previous Button -->
+							<li class="page-item @(currentPage == 1 ? "disabled" : "")">
+								<a class="page-link" @onclick="() => GoToPage(currentPage - 1)">
+									@ActionsResources.Previous
+								</a>
+							</li>
+							<!-- Dynamic Page Numbers -->
+							@{
+								const int maxVisiblePages = 5;
+								int startPage = Math.Max(1, currentPage - 2);
+								int endPage = Math.Min(totalPages, startPage + maxVisiblePages - 1);
+								if (endPage - startPage + 1 < maxVisiblePages)
+								{
+									startPage = Math.Max(1, endPage - maxVisiblePages + 1);
+								}
+							}
+							@if (startPage > 1)
+							{
+								<li class="page-item disabled">
+									<a class="page-link">...</a>
+								</li>
+							}
+							@for (int pag = startPage; pag <= endPage; pag++)
+							{
+								// Capture the loop variable in a local variable
+								int pageNumber = pag;
+								<li class="page-item @(pag == currentPage ? "active" : "")">
+									<a class="page-link" @onclick="() => GoToPage(pageNumber)">@pag</a>
+								</li>
+							}
+							@if (endPage < totalPages)
+							{
+								<li class="page-item disabled">
+									<a class="page-link">...</a>
+								</li>
+							}
+							<!-- Next Button -->
+							<li class="page-item @(currentPage == totalPages ? "disabled" : "")">
+								<a class="page-link" @onclick="() => GoToPage(currentPage + 1)">
+									@ActionsResources.Next
+								</a>
+							</li>
+
+							<!-- Last Button -->
+							<li class="page-item @(currentPage == totalPages ? "disabled" : "")">
+								<a class="page-link" @onclick="() => GoToPage(totalPages)" title="@ActionsResources.Last">
+									<i class="fas fa-angle-double-right"></i>
+								</a>
+							</li>
+						</ul>
+					</nav>
+				</div>
+			</div>
+		</div>
+	</div>
 </div>
 
 <style>
-    .currency-symbol {
-        font-size: 1.2rem;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        width: 32px;
-        height: 32px;
-        background: #f8f9fa;
-        border-radius: 50%;
-        border: 1px solid #dee2e6;
-    }
+	.currency-symbol {
+		font-size: 1.2rem;
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		width: 32px;
+		height: 32px;
+		background: #f8f9fa;
+		border-radius: 50%;
+		border: 1px solid #dee2e6;
+	}
 
-    .table-warning {
-        --bs-table-accent-bg: rgba(255, 193, 7, 0.075);
-    }
+	.table-warning {
+		--bs-table-accent-bg: rgba(255, 193, 7, 0.075);
+	}
 </style>

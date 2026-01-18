@@ -8,12 +8,15 @@
     <base href="/" />
     <title>بسيط | Basit</title>
 
-    <link rel="icon" type="image/x-icon" href="/assets/images/favicon.svg" />
+    <link rel="icon" type="image/x-icon" href="/assets/images/favicon.png" />
 
     <!-- Critical Resource Hints for LCP Optimization -->
     <link rel="dns-prefetch" href="//fonts.googleapis.com" />
     <link rel="dns-prefetch" href="//cdnjs.cloudflare.com" />
     <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin />
+
+    <!-- Bunny Fonts - Almarai -->
+    <link rel="stylesheet" href="https://fonts.bunny.net/css?family=almarai:300,400,700,800">
 
     <!-- LCP Critical: Preload hero logo with highest priority -->
     <link rel="preload" href="/assets/images/logogt.webp" as="image" fetchpriority="high" />
@@ -172,7 +175,6 @@
         const originalAssert = console.assert;
         console.assert = function (...args) {
             if (args.length > 0 && !args[0]) {
-                console.log('[Assertion Failed]:', ...args.slice(1));
             }
             // لا تستدعي originalAssert لتجنب debugger statement
         };
@@ -233,7 +235,7 @@
     <script src="assets/plugins/bootstrap/js/popper.min.js"></script>
     <script src="assets/plugins/bootstrap/js/bootstrap.min.js"></script>
 
-    <!-- Load pcoded.min.js immediately after Bootstrap - CRITICAL for menu functionality -->
+    <!-- Load pcoded.mi-n.js immediately after Bootstrap - CRITICAL for menu functionality -->
     <script src="assets/js/pcoded.min.js"></script>
 
     <script defer src="assets/js/perfect-scrollbar-1.4.0.min.js"></script>
@@ -247,12 +249,15 @@
     <!-- ✅ CRITICAL: Load HTTP Client helper for cookie-based authentication -->
     <script src="js/httpClientHelper.js"></script>
 
-    <!-- ✅ CRITICAL: Load OAuth JavaScript files -->
-    <script src="js/google-oauth.js" data-client-id="YOUR_GOOGLE_CLIENT_ID"></script>
-    <script src="js/facebook-oauth.js" data-app-id="YOUR_FACEBOOK_APP_ID"></script>
-
     <!-- Brand identity overrides -->
-    <link rel="stylesheet" href="assets/css/theme-identity.css" />
+    <link href="assets/css/theme-identity.css" rel="stylesheet" />
+
+    <!-- ✨ التحسينات الجديدة -->
+    <link href="assets/css/enhancements/dashboard-cards-enhancement.css" rel="stylesheet" />
+    <link href="assets/css/enhancements/sidebar-enhancement.css" rel="stylesheet" />
+    <link href="assets/css/enhancements/buttons-enhancement.css" rel="stylesheet" />
+    <link href="assets/css/enhancements/animations-library.css" rel="stylesheet" />
+    <!--<link href="assets/css/enhancements/comprehensive-ui-enhancements.css" rel="stylesheet" />-->
 </head>
 
 <body class="loading hide-scrollbar">
@@ -342,7 +347,6 @@
                     name === 'dotnet.native.wasm.symbols' ||
                     name.includes('debug') ||
                     name.includes('.dbg')) {
-                    console.log(`[BLOCKED] Debug file: ${name}`);
                     return null;
                 }
 
@@ -352,12 +356,7 @@
                     // بناء الـ URI يدوياً
                     const baseHref = document.querySelector('base')?.getAttribute('href') || '/';
                     defaultUri = `${baseHref}_framework/${name}`;
-                    console.log(`[RECONSTRUCTED] New URI: ${defaultUri}`);
                 }
-
-                // ✅ تسجيل محاولة التحميل
-                console.log(`[LOADING] ${type}: ${name}`);
-                console.log(`[URI] ${defaultUri}`);
 
                 // ✅ إرجاع الـ URI مباشرة بدون fetch إضافي
                 // الـ Blazor runtime هيعمل fetch بنفسه
@@ -370,7 +369,6 @@
             // إعدادات إضافية للاستقرار
             environment: 'Production'
         }).then(() => {
-            console.log('✅ Blazor started successfully!');
             document.body.classList.add('loaded');
             document.body.classList.remove('loading');
 
@@ -555,7 +553,6 @@
                 return this.loadScript(scriptFiles[scriptName])
                     .then(() => {
                         this.loadedScripts.add(scriptName);
-                        console.log('Loaded component script:', scriptName);
                     });
             },
 

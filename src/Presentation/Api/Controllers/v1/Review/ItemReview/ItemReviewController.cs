@@ -34,32 +34,109 @@ namespace Api.Controllers.v1.Review.ItemReview
 			_reviewItemService = reviewService;
 		}
 
-		
-		/// <summary>
-		/// Submit a new review for a Item
-		/// </summary>
-		/// <remarks>
-		/// API Version: 1.0+
-		/// Requires Authentication.
-		/// </remarks>
-		[HttpPost("submit")]
+        /// <summary>
+        /// Get paginated reviews with filters
+        /// </summary>
+        /// <remarks>
+        /// API Version: 1.0+
+        /// </remarks>
+        [HttpGet("search")]
+        [Authorize(Roles = $"{nameof(UserRole.Admin)}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<IActionResult> Search([FromQuery] ItemReviewSearchCriteriaModel criteria)
+        {
+            var result = await _reviewItemService.GetPageAsync(criteria);
+
+            return Ok(new ResponseModel<PagedResult<ItemReviewResponseDto>>
+            {
+                Success = true,
+                Message = NotifiAndAlertsResources.DataRetrieved,
+                Data = result
+            });
+        }
+
+        /// <summary>
+        /// Get review by ID with full details
+        /// </summary>
+        /// <remarks>
+        /// API Version: 1.0+
+        /// </remarks>
+        [HttpGet("{reviewId}")]
+        [Authorize(Roles = $"{nameof(UserRole.Customer)},{nameof(UserRole.Admin)}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> Get(Guid reviewId)
+        {
+            var review = await _reviewItemService.FindReviewByIdAsync(reviewId);
+
+
+            if (review == null)
+                return NotFound(new ResponseModel<string>
+                {
+                    Success = false,
+                    Message = NotifiAndAlertsResources.NoDataFound
+                });
+
+            return Ok(new ResponseModel<ItemReviewResponseDto>
+            {
+                Success = true,
+                Message = NotifiAndAlertsResources.DataRetrieved,
+                Data = review
+            });
+        }
+
+        /// <summary>
+        /// Get Item review statistics (average rating and count)
+        /// </summary>
+        /// <remarks>
+        /// API Version: 1.0+
+        /// </remarks>
+        [HttpGet("Item-review-summery/{ItemId}")]
+        [Authorize(Roles = nameof(UserRole.Admin))]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> GetItemReviewSummery(Guid ItemId)
+        {
+            var stats = await _reviewItemService.GetItemReviewSummeryAsync(ItemId);
+
+            return Ok(new ResponseModel<ResponseItemReviewSummeryDto>
+            {
+                Success = true,
+                Message = NotifiAndAlertsResources.DataRetrieved,
+                Data = stats
+            });
+        }
+
+        /// <summary>
+        /// Submit a new review for a Item
+        /// </summary>
+        /// <remarks>
+        /// API Version: 1.0+
+        /// Requires Authentication.
+        /// </remarks>
+        [HttpPost("Add")]
 		[Authorize(Roles = nameof(UserRole.Customer))]
 		[ProducesResponseType(StatusCodes.Status200OK)]
 		[ProducesResponseType(StatusCodes.Status400BadRequest)]
 		[ProducesResponseType(StatusCodes.Status401Unauthorized)]
-		public async Task<IActionResult> SubmitReview([FromBody] ItemReviewDto reviewDto)
+		public async Task<IActionResult> AddReview([FromBody] ItemReviewDto reviewDto)
 		{
-			//if (string.IsNullOrEmpty(UserId))
-			//	return Unauthorized(new ResponseModel<string>
-			//	{
-			//		Success = false,
-			//		Message = NotifiAndAlertsResources.UnauthorizedAccess
-			//	});
+			if(!ModelState.IsValid)
+			{
+				return BadRequest(ModelState);
+            }
 
-			//reviewDto.CustomerID = Guid.Parse(UserId);
-			var result = await _reviewItemService.SubmitReviewAsync(reviewDto, GuidUserId);
+			var result = await _reviewItemService.CreateReviewAsync(reviewDto, GuidUserId);
+			if (result == null)
+			{
+				return Ok(new ResponseModel<string>
+				{
+					Success = false,
+					Message = NotifiAndAlertsResources.SaveFailed
+				});
+            }
 
-			return Ok(new ResponseModel<ResponseItemReviewDto>
+            return Ok(new ResponseModel<ItemReviewResponseDto>
 			{
 				Success = true,
 				Message = NotifiAndAlertsResources.DataRetrieved,
@@ -74,23 +151,18 @@ namespace Api.Controllers.v1.Review.ItemReview
 		/// API Version: 1.0+
 		/// Requires Authentication.
 		/// </remarks>
-		[HttpPost("update")]
+		[HttpPut("Update")]
 		[Authorize(Roles = $"{nameof(UserRole.Customer)}")]
 		[ProducesResponseType(StatusCodes.Status200OK)]
 		[ProducesResponseType(StatusCodes.Status404NotFound)]
 		[ProducesResponseType(StatusCodes.Status403Forbidden)]
-		public async Task<IActionResult> updateReview( [FromBody] ItemReviewDto reviewDto)
+		public async Task<IActionResult> UpdateReview([FromBody] ItemReviewDto reviewDto)
 		{
-			if (string.IsNullOrEmpty(UserId))
-				return Unauthorized(new ResponseModel<string>
-				{
-					Success = false,
-					Message = NotifiAndAlertsResources.UnauthorizedAccess
-				});
+			if(!ModelState.IsValid)
+				{ return BadRequest(ModelState); }
 
-			var result = await _reviewItemService.updateReviewAsync( reviewDto, GuidUserId);
-
-			return Ok(new ResponseModel<ResponseItemReviewDto>
+			var result = await _reviewItemService.UpdateReviewAsync(reviewDto, GuidUserId);
+			return Ok(new ResponseModel<ItemReviewResponseDto>
 			{
 				Success = true,
 				Message = NotifiAndAlertsResources.DataRetrieved,
@@ -98,36 +170,39 @@ namespace Api.Controllers.v1.Review.ItemReview
 			});
 		}
 
-		/// <summary>
-		/// Get review by ID with full details
-		/// </summary>
-		/// <remarks>
-		/// API Version: 1.0+
-		/// </remarks>
-		[HttpGet("{reviewId}")]
-		[Authorize(Roles = $"{nameof(UserRole.Customer)},{nameof(UserRole.Admin)}")]
-		[ProducesResponseType(StatusCodes.Status200OK)]
-		[ProducesResponseType(StatusCodes.Status404NotFound)]
-		public async Task<IActionResult> GetReviewById(Guid reviewId)
-		{
-			var review = await _reviewItemService.GetReviewByIdAsync(reviewId);
-			
+        /// <summary>
+        /// change a review status (Admin only)
+        /// </summary>
+        /// <remarks>
+        /// API Version: 1.0+
+        /// Requires Admin role.
+        /// </remarks>
+        [HttpPatch("changeStatus/{reviewId}")]
+        [Authorize(Roles = nameof(UserRole.Admin))]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> ChangeReviewStatus(Guid reviewId, [FromBody] ReviewStatus newStatus)
+        {
+            if(!ModelState.IsValid)
+			{ 
+				return BadRequest(ModelState); 
+			}
 
-			if (review == null)
-				return NotFound(new ResponseModel<string>
-				{
-					Success = false,
-					Message = NotifiAndAlertsResources.NoDataFound
-				});
+            var result = await _reviewItemService.ChangeReviewStatus(reviewId, newStatus, UserId);
+            if (!result)
+                return NotFound(new ResponseModel<string>
+                {
+                    Success = false,
+                    Message = NotifiAndAlertsResources.NoDataFound
+                });
 
-			return Ok(new ResponseModel<ResponseItemReviewDto>
-			{
-				Success = true,
-				Message = NotifiAndAlertsResources.DataRetrieved,
-				Data = review
-			});
-		}
-
+            return Ok(new ResponseModel<bool>
+            {
+                Success = true,
+                Message = NotifiAndAlertsResources.DataRetrieved,
+                Data = result
+            });
+        }
 
 		/// <summary>
 		/// Delete a review
@@ -136,7 +211,7 @@ namespace Api.Controllers.v1.Review.ItemReview
 		/// API Version: 1.0+
 		/// Requires Authentication.
 		/// </remarks>
-		[HttpPost("delete")]
+		[HttpDelete("delete")]
 		[Authorize(Roles = $"{nameof(UserRole.Customer)}")]
 		[ProducesResponseType(StatusCodes.Status200OK)]
 		[ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -165,165 +240,5 @@ namespace Api.Controllers.v1.Review.ItemReview
 				Data = result
 			});
 		}
-
-		/// <summary>
-		/// Get all approved reviews for a Item
-		/// </summary>
-		/// <remarks>
-		/// API Version: 1.0+
-		/// </remarks>
-		[HttpGet("reviews-by-Item/{ItemId}")]
-		[ProducesResponseType(StatusCodes.Status200OK)]
-		public async Task<IActionResult> GetReviewsByItem(Guid ItemId)
-		{
-			var reviews = await _reviewItemService.GetReviewsByItemIdAsync(ItemId);
-
-			return Ok(new ResponseModel<IEnumerable<ResponseItemReviewDto>>
-			{
-				Success = true,
-				Message = NotifiAndAlertsResources.DataRetrieved,
-				Data = reviews
-			});
-		}
-
-		/// <summary>
-		/// Get paginated reviews with filters
-		/// </summary>
-		/// <remarks>
-		/// API Version: 1.0+
-		/// </remarks>
-		[HttpGet("search")]
-		[Authorize(Roles = $"{nameof(UserRole.Admin)}")]
-		[ProducesResponseType(StatusCodes.Status200OK)]
-		public async Task<IActionResult> Search([FromQuery] ItemReviewSearchCriteriaModel criteria)
-		{
-			var result = await _reviewItemService.GetPaginatedReviewsAsync(criteria);
-
-			return Ok(new ResponseModel<PagedResult<ResponseItemReviewDto>>
-			{
-				Success = true,
-				Message = NotifiAndAlertsResources.DataRetrieved,
-				Data = result
-			});
-		}
-		/// <summary>
-		/// Get Item review statistics (average rating and count)
-		/// </summary>
-		/// <remarks>
-		/// API Version: 1.0+
-		/// </remarks>
-		[HttpGet("Item-review-stats/{ItemId}")]
-		[Authorize(Roles = nameof(UserRole.Admin))]
-		[ProducesResponseType(StatusCodes.Status200OK)]
-		[ProducesResponseType(StatusCodes.Status404NotFound)]
-		public async Task<IActionResult> GetItemReviewStats(Guid ItemId)
-		{
-			var stats = await _reviewItemService.GetItemReviewStatsAsync(ItemId);
-
-			return Ok(new ResponseModel<ResponseItemReviewStatsDto>
-			{
-				Success = true,
-				Message = NotifiAndAlertsResources.DataRetrieved,
-				Data = stats
-			});
-		}
-
-		/// <summary>
-		/// Get pending reviews for moderation (Admin only)
-		/// </summary>
-		/// <remarks>
-		/// API Version: 1.0+
-		/// Requires Admin role.
-		/// </remarks>
-		[HttpGet("pending")]
-		[Authorize(Roles = nameof(UserRole.Admin))]
-		[ProducesResponseType(StatusCodes.Status200OK)]
-		[ProducesResponseType(StatusCodes.Status404NotFound)]
-		public async Task<IActionResult> GetPendingReviews()
-		{
-			var reviews = await _reviewItemService.GetPendingReviewsAsync();
-
-			return Ok(new ResponseModel<IEnumerable<ResponseItemReviewDto>>
-			{
-				Success = true,
-				Message = NotifiAndAlertsResources.DataRetrieved,
-				Data = reviews
-			});
-		}
-
-
-		/// <summary>
-		/// Approve a review (Admin only)
-		/// </summary>
-		/// <remarks>
-		/// API Version: 1.0+
-		/// Requires Admin role.
-		/// </remarks>
-		[HttpPost("approve")]
-		[Authorize(Roles = nameof(UserRole.Admin))]
-		[ProducesResponseType(StatusCodes.Status200OK)]
-		[ProducesResponseType(StatusCodes.Status404NotFound)]
-		public async Task<IActionResult> ApproveReview([FromBody] ItemReviewDto reviewDto)
-		{
-			if (string.IsNullOrEmpty(UserId))
-				return Unauthorized(new ResponseModel<string>
-				{
-					Success = false,
-					Message = NotifiAndAlertsResources.UnauthorizedAccess
-				});
-
-			var result = await _reviewItemService.ApproveReviewAsync(reviewDto.Id, GuidUserId);
-
-			if (!result)
-				return NotFound(new ResponseModel<string>
-				{
-					Success = false,
-					Message = NotifiAndAlertsResources.NoDataFound
-				});
-
-			return Ok(new ResponseModel<bool>
-			{
-				Success = true,
-				Message = NotifiAndAlertsResources.DataRetrieved,
-				Data = result
-			});
-		}
-
-		/// <summary>
-		/// Reject a review (Admin only)
-		/// </summary>
-		/// <remarks>
-		/// API Version: 1.0+
-		/// Requires Admin role.
-		/// </remarks>
-		[HttpPost("reject")]
-		[Authorize(Roles = nameof(UserRole.Admin))]
-		[ProducesResponseType(StatusCodes.Status200OK)]
-		[ProducesResponseType(StatusCodes.Status404NotFound)]
-		public async Task<IActionResult> RejectReview([FromBody] ItemReviewDto reviewDto)
-		{
-			if (string.IsNullOrEmpty(UserId))
-				return Unauthorized(new ResponseModel<string>
-				{
-					Success = false,
-					Message = NotifiAndAlertsResources.UnauthorizedAccess
-				});
-
-			var result = await _reviewItemService.RejectReviewAsync(reviewDto.Id, GuidUserId);
-
-			if (!result)
-				return NotFound(new ResponseModel<string>
-				{
-					Success = false,
-					Message = NotifiAndAlertsResources.NoDataFound
-				});
-
-			return Ok(new ResponseModel<bool>
-			{
-				Success = true,
-				Message = NotifiAndAlertsResources.DataRetrieved,
-				Data = result
-			});
-		}
-	}
+    }
 }

@@ -14,6 +14,7 @@
         public Guid CityId { get; set; }
         public string CityName { get; set; } = string.Empty;
         public string StateName { get; set; } = string.Empty; // Governorate
+        public string CountryName { get; set; } = string.Empty; // Governorate
         public bool IsDefault { get; set; }
         public DateTime CreatedDate { get; set; }
     }

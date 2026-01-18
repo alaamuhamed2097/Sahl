@@ -7,11 +7,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Parameters\**" />
     <Compile Remove="Policy\**" />
-    <EmbeddedResource Remove="Parameters\**" />
     <EmbeddedResource Remove="Policy\**" />
-    <None Remove="Parameters\**" />
     <None Remove="Policy\**" />
   </ItemGroup>
 

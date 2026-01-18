@@ -41,15 +41,18 @@
                     <li class="nav-item col-md-6">
                         <EditForm Model="searchModel" OnSubmit="@Search">
                             <!-- Search Box -->
-                            <div class="input-group rounded search-box">
-                                <input type="text" @bind="searchModel.SearchTerm"
-                                       id="searchInput"
-                                       class="form-control text-center border-0 @(ResourceManager.CurrentLanguage == Language.Arabic ? "rounded-end" : "rounded-start")"
-                                       placeholder="@ActionsResources.Search" />
-                                <button type="submit"
-                                        class="btn btn-danger d-flex align-items-center justify-content-center border-0 @(ResourceManager.CurrentLanguage == Language.Arabic ? "rounded-start" : "rounded-end")">
-                                    <i class="fas fa-search text-white m-0"></i>
-                                </button>
+                            <div class="search-container">
+                                <div class="input-group search-box">
+                                    <input type="text"
+                                           @bind="searchModel.SearchTerm"
+                                           id="searchInput"
+                                           class="form-control search-input"
+                                           placeholder="@ActionsResources.Search" />
+                                    <button type="submit"
+                                            class="btn btn-search">
+                                        <i class="fas fa-search"></i>
+                                    </button>
+                                </div>
                             </div>
                         </EditForm>
                     </li>

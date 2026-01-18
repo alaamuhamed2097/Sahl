@@ -27,7 +27,7 @@ namespace Shared.DTOs.ECommerce.Offer
 
         // Stock Management
         public int MinOrderQuantity { get; set; } = 1;
-        public int MaxOrderQuantity { get; set; } = 999;
+        public int MaxOrderQuantity { get; set; } = 10;
         public int LowStockThreshold { get; set; } = 5;
 
         // Navigation properties

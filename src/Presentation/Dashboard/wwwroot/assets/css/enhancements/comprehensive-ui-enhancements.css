@@ -1,0 +1,505 @@
+/* ===================================
+   ملف التحسينات الشامل - نظام بسيط
+   Enhanced UI/UX Improvements
+   =================================== */
+
+/* 
+   هذا الملف يحتوي على جميع التحسينات المقترحة
+   أضف هذا الملف بعد theme-identity.css في index.html
+*/
+
+/* ===================================
+   1. تحسينات عامة للواجهة
+   =================================== */
+
+/* Smooth Scrolling */
+html {
+    scroll-behavior: smooth;
+}
+
+/* تحسين الخطوط */
+body {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+}
+
+/* ===================================
+   2. تحسينات Input & Forms
+   =================================== */
+
+.form-control,
+.form-select {
+    border: 2px solid var(--neutral-light) !important;
+    border-radius: 10px !important;
+    padding: 12px 16px !important;
+    transition: all 0.3s ease !important;
+    font-size: 15px !important;
+}
+
+.form-control:focus,
+.form-select:focus {
+    border-color: var(--primary) !important;
+    box-shadow: 0 0 0 4px rgba(13, 84, 73, 0.1) !important;
+    outline: none !important;
+}
+
+.form-label {
+    font-weight: 600 !important;
+    color: var(--neutral-darker) !important;
+    margin-bottom: 8px !important;
+    font-size: 14px !important;
+}
+
+/* Input with Icon */
+.input-group {
+    position: relative;
+}
+
+.input-group-text {
+    background: var(--primary-lighter) !important;
+    border: 2px solid var(--neutral-light) !important;
+    border-radius: 10px 0 0 10px !important;
+    color: var(--primary) !important;
+}
+
+/* ===================================
+   3. تحسينات Modal
+   =================================== */
+
+.modal-content {
+    border-radius: 16px !important;
+    border: none !important;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3) !important;
+    overflow: hidden;
+}
+
+.modal-header {
+    background: linear-gradient(135deg, var(--primary-lighter) 0%, #e0f2f0 100%) !important;
+    border-bottom: 1px solid var(--neutral-light) !important;
+    padding: 20px 24px !important;
+}
+
+.modal-title {
+    color: var(--primary-dark) !important;
+    font-weight: 700 !important;
+    font-size: 20px !important;
+}
+
+.modal-body {
+    padding: 24px !important;
+}
+
+.modal-footer {
+    background: var(--neutral-lightest) !important;
+    border-top: 1px solid var(--neutral-light) !important;
+    padding: 16px 24px !important;
+}
+
+/* Modal Backdrop */
+.modal-backdrop {
+    backdrop-filter: blur(5px);
+    background: rgba(0, 0, 0, 0.5) !important;
+}
+
+/* ===================================
+   4. تحسينات Alert & Toast
+   =================================== */
+
+.alert {
+    border-radius: 12px !important;
+    border: none !important;
+    padding: 16px 20px !important;
+    font-weight: 500 !important;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1) !important;
+}
+
+.alert i {
+    font-size: 20px;
+}
+
+.alert-success {
+    background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%) !important;
+    color: #065f46 !important;
+}
+
+.alert-danger {
+    background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%) !important;
+    color: #991b1b !important;
+}
+
+.alert-warning {
+    background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%) !important;
+    color: #92400e !important;
+}
+
+.alert-info {
+    background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%) !important;
+    color: #1e40af !important;
+}
+
+/* Toast Notifications */
+.toast {
+    border-radius: 12px !important;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15) !important;
+    border: none !important;
+    animation: slideInRight 0.4s ease;
+}
+
+/* ===================================
+   5. تحسينات Breadcrumb
+   =================================== */
+
+.breadcrumb {
+    background: var(--neutral-lightest) !important;
+    padding: 12px 20px !important;
+    border-radius: 10px !important;
+    border: 1px solid var(--neutral-light) !important;
+}
+
+.breadcrumb-item {
+    color: var(--neutral-medium) !important;
+    font-weight: 500;
+}
+
+.breadcrumb-item.active {
+    color: var(--primary) !important;
+}
+
+.breadcrumb-item + .breadcrumb-item::before {
+    content: '›';
+    color: var(--neutral-medium);
+    margin: 0 8px;
+}
+
+.breadcrumb-item a {
+    color: var(--neutral-dark) !important;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.breadcrumb-item a:hover {
+    color: var(--primary) !important;
+}
+
+/* ===================================
+   6. تحسينات Tabs
+   =================================== */
+
+.nav-tabs {
+    border-bottom: 2px solid var(--neutral-light) !important;
+}
+
+.nav-tabs .nav-link {
+    border: none !important;
+    color: var(--neutral-medium) !important;
+    font-weight: 600 !important;
+    padding: 12px 24px !important;
+    margin-bottom: -2px !important;
+    border-radius: 10px 10px 0 0 !important;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.nav-tabs .nav-link::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: var(--primary);
+    transform: scaleX(0);
+    transition: transform 0.3s ease;
+}
+
+.nav-tabs .nav-link:hover {
+    background: var(--primary-lighter) !important;
+    color: var(--primary) !important;
+}
+
+.nav-tabs .nav-link.active {
+    background: var(--primary-lighter) !important;
+    color: var(--primary) !important;
+}
+
+.nav-tabs .nav-link.active::after {
+    transform: scaleX(1);
+}
+
+.tab-content {
+    padding: 24px !important;
+    background: var(--white);
+    border: 1px solid var(--neutral-light);
+    border-top: none;
+    border-radius: 0 0 12px 12px;
+}
+
+/* ===================================
+   7. تحسينات Progress Bar
+   =================================== */
+
+.progress {
+    height: 12px !important;
+    border-radius: 20px !important;
+    background: var(--neutral-lighter) !important;
+    overflow: visible !important;
+}
+
+.progress-bar {
+    border-radius: 20px !important;
+    background: linear-gradient(90deg, var(--primary) 0%, var(--success) 100%) !important;
+    box-shadow: 0 2px 8px rgba(13, 84, 73, 0.3);
+    position: relative;
+    transition: width 0.6s ease;
+}
+
+.progress-bar::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(255, 255, 255, 0.3),
+        transparent
+    );
+    animation: shimmer 2s infinite;
+}
+
+/* ===================================
+   8. تحسينات Badge
+   =================================== */
+
+.badge {
+    padding: 6px 12px !important;
+    border-radius: 8px !important;
+    font-weight: 700 !important;
+    font-size: 12px !important;
+    letter-spacing: 0.3px;
+}
+
+.badge-primary {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%) !important;
+}
+
+.badge-success {
+    background: linear-gradient(135deg, var(--success) 0%, var(--success-dark) 100%) !important;
+}
+
+.badge-warning {
+    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%) !important;
+}
+
+.badge-danger {
+    background: linear-gradient(135deg, var(--accent-error) 0%, #dc2626 100%) !important;
+}
+
+/* ===================================
+   9. تحسينات Tooltip & Popover
+   =================================== */
+
+.tooltip {
+    font-size: 13px !important;
+}
+
+.tooltip-inner {
+    background: var(--neutral-darkest) !important;
+    border-radius: 8px !important;
+    padding: 8px 12px !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.popover {
+    border-radius: 12px !important;
+    border: none !important;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15) !important;
+}
+
+.popover-header {
+    background: var(--primary-lighter) !important;
+    border-bottom: 1px solid var(--neutral-light) !important;
+    border-radius: 12px 12px 0 0 !important;
+    padding: 12px 16px !important;
+    font-weight: 700;
+}
+
+/* ===================================
+   10. تحسينات Dropdown
+   =================================== */
+
+.dropdown-menu {
+    border-radius: 12px !important;
+    border: 1px solid var(--neutral-light) !important;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12) !important;
+    padding: 8px !important;
+}
+
+.dropdown-item {
+    border-radius: 8px !important;
+    padding: 10px 16px !important;
+    transition: all 0.2s ease !important;
+    font-weight: 500;
+}
+
+.dropdown-item:hover {
+    background: var(--primary-lighter) !important;
+    color: var(--primary) !important;
+    transform: translateX(4px);
+}
+
+.dropdown-divider {
+    margin: 8px 0 !important;
+    border-top-color: var(--neutral-light) !important;
+}
+
+/* ===================================
+   11. تحسينات Scrollbar
+   =================================== */
+
+::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--neutral-lighter);
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--neutral-medium);
+    border-radius: 10px;
+    transition: background 0.3s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--primary);
+}
+
+/* ===================================
+   12. تحسينات Utility Classes
+   =================================== */
+
+/* Shadows */
+.shadow-primary {
+    box-shadow: 0 8px 24px rgba(13, 84, 73, 0.2) !important;
+}
+
+.shadow-success {
+    box-shadow: 0 8px 24px rgba(16, 185, 129, 0.2) !important;
+}
+
+/* Borders */
+.border-primary {
+    border-color: var(--primary) !important;
+}
+
+.border-success {
+    border-color: var(--success) !important;
+}
+
+/* Text Colors */
+.text-primary-custom {
+    color: var(--primary) !important;
+}
+
+.text-success-custom {
+    color: var(--success) !important;
+}
+
+/* Background Gradients */
+.bg-gradient-primary-custom {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%) !important;
+}
+
+.bg-gradient-success-custom {
+    background: linear-gradient(135deg, var(--success) 0%, var(--success-dark) 100%) !important;
+}
+
+/* ===================================
+   13. تحسينات Performance
+   =================================== */
+
+/* GPU Acceleration */
+.hardware-accelerated {
+    transform: translateZ(0);
+    -webkit-transform: translateZ(0);
+}
+
+/* Will-change for animations */
+.will-animate {
+    will-change: transform, opacity;
+}
+
+/* ===================================
+   14. تحسينات Accessibility
+   =================================== */
+
+/* Focus States */
+*:focus {
+    outline: none !important;
+}
+
+*:focus-visible {
+    outline: 2px solid var(--primary) !important;
+    outline-offset: 2px !important;
+}
+
+/* Skip to Content */
+.skip-to-content {
+    position: absolute;
+    top: -40px;
+    left: 0;
+    background: var(--primary);
+    color: white;
+    padding: 8px 16px;
+    border-radius: 0 0 8px 0;
+    z-index: 100;
+}
+
+.skip-to-content:focus {
+    top: 0;
+}
+
+/* ===================================
+   15. تحسينات Print
+   =================================== */
+
+@media print {
+    .no-print {
+        display: none !important;
+    }
+    
+    body {
+        background: white !important;
+    }
+    
+    .card {
+        box-shadow: none !important;
+        border: 1px solid #ddd !important;
+    }
+}
+
+/* ===================================
+   16. تحسينات Dark Mode (Optional)
+   =================================== */
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --white: #1e293b;
+        --neutral-lightest: #0f172a;
+        --neutral-lighter: #1e293b;
+        --neutral-light: #334155;
+        --neutral-medium: #94a3b8;
+        --neutral-dark: #e2e8f0;
+        --neutral-darker: #f1f5f9;
+        --neutral-darkest: #f8fafc;
+    }
+}

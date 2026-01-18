@@ -23,13 +23,14 @@
             public const string RegenerateRefreshToken = "api/v1/token/regenerate-refresh-token";
         }
 
-
         public static class Item
         {
             public const string Get = "api/v1/Item";
             public const string Save = "api/v1/Item/save";
+            public const string UpdateStatus = "api/v1/Item/update/status";
             public const string Delete = "api/v1/Item/delete";
             public const string Search = "api/v1/Item/search";
+            public const string SearchNewItemRequests = "api/v1/Item/search/requests";
         }
 
         public static class Attribute
@@ -43,11 +44,21 @@
         public static class Category
         {
             public const string Get = "api/v1/Category";
+            public const string GetFinalCategories = "api/v1/Category/final-categories";
             public const string Save = "api/v1/Category/save";
             public const string ChangeTreeViewSerials = "api/v1/Category/changeTreeViewSerials";
             public const string Delete = "api/v1/Category/delete";
             public const string Search = "api/v1/Category/search";
         }
+
+        public static class ItemCondition
+        {
+            public const string Get = "api/v1/item-conditions";
+            public const string Save = "api/v1/item-conditions/save";
+            public const string Delete = "api/v1/item-conditions/delete";
+            public const string Search = "api/v1/item-conditions/search";
+        }
+
 
         public static class Order
         {
@@ -195,11 +206,14 @@
         {
             public const string Get = "api/v1/Customer";
             public const string Create = "api/v1/Customer";
-            public const string Update = "api/v1/Customer";
-            public const string Delete = "api/v1/Customer/delete";
-            public const string Save = "api/v1/Customer/Save";
+			//public const string Update = "api/v1/Customer";
+			public const string SearchSearchWallet = "api/v1/CustomerWalletTransaction/SearchWalletTransactions";
 
-            public const string Search = "api/v1/Customer/search";
+			public const string Delete = "api/v1/Customer/delete";
+            public const string Save = "api/v1/Customer/Save";
+			public const string Register = "api/v1/UserRegistration/register-customer";
+			public const string Update = "api/Customer/Update";
+			public const string Search = "api/v1/Customer/search";
             public const string FindById = "api/v1/Customer";
             public const string GetForSelect = "api/v1/Customer/forSelect";
             public const string ChangeStatus = "api/v1/Customer/changeStatus";
@@ -280,6 +294,11 @@
             public const string MaintenanceMode = $"{Base}/maintenance-mode";
             public const string MinimumOrderAmount = $"{Base}/minimum-order-amount";
         }
+        public static class DevelopmentSettings 
+        {
+            public const string Get = "api/v1/development-settings";
+            public const string IsMultiVendorEnabled = "api/v1/development-settings/multi-vendor-enabled";
+        }
         public static class Page
         {
             public const string Get = "api/v1/PageStatic";
@@ -325,7 +344,12 @@
             public const string ToggleStatus = "api/v1/Warehouse/toggle-status";
             public const string GetVendors = "api/v1/Warehouse/vendors";
             public const string IsMultiVendorEnabled = "api/v1/Warehouse/multi-vendor-enabled";
+        }
 
+        // Vendor Warehouse endpoints
+        public static class VendorWarehouse
+        {
+            public const string GetMarketWarehouse = "api/v1/vendors/market/warehouse";
         }
 
         // Inventory Movement endpoints
@@ -408,16 +432,12 @@
         {
             private const string Base = "api/v1/ItemReview";
 
-            public const string Update = $"{Base}/update";
             public const string Get = Base;
+            public const string Update = $"{Base}/update";
             public const string Delete = $"{Base}/delete";
-            public const string GetByItemId = $"{Base}/reviews-by-Item";
             public const string Search = $"{Base}/search";
-            public const string GetStats = $"{Base}/Item-review-stats";
-            public const string GetPending = $"{Base}/pending";
-            public const string Approve = $"{Base}/approve";
-            public const string Reject = $"{Base}/reject";
-
+            public const string GetStats = $"{Base}/Item-review-summery";
+            public const string ChangeStatus = $"{Base}/changeStatus";
         }
 
         public static class VendorReview

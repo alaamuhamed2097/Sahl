@@ -70,7 +70,7 @@ namespace Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to مفعل.
+        ///   Looks up a localized string similar to نشط.
         /// </summary>
         public static string Active {
             get {
@@ -196,6 +196,15 @@ namespace Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to البريد الإلكتروني.
+        /// </summary>
+        public static string Email {
+            get {
+                return ResourceManager.GetString("Email", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to البريد الإلكتروني &apos;{0}&apos; مستخدم بالفعل..
         /// </summary>
         public static string Email_Duplicate {
@@ -241,6 +250,15 @@ namespace Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to الاسم الأول.
+        /// </summary>
+        public static string FirstName {
+            get {
+                return ResourceManager.GetString("FirstName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to هل نسيت كلمة المرور؟.
         /// </summary>
         public static string ForgetPasswordText {
@@ -273,6 +291,15 @@ namespace Resources {
         public static string HappyToSeeYouMessage {
             get {
                 return ResourceManager.GetString("HappyToSeeYouMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to غير نشط.
+        /// </summary>
+        public static string Inactive {
+            get {
+                return ResourceManager.GetString("Inactive", resourceCulture);
             }
         }
         
@@ -345,6 +372,15 @@ namespace Resources {
         public static string KeepMeSignedIn {
             get {
                 return ResourceManager.GetString("KeepMeSignedIn", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to الاسم الأخير.
+        /// </summary>
+        public static string LastName {
+            get {
+                return ResourceManager.GetString("LastName", resourceCulture);
             }
         }
         
@@ -520,6 +556,15 @@ namespace Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to يجب أن تكون كلمة المرور 8 أحرف على الأقل.
+        /// </summary>
+        public static string PasswordMinLength {
+            get {
+                return ResourceManager.GetString("PasswordMinLength", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to كلمة المرور غير متطابقة.
         /// </summary>
         public static string PasswordMismatch {
@@ -547,6 +592,15 @@ namespace Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to قيد الانتظار.
+        /// </summary>
+        public static string Pending {
+            get {
+                return ResourceManager.GetString("Pending", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to غير مفعل.
         /// </summary>
         public static string PendingActivation {
@@ -561,6 +615,24 @@ namespace Resources {
         public static string PersonalInfo {
             get {
                 return ResourceManager.GetString("PersonalInfo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to كود الهاتف.
+        /// </summary>
+        public static string PhoneCode {
+            get {
+                return ResourceManager.GetString("PhoneCode", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to رقم الهاتف.
+        /// </summary>
+        public static string PhoneNumber {
+            get {
+                return ResourceManager.GetString("PhoneNumber", resourceCulture);
             }
         }
         
@@ -804,6 +876,15 @@ namespace Resources {
         public static string UserNotFound {
             get {
                 return ResourceManager.GetString("UserNotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to حالة المستخدم.
+        /// </summary>
+        public static string UserStatus {
+            get {
+                return ResourceManager.GetString("UserStatus", resourceCulture);
             }
         }
         

@@ -20,7 +20,5 @@ namespace Shared.GeneralModels.SearchCriteriaModels
 
         // New Item Flags Filters
         public bool? IsNewArrival { get; set; } = null;
-        public bool? IsBestSeller { get; set; } = null;
-        public bool? IsRecommended { get; set; } = null;
     }
 }

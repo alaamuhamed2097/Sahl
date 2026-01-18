@@ -45,7 +45,7 @@ namespace BL.Services.VendorItem
             _vendorItemConditionRepository = vendorItemConditionRepository;
         }
 
-        public async Task<PagedResult<OfferConditionDto>> GetPage(BaseSearchCriteriaModel criteriaModel)
+        public async Task<PagedResult<VendorItemConditionDto>> GetPageAsync(BaseSearchCriteriaModel criteriaModel)
         {
             if (criteriaModel == null)
                 throw new ArgumentNullException(nameof(criteriaModel));
@@ -70,17 +70,22 @@ namespace BL.Services.VendorItem
                 orderBy: q => q.OrderByDescending(x => x.CreatedDateUtc)
             );
 
-            var offerConditionsDto = _mapper.MapList<TbOfferCondition, OfferConditionDto>(offerConditions.Items);
+            var offerConditionsDto = _mapper.MapList<TbOfferCondition, VendorItemConditionDto>(offerConditions.Items);
 
-            return new PagedResult<OfferConditionDto>(offerConditionsDto, offerConditions.TotalRecords);
+            return new PagedResult<VendorItemConditionDto>(offerConditionsDto, offerConditions.TotalRecords);
         }
-        public async Task<IEnumerable<OfferConditionDto>> GetNewConditions()
+        public async Task<IEnumerable<VendorItemConditionDto>> GetAllAsync()
+        {
+            var conditions = await _vendorItemConditionRepository.GetAllAsync();
+            return _mapper.MapList<TbOfferCondition, VendorItemConditionDto>(conditions);
+        }
+        public async Task<IEnumerable<VendorItemConditionDto>> GetNewConditionsAsync()
         {
             var conditions = await _vendorItemConditionRepository.GetAsync(vo=>vo.IsNew);
-            return _mapper.MapList<TbOfferCondition, OfferConditionDto>(conditions);
+            return _mapper.MapList<TbOfferCondition, VendorItemConditionDto>(conditions);
         }
 
-        public async Task<OfferConditionDto> FindByIdAsync(Guid Id)
+        public async Task<VendorItemConditionDto> FindByIdAsync(Guid Id)
         {
             if (Id == Guid.Empty)
                 throw new ArgumentNullException(nameof(Id));
@@ -94,9 +99,9 @@ namespace BL.Services.VendorItem
             if (offerCondition == null)
                 throw new KeyNotFoundException(ValidationResources.EntityNotFound);
 
-            return _mapper.MapModel<TbOfferCondition, OfferConditionDto>(offerCondition);
+            return _mapper.MapModel<TbOfferCondition, VendorItemConditionDto>(offerCondition);
         }
-        public async Task<SaveResult> SaveAsync(OfferConditionDto dto, Guid userId)
+        public async Task<SaveResult> SaveAsync(VendorItemConditionDto dto, Guid userId)
         {
             try
             {
@@ -105,7 +110,7 @@ namespace BL.Services.VendorItem
                 if (userId == Guid.Empty)
                     throw new ArgumentException(UserResources.UserNotFound, nameof(userId));
 
-                var entity = _mapper.MapModel<OfferConditionDto, TbOfferCondition>(dto);
+                var entity = _mapper.MapModel<VendorItemConditionDto, TbOfferCondition>(dto);
                 // Save offer condition entity
                 var offerConditionSaved = await _vendorItemConditionRepository.SaveAsync(entity, userId);
 
