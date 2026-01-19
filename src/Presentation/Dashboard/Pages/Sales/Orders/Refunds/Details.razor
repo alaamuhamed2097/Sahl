@@ -1,0 +1,303 @@
+@* @page "/sales/orders/{id:guid?}"
+@page "/orders/{id:guid?}"
+
+@attribute [Authorize(Roles = nameof(UserRole.Admin))]
+@using Common.Enumerations
+@using Common.Enumerations
+@using Common.Enumerations.FieldType
+@using Common.Enumerations.Order
+@using Common.Enumerations.Payment
+@using Common.Enumerations.User
+@using Shared.DTOs.User
+
+<PageTitle>@ECommerceResources.OrderDetails</PageTitle>
+<div class="container-fluid p-0">
+    <div class="card shadow-sm border-0">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h4 class="modal-title" >
+                @ECommerceResources.OrderDetails
+            </h4>
+        </div>
+            <div class="card-body p-4">
+                <div class="page-wrapper">
+                    <div class="bg-white p-4">
+                        <div class="row g-0">
+                            <div class="col-md-6 mb-3">
+                                <div class="card h-100">
+                                    <div class="card-body p-0">
+                                        <div class="my-3">
+                                            <span class="px-3 d-block">
+                                                <i class="fas fa-circle text-c-blue f-10 m-r-5"></i><strong class="fw-bold">@ECommerceResources.CustomerName : </strong>
+                                                @Model.FirstName @Model.LastName
+                                            </span>
+                                            <hr />
+                                            <span class="px-3 d-block">
+                                                <i class="fas fa-circle text-c-green f-10 m-r-5"></i><strong class="fw-bold">@FormResources.Email : </strong>
+                                                @Model.Email
+                                            </span>
+                                            <hr />
+                                            <span class="px-3 d-block">
+                                                <i class="fas fa-circle text-c-green f-10 m-r-5"></i><strong class="fw-bold">@FormResources.Price : </strong>
+                                                @Model.Price $
+                                            </span>
+                                            <hr />
+                                            <span class="px-3 d-block">
+                                                <i class="fas fa-circle text-c-green f-10 m-r-5"></i><strong class="fw-bold">@FormResources.Address : </strong>
+                                                @Model.Address
+                                            </span>
+                                            <hr />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <div class="card h-100">
+                                    <div class="card-body p-0">
+                                        <div class="my-3">
+                                            <span class="px-3 d-block">
+                                                <i class="fas fa-circle text-c-blue f-10 m-r-5"></i><strong class="fw-bold">@FormResources.PhoneNumber : </strong>
+                                                @Model.PhoneNumber
+                                            </span>
+                                            <hr />
+                                            <span class="px-3 d-block">
+                                                <i class="fas fa-circle text-c-green f-10 m-r-5"></i><strong class="fw-bold">@ECommerceResources.OrderDate : </strong>
+                                                @Model.CreatedDateLocalFormatted
+                                            </span>
+                                            <hr />
+                                            <span class="px-3 d-block">
+                                                <i class="fas fa-circle text-c-green f-10 m-r-5"></i><strong class="fw-bold">@ECommerceResources.OrderID : </strong>
+                                                @Model.Number
+                                            </span>
+                                            <hr />
+                                            <span class="px-3 d-block">
+                                                <i class="fas fa-circle text-c-red f-10 m-r-5"></i><strong class="fw-bold">@ECommerceResources.PaymentStatus : </strong>
+                                                @switch (Model.PaymentStatus)
+                                            {
+                                                case PaymentStatus.Completed:
+                                                    <span class="text-success">@ECommerceResources.Paid</span>
+                                                    break;
+                                                case PaymentStatus.Pending:
+                                                    <span class="text-primary">@ECommerceResources.Pending</span>
+                                                    break;
+                                                default:
+                                                    <span class="text-secondary">@Model.PaymentStatus.ToString()</span>
+                                                    break;
+                                            }
+                                        </span>
+                                        <hr />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <h3>@ECommerceResources.Products :</h3>
+                    <div class="table-border-style">
+                        <div class="table-responsive">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>@FormResources.Image</th>
+                                        <th>@ECommerceResources.Product</th>
+                                        <th>@ECommerceResources.Quantity</th>
+                                        <th>@ECommerceResources.UnitPrice</th>
+                                        <th>@ECommerceResources.SubTotal</th>
+                                    </tr>
+                                </thead>
+                                <tbody style="color: white">
+                                    @if (Model.OrderDetails != null && Model.OrderDetails.Count > 0 )
+                                    {
+                                         @foreach (var item in Model.OrderDetails)
+                                    {
+                                        <tr>
+                                            <td><img src="@baseUrl/@item.ItemImage" alt="Item Image" style="width: 50px; height: 50px;" /></td> 
+                                            <td>@item.ItemName</td>
+                                            <td>@item.Quantity</td>
+                                            <td>@item.UnitPrice $</td>
+                                            <td>@item.SubTotal $</td>
+                                        </tr>
+                                    }
+                                    }
+                                    else
+                                    {
+                                        <tr>
+                                            <td colspan="7" class="text-center">
+                                                       <div class="text-center p-4">
+    <!-- أيقونة كبيرة -->
+    <i class="fas fa-database text-muted" style="font-size: 60px;"></i>
+    
+    <!-- نص -->
+    <p class="text-muted mt-3" style="font-size: 18px;">
+        @NotifiAndAlertsResources.NoDataFound
+    </p>
+</div>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    @if(!isRefunded && Model.CurrentState!=OrderStatus.Returned)
+                    {
+                        <!-- [ Smart-Wizard ] start -->
+                        <div class="col-sm-12">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5>@ECommerceResources.OrderStatus</h5>
+                                </div>
+                                <div class="card-body">
+                                    <!-- [ SmartWizard html ] start -->
+                                    <div id="smartwizard" dir="ltr">
+                                        <ul class="nav d-flex justify-content-center align-items-center">
+                                            <li class="nav-item flex-grow-1 text-center">
+                                                <a class="nav-link" href="#step-1">
+                                                    <div class="num">1</div>
+                                                    @ECommerceResources.NewOrder
+                                                </a>
+                                            </li>
+                                            <li class="nav-item flex-grow-1 text-center">
+                                                <a class="nav-link " href="#step-2">
+                                                    <div class="num">2</div>
+                                                    @ECommerceResources.InProgress
+                                                </a>
+                                            </li>
+                                            <li class="nav-item flex-grow-1 text-center">
+                                                <a class="nav-link" href="#step-3">
+                                                    <div class="num">3</div>
+                                                    @ECommerceResources.Shipping
+                                                </a>
+                                            </li>
+                                            <li class="nav-item flex-grow-1 text-center">
+                                                <a class="nav-link" href="#step-4">
+                                                    <div class="num">4</div>
+                                                    @ECommerceResources.Delivered
+                                                </a>
+                                            </li>
+                                        </ul>
+
+                                        <div class="tab-content">
+                                            <div id="step-1" class="tab-pane" role="tabpanel">
+                                                <div class="text-center fw-bold fs-5">@ECommerceResources.NewOrder</div>
+                                                <div class="d-flex justify-content-center align-items-center my-3">
+                                                    <img src="assets/images/order/Step1.png" alt="New Order" style="width: 300px; height: 300px;" />
+                                                </div>
+                                                <div class="d-flex justify-content-center gap-2 align-items-center">
+                                                    <button class="btn btn-danger" @onclick="() => ChangeOrderStatus(OrderStatus.Rejected)">@ActionsResources.Reject</button>
+                                                    <button class="btn btn-primary" @onclick="() => ChangeOrderStatus(OrderStatus.Accepted)">@ActionsResources.Accept</button>
+                                                </div>
+                                                @if (Model.CurrentState == OrderStatus.Accepted || (int)Model.CurrentState>=4)
+                                                {
+                                                    <div class="d-flex justify-content-end">
+                                                        <button id="to-progress" class="btn btn-primary" @onclick="() => MoveToInProgress()">@ECommerceResources.MoveToInProgress</button>
+                                                    </div>
+                                                }
+                                            </div>
+
+                                            <div id="step-2" class="tab-pane" role="tabpanel">
+                                                <div class="text-center fw-bold fs-5">In Progress</div>
+                                                <div class="d-flex justify-content-center align-items-center my-3">
+                                                    <img src="assets/images/order/Step2.png" alt="In Progress" style="width: 300px; height: 300px;" />
+                                                </div>
+                                                <div class="d-flex justify-content-end">
+                                                    <button id="to-shipping" class="btn btn-primary status-btn" @onclick="() => MoveToShipping()">@ECommerceResources.MoveToShipping</button>
+                                                </div>
+                                            </div>
+
+                                            <div id="step-3" class="tab-pane" role="tabpanel">
+                                                <div class="text-center fw-bold fs-5">@ECommerceResources.Shipping</div>
+                                                <div class="d-flex justify-content-center align-items-center my-3">
+                                                    <img src="assets/images/order/Step3.jpg" alt="Shipping"  />
+                                                </div>
+                                                <div class="d-flex justify-content-between gap-2 align-items-center w-50 mx-auto mb-3">
+                                                    <div class="d-flex justify-content-center align-items-center flex-column">
+                                                        <label for="shippingDate" class="form-label d-block">@ECommerceResources.ExpectedDelivery</label>
+                                                        <InputDate class="form-control"  id="shippingDate" @bind-Value="Model.OrderDeliveryDate" />
+                                                    </div>
+                                                </div>
+                                                <div class="d-flex justify-content-end">
+                                                    <button id="to-delivered" class="btn btn-primary status-btn" @onclick="() => MoveToDelivered()">@ECommerceResources.MoveToDelivered</button>
+                                                </div>
+                                            </div>
+
+                                            <div id="step-4" class="tab-pane" role="tabpanel">
+                                                <div class="text-center fw-bold fs-5">@ECommerceResources.Delivered</div>
+                                                <div class="d-flex justify-content-center align-items-center my-3">
+                                                    <img src="assets/images/order/Step4.png" alt="Delivered" style="width: 300px; height: 300px;" />
+                                                </div>
+                                                <div class="d-flex justify-content-center gap-2 align-items-center">
+                                                    <div class="badge bg-success p-2 mb-3">@ECommerceResources.SuccessfullyDelivered</div>
+                                                </div>
+                                                <div class="d-flex justify-content-end">
+                                                    <button id="order-complete" class="btn btn-success status-btn" @onclick="() =>CompleteOrder()">@ActionsResources.Done</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="col-sm-12">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5>@ECommerceResources.RefundStatus</h5>
+                                </div>
+                                <div class="card-body">
+                                    @switch (RefundModel.RefundStatus)
+                                    {
+                                        case RefundStatus.Approved:
+                                            <div class="d-flex justify-content-center">
+                                                <span class="badge bg-success px-3 py-2 fs-6">@ECommerceResources.Accepted</span>
+                                            </div>
+                                            break;
+                                        case RefundStatus.Rejected:
+                                            <div class="d-flex justify-content-center">
+                                                <span class="badge bg-danger px-3 py-2 fs-6">@ECommerceResources.Rejected</span>
+                                            </div>
+                                            break;
+                                        case RefundStatus.Open:
+                                            <div class="row justify-content-center">
+                                                <div class="col-12 col-sm-10 col-md-8 col-lg-6 col-xl-4">
+                                                    <div class="mb-3">
+                                                        <label class="form-label mb-1">@FormResources.Amount</label>
+                                                        <input class="form-control"
+                                                               @bind-value="RefundResponseModel.RefundAmount"
+                                                               placeholder="@String.Format(FormResources.Placeholder, FormResources.Amount)"
+                                                               aria-label="@FormResources.Amount" />
+                                                    </div>
+
+                                                    <div class="mb-3">
+                                                        <label class="form-label mb-1">
+                                                            @FormResources.Comments
+                                                            <small class="text-muted"> (@FormResources.optional)</small>
+                                                        </label>
+                                                        <InputText class="form-control"
+                                                                   @bind-Value="RefundResponseModel.AdminComments"
+                                                                   placeholder="@String.Format(FormResources.Placeholder, FormResources.Comments)"
+                                                                   aria-label="@FormResources.Comments" />
+                                                    </div>
+
+                                                    <div class="d-flex justify-content-center gap-2">
+                                                        <button class="btn btn-danger" @onclick="() => ChangeRefundStatus(RefundStatus.Rejected)">
+                                                            @ActionsResources.Reject
+                                                        </button>
+                                                        <button class="btn btn-primary" @onclick="() => ChangeRefundStatus(RefundStatus.Approved)">
+                                                            @ActionsResources.Accept
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            break;
+                                    }
+                                </div>
+
+                           </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div> *@

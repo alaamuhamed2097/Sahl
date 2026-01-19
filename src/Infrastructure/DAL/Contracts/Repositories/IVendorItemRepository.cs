@@ -12,7 +12,7 @@ public interface IVendorItemRepository : ITableRepository<TbOffer>
     /// <summary>
     /// Get vendor item with all related data (item, user, pricing combinations)
     /// </summary>
-    Task<VwOffer> GetOfferWithDetailsAsync(Guid offerId, CancellationToken cancellationToken = default);
+    Task<VwVendorItem> GetOfferWithDetailsAsync(Guid offerId, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Get offers by item combination ID
@@ -22,7 +22,7 @@ public interface IVendorItemRepository : ITableRepository<TbOffer>
     /// <summary>
     /// Get offers by vendor ID
     /// </summary>
-    Task<IEnumerable<VwOffer>> GetOffersByVendorIdAsync(Guid vendorId, CancellationToken cancellationToken = default);
+    Task<IEnumerable<VwVendorItem>> GetOffersByVendorIdAsync(Guid vendorId, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Get offers with available stock information

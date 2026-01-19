@@ -19,16 +19,16 @@ namespace Dashboard.Services.Order
         /// <summary>
         /// Get all refunds.
         /// </summary>
-        public async Task<ResponseModel<IEnumerable<RefundDto>>> GetAllAsync()
+        public async Task<ResponseModel<IEnumerable<RefundRequestDto>>> GetAllAsync()
         {
             try
             {
-                return await _apiService.GetAsync<IEnumerable<RefundDto>>($"{ApiEndpoints.Refund.Get}");
+                return await _apiService.GetAsync<IEnumerable<RefundRequestDto>>($"{ApiEndpoints.Refund.Get}");
             }
             catch (Exception ex)
             {
                 // Log error here
-                return new ResponseModel<IEnumerable<RefundDto>>
+                return new ResponseModel<IEnumerable<RefundRequestDto>>
                 {
                     Success = false,
                     Message = ex.Message

@@ -1,4 +1,5 @@
 ﻿using Common.Enumerations.Order;
+using Shared.DTOs.Base;
 using System.Text.Json.Serialization;
 
 namespace Shared.DTOs.Order.Payment.Refund;
@@ -6,7 +7,7 @@ namespace Shared.DTOs.Order.Payment.Refund;
 /// <summary>
 /// DTO for refund request details
 /// </summary>
-public class RefundRequestDto
+public class RefundRequestDto :BaseDto
 {
     public string Number { get; set; } = null!;
 

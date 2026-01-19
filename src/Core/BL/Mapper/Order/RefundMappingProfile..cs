@@ -2,6 +2,7 @@
 using Domains.Entities.Order;
 using Domains.Entities.Order.Refund;
 using Domains.Entities.Order.Shipping;
+using Domains.Views.Order.Refund;
 using Shared.DTOs.ECommerce;
 using Shared.DTOs.Order.CouponCode;
 using Shared.DTOs.Order.OrderProcessing;
@@ -15,5 +16,6 @@ public partial class MappingProfile
     {
         CreateMap<TbRefund, RefundDto>().ReverseMap();
         CreateMap<TbRefund, RefundRequestDto>().ReverseMap();
+        CreateMap<VwRefundDetails, RefundDetailsDto>().ReverseMap();
     }
 }

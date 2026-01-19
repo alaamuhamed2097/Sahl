@@ -18,35 +18,35 @@ public partial class MappingProfile
         CreateMap<TbOffer, VendorItemDto>()
             .ReverseMap();
 
-            CreateMap<VwOffer, VwOfferDto>()
-            .ForMember(dest => dest.ItemImages, opt => opt.MapFrom(src =>
-                !string.IsNullOrEmpty(src.ItemImages)
-                    ? JsonSerializer.Deserialize<List<ItemImageDto>>(src.ItemImages,
-                        new JsonSerializerOptions
-                        {
-                            PropertyNameCaseInsensitive = true,
-                            DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
-                        }) ?? new List<ItemImageDto>()
-                    : new List<ItemImageDto>()))
-            .ForMember(dest => dest.ItemAttributes, opt => opt.MapFrom(src =>
-                !string.IsNullOrEmpty(src.ItemAttributes)
-                    ? JsonSerializer.Deserialize<List<ItemAttributeDto>>(src.ItemAttributes,
-                        new JsonSerializerOptions
-                        {
-                            PropertyNameCaseInsensitive = true,
-                            DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
-                        }) ?? new List<ItemAttributeDto>()
-                    : new List<ItemAttributeDto>()))
-            .ForMember(dest => dest.OfferCombinations, opt => opt.MapFrom(src =>
-                !string.IsNullOrEmpty(src.OfferCombinationsJson)
-                    ? JsonSerializer.Deserialize<List<OfferCombinationPricingDetailsDto>>(src.OfferCombinationsJson,
-                        new JsonSerializerOptions
-                        {
-                            PropertyNameCaseInsensitive = true,
-                            DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
-                        }) ?? new List<OfferCombinationPricingDetailsDto>()
-                    : new List<OfferCombinationPricingDetailsDto>()))
-            .ReverseMap();
+            //CreateMap<VwVendorItem, VwOfferDto>()
+            //.ForMember(dest => dest.ItemImages, opt => opt.MapFrom(src =>
+            //    !string.IsNullOrEmpty(src.ItemImages)
+            //        ? JsonSerializer.Deserialize<List<ItemImageDto>>(src.ItemImages,
+            //            new JsonSerializerOptions
+            //            {
+            //                PropertyNameCaseInsensitive = true,
+            //                DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
+            //            }) ?? new List<ItemImageDto>()
+            //        : new List<ItemImageDto>()))
+            //.ForMember(dest => dest.ItemAttributes, opt => opt.MapFrom(src =>
+            //    !string.IsNullOrEmpty(src.ItemAttributes)
+            //        ? JsonSerializer.Deserialize<List<ItemAttributeDto>>(src.ItemAttributes,
+            //            new JsonSerializerOptions
+            //            {
+            //                PropertyNameCaseInsensitive = true,
+            //                DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
+            //            }) ?? new List<ItemAttributeDto>()
+            //        : new List<ItemAttributeDto>()))
+            //.ForMember(dest => dest.OfferCombinations, opt => opt.MapFrom(src =>
+            //    !string.IsNullOrEmpty(src.OfferCombinationsJson)
+            //        ? JsonSerializer.Deserialize<List<OfferCombinationPricingDetailsDto>>(src.OfferCombinationsJson,
+            //            new JsonSerializerOptions
+            //            {
+            //                PropertyNameCaseInsensitive = true,
+            //                DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
+            //            }) ?? new List<OfferCombinationPricingDetailsDto>()
+            //        : new List<OfferCombinationPricingDetailsDto>()))
+            //.ReverseMap();
 
             CreateMap<VwVendorItem, VendorItemDetailsDto>()
                 .ForMember(dest => dest.BaseItemImages, opt => opt.MapFrom(src =>

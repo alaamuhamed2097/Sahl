@@ -7,7 +7,7 @@ namespace Dashboard.Contracts.Order
     {
         Task<ResponseModel<bool>> ChangeRefundStatusAsync(RefundResponseDto refund);
         Task<ResponseModel<bool>> DeleteAsync(Guid id);
-        Task<ResponseModel<IEnumerable<RefundDto>>> GetAllAsync();
+        Task<ResponseModel<IEnumerable<RefundRequestDto>>> GetAllAsync();
         Task<ResponseModel<RefundDto>> GetByOrderIdAsync(Guid id);
         Task<ResponseModel<bool>> SaveAsync(RefundRequestDto refund);
     }
