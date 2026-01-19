@@ -22,7 +22,7 @@ namespace DAL.Repositories.Merchandising
         /// <summary>
         /// Get all active campaigns (currently running)
         /// </summary>
-        public async Task<List<TbCampaign>> GetActiveCampaignsAsync()
+        public async Task<IEnumerable<TbCampaign>> GetActiveCampaignsAsync()
         {
             try
             {
@@ -47,7 +47,7 @@ namespace DAL.Repositories.Merchandising
         /// <summary>
         /// Get campaign by ID with all related data
         /// </summary>
-        public async Task<TbCampaign?> GetCampaignByIdAsync(Guid campaignId)
+        public async Task<TbCampaign> GetCampaignByIdAsync(Guid campaignId)
         {
             try
             {
@@ -61,7 +61,8 @@ namespace DAL.Repositories.Merchandising
                             .ThenInclude(i => i.ItemCombinations.Where(ic => ic.IsDefault && !ic.IsDeleted))
                                 .ThenInclude(ic => ic.ItemCombinationImages)
                     .Include(c => c.HomepageBlocks)
-                    .FirstOrDefaultAsync(c => c.Id == campaignId && !c.IsDeleted);
+                    .FirstOrDefaultAsync(c => c.Id == campaignId && !c.IsDeleted)
+                    ?? throw new KeyNotFoundException($"Campaign with id '{campaignId}' was not found.") ;
             }
             catch (Exception ex)
             {
@@ -73,7 +74,7 @@ namespace DAL.Repositories.Merchandising
         /// <summary>
         /// Get all items in a campaign
         /// </summary>
-        public async Task<List<TbCampaignItem>> GetCampaignItemsAsync(Guid campaignId)
+        public async Task<IEnumerable<TbCampaignItem>> GetCampaignItemsAsync(Guid campaignId)
         {
             try
             {
@@ -87,8 +88,9 @@ namespace DAL.Repositories.Merchandising
                     .Include(ci => ci.Campaign)
                     .Where(ci => ci.CampaignId == campaignId && !ci.IsDeleted)
                     .OrderBy(ci => ci.DisplayOrder)
-                    .ToListAsync();
-            }
+                    .ToListAsync()
+					?? throw new KeyNotFoundException($"Campaign with id '{campaignId}' was not found.");
+			}
             catch (Exception ex)
             {
                 _logger.Error(ex, "Error getting campaign items: {CampaignId}", campaignId);
@@ -99,7 +101,7 @@ namespace DAL.Repositories.Merchandising
         /// <summary>
         /// Get active flash sales (currently running)
         /// </summary>
-        public async Task<List<TbCampaign>> GetActiveFlashSalesAsync()
+        public async Task<IEnumerable<TbCampaign>> GetActiveFlashSalesAsync()
         {
             try
             {
@@ -114,8 +116,9 @@ namespace DAL.Repositories.Merchandising
                                c.EndDate >= now &&
                                (!c.FlashSaleEndTime.HasValue || c.FlashSaleEndTime >= now))
                     .OrderBy(c => c.FlashSaleEndTime)
-                    .ToListAsync();
-            }
+                    .ToListAsync()
+					?? throw new KeyNotFoundException($"Campaign with id Flash Sales was not found.");
+			}
             catch (Exception ex)
             {
                 _logger.Error(ex, "Error getting active flash sales");
@@ -172,32 +175,35 @@ namespace DAL.Repositories.Merchandising
             }
         }
 
-        /// <summary>
-        /// Update sold count for campaign item (for flash sales tracking)
-        /// </summary>
-        public async Task<bool> IncrementSoldCountAsync(Guid campaignItemId, int quantity)
-        {
-            try
-            {
-                var campaignItem = await _dbContext.TbCampaignItems
-                    .FirstOrDefaultAsync(ci => ci.Id == campaignItemId && !ci.IsDeleted);
+		/// <summary>
+		/// Update sold count for campaign item (for flash sales tracking)
+		/// </summary>
+		public async Task<bool> IncrementSoldCountAsync(Guid campaignItemId, int quantity)
+		{
+			if (quantity <= 0)
+				return false;
 
-                if (campaignItem == null)
-                    return false;
+			using var transaction = await _dbContext.Database.BeginTransactionAsync();
 
-                campaignItem.SoldCount += quantity;
-                campaignItem.UpdatedDateUtc = DateTime.UtcNow;
+			var campaignItem = await _dbContext.TbCampaignItems
+				.FirstOrDefaultAsync(ci => ci.Id == campaignItemId && !ci.IsDeleted);
 
-                await _dbContext.SaveChangesAsync();
-                return true;
-            }
-            catch (Exception ex)
-            {
-                _logger.Error(ex, "Error incrementing sold count: {CampaignItemId}", campaignItemId);
-                return false;
-            }
-        }
+			if (campaignItem == null)
+				return false;
 
-        #endregion
-    }
+			if (campaignItem.StockLimit.HasValue &&
+				campaignItem.SoldCount + quantity > campaignItem.StockLimit.Value)
+				return false;
+
+			campaignItem.SoldCount += quantity;
+			campaignItem.UpdatedDateUtc = DateTime.UtcNow;
+
+			await _dbContext.SaveChangesAsync();
+			await transaction.CommitAsync();
+
+			return true;
+		}
+
+		#endregion
+	}
 }

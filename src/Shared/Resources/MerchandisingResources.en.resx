@@ -522,4 +522,99 @@
   <data name="HomePageBlocks" xml:space="preserve">
     <value>Home Page Blocks</value>
   </data>
+	<!-- Flash Sale Configuration -->
+	<data name="EnableFlashSaleMode" xml:space="preserve">
+    <value>Enable Flash Sale Mode</value>
+  </data>
+	<data name="FlashSaleDescription" xml:space="preserve">
+    <value>Mark this campaign as a flash sale with limited-time and limited-quantity offers</value>
+  </data>
+	<data name="FlashSaleEndTime" xml:space="preserve">
+    <value>Flash Sale End Time:</value>
+  </data>
+	<data name="FlashSaleEndTimeHint" xml:space="preserve">
+    <value>When should the flash sale end?</value>
+  </data>
+	<data name="MaxQuantityPerUser" xml:space="preserve">
+    <value>Max Quantity Per User:</value>
+  </data>
+	<data name="MaxQuantityPerUserHint" xml:space="preserve">
+    <value>Maximum items a customer can buy</value>
+  </data>
+
+	<!-- Badge Configuration -->
+	<data name="BadgeConfiguration" xml:space="preserve">
+    <value>Badge Configuration</value>
+  </data>
+	<data name="BadgeTextEn" xml:space="preserve">
+    <value>Badge Text (EN):</value>
+  </data>
+	<data name="BadgeTextEnPlaceholder" xml:space="preserve">
+    <value>e.g., HOT DEAL</value>
+  </data>
+	<data name="BadgeTextEnHint" xml:space="preserve">
+    <value>Short badge text in English</value>
+  </data>
+	<data name="BadgeTextAr" xml:space="preserve">
+    <value>Badge Text (AR):</value>
+  </data>
+	<data name="BadgeTextArPlaceholder" xml:space="preserve">
+    <value>e.g., عرض حار</value>
+  </data>
+	<data name="BadgeTextArHint" xml:space="preserve">
+    <value>Short badge text in Arabic</value>
+  </data>
+	<data name="BadgeColor" xml:space="preserve">
+    <value>Badge Color:</value>
+  </data>
+	<data name="BadgeColorHint" xml:space="preserve">
+    <value>Choose a color for the campaign badge</value>
+  </data>
+
+	<!-- Status -->
+	<data name="Status" xml:space="preserve">
+    <value>Status</value>
+  </data>
+	<data name="CampaignIsActive" xml:space="preserve">
+    <value>Campaign is Active</value>
+  </data>
+	<data name="CampaignIsInactive" xml:space="preserve">
+    <value>Campaign is Inactive</value>
+  </data>
+	<data name="InactiveCampaignNote" xml:space="preserve">
+    <value>Inactive campaigns won't be displayed to customers</value>
+  </data>
+
+	<!-- Metadata -->
+	<data name="CreatedDate" xml:space="preserve">
+    <value>Created Date:</value>
+  </data>
+
+	<!-- Campaign Items -->
+	<data name="CampaignItems" xml:space="preserve">
+    <value>Campaign Items</value>
+  </data>
+	<data name="ItemNameEn" xml:space="preserve">
+    <value>Item Name (EN)</value>
+  </data>
+	<data name="ItemNameAr" xml:space="preserve">
+    <value>Item Name (AR)</value>
+  </data>
+	<data name="DisplayOrder" xml:space="preserve">
+    <value>Display Order</value>
+  </data>
+	<data name="Actions" xml:space="preserve">
+    <value>Actions</value>
+  </data>
+	<data name="RemoveItemFromCampaign" xml:space="preserve">
+    <value>Remove item from campaign</value>
+  </data>
+
+	<!-- Date Fields -->
+	<data name="StartDate" xml:space="preserve">
+    <value>Start Date:</value>
+  </data>
+	<data name="EndDate" xml:space="preserve">
+    <value>End Date:</value>
+  </data>
 </root>

@@ -11,7 +11,7 @@ namespace Dashboard.Services.Campaign
     public class CampaignService : ICampaignService
     {
         private readonly IApiService _apiService;
-        private const string BaseEndpoint = "api/v1/campaigns";
+        private const string BaseEndpoint = "api/v1/campaign";
 
         public CampaignService(IApiService apiService)
         {
@@ -69,7 +69,7 @@ namespace Dashboard.Services.Campaign
         /// </summary>
         public async Task<ResponseModel<CampaignDto>> UpdateCampaignAsync(Guid id, UpdateCampaignDto dto)
         {
-            return await _apiService.PutAsync<UpdateCampaignDto, CampaignDto>($"{BaseEndpoint}/{id}", dto);
+            return await _apiService.PostAsync<UpdateCampaignDto, CampaignDto>($"{BaseEndpoint}", dto);
         }
 
         /// <summary>
