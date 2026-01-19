@@ -327,29 +327,37 @@ public class UserProfileService : IUserProfileService
 
         user.FirstName = profileUpdateDto.FirstName;
         user.LastName = profileUpdateDto.LastName;
+        var oldImagePath = user.ProfileImagePath;
 
         if (!string.IsNullOrEmpty(profileUpdateDto.ProfileImage))
         {
-            try
+            if(!string.Equals(oldImagePath,profileUpdateDto.ProfileImage, StringComparison.OrdinalIgnoreCase))
             {
-                user.ProfileImagePath = await SaveImageSync(profileUpdateDto.ProfileImage);
-            }
-            catch (ValidationException ex)
-            {
-                return new ResponseModel<UserProfileDto>
+                try
                 {
-                    Success = false,
-                    Message = ex.Message
-                };
-            }
-            catch (Exception)
-            {
-                return new ResponseModel<UserProfileDto>
+                    user.ProfileImagePath = await SaveImageSync(profileUpdateDto.ProfileImage);
+                }
+                catch (ValidationException ex)
                 {
-                    Success = false,
-                    Message = ValidationResources.ErrorProcessingImage
-                };
+                    return new ResponseModel<UserProfileDto>
+                    {
+                        Success = false,
+                        Message = ex.Message
+                    };
+                }
+                catch (Exception)
+                {
+                    return new ResponseModel<UserProfileDto>
+                    {
+                        Success = false,
+                        Message = ValidationResources.ErrorProcessingImage
+                    };
+                }
             }
+        }
+        else
+        {
+            user.ProfileImagePath = null;
         }
 
         user.UpdatedBy = Guid.Parse(userId);

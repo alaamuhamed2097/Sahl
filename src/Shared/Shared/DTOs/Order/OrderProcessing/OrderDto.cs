@@ -16,7 +16,7 @@ namespace Shared.DTOs.Order.OrderProcessing
         public string Address { get; set; }
         public PaymentStatus PaymentStatus { get; set; }
         public string? InvoiceId { get; set; }
-        public OrderStatus CurrentState { get; set; }
+        public OrderProgressStatus CurrentState { get; set; }
         public DateTime CreatedDateUtc { get; set; }
         public DateTime? OrderDeliveryDate { get; set; }
 
@@ -42,14 +42,11 @@ namespace Shared.DTOs.Order.OrderProcessing
         public string ProfileImagePath { get; set; } = null!;
 
         // Sponsor Information
-        public string? SponsorFirstName { get; set; }
-        public string? SponsorLastName { get; set; }
-        public string? SponsorUserName { get; set; }
+        public string StoreName { get; set; } = null!;
 
         // Payment Gateway Information
         public string PaymentGatewayMethodTitleEn { get; set; } = null!;
         public string PaymentGatewayMethodTitleAr { get; set; } = null!;
-        public PaymentGatewayMethod PaymentGatewayMethodType { get; set; }
 
         // Order Items
         public List<OrderDetailsDto> OrderDetails { get; set; }

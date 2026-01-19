@@ -862,4 +862,7 @@
   <data name="CategorySelectionRequired" xml:space="preserve">
     <value>Please select a category in the Classification step to configure attributes.</value>
   </data>
+  <data name="Length" xml:space="preserve">
+    <value>must be between {2} and {1}characters.</value>
+  </data>
 </root>

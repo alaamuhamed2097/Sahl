@@ -243,6 +243,15 @@
             public const string Search = "api/v1/ShippingCompany/search";
         }
 
+        public static class Shipment
+        {
+            public const string GetOrderShipments = "api/v1/Shipment/order";
+            public const string Track = "api/v1/Shipment/track";
+            public const string GetById = "api/v1/Shipment";
+            public const string UpdateStatus = "api/v1/Shipment/{0}/status";
+            public const string AssignTracking = "api/v1/Shipment/{0}/tracking";
+        }
+
         public static class UserNotification
         {
             public const string Get = "api/v1/UserNotifications";
@@ -432,16 +441,12 @@
         {
             private const string Base = "api/v1/ItemReview";
 
-            public const string Update = $"{Base}/update";
             public const string Get = Base;
+            public const string Update = $"{Base}/update";
             public const string Delete = $"{Base}/delete";
-            public const string GetByItemId = $"{Base}/reviews-by-Item";
             public const string Search = $"{Base}/search";
-            public const string GetStats = $"{Base}/Item-review-stats";
-            public const string GetPending = $"{Base}/pending";
-            public const string Approve = $"{Base}/approve";
-            public const string Reject = $"{Base}/reject";
-
+            public const string GetStats = $"{Base}/Item-review-summery";
+            public const string ChangeStatus = $"{Base}/changeStatus";
         }
 
         public static class VendorReview

@@ -39,7 +39,7 @@ public class CustomerAddressService : ICustomerAddressService
                 a => a.UserId == customerId && !a.IsDeleted,
                 orderBy: q => q.OrderByDescending(a => a.IsDefault)
                                .ThenByDescending(a => a.CreatedDateUtc),
-                includeProperties: "City,City.State"
+                includeProperties: "City,City.State,City.State.Country"
             );
 
             return _mapper.Map<List<CustomerAddressDto>>(addresses);
@@ -62,7 +62,7 @@ public class CustomerAddressService : ICustomerAddressService
 
             var address = await _addressRepository.FindAsync(
                 a => a.Id == addressId && a.UserId == customerId && !a.IsDeleted,
-                includeProperties: "City,City.State"
+                includeProperties: "City,City.State,City.State.Country"
             );
 
             return address == null ? null : _mapper.Map<CustomerAddressDto>(address);
@@ -83,7 +83,7 @@ public class CustomerAddressService : ICustomerAddressService
 
             var address = await _addressRepository.FindAsync(
                 a => a.UserId == customerId && a.IsDefault && !a.IsDeleted,
-                includeProperties: "City,City.State"
+                includeProperties: "City,City.State,City.State.Country"
             );
 
             return address == null ? null : _mapper.Map<CustomerAddressDto>(address);
@@ -143,7 +143,7 @@ public class CustomerAddressService : ICustomerAddressService
             // Reload address with related entities for mapping
             var createdAddress = await _addressRepository.FindAsync(
                 a => a.Id == address.Id,
-                includeProperties: "City,City.State"
+                includeProperties: "City,City.State,City.State.Country"
             );
 
             return createdAddress == null ? new CustomerAddressDto() : _mapper.Map<CustomerAddressDto>(createdAddress);
@@ -177,7 +177,7 @@ public class CustomerAddressService : ICustomerAddressService
             // Get address with ownership validation
             var address = await _addressRepository.FindAsync(
                 a => a.Id == addressId && a.UserId == customerId && !a.IsDeleted,
-                includeProperties: "City,City.State"
+                includeProperties: "City,City.State,City.State.Country"
             );
 
             if (address == null)
@@ -357,7 +357,7 @@ public class CustomerAddressService : ICustomerAddressService
 
             var address = await _addressRepository.FindAsync(
                 a => a.Id == addressId && a.UserId == customerId && !a.IsDeleted,
-                includeProperties: "City,City.State"
+                includeProperties: "City,City.State,City.State.Country"
             );
 
             if (address == null)

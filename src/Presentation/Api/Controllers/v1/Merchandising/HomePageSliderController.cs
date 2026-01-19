@@ -26,6 +26,7 @@ namespace Api.Controllers.v1.Merchandising
         }
 
         [HttpGet("search")]
+        [Authorize(Roles = nameof(UserRole.Admin))]
         public async Task<IActionResult> Search([FromQuery] BaseSearchCriteriaModel criteria)
         {
 
@@ -48,6 +49,7 @@ namespace Api.Controllers.v1.Merchandising
             });
 
         }
+       
         /// <summary>
         /// Get all sliders (Admin only)
         /// </summary>
@@ -56,7 +58,6 @@ namespace Api.Controllers.v1.Merchandising
         /// Requires Admin role.
         /// </remarks>
         [HttpGet]
-        [Authorize(Roles = nameof(UserRole.Admin))]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<IActionResult> GetAllSliders()
         {
@@ -106,13 +107,11 @@ namespace Api.Controllers.v1.Merchandising
             });
         }
 
-
-
-
         /// <summary>
         /// Create new slider
         /// </summary>
         [HttpPost("create")]
+        [Authorize(Roles = nameof(UserRole.Admin))]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> CreateSlider([FromBody] HomePageSliderDto dto)
@@ -140,6 +139,7 @@ namespace Api.Controllers.v1.Merchandising
         /// Update existing slider
         /// </summary>
         [HttpPost("update")]
+        [Authorize(Roles = nameof(UserRole.Admin))]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -168,6 +168,7 @@ namespace Api.Controllers.v1.Merchandising
         /// Delete slider
         /// </summary>
         [HttpDelete("{sliderId}")]
+        [Authorize(Roles = nameof(UserRole.Admin))]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> DeleteSlider(Guid sliderId)

@@ -1014,4 +1014,7 @@
   <data name="NewProductRequests" xml:space="preserve">
   <value>طلبات إضافة منتجات جديدة</value>
 </data>
+  <data name="Total" xml:space="preserve">
+    <value>الإجمالي</value>
+  </data>
 </root>

@@ -12,6 +12,7 @@ using Domains.Entities.Order.Shipping;
 using Serilog;
 using Shared.DTOs.Order.OrderProcessing;
 using Shared.DTOs.Order.ResponseOrderDetail;
+using Shared.GeneralModels;
 
 namespace BL.Services.Order.OrderProcessing;
 
@@ -634,5 +635,225 @@ public class OrderManagementService : IOrderManagementService
             _logger.Error(ex, "Error searching orders with term: {SearchTerm}, page: {PageNumber}", searchTerm, pageNumber);
             throw;
         }
+    }
+
+    /// <summary>
+    /// Save/Update order (used by Dashboard - Details.razor)
+    /// </summary>
+    public async Task<ResponseModel<bool>> SaveAsync(
+        OrderDto orderDto,
+        CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            if (orderDto == null || orderDto.Id == Guid.Empty)
+            {
+                return new ResponseModel<bool>
+                {
+                    Success = false,
+                    Message = "Invalid order data",
+                    Data = false
+                };
+            }
+
+            var order = await _orderRepository.FindByIdAsync(orderDto.Id, cancellationToken);
+
+            if (order == null)
+            {
+                return new ResponseModel<bool>
+                {
+                    Success = false,
+                    Message = "Order not found",
+                    Data = false
+                };
+            }
+
+            // Update allowed fields (only delivery date for now)
+            if (orderDto.OrderDeliveryDate.HasValue)
+            {
+                order.OrderDeliveryDate = orderDto.OrderDeliveryDate;
+            }
+
+            order.UpdatedDateUtc = DateTime.UtcNow;
+
+            await _orderRepository.UpdateAsync(order, Guid.Empty, cancellationToken);
+
+            return new ResponseModel<bool>
+            {
+                Success = true,
+                Message = "Order updated successfully",
+                Data = true
+            };
+        }
+        catch (Exception ex)
+        {
+            _logger.Error(ex, "Error saving order {OrderId}", orderDto?.Id);
+            return new ResponseModel<bool>
+            {
+                Success = false,
+                Message = $"Failed to update order: {ex.Message}",
+                Data = false
+            };
+        }
+    }
+
+    /// <summary>
+    /// Change order status (Admin Dashboard - Details.razor)
+    /// Uses OrderStatusTransitionService for event handling
+    /// </summary>
+    public async Task<ResponseModel<bool>> ChangeOrderStatusAsync(
+        OrderDto orderDto,
+        CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            if (orderDto == null || orderDto.Id == Guid.Empty)
+            {
+                return new ResponseModel<bool>
+                {
+                    Success = false,
+                    Message = "Invalid order data",
+                    Data = false
+                };
+            }
+
+            var order = await _orderRepository.FindByIdAsync(orderDto.Id, cancellationToken);
+
+            if (order == null)
+            {
+                return new ResponseModel<bool>
+                {
+                    Success = false,
+                    Message = "Order not found",
+                    Data = false
+                };
+            }
+
+            // Use the OrderProgressStatus directly from the DTO
+            var newStatus = orderDto.CurrentState;
+
+            // Validate status transition
+            if (!IsValidStatusTransition(order.OrderStatus, newStatus))
+            {
+                return new ResponseModel<bool>
+                {
+                    Success = false,
+                    Message = $"Cannot change status from {order.OrderStatus} to {newStatus}",
+                    Data = false
+                };
+            }
+
+            // Update status
+            var oldStatus = order.OrderStatus;
+            order.OrderStatus = newStatus;
+            order.UpdatedDateUtc = DateTime.UtcNow;
+
+            // Additional logic based on status
+            switch (newStatus)
+            {
+                case OrderProgressStatus.Delivered:
+                    // Set delivery date if not already set
+                    if (!order.OrderDeliveryDate.HasValue)
+                    {
+                        order.OrderDeliveryDate = DateTime.UtcNow;
+                    }
+                    break;
+
+                case OrderProgressStatus.Cancelled:
+                case OrderProgressStatus.PaymentFailed:
+                    // Mark payment as failed/refunded if exists
+                    // This could trigger refund processing
+                    break;
+            }
+
+            await _orderRepository.UpdateAsync(order, Guid.Empty, cancellationToken);
+
+            _logger.Information(
+                "Order {OrderId} status changed from {OldStatus} to {NewStatus}",
+                order.Id, oldStatus, newStatus);
+
+            return new ResponseModel<bool>
+            {
+                Success = true,
+                Message = $"Order status changed to {newStatus} successfully",
+                Data = true
+            };
+        }
+        catch (Exception ex)
+        {
+            _logger.Error(ex, "Error changing order status for order {OrderId}", orderDto?.Id);
+            return new ResponseModel<bool>
+            {
+                Success = false,
+                Message = $"Failed to change order status: {ex.Message}",
+                Data = false
+            };
+        }
+    }
+
+    /// <summary>
+    /// Validate if status transition is allowed
+    /// Based on the actual OrderProgressStatus enum values
+    /// </summary>
+    private bool IsValidStatusTransition(OrderProgressStatus currentStatus, OrderProgressStatus newStatus)
+    {
+        // If same status, allow (idempotent)
+        if (currentStatus == newStatus)
+        {
+            return true;
+        }
+
+        // Define valid transitions based on actual enum
+        var validTransitions = new Dictionary<OrderProgressStatus, List<OrderProgressStatus>>
+        {
+            [OrderProgressStatus.Pending] = new List<OrderProgressStatus>
+            {
+                OrderProgressStatus.Confirmed,
+                OrderProgressStatus.Cancelled
+            },
+            [OrderProgressStatus.Confirmed] = new List<OrderProgressStatus>
+            {
+                OrderProgressStatus.Processing,
+                OrderProgressStatus.Cancelled
+            },
+            [OrderProgressStatus.Processing] = new List<OrderProgressStatus>
+            {
+                OrderProgressStatus.Shipped,
+                OrderProgressStatus.Cancelled
+            },
+            [OrderProgressStatus.Shipped] = new List<OrderProgressStatus>
+            {
+                OrderProgressStatus.Delivered,
+                OrderProgressStatus.Returned
+            },
+            [OrderProgressStatus.Delivered] = new List<OrderProgressStatus>
+            {
+                OrderProgressStatus.Completed,
+                OrderProgressStatus.Returned // Allow returns after delivery
+            },
+            [OrderProgressStatus.Completed] = new List<OrderProgressStatus>
+            {
+                OrderProgressStatus.Returned // Allow returns after completion
+            },
+            [OrderProgressStatus.Cancelled] = new List<OrderProgressStatus>(), // Final state
+            [OrderProgressStatus.PaymentFailed] = new List<OrderProgressStatus>
+            {
+                OrderProgressStatus.Pending // Allow retry
+            },
+            [OrderProgressStatus.RefundRequested] = new List<OrderProgressStatus>
+            {
+                OrderProgressStatus.Refunded,
+                OrderProgressStatus.Cancelled
+            },
+            [OrderProgressStatus.Refunded] = new List<OrderProgressStatus>(), // Final state
+            [OrderProgressStatus.Returned] = new List<OrderProgressStatus>
+            {
+                OrderProgressStatus.Refunded // Can lead to refund
+            }
+        };
+
+        // Check if transition is valid
+        return validTransitions.ContainsKey(currentStatus) &&
+               validTransitions[currentStatus].Contains(newStatus);
     }
 }

@@ -1,5 +1,6 @@
 using Shared.DTOs.Order.OrderProcessing;
 using Shared.DTOs.Order.ResponseOrderDetail;
+using Shared.GeneralModels;
 
 namespace BL.Contracts.Service.Order.OrderProcessing;
 
@@ -108,5 +109,19 @@ public interface IOrderManagementService
     /// </summary>
     Task<bool> ValidateOrderAsync(
         Guid orderId,
+        CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Save/Update order (used by Dashboard)
+    /// </summary>
+    Task<ResponseModel<bool>> SaveAsync(
+        OrderDto orderDto,
+        CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Change order status (used by Dashboard)
+    /// </summary>
+    Task<ResponseModel<bool>> ChangeOrderStatusAsync(
+        OrderDto orderDto,
         CancellationToken cancellationToken = default);
 }

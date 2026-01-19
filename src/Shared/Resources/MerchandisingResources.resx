@@ -522,4 +522,99 @@
   <data name="HomePageBlocks" xml:space="preserve">
     <value>بلوكات الصفحة الرئيسية</value>
   </data>
+	<!-- إعدادات البيع السريع -->
+	<data name="EnableFlashSaleMode" xml:space="preserve">
+    <value>تفعيل وضع البيع السريع</value>
+  </data>
+	<data name="FlashSaleDescription" xml:space="preserve">
+    <value>تمييز هذه الحملة كبيع سريع مع عروض محدودة الوقت والكمية</value>
+  </data>
+	<data name="FlashSaleEndTime" xml:space="preserve">
+    <value>وقت انتهاء البيع السريع:</value>
+  </data>
+	<data name="FlashSaleEndTimeHint" xml:space="preserve">
+    <value>متى يجب أن ينتهي البيع السريع؟</value>
+  </data>
+	<data name="MaxQuantityPerUser" xml:space="preserve">
+    <value>الحد الأقصى للكمية لكل مستخدم:</value>
+  </data>
+	<data name="MaxQuantityPerUserHint" xml:space="preserve">
+    <value>الحد الأقصى للعناصر التي يمكن للعميل شراؤها</value>
+  </data>
+
+	<!-- إعدادات الشارة -->
+	<data name="BadgeConfiguration" xml:space="preserve">
+    <value>إعدادات الشارة</value>
+  </data>
+	<data name="BadgeTextEn" xml:space="preserve">
+    <value>نص الشارة (إنجليزي):</value>
+  </data>
+	<data name="BadgeTextEnPlaceholder" xml:space="preserve">
+    <value>مثال: HOT DEAL</value>
+  </data>
+	<data name="BadgeTextEnHint" xml:space="preserve">
+    <value>نص قصير للشارة بالإنجليزية</value>
+  </data>
+	<data name="BadgeTextAr" xml:space="preserve">
+    <value>نص الشارة (عربي):</value>
+  </data>
+	<data name="BadgeTextArPlaceholder" xml:space="preserve">
+    <value>مثال: عرض حار</value>
+  </data>
+	<data name="BadgeTextArHint" xml:space="preserve">
+    <value>نص قصير للشارة بالعربية</value>
+  </data>
+	<data name="BadgeColor" xml:space="preserve">
+    <value>لون الشارة:</value>
+  </data>
+	<data name="BadgeColorHint" xml:space="preserve">
+    <value>اختر لوناً لشارة الحملة</value>
+  </data>
+
+	<!-- الحالة -->
+	<data name="Status" xml:space="preserve">
+    <value>الحالة</value>
+  </data>
+	<data name="CampaignIsActive" xml:space="preserve">
+    <value>الحملة نشطة</value>
+  </data>
+	<data name="CampaignIsInactive" xml:space="preserve">
+    <value>الحملة غير نشطة</value>
+  </data>
+	<data name="InactiveCampaignNote" xml:space="preserve">
+    <value>الحملات غير النشطة لن يتم عرضها للعملاء</value>
+  </data>
+
+	<!-- البيانات الوصفية -->
+	<data name="CreatedDate" xml:space="preserve">
+    <value>تاريخ الإنشاء:</value>
+  </data>
+
+	<!-- عناصر الحملة -->
+	<data name="CampaignItems" xml:space="preserve">
+    <value>عناصر الحملة</value>
+  </data>
+	<data name="ItemNameEn" xml:space="preserve">
+    <value>اسم العنصر (إنجليزي)</value>
+  </data>
+	<data name="ItemNameAr" xml:space="preserve">
+    <value>اسم العنصر (عربي)</value>
+  </data>
+	<data name="DisplayOrder" xml:space="preserve">
+    <value>ترتيب العرض</value>
+  </data>
+	<data name="Actions" xml:space="preserve">
+    <value>الإجراءات</value>
+  </data>
+	<data name="RemoveItemFromCampaign" xml:space="preserve">
+    <value>إزالة العنصر من الحملة</value>
+  </data>
+
+	<!-- حقول التاريخ -->
+	<data name="StartDate" xml:space="preserve">
+    <value>تاريخ البدء:</value>
+  </data>
+	<data name="EndDate" xml:space="preserve">
+    <value>تاريخ الانتهاء:</value>
+  </data>
 </root>

@@ -1,11 +1,13 @@
 using BL.Contracts.Service.Customer.Wishlist;
 using BL.Contracts.Service.Order.Cart;
 using BL.Contracts.Service.Order.Checkout;
+using BL.Contracts.Service.Order.Fulfillment;
 using BL.Contracts.Service.Order.OrderProcessing;
 using BL.Contracts.Service.Order.Payment;
 using BL.Services.Customer.Wishlist;
 using BL.Services.Order.Cart;
 using BL.Services.Order.Checkout;
+using BL.Services.Order.Fulfillment;
 using BL.Services.Order.OrderProcessing;
 using BL.Services.Order.Payment;
 
@@ -31,6 +33,8 @@ namespace Api.Extensions.Services
             services.AddScoped<IOrderCreationService, OrderCreationService>();
 
             services.AddScoped<IOrderPaymentProcessor, OrderPaymentProcessor>();
+            services.AddScoped<IShipmentService, ShipmentService>();
+            services.AddScoped<IRefundService, RefundService>();
 
             return services;
         }

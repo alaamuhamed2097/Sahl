@@ -64,6 +64,7 @@ namespace DAL.Repositories.Order
                         .ThenInclude(v => v.User)
                     .Include(s => s.Warehouse)
                     .Include(s => s.ShippingCompany)
+                    .Include(s => s.StatusHistory)
                     .Include(s => s.Items)
                         .ThenInclude(si => si.Item)
                             .ThenInclude(i => i.ItemImages) // ✅ ItemImages not Images

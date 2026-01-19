@@ -1,55 +1,33 @@
-﻿using Shared.DTOs.Review;
+﻿using Common.Enumerations.Review;
+using Dashboard.Models.pagintion;
+using Shared.DTOs.Review;
 using Shared.GeneralModels;
 using Shared.GeneralModels.SearchCriteriaModels;
-using Dashboard.Models.pagintion;
 
 namespace Dashboard.Contracts.Review
 {
 	public interface IItemReviewService
 	{
-		/// <summary>
-		/// Update an existing review
-		/// </summary>
-		Task<ResponseModel<ResponseItemReviewDto>> UpdateReviewAsync(ItemReviewDto reviewDto);
+        /// <summary>
+        /// Search reviews with pagination and filters
+        /// </summary>
+        Task<ResponseModel<PaginatedDataModel<ItemReviewResponseDto>>> SearchReviewsAsync(ItemReviewSearchCriteriaModel criteria);
 
 		/// <summary>
 		/// Get review by ID
 		/// </summary>
-		Task<ResponseModel<ResponseItemReviewDto>> GetReviewByIdAsync(Guid reviewId);
-
-		/// <summary>
-		/// Delete a review
-		/// </summary>
-		Task<ResponseModel<bool>> DeleteReviewAsync(Guid reviewId);
-
-		/// <summary>
-		/// Get all reviews for a specific Item
-		/// </summary>
-		Task<ResponseModel<IEnumerable<ResponseItemReviewDto>>> GetReviewsByItemIdAsync(Guid itemId);
-
-		/// <summary>
-		/// Search reviews with pagination and filters
-		/// </summary>
-		Task<ResponseModel<PaginatedDataModel<ResponseItemReviewDto>>> SearchReviewsAsync(ItemReviewSearchCriteriaModel criteria);
+		Task<ResponseModel<ItemReviewResponseDto>> GetReviewByIdAsync(Guid reviewId);
 
 		/// <summary>
 		/// Get Item review statistics
 		/// </summary>
-		Task<ResponseModel<ResponseItemReviewStatsDto>> GetItemReviewStatsAsync(Guid itemId);
-
+		Task<ResponseModel<ResponseItemReviewSummeryDto>> GetItemReviewSummeryAsync(Guid itemId);
+        
+		Task<ResponseModel<bool>> ChangeReviewStatusAsync(Guid reviewId, ReviewStatus newStatus);
+		
 		/// <summary>
-		/// Get pending reviews for moderation
+		/// Delete a review
 		/// </summary>
-		Task<ResponseModel<IEnumerable<ResponseItemReviewDto>>> GetPendingReviewsAsync();
-
-		/// <summary>
-		/// Approve a review
-		/// </summary>
-		Task<ResponseModel<bool>> ApproveReviewAsync(Guid reviewId);
-
-		/// <summary>
-		/// Reject a review
-		/// </summary>
-		Task<ResponseModel<bool>> RejectReviewAsync(Guid reviewId);
+		Task<ResponseModel<bool>> DeleteReviewAsync(Guid reviewId);
 	}
 }

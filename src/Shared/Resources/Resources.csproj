@@ -90,10 +90,10 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>MerchandisingResources.resx</DependentUpon>
     </Compile>
-    <Compile Update="warehouseResource.Designer.cs">
+    <Compile Update="OrderResources.Designer.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
-      <DependentUpon>WarehouseResource.resx</DependentUpon>
+      <DependentUpon>OrderResources.resx</DependentUpon>
     </Compile>
   </ItemGroup>
   <ItemGroup>
@@ -165,9 +165,9 @@
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>MerchandisingResources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <EmbeddedResource Update="WarehouseResource.resx">
+    <EmbeddedResource Update="OrderResources.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
-      <LastGenOutput>warehouseResource.Designer.cs</LastGenOutput>
+      <LastGenOutput>OrderResources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

@@ -134,9 +134,9 @@
                                             </td>
                                           
                                             <td>
-                                                @if (!string.IsNullOrEmpty(item.CustomerEmail))
+                                                @if (!string.IsNullOrEmpty(item.CustomerName))
                                                 {
-                                                    <span>@item.CustomerEmail</span>
+                                                    <span>@item.CustomerName</span>
                                                 }
                                                 else
                                                 {
@@ -155,7 +155,7 @@
                                             <td class="text-center">
                                                 <span class="badge bg-info">
                                                     <i class="fas fa-thumbs-up me-1"></i>
-                                                    @item.HelpfulVotesCount
+                                                    @item.HelpfulVoteCount
                                                 </span>
                                             </td>
                                             <td>
@@ -225,7 +225,7 @@
                                         <h6 class="fw-bold text-primary mb-0">@item.ReviewTitle</h6>
                                         <span class="badge bg-info">
                                             <i class="fas fa-thumbs-up me-1"></i>
-                                            @item.HelpfulVotesCount
+                                            @item.HelpfulVoteCount
                                         </span>
                                     </div>
 
@@ -237,9 +237,9 @@
                                     <!-- Customer Email -->
                                     <p class="text-muted small mb-1">
                                         <i class="fas fa-envelope text-info me-1"></i>
-                                        @if (!string.IsNullOrEmpty(item.CustomerEmail))
+                                        @if (!string.IsNullOrEmpty(item.CustomerName))
                                         {
-                                            <span>@item.CustomerEmail</span>
+                                            <span>@item.CustomerName</span>
                                         }
                                         else
                                         {

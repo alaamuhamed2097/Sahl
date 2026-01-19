@@ -1,331 +1,436 @@
-//using Common.Enumerations.Order;
-//using Dashboard.Configuration;
-//using Dashboard.Contracts;
-//using Dashboard.Contracts.General;
-//using Dashboard.Contracts.Order;
-//using Microsoft.AspNetCore.Components;
-//using Microsoft.Extensions.Options;
-//using Microsoft.JSInterop;
-//using Resources;
-//using Shared.DTOs.ECommerce;
-//using Shared.DTOs.Order.OrderProcessing;
-//using Shared.DTOs.Order.Payment.Refund;
+using Common.Enumerations.Order;
+using Common.Enumerations.Payment;
+using Common.Enumerations.Shipping;
+using Dashboard.Configuration;
+using Dashboard.Contracts;
+using Dashboard.Contracts.General;
+using Dashboard.Contracts.Order;
+using Microsoft.AspNetCore.Components;
+using Microsoft.Extensions.Options;
+using Microsoft.JSInterop;
+using Resources;
+using Shared.DTOs.ECommerce;
+using Shared.DTOs.Order.Fulfillment.Shipment;
+using Shared.DTOs.Order.OrderProcessing;
+using Shared.DTOs.Order.Payment.Refund;
 
-//namespace Dashboard.Pages.Sales.Orders
-//{
-//    public partial class Details
-//    {
-//        protected string baseUrl = string.Empty;
-//        private bool isSaving { get; set; }
-//        private bool isRefunded { get; set; }
-//        private bool isWizardInitialized { get; set; }
-//        private bool orderChanged { get; set; }
-//        protected OrderDto Model { get; set; } = new();
-//        protected RefundDto RefundModel { get; set; } = new();
-//        protected RefundResponseDto RefundResponseModel { get; set; } = new();
-//        protected List<ShippingCompanyDto> ShippingCompanies { get; set; } = new();
-//        [Parameter] public Guid Id { get; set; }
+namespace Dashboard.Pages.Sales.Orders
+{
+    public partial class Details
+    {
+        protected string baseUrl = string.Empty;
+        private bool isSaving { get; set; }
+        private bool isRefunded { get; set; }
+        private bool isWizardInitialized { get; set; }
+        private bool orderChanged { get; set; }
+        private bool isLoadingShipments { get; set; }
+        protected OrderDto Model { get; set; } = new();
+        protected RefundDto RefundModel { get; set; } = new();
+        protected RefundResponseDto RefundResponseModel { get; set; } = new();
+        protected List<ShippingCompanyDto> ShippingCompanies { get; set; } = new();
+        protected List<ShipmentDto> Shipments { get; set; } = new();
 
-//        [Inject] private IJSRuntime JSRuntime { get; set; } = default!;
-//        [Inject] protected NavigationManager Navigation { get; set; } = null!;
-//        [Inject] protected IResourceLoaderService ResourceLoaderService { get; set; } = null!;
-//        [Inject] protected IOrderService OrderService { get; set; } = null!;
-//        [Inject] protected IRefundService RefundService { get; set; } = null!;
-//        [Inject] protected IShippingCompanyService ShippingCompanyService { get; set; } = null!;
-//        [Inject] protected IOptions<ApiSettings> ApiOptions { get; set; } = default!;
+        [Parameter] public Guid Id { get; set; }
 
-//        protected override async Task OnInitializedAsync()
-//        {
-//            var task1 = CheckForExistingRefund();
-//            var task2 = LoadShippingCompanies();
+        [Inject] private IJSRuntime JSRuntime { get; set; } = default!;
+        [Inject] protected NavigationManager Navigation { get; set; } = null!;
+        [Inject] protected IResourceLoaderService ResourceLoaderService { get; set; } = null!;
+        [Inject] protected IOrderService OrderService { get; set; } = null!;
+        [Inject] protected IRefundService RefundService { get; set; } = null!;
+        [Inject] protected IShippingCompanyService ShippingCompanyService { get; set; } = null!;
+        [Inject] protected IShipmentService ShipmentService { get; set; } = null!;
+        [Inject] protected IOptions<ApiSettings> ApiOptions { get; set; } = default!;
 
-//            await Task.WhenAll(task1, task2);
-//        }
-//        protected override void OnParametersSet()
-//        {
-//            baseUrl = ApiOptions.Value.BaseUrl;
-//            if (Id != Guid.Empty)
-//            {
-//                View(Id);
-//            }
-//        }
+        protected override async Task OnInitializedAsync()
+        {
+            var task1 = CheckForExistingRefund();
+            var task2 = LoadShippingCompanies();
 
-//        protected override async Task OnAfterRenderAsync(bool firstRender)
-//        {
-//            if (!firstRender) return;
-//            try
-//            {
-//                await ResourceLoaderService.LoadStyleSheets(["assets/plugins/smart-wizard/css/smart_wizard.min.css",
-//                                                            "assets/plugins/smart-wizard/css/smart_wizard_theme_arrows.min.css",
-//                                                            "assets/css/pages/wizard-arrow.css"]);
+            await Task.WhenAll(task1, task2);
+        }
 
-//                await ResourceLoaderService.LoadScriptsSequential("assets/plugins/smart-wizard/js/jquery.smartWizard.min.js",
-//                                                                "assets/js/pages/wizard-custom.js",
-//                                                                "assets/js/pages/wizard-arrow.js");
+        protected override void OnParametersSet()
+        {
+            baseUrl = ApiOptions.Value.BaseUrl;
+            if (Id != Guid.Empty)
+            {
+                View(Id);
+            }
+        }
 
+        protected override async Task OnAfterRenderAsync(bool firstRender)
+        {
+            if (!firstRender) return;
+            try
+            {
+                isWizardInitialized = false;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error initializing wizard: {ex.Message}");
+            }
+        }
 
-//                await JSRuntime.InvokeVoidAsync("initializeSmartWizard", (int)Model.CurrentState);
-//                isWizardInitialized = true;
-//            }
-//            catch (Exception ex)
-//            {
-//                Console.WriteLine($"Error initializing wizard: {ex.Message}");
-//            }
-//        }
+        protected async Task<bool> Save()
+        {
+            try
+            {
+                isSaving = true;
+                StateHasChanged();
 
-//        protected async Task<bool> Save()
-//        {
-//            try
-//            {
-//                isSaving = true;
-//                StateHasChanged(); // Force UI update to show spinner
+                var result = await OrderService.SaveAsync(Model);
 
-//                var result = await OrderService.SaveAsync(Model);
+                isSaving = false;
+                if (!result.Success)
+                {
+                    await JSRuntime.InvokeVoidAsync("swal", ValidationResources.Failed, NotifiAndAlertsResources.FailedAlert, "error");
+                    return false;
+                }
+                return true;
+            }
+            catch (Exception)
+            {
+                await JSRuntime.InvokeVoidAsync("swal", NotifiAndAlertsResources.FailedAlert, "error");
+                return false;
+            }
+            finally
+            {
+                isSaving = false;
+                StateHasChanged();
+            }
+        }
 
-//                isSaving = false;
-//                if (!result.Success)
-//                {
-//                    await JSRuntime.InvokeVoidAsync("swal", ValidationResources.Failed, NotifiAndAlertsResources.FailedAlert, "error");
-//                    return false;
-//                }
-//                return true;
-//            }
-//            catch (Exception)
-//            {
-//                await JSRuntime.InvokeVoidAsync("swal",
-//                    NotifiAndAlertsResources.FailedAlert,
-//                    "error");
-//                return false;
-//            }
-//            finally
-//            {
-//                isSaving = false;
-//                StateHasChanged();
-//            }
-//        }
+        protected async Task View(Guid id)
+        {
+            try
+            {
+                var result = await OrderService.GetByIdAsync(id);
 
-//        protected async Task View(Guid id)
-//        {
-//            try
-//            {
-//                var result = await OrderService.GetByIdAsync(id);
+                if (!result.Success)
+                {
+                    await JSRuntime.InvokeVoidAsync("swal",
+                        ValidationResources.Failed,
+                        NotifiAndAlertsResources.FailedToRetrieveData,
+                        "error");
+                    return;
+                }
 
-//                if (!result.Success)
-//                {
-//                    await JSRuntime.InvokeVoidAsync("swal",
-//                        ValidationResources.Failed,
-//                        NotifiAndAlertsResources.FailedToRetrieveData,
-//                        "error");
-//                    return;
-//                }
-//                // Initialize model with proper empty collections if null
-//                Model = result.Data ?? new();
-//                StateHasChanged();
-//            }
-//            catch (Exception ex)
-//            {
-//                await JSRuntime.InvokeVoidAsync("swal",
-//                    ValidationResources.Error,
-//                    ex.Message,
-//                    "error");
-//            }
-//        }
+                Model = result.Data ?? new();
+                await LoadShipments(id);
+                StateHasChanged();
+            }
+            catch (Exception ex)
+            {
+                await JSRuntime.InvokeVoidAsync("swal", ValidationResources.Error, ex.Message, "error");
+            }
+        }
 
-//        private async Task<bool> ChangeOrderStatus(OrderStatus newStatus)
-//        {
-//            try
-//            {
-//                Model.CurrentState = newStatus;
-//                var result = await OrderService.ChangeOrderStatusAsync(Model);
+        private async Task<bool> ChangeOrderStatus(OrderProgressStatus newStatus)
+        {
+            try
+            {
+                Model.CurrentState = newStatus;
+                var result = await OrderService.ChangeOrderStatusAsync(Model);
 
-//                if (result.Success)
-//                {
-//                    // Update the wizard to reflect the new state (only updates position, doesn't move forward)
-//                    if (isWizardInitialized)
-//                    {
-//                        await JSRuntime.InvokeVoidAsync("updateWizardState", (int)newStatus);
-//                    }
-//                    StateHasChanged();
-//                    return true;
-//                }
-//                else
-//                {
-//                    await JSRuntime.InvokeVoidAsync("swal", ValidationResources.Failed, NotifiAndAlertsResources.SomethingWentWrong, "error");
-//                    return false;
-//                }
-//            }
-//            catch (Exception ex)
-//            {
-//                await JSRuntime.InvokeVoidAsync("swal", ValidationResources.Error, ex.Message, "error");
-//                return false;
-//            }
-//        }
+                if (result.Success)
+                {
+                    if (isWizardInitialized)
+                    {
+                        await JSRuntime.InvokeVoidAsync("updateWizardState", (int)newStatus);
+                    }
+                    StateHasChanged();
+                    return true;
+                }
+                else
+                {
+                    await JSRuntime.InvokeVoidAsync("swal", ValidationResources.Failed, NotifiAndAlertsResources.SomethingWentWrong, "error");
+                    return false;
+                }
+            }
+            catch (Exception ex)
+            {
+                await JSRuntime.InvokeVoidAsync("swal", ValidationResources.Error, ex.Message, "error");
+                return false;
+            }
+        }
 
-//        private async Task<bool> ChangeRefundStatus(RefundStatus newStatus)
-//        {
-//            try
-//            {
-//                RefundResponseModel.RefundId = RefundModel.Id;
-//                RefundResponseModel.CurrentState = newStatus;
+        private async Task<bool> ChangeRefundStatus(RefundStatus newStatus)
+        {
+            try
+            {
+                RefundResponseModel.RefundId = RefundModel.Id;
+                RefundResponseModel.CurrentState = newStatus;
 
-//                var saved = await RefundService.ChangeRefundStatusAsync(RefundResponseModel);
-//                if (saved.Success)
-//                {
-//                    await JSRuntime.InvokeVoidAsync("swal", ValidationResources.SaveSuccess, NotifiAndAlertsResources.Success, "success"); ;
-//                    return true;
-//                }
-//                else
-//                {
-//                    await JSRuntime.InvokeVoidAsync("swal", ValidationResources.Failed, NotifiAndAlertsResources.SomethingWentWrong, "error");
-//                    return false;
-//                }
-//            }
-//            catch (Exception ex)
-//            {
-//                await JSRuntime.InvokeVoidAsync("swal", ValidationResources.Error, ex.Message, "error");
-//                return false;
-//            }
-//        }
+                var saved = await RefundService.ChangeRefundStatusAsync(RefundResponseModel);
+                if (saved.Success)
+                {
+                    await JSRuntime.InvokeVoidAsync("swal", ValidationResources.SaveSuccess, NotifiAndAlertsResources.Success, "success");
+                    return true;
+                }
+                else
+                {
+                    await JSRuntime.InvokeVoidAsync("swal", ValidationResources.Failed, NotifiAndAlertsResources.SomethingWentWrong, "error");
+                    return false;
+                }
+            }
+            catch (Exception ex)
+            {
+                await JSRuntime.InvokeVoidAsync("swal", ValidationResources.Error, ex.Message, "error");
+                return false;
+            }
+        }
 
-//        // Fixed: This method now properly moves the wizard forward
-//        private async Task MoveToInProgress()
-//        {
-//            try
-//            {
-//                // Check if current state allows moving to InProgress
-//                if (Model.CurrentState == OrderStatus.Rejected ||
-//                    (int)Model.CurrentState < 2)
-//                {
-//                    await JSRuntime.InvokeVoidAsync("swal", ValidationResources.Failed, ECommerceResources.OrderMustBeAccepted, "warning");
-//                    return;
-//                }
+        // Move from Confirmed (1) to Processing (2)
+        private async Task MoveToProcessing()
+        {
+            try
+            {
+                if (Model.CurrentState != OrderProgressStatus.Confirmed)
+                {
+                    await JSRuntime.InvokeVoidAsync("swal", ValidationResources.Failed, OrderResources.OrderMustBeConfirmed, "warning");
+                    return;
+                }
 
-//                // Change the order status
-//                if ((int)Model.CurrentState == 2)
-//                    orderChanged = await ChangeOrderStatus(OrderStatus.InProgress);
+                orderChanged = await ChangeOrderStatus(OrderProgressStatus.Processing);
 
-//                // Move the wizard to the next step
-//                if (isWizardInitialized && orderChanged)
-//                {
-//                    await JSRuntime.InvokeVoidAsync("moveToNextStep");
-//                }
-//                orderChanged = false;
-//            }
-//            catch (Exception ex)
-//            {
-//                await JSRuntime.InvokeVoidAsync("swal", ValidationResources.Error, ex.Message, "error");
-//            }
-//        }
+                if (isWizardInitialized && orderChanged)
+                {
+                    await JSRuntime.InvokeVoidAsync("moveToNextStep");
+                }
+                orderChanged = false;
+            }
+            catch (Exception ex)
+            {
+                await JSRuntime.InvokeVoidAsync("swal", ValidationResources.Error, ex.Message, "error");
+            }
+        }
 
-//        // Fixed: Added method to move from InProgress to Shipping
-//        private async Task MoveToShipping()
-//        {
-//            try
-//            {
-//                if (Model.CurrentState < OrderStatus.InProgress)
-//                {
-//                    await JSRuntime.InvokeVoidAsync("swal", ValidationResources.Failed, ECommerceResources.OrderMustBeInProgress, "warning");
-//                    return;
-//                }
+        // Move from Processing (2) to Shipped (3)
+        private async Task MoveToShipped()
+        {
+            try
+            {
+                if (Model.CurrentState != OrderProgressStatus.Processing)
+                {
+                    await JSRuntime.InvokeVoidAsync("swal", ValidationResources.Failed, OrderResources.OrderMustBeProcessing, "warning");
+                    return;
+                }
 
-//                if ((int)Model.CurrentState == 4)
-//                    orderChanged = await ChangeOrderStatus(OrderStatus.Shipping);
+                orderChanged = await ChangeOrderStatus(OrderProgressStatus.Shipped);
 
-//                if (isWizardInitialized && orderChanged)
-//                {
-//                    await JSRuntime.InvokeVoidAsync("moveToNextStep");
-//                }
+                if (isWizardInitialized && orderChanged)
+                {
+                    await JSRuntime.InvokeVoidAsync("moveToNextStep");
+                }
 
-//                orderChanged = false;
-//            }
-//            catch (Exception ex)
-//            {
-//                await JSRuntime.InvokeVoidAsync("swal", ValidationResources.Error, ex.Message, "error");
-//            }
-//        }
+                orderChanged = false;
+            }
+            catch (Exception ex)
+            {
+                await JSRuntime.InvokeVoidAsync("swal", ValidationResources.Error, ex.Message, "error");
+            }
+        }
 
-//        private async Task MoveToDelivered()
-//        {
-//            try
-//            {
-//                // Validate delivery date
-//                if (Model.OrderDeliveryDate == default || Model.OrderDeliveryDate < DateTime.Now)
-//                {
-//                    await JSRuntime.InvokeVoidAsync("swal", ValidationResources.Failed, ECommerceResources.SelectValidDeliveryDate, "warning");
-//                    return;
-//                }
+        // Move from Shipped (3) to Delivered (4)
+        private async Task MoveToDelivered()
+        {
+            try
+            {
+                if (Model.OrderDeliveryDate == default || Model.OrderDeliveryDate < DateTime.Now)
+                {
+                    await JSRuntime.InvokeVoidAsync("swal", ValidationResources.Failed, OrderResources.SelectValidDeliveryDate, "warning");
+                    return;
+                }
 
-//                // Save the model first
-//                if ((int)Model.CurrentState == 5)
-//                {
-//                    var saveResult = await Save();
-//                    if (!saveResult)
-//                    {
-//                        return;
-//                    }
-//                    // Change order status to Delivered
-//                    orderChanged = await ChangeOrderStatus(OrderStatus.Delivered);
-//                }
+                if (Model.CurrentState != OrderProgressStatus.Shipped)
+                {
+                    await JSRuntime.InvokeVoidAsync("swal", ValidationResources.Failed, OrderResources.OrderMustBeShipped, "warning");
+                    return;
+                }
 
-//                // Move wizard to final step
-//                if (isWizardInitialized && orderChanged)
-//                {
-//                    await JSRuntime.InvokeVoidAsync("moveToNextStep");
-//                }
-//                orderChanged = false;
-//            }
-//            catch (Exception ex)
-//            {
-//                await JSRuntime.InvokeVoidAsync("swal", ValidationResources.Error, ex.Message, "error");
-//            }
-//        }
+                var saveResult = await Save();
+                if (!saveResult)
+                {
+                    return;
+                }
 
-//        private async Task CheckForExistingRefund()
-//        {
-//            var result = await RefundService.GetByOrderIdAsync(Id);
-//            if (result.Success)
-//            {
-//                if (result.Data != default)
-//                {
-//                    isRefunded = true;
-//                    RefundModel = result.Data;
-//                }
-//            }
-//        }
-//        private async Task CompleteOrder()
-//        {
-//            try
-//            {
-//                // navigate back to orders list after completion
-//                Navigation.NavigateTo("/orders");
-//            }
-//            catch (Exception ex)
-//            {
-//                await JSRuntime.InvokeVoidAsync("swal", ValidationResources.Error, ex.Message, "error");
-//            }
-//        }
+                orderChanged = await ChangeOrderStatus(OrderProgressStatus.Delivered);
 
-//        private async Task<bool> LoadShippingCompanies()
-//        {
-//            try
-//            {
-//                var result = await ShippingCompanyService.GetAllAsync();
-//                if (result.Success)
-//                {
-//                    ShippingCompanies = result.Data.ToList();
-//                    return true;
-//                }
-//                else
-//                {
-//                    await JSRuntime.InvokeVoidAsync("swal", ValidationResources.Failed, NotifiAndAlertsResources.FailedToRetrieveData, "error");
-//                    return false;
-//                }
-//            }
-//            catch (Exception ex)
-//            {
-//                await JSRuntime.InvokeVoidAsync("swal", ValidationResources.Error, ex.Message, "error");
-//                return false;
-//            }
-//        }
-//    }
-//}
+                if (isWizardInitialized && orderChanged)
+                {
+                    await JSRuntime.InvokeVoidAsync("moveToNextStep");
+                }
+                orderChanged = false;
+            }
+            catch (Exception ex)
+            {
+                await JSRuntime.InvokeVoidAsync("swal", ValidationResources.Error, ex.Message, "error");
+            }
+        }
+
+        private async Task CheckForExistingRefund()
+        {
+            var result = await RefundService.GetByOrderIdAsync(Id);
+            if (result.Success)
+            {
+                if (result.Data != default)
+                {
+                    isRefunded = true;
+                    RefundModel = result.Data;
+                }
+            }
+        }
+
+        private async Task CompleteOrder()
+        {
+            try
+            {
+                Navigation.NavigateTo("/orders");
+            }
+            catch (Exception ex)
+            {
+                await JSRuntime.InvokeVoidAsync("swal", ValidationResources.Error, ex.Message, "error");
+            }
+        }
+
+        private async Task<bool> LoadShippingCompanies()
+        {
+            try
+            {
+                var result = await ShippingCompanyService.GetAllAsync();
+                if (result.Success)
+                {
+                    ShippingCompanies = result.Data.ToList();
+                    return true;
+                }
+                else
+                {
+                    await JSRuntime.InvokeVoidAsync("swal", ValidationResources.Failed, NotifiAndAlertsResources.FailedToRetrieveData, "error");
+                    return false;
+                }
+            }
+            catch (Exception ex)
+            {
+                await JSRuntime.InvokeVoidAsync("swal", ValidationResources.Error, ex.Message, "error");
+                return false;
+            }
+        }
+
+        private async Task LoadShipments(Guid orderId)
+        {
+            try
+            {
+                isLoadingShipments = true;
+                StateHasChanged();
+
+                var result = await ShipmentService.GetOrderShipmentsAsync(orderId);
+                if (result.Success && result.Data != null)
+                {
+                    Shipments = result.Data;
+                }
+                else
+                {
+                    Shipments = new List<ShipmentDto>();
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error loading shipments: {ex.Message}");
+                Shipments = new List<ShipmentDto>();
+            }
+            finally
+            {
+                isLoadingShipments = false;
+                StateHasChanged();
+            }
+        }
+
+        // FIXED: Align with PaymentStatus enum (1-8)
+        private string GetPaymentStatusClass(PaymentStatus status) => status switch
+        {
+            PaymentStatus.Pending => "warning",                   // 1
+            PaymentStatus.Processing => "info",                   // 2
+            PaymentStatus.Completed => "success",                 // 3
+            PaymentStatus.Failed => "danger",                     // 4
+            PaymentStatus.Cancelled => "secondary",               // 5
+            PaymentStatus.Refunded => "info",                     // 6
+            PaymentStatus.PartiallyRefunded => "warning",         // 7
+            PaymentStatus.PartiallyPaid => "warning",             // 8
+            _ => "secondary"
+        };
+
+        // FIXED: Align with PaymentStatus enum using Resources
+        private string GetLocalizedPaymentStatus(PaymentStatus status) => status switch
+        {
+            PaymentStatus.Pending => OrderResources.Pending,
+            PaymentStatus.Processing => OrderResources.Processing,
+            PaymentStatus.Completed => OrderResources.Paid,
+            PaymentStatus.Failed => OrderResources.Failed,
+            PaymentStatus.Cancelled => OrderResources.Cancelled,
+            PaymentStatus.Refunded => OrderResources.Refunded,
+            PaymentStatus.PartiallyRefunded => OrderResources.PartiallyRefunded,
+            PaymentStatus.PartiallyPaid => OrderResources.PartiallyPaid,
+            _ => status.ToString()
+        };
+
+        // FIXED: Align with OrderProgressStatus enum (0-10)
+        private string GetOrderStatusClass(OrderProgressStatus status) => status switch
+        {
+            OrderProgressStatus.Pending => "secondary",           // 0
+            OrderProgressStatus.Confirmed => "info",              // 1
+            OrderProgressStatus.Processing => "primary",          // 2
+            OrderProgressStatus.Shipped => "warning",             // 3
+            OrderProgressStatus.Delivered => "success",           // 4
+            OrderProgressStatus.Completed => "success",           // 5
+            OrderProgressStatus.Cancelled => "danger",            // 6
+            OrderProgressStatus.PaymentFailed => "danger",        // 7
+            OrderProgressStatus.RefundRequested => "warning",     // 8
+            OrderProgressStatus.Refunded => "info",               // 9
+            OrderProgressStatus.Returned => "secondary",          // 10
+            _ => "secondary"
+        };
+
+        // FIXED: Align with OrderProgressStatus enum using Resources
+        private string GetLocalizedOrderStatus(OrderProgressStatus status) => status switch
+        {
+            OrderProgressStatus.Pending => OrderResources.Pending,
+            OrderProgressStatus.Confirmed => OrderResources.Confirmed,
+            OrderProgressStatus.Processing => OrderResources.Processing,
+            OrderProgressStatus.Shipped => OrderResources.Shipping,
+            OrderProgressStatus.Delivered => OrderResources.Delivered,
+            OrderProgressStatus.Completed => OrderResources.Completed,
+            OrderProgressStatus.Cancelled => OrderResources.Cancelled,
+            OrderProgressStatus.PaymentFailed => OrderResources.PaymentFailed,
+            OrderProgressStatus.RefundRequested => OrderResources.RefundRequested,
+            OrderProgressStatus.Refunded => OrderResources.Refunded,
+            OrderProgressStatus.Returned => OrderResources.Returned,
+            _ => status.ToString()
+        };
+
+        private string GetShipmentStatusClass(ShipmentStatus status) => status switch
+        {
+            ShipmentStatus.Pending => "secondary",
+            ShipmentStatus.Processing => "primary",
+            ShipmentStatus.Shipped => "warning",
+            ShipmentStatus.InTransit => "info",
+            ShipmentStatus.OutForDelivery => "info",
+            ShipmentStatus.Delivered => "success",
+            ShipmentStatus.Returned => "danger",
+            ShipmentStatus.Cancelled => "danger",
+            _ => "secondary"
+        };
+
+        private string GetLocalizedStatus(ShipmentStatus status) => status switch
+        {
+            ShipmentStatus.Pending => OrderResources.Pending,
+            ShipmentStatus.Processing => OrderResources.Processing,
+            ShipmentStatus.Shipped => OrderResources.Shipped,
+            ShipmentStatus.InTransit => OrderResources.InTransit,
+            ShipmentStatus.OutForDelivery => OrderResources.OutForDelivery,
+            ShipmentStatus.Delivered => OrderResources.Delivered,
+            ShipmentStatus.Returned => OrderResources.Returned,
+            ShipmentStatus.Cancelled => OrderResources.Cancelled,
+            _ => status.ToString()
+        };
+    }
+}

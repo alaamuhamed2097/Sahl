@@ -2500,6 +2500,15 @@ namespace Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to الإجمالي.
+        /// </summary>
+        public static string Total {
+            get {
+                return ResourceManager.GetString("Total", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to إجمالي الإعلانات.
         /// </summary>
         public static string TotalAdverts {

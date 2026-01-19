@@ -1,23 +1,19 @@
 ﻿using Common.Enumerations.Review;
-using DAL.Models;
 using Domains.Entities.ECommerceSystem.Review;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace DAL.Contracts.Repositories.Review
 {
 	public interface IItemReviewRepository : ITableRepository<TbItemReview>
 	{
-
 		/// <summary>
 		/// Retrieves all approved reviews for a specific Item.
 		/// </summary>
 		/// <param name="ItemId">The ID of the Item.</param>
 		/// <param name="cancellationToken">Token to cancel the operation.</param>
 		/// <returns>A collection of TbItemReview entries.</returns>
-		Task<IEnumerable<TbItemReview>> GetReviewsByItemIdAsync(Guid ItemId, CancellationToken cancellationToken = default);
-
+		Task<IEnumerable<TbItemReview>> GetReviewsByItemIdAsync(
+			Guid ItemId, 
+			CancellationToken cancellationToken = default);
 
 		/// <summary>
 		/// Retrieves the full details of a specific review.
@@ -25,52 +21,19 @@ namespace DAL.Contracts.Repositories.Review
 		/// <param name="reviewId">The ID of the review.</param>
 		/// <param name="cancellationToken">Token to cancel the operation.</param>
 		/// <returns>The review entity if found; otherwise null.</returns>
-		Task<TbItemReview?> GetReviewDetailsAsync(Guid reviewId, CancellationToken cancellationToken = default);
-
-
-		///// <summary>
-		///// Retrieves the review created by a specific customer for a specific order item.
-		///// </summary>
-		///// <param name="orderItemId">The ID of the order item.</param>
-		///// <param name="customerId">The ID of the customer.</param>
-		///// <param name="cancellationToken">Token to cancel the operation.</param>
-		///// <returns>The corresponding review if exists; otherwise null.</returns>
-		//Task<TbItemReview?> GetCustomerReviewForOrderItemAsync(Guid orderItemId, Guid customerId, CancellationToken cancellationToken = default);
-
-
+		Task<TbItemReview?> GetReviewDetailsAsync(
+			Guid reviewId, 
+			CancellationToken cancellationToken = default);
+		
 		/// <summary>
 		/// Calculates the average rating for a specific Item.
 		/// </summary>
 		/// <param name="ItemId">The ID of the Item.</param>
 		/// <param name="cancellationToken">Token to cancel the operation.</param>
 		/// <returns>The average rating value.</returns>
-		Task<decimal> GetAverageRatingAsync(Guid ItemId, CancellationToken cancellationToken = default);
-
-
-		/// <summary>
-		/// Retrieves a paginated list of reviews with optional filtering by Item and status.
-		/// </summary>
-		/// <param name="ItemId">Optional filter: Item id.</param>
-		/// <param name="status">Optional filter: review status.</param>
-		/// <param name="pageNumber">Page number (default: 1).</param>
-		/// <param name="pageSize">Page size (default: 10).</param>
-		/// <param name="cancellationToken">Token to cancel the operation.</param>
-		/// <returns>A paginated model containing reviews and metadata.</returns>
-		//Task<PaginatedDataModel<TbItemReview>> GetPaginatedReviewsAsync(
-		//	Guid? ItemId = null,
-		//	ReviewStatus? status = null,
-		//	int pageNumber = 1,
-		//	int pageSize = 10,
-		//	CancellationToken cancellationToken = default);
-
-
-		/// <summary>
-		/// Retrieves all reviews pending moderation.
-		/// </summary>
-		/// <param name="cancellationToken">Token to cancel the operation.</param>
-		/// <returns>A collection of pending reviews.</returns>
-		Task<IEnumerable<TbItemReview>> GetPendingReviewsAsync(CancellationToken cancellationToken = default);
-
+		Task<decimal> GetAverageRatingAsync(
+			Guid ItemId, 
+			CancellationToken cancellationToken = default);
 
 		/// <summary>
 		/// Counts the number of approved reviews for a specific Item.
@@ -78,8 +41,9 @@ namespace DAL.Contracts.Repositories.Review
 		/// <param name="ItemId">The ID of the Item.</param>
 		/// <param name="cancellationToken">Token to cancel the operation.</param>
 		/// <returns>Total number of reviews for the Item.</returns>
-		Task<int> GetReviewCountByItemIdAsync(Guid ItemId, CancellationToken cancellationToken = default);
-
+		Task<int> GetReviewCountByItemIdAsync(
+			Guid ItemId, 
+			CancellationToken cancellationToken = default);
 
 		/// <summary>
 		/// Retrieves the distribution of ratings (1–5 stars) for a specific product.
@@ -87,8 +51,14 @@ namespace DAL.Contracts.Repositories.Review
 		/// <param name="productId">The ID of the product.</param>
 		/// <param name="cancellationToken">Token to cancel the operation.</param>
 		/// <returns>A dictionary where key = rating value, value = count.</returns>
-		Task<Dictionary<int, int>> GetRatingDistributionAsync(Guid productId, CancellationToken cancellationToken = default);
+		Task<Dictionary<int, int>> GetRatingDistributionAsync(
+			Guid productId, 
+			CancellationToken cancellationToken = default);
 
-
+		Task<bool> UpdateReviewStatus(
+			Guid reviewId, 
+			ReviewStatus newStatus, 
+			string adminId, 
+			CancellationToken cancellationToken = default);
 	}
 }
