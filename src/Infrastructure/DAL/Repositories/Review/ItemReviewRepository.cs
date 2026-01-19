@@ -2,9 +2,12 @@
 using Common.Enumerations.Review;
 using DAL.ApplicationContext;
 using DAL.Contracts.Repositories.Review;
+using DAL.Exceptions;
+using DAL.Models;
 using Domains.Entities.ECommerceSystem.Review;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
+using System.Linq.Expressions;
 
 namespace DAL.Repositories.Review
 {
@@ -12,6 +15,51 @@ namespace DAL.Repositories.Review
     {
         public ItemReviewRepository(ApplicationDbContext dbContext, ICurrentUserService currentUserService, ILogger logger)
             : base(dbContext, currentUserService, logger) { }
+
+        public override async Task<PagedResult<TbItemReview>> GetPageAsync(
+            int pageNumber, 
+            int pageSize, 
+            Expression<Func<TbItemReview, bool>> filter = null, 
+            Func<IQueryable<TbItemReview>, IOrderedQueryable<TbItemReview>> orderBy = null, 
+            CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                ValidatePaginationParameters(pageNumber, pageSize);
+
+                IQueryable<TbItemReview> query = _dbContext.Set<TbItemReview>()
+                    .Include(r => r.ReviewVotes.Where(v => !v.IsDeleted))
+                    .Include(r => r.ReviewReports.Where(rr => !rr.IsDeleted))
+                    .Include(r => r.Customer)
+                    .ThenInclude(c => c.User)
+                    .AsNoTracking();
+
+                if (filter != null)
+                {
+                    query = query.Where(filter);
+                }
+
+                if (orderBy != null)
+                {
+                    query = orderBy(query);
+                }
+
+                int totalCount = await query.CountAsync(cancellationToken);
+                query = query.Skip((pageNumber - 1) * pageSize).Take(pageSize);
+                var data = await query.ToListAsync(cancellationToken);
+
+                return new PagedResult<TbItemReview>(data, totalCount);
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex, $"Error occurred in {nameof(GetPageAsync)} method for entity type {typeof(TbItemReview).Name}.");
+                throw new DataAccessException(
+                    $"Error occurred in {nameof(GetPageAsync)} method for entity type {typeof(TbItemReview).Name}.",
+                    ex,
+                    _logger
+                );
+            }
+        }
 
         /// <summary>
         /// Retrieves all approved (visible) reviews for a given Item.
@@ -56,9 +104,11 @@ namespace DAL.Repositories.Review
             try
             {
                 return await _dbContext.Set<TbItemReview>()
-                    .AsNoTracking()
                     .Include(r => r.ReviewVotes.Where(v => !v.IsDeleted))
                     .Include(r => r.ReviewReports.Where(rr => !rr.IsDeleted))
+                    .Include(r => r.Customer)
+                    .ThenInclude(c => c.User) 
+                    .AsNoTracking()
                     .FirstOrDefaultAsync(
                         r => r.Id == reviewId && !r.IsDeleted,
                         cancellationToken);
@@ -70,35 +120,7 @@ namespace DAL.Repositories.Review
                 return null;
             }
         }
-        ///// <summary>
-        ///// Retrieves a customer's review for a specific order item.
-        ///// Useful for preventing duplicate reviews for the same purchased item.
-        ///// </summary>
-        ///// <param name="orderItemId">Order item ID.</param>
-        ///// <param name="customerId">Customer ID.</param>
-        ///// <param name="cancellationToken">Cancellation token.</param>
-        ///// <returns>The review if found; otherwise null.</returns>
-        //public async Task<TbItemReview?> GetCustomerReviewForOrderItemAsync(
-
-        //	Guid customerId,
-        //	CancellationToken cancellationToken = default)
-        //{
-        //	try
-        //	{
-        //		return await _dbContext.Set<TbItemReview>()
-        //			.AsNoTracking()
-        //			.FirstOrDefaultAsync(r => 
-        //				 r.CustomerId == customerId
-        //				&& !r.IsDeleted,
-        //				cancellationToken);
-        //	}
-        //	catch (Exception ex)
-        //	{
-        //		HandleException(nameof(GetCustomerReviewForOrderItemAsync),
-        //			$"Error occurred while checking customer review for order item.", ex);
-        //		return null;
-        //	}
-        //}
+        
         /// <summary>
         /// Calculates the average rating for a specific Item
         /// considering only approved, non-deleted reviews.
@@ -131,45 +153,6 @@ namespace DAL.Repositories.Review
         }
 
         /// <summary>
-        /// Retrieves paginated list of reviews with optional filters (ItemId and Status).
-        /// Useful for admin panels and customer history views.
-        /// </summary>
-        /// <param name="ItemId">Optional filter by Item.</param>
-        /// <param name="status">Optional filter by review status.</param>
-        /// <param name="pageNumber">Page index starting from 1.</param>
-        /// <param name="pageSize">Number of items per page.</param>
-        /// <param name="cancellationToken">Cancellation token.</param>
-        /// <returns>A paginated data model wrapping reviews and total count.</returns>
-
-
-        /// <summary>
-        /// Retrieves all reviews currently pending admin approval.
-        /// </summary>
-        /// <param name="cancellationToken">Cancellation token.</param>
-        /// <returns>A list of pending reviews sorted by creation date.</returns>
-        public async Task<IEnumerable<TbItemReview>> GetPendingReviewsAsync(
-            CancellationToken cancellationToken = default)
-        {
-            try
-            {
-                return await _dbContext.Set<TbItemReview>()
-                    .AsNoTracking()
-                    .Where(r => r.Status == ReviewStatus.Pending
-                        && !r.IsDeleted)
-                    .OrderBy(r => r.CreatedDateUtc)
-                    .ToListAsync(cancellationToken);
-            }
-            catch (Exception ex)
-            {
-                HandleException(nameof(GetPendingReviewsAsync),
-                    $"Error occurred while retrieving pending reviews.", ex);
-                return new List<TbItemReview>();
-            }
-        }
-
-
-
-        /// <summary>
         /// Counts the number of approved, non-deleted reviews for a given Item.
         /// Used for statistics and rating calculations.
         /// </summary>
@@ -197,7 +180,6 @@ namespace DAL.Repositories.Review
             }
         }
 
-
         /// <summary>
         /// Returns the distribution of ratings (1-5 stars) for a specific Item.
         /// Groups ratings and returns a dictionary: Key = rating, Value = count.
@@ -222,6 +204,38 @@ namespace DAL.Repositories.Review
                 .ToDictionary(g => g.Key, g => g.Count());
         }
 
+        public async Task<bool> UpdateReviewStatus(
+            Guid reviewId, 
+            ReviewStatus newStatus, 
+            string adminId, 
+            CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                var entity = await _dbContext.Set<TbItemReview>().FindAsync(new object[] { reviewId }, cancellationToken);
 
+                if (entity == null)
+                    throw new NotFoundException($"Entity of type {typeof(TbReviewReport).Name} with ID {reviewId} not found.", _logger);
+
+                entity.Status = newStatus;
+                entity.UpdatedBy = new Guid(adminId);
+                entity.UpdatedDateUtc = DateTime.UtcNow;
+
+                _dbContext.Set<TbItemReview>().Update(entity);
+                return await _dbContext.SaveChangesAsync(cancellationToken) > 0;
+            }
+            catch (DbUpdateException dbEx)
+            {
+                HandleException(nameof(UpdateIsDeletedAsync),
+                    $"Database update error while updating IsDeleted for entity type {typeof(TbItemReview).Name}, ID {reviewId}.", dbEx);
+                return false;
+            }
+            catch (Exception ex)
+            {
+                HandleException(nameof(UpdateIsDeletedAsync),
+                    $"Error occurred while updating IsDeleted for entity type {typeof(TbItemReview).Name}, ID {reviewId}.", ex);
+                return false;
+            }
+        }
     }
 }

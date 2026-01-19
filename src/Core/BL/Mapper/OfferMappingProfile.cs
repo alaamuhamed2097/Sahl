@@ -81,7 +81,7 @@ public partial class MappingProfile
         // Additional offer mappings
         CreateMap<TbOfferCombinationPricing, OfferCombinationPricingDto>()
             .ReverseMap();
-        CreateMap<TbOfferCondition, OfferConditionDto>()
+        CreateMap<TbOfferCondition, VendorItemConditionDto>()
             .ReverseMap();
         CreateMap<TbOfferPriceHistory, OfferPriceHistoryDto>()
             .ReverseMap();

@@ -22,7 +22,9 @@ public partial class MappingProfile
             .ForMember(dest => dest.CityName,
                 opt => opt.MapFrom(src => src.City.TitleAr))
             .ForMember(dest => dest.StateName,
-                opt => opt.MapFrom(src => src.City.State.TitleAr));
+                opt => opt.MapFrom(src => src.City.State.TitleAr))
+            .ForMember(dest => dest.CountryName,
+                opt => opt.MapFrom(src => src.City.State.Country.TitleAr));
 
         // TbCustomerAddress → AddressSelectionDto
         CreateMap<TbCustomerAddress, AddressSelectionDto>()

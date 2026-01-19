@@ -5,6 +5,7 @@ using Shared.Attributes;
 using Shared.Contracts;
 using Shared.DTOs.Base;
 using Shared.DTOs.Currency;
+using Shared.DTOs.ECommerce.Offer;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Globalization;
@@ -82,7 +83,7 @@ namespace Shared.DTOs.Catalog.Item
         [MinLength(1, ErrorMessageResourceName = "ImagesRequired", ErrorMessageResourceType = typeof(ValidationResources))]
         public List<ItemImageDto> Images { get; set; } = new();
 
-       //public List<ItemCombinationDto> ItemCombinations { get; set; } = new();
+       public SaveVendorItemDto? defaultOfferData { get; set; } = new();
        public List<ItemAttributeDto>? ItemAttributes { get; set; } = new();
     }
 }

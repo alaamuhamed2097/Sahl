@@ -40,11 +40,11 @@ namespace Api.Controllers.v1.User
                 var result = await _customerService.GetAllAsync();
                 if (result.Success)
                     return Ok(CreateSuccessResponse(result.Data, "Customers retrieved successfully"));
-                return BadRequest(CreateErrorResponse(result.Message));
+                return BadRequest(CreateErrorResponse<IEnumerable<CustomerDto>>(result.Message));
             }
             catch (Exception ex)
             {
-                return StatusCode(500, CreateErrorResponse(ex.Message));
+                return StatusCode(500, CreateErrorResponse<IEnumerable<CustomerDto>>(ex.Message));
             }
         }
 
@@ -61,11 +61,11 @@ namespace Api.Controllers.v1.User
                 var result = await _customerService.GetByIdAsync(id);
                 if (result.Success && result.Data != null)
                     return Ok(CreateSuccessResponse(result.Data, "Customer retrieved successfully"));
-                return NotFound(CreateErrorResponse(NotifiAndAlertsResources.NoDataFound));
+                return NotFound(CreateErrorResponse<CustomerDto>(NotifiAndAlertsResources.NoDataFound));
             }
             catch (Exception ex)
             {
-                return StatusCode(500, CreateErrorResponse(ex.Message));
+                return StatusCode(500, CreateErrorResponse<CustomerDto>(ex.Message));
             }
         }
 
@@ -102,7 +102,7 @@ namespace Api.Controllers.v1.User
             try
             {
                 if (criteria == null)
-                    return BadRequest(CreateErrorResponse(NotifiAndAlertsResources.InvalidInputAlert));
+                    return BadRequest(CreateErrorResponse<AdvancedPagedResult<CustomerDto>>(NotifiAndAlertsResources.InvalidInputAlert));
 
                 ValidateBaseSearchCriteriaModel(criteria);
 
@@ -114,7 +114,7 @@ namespace Api.Controllers.v1.User
             }
             catch (Exception ex)
             {
-                return StatusCode(500, CreateErrorResponse(ex.Message));
+                return StatusCode(500, CreateErrorResponse<AdvancedPagedResult<CustomerDto>>(ex.Message));
             }
         }
 
@@ -127,18 +127,18 @@ namespace Api.Controllers.v1.User
         public async Task<IActionResult> Save([FromBody] CustomerDto dto)
         {
             if (dto == null)
-                return BadRequest(CreateErrorResponse(NotifiAndAlertsResources.InvalidInputAlert));
+                return BadRequest(CreateErrorResponse<CustomerDto>(NotifiAndAlertsResources.InvalidInputAlert));
 
             try
             {
                 var result = await _customerService.SaveAsync(dto);
                 if (result.Success)
                     return Ok(CreateSuccessResponse(result.Data, NotifiAndAlertsResources.SavedSuccessfully));
-                return BadRequest(CreateErrorResponse(result.Message));
+                return BadRequest(CreateErrorResponse<CustomerDto>(result.Message));
             }
             catch (Exception ex)
             {
-                return StatusCode(500, CreateErrorResponse(ex.Message));
+                return StatusCode(500, CreateErrorResponse<CustomerDto>(ex.Message));
             }
         }
 
@@ -151,18 +151,18 @@ namespace Api.Controllers.v1.User
         public async Task<IActionResult> Delete([FromBody] Guid id)
         {
             if (id == Guid.Empty)
-                return BadRequest(CreateErrorResponse(NotifiAndAlertsResources.InvalidInputAlert));
+                return BadRequest(CreateErrorResponse<bool>(NotifiAndAlertsResources.InvalidInputAlert));
 
             try
             {
                 var result = await _customerService.DeleteAsync(id);
                 if (result.Success)
                     return Ok(CreateSuccessResponse(true, NotifiAndAlertsResources.DeletedSuccessfully));
-                return BadRequest(CreateErrorResponse(result.Message));
+                return BadRequest(CreateErrorResponse<bool>(result.Message));
             }
             catch (Exception ex)
             {
-                return StatusCode(500, CreateErrorResponse(ex.Message));
+                return StatusCode(500, CreateErrorResponse<bool>(ex.Message));
             }
         }
 
@@ -177,16 +177,16 @@ namespace Api.Controllers.v1.User
             try
             {
                 if (request?.CustomerId == null || request.CustomerId == Guid.Empty)
-                    return BadRequest(CreateErrorResponse("Customer ID is required"));
+                    return BadRequest(CreateErrorResponse<bool>("Customer ID is required"));
 
                 var result = await _customerService.ChangeStatusAsync(request.CustomerId, request.Status);
                 if (result.Success)
                     return Ok(CreateSuccessResponse(true, "Account status updated successfully"));
-                return BadRequest(CreateErrorResponse(result.Message));
+                return BadRequest(CreateErrorResponse<bool>(result.Message));
             }
             catch (Exception ex)
             {
-                return StatusCode(500, CreateErrorResponse(ex.Message));
+                return StatusCode(500, CreateErrorResponse<bool>(ex.Message));
             }
         }
 
@@ -203,11 +203,11 @@ namespace Api.Controllers.v1.User
                 var result = await _customerService.GetStatusAsync(id);
                 if (result.Success)
                     return Ok(CreateSuccessResponse(result.Data, "Status retrieved successfully"));
-                return BadRequest(CreateErrorResponse(result.Message));
+                return BadRequest(CreateErrorResponse<UserStateType>(result.Message));
             }
             catch (Exception ex)
             {
-                return StatusCode(500, CreateErrorResponse(ex.Message));
+                return StatusCode(500, CreateErrorResponse<UserStateType>(ex.Message));
             }
         }
 
@@ -242,7 +242,7 @@ namespace Api.Controllers.v1.User
             }
             catch (Exception ex)
             {
-                return StatusCode(500, CreateErrorResponse(ex.Message));
+                return StatusCode(500, CreateErrorResponse<AdvancedPagedResult<OrderHistoryDto>>(ex.Message));
             }
         }
 
@@ -278,7 +278,7 @@ namespace Api.Controllers.v1.User
             }
             catch (Exception ex)
             {
-                return StatusCode(500, CreateErrorResponse(ex.Message));
+                return StatusCode(500, CreateErrorResponse<AdvancedPagedResult<object>>(ex.Message));
             }
         }
 
@@ -295,11 +295,11 @@ namespace Api.Controllers.v1.User
                 var result = await _customerService.GetWalletBalanceAsync(id);
                 if (result.Success)
                     return Ok(CreateSuccessResponse(result.Data, "Wallet balance retrieved successfully"));
-                return BadRequest(CreateErrorResponse(result.Message));
+                return BadRequest(CreateErrorResponse<bool>(result.Message));
             }
             catch (Exception ex)
             {
-                return StatusCode(500, CreateErrorResponse(ex.Message));
+                return StatusCode(500, CreateErrorResponse<bool>(ex.Message));
             }
         }
 
@@ -319,11 +319,11 @@ namespace Api.Controllers.v1.User
                     var selectList = result.Data.Select(c => new { value = c.Id, label = $"{c.FirstName} {c.LastName}" });
                     return Ok(CreateSuccessResponse(selectList, "Select list retrieved successfully"));
                 }
-                return Ok(CreateSuccessResponse(new List<object>(), "No customers available"));
+                return Ok(CreateSuccessResponse(new List<CustomerDto>(), "No customers available"));
             }
             catch (Exception ex)
             {
-                return StatusCode(500, CreateErrorResponse(ex.Message));
+                return StatusCode(500, CreateErrorResponse<IEnumerable<CustomerDto>>(ex.Message));
             }
         }
     }

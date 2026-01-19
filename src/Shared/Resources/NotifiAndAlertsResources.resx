@@ -474,6 +474,9 @@
   <data name="RequestRejected" xml:space="preserve">
     <value>تم رفض الطلب</value>
   </data>
+  <data name="RequestAccepted" xml:space="preserve">
+    <value>تم قبول الطلب</value>
+  </data>
   <data name="FailedToProcessRequest" xml:space="preserve">
     <value>تعذّرت معالجة الطلب. يُرجى المحاولة مجددًا.</value>
   </data>

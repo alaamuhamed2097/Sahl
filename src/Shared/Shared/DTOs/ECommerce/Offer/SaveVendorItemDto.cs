@@ -12,7 +12,7 @@ namespace Shared.DTOs.ECommerce.Offer
         // Filtering and search optimization
         public int? EstimatedDeliveryDays { get; set; }
         public bool IsFreeShipping { get; set; } = false;
-        public FulfillmentType FulfillmentType { get; set; } = FulfillmentType.Vendor;
+        public FulfillmentType FulfillmentType { get; set; } = FulfillmentType.Marketplace;
 
         // Optional properties
         public Guid? WarrantyId { get; set; }

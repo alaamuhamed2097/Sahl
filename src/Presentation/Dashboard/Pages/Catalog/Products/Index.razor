@@ -51,6 +51,11 @@
 						</div>
 					</li>
 					<li class="nav-item ms-auto d-flex flex-row align-items-center gap-2">
+						<!-- New products requests buttons-->
+						<button class="btn btn-primary" @onclick="GoToNewProductRequests">
+							<i class="fas fa-file-alt mx-1"></i>
+							<span class="fw-bold">@ECommerceResources.NewProductRequests</span>
+						</button>
 						<!-- Export Buttons -->
 						<div class="dropdown">
 							<button class="btn btn-info" type="button" id="exportDropdown" data-bs-toggle="dropdown" aria-expanded="false">
@@ -64,10 +69,10 @@
 						</div>
 
 						<!-- Import Button -->
-						<button class="btn btn-warning" @onclick="GoToImport">
+						@* <button class="btn btn-warning" @onclick="GoToImport">
 							<i class="fas fa-file-import mx-1"></i>
 							<span class="fw-bold">@ActionsResources.Import</span>
-						</button>
+						</button> *@
 
 						<!-- Add Button -->
 						<button class="btn btn-success" @onclick="Add">

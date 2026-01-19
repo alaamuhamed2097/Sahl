@@ -984,6 +984,36 @@
   <data name="AverageRating" xml:space="preserve">
     <value>متوسط التقييم</value>
   </data>
+  <data name="EstimatedDeliveryDays" xml:space="preserve">
+  <value>أيام التسليم المقدرة</value>
+</data>
+<data name="FreeShipping" xml:space="preserve">
+  <value>شحن مجاني</value>
+</data>
+<data name="Combinations" xml:space="preserve">
+  <value>الخيارات</value>
+</data>
+<data name="Condition" xml:space="preserve">
+  <value>الحالة</value>
+</data>
+<data name="Price" xml:space="preserve">
+  <value>السعر</value>
+</data>
+<data name="AvailableQuantity" xml:space="preserve">
+  <value>الكمية المتاحة</value>
+</data>
+<data name="MinOrderQuantity" xml:space="preserve">
+  <value>الحد الأدنى للطلب</value>
+</data>
+<data name="MaxOrderQuantity" xml:space="preserve">
+  <value>الحد الأقصى للطلب</value>
+</data>
+<data name="LowStockThreshold" xml:space="preserve">
+  <value>عتبة نقص المخزون</value>
+</data>
+  <data name="NewProductRequests" xml:space="preserve">
+  <value>طلبات إضافة منتجات جديدة</value>
+</data>
   <data name="Total" xml:space="preserve">
     <value>الإجمالي</value>
   </data>
