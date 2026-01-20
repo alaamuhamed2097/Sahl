@@ -66,7 +66,6 @@ namespace Api.Controllers.v1.Merchandising
             {
                 // Call service to submit request
                 var serviceResponse = await _participationService.SubmitParticipationRequestAsync(
-                    GuidUserId,
                     request,
                     GuidUserId);
 

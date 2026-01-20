@@ -14,7 +14,6 @@ namespace BL.Contracts.Service.Merchandising.PromoCode
         /// Submits a participation request for a vendor to join a public promo code
         /// </summary>
         Task<(bool Success, string Message, VendorPromoCodeParticipationRequestDto? Data)> SubmitParticipationRequestAsync(
-            Guid vendorId, 
             CreateVendorPromoCodeParticipationRequestDto request,
             Guid userId);
 

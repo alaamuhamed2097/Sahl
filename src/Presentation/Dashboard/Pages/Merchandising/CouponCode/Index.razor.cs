@@ -100,7 +100,6 @@ namespace Dashboard.Pages.Merchandising.CouponCode
                 CouponCodeType.General => CouponCodeResources.GeneralCoupon,
                 CouponCodeType.CategoryBased => CouponCodeResources.CategoryBasedCoupon,
                 CouponCodeType.VendorBased => CouponCodeResources.VendorBasedCoupon,
-                CouponCodeType.NewUserOnly => CouponCodeResources.NewUserOnlyCoupon,
                 _ => type.ToString()
             };
         }
@@ -112,7 +111,6 @@ namespace Dashboard.Pages.Merchandising.CouponCode
                 CouponCodeType.General => CouponCodeResources.GeneralCoupon,
                 CouponCodeType.CategoryBased => CouponCodeResources.CategoryBasedCoupon,
                 CouponCodeType.VendorBased => CouponCodeResources.VendorBasedCoupon,
-                CouponCodeType.NewUserOnly => CouponCodeResources.NewUserOnlyCoupon,
                 _ => type.ToString()
             };
         }
@@ -124,7 +122,6 @@ namespace Dashboard.Pages.Merchandising.CouponCode
                 CouponCodeType.General => "bg-primary",
                 CouponCodeType.CategoryBased => "bg-info",
                 CouponCodeType.VendorBased => "bg-success",
-                CouponCodeType.NewUserOnly => "bg-warning text-dark",
                 _ => "bg-secondary"
             };
         }

@@ -266,43 +266,6 @@ namespace UnitTests.Core.BL.Services.Merchandising
 
         #endregion
 
-        #region NewUserOnly Promo Type Tests
-
-        [Fact]
-        public async Task SaveAsync_NewUserOnly_WithoutScopes_ShouldSucceed()
-        {
-            // Arrange
-            var dto = CreateTestCouponDto(Guid.Empty, "NEWUSER");
-            dto.PromoType = CouponCodeType.NewUserOnly;
-            dto.IsFirstOrderOnly = true;
-            dto.ScopeItems = null;
-
-            var entity = CreateTestCoupon(Guid.NewGuid(), "NEWUSER");
-            entity.IsFirstOrderOnly = true;
-            var saveResult = new SaveResult { Success = true, Id = entity.Id };
-
-            _mockRepository.Setup(r => r.IsCodeUniqueAsync("NEWUSER", null, default))
-                .ReturnsAsync(true);
-            _mockMapper.Setup(m => m.Map<TbCouponCode>(dto))
-                .Returns(entity);
-            _mockRepository.Setup(r => r.SaveAsync(It.IsAny<TbCouponCode>(), _testUserId, default))
-                .ReturnsAsync(saveResult);
-            _mockRepository.Setup(r => r.GetByIdAsync(entity.Id, default))
-                .ReturnsAsync(entity);
-            _mockMapper.Setup(m => m.Map<CouponCodeDto>(entity))
-                .Returns(dto);
-
-            // Act
-            var result = await _service.SaveAsync(dto, _testUserId);
-
-            // Assert
-            Assert.NotNull(result);
-            Assert.Equal(CouponCodeType.NewUserOnly, result.PromoType);
-            Assert.True(result.IsFirstOrderOnly);
-        }
-
-        #endregion
-
         #region Co-Funded Tests
 
         [Fact]

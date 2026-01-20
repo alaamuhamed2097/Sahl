@@ -12,9 +12,11 @@ public partial class MappingProfile
     {
         // TbCouponCode <-> CouponCodeDto
         CreateMap<TbCouponCode, CouponCodeDto>()
-            .ForMember(dest => dest.VendorName,
+            .ForMember(
+                dest => dest.VendorName,
                 opt => opt.MapFrom(src => src.Vendor != null ? src.Vendor.StoreName : null))
-            .ForMember(dest => dest.ScopeItems,
+            .ForMember(
+                dest => dest.ScopeItems,
                 opt => opt.MapFrom(src => src.CouponScopes));
 
         CreateMap<CouponCodeDto, TbCouponCode>()
@@ -27,12 +29,12 @@ public partial class MappingProfile
             .ForMember(dest => dest.UpdatedDateUtc, opt => opt.Ignore())
             .ForMember(dest => dest.IsDeleted, opt => opt.Ignore());
 
-        // TbCouponCodeScope <-> CouponScopeDto
-        CreateMap<TbCouponCodeScope, CouponScopeDto>();
-
-        CreateMap<CouponScopeDto, TbCouponCodeScope>()
+        CreateMap<TbCouponCodeScope, CouponScopeDto>()
+            .ReverseMap()
             .ForMember(dest => dest.CouponCode, opt => opt.Ignore())
             .ForMember(dest => dest.CreatedBy, opt => opt.Ignore())
-            .ForMember(dest => dest.CreatedDateUtc, opt => opt.Ignore());
+            .ForMember(dest => dest.CreatedDateUtc, opt => opt.Ignore())
+            .ForMember(dest => dest.UpdatedBy, opt => opt.Ignore())
+            .ForMember(dest => dest.UpdatedDateUtc, opt => opt.Ignore());
     }
 }

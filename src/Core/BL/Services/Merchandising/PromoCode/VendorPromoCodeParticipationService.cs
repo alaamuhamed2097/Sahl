@@ -39,12 +39,13 @@ namespace BL.Services.Merchandising.PromoCode
         /// Submits a participation request for a vendor to join a public promo code
         /// </summary>
         public async Task<(bool Success, string Message, VendorPromoCodeParticipationRequestDto? Data)> SubmitParticipationRequestAsync(
-            Guid vendorId,
             CreateVendorPromoCodeParticipationRequestDto request,
             Guid userId)
         {
             try
             {
+                var vendorId = (await _vendorRepository.FindAsync(v => v.UserId == userId.ToString())).Id;
+
                 if (vendorId == Guid.Empty || request.PromoCodeId == Guid.Empty)
                     return (false, "Invalid vendor or promo code ID", null);
 
@@ -73,11 +74,11 @@ namespace BL.Services.Merchandising.PromoCode
                 {
                     VendorId = vendorId,
                     RequestType = SellerRequestType.PromoCodeParticipation,
-                    Status = SellerRequestStatus.Pending,
+                    Status = SellerRequestStatus.Approved,
                     TitleEn = $"Promo Code Participation Request - {promoCode.Code}",
-                    TitleAr = $"??? ???????? ?? ??? ??????? - {promoCode.Code}",
+                    TitleAr = $"طلب المشاركة في العرض الترويجي - {promoCode.Code}",
                     DescriptionEn = request.DescriptionEn ?? $"Request to participate in promo code: {promoCode.Code}",
-                    DescriptionAr = request.DescriptionAr ?? $"??? ???????? ?? ??? ???????: {promoCode.Code}",
+                    DescriptionAr = request.DescriptionAr ?? $"طلب المشاركة في الرمز الترويجي: {promoCode.Code}",
                     RequestData = request.PromoCodeId.ToString(),
                     SubmittedAt = DateTime.UtcNow,
                     Priority = 1 // Normal priority
@@ -196,7 +197,7 @@ namespace BL.Services.Merchandising.PromoCode
         {
             try
             {
-                var requestsResult = await _sellerRequestRepository.FindAsync(r =>
+                var requestsResult = await _sellerRequestRepository.GetAsync(r =>
                     r.RequestType == SellerRequestType.PromoCodeParticipation &&
                     (promoCodeId == null || r.RequestData == promoCodeId.Value.ToString()));
 
@@ -222,7 +223,7 @@ namespace BL.Services.Merchandising.PromoCode
                 var resultDtos = new List<AdminVendorPromoCodeParticipationRequestListDto>();
 
                 var vendorIds = pagedRequests.Select(x => x.VendorId).Distinct().ToList();
-                var vendorsResult = await _vendorRepository.FindAsync(v => vendorIds.Contains(v.Id));
+                var vendorsResult = await _vendorRepository.GetAsync(v => vendorIds.Contains(v.Id));
                 var vendors = (vendorsResult as IEnumerable<TbVendor>)?.ToList() ?? new List<TbVendor>();
                 var vendorNameById = vendors
                     .Where(v => v != null)

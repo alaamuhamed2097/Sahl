@@ -177,14 +177,6 @@
     <AdditionalFiles Remove="C:\Users\alaam\AppData\Roaming\SonarLint for Visual Studio\.global\csharp\SonarLint.xml" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Remove="CouponCodeResources.en.resx" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="CouponCodeResources.en.resx">
-      <Generator></Generator>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
     <AdditionalFiles Remove="C:\Users\alaam\AppData\Roaming\SonarLint for Visual Studio\.global\csharp\SonarLint.xml" />
   </ItemGroup>
   <ItemGroup>

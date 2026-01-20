@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using BL.Contracts.IMapper;
 using BL.Contracts.Service.Merchandising.CouponCode;
 using Common.Enumerations.Order;
 using Common.Filters;
@@ -18,12 +19,12 @@ namespace BL.Services.Merchandising.CouponCode
     {
         private readonly ICouponCodeRepository _repository;
         private readonly IUnitOfWork _unitOfWork;
-        private readonly IMapper _mapper;
+        private readonly IBaseMapper _mapper;
 
         public CouponCodeService(
             ICouponCodeRepository repository,
             IUnitOfWork unitOfWork,
-            IMapper mapper)
+            IBaseMapper mapper)
         {
             _repository = repository;
             _unitOfWork = unitOfWork;
@@ -35,13 +36,23 @@ namespace BL.Services.Merchandising.CouponCode
         public async Task<CouponCodeDto?> GetByIdAsync(Guid id)
         {
             var coupon = await _repository.GetByIdAsync(id);
-            return coupon == null ? null : _mapper.Map<CouponCodeDto>(coupon);
+            if (coupon == null) return null;
+
+            var dto = _mapper.MapModel<TbCouponCode, CouponCodeDto>(coupon);
+
+            // Manual mapping for ScopeItems if needed
+            if (coupon.CouponScopes != null && coupon.CouponScopes.Any())
+            {
+                dto.ScopeItems = _mapper.MapList<TbCouponCodeScope, CouponScopeDto>(coupon.CouponScopes).ToList();
+            }
+
+            return dto;
         }
 
         public async Task<IEnumerable<CouponCodeDto>> GetAllAsync()
         {
             var coupons = await _repository.GetAllAsync();
-            return _mapper.Map<IEnumerable<CouponCodeDto>>(coupons);
+            return _mapper.MapList<TbCouponCode, CouponCodeDto>(coupons);
         }
 
         public async Task<AdvancedPagedResult<CouponCodeDto>> GetPageAsync(BaseSearchCriteriaModel criteria)
@@ -68,7 +79,7 @@ namespace BL.Services.Merchandising.CouponCode
 
             return new AdvancedPagedResult<CouponCodeDto>
             {
-                Items = _mapper.Map<List<CouponCodeDto>>(items),
+                Items = _mapper.MapList<TbCouponCode, CouponCodeDto>(items).ToList(),
                 TotalRecords = totalCount,
                 PageNumber = criteria.PageNumber,
                 PageSize = criteria.PageSize,
@@ -85,39 +96,33 @@ namespace BL.Services.Merchandising.CouponCode
                 // Create new
                 await ValidateCreateDto(dto);
 
-                coupon = _mapper.Map<TbCouponCode>(dto);
+                coupon = _mapper.MapModel<CouponCodeDto, TbCouponCode>(dto);
                 coupon.Code = dto.Code.ToUpper().Trim();
+                // Ensure ID is generated for scopes linking
+                coupon.Id = Guid.NewGuid(); 
 
-                var saveResult = await _repository.SaveAsync(coupon, userId);
-
-                if (!saveResult.Success)
-                    throw new InvalidOperationException("فشل حفظ الكوبون");
-
-                // Add scopes if provided
-                if (dto.ScopeItems != null && dto.ScopeItems.Any())
+                var newScopes = new List<TbCouponCodeScope>();
+                if (dto.ScopeItems != null)
                 {
-                    coupon = await _repository.GetByIdAsync(saveResult.Id);
-
                     foreach (var scope in dto.ScopeItems)
                     {
-                        var scopeEntity = new TbCouponCodeScope
+                        newScopes.Add(new TbCouponCodeScope
                         {
                             Id = Guid.NewGuid(),
                             CouponCodeId = coupon.Id,
                             ScopeType = scope.ScopeType,
-                            ScopeId = scope.ScopeId,
-                            CreatedBy = userId,
-                            CreatedDateUtc = DateTime.UtcNow
-                        };
-
-                        coupon.CouponScopes.Add(scopeEntity);
+                            ScopeId = scope.ScopeId
+                        });
                     }
-
-                    await _repository.UpdateAsync(coupon);
                 }
 
+                var success = await _repository.AddWithScopesAsync(coupon, newScopes, userId);
+
+                if (!success)
+                    throw new InvalidOperationException("فشل حفظ الكوبون");
+
                 // Reload to get complete entity with scopes
-                coupon = await _repository.GetByIdAsync(saveResult.Id);
+                coupon = await _repository.GetByIdAsync(coupon.Id);
             }
             else
             {
@@ -131,18 +136,54 @@ namespace BL.Services.Merchandising.CouponCode
                 coupon.StartDate = dto.StartDate;
                 coupon.ExpiryDate = dto.ExpiryDate;
                 coupon.UsageLimit = dto.UsageLimit;
+                coupon.UsageLimitPerUser = dto.UsageLimitPerUser;
                 coupon.IsActive = dto.IsActive;
+                coupon.IsFirstOrderOnly = dto.IsFirstOrderOnly;
+                coupon.DiscountType = dto.DiscountType;
+                coupon.DiscountValue = dto.DiscountValue;
+                coupon.MaxDiscountAmount = dto.MaxDiscountAmount;
+                coupon.MinimumOrderAmount = dto.MinimumOrderAmount;
+                
+                // Update Coupon Type & Vendor info if changed
+                coupon.PromoType = dto.PromoType;
+                coupon.VendorId = dto.VendorId;
+                coupon.PlatformSharePercentage = dto.PlatformSharePercentage;
+                //coupon.IsVisible = dto.IsVisible;
 
-                var updateResult = await _repository.UpdateAsync(coupon, userId);
+                var newScopes = new List<TbCouponCodeScope>();
+                if (dto.ScopeItems != null)
+                {
+                    foreach (var scope in dto.ScopeItems)
+                    {
+                        newScopes.Add(new TbCouponCodeScope
+                        {
+                            Id = Guid.NewGuid(),
+                            CouponCodeId = coupon.Id,
+                            ScopeType = scope.ScopeType,
+                            ScopeId = scope.ScopeId
+                        });
+                    }
+                }
 
-                if (!updateResult.Success)
+                // Use transactional update method
+                var updateResult = await _repository.UpdateWithScopesAsync(coupon, newScopes, userId);
+
+                if (!updateResult)
                     throw new InvalidOperationException("فشل تحديث الكوبون");
 
                 // Reload to get updated entity
                 coupon = await _repository.GetByIdAsync(dto.Id);
             }
 
-            return _mapper.Map<CouponCodeDto>(coupon);
+            var resultDto = _mapper.MapModel<TbCouponCode, CouponCodeDto>(coupon);
+
+            // Manual mapping for ScopeItems
+            if (coupon.CouponScopes != null && coupon.CouponScopes.Any())
+            {
+                resultDto.ScopeItems = _mapper.MapList<TbCouponCodeScope, CouponScopeDto>(coupon.CouponScopes).ToList();
+            }
+
+            return resultDto;
         }
 
         public async Task<bool> DeleteAsync(Guid id, Guid userId)
@@ -157,19 +198,29 @@ namespace BL.Services.Merchandising.CouponCode
         public async Task<CouponCodeDto?> GetByCodeAsync(string code)
         {
             var coupon = await _repository.GetByCodeAsync(code);
-            return coupon == null ? null : _mapper.Map<CouponCodeDto>(coupon);
+            if (coupon == null) return null;
+
+            var dto = _mapper.MapModel<TbCouponCode, CouponCodeDto>(coupon);
+
+            // Manual mapping for ScopeItems
+            if (coupon.CouponScopes != null && coupon.CouponScopes.Any())
+            {
+                dto.ScopeItems = _mapper.MapList<TbCouponCodeScope, CouponScopeDto>(coupon.CouponScopes).ToList();
+            }
+
+            return dto;
         }
 
         public async Task<IEnumerable<CouponCodeDto>> GetActiveCouponsAsync()
         {
             var coupons = await _repository.GetActiveCouponsAsync();
-            return _mapper.Map<IEnumerable<CouponCodeDto>>(coupons);
+            return _mapper.MapList<TbCouponCode, CouponCodeDto>(coupons);
         }
 
         public async Task<IEnumerable<CouponCodeDto>> GetVendorCouponsAsync(Guid vendorId)
         {
             var coupons = await _repository.GetCouponsByVendorAsync(vendorId);
-            return _mapper.Map<IEnumerable<CouponCodeDto>>(coupons);
+            return _mapper.MapList<TbCouponCode, CouponCodeDto>(coupons);
         }
 
         public async Task<CouponValidationResultDto> ValidateCouponCodeAsync(string couponCode, string userId)

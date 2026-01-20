@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <root>
-	<!-- 
+  <!-- 
     Microsoft ResX Schema 
     
     Version 2.0
@@ -59,408 +59,404 @@
             : using a System.ComponentModel.TypeConverter
             : and then encoded with base64 encoding.
     -->
-	<xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
-		<xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
-		<xsd:element name="root" msdata:IsDataSet="true">
-			<xsd:complexType>
-				<xsd:choice maxOccurs="unbounded">
-					<xsd:element name="metadata">
-						<xsd:complexType>
-							<xsd:sequence>
-								<xsd:element name="value" type="xsd:string" minOccurs="0" />
-							</xsd:sequence>
-							<xsd:attribute name="name" use="required" type="xsd:string" />
-							<xsd:attribute name="type" type="xsd:string" />
-							<xsd:attribute name="mimetype" type="xsd:string" />
-							<xsd:attribute ref="xml:space" />
-						</xsd:complexType>
-					</xsd:element>
-					<xsd:element name="assembly">
-						<xsd:complexType>
-							<xsd:attribute name="alias" type="xsd:string" />
-							<xsd:attribute name="name" type="xsd:string" />
-						</xsd:complexType>
-					</xsd:element>
-					<xsd:element name="data">
-						<xsd:complexType>
-							<xsd:sequence>
-								<xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
-								<xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
-							</xsd:sequence>
-							<xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
-							<xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
-							<xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
-							<xsd:attribute ref="xml:space" />
-						</xsd:complexType>
-					</xsd:element>
-					<xsd:element name="resheader">
-						<xsd:complexType>
-							<xsd:sequence>
-								<xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
-							</xsd:sequence>
-							<xsd:attribute name="name" type="xsd:string" use="required" />
-						</xsd:complexType>
-					</xsd:element>
-				</xsd:choice>
-			</xsd:complexType>
-		</xsd:element>
-	</xsd:schema>
-	<resheader name="resmimetype">
-		<value>text/microsoft-resx</value>
-	</resheader>
-	<resheader name="version">
-		<value>2.0</value>
-	</resheader>
-	<resheader name="reader">
-		<value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-	</resheader>
-	<resheader name="writer">
-		<value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-	</resheader>
-	<data name="DiscountType" xml:space="preserve">
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="DiscountType" xml:space="preserve">
     <value>Discount Type</value>
   </data>
-	<data name="MaxDiscountAmount" xml:space="preserve">
+  <data name="MaxDiscountAmount" xml:space="preserve">
     <value>Maximum Discount Amount</value>
   </data>
-	<data name="MinimumOrderAmount" xml:space="preserve">
+  <data name="MinimumOrderAmount" xml:space="preserve">
     <value>Minimum Order Amount</value>
   </data>
-	<data name="UsageLimitPerUser" xml:space="preserve">
+  <data name="UsageLimitPerUser" xml:space="preserve">
     <value>Usage Limit Per User</value>
   </data>
-	<data name="IsFirstOrderOnly" xml:space="preserve">
+  <data name="IsFirstOrderOnly" xml:space="preserve">
     <value>First Order Only</value>
   </data>
-	<data name="PlatformSharePercentage" xml:space="preserve">
+  <data name="PlatformSharePercentage" xml:space="preserve">
     <value>Platform Share Percentage</value>
   </data>
-	<data name="CoFundedCoupon" xml:space="preserve">
+  <data name="CoFundedCoupon" xml:space="preserve">
     <value>Co-Funded Coupon</value>
   </data>
-	<data name="GeneralCoupon" xml:space="preserve">
+  <data name="GeneralCoupon" xml:space="preserve">
     <value>General Coupon</value>
   </data>
-	<data name="CategoryBasedCoupon" xml:space="preserve">
+  <data name="CategoryBasedCoupon" xml:space="preserve">
     <value>Category-Based Coupon</value>
   </data>
-	<data name="VendorBasedCoupon" xml:space="preserve">
+  <data name="ItemBasedCoupon" xml:space="preserve">
+    <value>Item-Based Coupon</value>
+  </data>
+  <data name="VendorBasedCoupon" xml:space="preserve">
     <value>Vendor-Based Coupon</value>
   </data>
-	<data name="NewUserOnlyCoupon" xml:space="preserve">
+  <data name="NewUserOnlyCoupon" xml:space="preserve">
     <value>New Users Only</value>
   </data>
-	<data name="PercentageDiscount" xml:space="preserve">
+  <data name="PercentageDiscount" xml:space="preserve">
     <value>Percentage</value>
   </data>
-	<data name="FixedAmountDiscount" xml:space="preserve">
+  <data name="FixedAmountDiscount" xml:space="preserve">
     <value>Fixed Amount</value>
   </data>
-	<data name="CouponScope" xml:space="preserve">
+  <data name="CouponScope" xml:space="preserve">
     <value>Coupon Scope</value>
   </data>
-	<data name="CouponValidity" xml:space="preserve">
+  <data name="CouponValidity" xml:space="preserve">
     <value>Coupon Validity</value>
   </data>
-	<data name="CouponUsage" xml:space="preserve">
+  <data name="CouponUsage" xml:space="preserve">
     <value>Coupon Usage</value>
   </data>
-	<data name="ValidFrom" xml:space="preserve">
+  <data name="ValidFrom" xml:space="preserve">
     <value>Valid From</value>
   </data>
-	<data name="ValidUntil" xml:space="preserve">
+  <data name="ValidUntil" xml:space="preserve">
     <value>Valid Until</value>
   </data>
-	<data name="UnlimitedUsage" xml:space="preserve">
+  <data name="UnlimitedUsage" xml:space="preserve">
     <value>Unlimited Usage</value>
   </data>
-	<data name="CurrentUsage" xml:space="preserve">
+  <data name="CurrentUsage" xml:space="preserve">
     <value>Current Usage</value>
   </data>
-	<data name="RemainingUsage" xml:space="preserve">
+  <data name="RemainingUsage" xml:space="preserve">
     <value>Remaining Usage</value>
   </data>
-	<data name="PromoCode" xml:space="preserve">
+  <data name="PromoCode" xml:space="preserve">
     <value>Promo Code</value>
   </data>
-	<data name="PromoCodes" xml:space="preserve">
+  <data name="PromoCodes" xml:space="preserve">
     <value>Promo Codes</value>
   </data>
-	<data name="PromoCodeType" xml:space="preserve">
+  <data name="PromoCodeType" xml:space="preserve">
     <value>Promo Code Type</value>
   </data>
-	<data name="Code" xml:space="preserve">
+  <data name="Code" xml:space="preserve">
     <value>Code</value>
   </data>
-	<data name="StartDate" xml:space="preserve">
+  <data name="StartDate" xml:space="preserve">
     <value>Start Date</value>
   </data>
-	<data name="EndDate" xml:space="preserve">
+  <data name="EndDate" xml:space="preserve">
     <value>End Date</value>
   </data>
-	<data name="UsageLimit" xml:space="preserve">
+  <data name="UsageLimit" xml:space="preserve">
     <value>Usage Limit</value>
   </data>
-	<data name="UsageCount" xml:space="preserve">
+  <data name="UsageCount" xml:space="preserve">
     <value>Usage Count</value>
   </data>
-	<data name="Value" xml:space="preserve">
+  <data name="Value" xml:space="preserve">
     <value>Value</value>
   </data>
-	<data name="Type" xml:space="preserve">
+  <data name="Type" xml:space="preserve">
     <value>Type</value>
   </data>
-	<data name="Status" xml:space="preserve">
+  <data name="Status" xml:space="preserve">
     <value>Status</value>
   </data>
-	<data name="Active" xml:space="preserve">
+  <data name="Active" xml:space="preserve">
     <value>Active</value>
   </data>
-	<data name="InActive" xml:space="preserve">
+  <data name="InActive" xml:space="preserve">
     <value>Inactive</value>
   </data>
-	<data name="ArabicTitle" xml:space="preserve">
+  <data name="ArabicTitle" xml:space="preserve">
     <value>Arabic Title</value>
   </data>
-	<data name="EnglishTitle" xml:space="preserve">
+  <data name="EnglishTitle" xml:space="preserve">
     <value>English Title</value>
   </data>
-	<data name="Vendor" xml:space="preserve">
+  <data name="Vendor" xml:space="preserve">
     <value>Vendor</value>
   </data>
-	<data name="Saving" xml:space="preserve">
+  <data name="Saving" xml:space="preserve">
     <value>Saving...</value>
   </data>
-	<data name="CouponCodeRequired" xml:space="preserve">
+  <data name="CouponCodeRequired" xml:space="preserve">
     <value>Coupon code is required</value>
   </data>
-	<data name="CouponCodeInvalid" xml:space="preserve">
+  <data name="CouponCodeInvalid" xml:space="preserve">
     <value>Invalid coupon code</value>
   </data>
-	<data name="CouponCodeExpired" xml:space="preserve">
+  <data name="CouponCodeExpired" xml:space="preserve">
     <value>Coupon code has expired</value>
   </data>
-	<data name="CouponCodeNotStarted" xml:space="preserve">
+  <data name="CouponCodeNotStarted" xml:space="preserve">
     <value>Coupon code has not started yet</value>
   </data>
-	<data name="CouponCodeUsageLimitReached" xml:space="preserve">
+  <data name="CouponCodeUsageLimitReached" xml:space="preserve">
     <value>Coupon usage limit reached</value>
   </data>
-	<data name="CouponCodeUserLimitReached" xml:space="preserve">
+  <data name="CouponCodeUserLimitReached" xml:space="preserve">
     <value>User usage limit exceeded</value>
   </data>
-	<data name="CouponCodeFirstOrderOnly" xml:space="preserve">
+  <data name="CouponCodeFirstOrderOnly" xml:space="preserve">
     <value>Available for first order only</value>
   </data>
-	<data name="CouponCodeMinimumOrderNotMet" xml:space="preserve">
+  <data name="CouponCodeMinimumOrderNotMet" xml:space="preserve">
     <value>Minimum order amount not met</value>
   </data>
-	<data name="CouponCodeNotApplicable" xml:space="preserve">
+  <data name="CouponCodeNotApplicable" xml:space="preserve">
     <value>Coupon not applicable</value>
   </data>
-	<data name="CouponCodeAlreadyUsed" xml:space="preserve">
+  <data name="CouponCodeAlreadyUsed" xml:space="preserve">
     <value>Coupon already used</value>
   </data>
-	<data name="CouponCodeDuplicate" xml:space="preserve">
+  <data name="CouponCodeDuplicate" xml:space="preserve">
     <value>Coupon code already exists</value>
   </data>
-	<data name="PercentageValueInvalid" xml:space="preserve">
+  <data name="PercentageValueInvalid" xml:space="preserve">
     <value>Percentage must be between 0 and 100</value>
   </data>
-	<data name="StartDateMustBeBeforeEndDate" xml:space="preserve">
+  <data name="StartDateMustBeBeforeEndDate" xml:space="preserve">
     <value>Start date must be before end date</value>
   </data>
-	<data name="VendorRequiredForCoFunded" xml:space="preserve">
+  <data name="VendorRequiredForCoFunded" xml:space="preserve">
     <value>Vendor is required for co-funded coupons</value>
   </data>
-	<data name="ScopeItemsRequired" xml:space="preserve">
+  <data name="ScopeItemsRequired" xml:space="preserve">
     <value>Eligible items must be selected</value>
   </data>
-	<data name="DiscountValueRequired" xml:space="preserve">
+  <data name="DiscountValueRequired" xml:space="preserve">
     <value>Discount value is required</value>
   </data>
-	<data name="DiscountValueMustBePositive" xml:space="preserve">
+  <data name="DiscountValueMustBePositive" xml:space="preserve">
     <value>Discount value must be positive</value>
   </data>
-	<data name="InvalidCouponType" xml:space="preserve">
+  <data name="InvalidCouponType" xml:space="preserve">
     <value>Invalid coupon type</value>
   </data>
-	<data name="CouponNotFound" xml:space="preserve">
+  <data name="CouponNotFound" xml:space="preserve">
     <value>Coupon not found</value>
   </data>
-	<data name="CouponInactive" xml:space="preserve">
+  <data name="CouponInactive" xml:space="preserve">
     <value>Coupon is inactive</value>
   </data>
-	<data name="CouponAppliedSuccessfully" xml:space="preserve">
+  <data name="CouponAppliedSuccessfully" xml:space="preserve">
     <value>Coupon applied successfully</value>
   </data>
-	<data name="CouponRemovedSuccessfully" xml:space="preserve">
+  <data name="CouponRemovedSuccessfully" xml:space="preserve">
     <value>Coupon removed successfully</value>
   </data>
-	<data name="CouponValidated" xml:space="preserve">
+  <data name="CouponValidated" xml:space="preserve">
     <value>Coupon validated successfully</value>
   </data>
-	<data name="CouponCreatedSuccessfully" xml:space="preserve">
+  <data name="CouponCreatedSuccessfully" xml:space="preserve">
     <value>Coupon created successfully</value>
   </data>
-	<data name="CouponUpdatedSuccessfully" xml:space="preserve">
+  <data name="CouponUpdatedSuccessfully" xml:space="preserve">
     <value>Coupon updated successfully</value>
   </data>
-	<data name="CouponDeletedSuccessfully" xml:space="preserve">
+  <data name="CouponDeletedSuccessfully" xml:space="preserve">
     <value>Coupon deleted successfully</value>
   </data>
-	<data name="CouponActivated" xml:space="preserve">
+  <data name="CouponActivated" xml:space="preserve">
     <value>Coupon activated</value>
   </data>
-	<data name="CouponDeactivated" xml:space="preserve">
+  <data name="CouponDeactivated" xml:space="preserve">
     <value>Coupon deactivated</value>
   </data>
-	<data name="ConfirmDeleteCoupon" xml:space="preserve">
+  <data name="ConfirmDeleteCoupon" xml:space="preserve">
     <value>Are you sure you want to delete this coupon?</value>
   </data>
-	<data name="ConfirmDeactivateCoupon" xml:space="preserve">
+  <data name="ConfirmDeactivateCoupon" xml:space="preserve">
     <value>Are you sure you want to deactivate this coupon?</value>
   </data>
-	<data name="CouponWillExpireSoon" xml:space="preserve">
+  <data name="CouponWillExpireSoon" xml:space="preserve">
     <value>Coupon will expire soon</value>
   </data>
-	<data name="CouponUsageLimitWarning" xml:space="preserve">
+  <data name="CouponUsageLimitWarning" xml:space="preserve">
     <value>Coupon is nearing its usage limit</value>
   </data>
-	<data name="InvalidCouponCode" xml:space="preserve">
+  <data name="InvalidCouponCode" xml:space="preserve">
     <value>Invalid coupon code</value>
   </data>
-	<data name="CouponNotApplicableToCart" xml:space="preserve">
+  <data name="CouponNotApplicableToCart" xml:space="preserve">
     <value>Coupon not applicable to cart items</value>
   </data>
-	<data name="PleaseEnterCouponCode" xml:space="preserve">
+  <data name="PleaseEnterCouponCode" xml:space="preserve">
     <value>Please enter a coupon code</value>
   </data>
-	<data name="DiscountApplied" xml:space="preserve">
+  <data name="DiscountApplied" xml:space="preserve">
     <value>Discount applied</value>
   </data>
-	<data name="YouSaved" xml:space="preserve">
+  <data name="YouSaved" xml:space="preserve">
     <value>You saved</value>
   </data>
-	<data name="CouponSavingAmount" xml:space="preserve">
+  <data name="CouponSavingAmount" xml:space="preserve">
     <value>Coupon saving amount: {0}</value>
   </data>
-	<data name="CouponCodes" xml:space="preserve">
+  <data name="CouponCodes" xml:space="preserve">
     <value>Coupon Codes</value>
   </data>
-	<data name="CouponInfo" xml:space="preserve">
-  <value>Coupon Information</value>
-</data>
-	<data name="DiscountInfo" xml:space="preserve">
-  <value>Discount Information</value>
-</data>
-	<data name="Validity" xml:space="preserve">
-  <value>Validity</value>
-</data>
-	<data name="Usage" xml:space="preserve">
-  <value>Usage</value>
-</data>
-
-	<!-- Tab Labels -->
-	<data name="BasicInfo" xml:space="preserve">
-  <value>Basic Information</value>
-</data>
-	<data name="DiscountSettings" xml:space="preserve">
-  <value>Discount Settings</value>
-</data>
-	<data name="LimitsAndRules" xml:space="preserve">
-  <value>Limits and Rules</value>
-</data>
-	<data name="Advanced" xml:space="preserve">
-  <value>Advanced</value>
-</data>
-
-	<!-- Section Headers -->
-	<data name="ValidityPeriod" xml:space="preserve">
-  <value>Validity Period</value>
-</data>
-	<data name="UsageLimits" xml:space="preserve">
-  <value>Usage Limits</value>
-</data>
-	<data name="SpecialRules" xml:space="preserve">
-  <value>Special Rules</value>
-</data>
-	<data name="UsageStatistics" xml:space="preserve">
-  <value>Usage Statistics</value>
-</data>
-	<data name="AuditInfo" xml:space="preserve">
-  <value>Audit Information</value>
-</data>
-
-	<!-- Field Labels -->
-	<data name="TotalUsageLimit" xml:space="preserve">
-  <value>Total Usage Limit</value>
-</data>
-	<data name="PerUserLimit" xml:space="preserve">
-  <value>Per User Limit</value>
-</data>
-	<data name="FirstOrderOnly" xml:space="preserve">
-  <value>First Order Only</value>
-</data>
-	<data name="PlatformShare" xml:space="preserve">
-  <value>Platform Share</value>
-</data>
-	<data name="TotalUsed" xml:space="preserve">
-  <value>Total Used</value>
-</data>
-	<data name="Limit" xml:space="preserve">
-  <value>Limit</value>
-</data>
-	<data name="Remaining" xml:space="preserve">
-  <value>Remaining</value>
-</data>
-
-	<!-- Placeholders -->
-	<data name="CodePlaceholder" xml:space="preserve">
-  <value>Example: SAVE20</value>
-</data>
-	<data name="ArabicTitlePlaceholder" xml:space="preserve">
-  <value>Enter Arabic Title</value>
-</data>
-	<data name="EnglishTitlePlaceholder" xml:space="preserve">
-  <value>Enter English Title</value>
-</data>
-	<data name="DescriptionPlaceholder" xml:space="preserve">
-  <value>Enter coupon description (optional)</value>
-</data>
-	<data name="Optional" xml:space="preserve">
-  <value>Optional</value>
-</data>
-
-	<!-- Help Text / Hints -->
-	<data name="CodeHint" xml:space="preserve">
-  <value>Characters will be automatically converted to uppercase</value>
-</data>
-	<data name="PercentageHint" xml:space="preserve">
-  <value>Enter a percentage between 0 and 100</value>
-</data>
-	<data name="FixedAmountHint" xml:space="preserve">
-  <value>Enter the fixed amount in currency</value>
-</data>
-	<data name="MaxDiscountHint" xml:space="preserve">
-  <value>Maximum discount when using percentage discount</value>
-</data>
-	<data name="MinOrderHint" xml:space="preserve">
-  <value>Minimum order value required to apply the coupon</value>
-</data>
-	<data name="TotalUsageHint" xml:space="preserve">
-  <value>Leave empty for unlimited usage</value>
-</data>
-	<data name="PerUserHint" xml:space="preserve">
-  <value>Number of times a customer can use the coupon</value>
-</data>
-	<data name="FirstOrderHint" xml:space="preserve">
-  <value>Coupon is available only for new customers on their first order</value>
-</data>
-	<data name="CoFundingHint" xml:space="preserve">
-  <value>Platform share percentage of the discount (remaining is covered by the vendor)</value>
-</data>
-	<data name="Loading" xml:space="preserve">
-  <value>Loading...</value>
-</data>
+  <data name="CouponInfo" xml:space="preserve">
+    <value>Coupon Information</value>
+  </data>
+  <data name="DiscountInfo" xml:space="preserve">
+    <value>Discount Information</value>
+  </data>
+  <data name="Validity" xml:space="preserve">
+    <value>Validity</value>
+  </data>
+  <data name="Usage" xml:space="preserve">
+    <value>Usage</value>
+  </data>
+  <data name="BasicInfo" xml:space="preserve">
+    <value>Basic Information</value>
+  </data>
+  <data name="DiscountSettings" xml:space="preserve">
+    <value>Discount Settings</value>
+  </data>
+  <data name="LimitsAndRules" xml:space="preserve">
+    <value>Limits and Rules</value>
+  </data>
+  <data name="Advanced" xml:space="preserve">
+    <value>Advanced</value>
+  </data>
+  <data name="ValidityPeriod" xml:space="preserve">
+    <value>Validity Period</value>
+  </data>
+  <data name="UsageLimits" xml:space="preserve">
+    <value>Usage Limits</value>
+  </data>
+  <data name="SpecialRules" xml:space="preserve">
+    <value>Special Rules</value>
+  </data>
+  <data name="UsageStatistics" xml:space="preserve">
+    <value>Usage Statistics</value>
+  </data>
+  <data name="AuditInfo" xml:space="preserve">
+    <value>Audit Information</value>
+  </data>
+  <data name="TotalUsageLimit" xml:space="preserve">
+    <value>Total Usage Limit</value>
+  </data>
+  <data name="PerUserLimit" xml:space="preserve">
+    <value>Per User Limit</value>
+  </data>
+  <data name="FirstOrderOnly" xml:space="preserve">
+    <value>First Order Only</value>
+  </data>
+  <data name="PlatformShare" xml:space="preserve">
+    <value>Platform Share</value>
+  </data>
+  <data name="TotalUsed" xml:space="preserve">
+    <value>Total Used</value>
+  </data>
+  <data name="Limit" xml:space="preserve">
+    <value>Limit</value>
+  </data>
+  <data name="Remaining" xml:space="preserve">
+    <value>Remaining</value>
+  </data>
+  <data name="CodePlaceholder" xml:space="preserve">
+    <value>Example: SAVE20</value>
+  </data>
+  <data name="ArabicTitlePlaceholder" xml:space="preserve">
+    <value>Enter Arabic Title</value>
+  </data>
+  <data name="EnglishTitlePlaceholder" xml:space="preserve">
+    <value>Enter English Title</value>
+  </data>
+  <data name="DescriptionPlaceholder" xml:space="preserve">
+    <value>Enter coupon description (optional)</value>
+  </data>
+  <data name="Optional" xml:space="preserve">
+    <value>Optional</value>
+  </data>
+  <data name="CodeHint" xml:space="preserve">
+    <value>Characters will be automatically converted to uppercase</value>
+  </data>
+  <data name="PercentageHint" xml:space="preserve">
+    <value>Enter a percentage between 0 and 100</value>
+  </data>
+  <data name="FixedAmountHint" xml:space="preserve">
+    <value>Enter the fixed amount in currency</value>
+  </data>
+  <data name="MaxDiscountHint" xml:space="preserve">
+    <value>Maximum discount when using percentage discount</value>
+  </data>
+  <data name="MinOrderHint" xml:space="preserve">
+    <value>Minimum order value required to apply the coupon</value>
+  </data>
+  <data name="TotalUsageHint" xml:space="preserve">
+    <value>Leave empty for unlimited usage</value>
+  </data>
+  <data name="PerUserHint" xml:space="preserve">
+    <value>Number of times a customer can use the coupon</value>
+  </data>
+  <data name="FirstOrderHint" xml:space="preserve">
+    <value>Coupon is available only for new customers on their first order</value>
+  </data>
+  <data name="CoFundingHint" xml:space="preserve">
+    <value>Platform share percentage of the discount (remaining is covered by the vendor)</value>
+  </data>
+  <data name="Loading" xml:space="preserve">
+    <value>Loading...</value>
+  </data>
+  <data name="PromoCodeParticipations" xml:space="preserve">
+    <value>Promo Code Participation</value>
+  </data>
 </root>

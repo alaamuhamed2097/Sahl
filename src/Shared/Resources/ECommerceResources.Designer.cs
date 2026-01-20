@@ -745,6 +745,15 @@ namespace Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to EGP.
+        /// </summary>
+        public static string CurrencySymbol {
+            get {
+                return ResourceManager.GetString("CurrencySymbol", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to الموقع الحالي.
         /// </summary>
         public static string CurrentPosition {
@@ -1330,20 +1339,20 @@ namespace Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to عتبة نقص المخزون.
-        /// </summary>
-        public static string LowStockThreshold {
-            get {
-                return ResourceManager.GetString("LowStockThreshold", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to اللوجستيات والشحن.
         /// </summary>
         public static string LogisticsAndShipping {
             get {
                 return ResourceManager.GetString("LogisticsAndShipping", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to عتبة نقص المخزون.
+        /// </summary>
+        public static string LowStockThreshold {
+            get {
+                return ResourceManager.GetString("LowStockThreshold", resourceCulture);
             }
         }
         

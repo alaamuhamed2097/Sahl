@@ -13,7 +13,7 @@
     Example:
     
     ... ado.net/XML headers & schema ...
-    <resheader name="resmimetype">text/microsoft-r-esx</resheader>
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
     <resheader name="version">2.0</resheader>
     <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
     <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
@@ -939,39 +939,6 @@
   <data name="Status" xml:space="preserve">
     <value>Status</value>
   </data>
-  <data name="Sales" xml:space="preserve">
-    <value>Sales</value>
-  </data>
-  <data name="EstimatedDeliveryDays" xml:space="preserve">
-  <value>Estimated Delivery Days</value>
-</data>
-  <data name="FreeShipping" xml:space="preserve">
-  <value>Free Shipping</value>
-</data>
-  <data name="Combinations" xml:space="preserve">
-  <value>Combinations</value>
-</data>
-  <data name="Condition" xml:space="preserve">
-  <value>Condition</value>
-</data>
-  <data name="Price" xml:space="preserve">
-  <value>Price</value>
-</data>
-  <data name="AvailableQuantity" xml:space="preserve">
-  <value>Available Quantity</value>
-</data>
-  <data name="MinOrderQuantity" xml:space="preserve">
-  <value>Minimum Order Quantity</value>
-</data>
-  <data name="MaxOrderQuantity" xml:space="preserve">
-  <value>Maximum Order Quantity</value>
-</data>
-  <data name="LowStockThreshold" xml:space="preserve">
-  <value>Low Stock Threshold</value>
-</data>
-  <data name="NewProductRequests" xml:space="preserve">
-  <value>New Product Requests</value>
-</data>
   <data name="OrderManagement" xml:space="preserve">
     <value>Order Management</value>
   </data>
@@ -981,35 +948,64 @@
   <data name="CatalogManagement" xml:space="preserve">
     <value>Catalog Management</value>
   </data>
+  <data name="Revenue" xml:space="preserve">
+    <value>Revenue</value>
+  </data>
+  <data name="TotalRevenue" xml:space="preserve">
+    <value>Total Revenue</value>
+  </data>
+  <data name="TotalProducts" xml:space="preserve">
+    <value>Total Products</value>
+  </data>
+  <data name="TopSellingProducts" xml:space="preserve">
+    <value>Top Selling Products</value>
+  </data>
+  <data name="TopPerformingVendors" xml:space="preserve">
+    <value>Top Performing Vendors</value>
+  </data>
+  <data name="PendingOrders" xml:space="preserve">
+    <value>Pending Orders</value>
+  </data>
   <data name="ActiveVendors" xml:space="preserve">
     <value>Active Vendors</value>
   </data>
-	<data name="Revenue" xml:space="preserve">
-  <value>Revenue</value>
-</data>
-	<data name="TotalRevenue" xml:space="preserve">
-  <value>Total Revenue</value>
-</data>
-	<data name="TotalProducts" xml:space="preserve">
-  <value>Total Products</value>
-</data>
-	<data name="TopSellingProducts" xml:space="preserve">
-  <value>Top Selling Products</value>
-</data>
-	<data name="TopPerformingVendors" xml:space="preserve">
-  <value>Top Performing Vendors</value>
-</data>
-	<data name="PendingOrders" xml:space="preserve">
-  <value>Pending Orders</value>
-</data>
-	<data name="ActiveVendors" xml:space="preserve">
-  <value>Active Vendors</value>
-</data>
-	<data name="Reviews" xml:space="preserve">
-  <value>Reviews</value>
-</data>
-	<data name="AverageRating" xml:space="preserve">
-  <value>Average Rating</value>
-</data>
-
+  <data name="Reviews" xml:space="preserve">
+    <value>Reviews</value>
+  </data>
+  <data name="AverageRating" xml:space="preserve">
+    <value>Average Rating</value>
+  </data>
+  <data name="EstimatedDeliveryDays" xml:space="preserve">
+    <value>Estimated Delivery Days</value>
+  </data>
+  <data name="FreeShipping" xml:space="preserve">
+    <value>Free Shipping</value>
+  </data>
+  <data name="Combinations" xml:space="preserve">
+    <value>Combinations</value>
+  </data>
+  <data name="Condition" xml:space="preserve">
+    <value>Condition</value>
+  </data>
+  <data name="Price" xml:space="preserve">
+    <value>Price</value>
+  </data>
+  <data name="AvailableQuantity" xml:space="preserve">
+    <value>Available Quantity</value>
+  </data>
+  <data name="MinOrderQuantity" xml:space="preserve">
+    <value>Minimum Order Quantity</value>
+  </data>
+  <data name="MaxOrderQuantity" xml:space="preserve">
+    <value>Maximum Order Quantity</value>
+  </data>
+  <data name="LowStockThreshold" xml:space="preserve">
+    <value>Low Stock Threshold</value>
+  </data>
+  <data name="NewProductRequests" xml:space="preserve">
+    <value>New Product Requests</value>
+  </data>
+  <data name="CurrencySymbol" xml:space="preserve">
+    <value>EGP</value>
+  </data>
 </root>

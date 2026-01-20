@@ -1,17 +1,15 @@
 using BL.Contracts.IMapper;
-using BL.Contracts.Service.Review;
 using BL.Contracts.Service.VendorDashboard;
-using BL.Services.Base;
 using Common.Enumerations.Order;
 using Common.Enumerations.Review;
 using DAL.Contracts.Repositories;
 using DAL.Contracts.Repositories.Order;
 using DAL.Contracts.Repositories.Review;
 using Domains.Entities.ECommerceSystem.Review;
+using Domains.Entities.ECommerceSystem.Vendor;
 using Domains.Entities.Order;
 using Serilog;
 using Shared.DTOs.VendorDashboard;
-using System.Linq.Expressions;
 
 namespace BL.Services.VendorDashboard;
 
@@ -23,24 +21,27 @@ public class VendorDashboardService : IVendorDashboardService
 {
     private readonly IOrderRepository _orderRepository;
     private readonly ITableRepository<TbOrderDetail> _orderDetailRepository;
+    private readonly ITableRepository<TbVendor> _vendorRepository;
+    private readonly ITableRepository<TbOrder> _tbOrderRepository;
     private readonly IVendorReviewRepository _vendorReviewRepository;
     private readonly IItemReviewRepository _itemReviewRepository;
-    private readonly ITableRepository<TbOrder> _tbOrderRepository;
     private readonly IBaseMapper _mapper;
     private readonly ILogger _logger;
 
     public VendorDashboardService(
         IOrderRepository orderRepository,
         ITableRepository<TbOrderDetail> orderDetailRepository,
+        ITableRepository<TbVendor> vendorRepository,
+        ITableRepository<TbOrder> tbOrderRepository,
         IVendorReviewRepository vendorReviewRepository,
         IItemReviewRepository itemReviewRepository,
-        ITableRepository<TbOrder> tbOrderRepository,
         IBaseMapper mapper,
         ILogger logger)
     {
         _orderRepository = orderRepository ?? throw new ArgumentNullException(nameof(orderRepository));
         _orderDetailRepository = orderDetailRepository ?? throw new ArgumentNullException(nameof(orderDetailRepository));
         _vendorReviewRepository = vendorReviewRepository ?? throw new ArgumentNullException(nameof(vendorReviewRepository));
+        _vendorRepository = vendorRepository ?? throw new ArgumentNullException(nameof(vendorRepository));
         _itemReviewRepository = itemReviewRepository ?? throw new ArgumentNullException(nameof(itemReviewRepository));
         _tbOrderRepository = tbOrderRepository ?? throw new ArgumentNullException(nameof(tbOrderRepository));
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
@@ -51,14 +52,16 @@ public class VendorDashboardService : IVendorDashboardService
     /// Gets comprehensive dashboard summary with all KPIs for a vendor
     /// </summary>
     public async Task<VendorDashboardSummaryDto> GetDashboardSummaryAsync(
-        Guid vendorId,
+        Guid userId,
         CancellationToken cancellationToken = default)
     {
-        if (vendorId == Guid.Empty)
-            throw new ArgumentException("VendorId cannot be empty.", nameof(vendorId));
+        if (userId == Guid.Empty)
+            throw new ArgumentException("VendorId cannot be empty.", nameof(userId));
 
         try
         {
+            var vendorId = (await _vendorRepository.FindAsync(v => v.UserId == userId.ToString())).Id;
+
             var dailySales = await GetDailySalesAsync(vendorId, cancellationToken);
             var newOrders = await GetNewOrdersAsync(vendorId, cancellationToken);
             var bestSellingProducts = await GetBestSellingProductsAsync(vendorId, 10, cancellationToken);
@@ -93,7 +96,7 @@ public class VendorDashboardService : IVendorDashboardService
         }
         catch (Exception ex)
         {
-            _logger.Error(ex, "Error retrieving dashboard summary for vendor {VendorId}", vendorId);
+            _logger.Error(ex, "Error retrieving dashboard summary for vendor {VendorId}", userId);
             throw;
         }
     }
