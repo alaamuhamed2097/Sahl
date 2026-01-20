@@ -483,14 +483,6 @@ namespace Resources {
             }
         }
         
-        /// <summary>
-        ///   Looks up a localized string similar to عدد العناصر.
-        /// </summary>
-        public static string ItemsCount {
-            get {
-                return ResourceManager.GetString("ItemsCount", resourceCulture);
-            }
-        }
         
         /// <summary>
         ///   Looks up a localized string similar to تحديد كمُسلّم.
