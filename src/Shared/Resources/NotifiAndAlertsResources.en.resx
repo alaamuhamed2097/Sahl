@@ -559,4 +559,8 @@
 <data name="ConfirmDeleteAlert" xml:space="preserve">
   <value>This action cannot be undone!</value>
 </data>
+	<data name="OrderCancelledSuccessfully" xml:space="preserve">
+  <value>Order cancelled successfully</value>
+</data>
+
 </root>

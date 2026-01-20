@@ -37,19 +37,4 @@ namespace Shared.DTOs.User.Customer
         [Compare("Password", ErrorMessage = "Passwords do not match")]
         public string ConfirmPassword { get; set; } = null!;
     }
-
-    public class CustomerRegistrationResponseDto
-    {
-        public string UserId { get; set; } = null!;
-        public string FirstName { get; set; } = null!;
-        public string LastName { get; set; } = null!;
-        public string? Email { get; set; }
-        public string UserName { get; set; } = null!;
-        public string PhoneNumber { get; set; } = null!;
-        public string PhoneCode { get; set; } = null!;
-        public string ProfileImagePath { get; set; } = null!;
-        public string Token { get; set; } = null!;
-        public string RefreshToken { get; set; } = null!;
-        public DateTime RegisteredDate { get; set; }
-    }
 }

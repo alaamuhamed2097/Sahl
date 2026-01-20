@@ -8,6 +8,8 @@ namespace Shared.DTOs.Order.OrderProcessing
     /// </summary>
     public class ChangeOrderStatusRequest
     {
+        public Guid OrderId { get; set; }
+
         /// <summary>
         /// New order status
         /// </summary>
@@ -17,10 +19,5 @@ namespace Shared.DTOs.Order.OrderProcessing
         /// Optional notes about the status change
         /// </summary>
         public string? Notes { get; set; }
-
-        /// <summary>
-        /// Admin user ID making the change
-        /// </summary>
-        public string? AdminUserId { get; set; }
     }
 }
