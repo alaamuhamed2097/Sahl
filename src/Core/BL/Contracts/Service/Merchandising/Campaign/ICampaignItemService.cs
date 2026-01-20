@@ -10,11 +10,10 @@ using System.Text;
 
 namespace BL.Contracts.Service.Merchandising.Campaign
 {
-	public interface ICampaignItemService 
+	public interface ICampaignItemService : IBaseService<TbCampaignItem, CampaignItemDto>
 	{
 		#region Campaign Items
 		Task<ResponseModel<PaginatedSearchResult<CampaignItemDto>>> SearchCampaignItemsAsync(BaseSearchCriteriaModel searchCriteria, Guid campaignId);
-		//Task<ResponseModel<PaginatedSearchResult<CampaignItemDto>>> SearchCampaignItemsForVendorAsync(BaseSearchCriteriaModel searchCriteria, Guid campaignId, Guid userId);
 
 		/// <summary>
 		/// Get all items in a campaign
@@ -35,6 +34,15 @@ namespace BL.Contracts.Service.Merchandising.Campaign
 		/// Update sold count when item is purchased
 		/// </summary>
 		Task<bool> UpdateSoldCountAsync(Guid campaignItemId, int quantity);
+
+		#endregion
+
+
+		#region vendor for campaign items
+
+		Task<IEnumerable<TbCampaignItem>> GetVendorCampaignItems(Guid campaignId, Guid userId);
+		Task<ResponseModel<PaginatedSearchResult<CampaignItemDto>>> SearchCampaignItemsForVendorAsync(BaseSearchCriteriaModel searchCriteria, Guid campaignId, Guid userId);
+		Task<CampaignItemDto> AddItemToCampaignForVendorAsync(AddCampaignItemDto dto, Guid userId);
 
 		#endregion
 	}

@@ -27,5 +27,11 @@ namespace DAL.Contracts.Repositories.Merchandising
 		/// </summary>
 		Task<bool> IncrementSoldCountAsync(Guid campaignItemId, int quantity);
 
+		#region
+		Task<IEnumerable<TbCampaignItem>> GetCampaignItemsForVendorAsync(Guid campaignId, Guid userId);
+
+		#endregion
+
+
 	}
 }

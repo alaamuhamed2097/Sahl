@@ -51,18 +51,6 @@ namespace DAL.Repositories.Merchandising
 		{
 			try
 			{
-				//return await _dbContext.TbCampaigns
-				//    .AsNoTracking()
-				//    .Include(c => c.CampaignItems.Where(ci => !ci.IsDeleted))
-				//        .ThenInclude(ci => ci.OfferCombinationPricing.ItemCombination.Item)
-				//            .ThenInclude(i => i.ItemImages)
-				//    .Include(c => c.CampaignItems.Where(ci => !ci.IsDeleted))
-				//        .ThenInclude(ci => ci.OfferCombinationPricing.ItemCombination.Item)
-				//            .ThenInclude(i => i.ItemCombinations.Where(ic => ic.IsDefault && !ic.IsDeleted))
-				//                .ThenInclude(ic => ic.ItemCombinationImages)
-				//    .Include(c => c.HomepageBlocks)
-				//    .FirstOrDefaultAsync(c => c.Id == campaignId && !c.IsDeleted)
-				//    ?? throw new KeyNotFoundException($"Campaign with id '{campaignId}' was not found.");
 								var campaign = await _dbContext.TbCampaigns
 					.Include(c => c.CampaignItems.Where(ci => !ci.IsDeleted))
 						.ThenInclude(ci => ci.OfferCombinationPricing.ItemCombination.Item)
