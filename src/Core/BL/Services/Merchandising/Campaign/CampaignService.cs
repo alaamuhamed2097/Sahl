@@ -5,6 +5,7 @@ using DAL.Contracts.Repositories.Merchandising;
 using Domains.Entities.Campaign;
 using Microsoft.EntityFrameworkCore;
 using Shared.DTOs.Campaign;
+using Shared.GeneralModels;
 
 namespace BL.Services.Merchandising.Campaign;
 
@@ -24,81 +25,97 @@ public class CampaignService : ICampaignService
         _mapper = mapper;
     }
 
-    #region Campaign Management
+	#region Campaign Management
 
-    /// <summary>
-    /// Get campaign by ID
-    /// </summary>
-    public async Task<CampaignDto?> GetCampaignByIdAsync(Guid id)
+	/// <summary>
+	/// Get all campaigns (admin)
+	/// </summary>
+	public async Task<IEnumerable<CampaignDto>> GetAllCampaignsAsync()
+	{
+		var campaigns = await _campaignRepository.GetAsync();
+		return _mapper.Map<IEnumerable<CampaignDto>>(campaigns.ToList());
+	}
+
+	/// <summary>
+	/// Get all active campaigns
+	/// </summary>
+	public async Task<IEnumerable<CampaignDto>> GetActiveCampaignsAsync()
+	{
+		var campaigns = await _campaignRepository.GetActiveCampaignsAsync();
+		return _mapper.Map<IEnumerable<CampaignDto>>(campaigns);
+	}
+
+	/// <summary>
+	/// Get campaign by ID
+	/// </summary>
+	public async Task<CampaignDto> GetCampaignByIdAsync(Guid id)
     {
         var campaign = await _campaignRepository.GetCampaignByIdAsync(id);
         return campaign != null ? _mapper.Map<CampaignDto>(campaign) : null;
     }
-
-    /// <summary>
-    /// Get all campaigns (admin)
-    /// </summary>
-    public async Task<List<CampaignDto>> GetAllCampaignsAsync()
-    {
-        var campaigns = await _campaignRepository.GetAsync();
-        return _mapper.Map<List<CampaignDto>>(campaigns.ToList());
-    }
-
-    /// <summary>
-    /// Search campaigns with pagination
-    /// </summary>
-    public async Task<(List<CampaignDto> Campaigns, int TotalCount)> SearchCampaignsAsync(BaseSearchCriteriaModel searchCriteria)
-    {
-        var query = _campaignRepository.GetQueryable().Where(c => !c.IsDeleted);
-
-        // Apply search filter
-        if (!string.IsNullOrWhiteSpace(searchCriteria.SearchTerm))
-        {
-            var searchTerm = searchCriteria.SearchTerm.ToLower();
-            query = query.Where(c => 
-                c.NameEn.ToLower().Contains(searchTerm) || 
-                c.NameAr.ToLower().Contains(searchTerm));
-        }
-
-        // Get total count before pagination
-        var totalCount = query.Count();
-
-        // Apply sorting
-        query = ApplySorting(query, searchCriteria.SortBy, searchCriteria.SortDirection);
-
-        // Apply pagination
-        var pageNumber = searchCriteria.PageNumber > 0 ? searchCriteria.PageNumber : 1;
-        var pageSize = searchCriteria.PageSize > 0 ? searchCriteria.PageSize : 10;
-        var skip = (pageNumber - 1) * pageSize;
-
-        var campaigns = await query.Skip(skip).Take(pageSize).ToListAsync();
-        var campaignDtos = _mapper.Map<List<CampaignDto>>(campaigns);
-
-        return (campaignDtos, totalCount);
-    }
-
-    /// <summary>
-    /// Get all active campaigns
-    /// </summary>
-    public async Task<List<CampaignDto>> GetActiveCampaignsAsync()
-    {
-        var campaigns = await _campaignRepository.GetActiveCampaignsAsync();
-        return _mapper.Map<List<CampaignDto>>(campaigns);
-    }
-
+  
     /// <summary>
     /// Get all active flash sales
     /// </summary>
-    public async Task<List<CampaignDto>> GetActiveFlashSalesAsync()
+    public async Task<IEnumerable<CampaignDto>> GetActiveFlashSalesAsync()
     {
         var flashSales = await _campaignRepository.GetActiveFlashSalesAsync();
-        return _mapper.Map<List<CampaignDto>>(flashSales);
+        return _mapper.Map<IEnumerable<CampaignDto>>(flashSales);
     }
 
-    /// <summary>
-    /// Create new campaign
-    /// </summary>
-    public async Task<CampaignDto> CreateCampaignAsync(CreateCampaignDto dto, Guid userId)
+	public async Task<ResponseModel<PaginatedSearchResult<CampaignDto>>> SearchCampaignsAsync(BaseSearchCriteriaModel searchCriteria)
+	{
+		var response = new ResponseModel<PaginatedSearchResult<CampaignDto>>();
+
+		try
+		{
+			var query = _campaignRepository.GetQueryable().Where(c => !c.IsDeleted);
+
+			// Apply search filter
+			if (!string.IsNullOrWhiteSpace(searchCriteria.SearchTerm))
+			{
+				var searchTerm = searchCriteria.SearchTerm.ToLower();
+				query = query.Where(c =>
+					c.NameEn.ToLower().Contains(searchTerm) ||
+					c.NameAr.ToLower().Contains(searchTerm));
+			}
+
+			// Get total count before pagination
+			var totalCount = await query.CountAsync();
+
+			// Apply sorting
+			query = ApplySorting(query, searchCriteria.SortBy, searchCriteria.SortDirection);
+
+			// Apply pagination
+			var pageNumber = searchCriteria.PageNumber > 0 ? searchCriteria.PageNumber : 1;
+			var pageSize = searchCriteria.PageSize > 0 ? searchCriteria.PageSize : 10;
+			var skip = (pageNumber - 1) * pageSize;
+
+			var campaigns = await query.Skip(skip).Take(pageSize).ToListAsync();
+			var campaignDtos = _mapper.Map<List<CampaignDto>>(campaigns);
+
+			// Build the response
+			response.Data = new PaginatedSearchResult<CampaignDto>
+			{
+				Items = campaignDtos,
+				TotalRecords = totalCount
+			};
+			response.SetSuccessMessage("Campaigns retrieved successfully");
+			response.StatusCode = 200;
+		}
+		catch (Exception ex)
+		{
+			response.SetErrorMessage($"Error retrieving campaigns: {ex.Message}");
+			response.StatusCode = 500;
+		}
+
+		return response;
+	}
+
+	/// <summary>
+	/// Create new campaign
+	/// </summary>
+	public async Task<CampaignDto> CreateCampaignAsync(CreateCampaignDto dto, Guid userId)
     {
         var campaign = _mapper.Map<TbCampaign>(dto);
 
@@ -153,68 +170,12 @@ public class CampaignService : ICampaignService
     public async Task<bool> DeleteCampaignAsync(Guid id, Guid userId)
     {
         // Check if campaign has items
-        var items = await _campaignRepository.GetCampaignItemsAsync(id);
-        if (items.Any())
-        {
+        var items = await _campaignRepository.GetCampaignByIdAsync(id);
+        if (items == null)
             throw new InvalidOperationException("Cannot delete campaign with items. Remove all items first.");
-        }
+        
 
         return await _campaignRepository.SoftDeleteAsync(id, userId);
-    }
-
-    #endregion
-
-    #region Campaign Items
-
-    /// <summary>
-    /// Get all items in a campaign
-    /// </summary>
-    public async Task<List<CampaignItemDto>> GetCampaignItemsAsync(Guid campaignId)
-    {
-        var items = await _campaignRepository.GetCampaignItemsAsync(campaignId);
-        return _mapper.Map<List<CampaignItemDto>>(items);
-    }
-
-    /// <summary>
-    /// Add item to campaign
-    /// </summary>
-    public async Task<CampaignItemDto> AddItemToCampaignAsync(AddCampaignItemDto dto, Guid userId)
-    {
-        // Validate campaign exists
-        var campaign = await _campaignRepository.GetCampaignByIdAsync(dto.CampaignId);
-        if (campaign == null)
-        {
-            throw new KeyNotFoundException($"Campaign with ID {dto.CampaignId} not found");
-        }
-
-        var campaignItem = _mapper.Map<TbCampaignItem>(dto);
-
-        // Set defaults
-        campaignItem.Id = Guid.NewGuid();
-        campaignItem.CreatedDateUtc = DateTime.UtcNow;
-        campaignItem.CreatedBy = userId;
-        campaignItem.IsDeleted = false;
-        campaignItem.IsActive = true;
-        campaignItem.SoldCount = 0;
-
-        var result = await _campaignRepository.AddItemToCampaignAsync(campaignItem);
-        return _mapper.Map<CampaignItemDto>(result);
-    }
-
-    /// <summary>
-    /// Remove item from campaign
-    /// </summary>
-    public async Task<bool> RemoveItemFromCampaignAsync(Guid campaignItemId, Guid userId)
-    {
-        return await _campaignRepository.RemoveItemFromCampaignAsync(campaignItemId);
-    }
-
-    /// <summary>
-    /// Update sold count when item is purchased
-    /// </summary>
-    public async Task<bool> UpdateSoldCountAsync(Guid campaignItemId, int quantity)
-    {
-        return await _campaignRepository.IncrementSoldCountAsync(campaignItemId, quantity);
     }
 
     #endregion

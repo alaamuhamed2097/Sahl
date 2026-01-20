@@ -43,7 +43,7 @@ namespace Dashboard.Services.Order
         {
             try
             {
-                return await _apiService.GetAsync<RefundDto>($"{ApiEndpoints.Refund.Get}/{id}");
+                return await _apiService.GetAsync<RefundDto>($"{ApiEndpoints.Refund.Get}/order/{id}");
             }
             catch (Exception ex)
             {

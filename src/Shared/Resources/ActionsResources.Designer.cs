@@ -70,6 +70,15 @@ namespace Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to الإجراءات.
+        /// </summary>
+        public static string Actions {
+            get {
+                return ResourceManager.GetString("Actions", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to تفعيل.
         /// </summary>
         public static string Activate {
@@ -664,6 +673,15 @@ namespace Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to من.
+        /// </summary>
+        public static string Of {
+            get {
+                return ResourceManager.GetString("Of", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to حسناً.
         /// </summary>
         public static string ok {
@@ -889,6 +907,15 @@ namespace Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to عرض.
+        /// </summary>
+        public static string Showing {
+            get {
+                return ResourceManager.GetString("Showing", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to عرض {0} إلى {1} من {2} مدخل.
         /// </summary>
         public static string ShowingEntries {
@@ -948,6 +975,15 @@ namespace Resources {
         public static string Subscribe {
             get {
                 return ResourceManager.GetString("Subscribe", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to إلى.
+        /// </summary>
+        public static string To {
+            get {
+                return ResourceManager.GetString("To", resourceCulture);
             }
         }
         

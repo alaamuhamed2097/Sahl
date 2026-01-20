@@ -90,6 +90,7 @@ namespace Dashboard.Pages.Warehouse
 
 			// Load Platform warehouse (single warehouse)
 			await LoadPlatformWarehouse();
+			StateHasChanged();
 
 			// Load Vendor warehouses if multi-vendor enabled
 			if (isMultiVendorEnabled)
@@ -279,10 +280,10 @@ namespace Dashboard.Pages.Warehouse
 			//}
 			//else
 			//{
-				vendorSearchModel.SortDirection = isAscending ? "asc" : "desc";
-				vendorSearchModel.SortBy = columnName;
-				Console.WriteLine($"[UI] Vendor sort - SortBy: {vendorSearchModel.SortBy}, Direction: {vendorSearchModel.SortDirection}");
-				await SearchVendorWarehouses();
+			vendorSearchModel.SortDirection = isAscending ? "asc" : "desc";
+			vendorSearchModel.SortBy = columnName;
+			Console.WriteLine($"[UI] Vendor sort - SortBy: {vendorSearchModel.SortBy}, Direction: {vendorSearchModel.SortDirection}");
+			await SearchVendorWarehouses();
 			//}
 		}
 

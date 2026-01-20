@@ -1,638 +1,722 @@
-﻿using AutoMapper;
-using BL.Contracts.Service.Order.Cart;
-using BL.Contracts.Service.Order.OrderProcessing;
-using Common.Enumerations.Order;
-using Common.Enumerations.Shipping;
-using DAL.Contracts.Repositories;
-using DAL.Contracts.Repositories.Order;
-using Domains.Entities.Catalog.Item;
-using Domains.Entities.ECommerceSystem.Vendor;
-using Domains.Entities.Order;
-using Domains.Entities.Order.Shipping;
-using Serilog;
-using Shared.DTOs.Order.OrderProcessing;
-using Shared.DTOs.Order.ResponseOrderDetail;
-
-namespace BL.Services.Order.OrderProcessing;
-
-/// <summary>
-/// Service for managing orders (CRUD operations)
-/// REFACTORED: Uses repositories directly, no UnitOfWork, no Info logging
-/// Note: Order creation is handled by OrderCreationService
-/// </summary>
-public class OrderManagementService : IOrderManagementService
-{
-    private readonly IOrderRepository _orderRepository;
-    private readonly ITableRepository<TbOrderDetail> _orderDetailRepository;
-    private readonly ITableRepository<TbOrderShipment> _shipmentRepository;
-    private readonly ITableRepository<TbItem> _itemRepository;
-    private readonly ITableRepository<TbVendor> _vendorRepository;
-    private readonly ICartService _cartService;
-    private readonly IMapper _mapper;
-    private readonly ILogger _logger;
-
-    public OrderManagementService(
-        IOrderRepository orderRepository,
-        ITableRepository<TbOrderDetail> orderDetailRepository,
-        ITableRepository<TbOrderShipment> shipmentRepository,
-        ITableRepository<TbItem> itemRepository,
-        ITableRepository<TbVendor> vendorRepository,
-        ICartService cartService,
-        IMapper mapper,
-        ILogger logger)
-    {
-        _orderRepository = orderRepository ?? throw new ArgumentNullException(nameof(orderRepository));
-        _orderDetailRepository = orderDetailRepository ?? throw new ArgumentNullException(nameof(orderDetailRepository));
-        _shipmentRepository = shipmentRepository ?? throw new ArgumentNullException(nameof(shipmentRepository));
-        _itemRepository = itemRepository ?? throw new ArgumentNullException(nameof(itemRepository));
-        _vendorRepository = vendorRepository ?? throw new ArgumentNullException(nameof(vendorRepository));
-        _cartService = cartService ?? throw new ArgumentNullException(nameof(cartService));
-        _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
-        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-    }
-
-    // ============================================
-    // READ OPERATIONS
-    // ============================================
-
-    /// <summary>
-    /// Get order by ID
-    /// </summary>
-    public async Task<OrderDto?> GetOrderByIdAsync(
-        Guid orderId,
-        CancellationToken cancellationToken = default)
-    {
-        try
-        {
-            if (orderId == Guid.Empty)
-            {
-                throw new ArgumentException("Order ID cannot be empty", nameof(orderId));
-            }
-
-            var order = await _orderRepository.FindByIdAsync(orderId, cancellationToken);
-
-            if (order == null)
-            {
-                return null;
-            }
-
-            return _mapper.Map<OrderDto>(order);
-        }
-        catch (Exception ex)
-        {
-            _logger.Error(ex, "Error getting order {OrderId}", orderId);
-            throw;
-        }
-    }
-
-    /// <summary>
-    /// Get order by order number
-    /// </summary>
-    public async Task<OrderDto?> GetOrderByNumberAsync(
-        string orderNumber,
-        CancellationToken cancellationToken = default)
-    {
-        try
-        {
-            if (string.IsNullOrWhiteSpace(orderNumber))
-            {
-                throw new ArgumentException("Order number cannot be empty", nameof(orderNumber));
-            }
-
-            var order = await _orderRepository.GetByOrderNumberAsync(orderNumber, cancellationToken);
-
-            if (order == null)
-            {
-                return null;
-            }
-
-            return _mapper.Map<OrderDto>(order);
-        }
-        catch (Exception ex)
-        {
-            _logger.Error(ex, "Error getting order by number {OrderNumber}", orderNumber);
-            throw;
-        }
-    }
-
-    /// <summary>
-    /// Get order with full details including shipments
-    /// </summary>
-    public async Task<OrderDto?> GetOrderWithShipmentsAsync(
-        Guid orderId,
-        CancellationToken cancellationToken = default)
-    {
-        try
-        {
-            if (orderId == Guid.Empty)
-            {
-                throw new ArgumentException("Order ID cannot be empty", nameof(orderId));
-            }
-
-            var order = await _orderRepository.GetOrderWithDetailsAsync(orderId, cancellationToken);
-
-            if (order == null)
-            {
-                return null;
-            }
-
-            return _mapper.Map<OrderDto>(order);
-        }
-        catch (Exception ex)
-        {
-            _logger.Error(ex, "Error getting order with shipments {OrderId}", orderId);
-            throw;
-        }
-    }
-
-    /// <summary>
-    /// Get all orders (for admin/dashboard)
-    /// </summary>
-    public async Task<IEnumerable<OrderDto>> GetAllOrdersAsync(
-        CancellationToken cancellationToken = default)
-    {
-        try
-        {
-            var orders = await _orderRepository.GetAsync(
-                o => !o.IsDeleted,
-                cancellationToken);
-
-            if (!orders.Any())
-            {
-                return Enumerable.Empty<OrderDto>();
-            }
-
-            return _mapper.Map<IEnumerable<OrderDto>>(orders);
-        }
-        catch (Exception ex)
-        {
-            _logger.Error(ex, "Error getting all orders");
-            throw;
-        }
-    }
-
-    /// <summary>
-    /// Get customer orders with pagination
-    /// Returns one DTO per order detail (for display in list)
-    /// </summary>
-    public async Task<List<OrderListItemDto>> GetCustomerOrdersAsync(
-        string customerId,
-        int pageNumber = 1,
-        int pageSize = 10,
-        CancellationToken cancellationToken = default)
-    {
-        try
-        {
-            if (string.IsNullOrWhiteSpace(customerId))
-            {
-                throw new ArgumentException("Customer ID cannot be empty", nameof(customerId));
-            }
-
-            // Validate pagination
-            if (pageNumber < 1) pageNumber = 1;
-            if (pageSize < 1 || pageSize > 100) pageSize = 10;
-
-            // Get orders with pagination
-            var orders = await _orderRepository.GetByCustomerIdAsync(
-                customerId,
-                pageNumber,
-                pageSize,
-                cancellationToken);
-
-            if (!orders.Any())
-            {
-                return new List<OrderListItemDto>();
-            }
-
-            var orderIds = orders.Select(o => o.Id).ToList();
-
-            // Load order details
-            var orderDetails = await _orderDetailRepository.GetAsync(
-                od => orderIds.Contains(od.OrderId) && !od.IsDeleted,
-                cancellationToken);
-
-            // Load items
-            var itemIds = orderDetails.Select(od => od.ItemId).Distinct().ToList();
-            var items = await _itemRepository.GetAsync(
-                i => itemIds.Contains(i.Id) && !i.IsDeleted,
-                cancellationToken);
-            var itemDict = items.ToDictionary(i => i.Id);
-
-            // Load vendors
-            var vendorIds = orderDetails.Select(od => od.VendorId).Distinct().ToList();
-            var vendors = await _vendorRepository.GetAsync(
-                v => vendorIds.Contains(v.Id) && !v.IsDeleted,
-                cancellationToken);
-            var vendorDict = vendors.ToDictionary(v => v.Id);
-
-            // Load latest shipments
-            var shipments = await _shipmentRepository.GetAsync(
-                s => orderIds.Contains(s.OrderId) && !s.IsDeleted,
-                cancellationToken);
-            var latestShipments = shipments
-                .GroupBy(s => s.OrderId)
-                .ToDictionary(
-                    g => g.Key,
-                    g => g.OrderByDescending(s => s.CreatedDateUtc).First());
-
-            // Build result
-            var result = new List<OrderListItemDto>();
-
-            foreach (var order in orders)
-            {
-                var orderDetailsForOrder = orderDetails.Where(od => od.OrderId == order.Id);
-
-                // Get latest shipment status for this order
-                var shipmentStatus = latestShipments.ContainsKey(order.Id)
-                    ? latestShipments[order.Id].ShipmentStatus
-                    : ShipmentStatus.Pending;
-
-                foreach (var orderDetail in orderDetailsForOrder)
-                {
-                    var item = itemDict.ContainsKey(orderDetail.ItemId)
-                        ? itemDict[orderDetail.ItemId]
-                        : null;
-
-                    var vendor = vendorDict.ContainsKey(orderDetail.VendorId)
-                        ? vendorDict[orderDetail.VendorId]
-                        : null;
-
-                    result.Add(new OrderListItemDto
-                    {
-                        Id = order.Id,
-                        OrderNumber = order.Number,
-                        SellerName = vendor?.StoreName ?? "",
-                        ItemImageUrl = item?.ThumbnailImage ?? "",
-                        ItemNameAr = item?.TitleAr ?? "",
-                        ItemNameEn = item?.TitleEn ?? "",
-                        QuantityItem = orderDetail.Quantity,
-                        Price = orderDetail.UnitPrice,
-                        Total = order.Price,
-                        OrderStatus = order.OrderStatus.ToString(),
-                        PaymentStatus = order.PaymentStatus.ToString(),
-                        ShipmentStatus = shipmentStatus,
-                        CreatedDate = order.CreatedDateUtc
-                    });
-                }
-            }
-
-            return result;
-        }
-        catch (Exception ex)
-        {
-            _logger.Error(ex, "Error getting customer orders for {CustomerId}", customerId);
-            throw;
-        }
-    }
-
-    /// <summary>
-    /// Get order items list by order ID
-    /// </summary>
-    public async Task<List<ResponseOrderItemDetailsDto>> GetListByOrderIdAsync(
-        Guid orderId,
-        string? userId = null,
-        CancellationToken cancellationToken = default)
-    {
-        try
-        {
-            if (orderId == Guid.Empty)
-            {
-                throw new ArgumentException("Order ID cannot be empty", nameof(orderId));
-            }
-
-            // Get order
-            var order = await _orderRepository.FindByIdAsync(orderId, cancellationToken);
-
-            if (order == null || order.OrderStatus == OrderProgressStatus.Cancelled)
-            {
-                return new List<ResponseOrderItemDetailsDto>();
-            }
-
-            // Security check
-            if (!string.IsNullOrEmpty(userId) && order.UserId != userId)
-            {
-                throw new UnauthorizedAccessException("You don't have permission to view this order");
-            }
-
-            // Get order details
-            var orderDetails = await _orderDetailRepository.GetAsync(
-                od => od.OrderId == orderId && !od.IsDeleted,
-                cancellationToken);
-
-            if (!orderDetails.Any())
-            {
-                return new List<ResponseOrderItemDetailsDto>();
-            }
-
-            // Load items
-            var itemIds = orderDetails.Select(od => od.ItemId).Distinct().ToList();
-            var items = await _itemRepository.GetAsync(
-                i => itemIds.Contains(i.Id) && !i.IsDeleted,
-                cancellationToken);
-            var itemDict = items.ToDictionary(i => i.Id);
-
-            // Load vendors
-            var vendorIds = orderDetails.Select(od => od.VendorId).Distinct().ToList();
-            var vendors = await _vendorRepository.GetAsync(
-                v => vendorIds.Contains(v.Id) && !v.IsDeleted,
-                cancellationToken);
-            var vendorDict = vendors.ToDictionary(v => v.Id);
-
-            // Load latest shipment
-            var shipments = await _shipmentRepository.GetAsync(
-                s => s.OrderId == orderId && !s.IsDeleted,
-                cancellationToken);
-            var latestShipment = shipments
-                .OrderByDescending(s => s.CreatedDateUtc)
-                .FirstOrDefault();
-
-            // Build result
-            var result = new List<ResponseOrderItemDetailsDto>();
-
-            foreach (var orderDetail in orderDetails)
-            {
-                var item = itemDict.ContainsKey(orderDetail.ItemId)
-                    ? itemDict[orderDetail.ItemId]
-                    : null;
-
-                var vendor = vendorDict.ContainsKey(orderDetail.VendorId)
-                    ? vendorDict[orderDetail.VendorId]
-                    : null;
-
-                result.Add(new ResponseOrderItemDetailsDto
-                {
-                    OrderDetailId = orderDetail.Id,
-                    ItemId = orderDetail.ItemId,
-                    ItemName = item?.TitleEn ?? "",
-                    ItemImageUrl = item?.ThumbnailImage ?? "",
-                    VendorId = orderDetail.VendorId,
-                    VendorStoreName = vendor?.StoreName ?? "",
-                    Quantity = orderDetail.Quantity,
-                    UnitPrice = orderDetail.UnitPrice,
-                    SubTotal = orderDetail.SubTotal,
-                    ShipmentStatus = latestShipment?.ShipmentStatus ?? ShipmentStatus.Pending
-                });
-            }
-
-            return result;
-        }
-        catch (Exception ex)
-        {
-            _logger.Error(ex, "Error getting order items list for {OrderId}", orderId);
-            throw;
-        }
-    }
-
-    /// <summary>
-    /// Get detailed order information by order details ID
-    /// </summary>
-    public async Task<ResponseOrderDetailsDto?> GetOrderDetailsByIdAsync(
-        Guid orderDetailsId,
-        string userId,
-        CancellationToken cancellationToken = default)
-    {
-        try
-        {
-            if (orderDetailsId == Guid.Empty)
-            {
-                throw new ArgumentException("Order details ID cannot be empty", nameof(orderDetailsId));
-            }
-
-            // Get order detail
-            var orderDetail = await _orderDetailRepository.FindByIdAsync(orderDetailsId, cancellationToken);
-
-            if (orderDetail == null)
-            {
-                return null;
-            }
-
-            // Security check - verify user owns this order
-            if (!string.IsNullOrEmpty(userId))
-            {
-                var order = await _orderRepository.FindByIdAsync(orderDetail.OrderId, cancellationToken);
-
-                if (order == null)
-                {
-                    return null;
-                }
-
-                if (order.UserId != userId)
-                {
-                    throw new UnauthorizedAccessException("You don't have permission to view this order detail");
-                }
-            }
-
-            // Load item
-            var item = await _itemRepository.FindByIdAsync(orderDetail.ItemId, cancellationToken);
-
-            // Load vendor
-            var vendor = await _vendorRepository.FindByIdAsync(orderDetail.VendorId, cancellationToken);
-
-            // Load latest shipment
-            var shipments = await _shipmentRepository.GetAsync(
-                s => s.OrderId == orderDetail.OrderId && !s.IsDeleted,
-                cancellationToken);
-            var latestShipment = shipments
-                .OrderByDescending(s => s.CreatedDateUtc)
-                .FirstOrDefault();
-
-            // Build result
-            return new ResponseOrderDetailsDto
-            {
-                OrderDetailId = orderDetail.Id,
-                ItemId = orderDetail.ItemId,
-                ItemName = item?.TitleEn ?? "",
-                ItemImageUrl = item?.ThumbnailImage ?? "",
-                VendorId = orderDetail.VendorId,
-                VendorStoreName = vendor?.StoreName ?? "",
-                Quantity = orderDetail.Quantity,
-                UnitPrice = orderDetail.UnitPrice,
-                SubTotal = orderDetail.SubTotal,
-                DiscountAmount = orderDetail.DiscountAmount,
-                TaxAmount = orderDetail.TaxAmount,
-                ShipmentStatus = latestShipment?.ShipmentStatus ?? ShipmentStatus.Pending
-            };
-        }
-        catch (Exception ex)
-        {
-            _logger.Error(ex, "Error getting order details {OrderDetailsId}", orderDetailsId);
-            throw;
-        }
-    }
-
-    // ============================================
-    // WRITE OPERATIONS
-    // ============================================
-
-    /// <summary>
-    /// Cancel order before shipping
-    /// Can only cancel orders that are not yet shipped/delivered/cancelled
-    /// </summary>
-    public async Task<bool> CancelOrderAsync(
-        Guid orderId,
-        string reason,
-        string? adminNotes = null,
-        CancellationToken cancellationToken = default)
-    {
-        try
-        {
-            if (orderId == Guid.Empty)
-            {
-                throw new ArgumentException("Order ID cannot be empty", nameof(orderId));
-            }
-
-            if (string.IsNullOrWhiteSpace(reason))
-            {
-                throw new ArgumentException("Cancellation reason cannot be empty", nameof(reason));
-            }
-
-            var order = await _orderRepository.FindByIdAsync(orderId, cancellationToken);
-
-            if (order == null || order.IsDeleted)
-            {
-                return false;
-            }
-
-            // Check if order can be cancelled
-            if (order.OrderStatus == OrderProgressStatus.Shipped ||
-                order.OrderStatus == OrderProgressStatus.Delivered ||
-                order.OrderStatus == OrderProgressStatus.Cancelled)
-            {
-                return false;
-            }
-
-            // Update order status
-            order.OrderStatus = OrderProgressStatus.Cancelled;
-            order.UpdatedDateUtc = DateTime.UtcNow;
-
-            await _orderRepository.UpdateAsync(order, Guid.Empty, cancellationToken);
-
-            return true;
-        }
-        catch (Exception ex)
-        {
-            _logger.Error(ex, "Error cancelling order {OrderId}", orderId);
-            throw;
-        }
-    }
-
-    // ============================================
-    // VALIDATION & STATUS OPERATIONS
-    // ============================================
-
-    /// <summary>
-    /// Get order completion status
-    /// </summary>
-    public async Task<OrderCompletionStatusDto> GetOrderCompletionStatusAsync(
-        Guid orderId,
-        CancellationToken cancellationToken = default)
-    {
-        try
-        {
-            if (orderId == Guid.Empty)
-            {
-                throw new ArgumentException("Order ID cannot be empty", nameof(orderId));
-            }
-
-            var order = await _orderRepository.FindByIdAsync(orderId, cancellationToken);
-
-            if (order == null)
-            {
-                return new OrderCompletionStatusDto
-                {
-                    OrderId = orderId,
-                    IsComplete = false
-                };
-            }
-
-            bool isComplete = order.OrderStatus == OrderProgressStatus.Completed ||
-                             order.OrderStatus == OrderProgressStatus.Delivered;
-
-            return new OrderCompletionStatusDto
-            {
-                OrderId = orderId,
-                OrderNumber = order.Number,
-                OrderStatus = order.OrderStatus,
-                IsComplete = isComplete
-            };
-        }
-        catch (Exception ex)
-        {
-            _logger.Error(ex, "Error getting order completion status {OrderId}", orderId);
-            throw;
-        }
-    }
-
-    /// <summary>
-    /// Validate order data
-    /// </summary>
-    public async Task<bool> ValidateOrderAsync(
-        Guid orderId,
-        CancellationToken cancellationToken = default)
-    {
-        try
-        {
-            if (orderId == Guid.Empty)
-            {
-                throw new ArgumentException("Order ID cannot be empty", nameof(orderId));
-            }
-
-            var order = await _orderRepository.FindByIdAsync(orderId, cancellationToken);
-
-            if (order == null)
-            {
-                return false;
-            }
-
-            bool isValid = !string.IsNullOrWhiteSpace(order.Number) &&
-                          !string.IsNullOrWhiteSpace(order.UserId) &&
-                          order.Price > 0 &&
-                          order.CreatedDateUtc <= DateTime.UtcNow;
-
-            return isValid;
-        }
-        catch (Exception ex)
-        {
-            _logger.Error(ex, "Error validating order {OrderId}", orderId);
-            throw;
-        }
-    }
-
-    /// <summary>
-    /// Search orders with pagination and filtering (for admin dashboard)
-    /// </summary>
-    public async Task<(List<OrderDto> Items, int TotalRecords)> SearchOrdersAsync(
-        string? searchTerm = null,
-        int pageNumber = 1,
-        int pageSize = 10,
-        string sortBy = "CreatedDateUtc",
-        string sortDirection = "desc",
-        CancellationToken cancellationToken = default)
-    {
-        try
-        {
-            // Delegate to repository for data access
-            var (orders, totalCount) = await _orderRepository.SearchAsync(
-                searchTerm,
-                pageNumber,
-                pageSize,
-                sortBy,
-                sortDirection,
-                cancellationToken);
-
-            if (!orders.Any())
-            {
-                return (new List<OrderDto>(), totalCount);
-            }
-
-            // Map to DTOs
-            var orderDtos = _mapper.Map<List<OrderDto>>(orders);
-            return (orderDtos, totalCount);
-        }
-        catch (Exception ex)
-        {
-            _logger.Error(ex, "Error searching orders with term: {SearchTerm}, page: {PageNumber}", searchTerm, pageNumber);
-            throw;
-        }
-    }
-}
+﻿//using AutoMapper;
+//using BL.Contracts.Service.Order.OrderProcessing;
+//using Common.Enumerations.Order;
+//using Common.Enumerations.Shipping;
+//using DAL.Contracts.Repositories.Order;
+//using DAL.Models;
+//using Domains.Entities.Order;
+//using Domains.Entities.Order.Shipping;
+//using Serilog;
+//using Shared.DTOs.Order.Checkout.Address;
+//using Shared.DTOs.Order.CouponCode;
+//using Shared.DTOs.Order.Fulfillment.Shipment;
+//using Shared.DTOs.Order.OrderProcessing;
+//using Shared.DTOs.Order.OrderProcessing.AdminOrder;
+//using Shared.DTOs.Order.OrderProcessing.CustomerOrder;
+//using Shared.DTOs.Order.OrderProcessing.VendorDashboardOrder;
+//using Shared.DTOs.Order.OrderProcessing.VendorOrder;
+//using Shared.DTOs.Order.Payment;
+//using Shared.DTOs.User.Customer;
+//using Shared.GeneralModels;
+
+//namespace BL.Services.Order.OrderProcessing;
+
+///// <summary>
+///// Service for managing orders - FIXED VERSION
+///// 
+///// FIXES APPLIED:
+///// 1. Fixed GetItemShipmentStatus method
+/////    - TbOrderShipment doesn't have OrderDetailId directly
+/////    - Must navigate through TbOrderShipment.Items collection
+/////    - Items is ICollection<TbOrderShipmentItem> where each has OrderDetailId
+///// 
+///// 2. Fixed MapToAdminOrderItem method
+/////    - TbOrderDetail doesn't have Warehouse navigation property
+/////    - Only has WarehouseId field
+/////    - Removed reference to od.Warehouse?.NameEn
+///// </summary>
+//public class OrderManagementService : IOrderManagementService
+//{
+//    private readonly IOrderRepository _orderRepository;
+//    private readonly IMapper _mapper;
+//    private readonly ILogger _logger;
+
+//    public OrderManagementService(
+//        IOrderRepository orderRepository,
+//        IMapper mapper,
+//        ILogger logger)
+//    {
+//        _orderRepository = orderRepository ?? throw new ArgumentNullException(nameof(orderRepository));
+//        _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+//        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+//    }
+
+//    // ============================================
+//    // CUSTOMER OPERATIONS
+//    // ============================================
+
+//    /// <summary>
+//    /// Get customer orders list with pagination
+//    /// </summary>
+//    public async Task<AdvancedPagedResult<CustomerOrderListDto>> GetCustomerOrdersListAsync(
+//        string customerId,
+//        int pageNumber = 1,
+//        int pageSize = 10,
+//        CancellationToken cancellationToken = default)
+//    {
+//        try
+//        {
+//            var (orders, totalCount) = await _orderRepository.GetCustomerOrdersWithPaginationAsync(
+//                customerId,
+//                pageNumber,
+//                pageSize,
+//                cancellationToken);
+
+//            var orderDtos = orders.Select(order => new CustomerOrderListDto
+//            {
+//                OrderId = order.Id,
+//                OrderNumber = order.Number,
+//                OrderDate = order.CreatedDateUtc,
+//                TotalAmount = order.Price,
+//                OrderStatus = order.OrderStatus,
+//                PaymentStatus = order.PaymentStatus,
+//                ShipmentStatus = order.TbOrderShipments
+//                    .OrderByDescending(s => s.CreatedDateUtc)
+//                    .FirstOrDefault()?.ShipmentStatus ?? ShipmentStatus.Pending,
+//                TotalItems = order.OrderDetails.Sum(od => od.Quantity),
+//                ItemsSummary = order.OrderDetails
+//                    .Take(3)
+//                    .Select(od => new OrderItemSummaryDto
+//                    {
+//                        ItemName = od.Item?.TitleEn ?? "",
+//                        ThumbnailImage = od.Item?.ThumbnailImage ?? "",
+//                        Quantity = od.Quantity
+//                    }).ToList(),
+//                CanCancel = CanCancelOrder(order.OrderStatus),
+//                IsWithinRefundPeriod = IsWithinRefundPeriod(order.CreatedDateUtc)
+//            }).ToList();
+
+//            return new AdvancedPagedResult<CustomerOrderListDto>
+//            {
+//                Items = orderDtos,
+//                TotalRecords = totalCount,
+//                PageNumber = pageNumber,
+//                PageSize = pageSize
+//            };
+//        }
+//        catch (Exception ex)
+//        {
+//            _logger.Error(ex, "Error getting customer orders for {CustomerId}", customerId);
+//            throw;
+//        }
+//    }
+
+//    /// <summary>
+//    /// Get customer order full details
+//    /// </summary>
+//    public async Task<CustomerOrderDetailsDto?> GetCustomerOrderDetailsAsync(
+//        Guid orderId,
+//        string customerId,
+//        CancellationToken cancellationToken = default)
+//    {
+//        try
+//        {
+//            var order = await _orderRepository.GetOrderWithFullDetailsAsync(orderId, cancellationToken);
+
+//            if (order == null || order.UserId != customerId)
+//            {
+//                return null;
+//            }
+
+//            return new CustomerOrderDetailsDto
+//            {
+//                OrderId = order.Id,
+//                OrderNumber = order.Number,
+//                OrderDate = order.CreatedDateUtc,
+//                DeliveryDate = order.OrderDeliveryDate,
+//                OrderStatus = order.OrderStatus,
+//                PaymentStatus = order.PaymentStatus,
+//                SubTotal = order.OrderDetails.Sum(od => od.SubTotal),
+//                ShippingAmount = order.ShippingAmount,
+//                TaxAmount = order.OrderDetails.Sum(od => od.TaxAmount),
+//                DiscountAmount = order.OrderDetails.Sum(od => od.DiscountAmount),
+//                TotalAmount = order.Price,
+//                DeliveryAddress = new DeliveryAddressDto
+//                {
+//                    Address = order.CustomerAddress?.Address ?? "",
+//                    CityNameAr = order.CustomerAddress?.City?.TitleAr ?? "",
+//                    CityNameEn = order.CustomerAddress?.City?.TitleEn ?? "",
+//                    StateNameAr = order.CustomerAddress?.City?.State?.TitleAr ?? "",
+//                    StateNameEn = order.CustomerAddress?.City?.State?.TitleEn ?? "",
+//                    PhoneCode = order.CustomerAddress?.PhoneCode ?? "",
+//                    PhoneNumber = order.CustomerAddress?.PhoneNumber ?? "",
+//                    RecipientName = order.CustomerAddress?.RecipientName ?? ""
+//                },
+//                PaymentInfo = new PaymentInfoDto
+//                {
+//                    Status = order.PaymentStatus,
+//                    PaymentMethod = order.OrderPayments.FirstOrDefault()?.PaymentMethod.ToString() ?? "",
+//                    TransactionId = order.InvoiceId,
+//                    PaymentDate = order.PaidAt,
+//                    Amount = order.Price
+//                },
+//                Items = order.OrderDetails.Select(od => new CustomerOrderItemDto
+//                {
+//                    OrderDetailId = od.Id,
+//                    ItemId = od.ItemId,
+//                    ItemName = od.Item?.TitleEn ?? "",
+//                    ItemImage = od.Item?.ThumbnailImage ?? "",
+//                    VendorName = od.Vendor?.StoreName ?? "",
+//                    Quantity = od.Quantity,
+//                    UnitPrice = od.UnitPrice,
+//                    SubTotal = od.SubTotal,
+//                    DiscountAmount = od.DiscountAmount,
+//                    TaxAmount = od.TaxAmount,
+//                    ShipmentStatus = GetItemShipmentStatus(od.Id, order.TbOrderShipments)
+//                }).ToList(),
+//                Shipments = order.TbOrderShipments.Select(s => new ShipmentInfoDto
+//                {
+//                    ShipmentId = s.Id,
+//                    ShipmentNumber = s.Number ?? "",
+//                    Status = s.ShipmentStatus,
+//                    TrackingNumber = s.TrackingNumber,
+//                    EstimatedDeliveryDate = s.EstimatedDeliveryDate,
+//                    ActualDeliveryDate = s.ActualDeliveryDate
+//                }).ToList(),
+//                CanCancel = CanCancelOrder(order.OrderStatus),
+//                CanRequestRefund = CanRequestRefund(order.OrderStatus, order.CreatedDateUtc),
+//                IsWithinRefundPeriod = IsWithinRefundPeriod(order.CreatedDateUtc)
+//            };
+//        }
+//        catch (Exception ex)
+//        {
+//            _logger.Error(ex, "Error getting customer order details {OrderId}", orderId);
+//            throw;
+//        }
+//    }
+
+//    // ============================================
+//    // VENDOR OPERATIONS
+//    // ============================================
+
+//    /// <summary>
+//    /// Get vendor orders with pagination and search
+//    /// Shows only orders containing vendor's items
+//    /// </summary>
+//    public async Task<AdvancedPagedResult<VendorOrderListDto>> GetVendorOrdersAsync(
+//        string vendorId,
+//        string? searchTerm,
+//        int pageNumber,
+//        int pageSize,
+//        string? sortBy,
+//        string? sortDirection,
+//        CancellationToken cancellationToken = default)
+//    {
+//        try
+//        {
+//            var (orders, totalCount) = await _orderRepository.GetVendorOrdersWithPaginationAsync(
+//                vendorId,
+//                searchTerm,
+//                pageNumber,
+//                pageSize,
+//                sortBy,
+//                sortDirection,
+//                cancellationToken);
+
+//            var orderDtos = orders.Select(order => new VendorOrderListDto
+//            {
+//                OrderId = order.Id,
+//                OrderNumber = order.Number,
+//                OrderDate = order.CreatedDateUtc,
+//                CustomerName = $"{order.User?.FirstName} {order.User?.LastName}",
+//                TotalAmount = order.OrderDetails.Sum(od => od.SubTotal),
+//                OrderStatus = order.OrderStatus,
+//                PaymentStatus = order.PaymentStatus,
+//                ItemsCount = order.OrderDetails.Sum(od => od.Quantity)
+//            }).ToList();
+
+//            return new AdvancedPagedResult<VendorOrderListDto>
+//            {
+//                Items = orderDtos,
+//                TotalRecords = totalCount,
+//                PageNumber = pageNumber,
+//                PageSize = pageSize
+//            };
+//        }
+//        catch (Exception ex)
+//        {
+//            _logger.Error(ex, "Error getting vendor orders for {VendorId}", vendorId);
+//            throw;
+//        }
+//    }
+
+//    /// <summary>
+//    /// Get vendor order details
+//    /// Shows only items belonging to this vendor
+//    /// </summary>
+//    public async Task<VendorOrderDetailsDto?> GetVendorOrderDetailsAsync(
+//        Guid orderId,
+//        string vendorId,
+//        CancellationToken cancellationToken = default)
+//    {
+//        try
+//        {
+//            if (!Guid.TryParse(vendorId, out var vendorGuid))
+//            {
+//                return null;
+//            }
+
+//            var order = await _orderRepository.GetOrderWithFullDetailsAsync(orderId, cancellationToken);
+
+//            if (order == null)
+//            {
+//                return null;
+//            }
+
+//            // Filter order details to only show vendor's items
+//            var vendorItems = order.OrderDetails
+//                .Where(od => od.VendorId == vendorGuid)
+//                .ToList();
+
+//            if (!vendorItems.Any())
+//            {
+//                return null;
+//            }
+
+//            return new VendorOrderDetailsDto
+//            {
+//                OrderId = order.Id,
+//                OrderNumber = order.Number,
+//                OrderDate = order.CreatedDateUtc,
+//                CustomerName = $"{order.User?.FirstName} {order.User?.LastName}",
+//                CustomerPhone = order.CustomerAddress?.PhoneNumber ?? "",
+//                OrderStatus = order.OrderStatus,
+//                PaymentStatus = order.PaymentStatus,
+//                DeliveryAddress = new DeliveryAddressDto
+//                {
+//                    Address = order.CustomerAddress?.Address ?? "",
+//                    CityNameEn = order.CustomerAddress?.City?.TitleEn ?? "",
+//                    PhoneNumber = order.CustomerAddress?.PhoneNumber ?? "",
+//                    RecipientName = order.CustomerAddress?.RecipientName ?? ""
+//                },
+//                Items = vendorItems.Select(od => new VendorOrderItemDto
+//                {
+//                    OrderDetailId = od.Id,
+//                    ItemId = od.ItemId,
+//                    ItemName = od.Item?.TitleEn ?? "",
+//                    ItemImage = od.Item?.ThumbnailImage ?? "",
+//                    Quantity = od.Quantity,
+//                    UnitPrice = od.UnitPrice,
+//                    SubTotal = od.SubTotal,
+//                    ShipmentStatus = GetItemShipmentStatus(od.Id, order.TbOrderShipments)
+//                }).ToList(),
+//                VendorTotal = vendorItems.Sum(od => od.SubTotal)
+//            };
+//        }
+//        catch (Exception ex)
+//        {
+//            _logger.Error(ex, "Error getting vendor order details {OrderId}", orderId);
+//            throw;
+//        }
+//    }
+
+//    // ============================================
+//    // ADMIN OPERATIONS
+//    // ============================================
+
+//    /// <summary>
+//    /// Get admin orders with pagination and search
+//    /// </summary>
+//    public async Task<AdvancedPagedResult<AdminOrderListDto>> GetAdminOrdersAsync(
+//        string? searchTerm,
+//        int pageNumber,
+//        int pageSize,
+//        string? sortBy,
+//        string? sortDirection,
+//        CancellationToken cancellationToken = default)
+//    {
+//        try
+//        {
+//            var (orders, totalCount) = await _orderRepository.SearchOrdersAsync(
+//                searchTerm,
+//                pageNumber,
+//                pageSize,
+//                sortBy,
+//                sortDirection,
+//                cancellationToken);
+
+//            var orderDtos = orders.Select(order => new AdminOrderListDto
+//            {
+//                OrderId = order.Id,
+//                OrderNumber = order.Number,
+//                OrderDate = order.CreatedDateUtc,
+//                CustomerName = $"{order.User?.FirstName} {order.User?.LastName}",
+//                CustomerEmail = order.User?.Email ?? "",
+//                TotalAmount = order.Price,
+//                OrderStatus = order.OrderStatus,
+//                PaymentStatus = order.PaymentStatus,
+//                ItemsCount = order.OrderDetails.Sum(od => od.Quantity)
+//            }).ToList();
+
+//            return new AdvancedPagedResult<AdminOrderListDto>
+//            {
+//                Items = orderDtos,
+//                TotalRecords = totalCount,
+//                PageNumber = pageNumber,
+//                PageSize = pageSize
+//            };
+//        }
+//        catch (Exception ex)
+//        {
+//            _logger.Error(ex, "Error getting admin orders");
+//            throw;
+//        }
+//    }
+
+//    /// <summary>
+//    /// Get admin order details with full information
+//    /// </summary>
+//    public async Task<AdminOrderDetailsDto?> GetAdminOrderDetailsAsync(
+//        Guid orderId,
+//        CancellationToken cancellationToken = default)
+//    {
+//        try
+//        {
+//            var order = await _orderRepository.GetOrderWithFullDetailsAsync(orderId, cancellationToken);
+
+//            if (order == null)
+//            {
+//                return null;
+//            }
+
+//            return new AdminOrderDetailsDto
+//            {
+//                OrderId = order.Id,
+//                OrderNumber = order.Number,
+//                OrderDate = order.CreatedDateUtc,
+//                DeliveryDate = order.OrderDeliveryDate,
+//                OrderStatus = order.OrderStatus,
+//                PaymentStatus = order.PaymentStatus,
+//                Customer = new CustomerInfoDto
+//                {
+//                    UserId = order.UserId,
+//                    FullName = $"{order.User?.FirstName} {order.User?.LastName}",
+//                    Email = order.User?.Email ?? "",
+//                    PhoneNumber = order.CustomerAddress?.PhoneNumber ?? ""
+//                },
+//                DeliveryAddress = new DeliveryAddressDto
+//                {
+//                    Address = order.CustomerAddress?.Address ?? "",
+//                    CityNameAr = order.CustomerAddress?.City?.TitleAr ?? "",
+//                    CityNameEn = order.CustomerAddress?.City?.TitleEn ?? "",
+//                    StateNameAr = order.CustomerAddress?.City?.State?.TitleAr ?? "",
+//                    StateNameEn = order.CustomerAddress?.City?.State?.TitleEn ?? "",
+//                    PhoneCode = order.CustomerAddress?.PhoneCode ?? "",
+//                    PhoneNumber = order.CustomerAddress?.PhoneNumber ?? "",
+//                    RecipientName = order.CustomerAddress?.RecipientName ?? ""
+//                },
+//                Items = order.OrderDetails.Select(od => MapToAdminOrderItem(od, order.TbOrderShipments)).ToList(),
+//                Shipments = order.TbOrderShipments.Select(s => new ShipmentInfoDto
+//                {
+//                    ShipmentId = s.Id,
+//                    ShipmentNumber = s.Number ?? "",
+//                    Status = s.ShipmentStatus,
+//                    TrackingNumber = s.TrackingNumber,
+//                    EstimatedDeliveryDate = s.EstimatedDeliveryDate,
+//                    ActualDeliveryDate = s.ActualDeliveryDate
+//                }).ToList(),
+//                PaymentInfo = new PaymentInfoDto
+//                {
+//                    Status = order.PaymentStatus,
+//                    PaymentMethod = order.OrderPayments.FirstOrDefault()?.PaymentMethod.ToString() ?? "",
+//                    TransactionId = order.InvoiceId,
+//                    PaymentDate = order.PaidAt,
+//                    Amount = order.Price
+//                },
+//                Coupon = order.Coupon != null ? new CouponInfoDto
+//                {
+//                    Code = order.Coupon.Code ?? "",
+//                    DiscountAmount = order.DiscountAmount
+//                } : null,
+//                SubTotal = order.SubTotal,
+//                ShippingAmount = order.ShippingAmount,
+//                TaxAmount = order.TaxAmount,
+//                DiscountAmount = order.DiscountAmount,
+//                TotalAmount = order.Price,
+//                Notes = order.Notes
+//            };
+//        }
+//        catch (Exception ex)
+//        {
+//            _logger.Error(ex, "Error getting admin order details {OrderId}", orderId);
+//            throw;
+//        }
+//    }
+
+//    /// <summary>
+//    /// Cancel order (Customer or Admin)
+//    /// </summary>
+//    public async Task<ResponseModel<bool>> CancelOrderAsync(
+//        Guid orderId,
+//        string? reason,
+//        CancellationToken cancellationToken = default)
+//    {
+//        try
+//        {
+//            var order = await _orderRepository.FindByIdAsync(orderId, cancellationToken);
+
+//            if (order == null)
+//            {
+//                return new ResponseModel<bool>
+//                {
+//                    Success = false,
+//                    Message = "Order not found"
+//                };
+//            }
+
+//            if (!CanCancelOrder(order.OrderStatus))
+//            {
+//                return new ResponseModel<bool>
+//                {
+//                    Success = false,
+//                    Message = "Order cannot be cancelled at this stage"
+//                };
+//            }
+
+//            order.OrderStatus = OrderProgressStatus.Cancelled;
+//            order.UpdatedDateUtc = DateTime.UtcNow;
+
+//            await _orderRepository.UpdateAsync(order, Guid.Empty, cancellationToken);
+
+//            return new ResponseModel<bool>
+//            {
+//                Success = true,
+//                Message = "Order cancelled successfully",
+//                Data = true
+//            };
+//        }
+//        catch (Exception ex)
+//        {
+//            _logger.Error(ex, "Error cancelling order {OrderId}", orderId);
+//            return new ResponseModel<bool>
+//            {
+//                Success = false,
+//                Message = ex.Message
+//            };
+//        }
+//    }
+
+//    /// <summary>
+//    /// Update order (Admin)
+//    /// </summary>
+//    public async Task<ResponseModel<bool>> UpdateOrderAsync(
+//        UpdateOrderRequest request,
+//        CancellationToken cancellationToken = default)
+//    {
+//        try
+//        {
+//            var order = await _orderRepository.FindByIdAsync(request.OrderId, cancellationToken);
+
+//            if (order == null)
+//            {
+//                return new ResponseModel<bool>
+//                {
+//                    Success = false,
+//                    Message = "Order not found"
+//                };
+//            }
+
+//            if (request.OrderDeliveryDate.HasValue)
+//            {
+//                order.OrderDeliveryDate = request.OrderDeliveryDate;
+//            }
+
+//            order.UpdatedDateUtc = DateTime.UtcNow;
+//            await _orderRepository.UpdateAsync(order, Guid.Empty, cancellationToken);
+
+//            return new ResponseModel<bool>
+//            {
+//                Success = true,
+//                Message = "Order updated successfully",
+//                Data = true
+//            };
+//        }
+//        catch (Exception ex)
+//        {
+//            _logger.Error(ex, "Error updating order {OrderId}", request.OrderId);
+//            return new ResponseModel<bool>
+//            {
+//                Success = false,
+//                Message = ex.Message
+//            };
+//        }
+//    }
+
+//    /// <summary>
+//    /// Change order status (Admin)
+//    /// </summary>
+//    public async Task<ResponseModel<bool>> ChangeOrderStatusAsync(
+//        Guid orderId,
+//        OrderProgressStatus newStatus,
+//        string? notes,
+//        string adminUserId,
+//        CancellationToken cancellationToken = default)
+//    {
+//        try
+//        {
+//            var order = await _orderRepository.FindByIdAsync(orderId, cancellationToken);
+
+//            if (order == null)
+//            {
+//                return new ResponseModel<bool>
+//                {
+//                    Success = false,
+//                    Message = "Order not found"
+//                };
+//            }
+
+//            if (!IsValidStatusTransition(order.OrderStatus, newStatus))
+//            {
+//                return new ResponseModel<bool>
+//                {
+//                    Success = false,
+//                    Message = $"Invalid status transition from {order.OrderStatus} to {newStatus}"
+//                };
+//            }
+
+//            order.OrderStatus = newStatus;
+//            order.UpdatedDateUtc = DateTime.UtcNow;
+
+//            if (newStatus == OrderProgressStatus.Delivered && !order.OrderDeliveryDate.HasValue)
+//            {
+//                order.OrderDeliveryDate = DateTime.UtcNow;
+//            }
+
+//            await _orderRepository.UpdateAsync(order, Guid.Empty, cancellationToken);
+
+//            return new ResponseModel<bool>
+//            {
+//                Success = true,
+//                Message = $"Order status changed to {newStatus}",
+//                Data = true
+//            };
+//        }
+//        catch (Exception ex)
+//        {
+//            _logger.Error(ex, "Error changing order status {OrderId}", orderId);
+//            return new ResponseModel<bool>
+//            {
+//                Success = false,
+//                Message = ex.Message
+//            };
+//        }
+//    }
+
+//    // ============================================
+//    // HELPER METHODS - FIXED
+//    // ============================================
+
+//    /// <summary>
+//    /// Map OrderDetail to AdminOrderItemDto
+//    /// 
+//    /// FIXED: Removed reference to od.Warehouse
+//    /// - TbOrderDetail doesn't have Warehouse navigation property
+//    /// - Only has WarehouseId (Guid) field
+//    /// - If you need warehouse name, you must:
+//    ///   1. Add Warehouse navigation property to TbOrderDetail
+//    ///   2. Include it in the query
+//    ///   3. Or load warehouses separately and join in memory
+//    /// </summary>
+//    private AdminOrderItemDto MapToAdminOrderItem(
+//        TbOrderDetail od,
+//        ICollection<TbOrderShipment> shipments)
+//    {
+//        return new AdminOrderItemDto
+//        {
+//            OrderDetailId = od.Id,
+//            ItemId = od.ItemId,
+//            ItemName = od.Item?.TitleEn ?? "",
+//            ItemImage = od.Item?.ThumbnailImage ?? "",
+//            VendorId = od.VendorId,
+//            VendorName = od.Vendor?.StoreName ?? "",
+//            Quantity = od.Quantity,
+//            UnitPrice = od.UnitPrice,
+//            SubTotal = od.SubTotal,
+//            DiscountAmount = od.DiscountAmount,
+//            TaxAmount = od.TaxAmount,
+//            ShipmentStatus = GetItemShipmentStatus(od.Id, shipments),
+//            WarehouseId = od.WarehouseId
+//            // REMOVED: WarehouseName = od.Warehouse?.NameEn
+//            // REASON: TbOrderDetail doesn't have Warehouse navigation property
+//            // SOLUTION: Add the navigation property or load warehouses separately
+//        };
+//    }
+
+//    /// <summary>
+//    /// Get shipment status for a specific order detail item
+//    /// 
+//    /// FIXED: Correct navigation through TbOrderShipment.Items
+//    /// 
+//    /// EXPLANATION:
+//    /// - TbOrderShipment does NOT have a direct OrderDetailId property
+//    /// - Instead, it has an Items collection (ICollection<TbOrderShipmentItem>)
+//    /// - Each TbOrderShipmentItem has an OrderDetailId
+//    /// - So we must navigate: shipment → Items → find item with matching OrderDetailId
+//    /// 
+//    /// PREVIOUS INCORRECT CODE:
+//    /// shipments.Where(s => s.OrderDetailId == orderDetailId)
+//    /// 
+//    /// CORRECTED CODE:
+//    /// shipments.Where(s => s.Items.Any(item => item.OrderDetailId == orderDetailId))
+//    /// </summary>
+//    private ShipmentStatus GetItemShipmentStatus(
+//        Guid orderDetailId,
+//        ICollection<TbOrderShipment> shipments)
+//    {
+//        return shipments
+//            .Where(s => s.Items.Any(item => item.OrderDetailId == orderDetailId))
+//            .OrderByDescending(s => s.CreatedDateUtc)
+//            .FirstOrDefault()?.ShipmentStatus ?? ShipmentStatus.Pending;
+//    }
+
+//    private bool CanCancelOrder(OrderProgressStatus status)
+//    {
+//        return status == OrderProgressStatus.Pending ||
+//               status == OrderProgressStatus.Confirmed;
+//    }
+
+//    private bool CanRequestRefund(OrderProgressStatus status, DateTime orderDate)
+//    {
+//        return (status == OrderProgressStatus.Delivered ||
+//                status == OrderProgressStatus.Completed) &&
+//               IsWithinRefundPeriod(orderDate);
+//    }
+
+//    private bool IsWithinRefundPeriod(DateTime orderDate)
+//    {
+//        return DateTime.UtcNow.Subtract(orderDate).Days <= 15;
+//    }
+
+//    private bool IsValidStatusTransition(OrderProgressStatus current, OrderProgressStatus target)
+//    {
+//        // Same status - allow
+//        if (current == target) return true;
+
+//        // Define valid transitions
+//        var validTransitions = new Dictionary<OrderProgressStatus, List<OrderProgressStatus>>
+//        {
+//            [OrderProgressStatus.Pending] = new() { OrderProgressStatus.Confirmed, OrderProgressStatus.Cancelled },
+//            [OrderProgressStatus.Confirmed] = new() { OrderProgressStatus.Processing, OrderProgressStatus.Cancelled },
+//            [OrderProgressStatus.Processing] = new() { OrderProgressStatus.Shipped, OrderProgressStatus.Cancelled },
+//            [OrderProgressStatus.Shipped] = new() { OrderProgressStatus.Delivered, OrderProgressStatus.Returned },
+//            [OrderProgressStatus.Delivered] = new() { OrderProgressStatus.Completed, OrderProgressStatus.Returned },
+//            [OrderProgressStatus.Completed] = new() { OrderProgressStatus.Returned },
+//            [OrderProgressStatus.Cancelled] = new(),
+//            [OrderProgressStatus.Returned] = new() { OrderProgressStatus.Refunded },
+//            [OrderProgressStatus.Refunded] = new()
+//        };
+
+//        return validTransitions.ContainsKey(current) &&
+//               validTransitions[current].Contains(target);
+//    }
+//}

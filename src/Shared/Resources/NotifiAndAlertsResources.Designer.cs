@@ -376,6 +376,15 @@ namespace Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to حدث خطأ.
+        /// </summary>
+        public static string ErrorOccurred {
+            get {
+                return ResourceManager.GetString("ErrorOccurred", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to حدث خطأ أثناء المعالجة. يُرجى المحاولة مرة أخرى..
         /// </summary>
         public static string ErrorWhileProcessing {
@@ -831,6 +840,15 @@ namespace Resources {
         public static string OrderCancelled {
             get {
                 return ResourceManager.GetString("OrderCancelled", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to تم إلغاء الطلب بنجاح.
+        /// </summary>
+        public static string OrderCancelledSuccessfully {
+            get {
+                return ResourceManager.GetString("OrderCancelledSuccessfully", resourceCulture);
             }
         }
         

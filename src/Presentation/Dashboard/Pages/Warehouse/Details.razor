@@ -58,7 +58,7 @@
                                 <select class="form-control select2"
                                         value="@(Model.VendorId?.ToString() ?? Guid.Empty.ToString())"
                                         @onchange="OnVendorSelectionChanged">
-                                    <option value="@Guid.Empty.ToString()">@WarehouseResource.SelectVendor</option>
+                                    <option value="@Guid.Empty.ToString()">@OrderResources.SelectVendor</option>
                                     @if (vendors != null && vendors.Any())
                                     {
                                         @foreach (var vendor in vendors)

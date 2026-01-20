@@ -18,6 +18,7 @@ namespace Api.Extensions.Services
             // Merchandising Services
             services.AddScoped<IHomepageService, HomepageService>();
             services.AddScoped<ICampaignService, CampaignService>();
+            services.AddScoped<ICampaignItemService, CampaignItemService>();
 
             // Promo code
             services.AddScoped<ICouponCodeService, CouponCodeService>();

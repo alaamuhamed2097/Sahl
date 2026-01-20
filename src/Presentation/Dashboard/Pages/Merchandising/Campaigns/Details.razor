@@ -63,12 +63,12 @@
                         </h5>
                         <div class="row">
                             <div class="col-md-6 mb-3">
-                                <label class="form-label">Start Date: <span class="text-danger">*</span></label>
+                                <label class="form-label">@MerchandisingResources.StartDate <span class="text-danger">*</span></label>
                                 <InputDate class="form-control" @bind-Value="Model.StartDate" />
                                 <ValidationMessage For="@(() => Model.StartDate)" />
                             </div>
                             <div class="col-md-6 mb-3">
-                                <label class="form-label">End Date: <span class="text-danger">*</span></label>
+                                <label class="form-label">@MerchandisingResources.EndDate <span class="text-danger">*</span></label>
                                 <InputDate class="form-control" @bind-Value="Model.EndDate" />
                                 <ValidationMessage For="@(() => Model.EndDate)" />
                             </div>
@@ -83,25 +83,27 @@
                         <div class="form-check form-switch mb-3">
                             <InputCheckbox id="isFlashSale" class="form-check-input" @bind-Value="Model.IsFlashSale" />
                             <label class="form-check-label" for="isFlashSale">
-                                Enable Flash Sale Mode
+                               @MerchandisingResources.EnableFlashSaleMode
                             </label>
                         </div>
                         <small class="text-muted d-block mb-3">
-                            <i class="fas fa-lightbulb text-info me-1"></i>Mark this campaign as a flash sale with limited-time and limited-quantity offers
+                            <i class="fas fa-lightbulb text-info me-1"></i>
+                            @MerchandisingResources.FlashSaleEndTime
+
                         </small>
 
                         @if (Model.IsFlashSale)
                         {
                             <div class="row">
                                 <div class="col-md-6 mb-3">
-                                    <label class="form-label">Flash Sale End Time:</label>
+                                    <label class="form-label">@MerchandisingResources.FlashSaleEndTime</label>
                                     <InputDate class="form-control" @bind-Value="Model.FlashSaleEndTime" />
-                                    <small class="text-muted">When should the flash sale end?</small>
+                                    <small class="text-muted"> @MerchandisingResources.FlashSaleEndTimeHint</small>
                                 </div>
                                 <div class="col-md-6 mb-3">
-                                    <label class="form-label">Max Quantity Per User:</label>
+                                    <label class="form-label">@MerchandisingResources.MaxQuantityPerUser</label>
                                     <InputNumber class="form-control" @bind-Value="Model.MaxQuantityPerUser" min="1" />
-                                    <small class="text-muted">Maximum items a customer can buy</small>
+                                    <small class="text-muted">@MerchandisingResources.MaxQuantityPerUserHint</small>
                                 </div>
                             </div>
                         }
@@ -110,32 +112,31 @@
                     <!-- Badge Configuration -->
                     <div class="mb-4">
                         <h5 class="mb-3">
-                            <i class="fas fa-tag text-success me-2"></i>Badge Configuration
+                            <i class="fas fa-tag text-success me-2"></i> @MerchandisingResources.BadgeConfiguration
                         </h5>
                         <div class="row">
                             <div class="col-md-6 mb-3">
-                                <label class="form-label">Badge Text (EN):</label>
+                                <label class="form-label">@MerchandisingResources.BadgeTextEn</label>
                                 <InputText class="form-control" @bind-Value="Model.BadgeTextEn"
-                                           placeholder="e.g., HOT DEAL" />
-                                <small class="text-muted">Short badge text in English</small>
+                                           placeholder=@MerchandisingResources.BadgeTextEnPlaceholder />
+                                <small class="text-muted">@MerchandisingResources.BadgeTextEnHint</small>
                             </div>
                             <div class="col-md-6 mb-3">
-                                <label class="form-label">Badge Text (AR):</label>
+                                <label class="form-label"> @MerchandisingResources.BadgeTextAr</label>
                                 <InputText class="form-control" @bind-Value="Model.BadgeTextAr"
-                                           placeholder="e.g., ??? ????" />
-                                <small class="text-muted">Short badge text in Arabic</small>
+                                           placeholder=@MerchandisingResources.BadgeTextArPlaceholder />
+                                <small class="text-muted">@MerchandisingResources.BadgeTextArHint</small>
                             </div>
                         </div>
 
                         <div class="row">
                             <div class="col-md-6 mb-3">
-                                <label class="form-label">Badge Color:</label>
+                                <label class="form-label">@MerchandisingResources.BadgeColor</label>
                                 <div class="input-group">
                                     <InputText type="color" class="form-control form-control-color" @bind-Value="Model.BadgeColor" />
                                     <InputText class="form-control" @bind-Value="Model.BadgeColor"
                                                placeholder="#FF0000" />
                                 </div>
-                                <small class="text-muted">Choose a color for the campaign badge</small>
                             </div>
                         </div>
                     </div>
@@ -143,16 +144,17 @@
                     <!-- Status -->
                     <div class="mb-4">
                         <h5 class="mb-3">
-                            <i class="fas fa-sliders-h text-secondary me-2"></i>Status
+                            <i class="fas fa-sliders-h text-secondary me-2"></i>@MerchandisingResources.Status
                         </h5>
                         <div class="form-check form-switch">
                             <InputCheckbox id="isActive" class="form-check-input" @bind-Value="Model.IsActive" />
                             <label class="form-check-label" for="isActive">
-                                @(Model.IsActive ? "Campaign is Active" : "Campaign is Inactive")
+                                @(Model.IsActive? MerchandisingResources.CampaignIsActive: MerchandisingResources.CampaignIsInactive)
                             </label>
                         </div>
                         <small class="text-muted d-block mt-2">
-                            <i class="fas fa-info-circle me-1"></i>Inactive campaigns won't be displayed to customers
+                            <i class="fas fa-info-circle me-1"></i>@MerchandisingResources.InactiveCampaignNote
+
                         </small>
                     </div>
 
@@ -162,7 +164,7 @@
                         <hr class="my-4" />
                         <div class="row">
                             <div class="col-md-6 mb-3">
-                                <label class="form-label">Created Date:</label>
+                                <label class="form-label"> @MerchandisingResources.CreatedDate</label>
                                 <input type="text" class="form-control" readonly
                                        value="@Model.CreatedDateUtc.ToString("dd/MM/yyyy HH:mm:ss")" />
                             </div>
@@ -172,7 +174,7 @@
 
                 <div class="card-footer bg-light py-3 d-flex justify-content-end gap-2">
                     <button type="button" class="btn btn-secondary" @onclick="Cancel">
-                        <i class="fas fa-times me-2"></i>@ActionsResources.Cancel
+                        <i class="fas fa-times mx-2"></i>@ActionsResources.Cancel
                     </button>
                     <button type="submit" class="btn btn-primary" disabled="@IsSaving">
                         @if (IsSaving)
@@ -182,7 +184,7 @@
                         }
                         else
                         {
-                            <i class="fas fa-save me-2"></i>
+                            <i class="fas fa-save  mx-2"></i>
                             @ActionsResources.Save
                         }
                     </button>
@@ -197,7 +199,7 @@
         <div class="card shadow-sm border-0 mt-4">
             <div class="card-header bg-light">
                 <h5 class="mb-0">
-                    <i class="fas fa-list text-primary me-2"></i>Campaign Items (@CampaignItems.Count)
+                    <i class="fas fa-list text-primary me-2"></i>@MerchandisingResources.CampaignItems (@CampaignItems.Count)
                 </h5>
             </div>
             <div class="card-body p-4">
@@ -205,10 +207,10 @@
                     <table class="table table-hover">
                         <thead class="table-light">
                             <tr>
-                                <th>Item Name (EN)</th>
-                                <th>Item Name (AR)</th>
-                                <th>Display Order</th>
-                                <th>Actions</th>
+                                <th>@MerchandisingResources.ItemNameEn</th>
+                                <th>@MerchandisingResources.ItemNameAr</th>
+                                <th>@MerchandisingResources.DisplayOrder</th>
+                                <th>@MerchandisingResources.Actions</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -221,7 +223,7 @@
                                     <td>
                                         <span class="badge bg-info">@item.ItemNameAr</span>
                                     </td>
-                                    <td>@item.DisplayOrder</td>
+                                    <td>item.DisplayOrder</td>
                                     <td>
                                         <button type="button" class="btn btn-sm btn-danger"
                                                 @onclick="() => RemoveItem(item.Id)"

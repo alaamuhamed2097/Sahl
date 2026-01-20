@@ -14,15 +14,8 @@ namespace DAL.Configurations
             // Table name
             entity.ToTable("TbCampaignProducts");
 
-            entity.Property(e => e.CampaignPrice)
-                .IsRequired()
-                .HasColumnType("decimal(18,2)");
-
             entity.Property(e => e.IsActive)
                 .HasDefaultValue(true);
-
-            entity.Property(e => e.DisplayOrder)
-                .HasDefaultValue(0);
 
             // Relationships
             entity.HasOne(e => e.Campaign)
@@ -30,21 +23,22 @@ namespace DAL.Configurations
                 .HasForeignKey(e => e.CampaignId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            entity.HasOne(e => e.Item)
-                .WithMany()
-                .HasForeignKey(e => e.ItemId)
-                .OnDelete(DeleteBehavior.Restrict);
+            entity.HasOne(e => e.OfferCombinationPricing)
+			    .WithMany(ocp => ocp.CampaignItems) 
+			    .HasForeignKey(e => e.OfferCombinationPricingId)
+				.OnDelete(DeleteBehavior.Restrict);
 
-            // Indexes
-            entity.HasIndex(e => e.CampaignId);
+			entity.HasIndex(e => new { e.CampaignId, e.OfferCombinationPricingId })
+	            .IsUnique();
 
-            entity.HasIndex(e => e.ItemId);
+			// Indexes
+			entity.HasIndex(e => e.CampaignId);
+
+            entity.HasIndex(e => e.OfferCombinationPricingId);
 
             entity.HasIndex(e => e.IsActive);
 
-            entity.HasIndex(e => e.DisplayOrder);
-
-            entity.HasIndex(e => new { e.CampaignId, e.ItemId })
+            entity.HasIndex(e => new { e.CampaignId, e.OfferCombinationPricingId })
                 .IsUnique();
 
             entity.HasIndex(e => new { e.CampaignId, e.IsActive });

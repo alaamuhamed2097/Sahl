@@ -1012,6 +1012,11 @@
     <value>عتبة نقص المخزون</value>
   </data>
   <data name="NewProductRequests" xml:space="preserve">
+  <value>طلبات إضافة منتجات جديدة</value>
+</data>
+  <data name="Total" xml:space="preserve">
+    <value>الإجمالي</value>
+  </data>
     <value>طلبات إضافة منتجات جديدة</value>
   </data>
   <data name="CurrencySymbol" xml:space="preserve">

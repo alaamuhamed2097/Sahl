@@ -680,9 +680,6 @@ namespace DAL.Migrations
                     b.Property<Guid>("CampaignId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<decimal>("CampaignPrice")
-                        .HasColumnType("decimal(18,2)");
-
                     b.Property<Guid>("CreatedBy")
                         .HasColumnType("uniqueidentifier");
 
@@ -690,11 +687,6 @@ namespace DAL.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime2(2)")
                         .HasDefaultValueSql("GETUTCDATE()");
-
-                    b.Property<int>("DisplayOrder")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValue(0);
 
                     b.Property<bool>("IsActive")
                         .ValueGeneratedOnAdd()
@@ -706,14 +698,8 @@ namespace DAL.Migrations
                         .HasColumnType("bit")
                         .HasDefaultValue(false);
 
-                    b.Property<Guid>("ItemId")
+                    b.Property<Guid>("OfferCombinationPricingId")
                         .HasColumnType("uniqueidentifier");
-
-                    b.Property<int>("SoldCount")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("StockLimit")
-                        .HasColumnType("int");
 
                     b.Property<Guid?>("UpdatedBy")
                         .HasColumnType("uniqueidentifier");
@@ -721,21 +707,24 @@ namespace DAL.Migrations
                     b.Property<DateTime?>("UpdatedDateUtc")
                         .HasColumnType("datetime2(2)");
 
+                    b.Property<Guid?>("VendorId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.HasKey("Id");
 
                     b.HasIndex("CampaignId");
-
-                    b.HasIndex("DisplayOrder");
 
                     b.HasIndex("IsActive");
 
                     b.HasIndex("IsDeleted");
 
-                    b.HasIndex("ItemId");
+                    b.HasIndex("OfferCombinationPricingId");
+
+                    b.HasIndex("VendorId");
 
                     b.HasIndex("CampaignId", "IsActive");
 
-                    b.HasIndex("CampaignId", "ItemId")
+                    b.HasIndex("CampaignId", "OfferCombinationPricingId")
                         .IsUnique();
 
                     b.ToTable("TbCampaignProducts", (string)null);
@@ -9421,15 +9410,15 @@ namespace DAL.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Domains.Entities.Catalog.Item.TbItem", "Item")
-                        .WithMany()
-                        .HasForeignKey("ItemId")
+                    b.HasOne("Domains.Entities.Offer.TbOfferCombinationPricing", "OfferCombinationPricing")
+                        .WithMany("CampaignItems")
+                        .HasForeignKey("OfferCombinationPricingId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Campaign");
 
-                    b.Navigation("Item");
+                    b.Navigation("OfferCombinationPricing");
                 });
 
             modelBuilder.Entity("Domains.Entities.Campaign.TbCampaignVendor", b =>
@@ -10953,6 +10942,8 @@ namespace DAL.Migrations
             modelBuilder.Entity("Domains.Entities.Offer.TbOfferCombinationPricing", b =>
                 {
                     b.Navigation("BuyBoxCalculations");
+
+                    b.Navigation("CampaignItems");
 
                     b.Navigation("OfferPriceHistories");
 
