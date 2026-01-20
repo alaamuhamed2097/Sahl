@@ -1,34 +1,27 @@
 ﻿using Domains.Entities.Catalog.Item;
+using Domains.Entities.Offer;
+using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Domains.Entities.Campaign
 {
-    public class TbCampaignItem : BaseEntity
+	[Index(nameof(CampaignId))]
+	[Index(nameof(OfferCombinationPricingId))]
+	[Index(nameof(VendorId))]
+	[Index(nameof(CampaignId), nameof(OfferCombinationPricingId), IsUnique = true)]
+	public class TbCampaignItem : BaseEntity
     {
         [Required]
         [ForeignKey("Campaign")]
         public Guid CampaignId { get; set; }
-
-        [Required]
-        [ForeignKey("Item")]
-        public Guid ItemId { get; set; }
-
-        // Campaign Price (الأهم!)
-        [Required]
-        [Column(TypeName = "decimal(18,2)")]
-        public decimal CampaignPrice { get; set; }
-
-        // Flash Sale Stock Management
-        public int? StockLimit { get; set; }  // الكمية المتاحة للعرض (null = unlimited)
-        public int SoldCount { get; set; } = 0;  // كام اتباع
-
-        // Display
-        public int DisplayOrder { get; set; }
+		[Required]
+		[ForeignKey("OfferCombinationPricing")]
+        public Guid OfferCombinationPricingId { get; set; }
+		public Guid? VendorId { get; set; } 
         public bool IsActive { get; set; } = true;
 
-        // Relations
         public virtual TbCampaign Campaign { get; set; } = null!;
-        public virtual TbItem Item { get; set; } = null!;
-    }
+        public virtual TbOfferCombinationPricing OfferCombinationPricing { get; set; } = null!;
+	}
 }

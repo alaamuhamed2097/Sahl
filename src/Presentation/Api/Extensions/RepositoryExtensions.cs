@@ -72,6 +72,8 @@ namespace Api.Extensions
             services.AddScoped<ISystemSettingsRepository, SystemSettingsRepository>();
             services.AddScoped<IDevelopmentSettingsRepository, DevelopmentSettingsRepository>();
 
+            services.AddScoped<ICampaignItemRepository, CampaignItemRepository>();
+
             return services;
         }
     }

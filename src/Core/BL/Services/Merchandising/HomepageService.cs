@@ -21,33 +21,33 @@ public class HomepageService : IHomepageService
 {
     private readonly IHomepageBlockRepository _blockRepository;
     private readonly IItemCombinationRepository _combinationRepository;
-    private readonly ICampaignRepository _campaignRepository;
+    private readonly ICampaignItemRepository _campaignItemRepository;
     private readonly IPricingService _pricingService;
     private readonly ITableRepository<TbCategory> _categoryRepository;
     private readonly IBaseMapper _mapper;
 
-    public HomepageService(
-        IHomepageBlockRepository blockRepository,
-        IItemCombinationRepository combinationRepository,
-        ICampaignRepository campaignRepository,
-        IPricingService pricingService,
-        ITableRepository<TbCategory> categoryRepository,
-        IBaseMapper mapper)
-    {
-        _blockRepository = blockRepository;
-        _combinationRepository = combinationRepository;
-        _campaignRepository = campaignRepository;
-        _pricingService = pricingService;
-        _categoryRepository = categoryRepository;
-        _mapper = mapper;
-    }
+	public HomepageService(
+		IHomepageBlockRepository blockRepository,
+		IItemCombinationRepository combinationRepository,
+		IPricingService pricingService,
+		ITableRepository<TbCategory> categoryRepository,
+		IBaseMapper mapper,
+		ICampaignItemRepository campaignItemRepository)
+	{
+		_blockRepository = blockRepository;
+		_combinationRepository = combinationRepository;
+		_pricingService = pricingService;
+		_categoryRepository = categoryRepository;
+		_mapper = mapper;
+		_campaignItemRepository = campaignItemRepository;
+	}
 
-    #region Public Methods
+	#region Public Methods
 
-    /// <summary>
-    /// Get complete homepage with all blocks
-    /// </summary>
-    public async Task<GetHomepageResponse> GetHomepageAsync(string? userId)
+	/// <summary>
+	/// Get complete homepage with all blocks
+	/// </summary>
+	public async Task<GetHomepageResponse> GetHomepageAsync(string? userId)
     {
         // Get all active blocks
         var blocks = await _blockRepository.GetActiveBlocksAsync();
@@ -162,11 +162,11 @@ public class HomepageService : IHomepageService
         if (!block.CampaignId.HasValue)
             return new List<ItemCardDto>();
 
-        var campaignItems = await _campaignRepository.GetCampaignItemsAsync(block.CampaignId.Value);
+        var campaignItems = await _campaignItemRepository.GetCampaignItemsAsync(block.CampaignId.Value);
 
         var activeItems = campaignItems
             .Where(ci => ci.IsActive && !ci.IsDeleted)
-            .OrderBy(ci => ci.DisplayOrder)
+            .OrderBy(ci => ci.CreatedDateUtc)
             .ToList();
 
         if (!activeItems.Any())
@@ -180,7 +180,7 @@ public class HomepageService : IHomepageService
         {
             var campaignItem = activeItems[i];
             var product = products[i];
-            var defaultCombination = campaignItem.Item.ItemCombinations?.FirstOrDefault(c => c.IsDefault);
+            var defaultCombination = campaignItem.OfferCombinationPricing.ItemCombination.Item.ItemCombinations?.FirstOrDefault(c => c.IsDefault);
 
             if (defaultCombination != null)
             {
