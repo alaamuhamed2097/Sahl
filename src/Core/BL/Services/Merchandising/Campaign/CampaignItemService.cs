@@ -10,6 +10,7 @@ using Domains.Entities.Campaign;
 using Domains.Entities.Catalog.Item;
 using Domains.Entities.ECommerceSystem.Vendor;
 using Microsoft.EntityFrameworkCore;
+using Resources;
 using Shared.DTOs.Campaign;
 using Shared.GeneralModels;
 using System;
@@ -73,6 +74,38 @@ namespace BL.Services.Merchandising.Campaign
 
 			return _mapper.Map<CampaignItemDto>(result);
 		}
+
+		//public async Task<CampaignItemDto> RemoveItemAsync(UpdateCampaignItemDto dto, Guid userId)
+		//{
+		//	// Get existing campaign item
+		//	var existingItem = await GetCampaignItemsAsync(dto.CampaignId);
+		//	if (existingItem == null)
+		//	{
+		//		throw new KeyNotFoundException($"Campaign item with ID {dto.CampaignId} not found");
+		//	}
+
+		//	// Validate campaign if changed
+		//	if (dto.CampaignId != existingItem.CampaignId)
+		//	{
+		//		var campaign = await _campaignRepository.GetCampaignByIdAsync(dto.CampaignId);
+		//		if (campaign == null)
+		//		{
+		//			throw new KeyNotFoundException($"Campaign with ID {dto.CampaignId} not found");
+		//		}
+		//	}
+
+		//	// Map updates
+		//	_mapper.Map(dto, existingItem);
+
+		//	// Update metadata
+		//	existingItem.ModifiedDateUtc = DateTime.UtcNow;
+		//	existingItem.ModifiedBy = userId;
+
+		//	var result = await _campaignItemRepository.UpdateCampaignItemAsync(existingItem);
+
+		//	return _mapper.Map<CampaignItemDto>(result);
+		//}
+
 		/// <summary>
 		/// Update sold count when item is purchased
 		/// </summary>
@@ -86,7 +119,7 @@ namespace BL.Services.Merchandising.Campaign
 		/// </summary>
 		public async Task<bool> RemoveItemFromCampaignAsync(Guid campaignItemId, Guid userId)
 		{
-			return await _campaignItemRepository.RemoveItemFromCampaignAsync(campaignItemId);
+			return await _campaignItemRepository.RemoveItemFromCampaignAsync(campaignItemId, userId);
 		}
 		public async Task<ResponseModel<PaginatedSearchResult<CampaignItemDto>>> SearchCampaignItemsAsync(BaseSearchCriteriaModel searchCriteria, Guid campaignId)
 		{
@@ -235,9 +268,12 @@ namespace BL.Services.Merchandising.Campaign
 		public async Task<CampaignItemDto> AddItemToCampaignForVendorAsync(AddCampaignItemDto dto, Guid userId)
 		{
 			var vendor = await _vendorRepository.FindAsync(v => v.UserId == userId.ToString() && !v.IsDeleted);
+			if (vendor == null )
+				throw new KeyNotFoundException(
+					"Vendor Not Found"
+				);
 
 
-			
 			var campaign = await _campaignRepository.GetCampaignByIdAsync(dto.CampaignId)
 				?? throw new KeyNotFoundException($"Campaign with ID {dto.CampaignId} not found");
 
