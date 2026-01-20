@@ -6,9 +6,8 @@
 @using Common.Enumerations.Order
 @using Common.Enumerations.Payment
 @using Common.Enumerations.User
-@using Shared.DTOs.Order.OrderProcessing
-@using Shared.DTOs.User
-@inherits BaseListPage<OrderDto>
+@using Shared.DTOs.Order.OrderProcessing.AdminOrder
+@inherits BaseListPage<AdminOrderListDto>
 
 <PageTitle>@ECommerceResources.Orders</PageTitle>
 
@@ -30,8 +29,7 @@
                                            id="searchInput"
                                            class="form-control search-input"
                                            placeholder="@ActionsResources.Search" />
-                                    <button type="submit"
-                                            class="btn btn-search">
+                                    <button type="submit" class="btn btn-search">
                                         <i class="fas fa-search"></i>
                                     </button>
                                 </div>
@@ -52,10 +50,7 @@
                             <option value="@((int)OrderProgressStatus.Delivered)">@OrderResources.Delivered</option>
                             <option value="@((int)OrderProgressStatus.Completed)">@OrderResources.Completed</option>
                             <option value="@((int)OrderProgressStatus.PaymentFailed)">@OrderResources.PaymentFailed</option>
-                            <option value="@((int)OrderProgressStatus.RefundRequested)">@OrderResources.RefundRequested</option>
-                            <option value="@((int)OrderProgressStatus.Refunded)">@OrderResources.Refunded</option>
                             <option value="@((int)OrderProgressStatus.Cancelled)">@OrderResources.Canceled</option>
-                            <option value="@((int)OrderProgressStatus.Returned)">@OrderResources.Returned</option>
                         </select>
                     </li>
 
@@ -85,11 +80,11 @@
                     <!-- Export Button -->
                     <li class="nav-item ms-auto d-flex flex-row align-items-center gap-2">
                         <div class="dropdown">
-                            <button class="btn btn-info" type="button" id="exportDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                            <button class="btn btn-info" type="button" id="exportDropdown" data-bs-toggle="dropdown">
                                 <i class="fas fa-file-export mx-1"></i>
                                 <span class="fw-bold">@ActionsResources.Export</span>
                             </button>
-                            <ul class="dropdown-menu" aria-labelledby="exportDropdown">
+                            <ul class="dropdown-menu">
                                 <li><a class="dropdown-item" href="javascript:void(0)" @onclick="ExportToExcel"><i class="far fa-file-excel mx-2"></i>@ActionsResources.Download</a></li>
                                 <li><a class="dropdown-item" href="javascript:void(0)" @onclick="ExportToPrint"><i class="fas fa-print mx-2"></i>@ActionsResources.Print</a></li>
                             </ul>
@@ -103,65 +98,66 @@
                         <table id="order-table" class="text-center table table-sm table-hover mb-0">
                             <thead class="table-light">
                                 <tr>
-                                    <th style="min-width: 120px; cursor: pointer;" @onclick="() => SortByColumn(nameof(OrderDto.Number))">
+                                    @* Use API DTO property names for sorting *@
+                                    <th style="min-width: 120px; cursor: pointer;" @onclick="() => SortByColumn(nameof(AdminOrderListDto.OrderNumber))">
                                         @ECommerceResources.OrderID
-                                        <i class="@GetSortIconClass(nameof(OrderDto.Number))"></i>
+                                        <i class="@GetSortIconClass(nameof(AdminOrderListDto.OrderNumber))"></i>
                                     </th>
-                                    <th style="min-width: 150px; cursor: pointer;" @onclick="() => SortByColumn(nameof(OrderDto.FirstName))">
+                                    <th style="min-width: 150px; cursor: pointer;" @onclick="() => SortByColumn(nameof(AdminOrderListDto.CustomerName))">
                                         @ECommerceResources.CustomerName
-                                        <i class="@GetSortIconClass(nameof(OrderDto.FirstName))"></i>
+                                        <i class="@GetSortIconClass(nameof(AdminOrderListDto.CustomerName))"></i>
                                     </th>
-                                    <th style="min-width: 130px; cursor: pointer;" @onclick="() => SortByColumn(nameof(OrderDto.CreatedDateUtc))">
-                                        @ECommerceResources.OrderDate
-                                        <i class="@GetSortIconClass(nameof(OrderDto.CreatedDateUtc))"></i>
+                                    <th style="min-width: 150px;">@FormResources.PhoneNumber</th>
+                                    <th style="min-width: 130px; cursor: pointer;" @onclick="() => SortByColumn(nameof(AdminOrderListDto.OrderDate))">
+                                        @OrderResources.OrderDate
+                                        <i class="@GetSortIconClass(nameof(AdminOrderListDto.OrderDate))"></i>
                                     </th>
-                                    <th style="min-width: 130px; cursor: pointer;" @onclick="() => SortByColumn(nameof(OrderDto.CurrentState))">
-                                        @ECommerceResources.OrderStatus
-                                        <i class="@GetSortIconClass(nameof(OrderDto.CurrentState))"></i>
+                                    <th style="min-width: 130px; cursor: pointer;" @onclick="() => SortByColumn(nameof(AdminOrderListDto.OrderStatus))">
+                                        @OrderResources.OrderStatus
+                                        <i class="@GetSortIconClass(nameof(AdminOrderListDto.OrderStatus))"></i>
                                     </th>
-                                    <th style="min-width: 100px; cursor: pointer;" @onclick="() => SortByColumn(nameof(OrderDto.Price))">
+                                    <th style="min-width: 100px; cursor: pointer;" @onclick="() => SortByColumn(nameof(AdminOrderListDto.TotalAmount))">
                                         @FormResources.Price
-                                        <i class="@GetSortIconClass(nameof(OrderDto.Price))"></i>
+                                        <i class="@GetSortIconClass(nameof(AdminOrderListDto.TotalAmount))"></i>
                                     </th>
-                                    <th style="min-width: 130px; cursor: pointer;" @onclick="() => SortByColumn(nameof(OrderDto.PaymentStatus))">
-                                        @ECommerceResources.PaymentStatus
-                                        <i class="@GetSortIconClass(nameof(OrderDto.PaymentStatus))"></i>
-                                    </th>
-                                    <th style="min-width: 100px;" class="text-center">@ActionsResources.Edit</th>
+                                    <th style="min-width: 120px;">@ECommerceResources.PaymentStatus</th>
+                                    <th style="min-width: 100px;">@ActionsResources.Actions</th>
                                 </tr>
                             </thead>
-                            <tbody class="fs-7">
+                            <tbody>
                                 @if (items != null && items.Any())
                                 {
-                                    @foreach (var item in items)
+                                    @foreach (var order in items)
                                     {
                                         <tr>
-                                            <td class="text-center p-1">
-                                                <span class="badge bg-primary">@item.Number</span>
+                                            @* Use API DTO properties directly *@
+                                            <td>
+                                                <span class="badge bg-primary">@order.OrderNumber</span>
                                             </td>
-                                            <td class="text-center p-1">@item.FirstName @item.LastName</td>
-                                            <td class="text-center p-1">
-                                                <small>@item.CreatedDateLocalFormatted</small>
+                                            <td>@order.CustomerName</td>
+                                            <td>
+                                                <a href="tel:@(order.CustomerPhoneCode + order.CustomerPhone)" class="text-decoration-none text-primary">@order.CustomerPhoneCode @order.CustomerPhone</a>
                                             </td>
-                                            <td class="text-center p-1">
-                                                <span class="@GetOrderStatusClass(item.CurrentState)">
-                                                    @GetOrderStatusText(item.CurrentState)
+                                            <td>
+                                                <small>@order.OrderDate.ToString("dd/MM/yyyy hh:mm tt")</small>
+                                            </td>
+                                            <td>
+                                                <span class="@GetOrderStatusClass(order.OrderStatus)">
+                                                    @GetOrderStatusText(order.OrderStatus)
                                                 </span>
                                             </td>
-                                            <td class="text-center p-1" dir="ltr">
-                                                $@(item.Price % 1 == 0 ? item.Price.ToString("F0") : item.Price.ToString("F2"))
+                                            <td dir="ltr">
+                                                <strong>$@(order.TotalAmount % 1 == 0 ? order.TotalAmount.ToString("F0") : order.TotalAmount.ToString("F2"))</strong>
                                             </td>
-                                            <td class="text-center p-1">
-                                                <span class="@GetPaymentStatusClass(item.PaymentStatus)">
-                                                    <strong>@GetPaymentStatusText(item.PaymentStatus)</strong>
+                                            <td>
+                                                <span class="@GetPaymentStatusClass(order.PaymentStatus)">
+                                                    <strong>@GetPaymentStatusText(order.PaymentStatus)</strong>
                                                 </span>
                                             </td>
-                                            <td class="text-center p-1">
-                                                <div class="d-flex gap-1 justify-content-center">
-                                                    <button class="btn btn-primary btn-sm" @onclick="() => Edit(item)" title="@ActionsResources.View">
-                                                        <i class="fas fa-eye"></i>
-                                                    </button>
-                                                </div>
+                                            <td>
+                                                <button class="btn btn-sm btn-primary" @onclick="() => Edit(order)" title="@ActionsResources.View">
+                                                    <i class="fas fa-eye"></i>
+                                                </button>
                                             </td>
                                         </tr>
                                     }
@@ -169,13 +165,9 @@
                                 else
                                 {
                                     <tr>
-                                        <td colspan="7" class="p-0">
-                                            <div class="d-flex flex-column justify-content-center align-items-center text-center" style="height: 500px;">
-                                                <i class="fas fa-database text-muted" style="font-size: 60px;"></i>
-                                                <p class="text-muted mt-3" style="font-size: 18px;">
-                                                    @NotifiAndAlertsResources.NoDataFound
-                                                </p>
-                                            </div>
+                                        <td colspan="9" class="text-center py-4">
+                                            <i class="fas fa-inbox text-muted" style="font-size: 48px;"></i>
+                                            <p class="text-muted mt-2">@NotifiAndAlertsResources.NoDataFound</p>
                                         </td>
                                     </tr>
                                 }
@@ -183,70 +175,65 @@
                         </table>
                     </div>
 
-                    <!-- Pagination -->
-                    <div class="pagination-wrapper d-flex flex-column justify-content-end flex-grow-1">
-                        <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mt-4 pagination-container" dir="ltr">
-                            <div class="text-muted small">
-                                @string.Format(ActionsResources.ShowingEntries,
-                                    ((currentPage - 1) * searchModel.PageSize + 1),
-                                    Math.Min(currentPage * searchModel.PageSize, totalRecords),
-                                    totalRecords)
-                            </div>
-
-                            <nav aria-label="Pagination">
-                                <ul class="pagination pagination-sm mb-0 shadow-sm rounded-3 overflow-hidden">
-                                    <li class="page-item @(currentPage == 1 ? "disabled" : "")">
-                                        <a class="page-link" href="javascript:void(0)" @onclick="() => GoToPage(1)" title="@ActionsResources.First">
-                                            <i class="fas fa-angle-double-left"></i>
-                                        </a>
-                                    </li>
-                                    <li class="page-item @(currentPage == 1 ? "disabled" : "")">
-                                        <a class="page-link" href="javascript:void(0)" @onclick="() => GoToPage(currentPage - 1)">
-                                            <i class="fas fa-angle-left"></i>
-                                        </a>
-                                    </li>
-
-                                    @{
-                                        const int maxVisiblePages = 5;
-                                        int startPage = Math.Max(1, currentPage - 2);
-                                        int endPage = Math.Min(totalPages, startPage + maxVisiblePages - 1);
-                                        if (endPage - startPage + 1 < maxVisiblePages)
-                                        {
-                                            startPage = Math.Max(1, endPage - maxVisiblePages + 1);
-                                        }
-                                    }
-
-                                    @if (startPage > 1)
-                                    {
-                                        <li class="page-item disabled"><span class="page-link">...</span></li>
-                                    }
-
-                                    @for (int pag = startPage; pag <= endPage; pag++)
-                                    {
-                                        int pageNumber = pag;
-                                        <li class="page-item @(pag == currentPage ? "active" : "")">
-                                            <a class="page-link fw-bold" href="javascript:void(0)" @onclick="() => GoToPage(pageNumber)">@pag</a>
-                                        </li>
-                                    }
-
-                                    @if (endPage < totalPages)
-                                    {
-                                        <li class="page-item disabled"><span class="page-link">...</span></li>
-                                    }
-
-                                    <li class="page-item @(currentPage == totalPages ? "disabled" : "")">
-                                        <a class="page-link" href="javascript:void(0)" @onclick="() => GoToPage(currentPage + 1)">
-                                            <i class="fas fa-angle-right"></i>
-                                        </a>
-                                    </li>
-                                    <li class="page-item @(currentPage == totalPages ? "disabled" : "")">
-                                        <a class="page-link" href="javascript:void(0)" @onclick="() => GoToPage(totalPages)" title="@ActionsResources.Last">
-                                            <i class="fas fa-angle-double-right"></i>
-                                        </a>
-                                    </li>
-                                </ul>
-                            </nav>
+                    @* Pagination - From BaseListPage *@
+                    <div class="d-flex justify-content-between align-items-center mt-3">
+                        <div class="text-muted small">
+                            @ActionsResources.Showing @StartRecord @ActionsResources.To @EndRecord @ActionsResources.Of @totalRecords
                         </div>
+
+                        <nav aria-label="Pagination">
+                            <ul class="pagination pagination-sm mb-0 shadow-sm rounded-3 overflow-hidden">
+                                <li class="page-item @(currentPage == 1 ? "disabled" : "")">
+                                    <a class="page-link" href="javascript:void(0)" @onclick="() => GoToPage(1)">
+                                        <i class="fas fa-angle-double-left"></i>
+                                    </a>
+                                </li>
+                                <li class="page-item @(currentPage == 1 ? "disabled" : "")">
+                                    <a class="page-link" href="javascript:void(0)" @onclick="() => GoToPage(currentPage - 1)">
+                                        <i class="fas fa-angle-left"></i>
+                                    </a>
+                                </li>
+
+                                @{
+                                    const int maxVisiblePages = 5;
+                                    int startPage = Math.Max(1, currentPage - 2);
+                                    int endPage = Math.Min(totalPages, startPage + maxVisiblePages - 1);
+                                    if (endPage - startPage + 1 < maxVisiblePages)
+                                    {
+                                        startPage = Math.Max(1, endPage - maxVisiblePages + 1);
+                                    }
+                                }
+
+                                @if (startPage > 1)
+                                {
+                                    <li class="page-item disabled"><span class="page-link">...</span></li>
+                                }
+
+                                @for (int pag = startPage; pag <= endPage; pag++)
+                                {
+                                    int pageNumber = pag;
+                                    <li class="page-item @(pag == currentPage ? "active" : "")">
+                                        <a class="page-link fw-bold" href="javascript:void(0)" @onclick="() => GoToPage(pageNumber)">@pag</a>
+                                    </li>
+                                }
+
+                                @if (endPage < totalPages)
+                                {
+                                    <li class="page-item disabled"><span class="page-link">...</span></li>
+                                }
+
+                                <li class="page-item @(currentPage == totalPages ? "disabled" : "")">
+                                    <a class="page-link" href="javascript:void(0)" @onclick="() => GoToPage(currentPage + 1)">
+                                        <i class="fas fa-angle-right"></i>
+                                    </a>
+                                </li>
+                                <li class="page-item @(currentPage == totalPages ? "disabled" : "")">
+                                    <a class="page-link" href="javascript:void(0)" @onclick="() => GoToPage(totalPages)">
+                                        <i class="fas fa-angle-double-right"></i>
+                                    </a>
+                                </li>
+                            </ul>
+                        </nav>
                     </div>
                 </div>
 
@@ -254,20 +241,18 @@
                 <div class="d-md-none">
                     @if (items != null && items.Any())
                     {
-                        @foreach (var item in items)
+                        @foreach (var order in items)
                         {
                             <div class="card border-0 shadow-sm rounded-3 mb-3">
                                 <div class="card-body p-3">
                                     <div class="d-flex justify-content-between align-items-start">
                                         <div>
-                                            <h6 class="fw-bold text-primary mb-1">🛒 @item.Number</h6>
-                                            <p class="text-muted small mb-1">@item.FirstName @item.LastName</p>
-                                            <small class="text-muted">
-                                                @item.CreatedDateLocalFormatted
-                                            </small>
+                                            <h6 class="fw-bold text-primary mb-1">🛒 @order.OrderNumber</h6>
+                                            <p class="text-muted small mb-1">@order.CustomerName</p>
+                                            <small class="text-muted">@order.OrderDate.ToString("dd/MM/yyyy hh:mm tt")</small>
                                         </div>
                                         <div>
-                                            <button class="btn btn-primary btn-sm" @onclick="() => Edit(item)">
+                                            <button class="btn btn-primary btn-sm" @onclick="() => Edit(order)">
                                                 <i class="fas fa-eye"></i>
                                             </button>
                                         </div>
@@ -275,25 +260,22 @@
                                     <hr class="my-2" />
                                     <div class="row small">
                                         <div class="col-6 mb-1">
-                                            <i class="fas fa-info-circle text-info me-1"></i>
                                             <strong>@ECommerceResources.OrderStatus:</strong>
                                             <br />
-                                            <span class="@GetOrderStatusClass(item.CurrentState)">
-                                                @GetOrderStatusText(item.CurrentState)
+                                            <span class="@GetOrderStatusClass(order.OrderStatus)">
+                                                @GetOrderStatusText(order.OrderStatus)
                                             </span>
                                         </div>
                                         <div class="col-6 mb-1">
-                                            <i class="fas fa-credit-card text-success me-1"></i>
                                             <strong>@ECommerceResources.PaymentStatus:</strong>
                                             <br />
-                                            <span class="@GetPaymentStatusClass(item.PaymentStatus)">
-                                                <strong>@GetPaymentStatusText(item.PaymentStatus)</strong>
+                                            <span class="@GetPaymentStatusClass(order.PaymentStatus)">
+                                                @GetPaymentStatusText(order.PaymentStatus)
                                             </span>
                                         </div>
                                         <div class="col-12 mt-2">
-                                            <i class="fas fa-dollar-sign text-warning me-1"></i>
                                             <strong>@FormResources.Price:</strong>
-                                            <span dir="ltr">$@(item.Price % 1 == 0 ? item.Price.ToString("F0") : item.Price.ToString("F2"))</span>
+                                            <span dir="ltr">$@order.TotalAmount.ToString("F2")</span>
                                         </div>
                                     </div>
                                 </div>
@@ -302,11 +284,9 @@
                     }
                     else
                     {
-                        <div class="d-flex flex-column justify-content-center align-items-center text-center" style="height: 400px;">
+                        <div class="text-center py-5">
                             <i class="fas fa-database text-muted" style="font-size: 60px;"></i>
-                            <p class="text-muted mt-3" style="font-size: 18px;">
-                                @NotifiAndAlertsResources.NoDataFound
-                            </p>
+                            <p class="text-muted mt-3">@NotifiAndAlertsResources.NoDataFound</p>
                         </div>
                     }
                 </div>

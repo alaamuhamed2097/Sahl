@@ -356,8 +356,10 @@ public class ShipmentService : IShipmentService
                 DeliveryAddress = new DeliveryAddressDto
                 {
                     Address = shipment.Order.CustomerAddress.Address,
-                    CityName = shipment.Order.CustomerAddress.City.TitleEn,
-                    StateName = shipment.Order.CustomerAddress.City.State.TitleEn, // ✅ State not Governorate
+                    CityNameAr = shipment.Order.CustomerAddress.City.TitleAr,
+                    CityNameEn = shipment.Order.CustomerAddress.City.TitleEn,
+                    StateNameAr = shipment.Order.CustomerAddress.City.State.TitleAr,
+                    StateNameEn = shipment.Order.CustomerAddress.City.State.TitleEn,
                     PhoneCode = shipment.Order.CustomerAddress.PhoneCode,
                     PhoneNumber = shipment.Order.CustomerAddress.PhoneNumber,
                     RecipientName = shipment.Order.CustomerAddress.RecipientName

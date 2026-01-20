@@ -10,9 +10,8 @@ using Serilog;
 namespace DAL.Repositories.Order;
 
 /// <summary>
-/// Repository implementation for Order operations
-/// Inherits all CRUD operations from TableRepository<TbOrder>
-/// Implements order-specific query methods
+/// Repository implementation for Order operations - FINAL VERSION
+/// Implements all IOrderRepository methods with correct signatures
 /// </summary>
 public class OrderRepository : TableRepository<TbOrder>, IOrderRepository
 {
@@ -28,10 +27,6 @@ public class OrderRepository : TableRepository<TbOrder>, IOrderRepository
     // ORDER-SPECIFIC READ OPERATIONS
     // ============================================
 
-    /// <summary>
-    /// Get order with full details
-    /// Includes: OrderDetails, Items, Vendors, Shipments, Payments, Address, User, Coupon
-    /// </summary>
     public async Task<TbOrder?> GetOrderWithDetailsAsync(
         Guid orderId,
         CancellationToken cancellationToken = default)
@@ -67,10 +62,6 @@ public class OrderRepository : TableRepository<TbOrder>, IOrderRepository
         }
     }
 
-    /// <summary>
-    /// Get order with shipments
-    /// Includes: OrderDetails, Items, Vendors, Shipments, Address, User
-    /// </summary>
     public async Task<TbOrder?> GetOrderWithShipmentsAsync(
         Guid orderId,
         CancellationToken cancellationToken = default)
@@ -99,9 +90,6 @@ public class OrderRepository : TableRepository<TbOrder>, IOrderRepository
         }
     }
 
-    /// <summary>
-    /// Get order by order number
-    /// </summary>
     public async Task<TbOrder?> GetByOrderNumberAsync(
         string orderNumber,
         CancellationToken cancellationToken = default)
@@ -120,9 +108,6 @@ public class OrderRepository : TableRepository<TbOrder>, IOrderRepository
         }
     }
 
-    /// <summary>
-    /// Get order by invoice ID
-    /// </summary>
     public async Task<TbOrder?> GetByInvoiceIdAsync(
         string invoiceId,
         CancellationToken cancellationToken = default)
@@ -141,9 +126,6 @@ public class OrderRepository : TableRepository<TbOrder>, IOrderRepository
         }
     }
 
-    /// <summary>
-    /// Get all orders for a customer
-    /// </summary>
     public async Task<List<TbOrder>> GetByCustomerIdAsync(
         string customerId,
         CancellationToken cancellationToken = default)
@@ -163,9 +145,6 @@ public class OrderRepository : TableRepository<TbOrder>, IOrderRepository
         }
     }
 
-    /// <summary>
-    /// Get customer orders with pagination
-    /// </summary>
     public async Task<List<TbOrder>> GetByCustomerIdAsync(
         string customerId,
         int pageNumber,
@@ -189,9 +168,6 @@ public class OrderRepository : TableRepository<TbOrder>, IOrderRepository
         }
     }
 
-    /// <summary>
-    /// Get orders by order status
-    /// </summary>
     public async Task<List<TbOrder>> GetOrdersByStatusAsync(
         OrderProgressStatus status,
         CancellationToken cancellationToken = default)
@@ -211,9 +187,6 @@ public class OrderRepository : TableRepository<TbOrder>, IOrderRepository
         }
     }
 
-    /// <summary>
-    /// Get orders by payment status
-    /// </summary>
     public async Task<List<TbOrder>> GetOrdersByPaymentStatusAsync(
         PaymentStatus paymentStatus,
         CancellationToken cancellationToken = default)
@@ -228,14 +201,211 @@ public class OrderRepository : TableRepository<TbOrder>, IOrderRepository
         }
         catch (Exception ex)
         {
-            _logger.Error(ex, "Error getting orders by payment status {Status}", paymentStatus);
+            _logger.Error(ex, "Error getting orders by payment status {PaymentStatus}", paymentStatus);
+            throw;
+        }
+    }
+
+    public async Task<(List<TbOrder> Orders, int TotalCount)> GetCustomerOrdersWithPaginationAsync(
+        string customerId,
+        int pageNumber,
+        int pageSize,
+        CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            pageNumber = Math.Max(1, pageNumber);
+            pageSize = Math.Max(1, Math.Min(pageSize, 100));
+
+            IQueryable<TbOrder> query = _dbContext.Set<TbOrder>()
+                .AsNoTracking()
+                .Where(o => o.UserId == customerId && !o.IsDeleted)
+                .Include(o => o.User)
+                .Include(o => o.OrderDetails)
+                    .ThenInclude(od => od.Item)
+                .Include(o => o.TbOrderShipments)
+                .OrderByDescending(o => o.CreatedDateUtc);
+
+            var totalCount = await query.CountAsync(cancellationToken);
+
+            var orders = await query
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync(cancellationToken);
+
+            return (orders, totalCount);
+        }
+        catch (Exception ex)
+        {
+            _logger.Error(ex, "Error getting customer orders with pagination for {CustomerId}", customerId);
+            throw;
+        }
+    }
+
+    public async Task<TbOrder?> GetOrderWithFullDetailsAsync(
+        Guid orderId,
+        CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            return await _dbContext.Set<TbOrder>()
+                .AsNoTracking()
+                .Where(o => o.Id == orderId && !o.IsDeleted)
+                .Include(o => o.User)
+                .Include(o => o.CustomerAddress)
+                    .ThenInclude(a => a.City)
+                        .ThenInclude(c => c.State)
+                .Include(o => o.Coupon)
+                .Include(o => o.OrderDetails)
+                    .ThenInclude(od => od.Item)
+                        .ThenInclude(i => i.ItemImages)
+                .Include(o => o.OrderDetails)
+                    .ThenInclude(od => od.Vendor)
+                .Include(o => o.TbOrderShipments)
+                    .ThenInclude(s => s.Items)
+                .Include(o => o.OrderPayments)
+                .FirstOrDefaultAsync(cancellationToken);
+        }
+        catch (Exception ex)
+        {
+            _logger.Error(ex, "Error getting order with full details {OrderId}", orderId);
+            throw;
+        }
+    }
+
+    public async Task<(List<TbOrder> Orders, int TotalCount)> GetVendorOrdersWithPaginationAsync(
+        string vendorId,
+        string? searchTerm,
+        int pageNumber,
+        int pageSize,
+        string? sortBy,
+        string? sortDirection,
+        CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            if (!Guid.TryParse(vendorId, out var vendorGuid))
+            {
+                return (new List<TbOrder>(), 0);
+            }
+
+            IQueryable<TbOrder> query = _dbContext.Set<TbOrder>()
+                .AsNoTracking()
+                .Where(o => !o.IsDeleted && o.OrderDetails.Any(od => od.VendorId == vendorGuid))
+                .Include(o => o.User)
+                .Include(o => o.OrderDetails.Where(od => od.VendorId == vendorGuid))
+                    .ThenInclude(od => od.Item)
+                .Include(o => o.TbOrderShipments);
+
+            if (!string.IsNullOrWhiteSpace(searchTerm))
+            {
+                var searchLower = searchTerm.ToLower();
+                query = query.Where(o =>
+                    o.Number.ToLower().Contains(searchLower) ||
+                    o.User.FirstName.ToLower().Contains(searchLower) ||
+                    o.User.LastName.ToLower().Contains(searchLower));
+            }
+
+            var totalCount = await query.CountAsync(cancellationToken);
+            query = ApplySorting(query, sortBy, sortDirection);
+
+            var orders = await query
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync(cancellationToken);
+
+            return (orders, totalCount);
+        }
+        catch (Exception ex)
+        {
+            _logger.Error(ex, "Error getting vendor orders for {VendorId}", vendorId);
             throw;
         }
     }
 
     /// <summary>
-    /// Count orders created on a specific date
-    /// Used for order number generation
+    /// Correct tuple element names matching interface
+    /// </summary>
+    public async Task<(List<TbOrder> Orders, int TotalCount)> SearchAsync(
+        string? searchTerm,
+        int pageNumber,
+        int pageSize,
+        string sortBy,
+        string sortDirection,
+        CancellationToken cancellationToken = default)
+    {
+        return await SearchOrdersAsync(searchTerm, pageNumber, pageSize, sortBy, sortDirection, cancellationToken);
+    }
+
+    public async Task<(List<TbOrder> Orders, int TotalCount)> SearchOrdersAsync(
+        string? searchTerm,
+        int pageNumber,
+        int pageSize,
+        string? sortBy,
+        string? sortDirection,
+        CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            pageNumber = Math.Max(1, pageNumber);
+            pageSize = Math.Max(1, Math.Min(pageSize, 100));
+
+            IQueryable<TbOrder> query = _dbContext.Set<TbOrder>()
+                .AsNoTracking()
+                .Where(o => !o.IsDeleted)
+                .Include(o => o.User)
+                .Include(o => o.OrderDetails)
+                .Include(o => o.TbOrderShipments);
+
+            if (!string.IsNullOrWhiteSpace(searchTerm))
+            {
+                var searchLower = searchTerm.ToLower();
+
+                if (searchLower.StartsWith("status:"))
+                {
+                    var statusPart = searchLower.Replace("status:", "").Trim();
+                    if (int.TryParse(statusPart, out int statusValue))
+                    {
+                        query = query.Where(o => (int)o.OrderStatus == statusValue);
+                    }
+                }
+                else if (searchLower.StartsWith("payment:"))
+                {
+                    var paymentPart = searchLower.Replace("payment:", "").Trim();
+                    if (int.TryParse(paymentPart, out int paymentValue))
+                    {
+                        query = query.Where(o => (int)o.PaymentStatus == paymentValue);
+                    }
+                }
+                else
+                {
+                    query = query.Where(o =>
+                        o.Number.ToLower().Contains(searchLower) ||
+                        o.User.FirstName.ToLower().Contains(searchLower) ||
+                        o.User.LastName.ToLower().Contains(searchLower) ||
+                        o.User.Email.ToLower().Contains(searchLower));
+                }
+            }
+
+            var totalCount = await query.CountAsync(cancellationToken);
+            query = ApplySorting(query, sortBy, sortDirection);
+
+            var orders = await query
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync(cancellationToken);
+
+            return (orders, totalCount);
+        }
+        catch (Exception ex)
+        {
+            _logger.Error(ex, "Error searching orders");
+            throw;
+        }
+    }
+
+    /// <summary>
+    /// ✅ NEW: Count today's orders
     /// </summary>
     public async Task<int> CountTodayOrdersAsync(
         DateTime date,
@@ -247,114 +417,46 @@ public class OrderRepository : TableRepository<TbOrder>, IOrderRepository
             var endOfDay = startOfDay.AddDays(1);
 
             return await _dbContext.Set<TbOrder>()
-                .Where(o => o.CreatedDateUtc >= startOfDay &&
-                           o.CreatedDateUtc < endOfDay &&
-                           !o.IsDeleted)
+                .AsNoTracking()
+                .Where(o => !o.IsDeleted &&
+                           o.CreatedDateUtc >= startOfDay &&
+                           o.CreatedDateUtc < endOfDay)
                 .CountAsync(cancellationToken);
         }
         catch (Exception ex)
         {
-            _logger.Error(ex, "Error counting orders for date {Date}", date);
+            _logger.Error(ex, "Error counting today's orders for date {Date}", date);
             throw;
         }
     }
 
-    /// <summary>
-    /// Search orders with pagination and filtering
-    /// </summary>
-    public async Task<(List<TbOrder> Items, int TotalCount)> SearchAsync(
-        string? searchTerm = null,
-        int pageNumber = 1,
-        int pageSize = 10,
-        string sortBy = "CreatedDateUtc",
-        string sortDirection = "desc",
-        CancellationToken cancellationToken = default)
+    private IQueryable<TbOrder> ApplySorting(
+        IQueryable<TbOrder> query,
+        string? sortBy,
+        string? sortDirection)
     {
-        try
+        var isDescending = sortDirection?.ToLower() == "desc";
+
+        return sortBy?.ToLower() switch
         {
-            // Validate pagination parameters
-            pageNumber = Math.Max(1, pageNumber);
-            pageSize = Math.Max(1, Math.Min(pageSize, 100));
-
-            var query = _dbContext.Set<TbOrder>()
-                .AsNoTracking()
-                .Where(o => !o.IsDeleted);
-
-            // Apply search filter
-            if (!string.IsNullOrWhiteSpace(searchTerm))
-            {
-                var searchLower = searchTerm.ToLower();
-
-                // Check if it's a status filter (status:value format)
-                if (searchLower.StartsWith("status:"))
-                {
-                    var statusPart = searchLower.Replace("status:", "").Trim();
-                    if (int.TryParse(statusPart, out int statusValue))
-                    {
-                        query = query.Where((System.Linq.Expressions.Expression<Func<TbOrder, bool>>)(o => (int)o.OrderStatus == statusValue));
-                    }
-                }
-                // Check if it's a payment status filter (payment:value format)
-                else if (searchLower.StartsWith("payment:"))
-                {
-                    var paymentStatusPart = searchLower.Replace("payment:", "").Trim();
-                    if (int.TryParse(paymentStatusPart, out int paymentStatusValue))
-                    {
-                        query = query.Where(o => (int)o.PaymentStatus == paymentStatusValue);
-                    }
-                }
-                // Regular search by order number or customer name
-                else
-                {
-                    query = query.Where(o =>
-                        o.Number.ToLower().Contains(searchLower) ||
-                        o.User.FirstName.ToLower().Contains(searchLower) ||
-                        o.User.LastName.ToLower().Contains(searchLower));
-                }
-            }
-
-            // Get total count before pagination
-            var totalCount = await query.CountAsync(cancellationToken);
-
-            // Apply sorting
-            query = sortBy.ToLower() switch
-            {
-                "number" or "ordernumber" => sortDirection == "desc"
-                    ? query.OrderByDescending(o => o.Number)
-                    : query.OrderBy(o => o.Number),
-                "customername" => sortDirection == "desc"
-                    ? query.OrderByDescending(o => o.User.FirstName).ThenByDescending(o => o.User.LastName)
-                    : query.OrderBy(o => o.User.FirstName).ThenBy(o => o.User.LastName),
-                "createddateutc" or "orderdate" => sortDirection == "desc"
-                    ? query.OrderByDescending(o => o.CreatedDateUtc)
-                    : query.OrderBy(o => o.CreatedDateUtc),
-                "orderstatus" or "currentstate" => sortDirection == "desc"
-                    ? query.OrderByDescending((System.Linq.Expressions.Expression<Func<TbOrder, OrderProgressStatus>>)(o => (OrderProgressStatus)o.OrderStatus))
-                    : query.OrderBy((System.Linq.Expressions.Expression<Func<TbOrder, OrderProgressStatus>>)(o => (OrderProgressStatus)o.OrderStatus)),
-                "price" => sortDirection == "desc"
-                    ? query.OrderByDescending(o => o.Price)
-                    : query.OrderBy(o => o.Price),
-                "paymentstatus" => sortDirection == "desc"
-                    ? query.OrderByDescending(o => o.PaymentStatus)
-                    : query.OrderBy(o => o.PaymentStatus),
-                _ => sortDirection == "desc"
-                    ? query.OrderByDescending(o => o.CreatedDateUtc)
-                    : query.OrderBy(o => o.CreatedDateUtc)
-            };
-
-            // Apply pagination
-            var orders = await query
-                .Include(o => o.User)
-                .Skip((pageNumber - 1) * pageSize)
-                .Take(pageSize)
-                .ToListAsync(cancellationToken);
-
-            return (orders, totalCount);
-        }
-        catch (Exception ex)
-        {
-            _logger.Error(ex, "Error searching orders with term: {SearchTerm}, page: {PageNumber}", searchTerm, pageNumber);
-            throw;
-        }
+            "number" or "ordernumber" => isDescending
+                ? query.OrderByDescending(o => o.Number)
+                : query.OrderBy(o => o.Number),
+            "customername" => isDescending
+                ? query.OrderByDescending(o => o.User.FirstName).ThenByDescending(o => o.User.LastName)
+                : query.OrderBy(o => o.User.FirstName).ThenBy(o => o.User.LastName),
+            "price" or "total" => isDescending
+                ? query.OrderByDescending(o => o.Price)
+                : query.OrderBy(o => o.Price),
+            "orderstatus" or "status" => isDescending
+                ? query.OrderByDescending(o => o.OrderStatus)
+                : query.OrderBy(o => o.OrderStatus),
+            "paymentstatus" => isDescending
+                ? query.OrderByDescending(o => o.PaymentStatus)
+                : query.OrderBy(o => o.PaymentStatus),
+            _ => isDescending
+                ? query.OrderByDescending(o => o.CreatedDateUtc)
+                : query.OrderBy(o => o.CreatedDateUtc)
+        };
     }
 }

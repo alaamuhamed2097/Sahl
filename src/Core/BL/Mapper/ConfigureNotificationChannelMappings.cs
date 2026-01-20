@@ -5,7 +5,7 @@ namespace BL.Mapper;
 
 public partial class MappingProfile
 {
-    private void ConfigureContentAndNotificationChannelMappings()
+    private void ConfigureNotificationChannelMappings()
     {
         // Notification Channels
         CreateMap<TbNotificationChannel, NotificationChannelDto>()

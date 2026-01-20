@@ -347,5 +347,99 @@
 <data name="PartiallyRefunded" xml:space="preserve">
     <value>Partially Refunded</value>
 </data>
+	<data name="OrderID" xml:space="preserve">
+  <value>Order ID</value>
+</data>
+
+	<data name="CustomerEmail" xml:space="preserve">
+  <value>Customer Email</value>
+</data>
+
+	<data name="OrderDate" xml:space="preserve">
+  <value>Order Date</value>
+</data>
+
+	<data name="ItemsCount" xml:space="preserve">
+  <value>Items Count</value>
+</data>
+
+	<data name="StatusChangedSuccessfully" xml:space="preserve">
+  <value>Order status changed successfully</value>
+</data>
+
+	<data name="ConfirmCancelOrder" xml:space="preserve">
+  <value>Are you sure you want to cancel this order?</value>
+</data>
+
+	<data name="ConfirmOrder" xml:space="preserve">
+  <value>Confirm Order</value>
+</data>
+
+	<data name="MoveToProcessing" xml:space="preserve">
+  <value>Move to Processing</value>
+</data>
+
+	<data name="NextStatus" xml:space="preserve">
+  <value>Next Status</value>
+</data>
+	<data name="OrderDetails" xml:space="preserve">
+  <value>Order Details</value>
+</data>
+
+	<data name="OrderMustBePending" xml:space="preserve">
+  <value>The order must be in pending status</value>
+</data>
+
+	<data name="Status" xml:space="preserve">
+  <value>Status</value>
+</data>
+
+	<data name="PaymentStatus" xml:space="preserve">
+  <value>Payment Status</value>
+</data>
+
+	<data name="Item" xml:space="preserve">
+  <value>Item</value>
+</data>
+
+	<data name="Vendor" xml:space="preserve">
+  <value>Vendor</value>
+</data>
+
+	<data name="Quantity" xml:space="preserve">
+  <value>Quantity</value>
+</data>
+
+	<data name="Discount" xml:space="preserve">
+  <value>Discount</value>
+</data>
+
+	<data name="Tax" xml:space="preserve">
+  <value>Tax</value>
+</data>
+
+	<data name="TotalAmount" xml:space="preserve">
+  <value>Total Amount</value>
+</data>
+
+	<data name="RecipientName" xml:space="preserve">
+  <value>Recipient Name</value>
+</data>
+
+	<data name="TransactionID" xml:space="preserve">
+  <value>Transaction ID</value>
+</data>
+
+	<data name="PaymentDate" xml:space="preserve">
+  <value>Payment Date</value>
+</data>
+
+	<data name="CancelOrder" xml:space="preserve">
+  <value>Cancel Order</value>
+</data>
+
+	<data name="CouponCode" xml:space="preserve">
+  <value>Coupon Code</value>
+</data>
 
 </root>

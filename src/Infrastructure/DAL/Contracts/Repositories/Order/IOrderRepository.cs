@@ -81,11 +81,54 @@ public interface IOrderRepository : ITableRepository<TbOrder>
     /// <summary>
     /// Search orders with pagination and filtering
     /// </summary>
-    Task<(List<TbOrder> Items, int TotalCount)> SearchAsync(
-        string? searchTerm = null,
-        int pageNumber = 1,
-        int pageSize = 10,
-        string sortBy = "CreatedDateUtc",
-        string sortDirection = "desc",
+    Task<(List<TbOrder> Orders, int TotalCount)> SearchAsync(
+        string? searchTerm,
+        int pageNumber,
+        int pageSize,
+        string sortBy,
+        string sortDirection,
+        CancellationToken cancellationToken = default);
+
+    // Add these methods to OrderRepository.cs
+
+    /// <summary>
+    /// Get customer orders with full details and pagination
+    /// </summary>
+    Task<(List<TbOrder> Orders, int TotalCount)> GetCustomerOrdersWithPaginationAsync(
+        string customerId,
+        int pageNumber,
+        int pageSize,
+        CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Get order with FULL details for all scenarios
+    /// Includes: User, Address, OrderDetails, Items, Vendors, Shipments, Payments, Coupon, Warehouses
+    /// </summary>
+    Task<TbOrder?> GetOrderWithFullDetailsAsync(
+        Guid orderId,
+        CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Get vendor orders with pagination
+    /// Returns orders that contain items from the specified vendor
+    /// </summary>
+    Task<(List<TbOrder> Orders, int TotalCount)> GetVendorOrdersWithPaginationAsync(
+        string vendorId,
+        string? searchTerm,
+        int pageNumber,
+        int pageSize,
+        string? sortBy,
+        string? sortDirection,
+        CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Search orders for admin with pagination
+    /// </summary>
+    Task<(List<TbOrder> Orders, int TotalCount)> SearchOrdersAsync(
+        string? searchTerm,
+        int pageNumber,
+        int pageSize,
+        string? sortBy,
+        string? sortDirection,
         CancellationToken cancellationToken = default);
 }
