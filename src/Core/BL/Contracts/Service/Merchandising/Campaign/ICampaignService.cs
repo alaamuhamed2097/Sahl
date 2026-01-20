@@ -53,27 +53,4 @@ public interface ICampaignService
 
     #endregion
 
-    #region Campaign Items
-
-    /// <summary>
-    /// Get all items in a campaign
-    /// </summary>
-    Task<List<CampaignItemDto>> GetCampaignItemsAsync(Guid campaignId);
-
-    /// <summary>
-    /// Add item to campaign
-    /// </summary>
-    Task<CampaignItemDto> AddItemToCampaignAsync(AddCampaignItemDto dto, Guid userId);
-
-    /// <summary>
-    /// Remove item from campaign
-    /// </summary>
-    Task<bool> RemoveItemFromCampaignAsync(Guid campaignItemId, Guid userId);
-
-    /// <summary>
-    /// Update sold count when item is purchased
-    /// </summary>
-    Task<bool> UpdateSoldCountAsync(Guid campaignItemId, int quantity);
-
-    #endregion
 }

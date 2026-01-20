@@ -1,5 +1,6 @@
 ﻿ using Common.Enumerations.Offer;
 using Domains.Entities.BuyBox;
+using Domains.Entities.Campaign;
 using Domains.Entities.Catalog.Item.ItemAttributes;
 using Domains.Entities.Catalog.Pricing;
 using System.ComponentModel.DataAnnotations;
@@ -70,5 +71,7 @@ namespace Domains.Entities.Offer
         public virtual ICollection<TbOfferPriceHistory> OfferPriceHistories { get; set; }
         public virtual ICollection<TbQuantityTierPricing> QuantityTierPricings { get; set; }
         public virtual ICollection<TbBuyBoxCalculation> BuyBoxCalculations { get; set; }
-    }
+		public virtual ICollection<TbCampaignItem> CampaignItems { get; set; } 
+
+	}
 }

@@ -170,68 +170,12 @@ public class CampaignService : ICampaignService
     public async Task<bool> DeleteCampaignAsync(Guid id, Guid userId)
     {
         // Check if campaign has items
-        var items = await _campaignRepository.GetCampaignItemsAsync(id);
-        if (items.Any())
-        {
+        var items = await _campaignRepository.GetCampaignByIdAsync(id);
+        if (items == null)
             throw new InvalidOperationException("Cannot delete campaign with items. Remove all items first.");
-        }
+        
 
         return await _campaignRepository.SoftDeleteAsync(id, userId);
-    }
-
-    #endregion
-
-    #region Campaign Items
-
-    /// <summary>
-    /// Get all items in a campaign
-    /// </summary>
-    public async Task<List<CampaignItemDto>> GetCampaignItemsAsync(Guid campaignId)
-    {
-        var items = await _campaignRepository.GetCampaignItemsAsync(campaignId);
-        return _mapper.Map<List<CampaignItemDto>>(items);
-    }
-
-    /// <summary>
-    /// Add item to campaign
-    /// </summary>
-    public async Task<CampaignItemDto> AddItemToCampaignAsync(AddCampaignItemDto dto, Guid userId)
-    {
-        // Validate campaign exists
-        var campaign = await _campaignRepository.GetCampaignByIdAsync(dto.CampaignId);
-        if (campaign == null)
-        {
-            throw new KeyNotFoundException($"Campaign with ID {dto.CampaignId} not found");
-        }
-
-        var campaignItem = _mapper.Map<TbCampaignItem>(dto);
-
-        // Set defaults
-        campaignItem.Id = Guid.NewGuid();
-        campaignItem.CreatedDateUtc = DateTime.UtcNow;
-        campaignItem.CreatedBy = userId;
-        campaignItem.IsDeleted = false;
-        campaignItem.IsActive = true;
-        campaignItem.SoldCount = 0;
-
-        var result = await _campaignRepository.AddItemToCampaignAsync(campaignItem);
-        return _mapper.Map<CampaignItemDto>(result);
-    }
-
-    /// <summary>
-    /// Remove item from campaign
-    /// </summary>
-    public async Task<bool> RemoveItemFromCampaignAsync(Guid campaignItemId, Guid userId)
-    {
-        return await _campaignRepository.RemoveItemFromCampaignAsync(campaignItemId);
-    }
-
-    /// <summary>
-    /// Update sold count when item is purchased
-    /// </summary>
-    public async Task<bool> UpdateSoldCountAsync(Guid campaignItemId, int quantity)
-    {
-        return await _campaignRepository.IncrementSoldCountAsync(campaignItemId, quantity) ;
     }
 
     #endregion
