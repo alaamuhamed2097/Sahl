@@ -432,5 +432,73 @@ namespace Dashboard.Pages.Sales.Orders
             ShipmentStatus.Cancelled => OrderResources.Cancelled,
             _ => status.ToString()
         };
+
+        private string GetOrderStatusBadgeClass(OrderProgressStatus status)
+        {
+            return status switch
+            {
+                OrderProgressStatus.Pending => "warning",
+                OrderProgressStatus.Confirmed => "info",
+                OrderProgressStatus.Processing => "info",
+                OrderProgressStatus.Shipped => "primary",
+                OrderProgressStatus.Delivered => "success",
+                OrderProgressStatus.Completed => "success",
+                OrderProgressStatus.Cancelled => "danger",
+                OrderProgressStatus.PaymentFailed => "danger",
+                OrderProgressStatus.RefundRequested => "warning",
+                OrderProgressStatus.Refunded => "info",
+                OrderProgressStatus.Returned => "secondary",
+                _ => "secondary"
+            };
+        }
+
+        private string GetShipmentStatusBadgeClass(Common.Enumerations.Shipping.ShipmentStatus status)
+        {
+            return status switch
+            {
+                Common.Enumerations.Shipping.ShipmentStatus.Pending => "warning",
+                Common.Enumerations.Shipping.ShipmentStatus.Processing => "info",
+                Common.Enumerations.Shipping.ShipmentStatus.Shipped => "primary",
+                Common.Enumerations.Shipping.ShipmentStatus.InTransit => "primary",
+                Common.Enumerations.Shipping.ShipmentStatus.OutForDelivery => "primary",
+                Common.Enumerations.Shipping.ShipmentStatus.Delivered => "success",
+                Common.Enumerations.Shipping.ShipmentStatus.Returned => "danger",
+                Common.Enumerations.Shipping.ShipmentStatus.Cancelled => "danger",
+                _ => "secondary"
+            };
+        }
+
+        private string GetLocalizedOrderProgressStatus(OrderProgressStatus status)
+        {
+            return status switch
+            {
+                OrderProgressStatus.Pending => ECommerceResources.Pending,
+                OrderProgressStatus.Confirmed => ECommerceResources.Accepted,
+                OrderProgressStatus.Processing => ECommerceResources.InProgress,
+                OrderProgressStatus.Shipped => ECommerceResources.Shipping,
+                OrderProgressStatus.Delivered => ECommerceResources.Delivered,
+                OrderProgressStatus.Completed => ECommerceResources.Delivered,
+                OrderProgressStatus.Cancelled => ECommerceResources.Canceled,
+                OrderProgressStatus.PaymentFailed => ECommerceResources.Rejected,
+                OrderProgressStatus.Returned => ECommerceResources.Returned,
+                _ => status.ToString()
+            };
+        }
+
+        private string GetLocalizedShipmentStatus(Common.Enumerations.Shipping.ShipmentStatus status)
+        {
+            return status switch
+            {
+                Common.Enumerations.Shipping.ShipmentStatus.Pending => ECommerceResources.Pending,
+                Common.Enumerations.Shipping.ShipmentStatus.Processing => ECommerceResources.InProgress,
+                Common.Enumerations.Shipping.ShipmentStatus.Shipped => ECommerceResources.Shipping,
+                Common.Enumerations.Shipping.ShipmentStatus.InTransit => ECommerceResources.Shipping,
+                Common.Enumerations.Shipping.ShipmentStatus.OutForDelivery => ECommerceResources.Shipping,
+                Common.Enumerations.Shipping.ShipmentStatus.Delivered => ECommerceResources.Delivered,
+                Common.Enumerations.Shipping.ShipmentStatus.Returned => ECommerceResources.Returned,
+                Common.Enumerations.Shipping.ShipmentStatus.Cancelled => ECommerceResources.Canceled,
+                _ => status.ToString()
+            };
+        }
     }
 }

@@ -1,4 +1,6 @@
-﻿using Shared.DTOs.Order.Payment.Refund;
+﻿using Common.Filters;
+using Dashboard.Models.pagintion;
+using Shared.DTOs.Order.Payment.Refund;
 using Shared.GeneralModels;
 
 namespace Dashboard.Contracts.Order
@@ -9,6 +11,8 @@ namespace Dashboard.Contracts.Order
         Task<ResponseModel<bool>> DeleteAsync(Guid id);
         Task<ResponseModel<IEnumerable<RefundRequestDto>>> GetAllAsync();
         Task<ResponseModel<RefundDto>> GetByOrderIdAsync(Guid id);
-        Task<ResponseModel<bool>> SaveAsync(RefundRequestDto refund);
+        Task<ResponseModel<RefundDetailsDto>> GetByIdAsync(Guid id);
+        Task<ResponseModel<PaginatedDataModel<RefundRequestDto>>> SearchAsync(RefundSearchCriteria model, string Endpoint);
+        Task<ResponseModel<bool>> UpdateAsync(RefundRequestDto refund);
     }
 }

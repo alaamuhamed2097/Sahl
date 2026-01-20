@@ -49,6 +49,5 @@ namespace Domains.Views.Order.Refund
         public DateTime? RefundedDateUTC { get; set; }
 
         public string? AdminNotes { get; set; }
-        public string? AdminUserId { get; set; }
     }
 }

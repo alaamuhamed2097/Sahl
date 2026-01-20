@@ -346,6 +346,145 @@
 <data name="PartiallyRefunded" xml:space="preserve">
     <value>مسترجع جزئياً</value>
 </data>
-
-
+  <data name="Refunds" xml:space="preserve">
+    <value>الاسترجاعات</value>
+  </data>
+  <data name="RefundStatus" xml:space="preserve">
+    <value>حالة الاسترجاع</value>
+  </data>
+  <data name="ItemsCount" xml:space="preserve">
+  <value>عدد العناصر</value>
+</data>
+  <data name="RequestedDate" xml:space="preserve">
+  <value>تاريخ الطلب</value>
+</data>
+  <data name="RefundNumber" xml:space="preserve">
+  <value>رقم الاسترداد</value>
+</data>
+  <data name="Closed" xml:space="preserve">
+  <value>مغلق</value>
+</data>
+  <data name="Inspecting" xml:space="preserve">
+  <value>قيد الفحص</value>
+</data>
+  <data name="ItemReceived" xml:space="preserve">
+  <value>تم استلام المنتج</value>
+</data>
+  <data name="ItemShippedBack" xml:space="preserve">
+  <value>تم شحن المنتج مجددًا</value>
+</data>
+  <data name="InfoApproved" xml:space="preserve">
+  <value>تم اعتماد المعلومات</value>
+</data>
+  <data name="NeedMoreInfo" xml:space="preserve">
+  <value>يُحتاج إلى مزيد من المعلومات</value>
+</data>
+  <data name="Opened" xml:space="preserve">
+  <value>مفتوح</value>
+</data>
+  <data name="AllRefundStatus" xml:space="preserve">
+  <value>جميع حالات الاسترداد</value>
+</data>
+  <data name="AdminNotes" xml:space="preserve">
+  <value>ملاحظات المشرف</value>
+</data>
+  <data name="RejectionReason" xml:space="preserve">
+  <value>سبب الرفض</value>
+</data>
+  <data name="CloseRefund" xml:space="preserve">
+  <value>إغلاق الاسترداد</value>
+</data>
+  <data name="RefundSuccessful" xml:space="preserve">
+  <value>تم استرداد الأموال بنجاح</value>
+</data>
+  <data name="RefundCompleted" xml:space="preserve">
+  <value>اكتمل استرداد الأموال</value>
+</data>
+  <data name="ProcessRefund" xml:space="preserve">
+  <value>معالجة استرداد الأموال</value>
+</data>
+  <data name="TransactionId" xml:space="preserve">
+  <value>رقم المعاملة</value>
+</data>
+  <data name="ApproveRefund" xml:space="preserve">
+  <value>اعتماد استرداد الأموال</value>
+</data>
+  <data name="InspectingItem" xml:space="preserve">
+  <value>فحص المنتج</value>
+</data>
+  <data name="MarkAsReceived" xml:space="preserve">
+  <value>وضع علامة "مستلم"</value>
+</data>
+  <data name="MarkAsShipped" xml:space="preserve">
+  <value>وضع علامة "تم الشحن"</value>
+</data>
+  <data name="WaitingForReturn" xml:space="preserve">
+  <value>في انتظار الإرجاع</value>
+</data>
+  <data name="ApproveInfo" xml:space="preserve">
+  <value>اعتماد المعلومات</value>
+</data>
+  <data name="ReviewingRequest" xml:space="preserve">
+  <value>قيد مراجعة الطلب</value>
+</data>
+  <data name="StartReview" xml:space="preserve">
+  <value>بدء المراجعة</value>
+</data>
+  <data name="RefundRequestReceived" xml:space="preserve">
+  <value>تم استلام طلب الاسترداد</value>
+</data>
+  <data name="RefundWorkflow" xml:space="preserve">
+  <value>سير عمل استرداد الأموال</value>
+</data>
+  <data name="RejectAfterInspection" xml:space="preserve">
+  <value>رفض بعد الفحص</value>
+</data>
+  <data name="EnterTrackingNumber" xml:space="preserve">
+  <value>أدخل رقم التتبع</value>
+</data>
+  <data name="RequestMoreInfo" xml:space="preserve">
+  <value>طلب مزيد من المعلومات</value>
+</data>
+  <data name="Details" xml:space="preserve">
+  <value>التفاصيل</value>
+</data>
+  <data name="ReturnShippingCost" xml:space="preserve">
+  <value>تكلفة شحن الإرجاع</value>
+</data>
+  <data name="ApprovedItems" xml:space="preserve">
+  <value>العناصر المعتمدة</value>
+</data>
+  <data name="RequestedItems" xml:space="preserve">
+  <value>العناصر المطلوبة</value>
+</data>
+  <data name="RefundReason" xml:space="preserve">
+  <value>سبب الاسترداد</value>
+</data>
+  <data name="RefundInformation" xml:space="preserve">
+  <value>معلومات الاسترداد</value>
+</data>
+  <data name="RequestDate" xml:space="preserve">
+  <value>تاريخ الطلب</value>
+</data>
+  <data name="VendorName" xml:space="preserve">
+  <value>اسم البائع</value>
+</data>
+  <data name="RefundDetails" xml:space="preserve">
+  <value>تفاصيل الاسترداد</value>
+</data>
+  <data name="TrackingNumberRequired" xml:space="preserve">
+  <value>رقم التتبع مطلوب</value>
+</data>
+  <data name="InvalidStatusTransition" xml:space="preserve">
+  <value>انتقال الحالة غير صحيح</value>
+</data>
+  <data name="InvalidRefundAmount" xml:space="preserve">
+  <value>مبلغ الاسترداد غير صالح</value>
+</data>
+  <data name="TransactionIdRequired" xml:space="preserve">
+  <value>معرف المعاملة مطلوب</value>
+</data>
+  <data name="RefundClosedSuccessfully" xml:space="preserve">
+  <value>تم إغلاق الاسترداد بنجاح</value>
+</data>
 </root>

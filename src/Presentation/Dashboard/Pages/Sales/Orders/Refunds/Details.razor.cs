@@ -8,45 +8,33 @@ using Microsoft.Extensions.Options;
 using Microsoft.JSInterop;
 using Resources;
 using Shared.DTOs.ECommerce;
-using Shared.DTOs.Order.OrderProcessing;
 using Shared.DTOs.Order.Payment.Refund;
 
-namespace Dashboard.Pages.Sales.Orders
+namespace Dashboard.Pages.Sales.Orders.Refunds
 {
     public partial class Details
     {
         protected string baseUrl = string.Empty;
         private bool isSaving { get; set; }
-        private bool isRefunded { get; set; }
         private bool isWizardInitialized { get; set; }
-        private bool orderChanged { get; set; }
-        protected OrderDto Model { get; set; } = new();
-        protected RefundDto RefundModel { get; set; } = new();
+        private bool statusChanged { get; set; }
+        protected RefundDetailsDto RefundModel { get; set; } = new();
         protected RefundResponseDto RefundResponseModel { get; set; } = new();
-        protected List<ShippingCompanyDto> ShippingCompanies { get; set; } = new();
+
         [Parameter] public Guid Id { get; set; }
 
         [Inject] private IJSRuntime JSRuntime { get; set; } = default!;
         [Inject] protected NavigationManager Navigation { get; set; } = null!;
         [Inject] protected IResourceLoaderService ResourceLoaderService { get; set; } = null!;
-        [Inject] protected IOrderService OrderService { get; set; } = null!;
         [Inject] protected IRefundService RefundService { get; set; } = null!;
-        [Inject] protected IShippingCompanyService ShippingCompanyService { get; set; } = null!;
         [Inject] protected IOptions<ApiSettings> ApiOptions { get; set; } = default!;
 
         protected override async Task OnInitializedAsync()
         {
-            var task1 = CheckForExistingRefund();
-            var task2 = LoadShippingCompanies();
-
-            await Task.WhenAll(task1, task2);
-        }
-        protected override void OnParametersSet()
-        {
             baseUrl = ApiOptions.Value.BaseUrl;
             if (Id != Guid.Empty)
             {
-                View(Id);
+                await View(Id);
             }
         }
 
@@ -55,16 +43,21 @@ namespace Dashboard.Pages.Sales.Orders
             if (!firstRender) return;
             try
             {
-                await ResourceLoaderService.LoadStyleSheets(["assets/plugins/smart-wizard/css/smart_wizard.min.css",
-                                                            "assets/plugins/smart-wizard/css/smart_wizard_theme_arrows.min.css",
-                                                            "assets/css/pages/wizard-arrow.css"]);
+                await ResourceLoaderService.LoadStyleSheets([
+                    "assets/plugins/smart-wizard/css/smart_wizard.min.css",
+                    "assets/plugins/smart-wizard/css/smart_wizard_theme_arrows.min.css",
+                    "assets/css/wizard-arrow.css"
+                ]);
 
-                await ResourceLoaderService.LoadScriptsSequential("assets/plugins/smart-wizard/js/jquery.smartWizard.min.js",
-                                                                "assets/js/pages/wizard-custom.js",
-                                                                "assets/js/pages/wizard-arrow.js");
+                await ResourceLoaderService.LoadScriptsSequential(
+                    "assets/plugins/smart-wizard/js/jquery.smartWizard.min.js",
+                    "assets/js/pages/wizard-custom.js",
+                    "assets/js/wizard-arrow.js"
+                );
 
-
-                await JSRuntime.InvokeVoidAsync("initializeSmartWizard", (int)Model.CurrentState);
+                // Map RefundStatus to wizard step (0-based index)
+                int currentStep = GetWizardStepFromStatus(RefundModel.RefundStatus);
+                await JSRuntime.InvokeVoidAsync("initializeSmartWizard", currentStep);
                 isWizardInitialized = true;
             }
             catch (Exception ex)
@@ -73,43 +66,12 @@ namespace Dashboard.Pages.Sales.Orders
             }
         }
 
-        protected async Task<bool> Save()
-        {
-            try
-            {
-                isSaving = true;
-                StateHasChanged(); // Force UI update to show spinner
-
-                var result = await OrderService.SaveAsync(Model);
-
-                isSaving = false;
-                if (!result.Success)
-                {
-                    await JSRuntime.InvokeVoidAsync("swal", ValidationResources.Failed, NotifiAndAlertsResources.FailedAlert, "error");
-                    return false;
-                }
-                return true;
-            }
-            catch (Exception)
-            {
-                await JSRuntime.InvokeVoidAsync("swal",
-                    NotifiAndAlertsResources.FailedAlert,
-                    "error");
-                return false;
-            }
-            finally
-            {
-                isSaving = false;
-                StateHasChanged();
-            }
-        }
-
         protected async Task View(Guid id)
         {
             try
             {
-                var result = await OrderService.GetByIdAsync(id);
-
+                var result = await RefundService.GetByIdAsync(id);
+                Console.WriteLine($"Result :  success: {result.Success} \n model : {result.Data?.VendorName}");
                 if (!result.Success)
                 {
                     await JSRuntime.InvokeVoidAsync("swal",
@@ -118,8 +80,13 @@ namespace Dashboard.Pages.Sales.Orders
                         "error");
                     return;
                 }
-                // Initialize model with proper empty collections if null
-                Model = result.Data ?? new();
+
+                RefundModel = result.Data ?? new();
+                Console.WriteLine($"Vendor name :  {RefundModel.VendorName}");
+                // Initialize RefundResponseModel with current refund data
+                RefundResponseModel.RefundId = RefundModel.Id;
+                RefundResponseModel.RefundAmount = RefundModel.RefundAmount;
+
                 StateHasChanged();
             }
             catch (Exception ex)
@@ -131,34 +98,23 @@ namespace Dashboard.Pages.Sales.Orders
             }
         }
 
-        private async Task<bool> ChangeOrderStatus(OrderStatus newStatus)
+        private int GetWizardStepFromStatus(RefundStatus status)
         {
-            try
+            return status switch
             {
-                Model.CurrentState = newStatus;
-                var result = await OrderService.ChangeOrderStatusAsync(Model);
-
-                if (result.Success)
-                {
-                    // Update the wizard to reflect the new state (only updates position, doesn't move forward)
-                    if (isWizardInitialized)
-                    {
-                        await JSRuntime.InvokeVoidAsync("updateWizardState", (int)newStatus);
-                    }
-                    StateHasChanged();
-                    return true;
-                }
-                else
-                {
-                    await JSRuntime.InvokeVoidAsync("swal", ValidationResources.Failed, NotifiAndAlertsResources.SomethingWentWrong, "error");
-                    return false;
-                }
-            }
-            catch (Exception ex)
-            {
-                await JSRuntime.InvokeVoidAsync("swal", ValidationResources.Error, ex.Message, "error");
-                return false;
-            }
+                RefundStatus.Open => 0,
+                RefundStatus.UnderReview => 1,
+                RefundStatus.NeedMoreInfo => 1, // Same as UnderReview in wizard
+                RefundStatus.InfoApproved => 2,
+                RefundStatus.ItemShippedBack => 2, // Same as InfoApproved
+                RefundStatus.ItemReceived => 3,
+                RefundStatus.Inspecting => 3, // Same as ItemReceived
+                RefundStatus.Approved => 4,
+                RefundStatus.Refunded => 5,
+                RefundStatus.Rejected => 0, // Stay at current position
+                RefundStatus.Closed => 5, // Final step
+                _ => 0
+            };
         }
 
         private async Task<bool> ChangeRefundStatus(RefundStatus newStatus)
@@ -168,163 +124,329 @@ namespace Dashboard.Pages.Sales.Orders
                 RefundResponseModel.RefundId = RefundModel.Id;
                 RefundResponseModel.CurrentState = newStatus;
 
-                var saved = await RefundService.ChangeRefundStatusAsync(RefundResponseModel);
-                if (saved.Success)
-                {
-                    await JSRuntime.InvokeVoidAsync("swal", ValidationResources.SaveSuccess, NotifiAndAlertsResources.Success, "success"); ;
-                    return true;
-                }
-                else
-                {
-                    await JSRuntime.InvokeVoidAsync("swal", ValidationResources.Failed, NotifiAndAlertsResources.SomethingWentWrong, "error");
-                    return false;
-                }
-            }
-            catch (Exception ex)
-            {
-                await JSRuntime.InvokeVoidAsync("swal", ValidationResources.Error, ex.Message, "error");
-                return false;
-            }
-        }
+                var result = await RefundService.ChangeRefundStatusAsync(RefundResponseModel);
 
-        // Fixed: This method now properly moves the wizard forward
-        private async Task MoveToInProgress()
-        {
-            try
-            {
-                // Check if current state allows moving to InProgress
-                if (Model.CurrentState == OrderStatus.Rejected ||
-                    (int)Model.CurrentState < 2)
-                {
-                    await JSRuntime.InvokeVoidAsync("swal", ValidationResources.Failed, ECommerceResources.OrderMustBeAccepted, "warning");
-                    return;
-                }
-
-                // Change the order status
-                if ((int)Model.CurrentState == 2)
-                    orderChanged = await ChangeOrderStatus(OrderStatus.InProgress);
-
-                // Move the wizard to the next step
-                if (isWizardInitialized && orderChanged)
-                {
-                    await JSRuntime.InvokeVoidAsync("moveToNextStep");
-                }
-                orderChanged = false;
-            }
-            catch (Exception ex)
-            {
-                await JSRuntime.InvokeVoidAsync("swal", ValidationResources.Error, ex.Message, "error");
-            }
-        }
-
-        // Fixed: Added method to move from InProgress to Shipping
-        private async Task MoveToShipping()
-        {
-            try
-            {
-                if (Model.CurrentState < OrderStatus.InProgress)
-                {
-                    await JSRuntime.InvokeVoidAsync("swal", ValidationResources.Failed, ECommerceResources.OrderMustBeInProgress, "warning");
-                    return;
-                }
-
-                if ((int)Model.CurrentState == 4)
-                    orderChanged = await ChangeOrderStatus(OrderStatus.Shipping);
-
-                if (isWizardInitialized && orderChanged)
-                {
-                    await JSRuntime.InvokeVoidAsync("moveToNextStep");
-                }
-
-                orderChanged = false;
-            }
-            catch (Exception ex)
-            {
-                await JSRuntime.InvokeVoidAsync("swal", ValidationResources.Error, ex.Message, "error");
-            }
-        }
-
-        private async Task MoveToDelivered()
-        {
-            try
-            {
-                // Validate delivery date
-                if (Model.OrderDeliveryDate == default || Model.OrderDeliveryDate < DateTime.Now)
-                {
-                    await JSRuntime.InvokeVoidAsync("swal", ValidationResources.Failed, ECommerceResources.SelectValidDeliveryDate, "warning");
-                    return;
-                }
-
-                // Save the model first
-                if ((int)Model.CurrentState == 5)
-                {
-                    var saveResult = await Save();
-                    if (!saveResult)
-                    {
-                        return;
-                    }
-                    // Change order status to Delivered
-                    orderChanged = await ChangeOrderStatus(OrderStatus.Delivered);
-                }
-
-                // Move wizard to final step
-                if (isWizardInitialized && orderChanged)
-                {
-                    await JSRuntime.InvokeVoidAsync("moveToNextStep");
-                }
-                orderChanged = false;
-            }
-            catch (Exception ex)
-            {
-                await JSRuntime.InvokeVoidAsync("swal", ValidationResources.Error, ex.Message, "error");
-            }
-        }
-
-        private async Task CheckForExistingRefund()
-        {
-            var result = await RefundService.GetByOrderIdAsync(Id);
-            if (result.Success)
-            {
-                if (result.Data != default)
-                {
-                    isRefunded = true;
-                    RefundModel = result.Data;
-                }
-            }
-        }
-        private async Task CompleteOrder()
-        {
-            try
-            {
-                // navigate back to orders list after completion
-                Navigation.NavigateTo("/orders");
-            }
-            catch (Exception ex)
-            {
-                await JSRuntime.InvokeVoidAsync("swal", ValidationResources.Error, ex.Message, "error");
-            }
-        }
-
-        private async Task<bool> LoadShippingCompanies()
-        {
-            try
-            {
-                var result = await ShippingCompanyService.GetAllAsync();
                 if (result.Success)
                 {
-                    ShippingCompanies = result.Data.ToList();
+                    RefundModel.RefundStatus = newStatus;
+
+                    if (isWizardInitialized && newStatus != RefundStatus.Rejected)
+                    {
+                        int step = GetWizardStepFromStatus(newStatus);
+                        await JSRuntime.InvokeVoidAsync("updateWizardState", step);
+                    }
+
+                    StateHasChanged();
+
+                    await JSRuntime.InvokeVoidAsync("swal",
+                        ValidationResources.SaveSuccess,
+                        NotifiAndAlertsResources.Success,
+                        "success");
+
                     return true;
                 }
                 else
                 {
-                    await JSRuntime.InvokeVoidAsync("swal", ValidationResources.Failed, NotifiAndAlertsResources.FailedToRetrieveData, "error");
+                    await JSRuntime.InvokeVoidAsync("swal",
+                        ValidationResources.Failed,
+                        NotifiAndAlertsResources.SomethingWentWrong,
+                        "error");
                     return false;
                 }
             }
             catch (Exception ex)
             {
-                await JSRuntime.InvokeVoidAsync("swal", ValidationResources.Error, ex.Message, "error");
+                await JSRuntime.InvokeVoidAsync("swal",
+                    ValidationResources.Error,
+                    ex.Message,
+                    "error");
                 return false;
+            }
+        }
+
+        private async Task MoveToUnderReview()
+        {
+            try
+            {
+                if (RefundModel.RefundStatus != RefundStatus.Open)
+                {
+                    await JSRuntime.InvokeVoidAsync("swal",
+                        ValidationResources.Failed,
+                        OrderResources.InvalidStatusTransition,
+                        "warning");
+                    return;
+                }
+
+                statusChanged = await ChangeRefundStatus(RefundStatus.UnderReview);
+
+                if (isWizardInitialized && statusChanged)
+                {
+                    await JSRuntime.InvokeVoidAsync("moveToNextStep");
+                }
+
+                statusChanged = false;
+            }
+            catch (Exception ex)
+            {
+                await JSRuntime.InvokeVoidAsync("swal",
+                    ValidationResources.Error,
+                    ex.Message,
+                    "error");
+            }
+        }
+
+        private async Task MoveToInfoApproved()
+        {
+            try
+            {
+                if (RefundModel.RefundStatus != RefundStatus.UnderReview &&
+                    RefundModel.RefundStatus != RefundStatus.NeedMoreInfo)
+                {
+                    await JSRuntime.InvokeVoidAsync("swal",
+                        ValidationResources.Failed,
+                        OrderResources.InvalidStatusTransition,
+                        "warning");
+                    return;
+                }
+
+                statusChanged = await ChangeRefundStatus(RefundStatus.InfoApproved);
+
+                if (isWizardInitialized && statusChanged)
+                {
+                    await JSRuntime.InvokeVoidAsync("moveToNextStep");
+                }
+
+                statusChanged = false;
+            }
+            catch (Exception ex)
+            {
+                await JSRuntime.InvokeVoidAsync("swal",
+                    ValidationResources.Error,
+                    ex.Message,
+                    "error");
+            }
+        }
+
+        private async Task MoveToItemShippedBack()
+        {
+            try
+            {
+                if (RefundModel.RefundStatus != RefundStatus.InfoApproved)
+                {
+                    await JSRuntime.InvokeVoidAsync("swal",
+                        ValidationResources.Failed,
+                        OrderResources.InvalidStatusTransition,
+                        "warning");
+                    return;
+                }
+
+                if (string.IsNullOrWhiteSpace(RefundModel.ReturnTrackingNumber))
+                {
+                    await JSRuntime.InvokeVoidAsync("swal",
+                        ValidationResources.Failed,
+                        OrderResources.TrackingNumberRequired,
+                        "warning");
+                    return;
+                }
+
+                // Update tracking number first
+                var saveModel = new RefundRequestDto
+                {
+                    Id = RefundModel.Id,
+                    ReturnTrackingNumber = RefundModel.ReturnTrackingNumber
+                };
+
+                var updateResult = await RefundService.UpdateAsync(saveModel);
+
+                if (!updateResult.Success)
+                {
+                    await JSRuntime.InvokeVoidAsync("swal",
+                        ValidationResources.Failed,
+                        NotifiAndAlertsResources.SaveFailed,
+                        "error");
+                    return;
+                }
+
+                statusChanged = await ChangeRefundStatus(RefundStatus.ItemShippedBack);
+                statusChanged = false;
+            }
+            catch (Exception ex)
+            {
+                await JSRuntime.InvokeVoidAsync("swal",
+                    ValidationResources.Error,
+                    ex.Message,
+                    "error");
+            }
+        }
+
+        private async Task MoveToItemReceived()
+        {
+            try
+            {
+                if (RefundModel.RefundStatus != RefundStatus.InfoApproved &&
+                    RefundModel.RefundStatus != RefundStatus.ItemShippedBack)
+                {
+                    await JSRuntime.InvokeVoidAsync("swal",
+                        ValidationResources.Failed,
+                        OrderResources.InvalidStatusTransition,
+                        "warning");
+                    return;
+                }
+
+                statusChanged = await ChangeRefundStatus(RefundStatus.ItemReceived);
+
+                if (isWizardInitialized && statusChanged)
+                {
+                    await JSRuntime.InvokeVoidAsync("moveToNextStep");
+                }
+
+                statusChanged = false;
+            }
+            catch (Exception ex)
+            {
+                await JSRuntime.InvokeVoidAsync("swal",
+                    ValidationResources.Error,
+                    ex.Message,
+                    "error");
+            }
+        }
+
+        private async Task MoveToApproved()
+        {
+            try
+            {
+                if (RefundModel.RefundStatus != RefundStatus.ItemReceived &&
+                    RefundModel.RefundStatus != RefundStatus.Inspecting)
+                {
+                    await JSRuntime.InvokeVoidAsync("swal",
+                        ValidationResources.Failed,
+                        OrderResources.InvalidStatusTransition,
+                        "warning");
+                    return;
+                }
+
+                statusChanged = await ChangeRefundStatus(RefundStatus.Approved);
+
+                if (isWizardInitialized && statusChanged)
+                {
+                    await JSRuntime.InvokeVoidAsync("moveToNextStep");
+                }
+
+                statusChanged = false;
+            }
+            catch (Exception ex)
+            {
+                await JSRuntime.InvokeVoidAsync("swal",
+                    ValidationResources.Error,
+                    ex.Message,
+                    "error");
+            }
+        }
+
+        private async Task MoveToRefunded()
+        {
+            try
+            {
+                if (RefundModel.RefundStatus != RefundStatus.Approved)
+                {
+                    await JSRuntime.InvokeVoidAsync("swal",
+                        ValidationResources.Failed,
+                        OrderResources.InvalidStatusTransition,
+                        "warning");
+                    return;
+                }
+
+                // Validate refund amount
+                if (RefundResponseModel.RefundAmount <= 0)
+                {
+                    await JSRuntime.InvokeVoidAsync("swal",
+                        ValidationResources.Failed,
+                        OrderResources.InvalidRefundAmount,
+                        "warning");
+                    return;
+                }
+
+                // Validate transaction ID
+                if (string.IsNullOrWhiteSpace(RefundModel.RefundTransactionId))
+                {
+                    await JSRuntime.InvokeVoidAsync("swal",
+                        ValidationResources.Failed,
+                        OrderResources.TransactionIdRequired,
+                        "warning");
+                    return;
+                }
+
+                // Update refund details
+                var saveModel = new RefundRequestDto
+                {
+                    Id = RefundModel.Id,
+                    RefundTransactionId = RefundModel.RefundTransactionId,
+                    RefundAmount = RefundResponseModel.RefundAmount
+                };
+
+                var updateResult = await RefundService.UpdateAsync(saveModel);
+
+                if (!updateResult.Success)
+                {
+                    await JSRuntime.InvokeVoidAsync("swal",
+                        ValidationResources.Failed,
+                        NotifiAndAlertsResources.SaveFailed,
+                        "error");
+                    return;
+                }
+
+                statusChanged = await ChangeRefundStatus(RefundStatus.Refunded);
+
+                if (isWizardInitialized && statusChanged)
+                {
+                    await JSRuntime.InvokeVoidAsync("moveToNextStep");
+                }
+
+                statusChanged = false;
+            }
+            catch (Exception ex)
+            {
+                await JSRuntime.InvokeVoidAsync("swal",
+                    ValidationResources.Error,
+                    ex.Message,
+                    "error");
+            }
+        }
+
+        private async Task CloseRefund()
+        {
+            try
+            {
+                if (RefundModel.RefundStatus != RefundStatus.Refunded)
+                {
+                    await JSRuntime.InvokeVoidAsync("swal",
+                        ValidationResources.Failed,
+                        OrderResources.InvalidStatusTransition,
+                        "warning");
+                    return;
+                }
+
+                statusChanged = await ChangeRefundStatus(RefundStatus.Closed);
+
+                if (statusChanged)
+                {
+                    await JSRuntime.InvokeVoidAsync("swal",
+                        ValidationResources.SaveSuccess,
+                        OrderResources.RefundClosedSuccessfully,
+                        "success");
+
+                    // Navigate back to refunds list
+                    Navigation.NavigateTo("/refunds");
+                }
+
+                statusChanged = false;
+            }
+            catch (Exception ex)
+            {
+                await JSRuntime.InvokeVoidAsync("swal",
+                    ValidationResources.Error,
+                    ex.Message,
+                    "error");
             }
         }
     }

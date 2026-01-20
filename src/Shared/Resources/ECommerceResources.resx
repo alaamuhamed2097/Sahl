@@ -681,12 +681,6 @@
   <data name="ListType" xml:space="preserve">
     <value>نوع القائمة</value>
   </data>
-  <data name="Refunds" xml:space="preserve">
-    <value>الاسترجاعات</value>
-  </data>
-  <data name="RefundStatus" xml:space="preserve">
-    <value>حالة الاسترجاع</value>
-  </data>
   <data name="ShippingCompanies" xml:space="preserve">
     <value>شركات الشحن</value>
   </data>

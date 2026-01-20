@@ -6,12 +6,12 @@
 @using Shared.DTOs.Order.Payment.Refund
 @inherits BaseListPage<RefundRequestDto>
 
-<PageTitle>@ECommerceResources.Refunds</PageTitle>
+<PageTitle>@OrderResources.Refunds</PageTitle>
 
 <div class="container-fluid p-0">
     <div class="card shadow-sm border-0">
         <div class="card-header bg-primary text-white py-3 d-flex justify-content-between align-items-center">
-            <h5 class="mb-0 fw-semibold text-white">🛒 @ECommerceResources.Refunds</h5>
+            <h5 class="mb-0 fw-semibold text-white">🛒 @OrderResources.Refunds</h5>
         </div>
         <div class="card-body">
             <div class="dt-responsive table-responsive">
@@ -38,20 +38,20 @@
                     <!-- Order Status Filter -->
                     <li class="nav-item w-auto">
                         <select class="form-select rounded-3 shadow-sm border-light text-primary fw-bold text-center custom-dropdown"
-                                style="width: 140px; height: 40px; padding-right: 30px;"
+                                style="width: 250px; height: 40px; padding-right: 30px;"
                                 @onchange="OnRefundStatusFilterChanged">
-                            <option value="">@ECommerceResources.RefundStatus</option>
-                            <option value="@((int)RefundStatus.Open)">@ECommerceResources.Pending</option>
-                            <option value="@((int)RefundStatus.UnderReview)">@ECommerceResources.Accepted</option>
-                            <option value="@((int)RefundStatus.NeedMoreInfo)">@ECommerceResources.InProgress</option>
-                            <option value="@((int)RefundStatus.InfoApproved)">@ECommerceResources.Shipping</option>
-                            <option value="@((int)RefundStatus.ItemShippedBack)">@ECommerceResources.Delivered</option>
-                            <option value="@((int)RefundStatus.ItemReceived)">@ECommerceResources.Rejected</option>
-                            <option value="@((int)RefundStatus.Inspecting)">@ECommerceResources.Canceled</option>
-                            <option value="@((int)RefundStatus.Approved)">@ECommerceResources.Returned</option>
-                            <option value="@((int)RefundStatus.Rejected)">@ECommerceResources.Returned</option>
-                            <option value="@((int)RefundStatus.Refunded)">@ECommerceResources.Returned</option>
-                            <option value="@((int)RefundStatus.Closed)">@ECommerceResources.Returned</option>
+                            <option value="0">@OrderResources.AllRefundStatus</option>
+                            <option value="@((int)RefundStatus.Open)">@OrderResources.Opened</option>
+                            <option value="@((int)RefundStatus.UnderReview)">@ECommerceResources.UnderReview</option>
+                            <option value="@((int)RefundStatus.NeedMoreInfo)">@OrderResources.NeedMoreInfo</option>
+                            <option value="@((int)RefundStatus.InfoApproved)">@OrderResources.InfoApproved</option>
+                            <option value="@((int)RefundStatus.ItemShippedBack)">@OrderResources.ItemShippedBack</option>
+                            <option value="@((int)RefundStatus.ItemReceived)">@OrderResources.ItemReceived</option>
+                            <option value="@((int)RefundStatus.Inspecting)">@OrderResources.Inspecting</option>
+                            <option value="@((int)RefundStatus.Approved)">@ECommerceResources.Approved</option>
+                            <option value="@((int)RefundStatus.Rejected)">@ECommerceResources.Rejected</option>
+                            <option value="@((int)RefundStatus.Refunded)">@OrderResources.Refunded</option>
+                            <option value="@((int)RefundStatus.Closed)">@OrderResources.Closed</option>
                         </select>
                     </li>
 
@@ -89,23 +89,23 @@
                             <thead class="table-light">
                                 <tr>
                                     <th style="min-width: 120px; cursor: pointer;" @onclick="() => SortByColumn(nameof(RefundDto.Number))">
-                                        @ECommerceResources.RefundNumber
+                                        @OrderResources.RefundNumber
                                         <i class="@GetSortIconClass(nameof(RefundDto.Number))"></i>
                                     </th>
                                     <th style="min-width: 150px; cursor: pointer;" @onclick="() => SortByColumn(nameof(RefundDto.RequestDateLocalFormatted))">
-                                        @ECommerceResources.RequestedDate
+                                        @OrderResources.RequestedDate
                                         <i class="@GetSortIconClass(nameof(RefundDto.RequestDateLocalFormatted))"></i>
                                     </th>
                                     <th style="min-width: 130px; cursor: pointer;" @onclick="() => SortByColumn(nameof(RefundDto.ApprovedItemsCount))">
-                                        @ECommerceResources.ApprovedItemsCount
+                                        @OrderResources.ItemsCount
                                         <i class="@GetSortIconClass(nameof(RefundDto.ApprovedItemsCount))"></i>
                                     </th>
                                     <th style="min-width: 100px; cursor: pointer;" @onclick="() => SortByColumn(nameof(RefundDto.RefundAmount))">
-                                        @FormResources.RefundAmount
+                                        @OrderResources.RefundAmount
                                         <i class="@GetSortIconClass(nameof(RefundDto.RefundAmount))"></i>
                                     </th>
                                     <th style="min-width: 130px; cursor: pointer;" @onclick="() => SortByColumn(nameof(RefundDto.RefundStatus))">
-                                        @ECommerceResources.RefundStatus
+                                        @OrderResources.RefundStatus
                                         <i class="@GetSortIconClass(nameof(RefundDto.RefundStatus))"></i>
                                     </th>
                                     <th style="min-width: 100px;" class="text-center">@ActionsResources.Edit</th>
@@ -135,7 +135,7 @@
                                             <td class="text-center p-1">
                                                 <div class="d-flex gap-1 justify-content-center">
                                                     <button class="btn btn-primary btn-sm" @onclick="() => Edit(item)" title="@ActionsResources.View">
-                                                        <i class="fas fa-eye"></i>
+                                                        <i class="fas fa-eye m-0"></i>
                                                     </button>
                                                 </div>
                                             </td>
@@ -236,7 +236,7 @@
                                 <div class="card-body p-3">
                                     <div class="d-flex justify-content-between align-items-start">
                                         <div>
-                                            <h6 class="fw-bold text-primary mb-1">🛒 @item.Number</h6>
+                                            <h6 class="fw-bold text-primary mb-1"> @item.Number</h6>
                                             <p class="text-muted small mb-1">@item.ApprovedItemsCount</p>
                                             <small class="text-muted">
                                                 @item.RequestDateLocalFormatted
@@ -244,7 +244,7 @@
                                         </div>
                                         <div>
                                             <button class="btn btn-primary btn-sm" @onclick="() => Edit(item)">
-                                                <i class="fas fa-eye"></i>
+                                                <i class="fas fa-eye m-0"></i>
                                             </button>
                                         </div>
                                     </div>
@@ -252,7 +252,7 @@
                                     <div class="row small">
                                         <div class="col-6 mb-1">
                                             <i class="fas fa-info-circle text-info me-1"></i>
-                                            <strong>@ECommerceResources.RefundStatus:</strong>
+                                            <strong>@OrderResources.RefundStatus:</strong>
                                             <br />
                                             <span class="@GetRefundStatusClass(item.RefundStatus)">
                                                 @GetRefundStatusText(item.RefundStatus)
@@ -260,7 +260,7 @@
                                         </div>
                                         <div class="col-12 mt-2">
                                             <i class="fas fa-dollar-sign text-warning me-1"></i>
-                                            <strong>@FormResources.RefundAmount:</strong>
+                                            <strong>@OrderResources.RefundAmount:</strong>
                                             <span dir="ltr">$@(item.RefundAmount % 1 == 0 ? item.RefundAmount.ToString("F0") : item.RefundAmount.ToString("F2"))</span>
                                         </div>
                                     </div>

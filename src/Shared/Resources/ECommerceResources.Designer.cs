@@ -1330,20 +1330,20 @@ namespace Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to عتبة نقص المخزون.
-        /// </summary>
-        public static string LowStockThreshold {
-            get {
-                return ResourceManager.GetString("LowStockThreshold", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to اللوجستيات والشحن.
         /// </summary>
         public static string LogisticsAndShipping {
             get {
                 return ResourceManager.GetString("LogisticsAndShipping", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to عتبة نقص المخزون.
+        /// </summary>
+        public static string LowStockThreshold {
+            get {
+                return ResourceManager.GetString("LowStockThreshold", resourceCulture);
             }
         }
         
@@ -1992,24 +1992,6 @@ namespace Resources {
         public static string RecommendedLengthRangeShort {
             get {
                 return ResourceManager.GetString("RecommendedLengthRangeShort", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to الاسترجاعات.
-        /// </summary>
-        public static string Refunds {
-            get {
-                return ResourceManager.GetString("Refunds", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to حالة الاسترجاع.
-        /// </summary>
-        public static string RefundStatus {
-            get {
-                return ResourceManager.GetString("RefundStatus", resourceCulture);
             }
         }
         

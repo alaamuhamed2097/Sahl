@@ -681,12 +681,6 @@
   <data name="ListType" xml:space="preserve">
     <value>List Type</value>
   </data>
-  <data name="Refunds" xml:space="preserve">
-    <value>Refunds</value>
-  </data>
-  <data name="RefundStatus" xml:space="preserve">
-    <value>Refund Status</value>
-  </data>
   <data name="ShippingCompanies" xml:space="preserve">
     <value>Shipping Companies</value>
   </data>

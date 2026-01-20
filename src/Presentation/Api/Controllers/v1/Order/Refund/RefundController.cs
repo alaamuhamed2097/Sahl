@@ -2,6 +2,7 @@ using Api.Controllers.v1.Base;
 using Asp.Versioning;
 using BL.Contracts.Service.Order.OrderProcessing;
 using BL.Contracts.Service.Order.Payment;
+using Common.Enumerations.Order;
 using Common.Enumerations.User;
 using Common.Filters;
 using DAL.Models;
@@ -37,7 +38,7 @@ namespace Api.Controllers.v1.Order
         /// <summary>
         /// Get refund by number.
         /// </summary>
-        [HttpGet]
+        [HttpGet("by-number/{number}")]
         [Authorize]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -52,10 +53,53 @@ namespace Api.Controllers.v1.Order
 
             // Check if refund exists
             if (refund == null)
-                return NotFound();
+                return NotFound(new ResponseModel<RefundRequestDto>
+                {
+                    Success = false,
+                    Message = "Refund not found!!",
+                    Data = refund
+                });
 
             // Return ok response with refund data
-            return Ok(refund);
+            return Ok(new ResponseModel<RefundRequestDto>
+            {
+                Success = true,
+                Message = "Data retrieved successfully",
+                Data = refund
+            });
+        }
+        /// <summary>
+        /// Get refund by ID.
+        /// </summary>
+        [HttpGet("{id:guid}")]
+        [Authorize]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> GetRefundById(Guid id)
+        {
+            // Validate input
+            if (id == Guid.Empty)
+                return BadRequest("Refund ID is required.");
+            
+            // Retrieve refund by number
+            var refund = await _refundService.FindById(id);
+
+            // Check if refund exists
+            if (refund == null)
+                return NotFound(new ResponseModel<RefundDetailsDto>
+                {
+                    Success = false,
+                    Message = "Refund not found!!",
+                    Data = refund
+                });
+
+            // Return ok response with refund data
+            return Ok(new ResponseModel<RefundDetailsDto>
+            {
+                Success = true,
+                Message = "Data retrieved successfully",
+                Data = refund
+            });
         }
 
         /// <summary>
@@ -78,7 +122,7 @@ namespace Api.Controllers.v1.Order
             {
                 return Ok(new ResponseModel<PagedResult<RefundRequestDto>>
                 {
-                    Success = false,
+                    Success = true,
                     Message = NotifiAndAlertsResources.NoDataFound,
                     Data = result
                 });
@@ -90,6 +134,66 @@ namespace Api.Controllers.v1.Order
                 Message = NotifiAndAlertsResources.DataRetrieved,
                 Data = result
             });
+        }
+
+        // GET api/v1/Refund/order/{orderId}
+        [HttpGet("order/{orderId}")]
+        public async Task<IActionResult> GetByOrder(Guid orderId)
+        {
+            var result = await _refundService.GetRefundRequestByOrderDetailIdAsync(orderId);
+            // Since RefundRequestDto now has Id, and Dashboard expects RefundDto (which matches RefundRequestDto mostly),
+            // Deserialization should work fine.
+
+            if (result == null)
+            {
+                return Ok(new ResponseModel<RefundRequestDto?>
+                {
+                    Success = true,
+                    Message = "No refund found",
+                    Data = null
+                });
+            }
+
+            return Ok(new ResponseModel<RefundRequestDto>
+            {
+                Success = true,
+                Data = result
+            });
+        }
+
+        // POST api/v1/Refund/changeRefundStatus
+        [HttpPost("changeRefundStatus")]
+        public async Task<IActionResult> ChangeStatus([FromBody] RefundResponseDto dto)
+        {
+            var updateDto = new UpdateRefundStatusDto
+            {
+                NewStatus = dto.CurrentState,
+                Notes = dto.AdminComments,
+                RejectionReason = dto.CurrentState == RefundStatus.Rejected ? dto.AdminComments : null,
+                RefundAmount = dto.RefundAmount > 0 ? dto.RefundAmount : null,
+                // ApprovedItemsCount and TrackingNumber might need mapping if in RefundResponseDto
+            };
+
+            var result = await _refundService.UpdateRefundStatusAsync(dto.RefundId, updateDto, GuidUserId.ToString());
+
+            if (result.IsSuccess)
+            {
+                return Ok(new ResponseModel<bool>
+                {
+                    Success = true,
+                    Message = "Status updated successfully",
+                    Data = true
+                });
+            }
+            else
+            {
+                return Ok(new ResponseModel<bool>
+                {
+                    Success = false,
+                    Message = result.ErrorMessage,
+                    Data = false
+                });
+            }
         }
 
         /// <summary>

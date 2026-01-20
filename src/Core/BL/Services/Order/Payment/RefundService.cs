@@ -3,12 +3,17 @@ using BL.Contracts.Service.Customer;
 using BL.Contracts.Service.Order.Payment;
 using Common.Enumerations.Order;
 using Common.Enumerations.Payment;
+using Common.Filters;
+using DAL.Contracts.Repositories.Order;
 using DAL.Contracts.UnitOfWork;
+using DAL.Exceptions;
 using DAL.Models;
+using DAL.Repositories.Order.Refund;
 using Domains.Entities.Order;
 using Domains.Entities.Order.Payment;
 using Domains.Entities.Order.Refund;
 using Domains.Entities.Order.Returns;
+using Domains.Views.Order.Refund;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
 using Shared.DTOs.Order.Payment.PaymentProcessing;
@@ -21,6 +26,8 @@ namespace BL.Services.Order.Payment;
 public class RefundService : IRefundService
 {
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IRefundRepository _refundRepository;
+    private readonly IOrderRepository _orderRepository;
     private readonly IPaymentService _paymentService;
     private readonly ICustomerService _customerService;
     private readonly IBaseMapper _mapper;
@@ -31,13 +38,17 @@ public class RefundService : IRefundService
         IPaymentService paymentService,
         ILogger logger,
         IBaseMapper mapper,
-        ICustomerService customerService)
+        ICustomerService customerService,
+        IRefundRepository refundRepository,
+        IOrderRepository orderRepository)
     {
         _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
         _paymentService = paymentService ?? throw new ArgumentNullException(nameof(paymentService));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _mapper = mapper;
         _customerService = customerService;
+        _refundRepository = refundRepository;
+        _orderRepository = orderRepository;
     }
 
     public async Task<RefundRequestResult> CreateRefundRequestAsync(
@@ -81,7 +92,7 @@ public class RefundService : IRefundService
                 requestDto.RequestedItemsCount
             );
             if (!eligibilityResult.IsEligible)
-                return RefundRequestResult.Fail(eligibilityResult.Reason);
+                return RefundRequestResult.Fail(eligibilityResult.Reason ?? "Something went wrong!!");
 
             // Validate delivery address if provided
             if (requestDto.DeliveryAddressId != null)
@@ -92,10 +103,8 @@ public class RefundService : IRefundService
                     return RefundRequestResult.Fail("Invalid delivery address");
             }
 
-            var refundRepo = _unitOfWork.TableRepository<TbRefund>();
-            var existingRefund = await refundRepo.GetQueryable()
-                .FirstOrDefaultAsync(r => r.OrderDetailId == requestDto.OrderDetailId && !r.IsDeleted);
-
+            // Check if refund already exists using repository
+            var existingRefund = await _refundRepository.GetByOrderDetailIdAsync(requestDto.OrderDetailId);
             if (existingRefund != null)
             {
                 return RefundRequestResult.Fail(
@@ -121,8 +130,8 @@ public class RefundService : IRefundService
                 RequestDateUTC = DateTime.UtcNow,
                 RefundStatus = RefundStatus.Open
             };
-
-            var refundSaved = await refundRepo.CreateAsync(refundRequest, Guid.Parse(userId));
+            // Use repository to create refund
+            var refundSaved = await _refundRepository.CreateAsync(refundRequest, Guid.Parse(userId));
 
             order.OrderStatus = OrderProgressStatus.RefundRequested;
             order.UpdatedDateUtc = DateTime.UtcNow;
@@ -150,11 +159,116 @@ public class RefundService : IRefundService
         }
     }
 
+    //public async Task<RefundStatusUpdateResult> UpdateRefundStatusAsync(
+    //    Guid refundId,
+    //    UpdateRefundStatusDto statusDto,
+    //    string userId)
+    //{
+    //    try
+    //    {
+    //        _logger.Information(
+    //            "Updating refund request {RefundId} status to {NewStatus} by user {UserId}",
+    //            refundId,
+    //            statusDto.NewStatus,
+    //            userId
+    //        );
+
+    //        await _unitOfWork.BeginTransactionAsync();
+
+    //        var refundRepo = _unitOfWork.TableRepository<TbRefund>();
+    //        var refundRequest = await refundRepo.FindByIdAsync(refundId);
+
+    //        if (refundRequest == null)
+    //            return RefundStatusUpdateResult.Fail("Refund request not found");
+
+    //        var previousStatus = refundRequest.RefundStatus;
+
+    //        if (previousStatus == RefundStatus.Closed)
+    //            return RefundStatusUpdateResult.Fail("Cannot update a closed refund request");
+
+    //        if (!IsValidStatusTransition(previousStatus, statusDto.NewStatus))
+    //        {
+    //            return RefundStatusUpdateResult.Fail(
+    //                $"Invalid status transition from {previousStatus} to {statusDto.NewStatus}"
+    //            );
+    //        }
+
+    //        var orderDetailsRepo = _unitOfWork.TableRepository<TbOrderDetail>();
+    //        var orderDetails = await orderDetailsRepo.FindByIdAsync(refundRequest.OrderDetailId);
+    //        if (orderDetails == null)
+    //            return RefundStatusUpdateResult.Fail("Order details not found");
+
+    //        var orderRepo = _unitOfWork.TableRepository<TbOrder>();
+    //        var order = await orderRepo.FindByIdAsync(orderDetails.OrderId);
+    //        if (order == null)
+    //            return RefundStatusUpdateResult.Fail("Order not found");
+
+    //        refundRequest.RefundStatus = statusDto.NewStatus;
+    //        refundRequest.AdminUserId = userId;
+
+    //        if (!string.IsNullOrEmpty(statusDto.Notes))
+    //            refundRequest.AdminNotes = statusDto.Notes;
+
+    //        var statusUpdateResult = await HandleStatusSpecificUpdates(
+    //            refundRequest,
+    //            order,
+    //            statusDto,
+    //            userId
+    //        );
+
+    //        if (!statusUpdateResult.IsSuccess)
+    //        {
+    //            await _unitOfWork.RollbackAsync();
+    //            return RefundStatusUpdateResult.Fail(statusUpdateResult.ErrorMessage ?? "Failed to update refund status");
+    //        }
+
+    //        order.UpdatedDateUtc = DateTime.UtcNow;
+    //        refundRequest.UpdatedDateUtc = DateTime.UtcNow;
+
+    //        await refundRepo.UpdateAsync(refundRequest, Guid.Parse(userId));
+    //        await orderRepo.UpdateAsync(order, Guid.Parse(userId));
+
+    //        await CreateStatusHistoryAsync(
+    //            refundRequest.Id,
+    //            previousStatus,
+    //            statusDto.NewStatus,
+    //            statusDto.Notes,
+    //            userId
+    //        );
+
+    //        await _unitOfWork.CommitAsync();
+
+    //        _logger.Information(
+    //            "Refund request {RefundId} status updated from {OldStatus} to {NewStatus}",
+    //            refundId,
+    //            previousStatus,
+    //            statusDto.NewStatus
+    //        );
+
+    //        return RefundStatusUpdateResult.Success(
+    //            refundRequest.Id,
+    //            previousStatus,
+    //            statusDto.NewStatus,
+    //            refundRequest.RefundTransactionId
+    //        );
+    //    }
+    //    catch (Exception ex)
+    //    {
+    //        _logger.Error(ex, "Error updating refund request {RefundId} status", refundId);
+    //        await _unitOfWork.RollbackAsync();
+    //        return RefundStatusUpdateResult.Fail(ex.Message);
+    //    }
+    //}
+
     public async Task<RefundStatusUpdateResult> UpdateRefundStatusAsync(
-        Guid refundId,
-        UpdateRefundStatusDto statusDto,
-        string userId)
+    Guid refundId,
+    UpdateRefundStatusDto statusDto,
+    string userId)
     {
+        TbRefund refundRequest;
+        TbOrder order;
+        RefundStatus previousStatus;
+
         try
         {
             _logger.Information(
@@ -164,15 +278,15 @@ public class RefundService : IRefundService
                 userId
             );
 
-            await _unitOfWork.BeginTransactionAsync();
-
             var refundRepo = _unitOfWork.TableRepository<TbRefund>();
-            var refundRequest = await refundRepo.FindByIdAsync(refundId);
+            refundRequest = await refundRepo.FindByIdAsync(refundId);
+            // Use repository to get refund
+            refundRequest = await _refundRepository.GetByIdAsync(refundId);
 
             if (refundRequest == null)
                 return RefundStatusUpdateResult.Fail("Refund request not found");
 
-            var previousStatus = refundRequest.RefundStatus;
+            previousStatus = refundRequest.RefundStatus;
 
             if (previousStatus == RefundStatus.Closed)
                 return RefundStatusUpdateResult.Fail("Cannot update a closed refund request");
@@ -190,35 +304,38 @@ public class RefundService : IRefundService
                 return RefundStatusUpdateResult.Fail("Order details not found");
 
             var orderRepo = _unitOfWork.TableRepository<TbOrder>();
-            var order = await orderRepo.FindByIdAsync(orderDetails.OrderId);
+            order = await orderRepo.FindByIdAsync(orderDetails.OrderId);
             if (order == null)
                 return RefundStatusUpdateResult.Fail("Order not found");
+
+            await _unitOfWork.BeginTransactionAsync();
 
             refundRequest.RefundStatus = statusDto.NewStatus;
             refundRequest.AdminUserId = userId;
 
-            if (!string.IsNullOrEmpty(statusDto.Notes))
+            if (!string.IsNullOrWhiteSpace(statusDto.Notes))
                 refundRequest.AdminNotes = statusDto.Notes;
 
             var statusUpdateResult = await HandleStatusSpecificUpdates(
                 refundRequest,
                 order,
-                statusDto,
-                userId
+                statusDto
             );
 
             if (!statusUpdateResult.IsSuccess)
             {
                 await _unitOfWork.RollbackAsync();
-                return RefundStatusUpdateResult.Fail(statusUpdateResult.ErrorMessage);
+                return RefundStatusUpdateResult.Fail(statusUpdateResult.ErrorMessage!);
             }
 
-            order.UpdatedDateUtc = DateTime.UtcNow;
             refundRequest.UpdatedDateUtc = DateTime.UtcNow;
+            order.UpdatedDateUtc = DateTime.UtcNow;
 
-            await refundRepo.UpdateAsync(refundRequest, Guid.Parse(userId));
-            await orderRepo.UpdateAsync(order, Guid.Parse(userId));
+            // Use repository to update refund
+            await _refundRepository.UpdateAsync(refundRequest, Guid.Parse(userId));
+            await _orderRepository.UpdateAsync(order, Guid.Parse(userId));
 
+            // Use repository to create status history
             await CreateStatusHistoryAsync(
                 refundRequest.Id,
                 previousStatus,
@@ -231,7 +348,7 @@ public class RefundService : IRefundService
 
             _logger.Information(
                 "Refund request {RefundId} status updated from {OldStatus} to {NewStatus}",
-                refundId,
+                refundRequest.Id,
                 previousStatus,
                 statusDto.NewStatus
             );
@@ -243,11 +360,18 @@ public class RefundService : IRefundService
                 refundRequest.RefundTransactionId
             );
         }
+        catch (DbUpdateConcurrencyException)
+        {
+            await _unitOfWork.RollbackAsync();
+            return RefundStatusUpdateResult.Fail(
+                "Refund was updated by another user. Please refresh and try again."
+            );
+        }
         catch (Exception ex)
         {
-            _logger.Error(ex, "Error updating refund request {RefundId} status", refundId);
             await _unitOfWork.RollbackAsync();
-            return RefundStatusUpdateResult.Fail(ex.Message);
+            _logger.Error(ex, "Error updating refund request {RefundId}", refundId);
+            return RefundStatusUpdateResult.Fail("Unexpected error occurred");
         }
     }
 
@@ -255,8 +379,8 @@ public class RefundService : IRefundService
     {
         try
         {
-            var refundRepo = _unitOfWork.TableRepository<TbRefund>();
-            var refundRequest = await refundRepo.FindByIdAsync(refundRequestId);
+            // Use repository to get refund
+            var refundRequest = await _refundRepository.GetByIdAsync(refundRequestId);
             return refundRequest == null ? null : _mapper.MapModel<TbRefund, RefundRequestDto>(refundRequest);
         }
         catch (Exception ex)
@@ -271,8 +395,7 @@ public class RefundService : IRefundService
         try
         {
             // Find refund request by number
-            var refundRepo = _unitOfWork.TableRepository<TbRefund>();
-            var refundRequest = await refundRepo.FindAsync(r => r.Number == number && !r.IsDeleted);
+            var refundRequest = await _refundRepository.GetByNumberAsync(number);
 
             // Validation to ensure refund request exists
             if (refundRequest == null)
@@ -291,9 +414,8 @@ public class RefundService : IRefundService
     {
         try
         {
-            var refundRepo = _unitOfWork.TableRepository<TbRefund>();
-            var refundRequest = await refundRepo.GetQueryable()
-                .FirstOrDefaultAsync(r => r.OrderDetailId == orderDetailId && !r.IsDeleted);
+            // Use repository to get refund by order detail ID
+            var refundRequest = await _refundRepository.GetByOrderDetailIdAsync(orderDetailId);
             return refundRequest == null ? null : _mapper.MapModel<TbRefund, RefundRequestDto>(refundRequest);
         }
         catch (Exception ex)
@@ -302,33 +424,33 @@ public class RefundService : IRefundService
             return null;
         }
     }
+    public async Task<RefundDetailsDto> FindById(Guid id)
+    {
+        try
+        {
+            // Use repository to find refund details
+            var refundRequest = await _refundRepository.GetDetailsByIdAsync(id);
+
+            // Validation to ensure refund request exists
+            if (refundRequest == null)
+                throw new NotFoundException($"Can't find Refund with Id: {id}",_logger);
+
+            // Map to DTO and return
+            return _mapper.MapModel<VwRefundDetails, RefundDetailsDto>(refundRequest); ;
+        }
+        catch (Exception ex)
+        {
+            _logger.Error(ex, "Error getting refund details for refund {RefundId}", id);
+            throw new ApplicationException("Error getting refund details.");
+        }
+    }
 
     public async Task<PagedResult<RefundRequestDto>> GetRefundsPageAsync(RefundSearchCriteria criteria)
     {
         try
         {
-            var refundRepo = _unitOfWork.TableRepository<TbRefund>();
-            var query = refundRepo.GetQueryable().Where(r => !r.IsDeleted);
-
-            if (criteria.Status.HasValue)
-                query = query.Where(r => r.RefundStatus == criteria.Status.Value);
-
-            if (!string.IsNullOrEmpty(criteria.CustomerId))
-                query = query.Where(r => r.CustomerId == Guid.Parse(criteria.CustomerId));
-
-            if (criteria.FromDate.HasValue)
-                query = query.Where(r => r.CreatedDateUtc >= criteria.FromDate.Value);
-
-            if (criteria.ToDate.HasValue)
-                query = query.Where(r => r.CreatedDateUtc <= criteria.ToDate.Value);
-
-            var totalCount = await query.CountAsync();
-
-            var items = await query
-                .OrderByDescending(r => r.CreatedDateUtc)
-                .Skip((criteria.PageNumber - 1) * criteria.PageSize)
-                .Take(criteria.PageSize)
-                .ToListAsync();
+            // Use repository to get paged refunds
+            var (items, totalCount) = await _refundRepository.GetPagedAsync(criteria);
 
             var dtos = _mapper.MapList<TbRefund, RefundRequestDto>(items);
             return new PagedResult<RefundRequestDto>(dtos.ToList(), totalCount);
@@ -342,10 +464,9 @@ public class RefundService : IRefundService
 
     // Helper methods
     private async Task<StatusUpdateOperationResult> HandleStatusSpecificUpdates(
-        TbRefund refundRequest,
-        TbOrder order,
-        UpdateRefundStatusDto statusDto,
-        string userId)
+    TbRefund refundRequest,
+    TbOrder order,
+    UpdateRefundStatusDto statusDto)
     {
         switch (statusDto.NewStatus)
         {
@@ -353,22 +474,24 @@ public class RefundService : IRefundService
                 break;
 
             case RefundStatus.NeedMoreInfo:
-                if (string.IsNullOrEmpty(statusDto.Notes))
-                    return StatusUpdateOperationResult.Fail("Notes are required when requesting more information");
+                if (string.IsNullOrWhiteSpace(statusDto.Notes))
+                    return StatusUpdateOperationResult.Fail(
+                        "Notes are required when requesting more information"
+                    );
                 break;
 
             case RefundStatus.InfoApproved:
                 break;
 
             case RefundStatus.ItemShippedBack:
-                if (!string.IsNullOrEmpty(statusDto.TrackingNumber))
+                if (!string.IsNullOrWhiteSpace(statusDto.TrackingNumber))
                     refundRequest.ReturnTrackingNumber = statusDto.TrackingNumber;
+
                 refundRequest.ReturnedDateUTC = DateTime.UtcNow;
                 break;
 
             case RefundStatus.ItemReceived:
-                if (!refundRequest.ReturnedDateUTC.HasValue)
-                    refundRequest.ReturnedDateUTC = DateTime.UtcNow;
+                refundRequest.ReturnedDateUTC ??= DateTime.UtcNow;
                 break;
 
             case RefundStatus.Inspecting:
@@ -376,58 +499,39 @@ public class RefundService : IRefundService
 
             case RefundStatus.Approved:
                 refundRequest.ApprovedDateUTC = DateTime.UtcNow;
-                refundRequest.ApprovedItemsCount = statusDto.ApprovedItemsCount ?? refundRequest.RequestedItemsCount;
+                refundRequest.ApprovedItemsCount =
+                    statusDto.ApprovedItemsCount ?? refundRequest.RequestedItemsCount;
 
                 var refundAmount = statusDto.RefundAmount ?? refundRequest.RefundAmount;
+                if (refundAmount <= 0)
+                    return StatusUpdateOperationResult.Fail("Invalid refund amount");
+
                 refundRequest.RefundAmount = refundAmount;
-
-                _logger.Information(
-                    "Executing refund payment for request {RefundId}, amount {Amount}",
-                    refundRequest.Id,
-                    refundAmount
-                );
-
-                var refundResult = await ExecuteRefundAsync(order, refundAmount);
-
-                if (refundResult.IsSuccess)
-                {
-                    refundRequest.RefundStatus = RefundStatus.Refunded;
-                    refundRequest.RefundedDateUTC = DateTime.UtcNow;
-                    refundRequest.RefundTransactionId = refundResult.RefundTransactionId;
-                    order.OrderStatus = OrderProgressStatus.Refunded;
-                    order.PaymentStatus = PaymentStatus.Refunded;
-
-                    _logger.Information(
-                        "Refund executed successfully for request {RefundId}, transaction {TransactionId}",
-                        refundRequest.Id,
-                        refundResult.RefundTransactionId
-                    );
-                }
-                else
-                {
-                    _logger.Error(
-                        "Refund execution failed for request {RefundId}: {Error}",
-                        refundRequest.Id,
-                        refundResult.ErrorMessage
-                    );
-                    return StatusUpdateOperationResult.Fail($"Refund payment failed: {refundResult.ErrorMessage}");
-                }
                 break;
 
             case RefundStatus.Rejected:
-                if (string.IsNullOrEmpty(statusDto.RejectionReason))
-                    return StatusUpdateOperationResult.Fail("Rejection reason is required when rejecting a refund");
+                if (string.IsNullOrWhiteSpace(statusDto.RejectionReason))
+                    return StatusUpdateOperationResult.Fail(
+                        "Rejection reason is required when rejecting a refund"
+                    );
 
                 refundRequest.RejectionReason = statusDto.RejectionReason;
                 refundRequest.ApprovedItemsCount = 0;
+
                 order.OrderStatus = OrderProgressStatus.Completed;
 
-                _logger.Information("Refund request {RefundId} rejected: {Reason}", refundRequest.Id, statusDto.RejectionReason);
+                _logger.Information(
+                    "Refund request {RefundId} rejected: {Reason}",
+                    refundRequest.Id,
+                    statusDto.RejectionReason
+                );
                 break;
 
             case RefundStatus.Refunded:
-                if (string.IsNullOrEmpty(refundRequest.RefundTransactionId))
-                    return StatusUpdateOperationResult.Fail("Cannot manually mark as Refunded without a valid refund transaction ID");
+                if (string.IsNullOrWhiteSpace(refundRequest.RefundTransactionId))
+                    return StatusUpdateOperationResult.Fail(
+                        "Cannot mark as Refunded without a refund transaction ID"
+                    );
 
                 refundRequest.RefundedDateUTC = DateTime.UtcNow;
                 order.OrderStatus = OrderProgressStatus.Refunded;
@@ -435,16 +539,125 @@ public class RefundService : IRefundService
                 break;
 
             case RefundStatus.Closed:
-                if (refundRequest.RefundStatus != RefundStatus.Refunded && refundRequest.RefundStatus != RefundStatus.Rejected)
-                    return StatusUpdateOperationResult.Fail("Can only close refund requests that are Refunded or Rejected");
+                if (refundRequest.RefundStatus is not (RefundStatus.Refunded or RefundStatus.Rejected))
+                    return StatusUpdateOperationResult.Fail(
+                        "Only Refunded or Rejected refunds can be closed"
+                    );
                 break;
 
             default:
-                return StatusUpdateOperationResult.Fail($"Unsupported status: {statusDto.NewStatus}");
+                return StatusUpdateOperationResult.Fail(
+                    $"Unsupported status: {statusDto.NewStatus}"
+                );
         }
 
         return StatusUpdateOperationResult.Success();
     }
+
+    //private async Task<StatusUpdateOperationResult> HandleStatusSpecificUpdates(
+    //    TbRefund refundRequest,
+    //    TbOrder order,
+    //    UpdateRefundStatusDto statusDto,
+    //    string userId)
+    //{
+    //    switch (statusDto.NewStatus)
+    //    {
+    //        case RefundStatus.UnderReview:
+    //            break;
+
+    //        case RefundStatus.NeedMoreInfo:
+    //            if (string.IsNullOrEmpty(statusDto.Notes))
+    //                return StatusUpdateOperationResult.Fail("Notes are required when requesting more information");
+    //            break;
+
+    //        case RefundStatus.InfoApproved:
+    //            break;
+
+    //        case RefundStatus.ItemShippedBack:
+    //            if (!string.IsNullOrEmpty(statusDto.TrackingNumber))
+    //                refundRequest.ReturnTrackingNumber = statusDto.TrackingNumber;
+    //            refundRequest.ReturnedDateUTC = DateTime.UtcNow;
+    //            break;
+
+    //        case RefundStatus.ItemReceived:
+    //            if (!refundRequest.ReturnedDateUTC.HasValue)
+    //                refundRequest.ReturnedDateUTC = DateTime.UtcNow;
+    //            break;
+
+    //        case RefundStatus.Inspecting:
+    //            break;
+
+    //        case RefundStatus.Approved:
+    //            refundRequest.ApprovedDateUTC = DateTime.UtcNow;
+    //            refundRequest.ApprovedItemsCount = statusDto.ApprovedItemsCount ?? refundRequest.RequestedItemsCount;
+
+    //            var refundAmount = statusDto.RefundAmount ?? refundRequest.RefundAmount;
+    //            refundRequest.RefundAmount = refundAmount;
+
+    //            //_logger.Information(
+    //            //    "Executing refund payment for request {RefundId}, amount {Amount}",
+    //            //    refundRequest.Id,
+    //            //    refundAmount
+    //            //);
+
+    //            //var refundResult = await ExecuteRefundAsync(order, refundAmount);
+
+    //            //if (refundResult.IsSuccess)
+    //            //{
+    //            //    refundRequest.RefundStatus = RefundStatus.Refunded;
+    //            //    refundRequest.RefundedDateUTC = DateTime.UtcNow;
+    //            //    refundRequest.RefundTransactionId = refundResult.RefundTransactionId;
+    //            //    order.OrderStatus = OrderProgressStatus.Refunded;
+    //            //    order.PaymentStatus = PaymentStatus.Refunded;
+
+    //            //    _logger.Information(
+    //            //        "Refund executed successfully for request {RefundId}, transaction {TransactionId}",
+    //            //        refundRequest.Id,
+    //            //        refundResult.RefundTransactionId
+    //            //    );
+    //            //}
+    //            //else
+    //            //{
+    //            //    _logger.Error(
+    //            //        "Refund execution failed for request {RefundId}: {Error}",
+    //            //        refundRequest.Id,
+    //            //        refundResult.ErrorMessage
+    //            //    );
+    //            //    return StatusUpdateOperationResult.Fail($"Refund payment failed: {refundResult.ErrorMessage}");
+    //            //}
+    //            break;
+
+    //        case RefundStatus.Rejected:
+    //            if (string.IsNullOrEmpty(statusDto.RejectionReason))
+    //                return StatusUpdateOperationResult.Fail("Rejection reason is required when rejecting a refund");
+
+    //            refundRequest.RejectionReason = statusDto.RejectionReason;
+    //            refundRequest.ApprovedItemsCount = 0;
+    //            order.OrderStatus = OrderProgressStatus.Completed;
+
+    //            _logger.Information("Refund request {RefundId} rejected: {Reason}", refundRequest.Id, statusDto.RejectionReason);
+    //            break;
+
+    //        case RefundStatus.Refunded:
+    //            if (string.IsNullOrEmpty(refundRequest.RefundTransactionId))
+    //                return StatusUpdateOperationResult.Fail("Cannot manually mark as Refunded without a valid refund transaction ID");
+
+    //            refundRequest.RefundedDateUTC = DateTime.UtcNow;
+    //            order.OrderStatus = OrderProgressStatus.Refunded;
+    //            order.PaymentStatus = PaymentStatus.Refunded;
+    //            break;
+
+    //        case RefundStatus.Closed:
+    //            if (refundRequest.RefundStatus != RefundStatus.Refunded && refundRequest.RefundStatus != RefundStatus.Rejected)
+    //                return StatusUpdateOperationResult.Fail("Can only close refund requests that are Refunded or Rejected");
+    //            break;
+
+    //        default:
+    //            return StatusUpdateOperationResult.Fail($"Unsupported status: {statusDto.NewStatus}");
+    //    }
+
+    //    return StatusUpdateOperationResult.Success();
+    //}
 
     private async Task CreateStatusHistoryAsync(
         Guid refundId,
@@ -466,7 +679,8 @@ public class RefundService : IRefundService
                 Notes = notes
             };
 
-            await historyRepo.CreateAsync(historyRecord, Guid.Parse(userId));
+            // Use repository to create status history
+            await _refundRepository.CreateStatusHistoryAsync(historyRecord, Guid.Parse(userId));
         }
         catch (Exception ex)
         {
@@ -501,7 +715,7 @@ public class RefundService : IRefundService
         TbOrderDetail orderDetails,
         int requestedQuantity)
     {
-        // FIXED: Added quantity validation
+        // Added quantity validation
         if (requestedQuantity <= 0)
             return RefundEligibilityResult.NotEligible("Requested quantity must be greater than zero");
 

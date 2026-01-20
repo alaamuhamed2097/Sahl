@@ -85,7 +85,7 @@
         public static class Refund
         {
             public const string Get = "api/v1/refunds";
-            public const string Save = "api/v1/refunds/save";
+            public const string Update = "api/v1/refunds/update";
             public const string ChangeRefundStatus = "api/v1/refunds/changeRefundStatus";
             public const string Delete = "api/v1/refunds/delete";
             public const string Search = "api/v1/refunds/search";

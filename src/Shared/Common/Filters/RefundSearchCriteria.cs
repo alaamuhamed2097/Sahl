@@ -1,7 +1,6 @@
 ﻿using Common.Enumerations.Order;
-using Common.Filters;
 
-namespace Shared.DTOs.Order.Payment.Refund;
+namespace Common.Filters;
 
 /// <summary>
 /// Search criteria for refund requests
