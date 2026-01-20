@@ -11,7 +11,7 @@ namespace DAL.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-			migrationBuilder.Sql(@"DELETE FROM [dbo].[TbCampaignProducts] GO");
+			migrationBuilder.Sql(@"DELETE FROM [dbo].[TbCampaignProducts]");
 
 			migrationBuilder.DropForeignKey(
                 name: "FK_TbCampaignProducts_TbItems_ItemId",

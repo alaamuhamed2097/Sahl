@@ -2005,24 +2005,6 @@ namespace Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to الاسترجاعات.
-        /// </summary>
-        public static string Refunds {
-            get {
-                return ResourceManager.GetString("Refunds", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to حالة الاسترجاع.
-        /// </summary>
-        public static string RefundStatus {
-            get {
-                return ResourceManager.GetString("RefundStatus", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to مرفوض.
         /// </summary>
         public static string Refused {

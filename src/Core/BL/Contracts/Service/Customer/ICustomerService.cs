@@ -18,11 +18,18 @@ namespace BL.Contracts.Service.Customer
 		/// </summary>
 		Task<ResponseModel<CustomerDto>> GetByIdAsync(Guid id);
 
-		/// <summary>
-		/// Search customers with pagination and filtering
-		/// </summary>
-		//Task<ResponseModel<AdvancedPagedResult<CustomerDto>>> SearchAsync(BaseSearchCriteriaModel criteria);
-		Task<ResponseModel<AdvancedPagedResult<CustomerDto>>> SearchAsync(
+        /// <summary>
+        /// Get customer by User ID
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        Task<CustomerDto> GetByUserIdAsync(string userId);
+
+        /// <summary>
+        /// Search customers with pagination and filtering
+        /// </summary>
+        //Task<ResponseModel<AdvancedPagedResult<CustomerDto>>> SearchAsync(BaseSearchCriteriaModel criteria);
+        Task<ResponseModel<AdvancedPagedResult<CustomerDto>>> SearchAsync(
 	BaseSearchCriteriaModel criteriaModel,
 	CancellationToken cancellationToken = default);
 		/// <summary>

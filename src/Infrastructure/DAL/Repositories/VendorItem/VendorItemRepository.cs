@@ -32,12 +32,12 @@ namespace DAL.Repositories.Offer
         /// <summary>
         /// Get offer with all related data
         /// </summary>
-        public async Task<VwOffer> GetOfferWithDetailsAsync(Guid offerId, CancellationToken cancellationToken = default)
+        public async Task<VwVendorItem> GetOfferWithDetailsAsync(Guid offerId, CancellationToken cancellationToken = default)
         {
             try
             {
-                var offer = await _dbContext.Set<VwOffer>()
-                    .FirstOrDefaultAsync(o => o.Id == offerId, cancellationToken);
+                var offer = await _dbContext.Set<VwVendorItem>()
+                    .FirstOrDefaultAsync(o => o.VendorItemId == offerId, cancellationToken);
                 return offer;
             }
             catch (Exception ex)
@@ -71,11 +71,11 @@ namespace DAL.Repositories.Offer
         /// <summary>
         /// Get offers by vendor ID
         /// </summary>
-        public async Task<IEnumerable<VwOffer>> GetOffersByVendorIdAsync(Guid vendorId, CancellationToken cancellationToken = default)
+        public async Task<IEnumerable<VwVendorItem>> GetOffersByVendorIdAsync(Guid vendorId, CancellationToken cancellationToken = default)
         {
             try
             {
-                var offers = await _dbContext.Set<VwOffer>()
+                var offers = await _dbContext.Set<VwVendorItem>()
                     .Where(o => o.VendorId == vendorId)
                     .ToListAsync(cancellationToken);
 
