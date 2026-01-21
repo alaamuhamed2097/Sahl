@@ -15,7 +15,7 @@ namespace Dashboard.Pages.Warehouse
 
 		// Tab management
 		private string activeTab = "platform";
-		private bool isMultiVendorEnabled = false;
+		private bool isMultiVendorEnabled = true;
 		private bool isLoading = false;
 
 		// Sorting properties
@@ -148,6 +148,7 @@ namespace Dashboard.Pages.Warehouse
 				if (result.Success && result.Data != null && result.Data.Items != null && result.Data.Items.Any())
 				{
 					platformWarehouse = result.Data.Items.FirstOrDefault();
+					
 				}
 				else
 				{
