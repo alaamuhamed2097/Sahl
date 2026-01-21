@@ -72,28 +72,51 @@ namespace DAL.Repositories.Merchandising
 			}
 		}
 
-		/// <summary>
-		/// Remove item from campaign (soft delete)
-		/// </summary>
-		public async Task<bool> RemoveItemFromCampaignAsync(Guid campaignItemId)
+		public async Task<TbCampaignItem> UpdateCampaignItemAsync(TbCampaignItem campaignItem)
 		{
 			try
 			{
+				_dbContext.TbCampaignItems.Update(campaignItem);
+				await _dbContext.SaveChangesAsync();
+
+				return await _dbContext.TbCampaignItems
+					.Include(ci => ci.OfferCombinationPricing)
+						.ThenInclude(ocp => ocp.ItemCombination)
+							.ThenInclude(ic => ic.Item)
+								.ThenInclude(i => i.ItemImages)
+					.Include(ci => ci.Campaign)
+					.FirstOrDefaultAsync(ci => ci.Id == campaignItem.Id);
+			}
+			catch (Exception ex)
+			{
+				_logger.Error(ex, "Error updating campaign item: {CampaignItemId}", campaignItem.Id);
+				throw;
+			}
+		}
+
+		/// <summary>
+		/// Remove item from campaign (soft delete)
+		/// </summary>
+		public async Task<bool> RemoveItemFromCampaignAsync(Guid ItemId, Guid userId)
+		{
+			try
+			{	
 				var campaignItem = await _dbContext.TbCampaignItems
-					.FirstOrDefaultAsync(ci => ci.Id == campaignItemId && !ci.IsDeleted);
+					.FirstOrDefaultAsync(ci => ci.OfferCombinationPricingId == ItemId && !ci.IsDeleted);
 
 				if (campaignItem == null)
 					return false;
 
 				campaignItem.IsDeleted = true;
 				campaignItem.UpdatedDateUtc = DateTime.UtcNow;
+				campaignItem.UpdatedBy = userId;
 
 				await _dbContext.SaveChangesAsync();
 				return true;
 			}
 			catch (Exception ex)
 			{
-				_logger.Error(ex, "Error removing item from campaign: {CampaignItemId}", campaignItemId);
+				_logger.Error(ex, "Error removing item from campaign: {CampaignItemId}", ItemId);
 				return false;
 			}
 		}

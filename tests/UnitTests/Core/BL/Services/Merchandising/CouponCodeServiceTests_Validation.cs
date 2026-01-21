@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using BL.Contracts.IMapper;
 using BL.Services.Merchandising.CouponCode;
 using Common.Enumerations.Order;
 using DAL.Contracts.Repositories.Merchandising;
@@ -16,6 +17,7 @@ namespace UnitTests.Core.BL.Services.Merchandising
         private readonly Mock<ICouponCodeRepository> _mockRepository;
         private readonly Mock<IUnitOfWork> _mockUnitOfWork;
         private readonly Mock<IMapper> _mockMapper;
+        private readonly Mock<IBaseMapper> _mockBaseMapper;
         private readonly CouponCodeService _service;
         private readonly string _testUserId = Guid.NewGuid().ToString();
 
@@ -24,7 +26,8 @@ namespace UnitTests.Core.BL.Services.Merchandising
             _mockRepository = new Mock<ICouponCodeRepository>();
             _mockUnitOfWork = new Mock<IUnitOfWork>();
             _mockMapper = new Mock<IMapper>();
-            _service = new CouponCodeService(_mockRepository.Object, _mockUnitOfWork.Object, _mockMapper.Object);
+            _mockBaseMapper = new Mock<IBaseMapper>();
+            _service = new CouponCodeService(_mockRepository.Object, _mockUnitOfWork.Object, _mockBaseMapper.Object);
         }
 
         #region ValidateCouponCodeAsync - Success Scenarios

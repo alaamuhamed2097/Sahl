@@ -11,6 +11,8 @@ namespace DAL.Configurations
     {
         public void Configure(EntityTypeBuilder<TbCouponCodeScope> entity)
         {
+            entity.ToTable("TbCouponCodeScopes");
+
             // Primary Key
             entity.HasKey(e => e.Id);
 

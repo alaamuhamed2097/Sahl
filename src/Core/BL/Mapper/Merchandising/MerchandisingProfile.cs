@@ -119,5 +119,13 @@ public partial class MappingProfile
 			.ForMember(dest => dest.Id, opt => opt.Ignore())
 			.ForMember(dest => dest.CreatedDateUtc, opt => opt.Ignore())
 			.ForMember(dest => dest.IsDeleted, opt => opt.Ignore());
+
+		CreateMap<UpdateCampaignItemDto, TbCampaignItem>()
+		   .ForMember(dest => dest.Id, opt => opt.Ignore())
+		   .ForMember(dest => dest.CreatedDateUtc, opt => opt.Ignore())
+		   .ForMember(dest => dest.CreatedBy, opt => opt.Ignore())
+		   .ForMember(dest => dest.IsDeleted, opt => opt.Ignore())
+		   .ForMember(dest => dest.UpdatedDateUtc, opt => opt.Ignore())
+		   .ForMember(dest => dest.UpdatedBy, opt => opt.Ignore());
 	}
 }

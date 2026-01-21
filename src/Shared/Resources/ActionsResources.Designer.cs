@@ -97,6 +97,24 @@ namespace Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to إضافة أول عنصر.
+        /// </summary>
+        public static string AddFirstItem {
+            get {
+                return ResourceManager.GetString("AddFirstItem", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to إضافة عنصر.
+        /// </summary>
+        public static string AddItem {
+            get {
+                return ResourceManager.GetString("AddItem", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to أضف إلى السلة.
         /// </summary>
         public static string AddToCart {
