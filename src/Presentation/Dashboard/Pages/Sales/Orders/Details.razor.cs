@@ -1,3 +1,4 @@
+using System;
 using Common.Enumerations.Order;
 using Common.Enumerations.Payment;
 using Common.Enumerations.Shipping;
@@ -7,6 +8,7 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Options;
 using Microsoft.JSInterop;
 using Resources;
+using Shared.DTOs.Order.Fulfillment.Shipment;
 using Shared.DTOs.Order.OrderProcessing;
 using Shared.DTOs.Order.OrderProcessing.AdminOrder;
 
@@ -27,14 +29,17 @@ namespace Dashboard.Pages.Sales.Orders
         protected string BaseUrl { get; set; } = string.Empty;
         protected bool IsSaving { get; set; }
         protected bool IsLoading { get; set; }
+        protected Guid? ShipmentUpdatingId { get; set; }
 
         protected AdminOrderDetailsDto Order { get; set; } = new();
+        protected Dictionary<Guid, ShipmentStatus> ShipmentStatusSelections { get; } = new();
 
         [Parameter] public Guid Id { get; set; }
 
         [Inject] private IJSRuntime JSRuntime { get; set; } = default!;
         [Inject] protected NavigationManager Navigation { get; set; } = null!;
         [Inject] protected IOrderService OrderService { get; set; } = null!;
+        [Inject] protected IShipmentService ShipmentService { get; set; } = null!;
         [Inject] protected IOptions<ApiSettings> ApiOptions { get; set; } = default!;
 
         // ============================================
@@ -66,6 +71,7 @@ namespace Dashboard.Pages.Sales.Orders
                 if (result.Success && result.Data != null)
                 {
                     Order = result.Data;
+                    InitializeShipmentSelections();
                 }
                 else
                 {
@@ -87,6 +93,131 @@ namespace Dashboard.Pages.Sales.Orders
                 IsLoading = false;
                 StateHasChanged();
             }
+        }
+
+        // ============================================
+        // SHIPMENT ACTIONS
+        // ============================================
+
+        private void InitializeShipmentSelections()
+        {
+            ShipmentStatusSelections.Clear();
+
+            foreach (var shipment in Order.Shipments)
+            {
+                ShipmentStatusSelections[shipment.ShipmentId] = shipment.Status;
+            }
+        }
+
+        protected ShipmentStatus GetSelectedShipmentStatus(Guid shipmentId)
+        {
+            if (ShipmentStatusSelections.TryGetValue(shipmentId, out var status))
+            {
+                return status;
+            }
+
+            var shipment = Order.Shipments.FirstOrDefault(s => s.ShipmentId == shipmentId);
+            return shipment?.Status ?? ShipmentStatus.PendingProcessing;
+        }
+
+        protected IEnumerable<ShipmentStatus> GetShipmentStatusOptions(ShipmentStatus current)
+        {
+            _ = current; // current status included in the returned sequence
+            return new List<ShipmentStatus>
+            {
+                ShipmentStatus.PendingProcessing,
+                ShipmentStatus.PreparingForShipment,
+                ShipmentStatus.PickedUpByCarrier,
+                ShipmentStatus.InTransitToCustomer,
+                ShipmentStatus.DeliveryAttemptFailed,
+                ShipmentStatus.DeliveredToCustomer,
+                ShipmentStatus.ReturnedToSender,
+                ShipmentStatus.CancelledByCustomer,
+                ShipmentStatus.CancelledByMarketplace
+            };
+        }
+
+        protected void OnShipmentStatusChanged(Guid shipmentId, ChangeEventArgs args)
+        {
+            if (Enum.TryParse<ShipmentStatus>(args.Value?.ToString(), out var status))
+            {
+                ShipmentStatusSelections[shipmentId] = status;
+            }
+        }
+
+        protected async Task UpdateShipmentStatusAsync(Guid shipmentId)
+        {
+            var selectedStatus = GetSelectedShipmentStatus(shipmentId);
+            var shipment = Order.Shipments.FirstOrDefault(s => s.ShipmentId == shipmentId);
+
+            if (shipment == null)
+            {
+                await JSRuntime.InvokeVoidAsync("swal",
+                    ValidationResources.Failed,
+                    NotifiAndAlertsResources.SomethingWentWrong,
+                    "error");
+                return;
+            }
+
+            if (shipment.Status == selectedStatus)
+            {
+                await JSRuntime.InvokeVoidAsync("swal",
+                    NotifiAndAlertsResources.Warning,
+                    "Shipment status is already set to this value.",
+                    "info");
+                return;
+            }
+
+            try
+            {
+                ShipmentUpdatingId = shipmentId;
+                StateHasChanged();
+
+                var request = new UpdateShipmentStatusRequest
+                {
+                    OrderId = Order.OrderId,
+                    ShipmentId = shipmentId,
+                    NewStatus = selectedStatus.ToString(),
+                    Notes = $"Updated by admin at {DateTime.UtcNow:g}"
+                };
+
+                var result = await ShipmentService.UpdateShipmentStatusAsync(Order.OrderId, request);
+
+                if (result.Success && result.Data != null)
+                {
+                    shipment.Status = result.Data.ShipmentStatus;
+                    ShipmentStatusSelections[shipmentId] = result.Data.ShipmentStatus;
+
+                    await JSRuntime.InvokeVoidAsync("swal",
+                        NotifiAndAlertsResources.Success,
+                        OrderResources.StatusChangedSuccessfully,
+                        "success");
+                }
+                else
+                {
+                    await JSRuntime.InvokeVoidAsync("swal",
+                        ValidationResources.Failed,
+                        result.Message ?? NotifiAndAlertsResources.SomethingWentWrong,
+                        "error");
+                }
+            }
+            catch (Exception ex)
+            {
+                await JSRuntime.InvokeVoidAsync("swal",
+                    ValidationResources.Error,
+                    ex.Message,
+                    "error");
+            }
+            finally
+            {
+                ShipmentUpdatingId = null;
+                StateHasChanged();
+            }
+        }
+
+        protected string FormatDate(DateTime? date)
+        {
+            return date.HasValue ? date.Value.ToString("dd/MM/yyyy") : "--";
         }
 
         // ============================================

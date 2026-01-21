@@ -250,6 +250,88 @@ else
                     </div>
                 </div>
 
+                @* Shipments Card *@
+                <div class="card shadow-sm border-0 mb-4">
+                    <div class="card-header bg-gradient-info text-white py-3">
+                        <h5 class="mb-0 fw-bold d-flex align-items-center gap-2">
+                            <i class="fas fa-shipping-fast"></i>
+                            Shipments
+                        </h5>
+                    </div>
+                    <div class="card-body p-0">
+                        @if (Order.Shipments.Any())
+                        {
+                            <div class="table-responsive">
+                                <table class="table table-hover mb-0">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>Shipment #</th>
+                                            <th class="text-center">@OrderResources.Status</th>
+                                            <th class="text-center">Tracking</th>
+                                            <th class="text-center">ETA</th>
+                                            <th class="text-center">Delivered</th>
+                                            <th class="text-end">@ActionsResources.Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var shipment in Order.Shipments)
+                                        {
+                                            var selectedStatus = GetSelectedShipmentStatus(shipment.ShipmentId);
+                                            <tr>
+                                                <td>
+                                                    <div class="fw-bold">@shipment.ShipmentNumber</div>
+                                                    <small class="text-muted">ID: @shipment.ShipmentId</small>
+                                                </td>
+                                                <td class="text-center">
+                                                    <span class="@GetShipmentStatusBadgeClass(shipment.Status)">
+                                                        @GetShipmentStatusText(shipment.Status)
+                                                    </span>
+                                                </td>
+                                                <td class="text-center">@(!string.IsNullOrWhiteSpace(shipment.TrackingNumber) ? shipment.TrackingNumber : "--")</td>
+                                                <td class="text-center">@FormatDate(shipment.EstimatedDeliveryDate)</td>
+                                                <td class="text-center">@FormatDate(shipment.ActualDeliveryDate)</td>
+                                                <td class="text-end">
+                                                    <div class="d-flex gap-2 justify-content-end align-items-center">
+                                                        <select class="form-select form-select-sm w-auto"
+                                                                value="@((int)selectedStatus)"
+                                                                @onchange="args => OnShipmentStatusChanged(shipment.ShipmentId, args)">
+                                                            @foreach (var status in GetShipmentStatusOptions(shipment.Status))
+                                                            {
+                                                                <option value="@((int)status)" selected="@(status == selectedStatus)">
+                                                                    @GetShipmentStatusText(status)
+                                                                </option>
+                                                            }
+                                                        </select>
+                                                        <button class="btn btn-sm btn-primary"
+                                                                @onclick="() => UpdateShipmentStatusAsync(shipment.ShipmentId)"
+                                                                disabled="@(ShipmentUpdatingId == shipment.ShipmentId)">
+                                                            @if (ShipmentUpdatingId == shipment.ShipmentId)
+                                                            {
+                                                                <span class="spinner-border spinner-border-sm me-1"></span>
+                                                            }
+                                                            else
+                                                            {
+                                                                <i class="fas fa-save me-1"></i>
+                                                            }
+                                                            @ActionsResources.Save
+                                                        </button>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="text-center py-4 text-muted">
+                                @NotifiAndAlertsResources.NoDataFound
+                            </div>
+                        }
+                    </div>
+                </div>
+
                 @* Shipping Address Card *@
                 <div class="card shadow-sm border-0 mb-4">
                     <div class="card-header bg-gradient-info text-white py-3">

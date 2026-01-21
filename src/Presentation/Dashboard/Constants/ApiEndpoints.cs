@@ -1,4 +1,6 @@
-﻿namespace Dashboard.Constants
+using System;
+
+namespace Dashboard.Constants
 {
     public static class ApiEndpoints
     {
@@ -95,6 +97,13 @@
             /// GET /api/v1/admin/orders/statistics/today-count
             /// </summary>
             public const string TodayCount = "api/v1/admin/orders/statistics/today-count";
+
+            /// <summary>
+            /// Update shipment status for a specific order shipment
+            /// PUT /api/v1/admin/orders/{orderId}/shipments/{shipmentId}/status
+            /// </summary>
+            public static string ShipmentStatus(Guid orderId, Guid shipmentId) =>
+                $"api/v1/admin/orders/{orderId}/shipments/{shipmentId}/status";
         }
 
         public static class WithdrawalMethod

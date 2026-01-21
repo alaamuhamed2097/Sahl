@@ -7,5 +7,6 @@ namespace Dashboard.Contracts.Order
     {
         Task<ResponseModel<List<ShipmentDto>>> GetOrderShipmentsAsync(Guid orderId);
         Task<ResponseModel<ShipmentTrackingDto>> GetShipmentTrackingAsync(string trackingNumber);
+        Task<ResponseModel<ShipmentDto>> UpdateShipmentStatusAsync(Guid orderId, UpdateShipmentStatusRequest request);
     }
 }

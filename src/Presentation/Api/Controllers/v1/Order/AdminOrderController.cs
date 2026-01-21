@@ -4,6 +4,7 @@ using BL.Contracts.Service.Order.OrderProcessing;
 using Common.Enumerations.User;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Shared.DTOs.Order.Fulfillment.Shipment;
 using Shared.DTOs.Order.OrderProcessing;
 using Shared.DTOs.Order.OrderProcessing.AdminOrder;
 using Shared.GeneralModels;
@@ -193,6 +194,64 @@ public class AdminOrderController : BaseController
                 Success = false,
                 Message = ex.Message,
                 Data = false
+            });
+        }
+    }
+
+    /// <summary>
+    /// Change Shipment Status for an Order (Admin)
+    /// </summary>
+    /// <remarks>
+    /// API Version: 1.0+<br/>
+    /// Requires Admin role.<br/>
+    /// Validates that the shipment belongs to the order and records status history.
+    /// </remarks>
+    [HttpPut("{orderId}/shipments/{shipmentId}/status")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    public async Task<IActionResult> UpdateShipmentStatus(
+        Guid orderId,
+        Guid shipmentId,
+        [FromBody] UpdateShipmentStatusRequest request)
+    {
+        try
+        {
+            if (shipmentId != request.ShipmentId)
+            {
+                return BadRequest(new ResponseModel<ShipmentDto>
+                {
+                    Success = false,
+                    Message = "Shipment ID mismatch"
+                });
+            }
+
+            request.OrderId = orderId;
+
+            var result = await _adminOrderService.UpdateShipmentStatusAsync(
+                orderId,
+                request,
+                UserId);
+
+            if (!result.Success)
+            {
+                if (result.Message == "Order not found" || result.Message == "Shipment not found for this order")
+                {
+                    return NotFound(result);
+                }
+
+                return BadRequest(result);
+            }
+
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new ResponseModel<ShipmentDto>
+            {
+                Success = false,
+                Message = ex.Message
             });
         }
     }

@@ -1,5 +1,6 @@
-﻿using BL.Contracts.GeneralService;
 using BL.Contracts.Service.Order.OrderProcessing;
+using BL.Contracts.Service.Order.Fulfillment;
+using BL.Contracts.GeneralService;
 using Common.Enumerations.Order;
 using DAL.Contracts.Repositories.Order;
 using Domains.Entities.Order;
@@ -24,15 +25,18 @@ namespace BL.Services.Order.OrderProcessing;
 public class AdminOrderService : IAdminOrderService
 {
     private readonly IOrderRepository _orderRepository;
+    private readonly IShipmentService _shipmentService;
     private readonly IDateTimeService _dateTimeService;
     private readonly ILogger _logger;
 
     public AdminOrderService(
         IOrderRepository orderRepository,
+        IShipmentService shipmentService,
         IDateTimeService dateTimeService,
         ILogger logger)
     {
         _orderRepository = orderRepository ?? throw new ArgumentNullException(nameof(orderRepository));
+        _shipmentService = shipmentService ?? throw new ArgumentNullException(nameof(shipmentService));
         _dateTimeService = dateTimeService ?? throw new ArgumentNullException(nameof(dateTimeService));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
@@ -284,6 +288,71 @@ public class AdminOrderService : IAdminOrderService
         {
             _logger.Error(ex, "Error counting today's orders");
             throw;
+        }
+    }
+
+    public async Task<ResponseModel<ShipmentDto>> UpdateShipmentStatusAsync(
+        Guid orderId,
+        UpdateShipmentStatusRequest request,
+        string adminUserId,
+        CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            if (orderId == Guid.Empty || request.ShipmentId == Guid.Empty)
+            {
+                return new ResponseModel<ShipmentDto>
+                {
+                    Success = false,
+                    Message = "OrderId and ShipmentId are required"
+                };
+            }
+
+            var order = await _orderRepository.GetOrderWithShipmentsAsync(orderId, cancellationToken);
+
+            if (order == null)
+            {
+                return new ResponseModel<ShipmentDto>
+                {
+                    Success = false,
+                    Message = "Order not found"
+                };
+            }
+
+            var shipment = order.TbOrderShipments.FirstOrDefault(s => s.Id == request.ShipmentId);
+
+            if (shipment == null)
+            {
+                return new ResponseModel<ShipmentDto>
+                {
+                    Success = false,
+                    Message = "Shipment not found for this order"
+                };
+            }
+
+            request.OrderId = orderId;
+
+            var updatedShipment = await _shipmentService.UpdateShipmentStatusAsync(
+                request.ShipmentId,
+                request.NewStatus,
+                request.Location,
+                request.Notes);
+
+            return new ResponseModel<ShipmentDto>
+            {
+                Success = true,
+                Message = $"Shipment status changed to {updatedShipment.ShipmentStatus} by {adminUserId}",
+                Data = updatedShipment
+            };
+        }
+        catch (Exception ex)
+        {
+            _logger.Error(ex, "Error updating shipment status {ShipmentId} for order {OrderId}", request.ShipmentId, orderId);
+            return new ResponseModel<ShipmentDto>
+            {
+                Success = false,
+                Message = ex.Message
+            };
         }
     }
 

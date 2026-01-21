@@ -53,5 +53,26 @@ namespace Dashboard.Services.Order
                 };
             }
         }
+
+        /// <summary>
+        /// Update a shipment status for a specific order (admin-only endpoint).
+        /// </summary>
+        public async Task<ResponseModel<ShipmentDto>> UpdateShipmentStatusAsync(Guid orderId, UpdateShipmentStatusRequest request)
+        {
+            try
+            {
+                request.OrderId = orderId;
+                var endpoint = ApiEndpoints.Order.ShipmentStatus(orderId, request.ShipmentId);
+                return await _apiService.PutAsync<UpdateShipmentStatusRequest, ShipmentDto>(endpoint, request);
+            }
+            catch (Exception ex)
+            {
+                return new ResponseModel<ShipmentDto>
+                {
+                    Success = false,
+                    Message = ex.Message
+                };
+            }
+        }
     }
 }

@@ -60,6 +60,7 @@ public class OrderEventHandlerService : IOrderEventHandlerService
     {
         try
         {
+            // Use OrderNumber instead of InvoiceId
             var order = await _orderRepository.FindByIdAsync(
                 orderEvent.OrderId ?? throw new ArgumentNullException(nameof(orderEvent.OrderId)),
                 cancellationToken);
@@ -97,8 +98,9 @@ public class OrderEventHandlerService : IOrderEventHandlerService
             // Send payment confirmation notification
             await _notificationService.NotifyOrderPaidAsync(order.Id, cancellationToken);
 
-            // Create shipments from order
-            var shipments = await _shipmentService.SplitOrderIntoShipmentsAsync(order.Id);
+            // ✅ SHIPMENTS ALREADY CREATED in OrderCreationService
+            // Get existing shipments and process fulfillment
+            var shipments = await _shipmentService.GetOrderShipmentsAsync(order.Id);
 
             // Process fulfillment for each shipment
             foreach (var shipment in shipments)
@@ -115,8 +117,7 @@ public class OrderEventHandlerService : IOrderEventHandlerService
         {
             _logger.Error(
                 ex,
-                "Failed to process OnOrderPaid - OrderId: {OrderId}",
-                orderEvent.OrderId);
+                $"Failed to process OnOrderPaid - OrderId: {orderEvent.OrderId}");
 
             // Mark order as payment failed and notify customer
             if (orderEvent.OrderId.HasValue)
@@ -383,7 +384,6 @@ public class OrderEventHandlerService : IOrderEventHandlerService
     }
 
     #region Private Helper Methods
-
 
     private async Task ProcessShipmentFulfillmentAsync(
         Guid shipmentId,

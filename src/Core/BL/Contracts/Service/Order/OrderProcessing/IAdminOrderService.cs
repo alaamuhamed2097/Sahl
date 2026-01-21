@@ -1,4 +1,5 @@
 using Common.Enumerations.Order;
+using Shared.DTOs.Order.Fulfillment.Shipment;
 using Shared.DTOs.Order.OrderProcessing;
 using Shared.DTOs.Order.OrderProcessing.AdminOrder;
 using Shared.GeneralModels;
@@ -32,5 +33,11 @@ public interface IAdminOrderService
 
     Task<int> CountTodayOrdersAsync(
         DateTime date,
+        CancellationToken cancellationToken = default);
+
+    Task<ResponseModel<ShipmentDto>> UpdateShipmentStatusAsync(
+        Guid orderId,
+        UpdateShipmentStatusRequest request,
+        string adminUserId,
         CancellationToken cancellationToken = default);
 }
