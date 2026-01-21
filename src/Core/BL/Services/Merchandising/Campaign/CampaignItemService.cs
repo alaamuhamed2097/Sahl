@@ -147,7 +147,6 @@ namespace BL.Services.Merchandising.Campaign
 						 (ci.OfferCombinationPricing.ItemCombination.Item.TitleEn.ToLower().Contains(searchTerm) ||
 						  ci.OfferCombinationPricing.ItemCombination.Item.TitleAr.ToLower().Contains(searchTerm))));
 				}
-
 				// Get total count before pagination
 				var totalCount = await query.CountAsync();
 

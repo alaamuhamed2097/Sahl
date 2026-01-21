@@ -1,3 +1,4 @@
+using Common.Filters;
 using Shared.DTOs.Campaign;
 using Shared.GeneralModels;
 
@@ -42,7 +43,7 @@ namespace Dashboard.Contracts.Campaign
         /// <summary>
         /// Update campaign
         /// </summary>
-        Task<ResponseModel<CampaignDto>> UpdateCampaignAsync(Guid id, UpdateCampaignDto dto);
+        Task<ResponseModel<CampaignDto>> UpdateCampaignAsync( UpdateCampaignDto dto);
 
         /// <summary>
         /// Delete campaign
@@ -58,10 +59,14 @@ namespace Dashboard.Contracts.Campaign
         /// </summary>
         Task<ResponseModel<List<CampaignItemDto>>> GetCampaignItemsAsync(Guid campaignId);
 
-        /// <summary>
-        /// Add item to campaign
-        /// </summary>
-        Task<ResponseModel<CampaignItemDto>> AddItemToCampaignAsync(Guid campaignId, AddCampaignItemDto dto);
+        Task<ResponseModel<PaginatedSearchResult<CampaignItemDto>>> SearchCampaignItemsAsync(
+            Guid campaignId,
+            BaseSearchCriteriaModel searchCriteria);
+
+		/// <summary>
+		/// Add item to campaign
+		/// </summary>
+		Task<ResponseModel<CampaignItemDto>> AddItemToCampaignAsync(Guid campaignId, AddCampaignItemDto dto);
 
         /// <summary>
         /// Remove item from campaign

@@ -111,7 +111,7 @@ namespace Api.Controllers.v1.Campaign
 		[Authorize(Roles = nameof(UserRole.Admin))]
 		[ProducesResponseType(typeof(ResponseModel<PaginatedSearchResult<CampaignDto>>), StatusCodes.Status200OK)]
 		[ProducesResponseType(typeof(ResponseModel<PaginatedSearchResult<CampaignDto>>), StatusCodes.Status500InternalServerError)]
-		public async Task<IActionResult> SearchCampaigns([FromQuery] BaseSearchCriteriaModel searchCriteria)
+		public async Task<IActionResult> SearchCampaigns([FromQuery] CampaignSearchCriteriaModel searchCriteria)
 		{
 			var result = await _campaignService.SearchCampaignsAsync(searchCriteria);
 
@@ -264,7 +264,7 @@ namespace Api.Controllers.v1.Campaign
 		/// Requires Admin role.
 		/// Requires Authentication.
 		/// </remarks>
-		[HttpPost("delete")]
+		[HttpDelete("{id}")]
 		[Authorize(Roles = nameof(UserRole.Admin))]
 		[ProducesResponseType(typeof(ResponseModel<bool>), StatusCodes.Status200OK)]
 		[ProducesResponseType(StatusCodes.Status404NotFound)]

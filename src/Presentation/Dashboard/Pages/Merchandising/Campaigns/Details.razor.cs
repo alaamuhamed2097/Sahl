@@ -144,7 +144,7 @@ namespace Dashboard.Pages.Merchandising.Campaigns
                         BadgeColor = Model.BadgeColor
                     };
 
-                    response = await CampaignService.UpdateCampaignAsync(Model.Id, updateDto);
+                    response = await CampaignService.UpdateCampaignAsync( updateDto);
                     if (response.Success)
                     {
                         await NotificationService.ShowSuccessAsync("Campaign updated successfully!");

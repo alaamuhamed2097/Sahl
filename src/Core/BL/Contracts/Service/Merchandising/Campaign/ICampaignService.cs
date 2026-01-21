@@ -29,7 +29,7 @@ public interface ICampaignService
 	/// <summary>
 	/// Search campaigns with pagination
 	/// </summary>
-	Task<ResponseModel<PaginatedSearchResult<CampaignDto>>> SearchCampaignsAsync(BaseSearchCriteriaModel searchCriteria);
+	Task<ResponseModel<PaginatedSearchResult<CampaignDto>>> SearchCampaignsAsync(CampaignSearchCriteriaModel searchCriteria);
 
     /// <summary>
     /// Get all active flash sales

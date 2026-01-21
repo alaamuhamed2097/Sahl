@@ -32,13 +32,13 @@ namespace Api.Controllers.v1.Campaign
 		}
 
 		#region Campaign Items
-		[HttpGet("{campaignId}/search")]
+		[HttpGet("{itemCampaignId}/search")]
 		[Authorize(Roles = nameof(UserRole.Admin))]
 		[ProducesResponseType(typeof(ResponseModel<PaginatedSearchResult<CampaignDto>>), StatusCodes.Status200OK)]
 		[ProducesResponseType(typeof(ResponseModel<PaginatedSearchResult<CampaignDto>>), StatusCodes.Status500InternalServerError)]
-		public async Task<IActionResult> SearchCampaigns(Guid campaignId,[FromQuery] BaseSearchCriteriaModel searchCriteria )
+		public async Task<IActionResult> SearchCampaigns(Guid itemCampaignId,[FromQuery] BaseSearchCriteriaModel searchCriteria )
 		{
-			var result = await _campaignItemService.SearchCampaignItemsAsync(searchCriteria, campaignId);
+			var result = await _campaignItemService.SearchCampaignItemsAsync(searchCriteria, itemCampaignId);
 
 			if (!result.Success)
 			{
@@ -159,7 +159,7 @@ namespace Api.Controllers.v1.Campaign
 
 		#region Campaign whith vendor
 
-		[HttpGet("{campaignId}/search")]
+		[HttpGet("{campaignId}/Vendor-search")]
 		[Authorize(Roles = nameof(UserRole.Vendor))]
 		[ProducesResponseType(typeof(ResponseModel<PaginatedSearchResult<CampaignDto>>), StatusCodes.Status200OK)]
 		[ProducesResponseType(typeof(ResponseModel<PaginatedSearchResult<CampaignDto>>), StatusCodes.Status500InternalServerError)]
