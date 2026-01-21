@@ -1,17 +1,20 @@
 ﻿using Bl.Contracts.GeneralService.Notification;
 using BL.Contracts.Service.Order;
 using Common.Enumerations.Notification;
-using Common.Enumerations.Payment;
 using Common.Enumerations.Shipping;
 using DAL.Contracts.Repositories.Order;
+using Domains.Entities.Order;
 using Serilog;
 using Shared.GeneralModels.Parameters.Notification;
 
 namespace BL.Services.Order.Notifications;
 
 /// <summary>
-/// Service responsible for sending notifications throughout the order lifecycle
-/// Handles order creation, payment, shipping, delivery, and cancellation notifications
+/// FINAL Order Notification Service
+/// - New ShipmentStatus enum values
+/// - Payment summary notifications (Wallet/Card/COD breakdown)
+/// - No InvoiceId references
+/// - Simplified messaging
 /// </summary>
 public class OrderNotificationService : IOrderNotificationService
 {
@@ -34,9 +37,6 @@ public class OrderNotificationService : IOrderNotificationService
 
     #region Order Lifecycle Notifications
 
-    /// <summary>
-    /// Send notification when order is created
-    /// </summary>
     public async Task NotifyOrderCreatedAsync(
         Guid orderId,
         CancellationToken cancellationToken = default)
@@ -96,7 +96,7 @@ public class OrderNotificationService : IOrderNotificationService
     }
 
     /// <summary>
-    /// Send notification when order payment is confirmed
+    /// FINAL: Includes payment breakdown (Wallet/Card/COD)
     /// </summary>
     public async Task NotifyOrderPaidAsync(
         Guid orderId,
@@ -108,12 +108,17 @@ public class OrderNotificationService : IOrderNotificationService
 
             if (order == null) return;
 
+            var paymentBreakdown = BuildPaymentBreakdownMessage(order);
+
             var parameters = new Dictionary<string, string>
             {
                 { "OrderNumber", order.Number },
                 { "PaymentDate", order.PaidAt?.ToString("dd/MM/yyyy HH:mm") ?? "" },
                 { "Amount", order.Price.ToString("N2") },
-                { "PaymentMethod", GetPaymentMethodName(order.PaymentStatus) }
+                { "PaymentBreakdown", paymentBreakdown },
+                { "WalletAmount", order.WalletPaidAmount > 0 ? order.WalletPaidAmount.ToString("N2") : "" },
+                { "CardAmount", order.CardPaidAmount > 0 ? order.CardPaidAmount.ToString("N2") : "" },
+                { "CashAmount", order.CashPaidAmount > 0 ? order.CashPaidAmount.ToString("N2") : "" }
             };
 
             await SendNotificationAsync(
@@ -140,9 +145,6 @@ public class OrderNotificationService : IOrderNotificationService
         }
     }
 
-    /// <summary>
-    /// Send notification when order is confirmed/accepted
-    /// </summary>
     public async Task NotifyOrderConfirmedAsync(
         Guid orderId,
         CancellationToken cancellationToken = default)
@@ -192,7 +194,7 @@ public class OrderNotificationService : IOrderNotificationService
     }
 
     /// <summary>
-    /// Send notification when order is being processed
+    /// Maps to ShipmentStatus.PreparingForShipment
     /// </summary>
     public async Task NotifyOrderProcessingAsync(
         Guid orderId,
@@ -226,7 +228,7 @@ public class OrderNotificationService : IOrderNotificationService
     }
 
     /// <summary>
-    /// Send notification when order is shipped
+    /// Maps to ShipmentStatus.PickedUpByCarrier
     /// </summary>
     public async Task NotifyOrderShippedAsync(
         Guid orderId,
@@ -292,7 +294,7 @@ public class OrderNotificationService : IOrderNotificationService
     }
 
     /// <summary>
-    /// Send notification when order is out for delivery
+    /// Maps to ShipmentStatus.InTransitToCustomer (when near customer)
     /// </summary>
     public async Task NotifyOrderOutForDeliveryAsync(
         Guid orderId,
@@ -335,7 +337,7 @@ public class OrderNotificationService : IOrderNotificationService
     }
 
     /// <summary>
-    /// Send notification when order is delivered
+    /// Maps to ShipmentStatus.DeliveredToCustomer
     /// </summary>
     public async Task NotifyOrderDeliveredAsync(
         Guid orderId,
@@ -386,7 +388,7 @@ public class OrderNotificationService : IOrderNotificationService
     }
 
     /// <summary>
-    /// Send notification when order is cancelled
+    /// Maps to ShipmentStatus.CancelledByCustomer or CancelledByMarketplace
     /// </summary>
     public async Task NotifyOrderCancelledAsync(
         Guid orderId,
@@ -403,7 +405,7 @@ public class OrderNotificationService : IOrderNotificationService
             {
                 { "OrderNumber", order.Number },
                 { "CancellationReason", cancellationReason },
-                { "RefundAmount", order.Price.ToString("N2") }
+                { "RefundAmount", order.TotalPaidAmount.ToString("N2") }
             };
 
             await SendNotificationAsync(
@@ -438,9 +440,6 @@ public class OrderNotificationService : IOrderNotificationService
         }
     }
 
-    /// <summary>
-    /// Send notification when refund is processed
-    /// </summary>
     public async Task NotifyOrderRefundedAsync(
         Guid orderId,
         decimal refundAmount,
@@ -483,9 +482,6 @@ public class OrderNotificationService : IOrderNotificationService
         }
     }
 
-    /// <summary>
-    /// Send notification when payment fails
-    /// </summary>
     public async Task NotifyPaymentFailedAsync(
         Guid orderId,
         string failureReason = "",
@@ -528,9 +524,6 @@ public class OrderNotificationService : IOrderNotificationService
         }
     }
 
-    /// <summary>
-    /// Send reminder for pending payment
-    /// </summary>
     public async Task NotifyPaymentReminderAsync(
         Guid orderId,
         CancellationToken cancellationToken = default)
@@ -541,10 +534,13 @@ public class OrderNotificationService : IOrderNotificationService
 
             if (order == null) return;
 
+            // Calculate remaining amount
+            var remainingAmount = order.Price - order.TotalPaidAmount;
+
             var parameters = new Dictionary<string, string>
             {
                 { "OrderNumber", order.Number },
-                { "Amount", order.Price.ToString("N2") },
+                { "Amount", remainingAmount.ToString("N2") },
                 { "ExpiryTime", DateTime.UtcNow.AddHours(24).ToString("dd/MM/yyyy HH:mm") }
             };
 
@@ -572,12 +568,57 @@ public class OrderNotificationService : IOrderNotificationService
         }
     }
 
+    /// <summary>
+    /// NEW: Notify when COD payment is collected
+    /// </summary>
+    public async Task NotifyCODPaymentCollectedAsync(
+        Guid shipmentId,
+        decimal amount,
+        CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var shipment = await _shipmentRepository.GetShipmentWithDetailsAsync(
+                shipmentId,
+                cancellationToken);
+
+            if (shipment?.Order == null) return;
+
+            var parameters = new Dictionary<string, string>
+            {
+                { "OrderNumber", shipment.Order.Number },
+                { "ShipmentNumber", shipment.Number },
+                { "Amount", amount.ToString("N2") },
+                { "CollectionDate", DateTime.UtcNow.ToString("dd/MM/yyyy HH:mm") }
+            };
+
+            await SendNotificationAsync(
+                recipient: shipment.Order.UserId,
+                channel: NotificationChannel.SignalR,
+                type: OrderNotificationType.PaymentConfirmed,
+                subject: "",
+                title: "COD Payment Collected",
+                parameters: parameters,
+                imagePath: "/images/notifications/cod-collected.png",
+                callToActionUrl: $"/orders/{shipment.OrderId}");
+
+            _logger.Information(
+                "COD payment collected notification sent for shipment {ShipmentNumber}",
+                shipment.Number
+            );
+        }
+        catch (Exception ex)
+        {
+            _logger.Error(ex, "Failed to send COD collection notification for shipment {ShipmentId}", shipmentId);
+        }
+    }
+
     #endregion
 
     #region Shipment Notifications
 
     /// <summary>
-    /// Send notification when shipment status changes
+    /// FINAL: Updated to use new ShipmentStatus enum values
     /// </summary>
     public async Task NotifyShipmentStatusChangedAsync(
         Guid shipmentId,
@@ -641,7 +682,7 @@ public class OrderNotificationService : IOrderNotificationService
         {
             Recipient = recipient,
             Channel = channel,
-            Type = (NotificationType)type, // Cast to NotificationType
+            Type = (NotificationType)type,
             Subject = subject,
             Title = title,
             ImagePath = imagePath,
@@ -652,30 +693,49 @@ public class OrderNotificationService : IOrderNotificationService
         await _notificationService.SendNotificationAsync(request);
     }
 
-    private string GetPaymentMethodName(PaymentStatus status)
+    /// <summary>
+    /// FINAL: Builds payment breakdown message (Wallet/Card/Cash only)
+    /// </summary>
+    private string BuildPaymentBreakdownMessage(TbOrder order)
     {
-        return status switch
+        var parts = new List<string>();
+
+        if (order.WalletPaidAmount > 0)
         {
-            PaymentStatus.Pending => "Pending",
-            PaymentStatus.Completed => "Completed",
-            PaymentStatus.Failed => "Failed",
-            PaymentStatus.Refunded => "Refunded",
-            _ => "Unknown"
-        };
+            parts.Add($"Wallet: {order.WalletPaidAmount:N2} EGP");
+        }
+
+        if (order.CardPaidAmount > 0)
+        {
+            parts.Add($"Card: {order.CardPaidAmount:N2} EGP");
+        }
+
+        if (order.CashPaidAmount > 0)
+        {
+            parts.Add($"Cash (COD): {order.CashPaidAmount:N2} EGP");
+        }
+
+        return parts.Count > 0
+            ? string.Join(", ", parts)
+            : $"Total: {order.TotalPaidAmount:N2} EGP";
     }
 
+    /// <summary>
+    /// FINAL: Updated to use new ShipmentStatus enum values
+    /// </summary>
     private string GetShipmentStatusMessage(ShipmentStatus status)
     {
         return status switch
         {
-            ShipmentStatus.Pending => "Pending",
-            ShipmentStatus.Processing => "Being Prepared",
-            ShipmentStatus.Shipped => "Shipped",
-            ShipmentStatus.InTransit => "In Transit",
-            ShipmentStatus.OutForDelivery => "Out for Delivery",
-            ShipmentStatus.Delivered => "Delivered",
-            ShipmentStatus.Cancelled => "Cancelled",
-            ShipmentStatus.Returned => "Returned",
+            ShipmentStatus.PendingProcessing => "Pending Processing",
+            ShipmentStatus.PreparingForShipment => "Being Prepared",
+            ShipmentStatus.PickedUpByCarrier => "Picked Up by Carrier",
+            ShipmentStatus.InTransitToCustomer => "In Transit",
+            ShipmentStatus.DeliveredToCustomer => "Delivered",
+            ShipmentStatus.ReturnedToSender => "Returned to Sender",
+            ShipmentStatus.CancelledByCustomer => "Cancelled by Customer",
+            ShipmentStatus.CancelledByMarketplace => "Cancelled by Marketplace",
+            ShipmentStatus.DeliveryAttemptFailed => "Delivery Attempt Failed",
             _ => "Unknown"
         };
     }

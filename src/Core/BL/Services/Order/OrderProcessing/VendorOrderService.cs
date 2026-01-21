@@ -162,6 +162,6 @@ public class VendorOrderService : IVendorOrderService
         return shipments
             .Where(s => s.Items.Any(item => item.OrderDetailId == orderDetailId))
             .OrderByDescending(s => s.CreatedDateUtc)
-            .FirstOrDefault()?.ShipmentStatus ?? ShipmentStatus.Pending;
+            .FirstOrDefault()?.ShipmentStatus ?? ShipmentStatus.PendingProcessing;
     }
 }

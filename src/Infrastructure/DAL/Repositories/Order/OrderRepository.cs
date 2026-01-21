@@ -10,8 +10,7 @@ using Serilog;
 namespace DAL.Repositories.Order;
 
 /// <summary>
-/// Repository implementation for Order operations - FINAL VERSION
-/// Implements all IOrderRepository methods with correct signatures
+/// FINAL OrderRepository - No InvoiceId
 /// </summary>
 public class OrderRepository : TableRepository<TbOrder>, IOrderRepository
 {
@@ -22,10 +21,6 @@ public class OrderRepository : TableRepository<TbOrder>, IOrderRepository
         : base(dbContext, currentUserService, logger)
     {
     }
-
-    // ============================================
-    // ORDER-SPECIFIC READ OPERATIONS
-    // ============================================
 
     public async Task<TbOrder?> GetOrderWithDetailsAsync(
         Guid orderId,
@@ -108,23 +103,7 @@ public class OrderRepository : TableRepository<TbOrder>, IOrderRepository
         }
     }
 
-    public async Task<TbOrder?> GetByInvoiceIdAsync(
-        string invoiceId,
-        CancellationToken cancellationToken = default)
-    {
-        try
-        {
-            return await _dbContext.Set<TbOrder>()
-                .AsNoTracking()
-                .Where(o => o.InvoiceId == invoiceId && !o.IsDeleted)
-                .FirstOrDefaultAsync(cancellationToken);
-        }
-        catch (Exception ex)
-        {
-            _logger.Error(ex, "Error getting order by invoice {InvoiceId}", invoiceId);
-            throw;
-        }
-    }
+    // REMOVED: GetByInvoiceIdAsync - No InvoiceId field anymore
 
     public async Task<List<TbOrder>> GetByCustomerIdAsync(
         string customerId,
@@ -323,9 +302,6 @@ public class OrderRepository : TableRepository<TbOrder>, IOrderRepository
         }
     }
 
-    /// <summary>
-    /// Correct tuple element names matching interface
-    /// </summary>
     public async Task<(List<TbOrder> Orders, int TotalCount)> SearchAsync(
         string? searchTerm,
         int pageNumber,
@@ -404,9 +380,6 @@ public class OrderRepository : TableRepository<TbOrder>, IOrderRepository
         }
     }
 
-    /// <summary>
-    /// ✅ NEW: Count today's orders
-    /// </summary>
     public async Task<int> CountTodayOrdersAsync(
         DateTime date,
         CancellationToken cancellationToken = default)

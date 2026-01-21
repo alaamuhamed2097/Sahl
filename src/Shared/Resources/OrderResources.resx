@@ -440,6 +440,46 @@
 	<data name="CouponCode" xml:space="preserve">
   <value>كود الخصم</value>
 </data>
+	<data name="PendingProcessing" xml:space="preserve">
+  <value>قيد المعالجة</value>
+</data>
+	<data name="PreparingForShipment" xml:space="preserve">
+  <value>جارٍ التحضير للشحن</value>
+</data>
+	<data name="PickedUpByCarrier" xml:space="preserve">
+  <value>تم الاستلام من شركة الشحن</value>
+</data>
+	<data name="AtLocalHub" xml:space="preserve">
+  <value>في مركز التوزيع المحلي</value>
+</data>
+	<data name="DeliveryAttemptFailed" xml:space="preserve">
+  <value>فشلت محاولة التسليم</value>
+</data>
+	<data name="CancelledByCustomer" xml:space="preserve">
+  <value>تم الإلغاء من قبل العميل</value>
+</data>
+	<data name="CancelledByMarketplace" xml:space="preserve">
+  <value>تم الإلغاء من قبل المنصة</value>
+</data>
+
+	<data name="Card" xml:space="preserve">
+  <value>بطاقة</value>
+</data>
+	<data name="Cash" xml:space="preserve">
+  <value>نقدًا</value>
+</data>
+	<data name="Wallet" xml:space="preserve">
+  <value>محفظة</value>
+</data>
+	<data name="Other" xml:space="preserve">
+  <value>أخرى</value>
+</data>
+	<data name="Currency" xml:space="preserve">
+  <value>العملة</value>
+</data>
+	<data name="Total" xml:space="preserve">
+  <value>الإجمالي</value>
+</data>
 
 
 </root>

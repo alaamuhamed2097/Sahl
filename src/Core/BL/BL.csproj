@@ -7,8 +7,11 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <Compile Remove="Contracts\Service\Wallet\Vendor\**" />
       <Compile Remove="Services\Wallet\Vendor\**" />
+      <EmbeddedResource Remove="Contracts\Service\Wallet\Vendor\**" />
       <EmbeddedResource Remove="Services\Wallet\Vendor\**" />
+      <None Remove="Contracts\Service\Wallet\Vendor\**" />
       <None Remove="Services\Wallet\Vendor\**" />
     </ItemGroup>
 
@@ -31,7 +34,6 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Folder Include="Contracts\Service\Wallet\Vendor\" />
 	  <Folder Include="Mapper\Wallet\Vendor\" />
 	  <Folder Include="Services\CouponCode\" />
 	  <Folder Include="Tests\UserManagement\" />

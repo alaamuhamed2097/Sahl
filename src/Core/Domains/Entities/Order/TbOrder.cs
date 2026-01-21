@@ -9,7 +9,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace Domains.Entities.Order
 {
     /// <summary>
-    /// Main order entity with complete pricing breakdown
+    /// Main order entity with complete pricing breakdown and payment summary
     /// </summary>
     public class TbOrder : BaseEntity
     {
@@ -17,42 +17,77 @@ namespace Domains.Entities.Order
         [MaxLength(50)]
         public string Number { get; set; } = null!;
 
+        // ==================== PRICING BREAKDOWN ====================
+
+        // Sum of all order details subtotals
         [Column(TypeName = "decimal(18,2)")]
         public decimal SubTotal { get; set; }
 
-        // DiscountAmount from coupon
+        // DiscountAmount from coupon (distributed across shipments)
         [Column(TypeName = "decimal(18,2)")]
         public decimal DiscountAmount { get; set; } = 0m;
 
+        // Total shipping amount (sum of all TbOrderShipment.ShippingCost)
+        // This is CALCULATED from shipments
         [Column(TypeName = "decimal(18,2)")]
         public decimal ShippingAmount { get; set; } = 0m;
 
+        // Tax amount (distributed across shipments)
         [Column(TypeName = "decimal(18,2)")]
         public decimal TaxAmount { get; set; } = 0m;
 
         [Column(TypeName = "decimal(5,2)")]
         public decimal TaxPercentage { get; set; } = 0m;
 
-        // Final total price (SubTotal + Shipping + Tax - Discount)
+        // Final total price (SubTotal + ShippingAmount + TaxAmount - DiscountAmount)
         [Column(TypeName = "decimal(18,2)")]
         public decimal Price { get; set; }
 
-        [MaxLength(50)]
-        public string? InvoiceId { get; set; }
+        // ==================== PAYMENT BREAKDOWN SUMMARY ====================
+
+        // Amount paid via Wallet
+        // Calculated from: SUM(TbOrderPayment.Amount WHERE PaymentMethodType = Wallet AND PaymentStatus = Completed)
+        [Column(TypeName = "decimal(18,2)")]
+        public decimal WalletPaidAmount { get; set; } = 0m;
+
+        // Amount paid via Credit/Debit Card
+        // Calculated from: SUM(TbOrderPayment.Amount WHERE PaymentMethodType = Card AND PaymentStatus = Completed)
+        [Column(TypeName = "decimal(18,2)")]
+        public decimal CardPaidAmount { get; set; } = 0m;
+
+        // Amount paid via Cash on Delivery
+        // Calculated from: SUM(TbShipmentPayment.Amount WHERE PaymentStatus = Completed)
+        [Column(TypeName = "decimal(18,2)")]
+        public decimal CashPaidAmount { get; set; } = 0m;
+
+        // Total amount actually paid
+        // Formula: WalletPaidAmount + CardPaidAmount + CashPaidAmount
+        [Column(TypeName = "decimal(18,2)")]
+        public decimal TotalPaidAmount { get; set; } = 0m;
+
+        // ==================== ADDRESS ====================
 
         // Address is stored as a reference to customer's saved address
         [ForeignKey("CustomerAddress")]
         public Guid DeliveryAddressId { get; set; }
 
-        // PaymentStatus stored as enum
+        // ==================== STATUS ====================
+
+        // Overall payment status
         public PaymentStatus PaymentStatus { get; set; }
 
-        // OrderStatus column to reflect progress (default 0 -> Pending)
+        // Order progress status
         public OrderProgressStatus OrderStatus { get; set; } = OrderProgressStatus.Pending;
 
+        // ==================== DATES ====================
+
+        // Date when order was fully delivered
         public DateTime? OrderDeliveryDate { get; set; }
 
+        // Date when order was fully paid (last payment date)
         public DateTime? PaidAt { get; set; }
+
+        // ==================== RELATIONSHIPS ====================
 
         [ForeignKey("User")]
         [Required]
@@ -60,6 +95,8 @@ namespace Domains.Entities.Order
 
         [ForeignKey("Coupon")]
         public Guid? CouponId { get; set; }
+
+        // ==================== ADDITIONAL INFO ====================
 
         [MaxLength(1000)]
         public string? Notes { get; set; }
@@ -73,4 +110,3 @@ namespace Domains.Entities.Order
         public virtual ICollection<TbOrderShipment> TbOrderShipments { get; set; } = new List<TbOrderShipment>();
     }
 }
-

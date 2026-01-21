@@ -276,7 +276,7 @@ to {
   position: relative;
 }
 
-.pcoded-navbar .pcoded-submenu li > a::before {
+/*.pcoded-navbar .pcoded-submenu li > a::before {
   content: '';
   position: absolute;
   left: var(--space-8);
@@ -293,7 +293,7 @@ transition: var(--transition-fast);
 .pcoded-navbar .pcoded-submenu li:hover > a::before {
   background: var(--primary);
   box-shadow: 0 0 8px var(--primary);
-}
+}*/
 
 .pcoded-navbar .pcoded-submenu li:hover > a {
   color: var(--primary-100);

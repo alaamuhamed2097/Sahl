@@ -13,23 +13,21 @@ using Shared.DTOs.Order.OrderProcessing.AdminOrder;
 namespace Dashboard.Pages.Sales.Orders
 {
     /// <summary>
-    /// Order Details Page - CLEAN VERSION
-    /// Uses API DTOs directly - NO intermediate mapping
-    /// Clean business logic
+    /// Order Details Page - FINAL VERSION
+    /// - New ShipmentStatus enum values
+    /// - Payment summary display (Wallet/Card/COD only)
+    /// - No InvoiceId, no AllowSplitPayment, no OtherPaidAmount
     /// </summary>
     public partial class Details : ComponentBase
     {
         // ============================================
-        // PROPERTIES - Using API DTOs directly
+        // PROPERTIES
         // ============================================
 
         protected string BaseUrl { get; set; } = string.Empty;
         protected bool IsSaving { get; set; }
         protected bool IsLoading { get; set; }
 
-        /// <summary>
-        /// Order details - uses API DTO directly
-        /// </summary>
         protected AdminOrderDetailsDto Order { get; set; } = new();
 
         [Parameter] public Guid Id { get; set; }
@@ -56,10 +54,6 @@ namespace Dashboard.Pages.Sales.Orders
         // LOAD ORDER DATA
         // ============================================
 
-        /// <summary>
-        /// Load order details from API
-        /// Returns AdminOrderDetailsDto directly - NO MAPPING
-        /// </summary>
         protected async Task LoadOrderAsync(Guid orderId)
         {
             try
@@ -71,7 +65,6 @@ namespace Dashboard.Pages.Sales.Orders
 
                 if (result.Success && result.Data != null)
                 {
-                    // ✅ Use API DTO directly - NO MAPPING
                     Order = result.Data;
                 }
                 else
@@ -100,10 +93,6 @@ namespace Dashboard.Pages.Sales.Orders
         // ORDER ACTIONS
         // ============================================
 
-        /// <summary>
-        /// Update order delivery date
-        /// Uses API DTO properties directly
-        /// </summary>
         protected async Task SaveOrderAsync()
         {
             try
@@ -113,8 +102,8 @@ namespace Dashboard.Pages.Sales.Orders
 
                 var request = new UpdateOrderRequest
                 {
-                    OrderId = Order.OrderId,              // ✅ API DTO property
-                    OrderDeliveryDate = Order.DeliveryDate // ✅ API DTO property
+                    OrderId = Order.OrderId,
+                    OrderDeliveryDate = Order.DeliveryDate
                 };
 
                 var result = await OrderService.UpdateOrderAsync(request);
@@ -148,16 +137,13 @@ namespace Dashboard.Pages.Sales.Orders
             }
         }
 
-        /// <summary>
-        /// Change order status
-        /// </summary>
         protected async Task ChangeOrderStatusAsync(OrderProgressStatus newStatus)
         {
             try
             {
                 var request = new ChangeOrderStatusRequest
                 {
-                    OrderId = Order.OrderId,  // ✅ API DTO property
+                    OrderId = Order.OrderId,
                     NewStatus = newStatus,
                     Notes = $"Status changed to {newStatus} by admin"
                 };
@@ -166,7 +152,6 @@ namespace Dashboard.Pages.Sales.Orders
 
                 if (result.Success)
                 {
-                    // ✅ Update API DTO property directly
                     Order.OrderStatus = newStatus;
 
                     await JSRuntime.InvokeVoidAsync("swal",
@@ -193,9 +178,6 @@ namespace Dashboard.Pages.Sales.Orders
             }
         }
 
-        /// <summary>
-        /// Confirm order (Pending → Confirmed)
-        /// </summary>
         protected async Task ConfirmOrderAsync()
         {
             if (Order.OrderStatus != OrderProgressStatus.Pending)
@@ -210,9 +192,6 @@ namespace Dashboard.Pages.Sales.Orders
             await ChangeOrderStatusAsync(OrderProgressStatus.Confirmed);
         }
 
-        /// <summary>
-        /// Move to Processing (Confirmed → Processing)
-        /// </summary>
         protected async Task MoveToProcessingAsync()
         {
             if (Order.OrderStatus != OrderProgressStatus.Confirmed)
@@ -227,9 +206,6 @@ namespace Dashboard.Pages.Sales.Orders
             await ChangeOrderStatusAsync(OrderProgressStatus.Processing);
         }
 
-        /// <summary>
-        /// Move to Shipped (Processing → Shipped)
-        /// </summary>
         protected async Task MoveToShippedAsync()
         {
             if (Order.OrderStatus != OrderProgressStatus.Processing)
@@ -244,13 +220,8 @@ namespace Dashboard.Pages.Sales.Orders
             await ChangeOrderStatusAsync(OrderProgressStatus.Shipped);
         }
 
-        /// <summary>
-        /// Move to Delivered (Shipped → Delivered)
-        /// Requires delivery date to be set
-        /// </summary>
         protected async Task MoveToDeliveredAsync()
         {
-            // Validate delivery date
             if (!Order.DeliveryDate.HasValue || Order.DeliveryDate < DateTime.Now)
             {
                 await JSRuntime.InvokeVoidAsync("swal",
@@ -269,16 +240,10 @@ namespace Dashboard.Pages.Sales.Orders
                 return;
             }
 
-            // Save delivery date first
             await SaveOrderAsync();
-
-            // Then change status
             await ChangeOrderStatusAsync(OrderProgressStatus.Delivered);
         }
 
-        /// <summary>
-        /// Cancel order
-        /// </summary>
         protected async Task CancelOrderAsync()
         {
             try
@@ -317,12 +282,9 @@ namespace Dashboard.Pages.Sales.Orders
         }
 
         // ============================================
-        // UI HELPERS - Work with API DTOs directly
+        // UI HELPERS
         // ============================================
 
-        /// <summary>
-        /// Get CSS class for order status badge
-        /// </summary>
         protected string GetOrderStatusBadgeClass(OrderProgressStatus status)
         {
             return status switch
@@ -342,9 +304,6 @@ namespace Dashboard.Pages.Sales.Orders
             };
         }
 
-        /// <summary>
-        /// Get localized order status text
-        /// </summary>
         protected string GetOrderStatusText(OrderProgressStatus status)
         {
             return status switch
@@ -364,9 +323,6 @@ namespace Dashboard.Pages.Sales.Orders
             };
         }
 
-        /// <summary>
-        /// Get CSS class for payment status
-        /// </summary>
         protected string GetPaymentStatusClass(PaymentStatus status)
         {
             return status switch
@@ -383,9 +339,6 @@ namespace Dashboard.Pages.Sales.Orders
             };
         }
 
-        /// <summary>
-        /// Get localized payment status text
-        /// </summary>
         protected string GetPaymentStatusText(PaymentStatus status)
         {
             return status switch
@@ -403,47 +356,46 @@ namespace Dashboard.Pages.Sales.Orders
         }
 
         /// <summary>
-        /// Get CSS class for shipment status badge
+        /// FINAL VERSION - Updated with new ShipmentStatus enum
+        /// Removed AtLocalHub
         /// </summary>
         protected string GetShipmentStatusBadgeClass(ShipmentStatus status)
         {
             return status switch
             {
-                ShipmentStatus.Pending => "badge bg-warning",
-                ShipmentStatus.Processing => "badge bg-info",
-                ShipmentStatus.Shipped => "badge bg-primary",
-                ShipmentStatus.InTransit => "badge bg-primary",
-                ShipmentStatus.OutForDelivery => "badge bg-primary",
-                ShipmentStatus.Delivered => "badge bg-success",
-                ShipmentStatus.Returned => "badge bg-danger",
-                ShipmentStatus.Cancelled => "badge bg-dark",
+                ShipmentStatus.PendingProcessing => "badge bg-warning",
+                ShipmentStatus.PreparingForShipment => "badge bg-info",
+                ShipmentStatus.PickedUpByCarrier => "badge bg-primary",
+                ShipmentStatus.InTransitToCustomer => "badge bg-primary",
+                ShipmentStatus.DeliveredToCustomer => "badge bg-success",
+                ShipmentStatus.ReturnedToSender => "badge bg-danger",
+                ShipmentStatus.CancelledByCustomer => "badge bg-dark",
+                ShipmentStatus.CancelledByMarketplace => "badge bg-dark",
+                ShipmentStatus.DeliveryAttemptFailed => "badge bg-warning",
                 _ => "badge bg-secondary"
             };
         }
 
         /// <summary>
-        /// Get localized shipment status text
+        /// FINAL VERSION - Updated with new ShipmentStatus enum
         /// </summary>
         protected string GetShipmentStatusText(ShipmentStatus status)
         {
             return status switch
             {
-                ShipmentStatus.Pending => OrderResources.Pending,
-                ShipmentStatus.Processing => OrderResources.Processing,
-                ShipmentStatus.Shipped => OrderResources.Shipped,
-                ShipmentStatus.InTransit => OrderResources.InTransit,
-                ShipmentStatus.OutForDelivery => OrderResources.OutForDelivery,
-                ShipmentStatus.Delivered => OrderResources.Delivered,
-                ShipmentStatus.Returned => OrderResources.Returned,
-                ShipmentStatus.Cancelled => OrderResources.Cancelled,
+                ShipmentStatus.PendingProcessing => OrderResources.PendingProcessing,
+                ShipmentStatus.PreparingForShipment => OrderResources.PreparingForShipment,
+                ShipmentStatus.PickedUpByCarrier => OrderResources.PickedUpByCarrier,
+                ShipmentStatus.InTransitToCustomer => OrderResources.InTransit,
+                ShipmentStatus.DeliveredToCustomer => OrderResources.Delivered,
+                ShipmentStatus.ReturnedToSender => OrderResources.Returned,
+                ShipmentStatus.CancelledByCustomer => OrderResources.CancelledByCustomer,
+                ShipmentStatus.CancelledByMarketplace => OrderResources.CancelledByMarketplace,
+                ShipmentStatus.DeliveryAttemptFailed => OrderResources.DeliveryAttemptFailed,
                 _ => status.ToString()
             };
         }
 
-        /// <summary>
-        /// Check if order can move to next status
-        /// Uses API DTO properties
-        /// </summary>
         protected bool CanMoveToNextStatus()
         {
             return Order.OrderStatus switch
@@ -459,9 +411,6 @@ namespace Dashboard.Pages.Sales.Orders
             };
         }
 
-        /// <summary>
-        /// Get next status button text
-        /// </summary>
         protected string GetNextStatusButtonText()
         {
             return Order.OrderStatus switch
@@ -474,9 +423,6 @@ namespace Dashboard.Pages.Sales.Orders
             };
         }
 
-        /// <summary>
-        /// Get next status button icon
-        /// </summary>
         protected string GetNextStatusButtonIcon()
         {
             return Order.OrderStatus switch
@@ -489,9 +435,6 @@ namespace Dashboard.Pages.Sales.Orders
             };
         }
 
-        /// <summary>
-        /// Execute next status action
-        /// </summary>
         protected async Task MoveToNextStatusAsync()
         {
             switch (Order.OrderStatus)
@@ -511,9 +454,91 @@ namespace Dashboard.Pages.Sales.Orders
             }
         }
 
+        // ============================================
+        // PAYMENT SUMMARY HELPERS - FINAL VERSION
+        // Only 3 payment methods: Wallet, Card, Cash
+        // ============================================
+
         /// <summary>
-        /// Navigate back to orders list
+        /// Get formatted payment breakdown message
+        /// FINAL: Only shows Wallet, Card, and Cash (no Other)
         /// </summary>
+        protected string GetPaymentBreakdownMessage()
+        {
+            var parts = new List<string>();
+
+            if (Order.WalletPaidAmount > 0)
+            {
+                parts.Add($"{OrderResources.Wallet}: {Order.WalletPaidAmount:N2} {OrderResources.Currency}");
+            }
+
+            if (Order.CardPaidAmount > 0)
+            {
+                parts.Add($"{OrderResources.Card}: {Order.CardPaidAmount:N2} {OrderResources.Currency}");
+            }
+
+            if (Order.CashPaidAmount > 0)
+            {
+                parts.Add($"{OrderResources.Cash}: {Order.CashPaidAmount:N2} {OrderResources.Currency}");
+            }
+
+            return parts.Count > 0
+                ? string.Join(" + ", parts)
+                : $"{OrderResources.Total}: {Order.TotalPaidAmount:N2} {OrderResources.Currency}";
+        }
+
+        /// <summary>
+        /// Check if order has multiple payment methods
+        /// FINAL: Only checks 3 methods
+        /// </summary>
+        protected bool HasMultiplePaymentMethods()
+        {
+            var methodCount = 0;
+
+            if (Order.WalletPaidAmount > 0) methodCount++;
+            if (Order.CardPaidAmount > 0) methodCount++;
+            if (Order.CashPaidAmount > 0) methodCount++;
+
+            return methodCount > 1;
+        }
+
+        /// <summary>
+        /// Get primary payment method name
+        /// </summary>
+        protected string GetPrimaryPaymentMethodName()
+        {
+            if (Order.WalletPaidAmount >= Order.CardPaidAmount &&
+                Order.WalletPaidAmount >= Order.CashPaidAmount)
+            {
+                return OrderResources.Wallet;
+            }
+
+            if (Order.CardPaidAmount >= Order.CashPaidAmount)
+            {
+                return OrderResources.Card;
+            }
+
+            return OrderResources.Cash;
+        }
+
+        /// <summary>
+        /// Check if order is Cash on Delivery
+        /// FINAL: Simplified logic without AllowSplitPayment
+        /// </summary>
+        protected bool IsCashOnDelivery()
+        {
+            // Order is COD if any cash amount was paid
+            return Order.CashPaidAmount > 0;
+        }
+
+        /// <summary>
+        /// Check if payment is fully completed
+        /// </summary>
+        protected bool IsFullyPaid()
+        {
+            return Order.TotalPaidAmount >= Order.TotalAmount;
+        }
+
         protected void NavigateToList()
         {
             Navigation.NavigateTo("/sales/orders");

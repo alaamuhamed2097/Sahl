@@ -223,6 +223,7 @@ namespace DAL.ApplicationContext
         public DbSet<TbOrderShipmentItem> TbOrderShipmentItems { get; set; }
         public DbSet<TbPaymentMethod> TbPaymentMethods { get; set; }
         public DbSet<TbOrderPayment> TbOrderPayments { get; set; }
+        public DbSet<TbShipmentPayment> TbShipmentPayments { get; set; }
 
         // Pricing System Settings
         public DbSet<TbPricingSystemSetting> TbPricingSystemSettings { get; set; }

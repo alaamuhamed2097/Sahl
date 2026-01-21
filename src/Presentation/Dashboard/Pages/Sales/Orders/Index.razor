@@ -60,8 +60,9 @@
                                 style="width: 140px; height: 40px; padding-right: 30px;"
                                 @onchange="OnPaymentStatusFilterChanged">
                             <option value="">@ECommerceResources.PaymentStatus</option>
-                            <option value="@((int)PaymentStatus.Pending)">@ECommerceResources.Pending</option>
-                            <option value="@((int)PaymentStatus.Completed)">@ECommerceResources.Paid</option>
+                            <option value="@((int)PaymentStatus.Pending)">@OrderResources.Pending</option>
+                            <option value="@((int)PaymentStatus.Completed)">@OrderResources.Paid</option>
+                            <option value="@((int)PaymentStatus.Failed)">@OrderResources.PaymentFailed</option>
                         </select>
                     </li>
 
@@ -74,6 +75,7 @@
                             <option value="15">15</option>
                             <option value="20">20</option>
                             <option value="30">30</option>
+                            <option value="100">100</option>
                         </select>
                     </li>
 

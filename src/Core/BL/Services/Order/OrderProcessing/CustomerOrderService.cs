@@ -16,8 +16,9 @@ using Shared.GeneralModels;
 namespace BL.Services.Order.OrderProcessing;
 
 /// <summary>
-/// Service for Customer-specific order operations
-/// Handles: View orders, order details, cancel orders, request refunds
+/// FINAL CustomerOrderService
+/// - ShipmentStatus.PendingProcessing (not Pending)
+/// - No InvoiceId references (use OrderNumber)
 /// </summary>
 public class CustomerOrderService : ICustomerOrderService
 {
@@ -35,9 +36,6 @@ public class CustomerOrderService : ICustomerOrderService
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
-    /// <summary>
-    /// Get customer orders list with pagination
-    /// </summary>
     public async Task<AdvancedPagedResult<CustomerOrderListDto>> GetCustomerOrdersListAsync(
         string customerId,
         int pageNumber = 1,
@@ -60,9 +58,10 @@ public class CustomerOrderService : ICustomerOrderService
                 TotalAmount = order.Price,
                 OrderStatus = order.OrderStatus,
                 PaymentStatus = order.PaymentStatus,
+                // FIXED: PendingProcessing instead of Pending
                 ShipmentStatus = order.TbOrderShipments
                     .OrderByDescending(s => s.CreatedDateUtc)
-                    .FirstOrDefault()?.ShipmentStatus ?? ShipmentStatus.Pending,
+                    .FirstOrDefault()?.ShipmentStatus ?? ShipmentStatus.PendingProcessing,
                 TotalItems = order.OrderDetails.Sum(od => od.Quantity),
                 ItemsSummary = order.OrderDetails
                     .Take(3)
@@ -91,9 +90,6 @@ public class CustomerOrderService : ICustomerOrderService
         }
     }
 
-    /// <summary>
-    /// Get customer order full details
-    /// </summary>
     public async Task<CustomerOrderDetailsDto?> GetCustomerOrderDetailsAsync(
         Guid orderId,
         string customerId,
@@ -136,7 +132,8 @@ public class CustomerOrderService : ICustomerOrderService
                 {
                     Status = order.PaymentStatus,
                     PaymentMethod = order.OrderPayments.FirstOrDefault()?.PaymentMethod.ToString() ?? "",
-                    TransactionId = order.InvoiceId,
+                    // FIXED: Use OrderNumber instead of InvoiceId
+                    TransactionId = order.Number,
                     PaymentDate = order.PaidAt,
                     Amount = order.Price
                 },
@@ -175,9 +172,6 @@ public class CustomerOrderService : ICustomerOrderService
         }
     }
 
-    /// <summary>
-    /// Cancel order (Customer)
-    /// </summary>
     public async Task<ResponseModel<bool>> CancelOrderAsync(
         Guid orderId,
         string customerId,
@@ -197,7 +191,6 @@ public class CustomerOrderService : ICustomerOrderService
                 };
             }
 
-            // Verify order belongs to customer
             if (order.UserId != customerId)
             {
                 return new ResponseModel<bool>
@@ -242,18 +235,17 @@ public class CustomerOrderService : ICustomerOrderService
         }
     }
 
-    // ============================================
     // HELPER METHODS
-    // ============================================
 
     private ShipmentStatus GetItemShipmentStatus(
         Guid orderDetailId,
         ICollection<TbOrderShipment> shipments)
     {
+        // FIXED: PendingProcessing instead of Pending
         return shipments
             .Where(s => s.Items.Any(item => item.OrderDetailId == orderDetailId))
             .OrderByDescending(s => s.CreatedDateUtc)
-            .FirstOrDefault()?.ShipmentStatus ?? ShipmentStatus.Pending;
+            .FirstOrDefault()?.ShipmentStatus ?? ShipmentStatus.PendingProcessing;
     }
 
     private bool CanCancelOrder(OrderProgressStatus status)

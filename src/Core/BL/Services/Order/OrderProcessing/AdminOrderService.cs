@@ -17,8 +17,9 @@ using Shared.GeneralModels;
 namespace BL.Services.Order.OrderProcessing;
 
 /// <summary>
-/// Service for Admin-specific order operations
-/// Handles: Search orders, manage all orders, change status, view statistics
+/// FINAL AdminOrderService
+/// - ShipmentStatus.PendingProcessing (not Pending)
+/// - No InvoiceId references (use OrderNumber)
 /// </summary>
 public class AdminOrderService : IAdminOrderService
 {
@@ -36,9 +37,6 @@ public class AdminOrderService : IAdminOrderService
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
-    /// <summary>
-    /// Get admin orders with pagination and search
-    /// </summary>
     public async Task<(List<AdminOrderListDto> Orders, int TotalCount)> SearchOrdersAsync(
         string? searchTerm,
         int pageNumber,
@@ -81,9 +79,6 @@ public class AdminOrderService : IAdminOrderService
         }
     }
 
-    /// <summary>
-    /// Get admin order details with full information
-    /// </summary>
     public async Task<AdminOrderDetailsDto?> GetAdminOrderDetailsAsync(
         Guid orderId,
         CancellationToken cancellationToken = default)
@@ -105,6 +100,13 @@ public class AdminOrderService : IAdminOrderService
                 DeliveryDate = _dateTimeService.ConvertToLocalTime(order.OrderDeliveryDate),
                 OrderStatus = order.OrderStatus,
                 PaymentStatus = order.PaymentStatus,
+
+                // ✅ Payment Summary fields
+                WalletPaidAmount = order.WalletPaidAmount,
+                CardPaidAmount = order.CardPaidAmount,
+                CashPaidAmount = order.CashPaidAmount,
+                TotalPaidAmount = order.TotalPaidAmount,
+
                 Customer = new AdminCustomerInfoDto
                 {
                     CustomerId = order.UserId,
@@ -138,7 +140,8 @@ public class AdminOrderService : IAdminOrderService
                 {
                     Status = order.PaymentStatus,
                     PaymentMethod = order.OrderPayments.FirstOrDefault()?.PaymentMethod.ToString() ?? "",
-                    TransactionId = order.InvoiceId,
+                    // ✅ FIXED: Use OrderNumber instead of InvoiceId
+                    TransactionId = order.Number,
                     PaymentDate = _dateTimeService.ConvertToLocalTime(order.PaidAt),
                     Amount = order.Price
                 },
@@ -162,9 +165,6 @@ public class AdminOrderService : IAdminOrderService
         }
     }
 
-    /// <summary>
-    /// Change order status (Admin)
-    /// </summary>
     public async Task<ResponseModel<bool>> ChangeOrderStatusAsync(
         Guid orderId,
         OrderProgressStatus newStatus,
@@ -229,9 +229,6 @@ public class AdminOrderService : IAdminOrderService
         }
     }
 
-    /// <summary>
-    /// Update order (Admin)
-    /// </summary>
     public async Task<ResponseModel<bool>> UpdateOrderAsync(
         UpdateOrderRequest request,
         CancellationToken cancellationToken = default)
@@ -275,9 +272,6 @@ public class AdminOrderService : IAdminOrderService
         }
     }
 
-    /// <summary>
-    /// Count today's orders
-    /// </summary>
     public async Task<int> CountTodayOrdersAsync(
         DateTime date,
         CancellationToken cancellationToken = default)
@@ -323,10 +317,11 @@ public class AdminOrderService : IAdminOrderService
         Guid orderDetailId,
         ICollection<TbOrderShipment> shipments)
     {
+        // ✅ FIXED: PendingProcessing instead of Pending
         return shipments
             .Where(s => s.Items.Any(item => item.OrderDetailId == orderDetailId))
             .OrderByDescending(s => s.CreatedDateUtc)
-            .FirstOrDefault()?.ShipmentStatus ?? Common.Enumerations.Shipping.ShipmentStatus.Pending;
+            .FirstOrDefault()?.ShipmentStatus ?? Common.Enumerations.Shipping.ShipmentStatus.PendingProcessing;
     }
 
     private bool IsValidStatusTransition(OrderProgressStatus current, OrderProgressStatus target)

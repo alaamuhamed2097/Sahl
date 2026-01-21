@@ -103,4 +103,9 @@ public class AdminOrderDetailsDto
     /// Order notes and comments
     /// </summary>
     public string? OrderNotes { get; set; }
+
+    public decimal WalletPaidAmount { get; set; }
+    public decimal CardPaidAmount { get; set; }
+    public decimal CashPaidAmount { get; set; }
+    public decimal TotalPaidAmount { get; set; }
 }
