@@ -115,6 +115,15 @@ namespace Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to مطلوب عنصر معتمد على الأقل.
+        /// </summary>
+        public static string ApprovedItemsRequired {
+            get {
+                return ResourceManager.GetString("ApprovedItemsRequired", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to اعتماد المعلومات.
         /// </summary>
         public static string ApproveInfo {
@@ -151,6 +160,15 @@ namespace Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to تم العثور على سعر أفضل.
+        /// </summary>
+        public static string BetterPriceFound {
+            get {
+                return ResourceManager.GetString("BetterPriceFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to ملغى.
         /// </summary>
         public static string Canceled {
@@ -169,6 +187,24 @@ namespace Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to إلغاء الطلب.
+        /// </summary>
+        public static string CancelOrder {
+            get {
+                return ResourceManager.GetString("CancelOrder", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to غيرت رأيي.
+        /// </summary>
+        public static string ChangedMind {
+            get {
+                return ResourceManager.GetString("ChangedMind", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to مغلق.
         /// </summary>
         public static string Closed {
@@ -183,15 +219,6 @@ namespace Resources {
         public static string CloseRefund {
             get {
                 return ResourceManager.GetString("CloseRefund", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to إلغاء الطلب.
-        /// </summary>
-        public static string CancelOrder {
-            get {
-                return ResourceManager.GetString("CancelOrder", resourceCulture);
             }
         }
         
@@ -291,6 +318,24 @@ namespace Resources {
         public static string CustomerType {
             get {
                 return ResourceManager.GetString("CustomerType", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to تم تلف المنتج أثناء الشحن.
+        /// </summary>
+        public static string DamagedDuringShipping {
+            get {
+                return ResourceManager.GetString("DamagedDuringShipping", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to منتج معيب.
+        /// </summary>
+        public static string DefectiveProduct {
+            get {
+                return ResourceManager.GetString("DefectiveProduct", resourceCulture);
             }
         }
         
@@ -448,6 +493,24 @@ namespace Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to العنصر.
+        /// </summary>
+        public static string Item {
+            get {
+                return ResourceManager.GetString("Item", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to المنتج ليس كما هو موضح.
+        /// </summary>
+        public static string ItemNotAsDescribed {
+            get {
+                return ResourceManager.GetString("ItemNotAsDescribed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to تم استلام المنتج.
         /// </summary>
         public static string ItemReceived {
@@ -475,14 +538,13 @@ namespace Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to العنصر.
+        ///   Looks up a localized string similar to توصيل متأخر.
         /// </summary>
-        public static string Item {
+        public static string LateDelivery {
             get {
-                return ResourceManager.GetString("Item", resourceCulture);
+                return ResourceManager.GetString("LateDelivery", resourceCulture);
             }
         }
-        
         
         /// <summary>
         ///   Looks up a localized string similar to تحديد كمُسلّم.
@@ -508,6 +570,15 @@ namespace Resources {
         public static string MarkAsShipped {
             get {
                 return ResourceManager.GetString("MarkAsShipped", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to أجزاء مفقودة.
+        /// </summary>
+        public static string MissingParts {
+            get {
+                return ResourceManager.GetString("MissingParts", resourceCulture);
             }
         }
         
@@ -638,6 +709,15 @@ namespace Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to تم الطلب بالخطأ.
+        /// </summary>
+        public static string OrderedByMistake {
+            get {
+                return ResourceManager.GetString("OrderedByMistake", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to رقم الطلب.
         /// </summary>
         public static string OrderID {
@@ -733,6 +813,15 @@ namespace Resources {
         public static string OrderSummary {
             get {
                 return ResourceManager.GetString("OrderSummary", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to أخرى.
+        /// </summary>
+        public static string Other {
+            get {
+                return ResourceManager.GetString("Other", resourceCulture);
             }
         }
         
@@ -850,6 +939,15 @@ namespace Resources {
         public static string Products {
             get {
                 return ResourceManager.GetString("Products", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to الجودة غير مرضية.
+        /// </summary>
+        public static string QualityNotSatisfactory {
+            get {
+                return ResourceManager.GetString("QualityNotSatisfactory", resourceCulture);
             }
         }
         
@@ -1016,6 +1114,15 @@ namespace Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to ملخص الاسترداد.
+        /// </summary>
+        public static string RefundSummary {
+            get {
+                return ResourceManager.GetString("RefundSummary", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to سير عمل استرداد الأموال.
         /// </summary>
         public static string RefundWorkflow {
@@ -1039,6 +1146,15 @@ namespace Resources {
         public static string RejectionReason {
             get {
                 return ResourceManager.GetString("RejectionReason", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to سبب الرفض مطلوب عند رفض طلب الاسترداد.
+        /// </summary>
+        public static string RejectionReasonRequiredForRefund {
+            get {
+                return ResourceManager.GetString("RejectionReasonRequiredForRefund", resourceCulture);
             }
         }
         
@@ -1277,29 +1393,29 @@ namespace Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to اسم البائع.
-        /// </summary>
-        public static string VendorName {
-            get {
-                return ResourceManager.GetString("VendorName", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to رقم العملية.
-        /// </summary>
-        public static string TransactionID {
-            get {
-                return ResourceManager.GetString("TransactionID", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to المورد.
         /// </summary>
         public static string Vendor {
             get {
                 return ResourceManager.GetString("Vendor", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to معلومات البائع.
+        /// </summary>
+        public static string VendorInformation {
+            get {
+                return ResourceManager.GetString("VendorInformation", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to اسم البائع.
+        /// </summary>
+        public static string VendorName {
+            get {
+                return ResourceManager.GetString("VendorName", resourceCulture);
             }
         }
         
@@ -1336,6 +1452,15 @@ namespace Resources {
         public static string Warehouses {
             get {
                 return ResourceManager.GetString("Warehouses", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to تم شحن منتج خاطئ.
+        /// </summary>
+        public static string WrongItemShipped {
+            get {
+                return ResourceManager.GetString("WrongItemShipped", resourceCulture);
             }
         }
     }

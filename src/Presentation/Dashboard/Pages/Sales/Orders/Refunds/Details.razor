@@ -10,364 +10,460 @@
 @using Shared.DTOs.User
 
 <PageTitle>@OrderResources.RefundDetails</PageTitle>
-<div class="container-fluid p-0">
-    <div class="card shadow-sm border-0">
-        <div class="card-header d-flex justify-content-between align-items-center">
-            <h4 class="modal-title">
-                @OrderResources.RefundDetails
-            </h4>
-        </div>
-        <div class="card-body p-4">
-            <div class="page-wrapper">
-                <div class="bg-white p-4">
-                    <div class="row g-0">
-                        <div class="col-md-6 mb-3">
-                            <div class="card h-100">
-                                <div class="card-body p-0">
-                                    <div class="my-3">
-                                        <span class="px-3 d-block">
-                                            <i class="fas fa-circle text-c-blue f-10 m-r-5"></i><strong class="fw-bold">@ECommerceResources.CustomerName : </strong>
-                                            @RefundModel.CustomerName
-                                        </span>
-                                        <hr />
-                                        <span class="px-3 d-block">
-                                            <i class="fas fa-circle text-c-green f-10 m-r-5"></i><strong class="fw-bold">@FormResources.Email : </strong>
-                                            @RefundModel.CustomerEmail
-                                        </span>
-                                        <hr />
-                                        <span class="px-3 d-block">
-                                            <i class="fas fa-circle text-c-green f-10 m-r-5"></i><strong class="fw-bold">@FormResources.PhoneNumber : </strong>
-                                            @RefundModel.CustomerFullPhoneNumber
-                                        </span>
-                                        <hr />
-                                        <span class="px-3 d-block">
-                                            <i class="fas fa-circle text-c-green f-10 m-r-5"></i><strong class="fw-bold">@OrderResources.RefundAmount : </strong>
-                                            @RefundModel.RefundAmount $
-                                        </span>
-                                        <hr />
-                                        <span class="px-3 d-block">
-                                            <i class="fas fa-circle text-c-green f-10 m-r-5"></i><strong class="fw-bold">@FormResources.Address : </strong>
-                                            @RefundModel.DeliveryAddress
-                                        </span>
-                                        <hr />
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <div class="card h-100">
-                                <div class="card-body p-0">
-                                    <div class="my-3">
-                                        <span class="px-3 d-block">
-                                            <i class="fas fa-circle text-c-blue f-10 m-r-5"></i><strong class="fw-bold">@OrderResources.VendorName : </strong>
-                                            @RefundModel.VendorName
-                                        </span>
-                                        <hr />
-                                        <span class="px-3 d-block">
-                                            <i class="fas fa-circle text-c-green f-10 m-r-5"></i><strong class="fw-bold">@ECommerceResources.StoreName : </strong>
-                                            @RefundModel.VendorStoreName
-                                        </span>
-                                        <hr />
-                                        <span class="px-3 d-block">
-                                            <i class="fas fa-circle text-c-green f-10 m-r-5"></i><strong class="fw-bold">@OrderResources.RefundNumber : </strong>
-                                            @RefundModel.Number
-                                        </span>
-                                        <hr />
-                                        <span class="px-3 d-block">
-                                            <i class="fas fa-circle text-c-green f-10 m-r-5"></i><strong class="fw-bold">@OrderResources.RequestDate : </strong>
-                                            @RefundModel.RequestDateUTC.ToLocalTime().ToString("g")
-                                        </span>
-                                        <hr />
-                                        <span class="px-3 d-block">
-                                            <i class="fas fa-circle text-c-red f-10 m-r-5"></i><strong class="fw-bold">@OrderResources.RefundStatus : </strong>
-                                            @switch (RefundModel.RefundStatus)
-                                            {
-                                                case RefundStatus.Open:
-                                                    <span class="text-warning">@OrderResources.Opened</span>
-                                                    break;
-                                                case RefundStatus.UnderReview:
-                                                    <span class="text-info">@ECommerceResources.UnderReview</span>
-                                                    break;
-                                                case RefundStatus.NeedMoreInfo:
-                                                    <span class="text-warning">@OrderResources.NeedMoreInfo</span>
-                                                    break;
-                                                case RefundStatus.InfoApproved:
-                                                    <span class="text-primary">@OrderResources.InfoApproved</span>
-                                                    break;
-                                                case RefundStatus.ItemShippedBack:
-                                                    <span class="text-primary">@OrderResources.ItemShippedBack</span>
-                                                    break;
-                                                case RefundStatus.ItemReceived:
-                                                    <span class="text-primary">@OrderResources.ItemReceived</span>
-                                                    break;
-                                                case RefundStatus.Inspecting:
-                                                    <span class="text-info">@OrderResources.Inspecting</span>
-                                                    break;
-                                                case RefundStatus.Approved:
-                                                    <span class="text-success">@ECommerceResources.Approved</span>
-                                                    break;
-                                                case RefundStatus.Rejected:
-                                                    <span class="text-danger">@ECommerceResources.Rejected</span>
-                                                    break;
-                                                case RefundStatus.Refunded:
-                                                    <span class="text-success">@OrderResources.Refunded</span>
-                                                    break;
-                                                case RefundStatus.Closed:
-                                                    <span class="text-secondary">@OrderResources.Closed</span>
-                                                    break;
-                                                default:
-                                                    <span class="text-secondary">@RefundModel.RefundStatus.ToString()</span>
-                                                    break;
-                                            }
-                                        </span>
-                                        <hr />
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
 
-                    <!-- Refund Details Section -->
-                    <div class="row g-0 mt-3">
-                        <div class="col-12">
-                            <div class="card">
-                                <div class="card-header">
-                                    <h5>@OrderResources.RefundInformation</h5>
-                                </div>
-                                <div class="card-body">
-                                    <div class="row">
-                                        <div class="col-md-6 mb-2">
-                                            <strong>@OrderResources.RefundReason:</strong> @RefundModel.RefundReason.ToString()
-                                        </div>
-                                        <div class="col-md-6 mb-2">
-                                            <strong>@OrderResources.RequestedItems:</strong> @RefundModel.RequestedItemsCount
-                                        </div>
-                                        <div class="col-md-6 mb-2">
-                                            <strong>@OrderResources.ApprovedItems:</strong> @RefundModel.ApprovedItemsCount
-                                        </div>
-                                        <div class="col-md-6 mb-2">
-                                            <strong>@OrderResources.ReturnShippingCost:</strong> @RefundModel.ReturnShippingCost $
-                                        </div>
-                                        @if (!string.IsNullOrEmpty(RefundModel.RefundReasonDetails))
-                                        {
-                                            <div class="col-12 mb-2">
-                                                <strong>@OrderResources.Details:</strong>
-                                                <p class="mb-0">@RefundModel.RefundReasonDetails</p>
-                                            </div>
-                                        }
-                                        @if (!string.IsNullOrEmpty(RefundModel.ReturnTrackingNumber))
-                                        {
-                                            <div class="col-md-6 mb-2">
-                                                <strong>@OrderResources.TrackingNumber:</strong> @RefundModel.ReturnTrackingNumber
-                                            </div>
-                                        }
-                                        @if (!string.IsNullOrEmpty(RefundModel.RefundTransactionId))
-                                        {
-                                            <div class="col-md-6 mb-2">
-                                                <strong>@OrderResources.TransactionId:</strong> @RefundModel.RefundTransactionId
-                                            </div>
-                                        }
-                                    </div>
-                                </div>
+@if (IsLoading)
+{
+    <div class="d-flex justify-content-center align-items-center" style="min-height: 400px;">
+        <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">@GeneralResources.Loading...</span>
+        </div>
+    </div>
+}
+else
+{
+    <div class="container-fluid p-0">
+        @* Header Card *@
+        <div class="card shadow-sm border-0 mb-3">
+            <div class="card-header d-flex flex-wrap justify-content-between bg-primary align-items-center py-3 gap-3">
+                <h4 class="modal-title text-white mb-0 d-flex align-items-center gap-2">
+                    @OrderResources.RefundDetails - <span dir="ltr">#@RefundModel.Number</span>
+                </h4>
+                <button class="btn btn-light btn-sm" @onclick="NavigateToList">
+                    <i class="fas fa-arrow-left me-2"></i>@ActionsResources.Back
+                </button>
+            </div>
+        </div>
+
+        @* Info Bar *@
+        <div class="row g-2 mb-3">
+            <div class="col-md-3">
+                <div class="card shadow-sm border-0 h-100">
+                    <div class="card-body p-3">
+                        <small class="text-muted d-block mb-1">@OrderResources.RefundNumber</small>
+                        <strong class="fs-6">#@RefundModel.Number</strong>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card shadow-sm border-0 h-100">
+                    <div class="card-body p-3">
+                        <small class="text-muted d-block mb-1">@OrderResources.RequestDate</small>
+                        <strong class="fs-6"><span dir="ltr">@RefundModel.RequestDateUTC.ToLocalTime().ToString("dd/MM/yyyy hh:mm tt")</span></strong>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card shadow-sm border-0 h-100">
+                    <div class="card-body p-3">
+                        <small class="text-muted d-block mb-1">@OrderResources.RefundStatus</small>
+                        <strong class="fs-6">
+                            @switch (RefundModel.RefundStatus)
+                            {
+                                case RefundStatus.Open:
+                                    <span class="badge bg-warning">@OrderResources.Opened</span>
+                                    break;
+                                case RefundStatus.UnderReview:
+                                    <span class="badge bg-info">@ECommerceResources.UnderReview</span>
+                                    break;
+                                case RefundStatus.NeedMoreInfo:
+                                    <span class="badge bg-warning">@OrderResources.NeedMoreInfo</span>
+                                    break;
+                                case RefundStatus.InfoApproved:
+                                    <span class="badge bg-primary">@OrderResources.InfoApproved</span>
+                                    break;
+                                case RefundStatus.ItemShippedBack:
+                                    <span class="badge bg-primary">@OrderResources.ItemShippedBack</span>
+                                    break;
+                                case RefundStatus.ItemReceived:
+                                    <span class="badge bg-primary">@OrderResources.ItemReceived</span>
+                                    break;
+                                case RefundStatus.Inspecting:
+                                    <span class="badge bg-info">@OrderResources.Inspecting</span>
+                                    break;
+                                case RefundStatus.Approved:
+                                    <span class="badge bg-success">@ECommerceResources.Approved</span>
+                                    break;
+                                case RefundStatus.Rejected:
+                                    <span class="badge bg-danger">@ECommerceResources.Rejected</span>
+                                    break;
+                                case RefundStatus.Refunded:
+                                    <span class="badge bg-success">@OrderResources.Refunded</span>
+                                    break;
+                                case RefundStatus.Closed:
+                                    <span class="badge bg-secondary">@OrderResources.Closed</span>
+                                    break;
+                                default:
+                                    <span class="badge bg-secondary">@RefundModel.RefundStatus.ToString()</span>
+                                    break;
+                            }
+                        </strong>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card shadow-sm border-0 h-100">
+                    <div class="card-body p-3">
+                        <small class="text-muted d-block mb-1">@OrderResources.RefundAmount</small>
+                        <strong class="fs-6" dir="ltr">$@RefundModel.RefundAmount.ToString("F2")</strong>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            @* Left Column: Refund Details *@
+            <div class="col-lg-8">
+                @* Customer Information Card *@
+                <div class="card shadow-sm border-0 mb-3">
+                    <div class="card-header bg-white">
+                        <h5 class="mb-0">@OrderResources.CustomerInformation</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <small class="text-muted d-block mb-1">@ECommerceResources.CustomerName</small>
+                                <strong>@RefundModel.CustomerName</strong>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <small class="text-muted d-block mb-1">@FormResources.Email</small>
+                                <strong>@RefundModel.CustomerEmail</strong>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <small class="text-muted d-block mb-1">@FormResources.PhoneNumber</small>
+                                <strong dir="ltr">@RefundModel.CustomerFullPhoneNumber</strong>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <small class="text-muted d-block mb-1">@FormResources.Address</small>
+                                <strong>@RefundModel.DeliveryAddress</strong>
                             </div>
                         </div>
                     </div>
                 </div>
 
+                @* Vendor Information Card *@
+                <div class="card shadow-sm border-0 mb-3">
+                    <div class="card-header bg-white">
+                        <h5 class="mb-0">@OrderResources.VendorInformation</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <small class="text-muted d-block mb-1">@OrderResources.VendorName</small>
+                                <strong>@RefundModel.VendorName</strong>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <small class="text-muted d-block mb-1">@ECommerceResources.StoreName</small>
+                                <strong>@RefundModel.VendorStoreName</strong>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                @* Refund Information Card *@
+                <div class="card shadow-sm border-0 mb-3">
+                    <div class="card-header bg-white">
+                        <h5 class="mb-0">@OrderResources.RefundInformation</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <small class="text-muted d-block mb-1">@OrderResources.RefundReason</small>
+                                <strong>@GetRefundReason(RefundModel.RefundReason)</strong>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <small class="text-muted d-block mb-1">@OrderResources.RequestedItems</small>
+                                <strong>@RefundModel.RequestedItemsCount</strong>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <small class="text-muted d-block mb-1">@OrderResources.ApprovedItems</small>
+                                <strong>@RefundModel.ApprovedItemsCount</strong>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <small class="text-muted d-block mb-1">@OrderResources.ReturnShippingCost</small>
+                                <strong dir="ltr">$@RefundModel.ReturnShippingCost.ToString("F2")</strong>
+                            </div>
+                            @if (!string.IsNullOrEmpty(RefundModel.ReturnTrackingNumber))
+                            {
+                                <div class="col-md-6 mb-3">
+                                    <small class="text-muted d-block mb-1">@OrderResources.TrackingNumber</small>
+                                    <strong>@RefundModel.ReturnTrackingNumber</strong>
+                                </div>
+                            }
+                            @if (!string.IsNullOrEmpty(RefundModel.RefundReasonDetails))
+                            {
+                                <div class="col-12 mb-3">
+                                    <small class="text-muted d-block mb-1">@OrderResources.Details</small>
+                                    <p class="mb-0">@RefundModel.RefundReasonDetails</p>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            @* Right Column: Actions & Summary *@
+            <div class="col-lg-4">
                 @if (RefundModel.RefundStatus != RefundStatus.Rejected && RefundModel.RefundStatus != RefundStatus.Closed)
                 {
-                    <!-- Refund Workflow -->
-                    <div class="col-sm-12 mt-3">
-                        <div class="card">
-                            <div class="card-header">
-                                <h5>@OrderResources.RefundWorkflow</h5>
+                    @* Refund Summary Card *@
+                    <div class="card shadow-sm border-0 mb-3">
+                        <div class="card-header bg-white">
+                            <h5 class="mb-0">@OrderResources.RefundSummary</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between mb-2">
+                                <span>@OrderResources.RefundAmount:</span>
+                                <strong dir="ltr">$@RefundModel.RefundAmount.ToString("F2")</strong>
                             </div>
-                            <div class="card-body">
-                                <!-- SmartWizard html -->
-                                <div id="smartwizard" dir="ltr">
-                                    <ul class="nav d-flex justify-content-center align-items-center">
-                                        <li class="nav-item flex-grow-1 text-center">
-                                            <a class="nav-link" href="#step-1">
-                                                <div class="num">1</div>
-                                                @OrderResources.Opened
-                                            </a>
-                                        </li>
-                                        <li class="nav-item flex-grow-1 text-center">
-                                            <a class="nav-link" href="#step-2">
-                                                <div class="num">2</div>
-                                                @ECommerceResources.UnderReview
-                                            </a>
-                                        </li>
-                                        <li class="nav-item flex-grow-1 text-center">
-                                            <a class="nav-link" href="#step-3">
-                                                <div class="num">3</div>
-                                                @OrderResources.InfoApproved
-                                            </a>
-                                        </li>
-                                        <li class="nav-item flex-grow-1 text-center">
-                                            <a class="nav-link" href="#step-4">
-                                                <div class="num">4</div>
-                                                @OrderResources.ItemReceived
-                                            </a>
-                                        </li>
-                                        <li class="nav-item flex-grow-1 text-center">
-                                            <a class="nav-link" href="#step-5">
-                                                <div class="num">5</div>
-                                                @ECommerceResources.Approved
-                                            </a>
-                                        </li>
-                                        <li class="nav-item flex-grow-1 text-center">
-                                            <a class="nav-link" href="#step-6">
-                                                <div class="num">6</div>
-                                                @OrderResources.Refunded
-                                            </a>
-                                        </li>
-                                    </ul>
-
-                                    <div class="tab-content">
-                                        <!-- Step 1: Open -->
-                                        <div id="step-1" class="tab-pane" role="tabpanel">
-                                            <div class="text-center fw-bold fs-5">@OrderResources.RefundRequestReceived</div>
-                                            <div class="d-flex justify-content-center align-items-center my-3">
-                                                <img src="assets/images/refund/step1.png" alt="Request Received" style="width: 300px; height: 300px;" />
-                                            </div>
-                                            <div class="d-flex justify-content-center gap-2 align-items-center">
-                                                <button class="btn btn-danger" @onclick="() => ChangeRefundStatus(RefundStatus.Rejected)">@ActionsResources.Reject</button>
-                                                <button class="btn btn-primary" @onclick="() => MoveToUnderReview()">@OrderResources.StartReview</button>
-                                            </div>
-                                        </div>
-
-                                        <!-- Step 2: Under Review -->
-                                        <div id="step-2" class="tab-pane" role="tabpanel">
-                                            <div class="text-center fw-bold fs-5">@OrderResources.ReviewingRequest</div>
-                                            <div class="d-flex justify-content-center align-items-center my-3">
-                                                <img src="assets/images/refund/step2.png" alt="Under Review" style="width: 300px; height: 300px;" />
-                                            </div>
-                                            <div class="d-flex justify-content-center gap-2 align-items-center mb-3">
-                                                <button class="btn btn-warning" @onclick="() => ChangeRefundStatus(RefundStatus.NeedMoreInfo)">@OrderResources.RequestMoreInfo</button>
-                                                <button class="btn btn-danger" @onclick="() => ChangeRefundStatus(RefundStatus.Rejected)">@ActionsResources.Reject</button>
-                                                <button class="btn btn-success" @onclick="() => MoveToInfoApproved()">@OrderResources.ApproveInfo</button>
-                                            </div>
-                                        </div>
-
-                                        <!-- Step 3: Info Approved -->
-                                        <div id="step-3" class="tab-pane" role="tabpanel">
-                                            <div class="text-center fw-bold fs-5">@OrderResources.WaitingForReturn</div>
-                                            <div class="d-flex justify-content-center align-items-center my-3">
-                                                <img src="assets/images/refund/step3.png" alt="Info Approved" style="width: 300px; height: 300px;" />
-                                            </div>
-                                            <div class="mb-3 w-50 mx-auto">
-                                                <label class="form-label">@OrderResources.TrackingNumber</label>
-                                                <input type="text" class="form-control" @bind-value="RefundModel.ReturnTrackingNumber" placeholder="@OrderResources.EnterTrackingNumber" />
-                                            </div>
-                                            <div class="d-flex justify-content-center gap-2">
-                                                <button class="btn btn-primary" @onclick="() => MoveToItemShippedBack()">@OrderResources.MarkAsShipped</button>
-                                                <button class="btn btn-success" @onclick="() => MoveToItemReceived()">@OrderResources.MarkAsReceived</button>
-                                            </div>
-                                        </div>
-
-                                        <!-- Step 4: Item Received -->
-                                        <div id="step-4" class="tab-pane" role="tabpanel">
-                                            <div class="text-center fw-bold fs-5">@OrderResources.InspectingItem</div>
-                                            <div class="d-flex justify-content-center align-items-center my-3">
-                                                <img src="assets/images/refund/step4.png" alt="Item Received" style="width: 300px; height: 300px;" />
-                                            </div>
-                                            <div class="d-flex justify-content-center gap-2 align-items-center">
-                                                <button class="btn btn-danger" @onclick="() => ChangeRefundStatus(RefundStatus.Rejected)">@OrderResources.RejectAfterInspection</button>
-                                                <button class="btn btn-success" @onclick="() => MoveToApproved()">@OrderResources.ApproveRefund</button>
-                                            </div>
-                                        </div>
-
-                                        <!-- Step 5: Approved -->
-                                        <div id="step-5" class="tab-pane" role="tabpanel">
-                                            <div class="text-center fw-bold fs-5">@OrderResources.RefundApproved</div>
-                                            <div class="d-flex justify-content-center align-items-center my-3">
-                                                <img src="assets/images/refund/step5.png" alt="Approved" style="width: 300px; height: 300px;" />
-                                            </div>
-                                            <div class="row justify-content-center mb-3">
-                                                <div class="col-12 col-sm-10 col-md-8 col-lg-6 col-xl-4">
-                                                    <div class="mb-3">
-                                                        <label class="form-label">@OrderResources.RefundAmount</label>
-                                                        <input type="number" step="0.01" class="form-control"
-                                                               @bind-value="RefundResponseModel.RefundAmount"
-                                                               placeholder="@string.Format(FormResources.Placeholder, OrderResources.RefundAmount)" />
-                                                    </div>
-                                                    <div class="mb-3">
-                                                        <label class="form-label">@OrderResources.TransactionId</label>
-                                                        <input type="text" class="form-control"
-                                                               @bind-value="RefundModel.RefundTransactionId"
-                                                               placeholder="@string.Format(FormResources.Placeholder, OrderResources.TransactionId)" />
-                                                    </div>
-                                                    <div class="mb-3">
-                                                        <label class="form-label">@FormResources.Comments <small class="text-muted">(@FormResources.optional)</small></label>
-                                                        <textarea class="form-control" rows="3"
-                                                                  @bind="RefundResponseModel.AdminComments"
-                                                                  placeholder="@string.Format(FormResources.Placeholder, FormResources.Comments)"></textarea>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="d-flex justify-content-center">
-                                                <button class="btn btn-success" @onclick="() => MoveToRefunded()">@OrderResources.ProcessRefund</button>
-                                            </div>
-                                        </div>
-
-                                        <!-- Step 6: Refunded -->
-                                        <div id="step-6" class="tab-pane" role="tabpanel">
-                                            <div class="text-center fw-bold fs-5">@OrderResources.RefundCompleted</div>
-                                            <div class="d-flex justify-content-center align-items-center my-3">
-                                                <img src="assets/images/refund/step6.png" alt="Refunded" style="width: 300px; height: 300px;" />
-                                            </div>
-                                            <div class="d-flex justify-content-center">
-                                                <div class="badge bg-success p-2 mb-3">@OrderResources.RefundSuccessful</div>
-                                            </div>
-                                            <div class="d-flex justify-content-center">
-                                                <button class="btn btn-primary" @onclick="() => CloseRefund()">@OrderResources.CloseRefund</button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
+                            <div class="d-flex justify-content-between mb-2">
+                                <span>@OrderResources.ReturnShippingCost:</span>
+                                <strong dir="ltr">$@RefundModel.ReturnShippingCost.ToString("F2")</strong>
+                            </div>
+                            <hr />
+                            <div class="d-flex justify-content-between">
+                                <span class="fw-bold">@OrderResources.TotalAmount:</span>
+                                <strong class="fs-5" dir="ltr">$@((RefundModel.RefundAmount + RefundModel.ReturnShippingCost).ToString("F2"))</strong>
                             </div>
                         </div>
                     </div>
                 }
                 else
                 {
-                    <!-- Final Status Display -->
-                    <div class="col-sm-12 mt-3">
-                        <div class="card">
-                            <div class="card-header">
-                                <h5>@OrderResources.RefundStatus</h5>
-                            </div>
-                            <div class="card-body">
-                                <div class="d-flex justify-content-center flex-column align-items-center">
-                                    @if (RefundModel.RefundStatus == RefundStatus.Rejected)
-                                    {
-                                        <span class="badge bg-danger px-3 py-2 fs-6 mb-3">@ECommerceResources.Rejected</span>
-                                        @if (!string.IsNullOrEmpty(RefundModel.RejectionReason))
-                                        {
-                                            <div class="alert alert-danger w-75 text-center">
-                                                <strong>@OrderResources.RejectionReason:</strong> @RefundModel.RejectionReason
-                                            </div>
-                                        }
-                                    }
-                                    else
-                                    {
-                                        <span class="badge bg-secondary px-3 py-2 fs-6 mb-3">@OrderResources.Closed</span>
-                                    }
-                                </div>
-
-                                @if (!string.IsNullOrEmpty(RefundModel.AdminNotes))
+                    @* Final Status Card *@
+                    <div class="card shadow-sm border-0 mb-3">
+                        <div class="card-header bg-white">
+                            <h5 class="mb-0">@OrderResources.RefundStatus</h5>
+                        </div>
+                        <div class="card-body text-center">
+                            @if (RefundModel.RefundStatus == RefundStatus.Rejected)
+                            {
+                                <span class="badge bg-danger px-3 py-2 fs-6 mb-3">@ECommerceResources.Rejected</span>
+                                @if (!string.IsNullOrEmpty(RefundModel.RejectionReason))
                                 {
-                                    <div class="mt-3 alert alert-info">
-                                        <strong>@OrderResources.AdminNotes:</strong>
-                                        <p class="mb-0 mt-2">@RefundModel.AdminNotes</p>
+                                    <div class="alert alert-danger text-start">
+                                        <strong>@OrderResources.RejectionReason:</strong>
+                                        <p class="mb-0 mt-2">@RefundModel.RejectionReason</p>
                                     </div>
                                 }
-                            </div>
+                            }
+                            else
+                            {
+                                <span class="badge bg-secondary px-3 py-2 fs-6 mb-3">@OrderResources.Closed</span>
+                            }
+
+                            @if (!string.IsNullOrEmpty(RefundModel.AdminNotes))
+                            {
+                                <div class="alert alert-info text-start">
+                                    <strong>@OrderResources.AdminNotes:</strong>
+                                    <p class="mb-0 mt-2">@RefundModel.AdminNotes</p>
+                                </div>
+                            }
                         </div>
                     </div>
                 }
             </div>
         </div>
+
+        @if (RefundModel.RefundStatus != RefundStatus.Rejected && RefundModel.RefundStatus != RefundStatus.Closed)
+        {
+            @* Refund Workflow *@
+            <div class="row">
+                <div class="col-12">
+                    <div class="card shadow-sm border-0">
+                        <div class="card-header bg-white">
+                            <h5 class="mb-0">@OrderResources.RefundWorkflow</h5>
+                        </div>
+                        <div class="card-body">
+                            <!-- SmartWizard html -->
+                            <div id="smartwizard" dir="ltr">
+                                <ul class="nav d-flex justify-content-center align-items-center">
+                                    <li class="nav-item flex-grow-1 text-center">
+                                        <a class="nav-link" href="#step-1">
+                                            <div class="num">1</div>
+                                            @OrderResources.Opened
+                                        </a>
+                                    </li>
+                                    <li class="nav-item flex-grow-1 text-center">
+                                        <a class="nav-link" href="#step-2">
+                                            <div class="num">2</div>
+                                            @ECommerceResources.UnderReview
+                                        </a>
+                                    </li>
+                                    <li class="nav-item flex-grow-1 text-center">
+                                        <a class="nav-link" href="#step-3">
+                                            <div class="num">3</div>
+                                            @OrderResources.InfoApproved
+                                        </a>
+                                    </li>
+                                    <li class="nav-item flex-grow-1 text-center">
+                                        <a class="nav-link" href="#step-4">
+                                            <div class="num">4</div>
+                                            @OrderResources.ItemReceived
+                                        </a>
+                                    </li>
+                                    <li class="nav-item flex-grow-1 text-center">
+                                        <a class="nav-link" href="#step-5">
+                                            <div class="num">5</div>
+                                            @ECommerceResources.Approved
+                                        </a>
+                                    </li>
+                                    <li class="nav-item flex-grow-1 text-center">
+                                        <a class="nav-link" href="#step-6">
+                                            <div class="num">6</div>
+                                            @OrderResources.Refunded
+                                        </a>
+                                    </li>
+                                </ul>
+
+                                <div class="tab-content">
+                                    <!-- Step 1: Open -->
+                                    <div id="step-1" class="tab-pane" role="tabpanel">
+                                        <div class="text-center fw-bold fs-5">@OrderResources.RefundRequestReceived</div>
+                                        <div class="d-flex justify-content-center align-items-center my-3">
+                                            <img src="assets/images/refund/step1.png" alt="Request Received" style="width: 300px; height: 300px;" />
+                                        </div>
+
+                                        <!-- Rejection Reason Input (for Reject action) -->
+                                        <div class="row justify-content-center mb-3">
+                                            <div class="col-12 col-md-6">
+                                                <label class="form-label">@OrderResources.RejectionReason <small class="text-muted">(@FormResources.optional)</small></label>
+                                                <textarea class="form-control" rows="3" @bind="RejectionReasonInput"
+                                                          placeholder="@string.Format(FormResources.Placeholder, OrderResources.RejectionReason)"></textarea>
+                                            </div>
+                                        </div>
+
+                                        <div class="d-flex justify-content-center gap-2 align-items-center">
+                                            <button class="btn btn-danger" @onclick="() => MoveToRejected()">@ActionsResources.Reject</button>
+                                            <button class="btn btn-primary" @onclick="() => MoveToUnderReview()">@OrderResources.StartReview</button>
+                                        </div>
+                                    </div>
+
+                                    <!-- Step 2: Under Review -->
+                                    <div id="step-2" class="tab-pane" role="tabpanel">
+                                        <div class="text-center fw-bold fs-5">@OrderResources.ReviewingRequest</div>
+                                        <div class="d-flex justify-content-center align-items-center my-3">
+                                            <img src="assets/images/refund/step2.png" alt="Under Review" style="width: 300px; height: 300px;" />
+                                        </div>
+
+                                        <!-- Admin Notes and Approved Items Count -->
+                                        <div class="row justify-content-center mb-3">
+                                            <div class="col-12 col-md-6">
+                                                <div class="mb-3">
+                                                    <label class="form-label">@OrderResources.ApprovedItems</label>
+                                                    <input type="number" class="form-control" @bind-value="ApprovedItemsCountInput"
+                                                           placeholder="@string.Format(FormResources.Placeholder, OrderResources.ApprovedItems)" />
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label class="form-label">@OrderResources.AdminNotes <small class="text-muted">(@FormResources.optional)</small></label>
+                                                    <textarea class="form-control" rows="3" @bind="AdminNotesInput"
+                                                              placeholder="@string.Format(FormResources.Placeholder, OrderResources.AdminNotes)"></textarea>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="d-flex justify-content-center gap-2 align-items-center mb-3">
+                                            @if (RefundModel.RefundStatus < RefundStatus.NeedMoreInfo)
+                                            {
+                                                <button class="btn btn-warning" @onclick="() => MoveToNeedMoreInfo()">@OrderResources.RequestMoreInfo</button>
+                                            }
+                                            <button class="btn btn-danger" @onclick="() => MoveToRejected()">@ActionsResources.Reject</button>
+                                            <button class="btn btn-success" @onclick="() => MoveToInfoApproved()">@OrderResources.ApproveInfo</button>
+                                        </div>
+                                    </div>
+
+                                    <!-- Step 3: Info Approved -->
+                                    <div id="step-3" class="tab-pane" role="tabpanel">
+                                        <div class="text-center fw-bold fs-5">@OrderResources.WaitingForReturn</div>
+                                        <div class="d-flex justify-content-center align-items-center my-3">
+                                            <img src="assets/images/refund/step3.png" alt="Info Approved" style="width: 300px; height: 300px;" />
+                                        </div>
+                                        <div class="mb-3 w-50 mx-auto">
+                                            @if (RefundModel.RefundStatus < RefundStatus.ItemShippedBack)
+                                            {
+                                                <label class="form-label">@OrderResources.TrackingNumber</label>
+                                                <input type="text" class="form-control" @bind-value="RefundModel.ReturnTrackingNumber" placeholder="@OrderResources.EnterTrackingNumber" />
+                                            }
+                                        </div>
+                                        <div class="d-flex justify-content-center gap-2">
+                                            @if (RefundModel.RefundStatus < RefundStatus.ItemShippedBack)
+                                            {
+                                                <button class="btn btn-primary" @onclick="() => MoveToItemShippedBack()">@OrderResources.MarkAsShipped</button>
+                                            }
+                                            @if (RefundModel.RefundStatus == RefundStatus.ItemShippedBack)
+                                            {
+                                                <button class="btn btn-success" @onclick="() => MoveToItemReceived()">@OrderResources.MarkAsReceived</button>
+                                            }
+                                        </div>
+                                    </div>
+
+                                    <!-- Step 4: Item Received -->
+                                    <div id="step-4" class="tab-pane" role="tabpanel">
+                                        <div class="text-center fw-bold fs-5">@OrderResources.InspectingItem</div>
+                                        <div class="d-flex justify-content-center align-items-center my-3">
+                                            <img src="assets/images/refund/step4.png" alt="Item Received" style="width: 300px; height: 300px;" />
+                                        </div>
+
+                                        <!-- Rejection Reason for After Inspection -->
+                                        <div class="row justify-content-center mb-3">
+                                            <div class="col-12 col-md-6">
+                                                <label class="form-label">@OrderResources.RejectionReason <small class="text-muted">(@FormResources.optional)</small></label>
+                                                <textarea class="form-control" rows="3" @bind="RejectionReasonInput"
+                                                          placeholder="@string.Format(FormResources.Placeholder, OrderResources.RejectionReason)"></textarea>
+                                            </div>
+                                        </div>
+
+                                        <div class="d-flex justify-content-center gap-2 align-items-center">
+                                            <button class="btn btn-danger" @onclick="() => MoveToRejected()">@OrderResources.RejectAfterInspection</button>
+                                            <button class="btn btn-success" @onclick="() => MoveToApproved()">@OrderResources.ApproveRefund</button>
+                                        </div>
+                                    </div>
+
+                                    <!-- Step 5: Approved -->
+                                    <div id="step-5" class="tab-pane" role="tabpanel">
+                                        <div class="text-center fw-bold fs-5">@OrderResources.RefundApproved</div>
+                                        <div class="d-flex justify-content-center align-items-center my-3">
+                                            <img src="assets/images/refund/step5.png" alt="Approved" style="width: 300px; height: 300px;" />
+                                        </div>
+                                        <div class="row justify-content-center mb-3">
+                                            <div class="col-12 col-sm-10 col-md-8 col-lg-6 col-xl-4">
+                                                <div class="mb-3">
+                                                    <label class="form-label">@OrderResources.RefundAmount</label>
+                                                    <input type="number" step="0.01" class="form-control"
+                                                           @bind-value="RefundResponseModel.RefundAmount"
+                                                           placeholder="@string.Format(FormResources.Placeholder, OrderResources.RefundAmount)" />
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label class="form-label">@FormResources.Comments <small class="text-muted">(@FormResources.optional)</small></label>
+                                                    <textarea class="form-control" rows="3"
+                                                              @bind="AdminNotesInput"
+                                                              placeholder="@string.Format(FormResources.Placeholder, FormResources.Comments)"></textarea>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="d-flex justify-content-center">
+                                            <button class="btn btn-success" @onclick="() => MoveToRefunded()">@OrderResources.ProcessRefund</button>
+                                        </div>
+                                    </div>
+
+                                    <!-- Step 6: Refunded -->
+                                    <div id="step-6" class="tab-pane" role="tabpanel">
+                                        <div class="text-center fw-bold fs-5">@OrderResources.RefundCompleted</div>
+                                        <div class="d-flex justify-content-center align-items-center my-3">
+                                            <img src="assets/images/refund/step6.png" alt="Refunded" style="width: 300px; height: 300px;" />
+                                        </div>
+                                        <div class="d-flex justify-content-center">
+                                            <div class="badge bg-success p-2 mb-3">@OrderResources.RefundSuccessful</div>
+                                        </div>
+                                        <div class="d-flex justify-content-center">
+                                            <button class="btn btn-primary" @onclick="() => CloseRefund()">@OrderResources.CloseRefund</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
     </div>
-</div>
+}

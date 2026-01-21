@@ -27,7 +27,6 @@ public interface IRefundService
     /// <param name="userId"></param>
     /// <returns></returns>
     Task<RefundStatusUpdateResult> UpdateRefundStatusAsync(
-        Guid refundId,
         UpdateRefundStatusDto statusDto,
         string userId);
 

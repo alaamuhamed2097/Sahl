@@ -7,6 +7,7 @@ public class UpdateRefundStatusDto
 {
     [Required]
     public RefundStatus NewStatus { get; set; }
+    public Guid RefundId { get; set; }
     public string? Notes { get; set; }
     public string? RejectionReason { get; set; }
     public decimal? RefundAmount { get; set; }

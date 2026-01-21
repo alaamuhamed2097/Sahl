@@ -50,8 +50,6 @@ namespace Dashboard.Services.Order
             }
             catch (Exception ex)
             {
-                // Log error here
-                Console.WriteLine($"{ex.Message}");
                 return new ResponseModel<RefundDetailsDto>
                 {
                     Success = false,
@@ -83,13 +81,13 @@ namespace Dashboard.Services.Order
         /// <summary>
         /// Change refund status.
         /// </summary>
-        public async Task<ResponseModel<bool>> ChangeRefundStatusAsync(RefundResponseDto refund)
+        public async Task<ResponseModel<bool>> ChangeRefundStatusAsync(UpdateRefundStatusDto refund)
         {
             if (refund == null) throw new ArgumentNullException(nameof(refund));
 
             try
             {
-                return await _apiService.PostAsync<RefundResponseDto, bool>($"{ApiEndpoints.Refund.ChangeRefundStatus}", refund);
+                return await _apiService.PostAsync<UpdateRefundStatusDto, bool>($"{ApiEndpoints.Refund.ChangeRefundStatus}", refund);
             }
             catch (Exception ex)
             {

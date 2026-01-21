@@ -566,10 +566,6 @@
   <value>اسم المستلم</value>
 </data>
 
-	<data name="TransactionID" xml:space="preserve">
-  <value>رقم العملية</value>
-</data>
-
 	<data name="PaymentDate" xml:space="preserve">
   <value>تاريخ الدفع</value>
 </data>
@@ -581,6 +577,49 @@
 	<data name="CouponCode" xml:space="preserve">
   <value>كود الخصم</value>
 </data>
-
-
+  <data name="Other" xml:space="preserve">
+  <value>أخرى</value>
+</data>
+  <data name="QualityNotSatisfactory" xml:space="preserve">
+  <value>الجودة غير مرضية</value>
+</data>
+  <data name="MissingParts" xml:space="preserve">
+  <value>أجزاء مفقودة</value>
+</data>
+  <data name="LateDelivery" xml:space="preserve">
+  <value>توصيل متأخر</value>
+</data>
+  <data name="BetterPriceFound" xml:space="preserve">
+  <value>تم العثور على سعر أفضل</value>
+</data>
+  <data name="OrderedByMistake" xml:space="preserve">
+  <value>تم الطلب بالخطأ</value>
+</data>
+  <data name="ChangedMind" xml:space="preserve">
+  <value>غيرت رأيي</value>
+</data>
+  <data name="DamagedDuringShipping" xml:space="preserve">
+  <value>تم تلف المنتج أثناء الشحن</value>
+</data>
+  <data name="ItemNotAsDescribed" xml:space="preserve">
+  <value>المنتج ليس كما هو موضح</value>
+</data>
+  <data name="WrongItemShipped" xml:space="preserve">
+  <value>تم شحن منتج خاطئ</value>
+</data>
+  <data name="DefectiveProduct" xml:space="preserve">
+  <value>منتج معيب</value>
+</data>
+  <data name="VendorInformation" xml:space="preserve">
+  <value>معلومات البائع</value>
+</data>
+  <data name="RefundSummary" xml:space="preserve">
+  <value>ملخص الاسترداد</value>
+</data>
+  <data name="ApprovedItemsRequired" xml:space="preserve">
+  <value>مطلوب عنصر معتمد على الأقل</value>
+</data>
+  <data name="RejectionReasonRequiredForRefund" xml:space="preserve">
+  <value>سبب الرفض مطلوب عند رفض طلب الاسترداد</value>
+</data>
 </root>

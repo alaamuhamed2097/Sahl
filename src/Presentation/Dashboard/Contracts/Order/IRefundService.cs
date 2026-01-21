@@ -7,7 +7,7 @@ namespace Dashboard.Contracts.Order
 {
     public interface IRefundService
     {
-        Task<ResponseModel<bool>> ChangeRefundStatusAsync(RefundResponseDto refund);
+        Task<ResponseModel<bool>> ChangeRefundStatusAsync(UpdateRefundStatusDto refund);
         Task<ResponseModel<bool>> DeleteAsync(Guid id);
         Task<ResponseModel<IEnumerable<RefundRequestDto>>> GetAllAsync();
         Task<ResponseModel<RefundDto>> GetByOrderIdAsync(Guid id);

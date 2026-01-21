@@ -37,12 +37,17 @@ window.initializeSmartWizard = function (currentState) {
 // Helper function to map order status to wizard step
 function getStepFromState(currentState) {
     const stepMap = {
-        1: 0, // Pending -> Step 1
-        2: 0, // Accepted -> Step 1 (but ready to move to step 2)
-        3: 0, // Rejected -> Step 1
-        4: 1, // InProgress -> Step 2
-        5: 2, // Shipping -> Step 3
-        6: 3  // Delivered -> Step 4
+        1: 0,  // Open -> Step 0 (index 0)
+        2: 1,  // UnderReview -> Step 1
+        3: 1,  // NeedMoreInfo -> Step 1
+        4: 2,  // InfoApproved -> Step 2
+        5: 2,  // ItemShippedBack -> Step 2
+        6: 3,  // ItemReceived -> Step 3
+        7: 3,  // Inspecting -> Step 3
+        8: 4,  // Approved -> Step 4
+        9: 0,  // Rejected -> Step 5
+        10: 5,  // Refunded -> Step 0
+        11: 5  // Closed -> Step 5
     };
 
     const step = stepMap[parseInt(currentState)] || 0;

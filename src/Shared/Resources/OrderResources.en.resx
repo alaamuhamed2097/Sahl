@@ -582,5 +582,49 @@
 	<data name="CouponCode" xml:space="preserve">
   <value>Coupon Code</value>
 </data>
-
+  <data name="Other" xml:space="preserve">
+  <value>Other</value>
+</data>
+  <data name="QualityNotSatisfactory" xml:space="preserve">
+  <value>Quality Not Satisfactory</value>
+</data>
+  <data name="MissingParts" xml:space="preserve">
+  <value>Missing Parts</value>
+</data>
+  <data name="LateDelivery" xml:space="preserve">
+  <value>Late Delivery</value>
+</data>
+  <data name="BetterPriceFound" xml:space="preserve">
+  <value>Better Price Found</value>
+</data>
+  <data name="OrderedByMistake" xml:space="preserve">
+  <value>Ordered by Mistake</value>
+</data>
+  <data name="ChangedMind" xml:space="preserve">
+  <value>Changed Mind</value>
+</data>
+  <data name="DamagedDuringShipping" xml:space="preserve">
+  <value>Damaged During Shipping</value>
+</data>
+  <data name="ItemNotAsDescribed" xml:space="preserve">
+  <value>Item Not As Described</value>
+</data>
+  <data name="WrongItemShipped" xml:space="preserve">
+  <value>Wrong Item Shipped</value>
+</data>
+  <data name="DefectiveProduct" xml:space="preserve">
+  <value>Defective Product</value>
+</data>
+  <data name="VendorInformation" xml:space="preserve">
+  <value>Vendor Information</value>
+</data>
+  <data name="RefundSummary" xml:space="preserve">
+  <value>Refund Summary</value>
+</data>
+  <data name="ApprovedItemsRequired" xml:space="preserve">
+  <value>At least one approved item is required</value>
+</data>
+  <data name="RejectionReasonRequiredForRefund" xml:space="preserve">
+  <value>Rejection reason is required when rejecting a refund</value>
+</data>
 </root>

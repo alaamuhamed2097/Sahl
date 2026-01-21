@@ -161,20 +161,11 @@ namespace Api.Controllers.v1.Order
             });
         }
 
-        // POST api/v1/Refund/changeRefundStatus
         [HttpPost("changeRefundStatus")]
-        public async Task<IActionResult> ChangeStatus([FromBody] RefundResponseDto dto)
+        public async Task<IActionResult> ChangeStatus([FromBody] UpdateRefundStatusDto dto)
         {
-            var updateDto = new UpdateRefundStatusDto
-            {
-                NewStatus = dto.CurrentState,
-                Notes = dto.AdminComments,
-                RejectionReason = dto.CurrentState == RefundStatus.Rejected ? dto.AdminComments : null,
-                RefundAmount = dto.RefundAmount > 0 ? dto.RefundAmount : null,
-                // ApprovedItemsCount and TrackingNumber might need mapping if in RefundResponseDto
-            };
 
-            var result = await _refundService.UpdateRefundStatusAsync(dto.RefundId, updateDto, GuidUserId.ToString());
+            var result = await _refundService.UpdateRefundStatusAsync(dto, GuidUserId.ToString());
 
             if (result.IsSuccess)
             {
@@ -190,7 +181,7 @@ namespace Api.Controllers.v1.Order
                 return Ok(new ResponseModel<bool>
                 {
                     Success = false,
-                    Message = result.ErrorMessage,
+                    Message = result.ErrorMessage ?? "Failed to update refund status.",
                     Data = false
                 });
             }

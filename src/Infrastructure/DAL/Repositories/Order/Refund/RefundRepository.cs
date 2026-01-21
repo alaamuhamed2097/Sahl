@@ -110,6 +110,77 @@ public class RefundRepository : IRefundRepository
             throw;
         }
     }
+    /// <summary>
+    /// Asynchronously retrieves the order with the specified unique identifier.
+    /// </summary>
+    /// <param name="id">The unique identifier of the order to retrieve.</param>
+    /// <returns>A task that represents the asynchronous operation. The task result contains the order matching the specified
+    /// identifier.</returns>
+    /// <exception cref="NotFoundException">Thrown if no order with the specified identifier exists or the order has been deleted.</exception>
+    public async Task<TbOrder> GetOrderByIdAsync(Guid id)
+    {
+        try
+        {
+            var data = await _dbContext.Set<TbOrder>()
+                .FirstOrDefaultAsync(r => r.Id == id && !r.IsDeleted);
+            if (data == null)
+                throw new NotFoundException($"Entity of type {typeof(TbOrder).Name} with ID {id} not found.", _logger);
+            return data;
+        }
+        catch (Exception ex)
+        {
+            _logger.Error(ex, "Error occurred while getting order by ID: {OrderId}", id);
+            throw;
+        }
+    }
+    public async Task<SaveResult> UpdateOrderAsync(TbOrder model, Guid updaterId, CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            // ✅ Check if entity is already tracked
+            var trackedEntity = _dbContext.Set<TbOrder>().Local
+                .FirstOrDefault(e => e.Id == model.Id);
+            if (trackedEntity != null)
+            {
+                // Entity is already tracked, update its properties
+                _dbContext.Entry(trackedEntity).CurrentValues.SetValues(model);
+            }
+            else
+            {
+                // Entity is not tracked, attach and mark as modified
+                _dbContext.Set<TbOrder>().Attach(model);
+                _dbContext.Entry(model).State = EntityState.Modified;
+            }
+            var existingEntity = await _dbContext.Set<TbOrder>()
+                .AsNoTracking()
+                .FirstOrDefaultAsync(e => e.Id == model.Id, cancellationToken);
+
+            if (existingEntity == null)
+                throw new DataAccessException($"Entity with key {model.Id} not found.", _logger);
+
+            model.UpdatedDateUtc = DateTime.UtcNow;
+            model.UpdatedBy = updaterId;
+            model.CreatedBy = existingEntity.CreatedBy;
+            model.IsDeleted = existingEntity.IsDeleted;
+            model.CreatedDateUtc = existingEntity.CreatedDateUtc;
+
+            var result = await _dbContext.SaveChangesAsync(cancellationToken) > 0;
+
+            if (!result)
+                throw new DataAccessException($"Failed to update entity with key {model.Id}.", _logger);
+
+            return new SaveResult { Success = true, Id = model.Id };
+        }
+        catch (DbUpdateConcurrencyException concurrencyEx)
+        {
+            throw new DataAccessException($"Concurrency error while updating an entity of type {typeof(TbOrder).Name}, ID {model.Id}.",_logger);
+        }
+        catch (Exception ex)
+        {
+            throw new DataAccessException(
+                $"Error occurred while updating an entity of type {typeof(TbOrder).Name}, ID {model.Id}.", _logger);
+        }
+    }
 
     /// <summary>
     /// Check if refund exists for order detail.
