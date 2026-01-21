@@ -3728,7 +3728,7 @@ namespace DAL.Migrations
                         .IsUnique()
                         .HasDatabaseName("IX_CouponCodeScope_CouponId_Type_ScopeId");
 
-                    b.ToTable("CouponCodeScopes");
+                    b.ToTable("TbCouponCodeScopes", (string)null);
                 });
 
             modelBuilder.Entity("Domains.Entities.Merchandising.HomePage.TbBlockCategory", b =>
@@ -8788,116 +8788,6 @@ namespace DAL.Migrations
                     b.ToView("VwItemBestPrices", (string)null);
                 });
 
-            modelBuilder.Entity("Domains.Views.Offer.VwOffer", b =>
-                {
-                    b.Property<Guid>("BrandId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("BrandTitleAr")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("BrandTitleEn")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<Guid>("CategoryId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("CategoryTitleAr")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("CategoryTitleEn")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("CreatedDateUtc")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int?>("EstimatedDeliveryDays")
-                        .HasColumnType("int");
-
-                    b.Property<int>("FulfillmentType")
-                        .HasColumnType("int");
-
-                    b.Property<Guid>("Id")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<bool>("IsBuyBoxWinner")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("ItemAttributes")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<Guid>("ItemId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("ItemImages")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ItemTitleAr")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ItemTitleEn")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("OfferCombinationsJson")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("PricingSystemType")
-                        .HasColumnType("int");
-
-                    b.Property<string>("VendorCompanyName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("VendorEmail")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("VendorFullName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("VendorFullPhoneNumber")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<Guid>("VendorId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<decimal>("VendorRatingForThisItem")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<int>("VendorSalesCountForThisItem")
-                        .HasColumnType("int");
-
-                    b.Property<int>("VisibilityScope")
-                        .HasColumnType("int");
-
-                    b.Property<Guid?>("WarrantyId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<int?>("WarrantyPeriodMonths")
-                        .HasColumnType("int");
-
-                    b.Property<string>("WarrantyPolicy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int?>("WarrantyType")
-                        .HasColumnType("int");
-
-                    b.ToTable((string)null);
-
-                    b.ToView("VwOffers", (string)null);
-                });
-
             modelBuilder.Entity("Domains.Views.Offer.VwVendorItem", b =>
                 {
                     b.Property<int>("AvailableQuantity")
@@ -9024,6 +8914,109 @@ namespace DAL.Migrations
                     b.ToTable((string)null);
 
                     b.ToView("VwVendorItems", (string)null);
+                });
+
+            modelBuilder.Entity("Domains.Views.Order.Refund.VwRefundDetails", b =>
+                {
+                    b.Property<string>("AdminNotes")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("AdminUserId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("ApprovedDateUTC")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("ApprovedItemsCount")
+                        .HasColumnType("int");
+
+                    b.Property<string>("CustomerEmail")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CustomerFullPhoneNumber")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("CustomerId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("CustomerName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("DeliveryAddress")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid?>("DeliveryAddressId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("DeliveryFullPhoneNumber")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("DeliveryRecipientName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Number")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("OrderDetailId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<decimal>("RefundAmount")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("RefundReason")
+                        .HasColumnType("int");
+
+                    b.Property<string>("RefundReasonDetails")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("RefundStatus")
+                        .HasColumnType("int");
+
+                    b.Property<string>("RefundTransactionId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("RefundedDateUTC")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("RejectionReason")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("RequestDateUTC")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("RequestedItemsCount")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("ReturnShippingCost")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("ReturnTrackingNumber")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("ReturnedDateUTC")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("VendorId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("VendorName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("VendorStoreName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.ToTable((string)null);
+
+                    b.ToView("VwRefundDetails", (string)null);
                 });
 
             modelBuilder.Entity("Domains.Views.Unit.VwUnitWithConversionsUnits", b =>

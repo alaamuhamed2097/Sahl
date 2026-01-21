@@ -617,4 +617,143 @@
 	<data name="EndDate" xml:space="preserve">
     <value>End Date:</value>
   </data>
+
+	<!-- Existing Resources -->
+	<data name="CreateNewCampaign" xml:space="preserve">
+    <value>Create New Campaign</value>
+  </data>
+	<data name="EditCampaign" xml:space="preserve">
+    <value>Edit Campaign</value>
+  </data>
+	<data name="Loading" xml:space="preserve">
+    <value>Loading...</value>
+  </data>
+	<data name="BasicInformation" xml:space="preserve">
+    <value>Basic Information</value>
+  </data>
+	<data name="CampaignDuration" xml:space="preserve">
+    <value>Campaign Duration</value>
+  </data>
+	<data name="StartDate" xml:space="preserve">
+    <value>Start Date</value>
+  </data>
+	<data name="EndDate" xml:space="preserve">
+    <value>End Date</value>
+  </data>
+	<data name="FlashSaleConfiguration" xml:space="preserve">
+    <value>Flash Sale Configuration</value>
+  </data>
+	<data name="EnableFlashSaleMode" xml:space="preserve">
+    <value>Enable Flash Sale Mode</value>
+  </data>
+	<data name="FlashSaleEndTime" xml:space="preserve">
+    <value>Flash Sale End Time</value>
+  </data>
+	<data name="FlashSaleEndTimeHint" xml:space="preserve">
+    <value>Specify when the flash sale ends</value>
+  </data>
+	<data name="MaxQuantityPerUser" xml:space="preserve">
+    <value>Max Quantity Per User</value>
+  </data>
+	<data name="MaxQuantityPerUserHint" xml:space="preserve">
+    <value>Maximum items each user can purchase</value>
+  </data>
+	<data name="BadgeConfiguration" xml:space="preserve">
+    <value>Badge Configuration</value>
+  </data>
+	<data name="BadgeTextEn" xml:space="preserve">
+    <value>Badge Text (English)</value>
+  </data>
+	<data name="BadgeTextEnPlaceholder" xml:space="preserve">
+    <value>e.g., SALE, HOT DEAL</value>
+  </data>
+	<data name="BadgeTextEnHint" xml:space="preserve">
+    <value>Text displayed on the badge in English</value>
+  </data>
+	<data name="BadgeTextAr" xml:space="preserve">
+    <value>Badge Text (Arabic)</value>
+  </data>
+	<data name="BadgeTextEnPlaceholder" xml:space="preserve">
+  <value>e.g., SALE, HOT DEAL</value>
+</data>
+	<data name="BadgeTextArPlaceholder" xml:space="preserve">
+  <value>e.g., تخفيض, عرض ساخن</value>
+</data>
+	<data name="BadgeTextArHint" xml:space="preserve">
+    <value>Text displayed on the badge in Arabic</value>
+  </data>
+	<data name="BadgeColor" xml:space="preserve">
+    <value>Badge Color</value>
+  </data>
+	<data name="Status" xml:space="preserve">
+    <value>Status</value>
+  </data>
+	<data name="CampaignIsActive" xml:space="preserve">
+    <value>Campaign is Active</value>
+  </data>
+	<data name="CampaignIsInactive" xml:space="preserve">
+    <value>Campaign is Inactive</value>
+  </data>
+	<data name="InactiveCampaignNote" xml:space="preserve">
+    <value>Inactive campaigns will not be visible to users</value>
+  </data>
+	<data name="CreatedDate" xml:space="preserve">
+    <value>Created Date</value>
+  </data>
+	<data name="CampaignItems" xml:space="preserve">
+    <value>Campaign Items</value>
+  </data>
+	<data name="ItemNameEn" xml:space="preserve">
+    <value>Item Name (English)</value>
+  </data>
+	<data name="ItemNameAr" xml:space="preserve">
+    <value>Item Name (Arabic)</value>
+  </data>
+	<data name="DisplayOrder" xml:space="preserve">
+    <value>Display Order</value>
+  </data>
+	<data name="Actions" xml:space="preserve">
+    <value>Actions</value>
+  </data>
+
+	<!-- New Resources for Campaign Items Page -->
+	<data name="Image" xml:space="preserve">
+    <value>Image</value>
+  </data>
+	<data name="Active" xml:space="preserve">
+    <value>Active</value>
+  </data>
+	<data name="Inactive" xml:space="preserve">
+    <value>Inactive</value>
+  </data>
+	<data name="SearchItems" xml:space="preserve">
+    <value>Search items...</value>
+  </data>
+	<data name="NoItemsFound" xml:space="preserve">
+    <value>No Items Found</value>
+  </data>
+	<data name="AddItemsToGetStarted" xml:space="preserve">
+    <value>Add items to this campaign to get started</value>
+  </data>
+	<data name="ViewDetails" xml:space="preserve">
+    <value>View Details</value>
+  </data>
+	<data name="RemoveFromCampaign" xml:space="preserve">
+    <value>Remove from Campaign</value>
+  </data>
+	<data name="Showing" xml:space="preserve">
+    <value>Showing</value>
+  </data>
+	<data name="Of" xml:space="preserve">
+    <value>of</value>
+  </data>
+	<data name="Items" xml:space="preserve">
+    <value>items</value>
+  </data>
+	<data name="LastUpdated" xml:space="preserve">
+    <value>Last Updated</value>
+  </data>
+	<data name="ImagePreview" xml:space="preserve">
+    <value>Image Preview</value>
+  </data>
 </root>

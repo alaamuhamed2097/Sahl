@@ -1,8 +1,13 @@
+﻿using Common.Filters;
 using Dashboard.Contracts.Campaign;
 using Dashboard.Contracts.General;
+using Dashboard.Services.Merchandising;
+using Dashboard.Services.Notification;
 using Microsoft.AspNetCore.Components;
 using Resources;
 using Shared.DTOs.Campaign;
+using Shared.DTOs.Customer;
+using Shared.DTOs.Merchandising.Homepage;
 using Shared.GeneralModels;
 
 namespace Dashboard.Pages.Merchandising.Campaigns
@@ -10,8 +15,12 @@ namespace Dashboard.Pages.Merchandising.Campaigns
     public partial class Index : BaseListPage<CampaignDto>
     {
         [Inject] protected ICampaignService CampaignService { get; set; } = null!;
+		protected string currentStatusFilter = string.Empty;
+		protected CampaignSearchCriteriaModel searchModel { get; set; } = new();
+		private string currentSortColumn = "";
+		private string currentSortDirection = "asc";
 
-        protected override string EntityName { get; } = "Campaign";
+		protected override string EntityName { get; } = "Campaign";
         protected override string AddRoute { get; } = "/campaigns/new";
         protected override string EditRouteTemplate { get; } = "/campaigns/{id}";
         protected override string SearchEndpoint { get; } = "api/v1/campaign/search";
@@ -71,51 +80,60 @@ namespace Dashboard.Pages.Merchandising.Campaigns
                 };
             }
         }
-		protected virtual async Task SortByColumn(string columnName)
+	
+
+		protected override async Task OnInitializedAsync()
 		{
-			if (searchModel.SortBy == columnName)
+			searchModel.PageSize = 10;
+			searchModel.PageNumber = 1;
+			await base.OnInitializedAsync();
+		}
+
+		private async Task OnStatusFilterChanged(string statusValue)
+		{
+			if (string.IsNullOrEmpty(statusValue))
 			{
-				// Toggle sort direction if same column
-				searchModel.SortDirection = searchModel.SortDirection == "asc" ? "desc" : "asc";
+				searchModel.Status = null; // All
 			}
-			else
+			else if (int.TryParse(statusValue, out int status))
 			{
-				// New column, default to ascending
-				searchModel.SortBy = columnName;
-				searchModel.SortDirection = "asc";
+				searchModel.Status = status; // 1 = Active, 2 = Inactive
 			}
 
-			// Reset to first page when sorting changes
-			currentPage = 1;
 			searchModel.PageNumber = 1;
-			await Search();
+			await GetAllItemsAsync();
+		}
+
+		private async Task OnTypeFilterChanged(string typeValue)
+		{
+			if (string.IsNullOrEmpty(typeValue))
+			{
+				searchModel.Type = null; // All
+			}
+			else if (int.TryParse(typeValue, out int type))
+			{
+				searchModel.Type = type; // 1 = Flash Sale, 2 = Regular
+			}
+
+			searchModel.PageNumber = 1;
+			await LoadItems();
+		}
+		private async Task OnPageSizeChanged(ChangeEventArgs e)
+		{
+			if (int.TryParse(e.Value?.ToString(), out int newSize))
+			{
+				searchModel.PageSize = newSize;
+				searchModel.PageNumber = 1; // Reset to first page
+				await LoadItems();
+			}
+		}
+		private void ViewDetails(Guid campaignId)
+		{
+			Navigation.NavigateTo($"/campaigns/show/{campaignId}");
 		}
 		protected override async Task<string> GetItemId(CampaignDto item)
         {
             return item?.Id != Guid.Empty ? item.Id.ToString() : string.Empty;
-        }
-
-        protected virtual async Task OnStatusFilterChanged(string status)
-        {
-            searchModel.PageNumber = 1;
-            await Search();
-        }
-
-        protected virtual async Task OnTypeFilterChanged(string type)
-        {
-            searchModel.PageNumber = 1;
-            await Search();
-        }
-
-        protected virtual async Task OnDeleteConfirm(Guid campaignId)
-        {
-            await Delete(campaignId);
-        }
-
-        protected virtual async Task GoToPageAsync(int pageNumber)
-        {
-            searchModel.PageNumber = pageNumber;
-            await Search();
         }
     }
 }

@@ -1,11 +1,16 @@
 ﻿using AutoMapper;
 using BL.Contracts.Service.Merchandising.Campaign;
 using BL.Contracts.Service.Vendor;
+using BL.Services.Base;
 using Common.Filters;
+using DAL.Contracts.Repositories;
 using DAL.Contracts.Repositories.Merchandising;
 using DAL.Services;
 using Domains.Entities.Campaign;
+using Domains.Entities.Catalog.Item;
+using Domains.Entities.ECommerceSystem.Vendor;
 using Microsoft.EntityFrameworkCore;
+using Resources;
 using Shared.DTOs.Campaign;
 using Shared.GeneralModels;
 using System;
@@ -14,17 +19,22 @@ using System.Text;
 
 namespace BL.Services.Merchandising.Campaign
 {
-	public class CampaignItemService : ICampaignItemService
+	public class CampaignItemService : BaseService<TbCampaignItem,CampaignItemDto>, ICampaignItemService
 	{
 		private readonly ICampaignItemRepository _campaignItemRepository;
+		private readonly ITableRepository<TbVendor> _vendorRepository;
 		private readonly ICampaignRepository _campaignRepository;
 		private readonly IMapper _mapper;
-		public CampaignItemService(ICampaignItemRepository campaignItemRepository, IMapper mapper, ICampaignRepository campaignRepository)
-			
+		public CampaignItemService(
+			ICampaignItemRepository campaignItemRepository,
+			IMapper mapper, ICampaignRepository campaignRepository, ITableRepository<TbVendor> vendorRepository)
+			: base(campaignItemRepository, mapper)
+
 		{
 			_campaignItemRepository = campaignItemRepository;
 			_mapper = mapper;
 			_campaignRepository = campaignRepository;
+			_vendorRepository = vendorRepository;
 		}
 
 		#region Campaign Items
@@ -39,6 +49,7 @@ namespace BL.Services.Merchandising.Campaign
 		}
 		public async Task<CampaignItemDto> AddItemToCampaignAsync(AddCampaignItemDto dto, Guid userId)
 		{
+			
 			// Validate campaign exists
 			var campaign = await _campaignRepository.GetCampaignByIdAsync(dto.CampaignId);
 			if (campaign == null)
@@ -63,6 +74,38 @@ namespace BL.Services.Merchandising.Campaign
 
 			return _mapper.Map<CampaignItemDto>(result);
 		}
+
+		//public async Task<CampaignItemDto> RemoveItemAsync(UpdateCampaignItemDto dto, Guid userId)
+		//{
+		//	// Get existing campaign item
+		//	var existingItem = await GetCampaignItemsAsync(dto.CampaignId);
+		//	if (existingItem == null)
+		//	{
+		//		throw new KeyNotFoundException($"Campaign item with ID {dto.CampaignId} not found");
+		//	}
+
+		//	// Validate campaign if changed
+		//	if (dto.CampaignId != existingItem.CampaignId)
+		//	{
+		//		var campaign = await _campaignRepository.GetCampaignByIdAsync(dto.CampaignId);
+		//		if (campaign == null)
+		//		{
+		//			throw new KeyNotFoundException($"Campaign with ID {dto.CampaignId} not found");
+		//		}
+		//	}
+
+		//	// Map updates
+		//	_mapper.Map(dto, existingItem);
+
+		//	// Update metadata
+		//	existingItem.ModifiedDateUtc = DateTime.UtcNow;
+		//	existingItem.ModifiedBy = userId;
+
+		//	var result = await _campaignItemRepository.UpdateCampaignItemAsync(existingItem);
+
+		//	return _mapper.Map<CampaignItemDto>(result);
+		//}
+
 		/// <summary>
 		/// Update sold count when item is purchased
 		/// </summary>
@@ -76,7 +119,7 @@ namespace BL.Services.Merchandising.Campaign
 		/// </summary>
 		public async Task<bool> RemoveItemFromCampaignAsync(Guid campaignItemId, Guid userId)
 		{
-			return await _campaignItemRepository.RemoveItemFromCampaignAsync(campaignItemId);
+			return await _campaignItemRepository.RemoveItemFromCampaignAsync(campaignItemId, userId);
 		}
 		public async Task<ResponseModel<PaginatedSearchResult<CampaignItemDto>>> SearchCampaignItemsAsync(BaseSearchCriteriaModel searchCriteria, Guid campaignId)
 		{
@@ -91,6 +134,84 @@ namespace BL.Services.Merchandising.Campaign
 									.ThenInclude(ic => ic.Item)
 							.Where(ci => !ci.IsDeleted && ci.CampaignId == campaignId); 
 
+
+
+				// Apply search filter
+				if (!string.IsNullOrWhiteSpace(searchCriteria.SearchTerm))
+				{
+					var searchTerm = searchCriteria.SearchTerm.ToLower();
+					query = query.Where(ci =>
+						(ci.OfferCombinationPricing != null &&
+						 ci.OfferCombinationPricing.ItemCombination != null &&
+						 ci.OfferCombinationPricing.ItemCombination.Item != null &&
+						 (ci.OfferCombinationPricing.ItemCombination.Item.TitleEn.ToLower().Contains(searchTerm) ||
+						  ci.OfferCombinationPricing.ItemCombination.Item.TitleAr.ToLower().Contains(searchTerm))));
+				}
+				// Get total count before pagination
+				var totalCount = await query.CountAsync();
+
+				// Apply sorting
+				query = ApplySorting(query, searchCriteria.SortBy, searchCriteria.SortDirection);
+
+				// Apply pagination
+				var pageNumber = searchCriteria.PageNumber > 0 ? searchCriteria.PageNumber : 1;
+				var pageSize = searchCriteria.PageSize > 0 ? searchCriteria.PageSize : 10;
+				var skip = (pageNumber - 1) * pageSize;
+
+				var campaignItems = await query
+					.Skip(skip)
+					.Take(pageSize)
+					.AsNoTracking()
+					.ToListAsync();
+
+				var campaignItemDtos = _mapper.Map<List<CampaignItemDto>>(campaignItems);
+
+				// Build the response
+				response.Data = new PaginatedSearchResult<CampaignItemDto>
+				{
+					Items = campaignItemDtos,
+					TotalRecords = totalCount
+				};
+
+				response.SetSuccessMessage("Campaign items retrieved successfully");
+				response.StatusCode = 200;
+			}
+			catch (Exception ex)
+			{
+				response.SetErrorMessage($"Error retrieving campaign items: {ex.Message}");
+				response.StatusCode = 500;
+			}
+
+			return response;
+		}
+
+		#endregion
+
+		#region Vendor Campaign Items
+
+		public async Task<ResponseModel<PaginatedSearchResult<CampaignItemDto>>> SearchCampaignItemsForVendorAsync(BaseSearchCriteriaModel searchCriteria, Guid campaignId, Guid userId)
+		{
+			var response = new ResponseModel<PaginatedSearchResult<CampaignItemDto>>();
+			try
+			{
+				var vendor = await _vendorRepository.FindAsync(v => v.UserId == userId.ToString() && !v.IsDeleted);
+
+				if (vendor == null)
+				{
+					response.SetErrorMessage("Vendor not found for this user");
+					response.StatusCode = 404;
+					return response;
+				}
+
+
+				var query = _campaignItemRepository.GetQueryable()
+					.Include(ci => ci.Campaign)
+					.Include(ci => ci.OfferCombinationPricing)
+						.ThenInclude(ocp => ocp.ItemCombination)
+							.ThenInclude(ic => ic.Item)
+					.Where(ci => !ci.IsDeleted
+						&& ci.CampaignId == campaignId
+						&& ci.VendorId == vendor.Id); // ✅ Filter by VendorId
 
 
 				// Apply search filter
@@ -142,82 +263,39 @@ namespace BL.Services.Merchandising.Campaign
 
 			return response;
 		}
-		//public async Task<ResponseModel<PaginatedSearchResult<CampaignItemDto>>> SearchCampaignItemsForVendorAsync(BaseSearchCriteriaModel searchCriteria, Guid campaignId, Guid userId)
-		//{
-		//	var response = new ResponseModel<PaginatedSearchResult<CampaignItemDto>>();
-		//	try
-		//	{
-		//		  var vendor = await _dbContext.TbVendors
-  //          .AsNoTracking()
-  //          .FirstOrDefaultAsync(v => v.UserId == userId && !v.IsDeleted);
 
-		//		if (vendor == null)
-		//		{
-		//			response.SetErrorMessage("Vendor not found for this user");
-		//			response.StatusCode = 404;
-		//			return response;
-		//		}
-
-				
-		//		var query = _campaignItemRepository.GetQueryable()
-		//			.Include(ci => ci.Campaign)
-		//			.Include(ci => ci.OfferCombinationPricing)
-		//				.ThenInclude(ocp => ocp.ItemCombination)
-		//					.ThenInclude(ic => ic.Item)
-		//			.Where(ci => !ci.IsDeleted
-		//				&& ci.CampaignId == campaignId
-		//				&& ci.VendorId == vendor.Id); // ✅ Filter by VendorId
+		public async Task<CampaignItemDto> AddItemToCampaignForVendorAsync(AddCampaignItemDto dto, Guid userId)
+		{
+			var vendor = await _vendorRepository.FindAsync(v => v.UserId == userId.ToString() && !v.IsDeleted);
+			if (vendor == null )
+				throw new KeyNotFoundException(
+					"Vendor Not Found"
+				);
 
 
-		//		// Apply search filter
-		//		if (!string.IsNullOrWhiteSpace(searchCriteria.SearchTerm))
-		//		{
-		//			var searchTerm = searchCriteria.SearchTerm.ToLower();
-		//			query = query.Where(ci =>
-		//				(ci.OfferCombinationPricing != null &&
-		//				 ci.OfferCombinationPricing.ItemCombination != null &&
-		//				 ci.OfferCombinationPricing.ItemCombination.Item != null &&
-		//				 (ci.OfferCombinationPricing.ItemCombination.Item.TitleEn.ToLower().Contains(searchTerm) ||
-		//				  ci.OfferCombinationPricing.ItemCombination.Item.TitleAr.ToLower().Contains(searchTerm))));
-		//		}
+			var campaign = await _campaignRepository.GetCampaignByIdAsync(dto.CampaignId)
+				?? throw new KeyNotFoundException($"Campaign with ID {dto.CampaignId} not found");
 
-		//		// Get total count before pagination
-		//		var totalCount = await query.CountAsync();
+			
+			var campaignItem = _mapper.Map<TbCampaignItem>(dto);
+			campaignItem.Id = Guid.NewGuid();
+			campaignItem.CreatedDateUtc = DateTime.UtcNow;
+			campaignItem.CreatedBy = userId;
+			campaignItem.IsDeleted = false;
+			campaignItem.IsActive = true;
+			campaignItem.VendorId = vendor.Id; 
 
-		//		// Apply sorting
-		//		query = ApplySorting(query, searchCriteria.SortBy, searchCriteria.SortDirection);
+			var result = await _campaignItemRepository.AddItemToCampaignAsync(campaignItem);
 
-		//		// Apply pagination
-		//		var pageNumber = searchCriteria.PageNumber > 0 ? searchCriteria.PageNumber : 1;
-		//		var pageSize = searchCriteria.PageSize > 0 ? searchCriteria.PageSize : 10;
-		//		var skip = (pageNumber - 1) * pageSize;
+			return _mapper.Map<CampaignItemDto>(result);
+		}
 
-		//		var campaignItems = await query
-		//			.Skip(skip)
-		//			.Take(pageSize)
-		//			.AsNoTracking()
-		//			.ToListAsync();
+		public async Task<IEnumerable<TbCampaignItem>> GetVendorCampaignItems(Guid campaignId, Guid userId)
+		{
+			return await _campaignItemRepository.GetCampaignItemsForVendorAsync(campaignId, userId);
+		}
 
-		//		var campaignItemDtos = _mapper.Map<List<CampaignItemDto>>(campaignItems);
-
-		//		// Build the response
-		//		response.Data = new PaginatedSearchResult<CampaignItemDto>
-		//		{
-		//			Items = campaignItemDtos,
-		//			TotalRecords = totalCount
-		//		};
-
-		//		response.SetSuccessMessage("Campaign items retrieved successfully");
-		//		response.StatusCode = 200;
-		//	}
-		//	catch (Exception ex)
-		//	{
-		//		response.SetErrorMessage($"Error retrieving campaign items: {ex.Message}");
-		//		response.StatusCode = 500;
-		//	}
-
-		//	return response;
-		//}
+		#endregion
 
 		// Helper method for sorting
 		private IQueryable<TbCampaignItem> ApplySorting(
@@ -248,7 +326,5 @@ namespace BL.Services.Merchandising.Campaign
 				_ => query.OrderByDescending(ci => ci.CreatedDateUtc) // Default sorting
 			};
 		}
-
-		#endregion
 	}
 }

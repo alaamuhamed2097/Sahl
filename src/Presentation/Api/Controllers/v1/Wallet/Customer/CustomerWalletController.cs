@@ -9,7 +9,7 @@ using Shared.GeneralModels;
 
 namespace Api.Controllers.v1.Wallet.Customer
 {
-    [Route("api/[controller]")]
+    [Route("api/v{version:apiVersion}/[controller]")]
     [ApiController]
     [Authorize(Roles = nameof(UserType.Customer))]
     public class CustomerWalletController : BaseController

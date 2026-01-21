@@ -2,6 +2,7 @@
 using BL.Contracts.Service.Order.Payment;
 using Common.Enumerations.Payment;
 using DAL.Contracts.UnitOfWork;
+using DAL.Repositories.Order.Refund;
 using Domains.Entities.Order;
 using Domains.Entities.Order.Payment;
 using Microsoft.EntityFrameworkCore;
@@ -17,17 +18,20 @@ namespace BL.Services.Order.Payment
     public class PaymentService : IPaymentService
     {
         private readonly IUnitOfWork _unitOfWork;
+        private readonly IRefundRepository _refundRepository;
         private readonly IMapper _mapper;
         private readonly ILogger _logger;
 
         public PaymentService(
             IUnitOfWork unitOfWork,
             IMapper mapper,
-            ILogger logger)
+            ILogger logger,
+            IRefundRepository refundRepository)
         {
             _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _refundRepository = refundRepository;
         }
 
         public async Task<PaymentResult> ProcessPaymentAsync(IPaymentProcessRequest request)
@@ -310,7 +314,7 @@ namespace BL.Services.Order.Payment
                     {
                         order.PaymentStatus = PaymentStatus.Completed;
                         order.PaidAt = DateTime.UtcNow;
-                        await orderRepo.UpdateAsync(order, Guid.Empty);
+                        await _refundRepository.UpdateOrderAsync(order, Guid.Empty);
                     }
 
                     await _unitOfWork.CommitAsync();
@@ -373,11 +377,11 @@ namespace BL.Services.Order.Payment
                 await paymentRepo.UpdateAsync(payment, Guid.Empty);
 
                 var orderRepo = _unitOfWork.TableRepository<TbOrder>();
-                var order = await orderRepo.FindByIdAsync(payment.OrderId);
+                var order = (await orderRepo.GetAsync(o=>o.Id == payment.OrderId)).FirstOrDefault();
                 if (order != null)
                 {
                     order.PaymentStatus = PaymentStatus.Refunded;
-                    await orderRepo.UpdateAsync(order, Guid.Empty);
+                    await _refundRepository.UpdateOrderAsync(order, Guid.Empty);
                 }
 
                 await _unitOfWork.CommitAsync();

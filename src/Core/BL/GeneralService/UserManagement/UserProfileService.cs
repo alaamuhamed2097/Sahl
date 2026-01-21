@@ -357,7 +357,7 @@ public class UserProfileService : IUserProfileService
         }
         else
         {
-            user.ProfileImagePath = null;
+            user.ProfileImagePath = "uploads/Images/ProfileImages/Customers/default.png";
         }
 
         user.UpdatedBy = Guid.Parse(userId);

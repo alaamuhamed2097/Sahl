@@ -4,6 +4,7 @@ using BL.Extensions;
 using BL.Services.Base;
 using Common.Enumerations.Review;
 using DAL.Contracts.Repositories;
+using DAL.Contracts.Repositories.Customer;
 using DAL.Contracts.Repositories.Review;
 using DAL.Exceptions;
 using DAL.Models;
@@ -22,6 +23,7 @@ namespace BL.Services.Review
     {
         private readonly ITableRepository<TbItem> _itemRepository;
         private readonly IItemReviewRepository _reviewRepository;
+        private readonly ICustomerRepository _customerRepository;
         private readonly IBaseMapper _mapper;
         private readonly ILogger _logger;
 
@@ -29,12 +31,14 @@ namespace BL.Services.Review
             ITableRepository<TbItem> itemRepository,
             ITableRepository<TbItemReview> tableRepository,
             IItemReviewRepository reviewRepo,
+            ICustomerRepository customerRepository,
             IBaseMapper mapper,
             ILogger logger)
             : base(tableRepository, mapper)
         {
             _reviewRepository = reviewRepo;
             _itemRepository = itemRepository;
+            _customerRepository = customerRepository;
             _mapper = mapper;
             _logger = logger;
         }
@@ -260,9 +264,12 @@ namespace BL.Services.Review
                 if (!isValid.sucess)
                     throw new Exception(isValid.errorMassage);
 
+                var customer = await _customerRepository.FindAsync(c => c.UserId == creatorId.ToString());
+
                 // Mapping review
                 var review = _mapper.MapModel<ItemReviewDto, TbItemReview>(reviewDto);
                 review.ReviewNumber = generateNumber();
+                review.CustomerId = customer.Id;
                 review.Status = ReviewStatus.Approved;
                 review.IsEdited = false;
 
@@ -444,11 +451,11 @@ namespace BL.Services.Review
         private string generateNumber()
         {
             // Generate a unique 4-character string
-            char[] randomNumber = new char[4];
+            char[] randomNumber = new char[3];
             byte[] randomBytes = RandomNumberGenerator.GetBytes(4);
             const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 
-            for (int i = 0; i < 4; i++)
+            for (int i = 0; i < 3; i++)
                 randomNumber[i] = chars[randomBytes[i] % chars.Length];
 
             // Generation Time
@@ -456,7 +463,7 @@ namespace BL.Services.Review
             var egyptTime = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, egyptTimeZone);
             var formattedDate = egyptTime.ToString("MMdd");
 
-            return $"REV-{formattedDate}-{randomNumber}";
+            return $"REV-{formattedDate}-{new string(randomNumber)}";
         }
 
         #endregion

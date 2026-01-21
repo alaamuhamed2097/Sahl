@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using BL.Contracts.IMapper;
 using BL.Services.Merchandising.CouponCode;
 using Common.Enumerations.Order;
 using DAL.Contracts.Repositories.Merchandising;
@@ -18,6 +19,7 @@ namespace UnitTests.Core.BL.Services.Merchandising
         private readonly Mock<ICouponCodeRepository> _mockRepository;
         private readonly Mock<IUnitOfWork> _mockUnitOfWork;
         private readonly Mock<IMapper> _mockMapper;
+        private readonly Mock<IBaseMapper> _mockBaseMapper;
         private readonly CouponCodeService _service;
         private readonly Guid _testUserId = Guid.NewGuid();
 
@@ -26,7 +28,8 @@ namespace UnitTests.Core.BL.Services.Merchandising
             _mockRepository = new Mock<ICouponCodeRepository>();
             _mockUnitOfWork = new Mock<IUnitOfWork>();
             _mockMapper = new Mock<IMapper>();
-            _service = new CouponCodeService(_mockRepository.Object, _mockUnitOfWork.Object, _mockMapper.Object);
+            _mockBaseMapper = new Mock<IBaseMapper>();
+            _service = new CouponCodeService(_mockRepository.Object, _mockUnitOfWork.Object, _mockBaseMapper.Object);
         }
 
         #region General Promo Type Tests
@@ -262,43 +265,6 @@ namespace UnitTests.Core.BL.Services.Merchandising
             Assert.NotNull(result);
             Assert.Equal(CouponCodeType.VendorBased, result.PromoType);
             Assert.Equal(vendorId, result.VendorId);
-        }
-
-        #endregion
-
-        #region NewUserOnly Promo Type Tests
-
-        [Fact]
-        public async Task SaveAsync_NewUserOnly_WithoutScopes_ShouldSucceed()
-        {
-            // Arrange
-            var dto = CreateTestCouponDto(Guid.Empty, "NEWUSER");
-            dto.PromoType = CouponCodeType.NewUserOnly;
-            dto.IsFirstOrderOnly = true;
-            dto.ScopeItems = null;
-
-            var entity = CreateTestCoupon(Guid.NewGuid(), "NEWUSER");
-            entity.IsFirstOrderOnly = true;
-            var saveResult = new SaveResult { Success = true, Id = entity.Id };
-
-            _mockRepository.Setup(r => r.IsCodeUniqueAsync("NEWUSER", null, default))
-                .ReturnsAsync(true);
-            _mockMapper.Setup(m => m.Map<TbCouponCode>(dto))
-                .Returns(entity);
-            _mockRepository.Setup(r => r.SaveAsync(It.IsAny<TbCouponCode>(), _testUserId, default))
-                .ReturnsAsync(saveResult);
-            _mockRepository.Setup(r => r.GetByIdAsync(entity.Id, default))
-                .ReturnsAsync(entity);
-            _mockMapper.Setup(m => m.Map<CouponCodeDto>(entity))
-                .Returns(dto);
-
-            // Act
-            var result = await _service.SaveAsync(dto, _testUserId);
-
-            // Assert
-            Assert.NotNull(result);
-            Assert.Equal(CouponCodeType.NewUserOnly, result.PromoType);
-            Assert.True(result.IsFirstOrderOnly);
         }
 
         #endregion

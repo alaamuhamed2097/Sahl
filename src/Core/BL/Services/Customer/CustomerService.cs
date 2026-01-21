@@ -98,6 +98,24 @@ namespace BL.Services.Customer
 		}
 
 		/// <summary>
+		/// Get customer by user ID
+		/// </summary>
+		public async Task<CustomerDto> GetByUserIdAsync(string userId)
+		{
+			try
+			{
+				var customer = await _customerRepository.GetCustomerByUserIdAsync(userId);
+				var dto = _mapper.MapModel<TbCustomer, CustomerDto>(customer);
+				return dto;
+            }
+			catch (Exception ex)
+			{
+				_logger.Error(ex, "Error while getting customer by user ID: {UserId}", userId);
+                throw new Exception ("Error while getting customer.");
+			}
+		}
+
+		/// <summary>
 		/// Search customers with pagination and filtering
 		/// </summary>
 		public async Task<ResponseModel<AdvancedPagedResult<CustomerDto>>> SearchAsync(

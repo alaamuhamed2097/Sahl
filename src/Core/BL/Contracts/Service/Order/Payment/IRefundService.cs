@@ -1,6 +1,9 @@
 ﻿using BL.Services.Order.Payment;
+using Common.Filters;
 using DAL.Models;
 using Shared.DTOs.Order.Payment.Refund;
+using Shared.ResultModels.Refund;
+using System.Threading.Tasks;
 
 namespace BL.Contracts.Service.Order.Payment;
 
@@ -24,7 +27,6 @@ public interface IRefundService
     /// <param name="userId"></param>
     /// <returns></returns>
     Task<RefundStatusUpdateResult> UpdateRefundStatusAsync(
-        Guid refundId,
         UpdateRefundStatusDto statusDto,
         string userId);
 
@@ -34,13 +36,29 @@ public interface IRefundService
     Task<RefundRequestDto?> GetRefundRequestByIdAsync(Guid refundRequestId);
 
     /// <summary>
+    /// Asynchronously retrieves a refund request by its unique number.
+    /// </summary>
+    /// <param name="number">The unique identifier number of the refund request to retrieve. Cannot be null or empty.</param>
+    /// <returns>A task that represents the asynchronous operation. The task result contains a <see cref="RefundRequestDto"/> if
+    /// a refund request with the specified number exists; otherwise, <see langword="null"/>.</returns>
+    Task<RefundRequestDto> GetRefundRequestByNumberAsync(string number);
+
+    /// <summary>
     /// Gets refund request by order ID
     /// </summary>
     Task<RefundRequestDto?> GetRefundRequestByOrderDetailIdAsync(Guid orderId);
 
     /// <summary>
+    /// Asynchronously retrieves the refund details for the specified unique identifier.
+    /// </summary>
+    /// <param name="id">The unique identifier of the refund to retrieve.</param>
+    /// <returns>A task that represents the asynchronous operation. The task result contains a <see cref="RefundDetailsDto"/>
+    /// with the details of the refund if found.</returns>
+    Task<RefundDetailsDto> FindById(Guid id);
+
+    /// <summary>
     /// Gets all refund requests with pagination and filtering
     /// </summary>
-    Task<PagedResult<RefundRequestDto>> GetRefundRequestsAsync(
+    Task<PagedResult<RefundRequestDto>> GetRefundsPageAsync(
         RefundSearchCriteria criteria);
 }

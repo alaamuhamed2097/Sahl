@@ -82,6 +82,97 @@ namespace DAL.Repositories.Merchandising
             return true;
         }
 
+        public async Task<bool> UpdateWithScopesAsync(TbCouponCode coupon, List<TbCouponCodeScope> scopes, Guid userId, CancellationToken cancellationToken = default)
+        {
+            if (coupon == null) throw new ArgumentNullException(nameof(coupon));
+
+            await using var transaction = await _context.Database.BeginTransactionAsync(System.Data.IsolationLevel.ReadCommitted, cancellationToken);
+            try
+            {
+                // 1. Update Coupon Basic Info
+                coupon.UpdatedBy = userId;
+                coupon.UpdatedDateUtc = DateTime.UtcNow;
+                _context.TbCouponCodes.Update(coupon);
+
+                // 2. Remove Old Scopes
+                var existingScopes = await _context.Set<TbCouponCodeScope>()
+                    .Where(s => s.CouponCodeId == coupon.Id)
+                    .ToListAsync(cancellationToken);
+                
+                if (existingScopes.Any())
+                {
+                    _context.Set<TbCouponCodeScope>().RemoveRange(existingScopes);
+                }
+
+                // 3. Add New Scopes
+                if (scopes != null && scopes.Any())
+                {
+                    foreach (var scope in scopes)
+                    {
+                        scope.CouponCodeId = coupon.Id;
+                        if (scope.Id == Guid.Empty) scope.Id = Guid.NewGuid();
+                        if (scope.CreatedDateUtc == default) scope.CreatedDateUtc = DateTime.UtcNow;
+                        if (scope.CreatedBy == Guid.Empty) scope.CreatedBy = userId;
+
+                        await _context.Set<TbCouponCodeScope>().AddAsync(scope, cancellationToken);
+                    }
+                }
+
+                // 4. Save and Commit
+                await _context.SaveChangesAsync(cancellationToken);
+                await transaction.CommitAsync(cancellationToken);
+
+                return true;
+            }
+            catch (Exception)
+            {
+                await transaction.RollbackAsync(cancellationToken);
+                throw;
+            }
+        }
+
+        public async Task<bool> AddWithScopesAsync(TbCouponCode coupon, List<TbCouponCodeScope> scopes, Guid userId, CancellationToken cancellationToken = default)
+        {
+            if (coupon == null) throw new ArgumentNullException(nameof(coupon));
+
+            await using var transaction = await _context.Database.BeginTransactionAsync(System.Data.IsolationLevel.ReadCommitted, cancellationToken);
+            try
+            {
+                // 1. Prepare Coupon
+                if (coupon.Id == Guid.Empty) coupon.Id = Guid.NewGuid();
+                coupon.CreatedBy = userId;
+                coupon.CreatedDateUtc = DateTime.UtcNow;
+                
+                // 2. Add Coupon
+                await _context.TbCouponCodes.AddAsync(coupon, cancellationToken);
+
+                // 3. Add Scopes
+                if (scopes != null && scopes.Any())
+                {
+                    foreach (var scope in scopes)
+                    {
+                        scope.CouponCodeId = coupon.Id;
+                        if (scope.Id == Guid.Empty) scope.Id = Guid.NewGuid();
+                        scope.CreatedDateUtc = DateTime.UtcNow;
+                        scope.CreatedBy = userId;
+
+                        await _context.Set<TbCouponCodeScope>().AddAsync(scope, cancellationToken);
+                    }
+                }
+
+                // 4. Save and Commit
+                await _context.SaveChangesAsync(cancellationToken);
+                await transaction.CommitAsync(cancellationToken);
+
+                return true;
+            }
+            catch (Exception)
+            {
+                await transaction.RollbackAsync(cancellationToken);
+                throw;
+            }
+        }
+
         #endregion
 
         #region Query Operations

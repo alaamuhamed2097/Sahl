@@ -462,6 +462,23 @@
 	<data name="Of" xml:space="preserve">
   <value>من</value>
 </data>
+	<!-- Existing Actions -->
+	<data name="Save" xml:space="preserve">
+    <value>حفظ</value>
+  </data>
+	<data name="Cancel" xml:space="preserve">
+    <value>إلغاء</value>
+  </data>
+	<data name="Back" xml:space="preserve">
+    <value>رجوع</value>
+  </data>
 
+	<!-- New Actions -->
+	<data name="AddItem" xml:space="preserve">
+    <value>إضافة عنصر</value>
+  </data>
+	<data name="AddFirstItem" xml:space="preserve">
+    <value>إضافة أول عنصر</value>
+  </data>
 
 </root>

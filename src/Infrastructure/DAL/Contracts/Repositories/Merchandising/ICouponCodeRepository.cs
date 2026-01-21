@@ -12,7 +12,9 @@ namespace DAL.Contracts.Repositories.Merchandising
         Task<TbCouponCode?> GetByCodeAsync(string code, CancellationToken cancellationToken = default);
         Task<IEnumerable<TbCouponCode>> GetAllAsync(CancellationToken cancellationToken = default);
         Task<TbCouponCode> AddAsync(TbCouponCode couponCode, CancellationToken cancellationToken = default);
+        Task<bool> AddWithScopesAsync(TbCouponCode coupon, List<TbCouponCodeScope> scopes, Guid userId, CancellationToken cancellationToken = default);
         Task<TbCouponCode> UpdateAsync(TbCouponCode couponCode, CancellationToken cancellationToken = default);
+        Task<bool> UpdateWithScopesAsync(TbCouponCode coupon, List<TbCouponCodeScope> scopes, Guid userId, CancellationToken cancellationToken = default);
         Task<bool> DeleteAsync(Guid id, CancellationToken cancellationToken = default);
 
         // Query Operations
