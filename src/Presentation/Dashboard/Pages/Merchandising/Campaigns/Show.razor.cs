@@ -1,10 +1,11 @@
-using Common.Enumerations.User;
+﻿using Common.Enumerations.User;
 using Common.Filters;
 using Dashboard.Contracts.Campaign;
 using Dashboard.Contracts.Notification;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
+using Resources;
 using Shared.DTOs.Campaign;
 using Shared.GeneralModels;
 
@@ -16,11 +17,11 @@ namespace Dashboard.Pages.Merchandising.Campaigns
 		#region Parameters & Injects
 
 		[Parameter] public string? CampaignId { get; set; }
-
+		[Inject] private IJSRuntime JSRuntime { get; set; } = default!;
 		[Inject] protected ICampaignService CampaignService { get; set; } = null!;
 		[Inject] protected NavigationManager NavigationManager { get; set; } = null!;
 		[Inject] protected INotificationService NotificationService { get; set; } = null!;
-		[Inject] protected IJSRuntime JSRuntime { get; set; } = null!;
+
 
 		#endregion
 
@@ -237,38 +238,78 @@ namespace Dashboard.Pages.Merchandising.Campaigns
 		#endregion
 
 		#region Actions
-
-		private async Task RemoveItem(Guid itemId)
+		protected virtual async Task Delete(Guid id)
 		{
-			
-			
+			var confirmed = await DeleteConfirmNotification();
 
-			IsRemoving = true;
-			try
+			if (confirmed)
 			{
-				var response = await CampaignService.RemoveItemFromCampaignAsync(_campaignGuid, itemId);
-
-				if (response.Success)
+				var result = await CampaignService.RemoveItemFromCampaignAsync(id);
+				if (result.Success)
 				{
-					await NotificationService.ShowSuccessAsync("Item removed successfully");
-
-					// Reload current page
+					await ShowSuccessNotification(NotifiAndAlertsResources.DeletedSuccessfully);
 					await SearchCampaignItemsAsync();
+					await OnAfterDeleteAsync(id);
+					StateHasChanged();
 				}
 				else
 				{
-					await NotificationService.ShowErrorAsync(
-						response.Message ?? "Failed to remove item");
+					if (result.Message == null)
+						await ShowErrorNotification(ValidationResources.Failed, NotifiAndAlertsResources.DeleteFailed);
+					else
+						await ShowErrorNotification(ValidationResources.Failed, result.Message);
 				}
 			}
-			catch (Exception ex)
+		}
+
+		protected virtual async Task OnAfterDeleteAsync(Guid id)
+		{
+			await Task.CompletedTask;
+		}
+		protected virtual async Task ShowErrorNotification(string title, string message)
+		{
+			await JSRuntime.InvokeVoidAsync("swal", title, message, "error");
+		}
+
+		protected virtual async Task ShowWarningNotification(string title, string message)
+		{
+			await JSRuntime.InvokeVoidAsync("swal", title, message, "warning");
+		}
+
+		protected virtual async Task ShowSuccessNotification(string message)
+		{
+			await JSRuntime.InvokeVoidAsync("swal", ValidationResources.Done, message, "success");
+		}
+
+		protected virtual async Task<bool> DeleteConfirmNotification()
+		{
+			var options = new
 			{
-				await NotificationService.ShowErrorAsync($"Error removing item: {ex.Message}");
-			}
-			finally
-			{
-				IsRemoving = false;
-			}
+				title = NotifiAndAlertsResources.AreYouSure,
+				text = NotifiAndAlertsResources.ConfirmDeleteAlert,
+				icon = "warning",
+				buttons = new
+				{
+					cancel = new
+					{
+						text = ActionsResources.Cancel,
+						value = false,
+						visible = true,
+						className = "",
+						closeModal = true
+					},
+					confirm = new
+					{
+						text = ActionsResources.Confirm,
+						value = true,
+						visible = true,
+						className = "swal-button--danger",
+						closeModal = true
+					}
+				}
+			};
+
+			return (await JSRuntime.InvokeAsync<bool>("swal", options));
 		}
 
 		private void AddNewItem()
@@ -318,6 +359,8 @@ namespace Dashboard.Pages.Merchandising.Campaigns
 		}
 
 		#endregion
+		
+		
 
 		#region Image Preview
 
@@ -333,6 +376,7 @@ namespace Dashboard.Pages.Merchandising.Campaigns
 			StateHasChanged();
 		}
 
+				
 		#endregion
 	}
 }

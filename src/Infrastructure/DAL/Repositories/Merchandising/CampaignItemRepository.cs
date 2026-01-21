@@ -102,7 +102,7 @@ namespace DAL.Repositories.Merchandising
 			try
 			{	
 				var campaignItem = await _dbContext.TbCampaignItems
-					.FirstOrDefaultAsync(ci => ci.OfferCombinationPricingId == ItemId && !ci.IsDeleted);
+					.FirstOrDefaultAsync(ci => ci.Id == ItemId && !ci.IsDeleted);
 
 				if (campaignItem == null)
 					return false;

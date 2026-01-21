@@ -127,7 +127,7 @@ namespace Api.Controllers.v1.Campaign
 		[ProducesResponseType(typeof(ResponseModel<bool>), StatusCodes.Status200OK)]
 		[ProducesResponseType(StatusCodes.Status404NotFound)]
 		[ProducesResponseType(StatusCodes.Status401Unauthorized)]
-		public async Task<IActionResult> RemoveItemFromCampaign(Guid itemId)
+		public async Task<IActionResult> RemoveItemFromCampaign([FromBody]Guid itemId)
 		{
 			if (string.IsNullOrEmpty(UserId))
 				return Unauthorized(new ResponseModel<string>
@@ -135,7 +135,6 @@ namespace Api.Controllers.v1.Campaign
 					Success = false,
 					Message = NotifiAndAlertsResources.UnauthorizedAccess
 				});
-
 			var result = await _campaignItemService.RemoveItemFromCampaignAsync(itemId, GuidUserId);
 
 			if (!result)

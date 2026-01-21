@@ -71,8 +71,8 @@ namespace Dashboard.Contracts.Campaign
         /// <summary>
         /// Remove item from campaign
         /// </summary>
-        Task<ResponseModel<object>> RemoveItemFromCampaignAsync(Guid campaignId, Guid itemId);
+        Task<ResponseModel<bool>> RemoveItemFromCampaignAsync(Guid itemId);
 
-        #endregion
-    }
+		#endregion
+	}
 }

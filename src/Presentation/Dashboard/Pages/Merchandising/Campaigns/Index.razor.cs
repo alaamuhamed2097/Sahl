@@ -104,7 +104,6 @@ namespace Dashboard.Pages.Merchandising.Campaigns
 			await GetAllItemsAsync();
 		}
 
-		// Type Filter - بيبعت 1 أو 2
 		private async Task OnTypeFilterChanged(string typeValue)
 		{
 			if (string.IsNullOrEmpty(typeValue))

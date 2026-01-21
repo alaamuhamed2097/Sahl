@@ -122,14 +122,18 @@ namespace Dashboard.Services.Campaign
                 dto);
         }
 
-        /// <summary>
-        /// Remove item from campaign
-        /// </summary>
-        public async Task<ResponseModel<object>> RemoveItemFromCampaignAsync(Guid campaignId, Guid itemId)
-        {
-            return await _apiService.DeleteAsync<object>($"{BaseItemEndpoint}/{campaignId}/items/{itemId}");
-        }
+		/// <summary>
+		/// Remove item from campaign
+		/// </summary>
+		public async Task<ResponseModel<bool>> RemoveItemFromCampaignAsync(Guid itemId)
+		{
+			//var request = new { itemId = itemId };
+			return await _apiService.PostAsync<object, bool>(
+				$"{BaseItemEndpoint}/items/remove",
+				itemId
+			);
+		}
 
-        #endregion
-    }
+		#endregion
+	}
 }

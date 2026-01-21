@@ -32,9 +32,9 @@
                     <button type="button" class="btn btn-light btn-sm" @onclick="BackToCampaigns">
                         <i class="fas fa-arrow-left mx-1"></i>@ActionsResources.Back
                     </button>
-                    <button type="button" class="btn btn-success btn-sm" @onclick="AddNewItem">
+                    @* <button type="button" class="btn btn-success btn-sm" @onclick="AddNewItem">
                         <i class="fas fa-plus mx-1"></i>@ActionsResources.AddItem
-                    </button>
+                    </button> *@
                 </div>
             </div>
         </div>
@@ -235,7 +235,7 @@
                                                 </button> *@
                                                 <button type="button"
                                                         class="btn btn-sm btn-outline-danger"
-                                                        @onclick="() => RemoveItem(item.Id)"
+                                                        @onclick="() => Delete(item.Id)"
                                                         disabled="@IsRemoving"
                                                         title="@MerchandisingResources.RemoveFromCampaign">
                                                     @if (IsRemoving)
