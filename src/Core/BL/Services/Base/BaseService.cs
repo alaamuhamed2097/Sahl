@@ -1,6 +1,8 @@
-﻿using BL.Contracts.IMapper;
+﻿using AutoMapper;
+using BL.Contracts.IMapper;
 using BL.Contracts.Service.Base;
 using DAL.Contracts.Repositories;
+using DAL.Contracts.Repositories.Merchandising;
 using DAL.ResultModels;
 using Domains.Entities.Base;
 
@@ -10,14 +12,23 @@ public abstract class BaseService<TS, TD> : IBaseService<TS, TD> where TS : Base
 {
     private readonly ITableRepository<TS> _baseRepository;
 		private readonly IBaseMapper _mapper;
-    public BaseService(ITableRepository<TS> baseRepository, IBaseMapper mapper)
+	private ICampaignItemRepository campaignItemRepository;
+	private IMapper mapper;
+
+	public BaseService(ITableRepository<TS> baseRepository, IBaseMapper mapper)
     {
         _baseRepository = baseRepository;
         _mapper = mapper;
     }
 
-    #region Async
-    public virtual async Task<TD> FindByIdAsync(Guid Id)
+	protected BaseService(ICampaignItemRepository campaignItemRepository, IMapper mapper)
+	{
+		this.campaignItemRepository = campaignItemRepository;
+		this.mapper = mapper;
+	}
+
+	#region Async
+	public virtual async Task<TD> FindByIdAsync(Guid Id)
     {
         var entity = await _baseRepository.FindByIdAsync(Id);
         var dto = _mapper.MapModel<TS, TD>(entity);

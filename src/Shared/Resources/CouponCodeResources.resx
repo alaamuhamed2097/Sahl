@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <root>
-	<!-- 
+  <!-- 
     Microsoft ResX Schema 
     
     Version 2.0
@@ -59,413 +59,404 @@
             : using a System.ComponentModel.TypeConverter
             : and then encoded with base64 encoding.
     -->
-	<xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
-		<xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
-		<xsd:element name="root" msdata:IsDataSet="true">
-			<xsd:complexType>
-				<xsd:choice maxOccurs="unbounded">
-					<xsd:element name="metadata">
-						<xsd:complexType>
-							<xsd:sequence>
-								<xsd:element name="value" type="xsd:string" minOccurs="0" />
-							</xsd:sequence>
-							<xsd:attribute name="name" use="required" type="xsd:string" />
-							<xsd:attribute name="type" type="xsd:string" />
-							<xsd:attribute name="mimetype" type="xsd:string" />
-							<xsd:attribute ref="xml:space" />
-						</xsd:complexType>
-					</xsd:element>
-					<xsd:element name="assembly">
-						<xsd:complexType>
-							<xsd:attribute name="alias" type="xsd:string" />
-							<xsd:attribute name="name" type="xsd:string" />
-						</xsd:complexType>
-					</xsd:element>
-					<xsd:element name="data">
-						<xsd:complexType>
-							<xsd:sequence>
-								<xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
-								<xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
-							</xsd:sequence>
-							<xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
-							<xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
-							<xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
-							<xsd:attribute ref="xml:space" />
-						</xsd:complexType>
-					</xsd:element>
-					<xsd:element name="resheader">
-						<xsd:complexType>
-							<xsd:sequence>
-								<xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
-							</xsd:sequence>
-							<xsd:attribute name="name" type="xsd:string" use="required" />
-						</xsd:complexType>
-					</xsd:element>
-				</xsd:choice>
-			</xsd:complexType>
-		</xsd:element>
-	</xsd:schema>
-	<resheader name="resmimetype">
-		<value>text/microsoft-resx</value>
-	</resheader>
-	<resheader name="version">
-		<value>2.0</value>
-	</resheader>
-	<resheader name="reader">
-		<value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-	</resheader>
-	<resheader name="writer">
-		<value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-	</resheader>
-	<data name="DiscountType">
-		<value>نوع الخصم</value>
-	</data>
-	<data name="MaxDiscountAmount">
-		<value>الحد الأقصى للخصم</value>
-	</data>
-	<data name="MinimumOrderAmount">
-		<value>الحد الأدنى للطلب</value>
-	</data>
-	<data name="UsageLimitPerUser">
-		<value>حد الاستخدام لكل مستخدم</value>
-	</data>
-	<data name="IsFirstOrderOnly">
-		<value>للطلب الأول فقط</value>
-	</data>
-	<data name="PlatformSharePercentage">
-		<value>نسبة مشاركة المنصة</value>
-	</data>
-	<data name="CoFundedCoupon">
-		<value>كوبون مشترك</value>
-	</data>
-	<data name="GeneralCoupon">
-		<value>كوبون عام</value>
-	</data>
-	<data name="CategoryBasedCoupon">
-		<value>كوبون على الفئة</value>
-	</data>
-	<data name="VendorBasedCoupon">
-		<value>كوبون على البائع</value>
-	</data>
-	<data name="NewUserOnlyCoupon">
-		<value>للعملاء الجدد فقط</value>
-	</data>
-	<data name="PercentageDiscount">
-		<value>نسبة مئوية</value>
-	</data>
-	<data name="FixedAmountDiscount">
-		<value>مبلغ ثابت</value>
-	</data>
-	<data name="CouponScope">
-		<value>نطاق الكوبون</value>
-	</data>
-	<data name="CouponValidity">
-		<value>صلاحية الكوبون</value>
-	</data>
-	<data name="CouponUsage">
-		<value>استخدام الكوبون</value>
-	</data>
-	<data name="ValidFrom">
-		<value>صالح من</value>
-	</data>
-	<data name="ValidUntil">
-		<value>صالح حتى</value>
-	</data>
-	<data name="UnlimitedUsage">
-		<value>استخدام غير محدود</value>
-	</data>
-	<data name="CurrentUsage">
-		<value>الاستخدام الحالي</value>
-	</data>
-	<data name="RemainingUsage">
-		<value>الاستخدام المتبقي</value>
-	</data>
-	<data name="PromoCode">
-		<value>كود الخصم</value>
-	</data>
-	<data name="PromoCodes">
-		<value>اكواد الخصم</value>
-	</data>
-	<data name="PromoCodeType">
-		<value>نوع كود الخصم</value>
-	</data>
-	<data name="Code">
-		<value>الكود</value>
-	</data>
-	<data name="StartDate">
-		<value>تاريخ البداية</value>
-	</data>
-	<data name="EndDate">
-		<value>تاريخ النهاية</value>
-	</data>
-	<data name="UsageLimit">
-		<value>حد الإستخدام</value>
-	</data>
-	<data name="UsageCount">
-		<value>عدد مرات الاستخدام</value>
-	</data>
-	<data name="Value">
-		<value>القيمة</value>
-	</data>
-	<data name="Type">
-		<value>النوع</value>
-	</data>
-	<data name="Status">
-		<value>الحالة</value>
-	</data>
-	<data name="Active">
-		<value>نشط</value>
-	</data>
-	<data name="InActive">
-		<value>غير نشط</value>
-	</data>
-	<data name="ArabicTitle">
-		<value>العنوان بالعربي</value>
-	</data>
-	<data name="EnglishTitle">
-		<value>العنوان بالإنجليزي</value>
-	</data>
-	<data name="Vendor">
-		<value>البائع</value>
-	</data>
-	<data name="Saving">
-		<value>جارِ الحفظ...</value>
-	</data>
-	<data name="CouponCodeRequired">
-		<value>كود الخصم مطلوب</value>
-	</data>
-	<data name="CouponCodeInvalid">
-		<value>كود الخصم غير صحيح</value>
-	</data>
-	<data name="CouponCodeExpired">
-		<value>كود الخصم منتهي الصلاحية</value>
-	</data>
-	<data name="CouponCodeNotStarted">
-		<value>كود الخصم لم يبدأ بعد</value>
-	</data>
-	<data name="CouponCodeUsageLimitReached">
-		<value>تم الوصول للحد الأقصى</value>
-	</data>
-	<data name="CouponCodeUserLimitReached">
-		<value>تجاوزت الحد الأقصى لاستخدامك</value>
-	</data>
-	<data name="CouponCodeFirstOrderOnly">
-		<value>متاح للطلب الأول فقط</value>
-	</data>
-	<data name="CouponCodeMinimumOrderNotMet">
-		<value>الطلب لا يستوفي الحد الأدنى</value>
-	</data>
-	<data name="CouponCodeNotApplicable">
-		<value>غير قابل للتطبيق على هذا الطلب</value>
-	</data>
-	<data name="CouponCodeAlreadyUsed">
-		<value>تم استخدام الكود مسبقاً</value>
-	</data>
-	<data name="CouponCodeDuplicate">
-		<value>الكود مستخدم بالفعل</value>
-	</data>
-	<data name="PercentageValueInvalid">
-		<value>النسبة المئوية يجب أن تكون بين 0 و 100</value>
-	</data>
-	<data name="StartDateMustBeBeforeEndDate">
-		<value>تاريخ البدء يجب أن يكون قبل الانتهاء</value>
-	</data>
-	<data name="VendorRequiredForCoFunded">
-		<value>يجب تحديد البائع للكوبونات المشتركة</value>
-	</data>
-	<data name="ScopeItemsRequired">
-		<value>يجب تحديد العناصر المؤهلة للخصم</value>
-	</data>
-	<data name="DiscountValueRequired">
-		<value>قيمة الخصم مطلوبة</value>
-	</data>
-	<data name="DiscountValueMustBePositive">
-		<value>قيمة الخصم يجب أن تكون موجبة</value>
-	</data>
-	<data name="InvalidCouponType">
-		<value>نوع الكوبون غير صحيح</value>
-	</data>
-	<data name="CouponNotFound">
-		<value>الكوبون غير موجود</value>
-	</data>
-	<data name="CouponInactive">
-		<value>الكوبون غير مفعل</value>
-	</data>
-	<data name="CouponAppliedSuccessfully">
-		<value>تم تطبيق كود الخصم بنجاح</value>
-	</data>
-	<data name="CouponRemovedSuccessfully">
-		<value>تم إزالة كود الخصم بنجاح</value>
-	</data>
-	<data name="CouponValidated">
-		<value>تم التحقق من الكوبون بنجاح</value>
-	</data>
-	<data name="CouponCreatedSuccessfully">
-		<value>تم إنشاء كود الخصم بنجاح</value>
-	</data>
-	<data name="CouponUpdatedSuccessfully">
-		<value>تم تحديث كود الخصم بنجاح</value>
-	</data>
-	<data name="CouponDeletedSuccessfully">
-		<value>تم حذف كود الخصم بنجاح</value>
-	</data>
-	<data name="CouponActivated">
-		<value>تم تفعيل الكوبون</value>
-	</data>
-	<data name="CouponDeactivated">
-		<value>تم إيقاف الكوبون</value>
-	</data>
-	<data name="ConfirmDeleteCoupon">
-		<value>هل أنت متأكد من حذف كود الخصم؟</value>
-	</data>
-	<data name="ConfirmDeactivateCoupon">
-		<value>هل أنت متأكد من إيقاف الكوبون؟</value>
-	</data>
-	<data name="CouponWillExpireSoon">
-		<value>ينتهي صلاحية الكوبون قريباً</value>
-	</data>
-	<data name="CouponUsageLimitWarning">
-		<value>قارب الكوبون على الوصول لحد الاستخدام</value>
-	</data>
-	<data name="InvalidCouponCode">
-		<value>كود خصم غير صالح</value>
-	</data>
-	<data name="CouponNotApplicableToCart">
-		<value>غير قابل للتطبيق على العناصر في السلة</value>
-	</data>
-	<data name="PleaseEnterCouponCode">
-		<value>الرجاء إدخال كود الخصم</value>
-	</data>
-	<data name="DiscountApplied">
-		<value>تم تطبيق الخصم</value>
-	</data>
-	<data name="YouSaved">
-		<value>وفرت</value>
-	</data>
-	<data name="CouponSavingAmount">
-		<value>قيمة التوفير من الكوبون: {0}</value>
-	</data>
-	<data name="CouponCodes" xml:space="preserve">
-    <value>أكوادالخصم</value>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="DiscountType" xml:space="preserve">
+    <value>نوع الخصم</value>
   </data>
-	<data name="CouponInfo" xml:space="preserve">
-    <value>معلومات الكوبون</value>
+  <data name="MaxDiscountAmount" xml:space="preserve">
+    <value>الحد الأقصى للخصم</value>
   </data>
-	<data name="DiscountInfo" xml:space="preserve">
-    <value>معلومات الخصم</value>
+  <data name="MinimumOrderAmount" xml:space="preserve">
+    <value>الحد الأدنى للطلب</value>
   </data>
-	<data name="Validity" xml:space="preserve">
-    <value>الصلاحية</value>
-  </data>
-	<data name="Usage" xml:space="preserve">
-    <value>الاستخدام</value>
-  </data>
-
-	<!-- Tab Labels -->
-	<data name="BasicInfo" xml:space="preserve">
-    <value>المعلومات الأساسية</value>
-  </data>
-	<data name="DiscountSettings" xml:space="preserve">
-    <value>إعدادات الخصم</value>
-  </data>
-	<data name="LimitsAndRules" xml:space="preserve">
-    <value>القيود والقواعد</value>
-  </data>
-	<data name="Advanced" xml:space="preserve">
-    <value>متقدم</value>
-  </data>
-
-	<!-- Section Headers -->
-	<data name="ValidityPeriod" xml:space="preserve">
-    <value>فترة الصلاحية</value>
-  </data>
-	<data name="UsageLimits" xml:space="preserve">
-    <value>حدود الاستخدام</value>
-  </data>
-	<data name="SpecialRules" xml:space="preserve">
-    <value>قواعد خاصة</value>
-  </data>
-	<data name="UsageStatistics" xml:space="preserve">
-    <value>إحصائيات الاستخدام</value>
-  </data>
-	<data name="AuditInfo" xml:space="preserve">
-    <value>معلومات التدقيق</value>
-  </data>
-
-	<!-- Field Labels -->
-	<data name="TotalUsageLimit" xml:space="preserve">
-    <value>إجمالي حد الاستخدام</value>
-  </data>
-	<data name="PerUserLimit" xml:space="preserve">
+  <data name="UsageLimitPerUser" xml:space="preserve">
     <value>حد الاستخدام لكل مستخدم</value>
   </data>
-	<data name="FirstOrderOnly" xml:space="preserve">
+  <data name="IsFirstOrderOnly" xml:space="preserve">
     <value>للطلب الأول فقط</value>
   </data>
-	<data name="PlatformShare" xml:space="preserve">
-    <value>نسبة المنصة</value>
+  <data name="PlatformSharePercentage" xml:space="preserve">
+    <value>نسبة مشاركة المنصة</value>
   </data>
-	<data name="TotalUsed" xml:space="preserve">
-    <value>إجمالي الاستخدام</value>
+  <data name="CoFundedCoupon" xml:space="preserve">
+    <value>كوبون مشترك</value>
   </data>
-	<data name="Limit" xml:space="preserve">
-    <value>الحد</value>
+  <data name="GeneralCoupon" xml:space="preserve">
+    <value>كوبون عام</value>
   </data>
-	<data name="Remaining" xml:space="preserve">
-    <value>المتبقي</value>
+  <data name="CategoryBasedCoupon" xml:space="preserve">
+    <value>كوبون على الفئة</value>
   </data>
-
-	<!-- Placeholders -->
-	<data name="CodePlaceholder" xml:space="preserve">
-    <value>مثال: SAVE20</value>
+  <data name="ItemBasedCoupon" xml:space="preserve">
+    <value>كوبون على المنتجات</value>
   </data>
-	<data name="ArabicTitlePlaceholder" xml:space="preserve">
-    <value>أدخل العنوان بالعربي</value>
+  <data name="VendorBasedCoupon" xml:space="preserve">
+    <value>كوبون على البائع</value>
   </data>
-	<data name="EnglishTitlePlaceholder" xml:space="preserve">
-    <value>Enter English Title</value>
+  <data name="NewUserOnlyCoupon" xml:space="preserve">
+    <value>للعملاء الجدد فقط</value>
   </data>
-	<data name="DescriptionPlaceholder" xml:space="preserve">
-    <value>أدخل وصف الكوبون (اختياري)</value>
+  <data name="PercentageDiscount" xml:space="preserve">
+    <value>نسبة مئوية</value>
   </data>
-	<data name="Optional" xml:space="preserve">
-    <value>اختياري</value>
+  <data name="FixedAmountDiscount" xml:space="preserve">
+    <value>مبلغ ثابت</value>
   </data>
-
-	<!-- Help Text / Hints -->
-	<data name="CodeHint" xml:space="preserve">
-    <value>سيتم تحويل الأحرف تلقائياً إلى كبيرة</value>
+  <data name="CouponScope" xml:space="preserve">
+    <value>نطاق الكوبون</value>
   </data>
-	<data name="PercentageHint" xml:space="preserve">
-    <value>أدخل نسبة من 0 إلى 100</value>
+  <data name="CouponValidity" xml:space="preserve">
+    <value>صلاحية الكوبون</value>
   </data>
-	<data name="FixedAmountHint" xml:space="preserve">
-    <value>أدخل المبلغ الثابت بالريال</value>
+  <data name="CouponUsage" xml:space="preserve">
+    <value>استخدام الكوبون</value>
   </data>
-	<data name="MaxDiscountHint" xml:space="preserve">
-    <value>الحد الأقصى للخصم عند استخدام النسبة المئوية</value>
+  <data name="ValidFrom" xml:space="preserve">
+    <value>صالح من</value>
   </data>
-	<data name="MinOrderHint" xml:space="preserve">
-    <value>أقل قيمة للطلب لتطبيق الكوبون</value>
+  <data name="ValidUntil" xml:space="preserve">
+    <value>صالح حتى</value>
   </data>
-	<data name="TotalUsageHint" xml:space="preserve">
-    <value>اتركه فارغاً للاستخدام غير المحدود</value>
+  <data name="UnlimitedUsage" xml:space="preserve">
+    <value>استخدام غير محدود</value>
   </data>
-	<data name="PerUserHint" xml:space="preserve">
-    <value>عدد المرات التي يمكن للعميل استخدام الكوبون</value>
+  <data name="CurrentUsage" xml:space="preserve">
+    <value>الاستخدام الحالي</value>
   </data>
-	<data name="FirstOrderHint" xml:space="preserve">
-    <value>الكوبون متاح فقط للعملاء الجدد في أول طلب</value>
+  <data name="RemainingUsage" xml:space="preserve">
+    <value>الاستخدام المتبقي</value>
   </data>
-	<data name="CoFundingHint" xml:space="preserve">
-    <value>نسبة مشاركة المنصة في الخصم (الباقي يتحمله البائع)</value>
+  <data name="PromoCode" xml:space="preserve">
+    <value>كود الخصم</value>
   </data>
-
-	<!-- Status Messages -->
-	<data name="Saving" xml:space="preserve">
+  <data name="PromoCodes" xml:space="preserve">
+    <value>اكواد الخصم</value>
+  </data>
+  <data name="PromoCodeType" xml:space="preserve">
+    <value>نوع كود الخصم</value>
+  </data>
+  <data name="Code" xml:space="preserve">
+    <value>الكود</value>
+  </data>
+  <data name="StartDate" xml:space="preserve">
+    <value>تاريخ البداية</value>
+  </data>
+  <data name="EndDate" xml:space="preserve">
+    <value>تاريخ النهاية</value>
+  </data>
+  <data name="UsageLimit" xml:space="preserve">
+    <value>حد الإستخدام</value>
+  </data>
+  <data name="UsageCount" xml:space="preserve">
+    <value>عدد مرات الاستخدام</value>
+  </data>
+  <data name="Value" xml:space="preserve">
+    <value>القيمة</value>
+  </data>
+  <data name="Type" xml:space="preserve">
+    <value>النوع</value>
+  </data>
+  <data name="Status" xml:space="preserve">
+    <value>الحالة</value>
+  </data>
+  <data name="Active" xml:space="preserve">
+    <value>نشط</value>
+  </data>
+  <data name="InActive" xml:space="preserve">
+    <value>غير نشط</value>
+  </data>
+  <data name="ArabicTitle" xml:space="preserve">
+    <value>العنوان بالعربي</value>
+  </data>
+  <data name="EnglishTitle" xml:space="preserve">
+    <value>العنوان بالإنجليزي</value>
+  </data>
+  <data name="Vendor" xml:space="preserve">
+    <value>البائع</value>
+  </data>
+  <data name="Saving" xml:space="preserve">
     <value>جارِ الحفظ...</value>
   </data>
-	<data name="Loading" xml:space="preserve">
+  <data name="CouponCodeRequired" xml:space="preserve">
+    <value>كود الخصم مطلوب</value>
+  </data>
+  <data name="CouponCodeInvalid" xml:space="preserve">
+    <value>كود الخصم غير صحيح</value>
+  </data>
+  <data name="CouponCodeExpired" xml:space="preserve">
+    <value>كود الخصم منتهي الصلاحية</value>
+  </data>
+  <data name="CouponCodeNotStarted" xml:space="preserve">
+    <value>كود الخصم لم يبدأ بعد</value>
+  </data>
+  <data name="CouponCodeUsageLimitReached" xml:space="preserve">
+    <value>تم الوصول للحد الأقصى</value>
+  </data>
+  <data name="CouponCodeUserLimitReached" xml:space="preserve">
+    <value>تجاوزت الحد الأقصى لاستخدامك</value>
+  </data>
+  <data name="CouponCodeFirstOrderOnly" xml:space="preserve">
+    <value>متاح للطلب الأول فقط</value>
+  </data>
+  <data name="CouponCodeMinimumOrderNotMet" xml:space="preserve">
+    <value>الطلب لا يستوفي الحد الأدنى</value>
+  </data>
+  <data name="CouponCodeNotApplicable" xml:space="preserve">
+    <value>غير قابل للتطبيق على هذا الطلب</value>
+  </data>
+  <data name="CouponCodeAlreadyUsed" xml:space="preserve">
+    <value>تم استخدام الكود مسبقاً</value>
+  </data>
+  <data name="CouponCodeDuplicate" xml:space="preserve">
+    <value>الكود مستخدم بالفعل</value>
+  </data>
+  <data name="PercentageValueInvalid" xml:space="preserve">
+    <value>النسبة المئوية يجب أن تكون بين 0 و 100</value>
+  </data>
+  <data name="StartDateMustBeBeforeEndDate" xml:space="preserve">
+    <value>تاريخ البدء يجب أن يكون قبل الانتهاء</value>
+  </data>
+  <data name="VendorRequiredForCoFunded" xml:space="preserve">
+    <value>يجب تحديد البائع للكوبونات المشتركة</value>
+  </data>
+  <data name="ScopeItemsRequired" xml:space="preserve">
+    <value>يجب تحديد العناصر المؤهلة للخصم</value>
+  </data>
+  <data name="DiscountValueRequired" xml:space="preserve">
+    <value>قيمة الخصم مطلوبة</value>
+  </data>
+  <data name="DiscountValueMustBePositive" xml:space="preserve">
+    <value>قيمة الخصم يجب أن تكون موجبة</value>
+  </data>
+  <data name="InvalidCouponType" xml:space="preserve">
+    <value>نوع الكوبون غير صحيح</value>
+  </data>
+  <data name="CouponNotFound" xml:space="preserve">
+    <value>الكوبون غير موجود</value>
+  </data>
+  <data name="CouponInactive" xml:space="preserve">
+    <value>الكوبون غير مفعل</value>
+  </data>
+  <data name="CouponAppliedSuccessfully" xml:space="preserve">
+    <value>تم تطبيق كود الخصم بنجاح</value>
+  </data>
+  <data name="CouponRemovedSuccessfully" xml:space="preserve">
+    <value>تم إزالة كود الخصم بنجاح</value>
+  </data>
+  <data name="CouponValidated" xml:space="preserve">
+    <value>تم التحقق من الكوبون بنجاح</value>
+  </data>
+  <data name="CouponCreatedSuccessfully" xml:space="preserve">
+    <value>تم إنشاء كود الخصم بنجاح</value>
+  </data>
+  <data name="CouponUpdatedSuccessfully" xml:space="preserve">
+    <value>تم تحديث كود الخصم بنجاح</value>
+  </data>
+  <data name="CouponDeletedSuccessfully" xml:space="preserve">
+    <value>تم حذف كود الخصم بنجاح</value>
+  </data>
+  <data name="CouponActivated" xml:space="preserve">
+    <value>تم تفعيل الكوبون</value>
+  </data>
+  <data name="CouponDeactivated" xml:space="preserve">
+    <value>تم إيقاف الكوبون</value>
+  </data>
+  <data name="ConfirmDeleteCoupon" xml:space="preserve">
+    <value>هل أنت متأكد من حذف كود الخصم؟</value>
+  </data>
+  <data name="ConfirmDeactivateCoupon" xml:space="preserve">
+    <value>هل أنت متأكد من إيقاف الكوبون؟</value>
+  </data>
+  <data name="CouponWillExpireSoon" xml:space="preserve">
+    <value>ينتهي صلاحية الكوبون قريباً</value>
+  </data>
+  <data name="CouponUsageLimitWarning" xml:space="preserve">
+    <value>قارب الكوبون على الوصول لحد الاستخدام</value>
+  </data>
+  <data name="InvalidCouponCode" xml:space="preserve">
+    <value>كود خصم غير صالح</value>
+  </data>
+  <data name="CouponNotApplicableToCart" xml:space="preserve">
+    <value>غير قابل للتطبيق على العناصر في السلة</value>
+  </data>
+  <data name="PleaseEnterCouponCode" xml:space="preserve">
+    <value>الرجاء إدخال كود الخصم</value>
+  </data>
+  <data name="DiscountApplied" xml:space="preserve">
+    <value>تم تطبيق الخصم</value>
+  </data>
+  <data name="YouSaved" xml:space="preserve">
+    <value>وفرت</value>
+  </data>
+  <data name="CouponSavingAmount" xml:space="preserve">
+    <value>قيمة التوفير من الكوبون: {0}</value>
+  </data>
+  <data name="CouponCodes" xml:space="preserve">
+    <value>أكوادالخصم</value>
+  </data>
+  <data name="CouponInfo" xml:space="preserve">
+    <value>معلومات الكوبون</value>
+  </data>
+  <data name="DiscountInfo" xml:space="preserve">
+    <value>معلومات الخصم</value>
+  </data>
+  <data name="Validity" xml:space="preserve">
+    <value>الصلاحية</value>
+  </data>
+  <data name="Usage" xml:space="preserve">
+    <value>الاستخدام</value>
+  </data>
+  <data name="BasicInfo" xml:space="preserve">
+    <value>المعلومات الأساسية</value>
+  </data>
+  <data name="DiscountSettings" xml:space="preserve">
+    <value>إعدادات الخصم</value>
+  </data>
+  <data name="LimitsAndRules" xml:space="preserve">
+    <value>القيود والقواعد</value>
+  </data>
+  <data name="Advanced" xml:space="preserve">
+    <value>متقدم</value>
+  </data>
+  <data name="ValidityPeriod" xml:space="preserve">
+    <value>فترة الصلاحية</value>
+  </data>
+  <data name="UsageLimits" xml:space="preserve">
+    <value>حدود الاستخدام</value>
+  </data>
+  <data name="SpecialRules" xml:space="preserve">
+    <value>قواعد خاصة</value>
+  </data>
+  <data name="UsageStatistics" xml:space="preserve">
+    <value>إحصائيات الاستخدام</value>
+  </data>
+  <data name="AuditInfo" xml:space="preserve">
+    <value>معلومات التدقيق</value>
+  </data>
+  <data name="TotalUsageLimit" xml:space="preserve">
+    <value>إجمالي حد الاستخدام</value>
+  </data>
+  <data name="PerUserLimit" xml:space="preserve">
+    <value>حد الاستخدام لكل مستخدم</value>
+  </data>
+  <data name="FirstOrderOnly" xml:space="preserve">
+    <value>للطلب الأول فقط</value>
+  </data>
+  <data name="PlatformShare" xml:space="preserve">
+    <value>نسبة المنصة</value>
+  </data>
+  <data name="TotalUsed" xml:space="preserve">
+    <value>إجمالي الاستخدام</value>
+  </data>
+  <data name="Limit" xml:space="preserve">
+    <value>الحد</value>
+  </data>
+  <data name="Remaining" xml:space="preserve">
+    <value>المتبقي</value>
+  </data>
+  <data name="CodePlaceholder" xml:space="preserve">
+    <value>مثال: SAVE20</value>
+  </data>
+  <data name="ArabicTitlePlaceholder" xml:space="preserve">
+    <value>أدخل العنوان بالعربي</value>
+  </data>
+  <data name="EnglishTitlePlaceholder" xml:space="preserve">
+    <value>Enter English Title</value>
+  </data>
+  <data name="DescriptionPlaceholder" xml:space="preserve">
+    <value>أدخل وصف الكوبون (اختياري)</value>
+  </data>
+  <data name="Optional" xml:space="preserve">
+    <value>اختياري</value>
+  </data>
+  <data name="CodeHint" xml:space="preserve">
+    <value>سيتم تحويل الأحرف تلقائياً إلى كبيرة</value>
+  </data>
+  <data name="PercentageHint" xml:space="preserve">
+    <value>أدخل نسبة من 0 إلى 100</value>
+  </data>
+  <data name="FixedAmountHint" xml:space="preserve">
+    <value>أدخل المبلغ الثابت بالريال</value>
+  </data>
+  <data name="MaxDiscountHint" xml:space="preserve">
+    <value>الحد الأقصى للخصم عند استخدام النسبة المئوية</value>
+  </data>
+  <data name="MinOrderHint" xml:space="preserve">
+    <value>أقل قيمة للطلب لتطبيق الكوبون</value>
+  </data>
+  <data name="TotalUsageHint" xml:space="preserve">
+    <value>اتركه فارغاً للاستخدام غير المحدود</value>
+  </data>
+  <data name="PerUserHint" xml:space="preserve">
+    <value>عدد المرات التي يمكن للعميل استخدام الكوبون</value>
+  </data>
+  <data name="FirstOrderHint" xml:space="preserve">
+    <value>الكوبون متاح فقط للعملاء الجدد في أول طلب</value>
+  </data>
+  <data name="CoFundingHint" xml:space="preserve">
+    <value>نسبة مشاركة المنصة في الخصم (الباقي يتحمله البائع)</value>
+  </data>
+  <data name="Loading" xml:space="preserve">
     <value>جارِ التحميل...</value>
+  </data>
+  <data name="PromoCodeParticipations" xml:space="preserve">
+    <value>المشاركون في البرومو كود</value>
   </data>
 </root>

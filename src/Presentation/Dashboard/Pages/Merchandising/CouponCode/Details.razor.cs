@@ -12,7 +12,7 @@ using Shared.DTOs.Order.CouponCode;
 
 namespace Dashboard.Pages.Merchandising.CouponCode
 {
-    public partial class Details : ComponentBase, IDisposable
+    public partial class Details
     {
         private bool _isSaving;
         private bool _disposed;
@@ -35,6 +35,14 @@ namespace Dashboard.Pages.Merchandising.CouponCode
         [Inject] private IResourceLoaderService? ResourceLoaderService { get; set; }
         [Inject] private ICouponCodeService CouponCodeService { get; set; } = null!;
         [Inject] private IVendorPromoCodeParticipationAdminService VendorPromoParticipationAdminService { get; set; } = null!;
+        [Inject] private Dashboard.Contracts.ECommerce.Category.ICategoryService CategoryService { get; set; } = null!;
+        [Inject] private Dashboard.Contracts.ECommerce.Item.IItemService ItemService { get; set; } = null!;
+
+        // Category Selection
+        protected List<Shared.DTOs.Catalog.Category.CategoryDto> SelectedCategories { get; set; } = new();
+        
+        // Item Selection
+        protected List<Shared.DTOs.Catalog.Item.ItemDto> SelectedItems { get; set; } = new();
 
         protected override void OnParametersSet()
         {
@@ -44,7 +52,7 @@ namespace Dashboard.Pages.Merchandising.CouponCode
                 _ = LoadParticipationRequestsAsync();
             }
         }
-
+        
         protected override async Task OnInitializedAsync()
         {
             try
@@ -91,8 +99,6 @@ namespace Dashboard.Pages.Merchandising.CouponCode
                     ParticipationRequests = new PaginatedDataModel<AdminVendorPromoCodeParticipationRequestListDto>(
                         new List<AdminVendorPromoCodeParticipationRequestListDto>(),
                         0);
-
-                StateHasChanged();
             }
             catch (Exception ex)
             {
@@ -101,6 +107,7 @@ namespace Dashboard.Pages.Merchandising.CouponCode
             finally
             {
                 _isLoadingParticipation = false;
+                StateHasChanged();
             }
         }
 
@@ -173,12 +180,72 @@ namespace Dashboard.Pages.Merchandising.CouponCode
                 }
 
                 Model = result.Data ?? new CouponCodeDto();
+
+                // Load selected categories if CategoryBased
+                if (Model.PromoType == CouponCodeType.CategoryBased && Model.ScopeItems != null && Model.ScopeItems.Any())
+                {
+                    var scopeIds = Model.ScopeItems.Select(s => s.ScopeId).ToHashSet();
+                    // Ideally we would fetch by IDs, but service only has GetAll
+                    var response = await CategoryService.GetAllAsync();
+                    if (response.Success && response.Data != null)
+                    {
+                        SelectedCategories = response.Data.Where(c => scopeIds.Contains(c.Id)).ToList();
+                    }
+                }
+                // Load selected items if ItemBased
+                else if (Model.PromoType == CouponCodeType.ItemBased && Model.ScopeItems != null && Model.ScopeItems.Any())
+                {
+                     var scopeIds = Model.ScopeItems.Select(s => s.ScopeId).ToHashSet();
+                     // Ideally we would fetch by IDs, but service only has GetAll
+                     var response = await ItemService.GetAllAsync();
+                     if (response.Success && response.Data != null)
+                     {
+                         SelectedItems = response.Data.Where(i => scopeIds.Contains(i.Id)).ToList();
+                     }
+                }
+
                 StateHasChanged();
             }
             catch (Exception ex)
             {
                 await HandleErrorAsync(ValidationResources.Error, ex);
             }
+        }
+
+        protected Task OnSelectedCategoriesChanged(List<Shared.DTOs.Catalog.Category.CategoryDto> categories)
+        {
+            SelectedCategories = categories;
+
+            // Update Model.ScopeItems
+            if (Model.PromoType == CouponCodeType.CategoryBased)
+            {
+                Model.ScopeItems = categories.Select(c => new CouponScopeDto
+                {
+                    Id = Guid.NewGuid(),
+                    ScopeType = CouponCodeScopeType.Category,
+                    ScopeId = c.Id
+                }).ToList();
+            }
+
+            return Task.CompletedTask;
+        }
+
+        protected Task OnSelectedItemsChanged(List<Shared.DTOs.Catalog.Item.ItemDto> items)
+        {
+            SelectedItems = items;
+
+            // Update Model.ScopeItems
+            if (Model.PromoType == CouponCodeType.ItemBased)
+            {
+                Model.ScopeItems = items.Select(i => new CouponScopeDto
+                {
+                    Id = Guid.NewGuid(),
+                    ScopeType = CouponCodeScopeType.Item,
+                    ScopeId = i.Id
+                }).ToList();
+            }
+
+            return Task.CompletedTask;
         }
 
         private bool ValidateModel()
@@ -215,11 +282,17 @@ namespace Dashboard.Pages.Merchandising.CouponCode
                 }
             }
 
-            // Validate scope for category/vendor based
+            // Validate scope for category/vendor/item based
             if (Model.PromoType == CouponCodeType.CategoryBased
-                || Model.PromoType == CouponCodeType.VendorBased)
+                || Model.PromoType == CouponCodeType.VendorBased
+                || Model.PromoType == CouponCodeType.ItemBased)
             {
-                if (Model.ScopeItems == null || !Model.ScopeItems.Any())
+                // VendorBased might not need ScopeItems if it applies to all vendor items, 
+                // but checking if implementation requires specific scope logic.
+                // Assuming VendorBased applies to everything from that vendor, so ScopeItems might be empty.
+                // But for Category/Item based, we definitely need selection.
+
+                if (Model.PromoType != CouponCodeType.VendorBased && (Model.ScopeItems == null || !Model.ScopeItems.Any()))
                 {
                     ShowWarningNotificationSync(
                         ValidationResources.Failed,

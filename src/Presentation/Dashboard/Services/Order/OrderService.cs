@@ -1,37 +1,42 @@
 ﻿using Dashboard.Constants;
 using Dashboard.Contracts.General;
 using Dashboard.Contracts.Order;
-using Dashboard.Models.pagintion;
-using Resources;
 using Shared.DTOs.Order.OrderProcessing;
+using Shared.DTOs.Order.OrderProcessing.AdminOrder;
 using Shared.GeneralModels;
-using Shared.GeneralModels.SearchCriteriaModels;
 
 namespace Dashboard.Services.Order
 {
-
+    /// <summary>
+    /// Order Service for Admin Dashboard - CLEAN VERSION
+    /// Uses API DTOs directly without intermediate mapping
+    /// This is the proper business-logic approach
+    /// </summary>
     public class OrderService : IOrderService
     {
         private readonly IApiService _apiService;
 
         public OrderService(IApiService apiService)
         {
-            _apiService = apiService;
+            _apiService = apiService ?? throw new ArgumentNullException(nameof(apiService));
         }
 
         /// <summary>
-        /// Get all Orders.
+        /// Get order by ID
+        /// Returns: AdminOrderDetailsDto directly from API
         /// </summary>
-        public async Task<ResponseModel<IEnumerable<OrderDto>>> GetAllAsync()
+        public async Task<ResponseModel<AdminOrderDetailsDto>> GetOrderByIdAsync(Guid orderId)
         {
             try
             {
-                return await _apiService.GetAsync<IEnumerable<OrderDto>>($"{ApiEndpoints.Order.All}");
+                var endpoint = $"{ApiEndpoints.Order.GetById}/{orderId}";
+
+                // Return API DTO directly - NO MAPPING
+                return await _apiService.GetAsync<AdminOrderDetailsDto>(endpoint);
             }
             catch (Exception ex)
             {
-                // Log error here
-                return new ResponseModel<IEnumerable<OrderDto>>
+                return new ResponseModel<AdminOrderDetailsDto>
                 {
                     Success = false,
                     Message = ex.Message
@@ -40,97 +45,19 @@ namespace Dashboard.Services.Order
         }
 
         /// <summary>
-        /// Get Orders page.
+        /// Change order status
         /// </summary>
-        public async Task<ResponseModel<PaginatedDataModel<OrderDto>>> GetPage(OrderSearchCriteriaModel searchModel)
+        public async Task<ResponseModel<bool>> ChangeOrderStatusAsync(ChangeOrderStatusRequest request)
         {
-            try
-            {
-                // Convert OrderSearchCriteriaModel to match API requirements
-                var requestBody = new
-                {
-                    searchTerm = searchModel.SearchTerm ?? string.Empty,
-                    pageNumber = searchModel.PageNumber,
-                    pageSize = searchModel.PageSize,
-                    sortBy = searchModel.SortBy ?? "createdDateUtc",
-                    sortDirection = searchModel.SortDirection ?? "desc"
-                };
-
-                var result = await _apiService.PostAsync<object, PaginatedDataModel<OrderDto>>(
-                    ApiEndpoints.Order.Search,
-                    requestBody);
-
-                return new ResponseModel<PaginatedDataModel<OrderDto>>
-                {
-                    Success = result.Success,
-                    Message = result.Message,
-                    Data = result.Data
-                };
-            }
-            catch (Exception ex)
-            {
-                return new ResponseModel<PaginatedDataModel<OrderDto>>
-                {
-                    Success = false,
-                    Message = ex.Message
-                };
-            }
-        }
-
-        /// <summary>
-        /// Get Order by ID.
-        /// </summary>
-        public async Task<ResponseModel<OrderDto>> GetByIdAsync(Guid id)
-        {
-            try
-            {
-                return await _apiService.GetAsync<OrderDto>($"{ApiEndpoints.Order.Get}/{id}");
-            }
-            catch (Exception ex)
-            {
-                // Log error here
-                return new ResponseModel<OrderDto>
-                {
-                    Success = false,
-                    Message = ex.Message
-                };
-            }
-        }
-
-        /// <summary>
-        /// Get Order Number.
-        /// </summary>
-        public async Task<ResponseModel<string>> GetOrderNumber(string Idetifire)
-        {
-            try
-            {
-                return await _apiService.GetAsync<string>($"{ApiEndpoints.Order.GetOrderNumber}/{Idetifire}");
-            }
-            catch (Exception ex)
-            {
-                // Log error here
-                return new ResponseModel<string>
-                {
-                    Success = false,
-                    Message = ex.Message
-                };
-            }
-        }
-
-        /// <summary>
-        /// Change order status.
-        /// </summary>
-        public async Task<ResponseModel<bool>> ChangeOrderStatusAsync(OrderDto Order)
-        {
-            if (Order == null) throw new ArgumentNullException(nameof(Order));
+            if (request == null) throw new ArgumentNullException(nameof(request));
 
             try
             {
-                return await _apiService.PostAsync<OrderDto, bool>($"{ApiEndpoints.Order.ChangeOrderStatus}", Order);
+                var endpoint = $"{ApiEndpoints.Order.ChangeStatus}/{request.OrderId}/change-status";
+                return await _apiService.PostAsync<ChangeOrderStatusRequest, bool>(endpoint, request);
             }
             catch (Exception ex)
             {
-                // Log error here
                 return new ResponseModel<bool>
                 {
                     Success = false,
@@ -140,20 +67,20 @@ namespace Dashboard.Services.Order
         }
 
         /// <summary>
-        /// Save or update a Order.
+        /// Update order
         /// </summary>
-        public async Task<ResponseModel<OrderDto>> SaveAsync(OrderDto Order)
+        public async Task<ResponseModel<bool>> UpdateOrderAsync(UpdateOrderRequest request)
         {
-            if (Order == null) throw new ArgumentNullException(nameof(Order));
+            if (request == null) throw new ArgumentNullException(nameof(request));
 
             try
             {
-                return await _apiService.PostAsync<OrderDto, OrderDto>($"{ApiEndpoints.Order.Save}", Order);
+                var endpoint = $"{ApiEndpoints.Order.Update}/{request.OrderId}";
+                return await _apiService.PutAsync<UpdateOrderRequest, bool>(endpoint, request);
             }
             catch (Exception ex)
             {
-                // Log error here
-                return new ResponseModel<OrderDto>
+                return new ResponseModel<bool>
                 {
                     Success = false,
                     Message = ex.Message
@@ -162,35 +89,47 @@ namespace Dashboard.Services.Order
         }
 
         /// <summary>
-        /// Delete a Order by ID.
+        /// Cancel order (changes status to Cancelled)
         /// </summary>
-        public async Task<ResponseModel<bool>> DeleteAsync(Guid id)
+        public async Task<ResponseModel<bool>> CancelOrderAsync(Guid orderId, string reason)
         {
             try
             {
-                var result = await _apiService.PostAsync<Guid, ResponseModel<bool>>($"{ApiEndpoints.Order.Delete}", id);
-                if (result.Success)
+                var request = new ChangeOrderStatusRequest
                 {
-                    return new ResponseModel<bool>
-                    {
-                        Success = true,
-                        Message = result.Message
-                    };
-                }
+                    OrderId = orderId,
+                    NewStatus = Common.Enumerations.Order.OrderProgressStatus.Cancelled,
+                    Notes = reason
+                };
+
+                return await ChangeOrderStatusAsync(request);
+            }
+            catch (Exception ex)
+            {
                 return new ResponseModel<bool>
                 {
                     Success = false,
-                    Message = result.Message,
-                    Errors = result.Errors
+                    Message = ex.Message
                 };
             }
-            catch (Exception)
+        }
+
+        /// <summary>
+        /// Get today's orders count
+        /// </summary>
+        public async Task<ResponseModel<int>> GetTodayOrdersCountAsync()
+        {
+            try
             {
-                // Log error here
-                return new ResponseModel<bool>
+                var endpoint = ApiEndpoints.Order.TodayCount;
+                return await _apiService.GetAsync<int>(endpoint);
+            }
+            catch (Exception ex)
+            {
+                return new ResponseModel<int>
                 {
                     Success = false,
-                    Message = NotifiAndAlertsResources.DeleteFailed
+                    Message = ex.Message
                 };
             }
         }

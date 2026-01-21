@@ -1,3 +1,4 @@
+using Common.Filters;
 using Dashboard.Contracts.Campaign;
 using Dashboard.Contracts.General;
 using Shared.DTOs.Campaign;
@@ -11,9 +12,10 @@ namespace Dashboard.Services.Campaign
     public class CampaignService : ICampaignService
     {
         private readonly IApiService _apiService;
-        private const string BaseEndpoint = "api/v1/campaigns";
+        private const string BaseEndpoint = "api/v1/campaign";
+        private const string BaseItemEndpoint = "api/v1/campaignItem";
 
-        public CampaignService(IApiService apiService)
+		public CampaignService(IApiService apiService)
         {
             _apiService = apiService;
         }
@@ -64,32 +66,50 @@ namespace Dashboard.Services.Campaign
             return await _apiService.PostAsync<CreateCampaignDto, CampaignDto>(BaseEndpoint, dto);
         }
 
-        /// <summary>
-        /// Update campaign
-        /// </summary>
-        public async Task<ResponseModel<CampaignDto>> UpdateCampaignAsync(Guid id, UpdateCampaignDto dto)
-        {
-            return await _apiService.PutAsync<UpdateCampaignDto, CampaignDto>($"{BaseEndpoint}/{id}", dto);
-        }
+		/// <summary>
+		/// Update campaign
+		/// </summary>
+		public async Task<ResponseModel<CampaignDto>> UpdateCampaignAsync( UpdateCampaignDto dto)
+		{
+			return await _apiService.PostAsync<UpdateCampaignDto, CampaignDto>($"{BaseEndpoint}/update", dto);
+			                                                                                   
+		}
 
-        /// <summary>
-        /// Delete campaign
-        /// </summary>
-        public async Task<ResponseModel<object>> DeleteCampaignAsync(Guid id)
+		/// <summary>
+		/// Delete campaign
+		/// </summary>
+		public async Task<ResponseModel<object>> DeleteCampaignAsync(Guid id)
         {
             return await _apiService.DeleteAsync<object>($"{BaseEndpoint}/{id}");
         }
 
-        #endregion
+		#endregion
 
-        #region Campaign Items
+		#region Campaign Items
 
-        /// <summary>
-        /// Get campaign items
-        /// </summary>
-        public async Task<ResponseModel<List<CampaignItemDto>>> GetCampaignItemsAsync(Guid campaignId)
+		/// <summary>
+		/// Search campaign items with pagination
+		/// </summary>
+		public async Task<ResponseModel<PaginatedSearchResult<CampaignItemDto>>> SearchCampaignItemsAsync(
+			Guid campaignId,
+			BaseSearchCriteriaModel searchCriteria)
+		{
+			var queryString = $"?PageNumber={searchCriteria.PageNumber}&PageSize={searchCriteria.PageSize}";
+
+			if (!string.IsNullOrEmpty(searchCriteria.SearchTerm))
+			{
+				queryString += $"&SearchTerm={Uri.EscapeDataString(searchCriteria.SearchTerm)}";
+			}
+
+			return await _apiService.GetAsync<PaginatedSearchResult<CampaignItemDto>>(
+				$"{BaseItemEndpoint}/{campaignId}/search{queryString}");
+		}
+		/// <summary>
+		/// Get campaign items
+		/// </summary>
+		public async Task<ResponseModel<List<CampaignItemDto>>> GetCampaignItemsAsync(Guid campaignId)
         {
-            return await _apiService.GetAsync<List<CampaignItemDto>>($"{BaseEndpoint}/{campaignId}/items");
+            return await _apiService.GetAsync<List<CampaignItemDto>>($"{BaseItemEndpoint}/{campaignId}/items");
         }
 
         /// <summary>
@@ -98,18 +118,22 @@ namespace Dashboard.Services.Campaign
         public async Task<ResponseModel<CampaignItemDto>> AddItemToCampaignAsync(Guid campaignId, AddCampaignItemDto dto)
         {
             return await _apiService.PostAsync<AddCampaignItemDto, CampaignItemDto>(
-                $"{BaseEndpoint}/{campaignId}/items",
+                $"{BaseItemEndpoint}/{campaignId}/items",
                 dto);
         }
 
-        /// <summary>
-        /// Remove item from campaign
-        /// </summary>
-        public async Task<ResponseModel<object>> RemoveItemFromCampaignAsync(Guid campaignId, Guid itemId)
-        {
-            return await _apiService.DeleteAsync<object>($"{BaseEndpoint}/{campaignId}/items/{itemId}");
-        }
+		/// <summary>
+		/// Remove item from campaign
+		/// </summary>
+		public async Task<ResponseModel<bool>> RemoveItemFromCampaignAsync(Guid itemId)
+		{
+			//var request = new { itemId = itemId };
+			return await _apiService.PostAsync<object, bool>(
+				$"{BaseItemEndpoint}/items/remove",
+				itemId
+			);
+		}
 
-        #endregion
-    }
+		#endregion
+	}
 }

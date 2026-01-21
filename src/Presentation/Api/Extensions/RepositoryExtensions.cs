@@ -1,4 +1,5 @@
 using BL.Contracts.IMapper;
+using BL.Contracts.Service.Order.Payment;
 using BL.Mapper.Base;
 using DAL.Contracts.Repositories;
 using DAL.Contracts.Repositories.Catalog.Item;
@@ -16,6 +17,7 @@ using DAL.Repositories.Customer;
 using DAL.Repositories.Merchandising;
 using DAL.Repositories.Offer;
 using DAL.Repositories.Order;
+using DAL.Repositories.Order.Refund;
 using DAL.Repositories.Review;
 using DAL.UnitOfWork;
 
@@ -40,6 +42,7 @@ namespace Api.Extensions
             services.AddScoped<IBuyBoxHelperRepository, BuyBoxHelperRepository>();
             services.AddScoped<IVendorItemConditionRepository, VendorItemConditionRepository>();
             services.AddScoped<IOrderRepository, OrderRepository>();
+            services.AddScoped<IRefundRepository, RefundRepository>();
             services.AddScoped<IOrderPaymentRepository, OrderPaymentRepository>();
             services.AddScoped<IItemSearchRepository, ItemSearchRepository>();
 
@@ -66,11 +69,12 @@ namespace Api.Extensions
             services.AddScoped<IItemCombinationRepository, ItemCombinationRepository>();
             services.AddScoped<IVendorManagementRepository, VendorManagementRepository>();
 
-            services.AddScoped<IOrderRepository, OrderRepository>();
             services.AddScoped<IShipmentRepository, ShipmentRepository>();
 
             services.AddScoped<ISystemSettingsRepository, SystemSettingsRepository>();
             services.AddScoped<IDevelopmentSettingsRepository, DevelopmentSettingsRepository>();
+
+            services.AddScoped<ICampaignItemRepository, CampaignItemRepository>();
 
             return services;
         }

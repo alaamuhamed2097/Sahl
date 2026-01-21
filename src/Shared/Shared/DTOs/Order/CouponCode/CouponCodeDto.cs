@@ -13,8 +13,6 @@ namespace Shared.DTOs.Order.CouponCode
         public string TitleAr { get; set; } = string.Empty;
         public string TitleEn { get; set; } = string.Empty;
         public string Title => ResourceManager.CurrentLanguage == Resources.Enumerations.Language.English ? TitleEn : TitleAr;
-        public string? DescriptionAr { get; set; }
-        public string? DescriptionEn { get; set; }
 
         public CouponCodeType PromoType { get; set; }
         public DiscountType DiscountType { get; set; }

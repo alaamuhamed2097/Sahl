@@ -1,0 +1,671 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+	<!-- 
+		Microsoft ResX Schema
+
+		Version 1.3
+
+		The primary goals of this format is to allow a simple XML format 
+		that is mostly human readable. The generation and parsing of the 
+		various data types are done through the TypeConverter classes 
+		associated with the data types.
+
+		Example:
+
+		... ado.net/XML headers & schema ...
+		<resheader name="resmimetype">text/microsoft-resx</resheader>
+		<resheader name="version">1.3</resheader>
+		<resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+		<resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+		<data name="Name1">this is my long string</data>
+		<data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+		<data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+			[base64 mime encoded serialized .NET Framework object]
+		</data>
+		<data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+			[base64 mime encoded string representing a byte array form of the .NET Framework object]
+		</data>
+
+		There are any number of "resheader" rows that contain simple 
+		name/value pairs.
+
+		Each data row contains a name, and value. The row also contains a 
+		type or mimetype. Type corresponds to a .NET class that support 
+		text/value conversion through the TypeConverter architecture. 
+		Classes that don't support this are serialized and stored with the 
+		mimetype set.
+
+		The mimetype is used for serialized objects, and tells the 
+		ResXResourceReader how to depersist the object. This is currently not 
+		extensible. For a given mimetype the value must be set accordingly:
+
+		Note - application/x-microsoft.net.object.binary.base64 is the format 
+		that the ResXResourceWriter will generate, however the reader can 
+		read any of the formats listed below.
+
+		mimetype: application/x-microsoft.net.object.binary.base64
+		value   : The object must be serialized with 
+			: System.Serialization.Formatters.Binary.BinaryFormatter
+			: and then encoded with base64 encoding.
+
+		mimetype: application/x-microsoft.net.object.soap.base64
+		value   : The object must be serialized with 
+			: System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+			: and then encoded with base64 encoding.
+
+		mimetype: application/x-microsoft.net.object.bytearray.base64
+		value   : The object must be serialized into a byte array 
+			: using a System.ComponentModel.TypeConverter
+			: and then encoded with base64 encoding.
+	-->
+	
+	<xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+		<xsd:element name="root" msdata:IsDataSet="true">
+			<xsd:complexType>
+				<xsd:choice maxOccurs="unbounded">
+					<xsd:element name="data">
+						<xsd:complexType>
+							<xsd:sequence>
+								<xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+								<xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+							</xsd:sequence>
+							<xsd:attribute name="name" type="xsd:string" msdata:Ordinal="1" />
+							<xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+							<xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+						</xsd:complexType>
+					</xsd:element>
+					<xsd:element name="resheader">
+						<xsd:complexType>
+							<xsd:sequence>
+								<xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+							</xsd:sequence>
+							<xsd:attribute name="name" type="xsd:string" use="required" />
+						</xsd:complexType>
+					</xsd:element>
+				</xsd:choice>
+			</xsd:complexType>
+		</xsd:element>
+	</xsd:schema>
+	<resheader name="resmimetype">
+		<value>text/microsoft-resx</value>
+	</resheader>
+	<resheader name="version">
+		<value>1.3</value>
+	</resheader>
+	<resheader name="reader">
+		<value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.3500.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+	</resheader>
+	<resheader name="writer">
+		<value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.3500.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+	</resheader>
+
+	<data name="WarehouseManagement" xml:space="preserve">
+  <value>Warehouse Management</value>
+</data>
+
+	<data name="Warehouses" xml:space="preserve">
+  <value>Warehouses</value>
+</data>
+
+	<data name="SelectVendor" xml:space="preserve">
+  <value>Select Vendor</value>
+</data>
+
+	<data name="AddWarehouse" xml:space="preserve">
+  <value>Add Warehouse</value>
+</data>
+
+	<data name="EditWarehouse" xml:space="preserve">
+  <value>Edit Warehouse</value>
+</data>
+
+	<data name="OrderNumber" xml:space="preserve">
+    <value>Order Number</value>
+</data>
+	<data name="CustomerInformation" xml:space="preserve">
+    <value>Customer Information</value>
+</data>
+	<data name="CustomerName" xml:space="preserve">
+    <value>Customer Name</value>
+</data>
+	<data name="CustomerType" xml:space="preserve">
+    <value>Customer Type</value>
+</data>
+	<data name="ShippingInformation" xml:space="preserve">
+    <value>Shipping Information</value>
+</data>
+	<data name="ExpectedDelivery" xml:space="preserve">
+    <value>Expected Delivery Date</value>
+</data>
+	<data name="ShippingCost" xml:space="preserve">
+    <value>Shipping Cost</value>
+</data>
+	<data name="Shipments" xml:space="preserve">
+    <value>Shipments</value>
+</data>
+	<data name="TrackingNumber" xml:space="preserve">
+    <value>Tracking Number</value>
+</data>
+	<data name="ShipmentTotal" xml:space="preserve">
+    <value>Shipment Total</value>
+</data>
+	<data name="ViewHistory" xml:space="preserve">
+    <value>View History</value>
+</data>
+	<data name="NoShipments" xml:space="preserve">
+    <value>No Shipments</value>
+</data>
+	<data name="NoShipmentsYet" xml:space="preserve">
+    <value>No shipments have been created for this order yet</value>
+</data>
+	<data name="Products" xml:space="preserve">
+    <value>Products</value>
+</data>
+	<data name="NoProducts" xml:space="preserve">
+    <value>No Products</value>
+</data>
+	<data name="NoProductsInOrder" xml:space="preserve">
+    <value>No products in this order</value>
+</data>
+	<data name="OrderSummary" xml:space="preserve">
+    <value>Order Summary</value>
+</data>
+	<data name="Subtotal" xml:space="preserve">
+    <value>Subtotal</value>
+</data>
+	<data name="PaymentInformation" xml:space="preserve">
+    <value>Payment Information</value>
+</data>
+	<data name="PaymentMethod" xml:space="preserve">
+    <value>Payment Method</value>
+</data>
+	<data name="InvoiceNumber" xml:space="preserve">
+    <value>Invoice Number</value>
+</data>
+	<data name="CreatedDate" xml:space="preserve">
+    <value>Created Date</value>
+</data>
+	<data name="AwaitingConfirmation" xml:space="preserve">
+    <value>Awaiting Confirmation</value>
+</data>
+	<data name="Processing" xml:space="preserve">
+    <value>Processing</value>
+</data>
+	<data name="OnTheWay" xml:space="preserve">
+    <value>On the Way</value>
+</data>
+	<data name="DeliveryDate" xml:space="preserve">
+    <value>Delivery Date</value>
+</data>
+	<data name="RefundRequest" xml:space="preserve">
+    <value>Refund Request</value>
+</data>
+	<data name="RefundApproved" xml:space="preserve">
+    <value>Refund Approved</value>
+</data>
+	<data name="RefundRejected" xml:space="preserve">
+    <value>Refund Rejected</value>
+</data>
+	<data name="RefundAmount" xml:space="preserve">
+    <value>Refund Amount</value>
+</data>
+	<data name="AddComment" xml:space="preserve">
+    <value>Add Comment</value>
+</data>
+	<data name="Failed" xml:space="preserve">
+    <value>Failed</value>
+</data>
+	<data name="Refunded" xml:space="preserve">
+    <value>Refunded</value>
+</data>
+	<data name="Free" xml:space="preserve">
+    <value>Free</value>
+</data>
+	<data name="Shipping" xml:space="preserve">
+    <value>Shipping</value>
+</data>
+	<data name="Paid" xml:space="preserve">
+    <value>Paid</value>
+</data>
+	<data name="Pending" xml:space="preserve">
+    <value>Pending</value>
+</data>
+	<data name="BackToOrders" xml:space="preserve">
+    <value>Back to Orders</value>
+</data>
+
+	<data name="OrderItems" xml:space="preserve">
+    <value>Order Items</value>
+</data>
+
+	<data name="OrderControl" xml:space="preserve">
+    <value>Order Control</value>
+</data>
+
+	<data name="CurrentStatus" xml:space="preserve">
+    <value>Current Status</value>
+</data>
+
+	<data name="StartProcessing" xml:space="preserve">
+    <value>Start Processing</value>
+</data>
+
+	<data name="MoveToShipping" xml:space="preserve">
+    <value>Move to Shipping</value>
+</data>
+
+	<data name="MarkAsDelivered" xml:space="preserve">
+    <value>Mark as Delivered</value>
+</data>
+
+	<data name="OrderCompleted" xml:space="preserve">
+    <value>Order Completed</value>
+</data>
+
+	<data name="OrderRejected" xml:space="preserve">
+    <value>Order Rejected</value>
+</data>
+
+	<data name="OrderProgress" xml:space="preserve">
+    <value>Order Progress</value>
+</data>
+	<data name="OrderStatus" xml:space="preserve">
+    <value>Order Status</value>
+</data>
+
+	<data name="Accepted" xml:space="preserve">
+    <value>Accepted</value>
+</data>
+
+	<data name="InProgress" xml:space="preserve">
+    <value>In Progress</value>
+</data>
+
+	<data name="Delivered" xml:space="preserve">
+    <value>Delivered</value>
+</data>
+
+	<data name="Completed" xml:space="preserve">
+    <value>Completed</value>
+</data>
+
+	<data name="Canceled" xml:space="preserve">
+    <value>Canceled</value>
+</data>
+
+	<data name="Returned" xml:space="preserve">
+    <value>Returned</value>
+</data>
+
+	<data name="PaymentFailed" xml:space="preserve">
+    <value>Payment Failed</value>
+</data>
+
+	<data name="RefundRequested" xml:space="preserve">
+    <value>Refund Requested</value>
+</data>
+<data name="OrderMustBeConfirmed" xml:space="preserve">
+    <value>The order must be confirmed first.</value>
+</data>
+
+<data name="OrderMustBeProcessing" xml:space="preserve">
+    <value>The order must be in processing state.</value>
+</data>
+
+<data name="SelectValidDeliveryDate" xml:space="preserve">
+    <value>Please select a valid delivery date.</value>
+</data>
+
+<data name="OrderMustBeShipped" xml:space="preserve">
+    <value>The order must be shipped first.</value>
+</data>
+
+<data name="Confirmed" xml:space="preserve">
+    <value>Confirmed</value>
+</data>
+
+<data name="Cancelled" xml:space="preserve">
+    <value>Cancelled</value>
+</data>
+
+<data name="Shipped" xml:space="preserve">
+    <value>Shipped</value>
+</data>
+
+<data name="InTransit" xml:space="preserve">
+    <value>In Transit</value>
+</data>
+
+<data name="OutForDelivery" xml:space="preserve">
+    <value>Out for Delivery</value>
+</data>
+
+<data name="PartiallyPaid" xml:space="preserve">
+    <value>Partially Paid</value>
+</data>
+
+<data name="PartiallyRefunded" xml:space="preserve">
+    <value>Partially Refunded</value>
+</data>
+  <data name="Refunds" xml:space="preserve">
+    <value>Refunds</value>
+  </data>
+  <data name="RefundStatus" xml:space="preserve">
+    <value>Refund Status</value>
+  </data>
+  <data name="ItemsCount" xml:space="preserve">
+  <value>Items Count</value>
+</data>
+  <data name="RequestedDate" xml:space="preserve">
+  <value>Requested Date</value>
+</data>
+  <data name="RefundNumber" xml:space="preserve">
+  <value>Refund Number</value>
+</data>
+  <data name="Closed" xml:space="preserve">
+  <value>Closed</value>
+</data>
+  <data name="Inspecting" xml:space="preserve">
+  <value>Inspecting</value>
+</data>
+  <data name="ItemReceived" xml:space="preserve">
+  <value>Item Received</value>
+</data>
+  <data name="ItemShippedBack" xml:space="preserve">
+  <value>Item Shipped Back</value>
+</data>
+  <data name="InfoApproved" xml:space="preserve">
+  <value>Information Approved</value>
+</data>
+  <data name="NeedMoreInfo" xml:space="preserve">
+  <value>Need More Information</value>
+</data>
+  <data name="Opened" xml:space="preserve">
+  <value>Opened</value>
+</data>
+  <data name="AllRefundStatus" xml:space="preserve">
+  <value>All Refund Statuses</value>
+</data>
+  <data name="AdminNotes" xml:space="preserve">
+  <value>Admin Notes</value>
+</data>
+  <data name="RejectionReason" xml:space="preserve">
+  <value>Rejection Reason</value>
+</data>
+  <data name="CloseRefund" xml:space="preserve">
+  <value>Close Refund</value>
+</data>
+  <data name="RefundSuccessful" xml:space="preserve">
+  <value>Refund Successful</value>
+</data>
+  <data name="RefundCompleted" xml:space="preserve">
+  <value>Refund Completed</value>
+</data>
+  <data name="ProcessRefund" xml:space="preserve">
+  <value>Process Refund</value>
+</data>
+  <data name="TransactionId" xml:space="preserve">
+  <value>Transaction ID</value>
+</data>
+  <data name="ApproveRefund" xml:space="preserve">
+  <value>Approve Refund</value>
+</data>
+  <data name="InspectingItem" xml:space="preserve">
+  <value>Inspecting Item</value>
+</data>
+  <data name="MarkAsReceived" xml:space="preserve">
+  <value>Mark as Received</value>
+</data>
+  <data name="MarkAsShipped" xml:space="preserve">
+  <value>Mark as Shipped</value>
+</data>
+  <data name="WaitingForReturn" xml:space="preserve">
+  <value>Waiting for Return</value>
+</data>
+  <data name="ApproveInfo" xml:space="preserve">
+  <value>Approve Information</value>
+</data>
+  <data name="ReviewingRequest" xml:space="preserve">
+  <value>Reviewing Request</value>
+</data>
+  <data name="StartReview" xml:space="preserve">
+  <value>Start Review</value>
+</data>
+  <data name="RefundRequestReceived" xml:space="preserve">
+  <value>Refund Request Received</value>
+</data>
+  <data name="RefundWorkflow" xml:space="preserve">
+  <value>Refund Workflow</value>
+</data>
+  <data name="RejectAfterInspection" xml:space="preserve">
+  <value>Reject After Inspection</value>
+</data>
+  <data name="EnterTrackingNumber" xml:space="preserve">
+  <value>Enter Tracking Number</value>
+</data>
+  <data name="RequestMoreInfo" xml:space="preserve">
+  <value>Request More Information</value>
+</data>
+  <data name="Details" xml:space="preserve">
+  <value>Details</value>
+</data>
+  <data name="ReturnShippingCost" xml:space="preserve">
+  <value>Return Shipping Cost</value>
+</data>
+  <data name="ApprovedItems" xml:space="preserve">
+  <value>Approved Items</value>
+</data>
+  <data name="RequestedItems" xml:space="preserve">
+  <value>Requested Items</value>
+</data>
+  <data name="RefundReason" xml:space="preserve">
+  <value>Refund Reason</value>
+</data>
+  <data name="RefundInformation" xml:space="preserve">
+  <value>Refund Information</value>
+</data>
+  <data name="RequestDate" xml:space="preserve">
+  <value>Request Date</value>
+</data>
+  <data name="VendorName" xml:space="preserve">
+  <value>Vendor Name</value>
+</data>
+  <data name="RefundDetails" xml:space="preserve">
+  <value>Refund Details</value>
+</data>
+  <data name="TrackingNumberRequired" xml:space="preserve">
+  <value>Tracking Number is required</value>
+</data>
+  <data name="InvalidStatusTransition" xml:space="preserve">
+  <value>Invalid status transition</value>
+</data>
+  <data name="InvalidRefundAmount" xml:space="preserve">
+  <value>Invalid refund amount</value>
+</data>
+  <data name="TransactionIdRequired" xml:space="preserve">
+  <value>Transaction ID is required</value>
+</data>
+  <data name="RefundClosedSuccessfully" xml:space="preserve">
+  <value>Refund closed successfully</value>
+</data>
+	<data name="OrderID" xml:space="preserve">
+  <value>Order ID</value>
+</data>
+
+	<data name="CustomerEmail" xml:space="preserve">
+  <value>Customer Email</value>
+</data>
+
+	<data name="OrderDate" xml:space="preserve">
+  <value>Order Date</value>
+</data>
+
+	<data name="ItemsCount" xml:space="preserve">
+  <value>Items Count</value>
+</data>
+
+	<data name="StatusChangedSuccessfully" xml:space="preserve">
+  <value>Order status changed successfully</value>
+</data>
+
+	<data name="ConfirmCancelOrder" xml:space="preserve">
+  <value>Are you sure you want to cancel this order?</value>
+</data>
+
+	<data name="ConfirmOrder" xml:space="preserve">
+  <value>Confirm Order</value>
+</data>
+
+	<data name="MoveToProcessing" xml:space="preserve">
+  <value>Move to Processing</value>
+</data>
+
+	<data name="NextStatus" xml:space="preserve">
+  <value>Next Status</value>
+</data>
+	<data name="OrderDetails" xml:space="preserve">
+  <value>Order Details</value>
+</data>
+
+	<data name="OrderMustBePending" xml:space="preserve">
+  <value>The order must be in pending status</value>
+</data>
+
+	<data name="Status" xml:space="preserve">
+  <value>Status</value>
+</data>
+
+	<data name="PaymentStatus" xml:space="preserve">
+  <value>Payment Status</value>
+</data>
+
+	<data name="Item" xml:space="preserve">
+  <value>Item</value>
+</data>
+
+	<data name="Vendor" xml:space="preserve">
+  <value>Vendor</value>
+</data>
+
+	<data name="Quantity" xml:space="preserve">
+  <value>Quantity</value>
+</data>
+
+	<data name="Discount" xml:space="preserve">
+  <value>Discount</value>
+</data>
+
+	<data name="Tax" xml:space="preserve">
+  <value>Tax</value>
+</data>
+
+	<data name="TotalAmount" xml:space="preserve">
+  <value>Total Amount</value>
+</data>
+
+	<data name="RecipientName" xml:space="preserve">
+  <value>Recipient Name</value>
+</data>
+
+	<data name="TransactionID" xml:space="preserve">
+  <value>Transaction ID</value>
+</data>
+
+	<data name="PaymentDate" xml:space="preserve">
+  <value>Payment Date</value>
+</data>
+
+	<data name="CancelOrder" xml:space="preserve">
+  <value>Cancel Order</value>
+</data>
+
+	<data name="CouponCode" xml:space="preserve">
+  <value>Coupon Code</value>
+</data>
+	<data name="PendingProcessing" xml:space="preserve">
+  <value>Pending Processing</value>
+</data>
+	<data name="PreparingForShipment" xml:space="preserve">
+  <value>Preparing for Shipment</value>
+</data>
+	<data name="PickedUpByCarrier" xml:space="preserve">
+  <value>Picked Up by Carrier</value>
+</data>
+	<data name="AtLocalHub" xml:space="preserve">
+  <value>At Local Hub</value>
+</data>
+	<data name="DeliveryAttemptFailed" xml:space="preserve">
+  <value>Delivery Attempt Failed</value>
+</data>
+	<data name="CancelledByCustomer" xml:space="preserve">
+  <value>Cancelled by Customer</value>
+</data>
+	<data name="CancelledByMarketplace" xml:space="preserve">
+  <value>Cancelled by Marketplace</value>
+</data>
+
+	<data name="Card" xml:space="preserve">
+  <value>Card</value>
+</data>
+	<data name="Cash" xml:space="preserve">
+  <value>Cash</value>
+</data>
+	<data name="Wallet" xml:space="preserve">
+  <value>Wallet</value>
+</data>
+	<data name="Other" xml:space="preserve">
+  <value>Other</value>
+</data>
+	<data name="Currency" xml:space="preserve">
+  <value>Currency</value>
+</data>
+	<data name="Total" xml:space="preserve">
+  <value>Total</value>
+</data>
+
+  <data name="Other" xml:space="preserve">
+  <value>Other</value>
+</data>
+  <data name="QualityNotSatisfactory" xml:space="preserve">
+  <value>Quality Not Satisfactory</value>
+</data>
+  <data name="MissingParts" xml:space="preserve">
+  <value>Missing Parts</value>
+</data>
+  <data name="LateDelivery" xml:space="preserve">
+  <value>Late Delivery</value>
+</data>
+  <data name="BetterPriceFound" xml:space="preserve">
+  <value>Better Price Found</value>
+</data>
+  <data name="OrderedByMistake" xml:space="preserve">
+  <value>Ordered by Mistake</value>
+</data>
+  <data name="ChangedMind" xml:space="preserve">
+  <value>Changed Mind</value>
+</data>
+  <data name="DamagedDuringShipping" xml:space="preserve">
+  <value>Damaged During Shipping</value>
+</data>
+  <data name="ItemNotAsDescribed" xml:space="preserve">
+  <value>Item Not As Described</value>
+</data>
+  <data name="WrongItemShipped" xml:space="preserve">
+  <value>Wrong Item Shipped</value>
+</data>
+  <data name="DefectiveProduct" xml:space="preserve">
+  <value>Defective Product</value>
+</data>
+  <data name="VendorInformation" xml:space="preserve">
+  <value>Vendor Information</value>
+</data>
+  <data name="RefundSummary" xml:space="preserve">
+  <value>Refund Summary</value>
+</data>
+  <data name="ApprovedItemsRequired" xml:space="preserve">
+  <value>At least one approved item is required</value>
+</data>
+  <data name="RejectionReasonRequiredForRefund" xml:space="preserve">
+  <value>Rejection reason is required when rejecting a refund</value>
+</data>
+</root>

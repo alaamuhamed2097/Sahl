@@ -1,4 +1,6 @@
-﻿namespace Dashboard.Constants
+using System;
+
+namespace Dashboard.Constants
 {
     public static class ApiEndpoints
     {
@@ -62,16 +64,46 @@
 
         public static class Order
         {
-            public const string Get = "api/v1/Order";
-            public const string All = "api/v1/Order/all";
-            public const string Save = "api/v1/Order/save";
-            public const string ChangeOrderStatus = "api/v1/Order/changeOrderStatus";
-            public const string Delete = "api/v1/Order/delete";
-            public const string Search = "api/v1/Order/search";
-            public const string SearchForUserId = "api/v1/Order/searchForUserId";
-            public const string UserSearch = "api/v1/Order/userSearch";
-            public const string ReferralOrders = "api/v1/Order/referralOrders";
-            public const string GetOrderNumber = "api/v1/Order/orderNumber";
+            // ============================================
+            // NEW ADMIN ENDPOINTS
+            // ============================================
+
+            /// <summary>
+            /// Search orders with filtering and pagination
+            /// GET /api/v1/admin/orders/search
+            /// </summary>
+            public const string Search = "api/v1/admin/orders/search";
+
+            /// <summary>
+            /// Get order details by ID
+            /// GET /api/v1/admin/orders/{orderId}
+            /// </summary>
+            public const string GetById = "api/v1/admin/orders";
+
+            /// <summary>
+            /// Change order status
+            /// POST /api/v1/admin/orders/{orderId}/change-status
+            /// </summary>
+            public const string ChangeStatus = "api/v1/admin/orders";
+
+            /// <summary>
+            /// Update order details
+            /// PUT /api/v1/admin/orders/{orderId}
+            /// </summary>
+            public const string Update = "api/v1/admin/orders";
+
+            /// <summary>
+            /// Get today's orders count
+            /// GET /api/v1/admin/orders/statistics/today-count
+            /// </summary>
+            public const string TodayCount = "api/v1/admin/orders/statistics/today-count";
+
+            /// <summary>
+            /// Update shipment status for a specific order shipment
+            /// PUT /api/v1/admin/orders/{orderId}/shipments/{shipmentId}/status
+            /// </summary>
+            public static string ShipmentStatus(Guid orderId, Guid shipmentId) =>
+                $"api/v1/admin/orders/{orderId}/shipments/{shipmentId}/status";
         }
 
         public static class WithdrawalMethod
@@ -84,11 +116,11 @@
 
         public static class Refund
         {
-            public const string Get = "api/v1/Refund";
-            public const string Save = "api/v1/Refund/save";
-            public const string ChangeRefundStatus = "api/v1/Refund/changeRefundStatus";
-            public const string Delete = "api/v1/Refund/delete";
-            public const string Search = "api/v1/Refund/search";
+            public const string Get = "api/v1/refunds";
+            public const string Update = "api/v1/refunds/update";
+            public const string ChangeRefundStatus = "api/v1/refunds/changeRefundStatus";
+            public const string Delete = "api/v1/refunds/delete";
+            public const string Search = "api/v1/refunds/search";
         }
 
         public static class Unit
@@ -206,14 +238,14 @@
         {
             public const string Get = "api/v1/Customer";
             public const string Create = "api/v1/Customer";
-			//public const string Update = "api/v1/Customer";
-			public const string SearchSearchWallet = "api/v1/CustomerWalletTransaction/SearchWalletTransactions";
+            //public const string Update = "api/v1/Customer";
+            public const string SearchSearchWallet = "api/v1/CustomerWalletTransaction/SearchWalletTransactions";
 
-			public const string Delete = "api/v1/Customer/delete";
+            public const string Delete = "api/v1/Customer/delete";
             public const string Save = "api/v1/Customer/Save";
-			public const string Register = "api/v1/UserRegistration/register-customer";
-			public const string Update = "api/Customer/Update";
-			public const string Search = "api/v1/Customer/search";
+            public const string Register = "api/v1/UserRegistration/register-customer";
+            public const string Update = "api/Customer/Update";
+            public const string Search = "api/v1/Customer/search";
             public const string FindById = "api/v1/Customer";
             public const string GetForSelect = "api/v1/Customer/forSelect";
             public const string ChangeStatus = "api/v1/Customer/changeStatus";
@@ -241,6 +273,15 @@
             public const string Save = "api/v1/ShippingCompany/save";
             public const string Delete = "api/v1/ShippingCompany/delete";
             public const string Search = "api/v1/ShippingCompany/search";
+        }
+
+        public static class Shipment
+        {
+            public const string GetOrderShipments = "api/v1/Shipment/order";
+            public const string Track = "api/v1/Shipment/track";
+            public const string GetById = "api/v1/Shipment";
+            public const string UpdateStatus = "api/v1/Shipment/{0}/status";
+            public const string AssignTracking = "api/v1/Shipment/{0}/tracking";
         }
 
         public static class UserNotification
@@ -294,7 +335,7 @@
             public const string MaintenanceMode = $"{Base}/maintenance-mode";
             public const string MinimumOrderAmount = $"{Base}/minimum-order-amount";
         }
-        public static class DevelopmentSettings 
+        public static class DevelopmentSettings
         {
             public const string Get = "api/v1/development-settings";
             public const string IsMultiVendorEnabled = "api/v1/development-settings/multi-vendor-enabled";
@@ -376,17 +417,6 @@
             public const string Delete = "api/v1/ReturnMovement/delete";
         }
 
-        // Content Area endpoints
-        public static class ContentArea
-        {
-            public const string Get = "api/v1/ContentArea";
-            public const string GetActive = "api/v1/ContentArea/active";
-            public const string GetByCode = "api/v1/ContentArea/by-code";
-            public const string Search = "api/v1/ContentArea/search";
-            public const string Save = "api/v1/ContentArea/save";
-            public const string Delete = "api/v1/ContentArea/delete";
-            public const string ToggleStatus = "api/v1/ContentArea/toggle-status";
-        }
 
         // Media Content endpoints
         public static class MediaContent
@@ -466,37 +496,7 @@
             public static string Reject => $"{BaseUrl}/reject";
             public static string Delete => $"{BaseUrl}/delete";
         }
-  //      public static class VendorReview
-		//{
-		//	private const string Base = "api/v1/VendorReview";
 
-		//	// Basic Operations
-		//	public const string Get = Base;
-		//	public const string Update = $"{Base}/update";
-		//	public const string Delete = $"{Base}/delete";
-
-		//	// Get Operations
-		//	public const string GetByVendorId = $"{Base}/vendorReviews-by";
-		//	public const string GetVendorReviews = $"{Base}/vendor-by";
-		//	public const string GetCustomerReviews = $"{Base}/customer";
-		//	public const string GetVerified = $"{Base}/vendor/verified";
-		//	public const string GetNonVerified = $"{Base}/vendor/non-verified";
-
-		//	// Search & Filter
-		//	public const string Search = $"{Base}/searchVendorReviews";
-
-		//	// Statistics
-		//	public const string GetStats = $"{Base}/vendor-review-stats-by";
-		//	public const string GetAverageRating = $"{Base}/average-rating-by";
-		//	public const string GetReviewCount = $"{Base}/vendorReview-count";
-
-		//	// Admin Operations
-		//	public const string GetPending = $"{Base}/pending";
-		//	public const string Approve = $"{Base}/approve";
-		//	public const string Reject = $"{Base}/reject";
-		//}
-		
-        
         public static class HomePageSlider
         {
             private const string Base = "api/v1/HomePageSlider";
@@ -508,14 +508,8 @@
             public const string Create = $"{Base}/create";
             public const string Update = $"{Base}/update";
             public const string Delete = $"{Base}";
-
-            // Batch Operations
-            //public const string BatchGet = $"{Base}/batch/get";
-            //public const string BatchActivate = $"{Base}/batch/activate";
-            //public const string BatchDeactivate = $"{Base}/batch/deactivate";
-            //public const string BatchDelete = $"{Base}/batch/delete";
-            //public const string BatchReorder = $"{Base}/batch/reorder";
         }
+
         public static class ReviewReport
         {
             private const string Base = "api/v1/ReviewReport";

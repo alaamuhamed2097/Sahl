@@ -28,5 +28,6 @@ namespace Shared.DTOs.Order.Fulfillment.Shipment
         public DateTime? ActualDeliveryDate { get; set; }
         public DateTime CreatedDateUtc { get; set; }
         public List<ShipmentItemDto> Items { get; set; } = new();
+        public List<ShipmentStatusHistoryDto> StatusHistory { get; set; } = new();
     }
 }

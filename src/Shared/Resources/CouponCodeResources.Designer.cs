@@ -637,6 +637,15 @@ namespace Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to كوبون على المنتجات.
+        /// </summary>
+        public static string ItemBasedCoupon {
+            get {
+                return ResourceManager.GetString("ItemBasedCoupon", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to الحد.
         /// </summary>
         public static string Limit {
@@ -795,6 +804,15 @@ namespace Resources {
         public static string PromoCode {
             get {
                 return ResourceManager.GetString("PromoCode", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to المشاركون في البرومو كود.
+        /// </summary>
+        public static string PromoCodeParticipations {
+            get {
+                return ResourceManager.GetString("PromoCodeParticipations", resourceCulture);
             }
         }
         

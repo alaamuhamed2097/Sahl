@@ -15,8 +15,9 @@ using Shared.DTOs.Order.Payment.PaymentProcessing;
 namespace BL.Services.Order;
 
 /// <summary>
-/// Handles order lifecycle events with integrated notifications
-/// Coordinates between order status, shipment creation, fulfillment, and customer notifications
+/// FINAL OrderEventHandlerService
+/// - No InvoiceId references (removed GetByInvoiceIdAsync)
+/// - Uses OrderNumber for tracking
 /// </summary>
 public class OrderEventHandlerService : IOrderEventHandlerService
 {
@@ -59,12 +60,15 @@ public class OrderEventHandlerService : IOrderEventHandlerService
     {
         try
         {
-            var order = await FindOrderAsync(orderEvent.OrderId, orderEvent.InvoiceId, cancellationToken);
+            // Use OrderNumber instead of InvoiceId
+            var order = await _orderRepository.FindByIdAsync(
+                orderEvent.OrderId ?? throw new ArgumentNullException(nameof(orderEvent.OrderId)),
+                cancellationToken);
 
             if (order == null)
             {
                 throw new InvalidOperationException(
-                    $"Order not found - OrderId: {orderEvent.OrderId}, InvoiceId: {orderEvent.InvoiceId}");
+                    $"Order not found - OrderId: {orderEvent.OrderId}");
             }
 
             // Check if already processed
@@ -94,8 +98,9 @@ public class OrderEventHandlerService : IOrderEventHandlerService
             // Send payment confirmation notification
             await _notificationService.NotifyOrderPaidAsync(order.Id, cancellationToken);
 
-            // Create shipments from order
-            var shipments = await _shipmentService.SplitOrderIntoShipmentsAsync(order.Id);
+            // ✅ SHIPMENTS ALREADY CREATED in OrderCreationService
+            // Get existing shipments and process fulfillment
+            var shipments = await _shipmentService.GetOrderShipmentsAsync(order.Id);
 
             // Process fulfillment for each shipment
             foreach (var shipment in shipments)
@@ -112,9 +117,7 @@ public class OrderEventHandlerService : IOrderEventHandlerService
         {
             _logger.Error(
                 ex,
-                "Failed to process OnOrderPaid - OrderId: {OrderId}, InvoiceId: {InvoiceId}",
-                orderEvent.OrderId,
-                orderEvent.InvoiceId);
+                $"Failed to process OnOrderPaid - OrderId: {orderEvent.OrderId}");
 
             // Mark order as payment failed and notify customer
             if (orderEvent.OrderId.HasValue)
@@ -134,10 +137,6 @@ public class OrderEventHandlerService : IOrderEventHandlerService
         }
     }
 
-    /// <summary>
-    /// Handles order completion event
-    /// Processes cash on delivery payments and sends delivery confirmation
-    /// </summary>
     public async Task<bool> OnOrderCompleted(
         OrderEvent orderEvent,
         CancellationToken cancellationToken = default)
@@ -175,10 +174,6 @@ public class OrderEventHandlerService : IOrderEventHandlerService
         }
     }
 
-    /// <summary>
-    /// Handles order cancellation event
-    /// Releases inventory, processes refunds, and notifies customer
-    /// </summary>
     public async Task<bool> OnOrderCanceled(
         OrderEvent orderEvent,
         CancellationToken cancellationToken = default)
@@ -239,10 +234,6 @@ public class OrderEventHandlerService : IOrderEventHandlerService
         }
     }
 
-    /// <summary>
-    /// Handles order refund request
-    /// Validates refund eligibility, processes refund, and notifies customer
-    /// </summary>
     public async Task<bool> OnOrderRefund(
         OrderEvent orderEvent,
         CancellationToken cancellationToken = default)
@@ -282,9 +273,6 @@ public class OrderEventHandlerService : IOrderEventHandlerService
         }
     }
 
-    /// <summary>
-    /// Handles order pending event
-    /// </summary>
     public async Task<bool> OnOrderPending(
         OrderEvent orderEvent,
         CancellationToken cancellationToken = default)
@@ -307,9 +295,6 @@ public class OrderEventHandlerService : IOrderEventHandlerService
         return result;
     }
 
-    /// <summary>
-    /// Handles order accepted/confirmed event
-    /// </summary>
     public async Task<bool> OnOrderAccepted(
         OrderEvent orderEvent,
         CancellationToken cancellationToken = default)
@@ -327,9 +312,6 @@ public class OrderEventHandlerService : IOrderEventHandlerService
         return result;
     }
 
-    /// <summary>
-    /// Handles order rejected event
-    /// </summary>
     public async Task<bool> OnOrderRejected(
         OrderEvent orderEvent,
         CancellationToken cancellationToken = default)
@@ -350,9 +332,6 @@ public class OrderEventHandlerService : IOrderEventHandlerService
         return result;
     }
 
-    /// <summary>
-    /// Handles order in progress event
-    /// </summary>
     public async Task<bool> OnOrderInProgress(
         OrderEvent orderEvent,
         CancellationToken cancellationToken = default)
@@ -370,9 +349,6 @@ public class OrderEventHandlerService : IOrderEventHandlerService
         return result;
     }
 
-    /// <summary>
-    /// Handles order shipping event
-    /// </summary>
     public async Task<bool> OnOrderShipping(
         OrderEvent orderEvent,
         CancellationToken cancellationToken = default)
@@ -397,9 +373,6 @@ public class OrderEventHandlerService : IOrderEventHandlerService
         return result;
     }
 
-    /// <summary>
-    /// Handles order not active event
-    /// </summary>
     public async Task<bool> OnOrderNotActive(
         OrderEvent orderEvent,
         CancellationToken cancellationToken = default)
@@ -411,24 +384,6 @@ public class OrderEventHandlerService : IOrderEventHandlerService
     }
 
     #region Private Helper Methods
-
-    private async Task<TbOrder?> FindOrderAsync(
-        Guid? orderId,
-        string? invoiceId,
-        CancellationToken cancellationToken)
-    {
-        if (orderId.HasValue && orderId != Guid.Empty)
-        {
-            return await _orderRepository.FindByIdAsync(orderId.Value, cancellationToken);
-        }
-
-        if (!string.IsNullOrEmpty(invoiceId))
-        {
-            return await _orderRepository.GetByInvoiceIdAsync(invoiceId, cancellationToken);
-        }
-
-        return null;
-    }
 
     private async Task ProcessShipmentFulfillmentAsync(
         Guid shipmentId,
@@ -577,11 +532,6 @@ public class OrderEventHandlerService : IOrderEventHandlerService
         }
     }
 
-    /// <summary>
-    /// Marks order as payment failed
-    /// Updates both TbOrder and TbOrderPayment with failure information
-    /// UPDATED: Now updates payment record with FailureReason
-    /// </summary>
     private async Task MarkOrderAsPaymentFailed(
         Guid orderId,
         string failureReason,

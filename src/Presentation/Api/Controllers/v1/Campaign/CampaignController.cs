@@ -21,7 +21,7 @@ namespace Api.Controllers.v1.Campaign
 	[ApiController]
 	[ApiVersion("1.0")]
 	[Route("api/v{version:apiVersion}/[controller]")]
-	[Authorize(Roles = $"{nameof(UserRole.Admin)},{nameof(UserRole.Vendor)}")]
+	[Authorize(Roles = nameof(UserRole.Admin))]
 	public class CampaignController : BaseController
 	{
 		private readonly ICampaignService _campaignService;
@@ -36,6 +36,27 @@ namespace Api.Controllers.v1.Campaign
 		}
 
 		#region Campaign Queries
+		/// <summary>
+		/// Get all campaigns (admin only)
+		/// </summary>
+		/// <remarks>
+		/// API Version: 1.0+
+		/// Requires Admin role.
+		/// </remarks>
+		[HttpGet]
+		[Authorize(Roles = nameof(UserRole.Admin))]
+		[ProducesResponseType(typeof(ResponseModel<List<CampaignDto>>), StatusCodes.Status200OK)]
+		public async Task<IActionResult> GetAllCampaigns()
+		{
+			var campaigns = await _campaignService.GetAllCampaignsAsync();
+
+			return Ok(new ResponseModel<IEnumerable<CampaignDto>>
+			{
+				Success = true,
+				Data = campaigns,
+				Message = NotifiAndAlertsResources.DataRetrieved
+			});
+		}
 
 		/// <summary>
 		/// Get active campaigns (public)
@@ -50,7 +71,7 @@ namespace Api.Controllers.v1.Campaign
 		{
 			var campaigns = await _campaignService.GetActiveCampaignsAsync();
 
-			return Ok(new ResponseModel<List<CampaignDto>>
+			return Ok(new ResponseModel<IEnumerable<CampaignDto>>
 			{
 				Success = true,
 				Data = campaigns,
@@ -71,32 +92,10 @@ namespace Api.Controllers.v1.Campaign
 		{
 			var flashSales = await _campaignService.GetActiveFlashSalesAsync();
 
-			return Ok(new ResponseModel<List<CampaignDto>>
+			return Ok(new ResponseModel<IEnumerable<CampaignDto>>
 			{
 				Success = true,
 				Data = flashSales,
-				Message = NotifiAndAlertsResources.DataRetrieved
-			});
-		}
-
-		/// <summary>
-		/// Get all campaigns (admin only)
-		/// </summary>
-		/// <remarks>
-		/// API Version: 1.0+
-		/// Requires Admin role.
-		/// </remarks>
-		[HttpGet]
-		[Authorize(Roles = nameof(UserRole.Admin))]
-		[ProducesResponseType(typeof(ResponseModel<List<CampaignDto>>), StatusCodes.Status200OK)]
-		public async Task<IActionResult> GetAllCampaigns()
-		{
-			var campaigns = await _campaignService.GetAllCampaignsAsync();
-
-			return Ok(new ResponseModel<List<CampaignDto>>
-			{
-				Success = true,
-				Data = campaigns,
 				Message = NotifiAndAlertsResources.DataRetrieved
 			});
 		}
@@ -111,20 +110,17 @@ namespace Api.Controllers.v1.Campaign
 		[HttpGet("search")]
 		[Authorize(Roles = nameof(UserRole.Admin))]
 		[ProducesResponseType(typeof(ResponseModel<PaginatedSearchResult<CampaignDto>>), StatusCodes.Status200OK)]
-		public async Task<IActionResult> SearchCampaigns([FromQuery] BaseSearchCriteriaModel searchCriteria)
+		[ProducesResponseType(typeof(ResponseModel<PaginatedSearchResult<CampaignDto>>), StatusCodes.Status500InternalServerError)]
+		public async Task<IActionResult> SearchCampaigns([FromQuery] CampaignSearchCriteriaModel searchCriteria)
 		{
-			var (campaigns, totalCount) = await _campaignService.SearchCampaignsAsync(searchCriteria);
+			var result = await _campaignService.SearchCampaignsAsync(searchCriteria);
 
-			return Ok(new ResponseModel<PaginatedSearchResult<CampaignDto>>
+			if (!result.Success)
 			{
-				Success = true,
-				Data = new PaginatedSearchResult<CampaignDto>
-				{
-					Items = campaigns,
-					TotalRecords = totalCount
-				},
-				Message = NotifiAndAlertsResources.DataRetrieved
-			});
+				return StatusCode(result.StatusCode, result);
+			}
+
+			return Ok(result);
 		}
 
 		/// <summary>
@@ -268,7 +264,7 @@ namespace Api.Controllers.v1.Campaign
 		/// Requires Admin role.
 		/// Requires Authentication.
 		/// </remarks>
-		[HttpPost("delete")]
+		[HttpDelete("{id}")]
 		[Authorize(Roles = nameof(UserRole.Admin))]
 		[ProducesResponseType(typeof(ResponseModel<bool>), StatusCodes.Status200OK)]
 		[ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -303,126 +299,7 @@ namespace Api.Controllers.v1.Campaign
 
 		#endregion
 
-		#region Campaign Items
-
-		/// <summary>
-		/// Get campaign items (public)
-		/// </summary>
-		/// <remarks>
-		/// API Version: 1.0+
-		/// </remarks>
-		[HttpGet("{id:guid}/items")]
-		[AllowAnonymous]
-		[ProducesResponseType(typeof(ResponseModel<List<CampaignItemDto>>), StatusCodes.Status200OK)]
-		public async Task<IActionResult> GetCampaignItems(Guid id)
-		{
-			var items = await _campaignService.GetCampaignItemsAsync(id);
-
-			return Ok(new ResponseModel<List<CampaignItemDto>>
-			{
-				Success = true,
-				Data = items,
-				Message = NotifiAndAlertsResources.DataRetrieved
-			});
-		}
-
-		/// <summary>
-		/// Add item to campaign (admin only)
-		/// </summary>
-		/// <remarks>
-		/// API Version: 1.0+
-		/// Requires Admin role.
-		/// Requires Authentication.
-		/// </remarks>
-		[HttpPost("{id:guid}/items")]
-		[Authorize(Roles = nameof(UserRole.Admin))]
-		[ProducesResponseType(typeof(ResponseModel<CampaignItemDto>), StatusCodes.Status201Created)]
-		[ProducesResponseType(StatusCodes.Status400BadRequest)]
-		[ProducesResponseType(StatusCodes.Status401Unauthorized)]
-		public async Task<IActionResult> AddItemToCampaign(Guid id, [FromBody] AddCampaignItemDto dto)
-		{
-			if (string.IsNullOrEmpty(UserId))
-				return Unauthorized(new ResponseModel<string>
-				{
-					Success = false,
-					Message = NotifiAndAlertsResources.UnauthorizedAccess
-				});
-
-			if (id != dto.CampaignId)
-			{
-				return BadRequest(new ResponseModel<string>
-				{
-					Success = false,
-					Message = "Campaign ID mismatch"
-				});
-			}
-
-			if (!ModelState.IsValid)
-				return BadRequest(new ResponseModel<object>
-				{
-					Success = false,
-					Message = "Validation failed",
-					Errors = ModelState.Values
-						.SelectMany(v => v.Errors)
-						.Select(e => e.ErrorMessage)
-						.ToList()
-				});
-
-			var item = await _campaignService.AddItemToCampaignAsync(dto, GuidUserId);
-
-			return CreatedAtAction(
-				nameof(GetCampaignItems),
-				new { id = dto.CampaignId },
-				new ResponseModel<CampaignItemDto>
-				{
-					Success = true,
-					Data = item,
-					Message = NotifiAndAlertsResources.SavedSuccessfully
-				});
-		}
-
-		/// <summary>
-		/// Remove item from campaign (admin only)
-		/// </summary>
-		/// <remarks>
-		/// API Version: 1.0+
-		/// Requires Admin role.
-		/// Requires Authentication.
-		/// </remarks>
-		[HttpPost("items/remove")]
-		[Authorize(Roles = nameof(UserRole.Admin))]
-		[ProducesResponseType(typeof(ResponseModel<bool>), StatusCodes.Status200OK)]
-		[ProducesResponseType(StatusCodes.Status404NotFound)]
-		[ProducesResponseType(StatusCodes.Status401Unauthorized)]
-		public async Task<IActionResult> RemoveItemFromCampaign(Guid itemId)
-		{
-			if (string.IsNullOrEmpty(UserId))
-				return Unauthorized(new ResponseModel<string>
-				{
-					Success = false,
-					Message = NotifiAndAlertsResources.UnauthorizedAccess
-				});
-
-			var result = await _campaignService.RemoveItemFromCampaignAsync(itemId, GuidUserId);
-
-			if (!result)
-			{
-				return NotFound(new ResponseModel<string>
-				{
-					Success = false,
-					Message = NotifiAndAlertsResources.NoDataFound
-				});
-			}
-
-			return Ok(new ResponseModel<bool>
-			{
-				Success = true,
-				Data = result,
-				Message = NotifiAndAlertsResources.DeletedSuccessfully
-			});
-		}
-
-		#endregion
+		
 	}
 }
 

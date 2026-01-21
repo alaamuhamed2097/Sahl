@@ -46,6 +46,7 @@ using Domains.Views.Brand;
 using Domains.Views.Category;
 using Domains.Views.Item;
 using Domains.Views.Offer;
+using Domains.Views.Order.Refund;
 using Domains.Views.Unit;
 using Domains.Views.UserNotification;
 using Domains.Views.Vendor;
@@ -223,6 +224,7 @@ namespace DAL.ApplicationContext
         public DbSet<TbOrderShipmentItem> TbOrderShipmentItems { get; set; }
         public DbSet<TbPaymentMethod> TbPaymentMethods { get; set; }
         public DbSet<TbOrderPayment> TbOrderPayments { get; set; }
+        public DbSet<TbShipmentPayment> TbShipmentPayments { get; set; }
 
         // Pricing System Settings
         public DbSet<TbPricingSystemSetting> TbPricingSystemSettings { get; set; }
@@ -254,8 +256,10 @@ namespace DAL.ApplicationContext
         public DbSet<VwItem> VwItems { get; set; }
 
         //Vendor Items
-        public DbSet<VwOffer> VwOffers { get; set; }
         public DbSet<VwVendorItem> VwVendorItems { get; set; }
+
+        // Offer Views
+        public DbSet<VwRefundDetails> VwRefundDetails { get; set; }
 
         // Item Search Views (from stored procedure and denormalized view)
         public DbSet<VwItemBestPrice> VwItemBestPrices { get; set; }
@@ -438,7 +442,7 @@ namespace DAL.ApplicationContext
             modelBuilder.Entity<VwItem>().HasNoKey().ToView("VwItems");
 
             // Vendor Item Views
-            modelBuilder.Entity<VwOffer>().HasNoKey().ToView("VwOffers");
+            modelBuilder.Entity<VwRefundDetails>().HasNoKey().ToView("VwRefundDetails");
             modelBuilder.Entity<VwVendorItem>().HasNoKey().ToView("VwVendorItems");
 
             // Item Search Result View (from stored procedure - no actual view, used for mapping results)

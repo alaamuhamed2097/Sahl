@@ -9,5 +9,5 @@ namespace BL.Contracts.Service.Order.OrderProcessing;
 
 public interface IOrderStatusTransitionService
 {
-    Task<bool> HandleStatusChangeAsync(Guid orderId, OrderStatus newStatus, string userId);
+    Task<bool> HandleStatusChangeAsync(Guid orderId, OrderProgressStatus newStatus, string userId);
 }

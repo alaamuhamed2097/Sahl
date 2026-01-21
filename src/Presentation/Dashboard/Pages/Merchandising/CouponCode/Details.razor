@@ -78,10 +78,9 @@
                             <div class="form-group">
                                 <label for="promoType" class="form-label fw-bold">@CouponCodeResources.Type</label>
                                 <InputSelect id="promoType" @bind-Value="Model.PromoType" class="form-select">
-                                    <option value="@((int)CouponCodeType.General)">@CouponCodeResources.GeneralCoupon</option>
-                                    <option value="@((int)CouponCodeType.CategoryBased)">@CouponCodeResources.CategoryBasedCoupon</option>
-                                    <option value="@((int)CouponCodeType.VendorBased)">@CouponCodeResources.VendorBasedCoupon</option>
-                                    <option value="@((int)CouponCodeType.NewUserOnly)">@CouponCodeResources.NewUserOnlyCoupon</option>
+                                    <option value="@(CouponCodeType.General)">@CouponCodeResources.GeneralCoupon</option>
+                                    <option value="@(CouponCodeType.CategoryBased)">@CouponCodeResources.CategoryBasedCoupon</option>
+                                    <option value="@(CouponCodeType.ItemBased)">@CouponCodeResources.ItemBasedCoupon</option>
                                 </InputSelect>
                             </div>
                         </div>
@@ -89,8 +88,8 @@
                             <div class="form-group">
                                 <label for="discountType" class="form-label fw-bold">@CouponCodeResources.DiscountType</label>
                                 <InputSelect id="discountType" @bind-Value="Model.DiscountType" class="form-select">
-                                    <option value="@((int)DiscountType.Percentage)">@CouponCodeResources.PercentageDiscount</option>
-                                    <option value="@((int)DiscountType.FixedAmount)">@CouponCodeResources.FixedAmountDiscount</option>
+                                    <option value="@(DiscountType.Percentage)">@CouponCodeResources.PercentageDiscount</option>
+                                    <option value="@(DiscountType.FixedAmount)">@CouponCodeResources.FixedAmountDiscount</option>
                                 </InputSelect>
                             </div>
                         </div>
@@ -111,12 +110,36 @@
                         {
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <label for="maxDiscountAmount" class="form-label fw-bold">@CouponCodeResources.MaxDiscountAmount (SAR)</label>
+                                    <label for="maxDiscountAmount" class="form-label fw-bold">@CouponCodeResources.MaxDiscountAmount (@ECommerceResources.CurrencySymbol)</label>
                                     <InputNumber id="maxDiscountAmount" @bind-Value="Model.MaxDiscountAmount" class="form-control" />
                                 </div>
                             </div>
                         }
                     </div>
+
+                    <!-- Category Selector Section (for CategoryBased coupons) -->
+                    @if (Model.PromoType == CouponCodeType.CategoryBased)
+                    {
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <Dashboard.Pages.Merchandising.CouponCode.Components.CouponCategoriesSelector 
+                                    SelectedCategories="@SelectedCategories"
+                                    SelectedCategoriesChanged="@OnSelectedCategoriesChanged" />
+                            </div>
+                        </div>
+                    }
+
+                    <!-- Item Selector Section (for ItemBased coupons) -->
+                    @if (Model.PromoType == CouponCodeType.ItemBased)
+                    {
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <Dashboard.Pages.Merchandising.CouponCode.Components.CouponItemsSelector 
+                                    SelectedItems="@SelectedItems"
+                                    SelectedItemsChanged="@OnSelectedItemsChanged" />
+                            </div>
+                        </div>
+                    }
 
                     <!-- Dates Section -->
                     <div class="row mb-4">
@@ -192,7 +215,7 @@
                     <hr class="my-4" />
                     <div class="card border-0 shadow-sm">
                         <div class="card-header bg-light d-flex justify-content-between align-items-center">
-                            <h6 class="mb-0 fw-bold">@CouponCodeResources.PromoCodes - Participation Requests</h6>
+                            <h6 class="mb-0 fw-bold">@CouponCodeResources.PromoCodeParticipations</h6>
                             <button type="button" class="btn btn-outline-primary btn-sm" @onclick="@(async () => await LoadParticipationRequestsAsync())">
                                 <i class="fas fa-sync-alt me-1"></i> @ActionsResources.Refresh
                             </button>
@@ -213,7 +236,6 @@
                                                 <th style="min-width: 160px;">@CouponCodeResources.Vendor</th>
                                                 <th style="min-width: 120px;">@CouponCodeResources.Code</th>
                                                 <th style="min-width: 130px;">@FormResources.Date</th>
-                                                <th style="min-width: 120px;">@CouponCodeResources.Status</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -223,11 +245,6 @@
                                                     <td>@(req.VendorName ?? "-")</td>
                                                     <td><span class="badge bg-primary">@req.PromoCodeValue</span></td>
                                                     <td>@req.SubmittedAt.ToString("yyyy-MM-dd HH:mm")</td>
-                                                    <td>
-                                                        <span class="badge @GetRequestStatusBadge(req.Status)">
-                                                            @(req.StatusName ?? req.Status.ToString())
-                                                        </span>
-                                                    </td>
                                                 </tr>
                                             }
                                         </tbody>

@@ -1,7 +1,6 @@
 ﻿using Dashboard.Contracts;
 using Dashboard.Contracts.Brand;
 using Dashboard.Contracts.Campaign;
-using Dashboard.Contracts.Content;
 using Dashboard.Contracts.Currency;
 using Dashboard.Contracts.Customer;
 using Dashboard.Contracts.ECommerce.Category;
@@ -21,7 +20,6 @@ using Dashboard.Contracts.WithdrawalMethod;
 using Dashboard.Services;
 using Dashboard.Services.Brand;
 using Dashboard.Services.Campaign;
-using Dashboard.Services.Content;
 using Dashboard.Services.Currency;
 using Dashboard.Services.Customer;
 using Dashboard.Services.ECommerce.Category;
@@ -54,6 +52,7 @@ namespace Dashboard.Extensions
             services.AddScoped<ICategoryService, CategoryService>();
             services.AddScoped<IOrderService, OrderService>();
             services.AddScoped<IRefundService, RefundService>();
+            services.AddScoped<IShipmentService, ShipmentService>();
             services.AddScoped<IUnitService, UnitService>();
             services.AddScoped<ICountryService, CountryService>();
             services.AddScoped<IStateService, StateService>();
@@ -65,13 +64,9 @@ namespace Dashboard.Extensions
             services.AddScoped<ICurrencyService, CurrencyService>();
             services.AddScoped<IPageService, PageService>();
 
-			// Warehouse & Inventory Services
-			services.AddScoped<IWarehouseService, WarehouseService>();
-			services.AddScoped<IVendorWarehouseService, VendorWarehouseService>();
-
-            // Content Management Services
-            services.AddScoped<IContentAreaService, ContentAreaService>();
-            services.AddScoped<IMediaContentService, MediaContentService>();
+            // Warehouse & Inventory Services
+            services.AddScoped<IWarehouseService, WarehouseService>();
+            services.AddScoped<IVendorWarehouseService, VendorWarehouseService>();
 
             services.AddScoped<IItemReviewService, ItemReviewService>();
             services.AddScoped<IVendorReviewService, VendorReviewService>();

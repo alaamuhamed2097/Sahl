@@ -559,4 +559,9 @@
 	<data name="ConfirmDeleteAlert" xml:space="preserve">
   <value>لا يمكن التراجع عن هذا الإجراء!</value>
 </data>
+	<data name="OrderCancelledSuccessfully" xml:space="preserve">
+  <value>تم إلغاء الطلب بنجاح</value>
+</data>
+
+
 </root>

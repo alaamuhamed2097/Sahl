@@ -10,11 +10,11 @@ public interface IVendorDashboardService
     /// <summary>
     /// Gets comprehensive dashboard summary with all KPIs for a vendor
     /// </summary>
-    /// <param name="vendorId">The vendor ID</param>
+    /// <param name="userId">The vendor ID</param>
     /// <param name="cancellationToken">Cancellation token</param>
     /// <returns>Complete dashboard summary with all metrics</returns>
     Task<VendorDashboardSummaryDto> GetDashboardSummaryAsync(
-        Guid vendorId,
+        Guid userId,
         CancellationToken cancellationToken = default);
 
     /// <summary>

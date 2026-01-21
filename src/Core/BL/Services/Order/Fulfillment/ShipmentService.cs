@@ -1,10 +1,12 @@
 ﻿using AutoMapper;
 using BL.Contracts.Service.Order.Fulfillment;
 using Common.Enumerations.Fulfillment;
+using Common.Enumerations.Payment;
 using Common.Enumerations.Shipping;
 using DAL.Contracts.Repositories.Order;
 using DAL.Contracts.UnitOfWork;
 using Domains.Entities.Order;
+using Domains.Entities.Order.Payment;
 using Domains.Entities.Order.Shipping;
 using Serilog;
 using Shared.DTOs.Order.Checkout.Address;
@@ -13,7 +15,12 @@ using Shared.DTOs.Order.Fulfillment.Shipment;
 namespace BL.Services.Order.Fulfillment;
 
 /// <summary>
-/// FINAL FIXED VERSION - Uses custom repositories
+/// FINAL Shipment Service
+/// - New ShipmentStatus enum values
+/// - Tax and discount distribution across shipments
+/// - COD payment support via TbShipmentPayment
+/// - Payment summary updates
+/// - No InvoiceId, no AllowSplitPayment flag
 /// </summary>
 public class ShipmentService : IShipmentService
 {
@@ -43,7 +50,6 @@ public class ShipmentService : IShipmentService
         {
             _logger.Information("Splitting order {OrderId} into shipments", orderId);
 
-            // ✅ Use custom repository
             var order = await _orderRepository.GetOrderWithDetailsAsync(orderId);
 
             if (order == null)
@@ -60,11 +66,21 @@ public class ShipmentService : IShipmentService
             var shipmentRepo = _unitOfWork.TableRepository<TbOrderShipment>();
             var shipmentItemRepo = _unitOfWork.TableRepository<TbOrderShipmentItem>();
             var historyRepo = _unitOfWork.TableRepository<TbShipmentStatusHistory>();
+            var shipmentPaymentRepo = _unitOfWork.TableRepository<TbShipmentPayment>();
+
+            // Calculate total order subtotal for distribution
+            var totalOrderSubTotal = order.OrderDetails.Sum(od => od.SubTotal);
+
+            // Check if payment is COD
+            var isCOD = order.OrderPayments.Any(p => p.PaymentMethodType == PaymentMethodType.CashOnDelivery);
 
             foreach (var group in shipmentGroups)
             {
                 // Determine fulfillment type
                 var fulfillmentType = await DetermineFulfillmentTypeAsync(group.Key.WarehouseId);
+
+                // Calculate shipment subtotal
+                var shipmentSubTotal = group.Sum(od => od.SubTotal);
 
                 // Calculate shipment shipping cost
                 var shippingCost = await CalculateShipmentShippingAsync(
@@ -72,6 +88,14 @@ public class ShipmentService : IShipmentService
                     order.CustomerAddress.CityId,
                     group.Sum(od => od.Quantity)
                 );
+
+                // ==================== DISTRIBUTE TAX AND DISCOUNT ====================
+                var shipmentRatio = totalOrderSubTotal > 0
+                    ? shipmentSubTotal / totalOrderSubTotal
+                    : 0m;
+
+                var taxAmount = Math.Round(order.TaxAmount * shipmentRatio, 2);
+                var discountAmount = Math.Round(order.DiscountAmount * shipmentRatio, 2);
 
                 // Create shipment
                 var shipment = new TbOrderShipment
@@ -82,14 +106,19 @@ public class ShipmentService : IShipmentService
                     WarehouseId = group.Key.WarehouseId,
                     Number = await GenerateShipmentNumberAsync(),
                     FulfillmentType = fulfillmentType,
-                    ShipmentStatus = ShipmentStatus.Pending,
-                    ShippingCost = shippingCost,
-                    SubTotal = group.Sum(od => od.SubTotal),
-                    CreatedDateUtc = DateTime.UtcNow,
-                    CreatedBy = Guid.Empty // System
-                };
+                    ShipmentStatus = ShipmentStatus.PendingProcessing,
 
-                shipment.TotalAmount = shipment.SubTotal + shipment.ShippingCost;
+                    // Pricing breakdown
+                    SubTotal = shipmentSubTotal,
+                    ShippingCost = shippingCost,
+                    TaxAmount = taxAmount,
+                    TaxPercentage = order.TaxPercentage,
+                    DiscountAmount = discountAmount,
+                    TotalAmount = shipmentSubTotal + shippingCost + taxAmount - discountAmount,
+
+                    CreatedDateUtc = DateTime.UtcNow,
+                    CreatedBy = Guid.Empty
+                };
 
                 await shipmentRepo.CreateAsync(shipment, Guid.Empty);
 
@@ -112,14 +141,37 @@ public class ShipmentService : IShipmentService
                     await shipmentItemRepo.CreateAsync(shipmentItem, Guid.Empty);
                 }
 
+                // ==================== CREATE COD PAYMENT RECORD IF NEEDED ====================
+                if (isCOD)
+                {
+                    var shipmentPayment = new TbShipmentPayment
+                    {
+                        Id = Guid.NewGuid(),
+                        ShipmentId = shipment.Id,
+                        OrderId = orderId,
+                        Amount = shipment.TotalAmount,
+                        PaymentStatus = PaymentStatus.Pending,
+                        TransactionId = $"COD-{shipment.Number}",
+                        CreatedDateUtc = DateTime.UtcNow
+                    };
+
+                    await shipmentPaymentRepo.CreateAsync(shipmentPayment, Guid.Empty);
+
+                    _logger.Information(
+                        "Created COD payment record for shipment {ShipmentNumber} - Amount: {Amount}",
+                        shipment.Number,
+                        shipment.TotalAmount
+                    );
+                }
+
                 // Create initial status history
                 var statusHistory = new TbShipmentStatusHistory
                 {
                     Id = Guid.NewGuid(),
                     ShipmentId = shipment.Id,
-                    Status = ShipmentStatus.Pending,
+                    Status = ShipmentStatus.PendingProcessing,
                     StatusDate = DateTime.UtcNow,
-                    Notes = "Shipment created and awaiting processing",
+                    Notes = "Shipment created and awaiting warehouse processing",
                     CreatedDateUtc = DateTime.UtcNow
                 };
 
@@ -128,16 +180,30 @@ public class ShipmentService : IShipmentService
                 createdShipments.Add(shipment);
 
                 _logger.Information(
-                    "Created shipment {ShipmentNumber} for vendor {VendorId}",
+                    "Created shipment {ShipmentNumber} | SubTotal: {SubTotal}, Tax: {Tax}, Discount: {Discount}, Shipping: {Shipping}, Total: {Total}",
                     shipment.Number,
-                    group.Key.VendorId
+                    shipment.SubTotal,
+                    shipment.TaxAmount,
+                    shipment.DiscountAmount,
+                    shipment.ShippingCost,
+                    shipment.TotalAmount
                 );
             }
 
+            // ==================== FIX ROUNDING ERRORS ====================
+            await AdjustShipmentTotalsForRoundingAsync(order, createdShipments);
+
+            // ==================== UPDATE ORDER SHIPPING AMOUNT ====================
+            order.ShippingAmount = createdShipments.Sum(s => s.ShippingCost);
+
+            var orderRepo = _unitOfWork.TableRepository<TbOrder>();
+            await orderRepo.UpdateAsync(order, Guid.Empty);
+
             _logger.Information(
-                "Successfully split order {OrderId} into {Count} shipments",
+                "Successfully split order {OrderId} into {Count} shipments | Total Shipping: {ShippingAmount}",
                 orderId,
-                createdShipments.Count
+                createdShipments.Count,
+                order.ShippingAmount
             );
 
             return _mapper.Map<List<ShipmentDto>>(createdShipments);
@@ -153,7 +219,6 @@ public class ShipmentService : IShipmentService
     {
         try
         {
-            // ✅ Use custom repository
             var shipment = await _shipmentRepository.GetShipmentWithDetailsAsync(shipmentId);
 
             if (shipment == null)
@@ -195,7 +260,6 @@ public class ShipmentService : IShipmentService
     {
         try
         {
-            // ✅ Use custom repository
             var shipments = await _shipmentRepository.GetOrderShipmentsAsync(orderId);
             return _mapper.Map<List<ShipmentDto>>(shipments);
         }
@@ -223,7 +287,6 @@ public class ShipmentService : IShipmentService
                 throw new InvalidOperationException($"Shipment {shipmentId} not found");
             }
 
-            // Parse and validate status
             if (!Enum.TryParse<ShipmentStatus>(newStatus, out var status))
             {
                 throw new ArgumentException($"Invalid shipment status: {newStatus}");
@@ -235,14 +298,14 @@ public class ShipmentService : IShipmentService
             // Update specific fields based on status
             switch (status)
             {
-                case ShipmentStatus.Shipped:
+                case ShipmentStatus.PickedUpByCarrier:
                     if (!shipment.EstimatedDeliveryDate.HasValue)
                     {
                         shipment.EstimatedDeliveryDate = DateTime.UtcNow.AddDays(4);
                     }
                     break;
 
-                case ShipmentStatus.Delivered:
+                case ShipmentStatus.DeliveredToCustomer:
                     shipment.ActualDeliveryDate = DateTime.UtcNow;
                     break;
             }
@@ -272,7 +335,7 @@ public class ShipmentService : IShipmentService
             );
 
             // Check if all shipments for this order are delivered
-            if (status == ShipmentStatus.Delivered)
+            if (status == ShipmentStatus.DeliveredToCustomer)
             {
                 await CheckOrderCompletionAsync(shipment.OrderId);
             }
@@ -330,7 +393,6 @@ public class ShipmentService : IShipmentService
     {
         try
         {
-            // ✅ Use custom repository
             var shipment = await _shipmentRepository
                 .GetShipmentByTrackingNumberAsync(trackingNumber);
 
@@ -341,7 +403,6 @@ public class ShipmentService : IShipmentService
                 );
             }
 
-            // Get status history
             var history = await _shipmentRepository
                 .GetShipmentStatusHistoryAsync(shipment.Id);
 
@@ -356,8 +417,10 @@ public class ShipmentService : IShipmentService
                 DeliveryAddress = new DeliveryAddressDto
                 {
                     Address = shipment.Order.CustomerAddress.Address,
-                    CityName = shipment.Order.CustomerAddress.City.TitleEn,
-                    StateName = shipment.Order.CustomerAddress.City.State.TitleEn, // ✅ State not Governorate
+                    CityNameAr = shipment.Order.CustomerAddress.City.TitleAr,
+                    CityNameEn = shipment.Order.CustomerAddress.City.TitleEn,
+                    StateNameAr = shipment.Order.CustomerAddress.City.State.TitleAr,
+                    StateNameEn = shipment.Order.CustomerAddress.City.State.TitleEn,
                     PhoneCode = shipment.Order.CustomerAddress.PhoneCode,
                     PhoneNumber = shipment.Order.CustomerAddress.PhoneNumber,
                     RecipientName = shipment.Order.CustomerAddress.RecipientName
@@ -379,7 +442,6 @@ public class ShipmentService : IShipmentService
     {
         try
         {
-            // ✅ Use custom repository
             var pagedResult = await _shipmentRepository
                 .GetVendorShipmentsPagedAsync(vendorId, pageNumber, pageSize);
 
@@ -388,6 +450,73 @@ public class ShipmentService : IShipmentService
         catch (Exception ex)
         {
             _logger.Error(ex, "Error getting shipments for vendor {VendorId}", vendorId);
+            throw;
+        }
+    }
+
+    /// <summary>
+    /// Collect COD payment when shipment is delivered
+    /// Updates both TbShipmentPayment and Order payment summary
+    /// </summary>
+    public async Task<ShipmentDto> CollectCODPaymentAsync(
+        Guid shipmentId,
+        string? notes = null)
+    {
+        try
+        {
+            _logger.Information("Collecting COD payment for shipment {ShipmentId}", shipmentId);
+
+            var shipmentRepo = _unitOfWork.TableRepository<TbOrderShipment>();
+            var shipmentPaymentRepo = _unitOfWork.TableRepository<TbShipmentPayment>();
+
+            var shipment = await shipmentRepo.FindByIdAsync(shipmentId);
+            if (shipment == null)
+            {
+                throw new InvalidOperationException($"Shipment {shipmentId} not found");
+            }
+
+            // Get the shipment payment record
+            var shipmentPayments = await shipmentPaymentRepo.GetAsync(
+                sp => sp.ShipmentId == shipmentId
+            );
+            var shipmentPayment = shipmentPayments.FirstOrDefault();
+
+            if (shipmentPayment == null)
+            {
+                throw new InvalidOperationException(
+                    $"No COD payment record found for shipment {shipmentId}"
+                );
+            }
+
+            // Update shipment payment
+            shipmentPayment.PaymentStatus = PaymentStatus.Completed;
+            shipmentPayment.PaidAt = DateTime.UtcNow;
+            shipmentPayment.Notes = notes;
+            shipmentPayment.UpdatedDateUtc = DateTime.UtcNow;
+
+            await shipmentPaymentRepo.UpdateAsync(shipmentPayment, Guid.Empty);
+
+            // Update shipment status to delivered
+            shipment.ShipmentStatus = ShipmentStatus.DeliveredToCustomer;
+            shipment.ActualDeliveryDate = DateTime.UtcNow;
+            shipment.UpdatedDateUtc = DateTime.UtcNow;
+
+            await shipmentRepo.UpdateAsync(shipment, Guid.Empty);
+
+            // Update order payment summary
+            await UpdateOrderPaymentSummaryAsync(shipment.OrderId);
+
+            _logger.Information(
+                "COD payment collected for shipment {ShipmentNumber} - Amount: {Amount}",
+                shipment.Number,
+                shipmentPayment.Amount
+            );
+
+            return _mapper.Map<ShipmentDto>(shipment);
+        }
+        catch (Exception ex)
+        {
+            _logger.Error(ex, "Error collecting COD payment for shipment {ShipmentId}", shipmentId);
             throw;
         }
     }
@@ -417,9 +546,10 @@ public class ShipmentService : IShipmentService
             var warehouseRepo = _unitOfWork.TableRepository<Domains.Entities.Warehouse.TbWarehouse>();
             var warehouse = await warehouseRepo.FindByIdAsync(warehouseId.Value);
 
-            // ✅ TODO: Check warehouse type property when added to entity
-            // For now, default to Marketplace
-            return FulfillmentType.Marketplace;
+            // Check if it's platform warehouse (FBA) or vendor warehouse (FBM)
+            return warehouse?.IsDefaultPlatformWarehouse == true
+                ? FulfillmentType.Marketplace
+                : FulfillmentType.Vendor;
         }
         catch (Exception ex)
         {
@@ -462,6 +592,111 @@ public class ShipmentService : IShipmentService
         }
     }
 
+    private async Task AdjustShipmentTotalsForRoundingAsync(
+        TbOrder order,
+        List<TbOrderShipment> shipments)
+    {
+        if (shipments.Count == 0) return;
+
+        var calculatedTotal = shipments.Sum(s => s.TotalAmount);
+        var difference = order.Price - calculatedTotal;
+
+        if (difference != 0)
+        {
+            _logger.Information(
+                "Adjusting shipment totals for rounding - Difference: {Difference}",
+                difference
+            );
+
+            var lastShipment = shipments.Last();
+            lastShipment.TotalAmount += difference;
+            lastShipment.TaxAmount += difference;
+
+            var shipmentRepo = _unitOfWork.TableRepository<TbOrderShipment>();
+            await shipmentRepo.UpdateAsync(lastShipment, Guid.Empty);
+        }
+    }
+
+    private async Task UpdateOrderPaymentSummaryAsync(Guid orderId)
+    {
+        try
+        {
+            var orderRepo = _unitOfWork.TableRepository<TbOrder>();
+            var orderPaymentRepo = _unitOfWork.TableRepository<TbOrderPayment>();
+            var shipmentPaymentRepo = _unitOfWork.TableRepository<TbShipmentPayment>();
+
+            var order = await orderRepo.FindByIdAsync(orderId);
+            if (order == null) return;
+
+            var orderPayments = await orderPaymentRepo.GetAsync(op => op.OrderId == orderId);
+            var shipmentPayments = await shipmentPaymentRepo.GetAsync(sp => sp.OrderId == orderId);
+
+            // Calculate wallet payments
+            order.WalletPaidAmount = orderPayments
+                .Where(p => p.PaymentMethodType == PaymentMethodType.Wallet
+                         && p.PaymentStatus == PaymentStatus.Completed)
+                .Sum(p => p.Amount);
+
+            // Calculate card payments
+            order.CardPaidAmount = orderPayments
+                .Where(p => p.PaymentMethodType == PaymentMethodType.Card
+                         && p.PaymentStatus == PaymentStatus.Completed)
+                .Sum(p => p.Amount);
+
+            // Calculate cash (COD) payments
+            order.CashPaidAmount = shipmentPayments
+                .Where(p => p.PaymentStatus == PaymentStatus.Completed)
+                .Sum(p => p.Amount);
+
+            // Calculate totals
+            order.TotalPaidAmount = order.WalletPaidAmount
+                                  + order.CardPaidAmount
+                                  + order.CashPaidAmount;
+
+            // Update overall payment status
+            if (order.TotalPaidAmount >= order.Price)
+            {
+                order.PaymentStatus = PaymentStatus.Completed;
+
+                // Set PaidAt to latest payment date
+                var latestPaymentDate = new[]
+                {
+                    orderPayments.Where(p => p.PaymentStatus == PaymentStatus.Completed)
+                                .OrderByDescending(p => p.PaidAt)
+                                .FirstOrDefault()?.PaidAt,
+                    shipmentPayments.Where(p => p.PaymentStatus == PaymentStatus.Completed)
+                                   .OrderByDescending(p => p.PaidAt)
+                                   .FirstOrDefault()?.PaidAt
+                }
+                .Where(d => d.HasValue)
+                .OrderByDescending(d => d)
+                .FirstOrDefault();
+
+                order.PaidAt = latestPaymentDate;
+            }
+            else if (order.TotalPaidAmount > 0)
+            {
+                order.PaymentStatus = PaymentStatus.PartiallyPaid;
+            }
+
+            order.UpdatedDateUtc = DateTime.UtcNow;
+            await orderRepo.UpdateAsync(order, Guid.Empty);
+
+            _logger.Information(
+                "Updated payment summary for order {OrderId} - Wallet: {Wallet}, Card: {Card}, Cash: {Cash}, Total: {Total}",
+                orderId,
+                order.WalletPaidAmount,
+                order.CardPaidAmount,
+                order.CashPaidAmount,
+                order.TotalPaidAmount
+            );
+        }
+        catch (Exception ex)
+        {
+            _logger.Error(ex, "Error updating payment summary for order {OrderId}", orderId);
+        }
+    }
+
     private async Task CheckOrderCompletionAsync(Guid orderId)
     {
         try
@@ -469,7 +704,7 @@ public class ShipmentService : IShipmentService
             var shipmentRepo = _unitOfWork.TableRepository<TbOrderShipment>();
             var shipments = await shipmentRepo.GetAsync(s => s.OrderId == orderId);
 
-            var allDelivered = shipments.All(s => s.ShipmentStatus == ShipmentStatus.Delivered);
+            var allDelivered = shipments.All(s => s.ShipmentStatus == ShipmentStatus.DeliveredToCustomer);
 
             if (allDelivered)
             {

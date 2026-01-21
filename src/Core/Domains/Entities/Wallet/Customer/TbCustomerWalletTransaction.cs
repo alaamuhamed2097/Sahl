@@ -1,4 +1,5 @@
 ﻿using Common.Enumerations.Wallet.Customer;
+using Domains.Entities.Order.Payment;
 using Shared.Common.Enumerations.Wallet;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -24,5 +25,6 @@ namespace Domains.Entities.Wallet.Customer
         public string ReferenceType { get; set; } = string.Empty; // "Order", "Refund", "Deposit"
 
         public virtual TbCustomerWallet Wallet { get; set; } = null!;
+        public virtual TbOrderPayment? WalletTransaction { get; set; }
     }
 }

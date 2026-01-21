@@ -144,7 +144,7 @@ namespace Dashboard.Pages.Merchandising.Campaigns
                         BadgeColor = Model.BadgeColor
                     };
 
-                    response = await CampaignService.UpdateCampaignAsync(Model.Id, updateDto);
+                    response = await CampaignService.UpdateCampaignAsync( updateDto);
                     if (response.Success)
                     {
                         await NotificationService.ShowSuccessAsync("Campaign updated successfully!");
@@ -179,7 +179,7 @@ namespace Dashboard.Pages.Merchandising.Campaigns
             {
                 try
                 {
-                    var response = await CampaignService.RemoveItemFromCampaignAsync(Model.Id, itemId);
+                    var response = await CampaignService.RemoveItemFromCampaignAsync(itemId);
                     if (response.Success)
                     {
                         await NotificationService.ShowSuccessAsync("Item removed successfully");

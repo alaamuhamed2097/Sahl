@@ -2,6 +2,7 @@
 using BL.Contracts.GeneralService;
 using BL.Contracts.Service.Order.Cart;
 using BL.Contracts.Service.Order.Checkout;
+using BL.Contracts.Service.Order.Fulfillment;
 using BL.Contracts.Service.Order.OrderProcessing;
 using BL.Contracts.Service.Order.Payment;
 using Common.Enumerations.Order;
@@ -18,13 +19,15 @@ using Shared.DTOs.Order.Payment.PaymentProcessing;
 namespace BL.Services.Order.OrderProcessing;
 
 /// <summary>
-/// Service for creating orders
-/// REFACTORED: Uses IUnitOfWork for transactions, optimized with CheckoutItemDto, no Info logging
+/// FINAL OrderCreationService
+/// ✅ Creates shipments WITH order in same transaction
+/// ✅ No InvoiceId references
 /// </summary>
 public class OrderCreationService : IOrderCreationService
 {
     private readonly ICheckoutService _checkoutService;
     private readonly IOrderPaymentProcessor _paymentProcessor;
+    private readonly IShipmentService _shipmentService;
     private readonly ICurrentUserService _currentUserService;
     private readonly ICartService _cartService;
     private readonly IOrderRepository _orderRepository;
@@ -37,6 +40,7 @@ public class OrderCreationService : IOrderCreationService
     public OrderCreationService(
         ICheckoutService checkoutService,
         IOrderPaymentProcessor paymentProcessor,
+        IShipmentService shipmentService,
         ICurrentUserService currentUserService,
         ICartService cartService,
         IOrderRepository orderRepository,
@@ -48,6 +52,7 @@ public class OrderCreationService : IOrderCreationService
     {
         _checkoutService = checkoutService ?? throw new ArgumentNullException(nameof(checkoutService));
         _paymentProcessor = paymentProcessor ?? throw new ArgumentNullException(nameof(paymentProcessor));
+        _shipmentService = shipmentService ?? throw new ArgumentNullException(nameof(shipmentService));
         _currentUserService = currentUserService ?? throw new ArgumentNullException(nameof(currentUserService));
         _cartService = cartService ?? throw new ArgumentNullException(nameof(cartService));
         _orderRepository = orderRepository ?? throw new ArgumentNullException(nameof(orderRepository));
@@ -60,7 +65,7 @@ public class OrderCreationService : IOrderCreationService
 
     /// <summary>
     /// Create order from cart with payment processing
-    /// Uses IUnitOfWork transaction to ensure data integrity
+    /// ✅ FIXED: Creates shipments in same transaction as order
     /// </summary>
     public async Task<CreateOrderResult> CreateOrderAsync(
         CreateOrderRequest request,
@@ -79,8 +84,8 @@ public class OrderCreationService : IOrderCreationService
             {
                 // COD doesn't require payment method setup
             }
-            else if (request.PaymentMethod != PaymentMethodType.Wallet && 
-                     request.PaymentMethod != PaymentMethodType.Card && 
+            else if (request.PaymentMethod != PaymentMethodType.Wallet &&
+                     request.PaymentMethod != PaymentMethodType.Card &&
                      request.PaymentMethod != PaymentMethodType.WalletAndCard)
             {
                 return CreateOrderResult.CreateFailure("Invalid payment method");
@@ -88,10 +93,10 @@ public class OrderCreationService : IOrderCreationService
 
             var userId = _currentUserService.GetCurrentUserId();
 
-            // 3. Validate checkout (uses CheckoutService internally)
+            // 3. Validate checkout
             await _checkoutService.ValidateCheckoutAsync(userId, request.DeliveryAddressId.Value);
 
-            // 4. Prepare checkout summary (calculates all prices AND gets checkout items)
+            // 4. Prepare checkout summary
             var checkoutSummary = await _checkoutService.PrepareCheckoutAsync(
                 userId,
                 new PrepareCheckoutRequest
@@ -100,8 +105,8 @@ public class OrderCreationService : IOrderCreationService
                     CouponCode = request.CouponCode
                 });
 
-            // ✅ START TRANSACTION - All database operations must succeed together
-            await _unitOfWork.BeginTransactionAsync(); // ✅ No CancellationToken parameter
+            // ✅ START TRANSACTION
+            await _unitOfWork.BeginTransactionAsync();
 
             try
             {
@@ -112,22 +117,30 @@ public class OrderCreationService : IOrderCreationService
                     checkoutSummary,
                     cancellationToken);
 
-                // 6. Create order details (uses checkout items from checkoutSummary - no duplicate query!)
+                // 6. Create order details
                 await CreateOrderDetailsAsync(
                     order.Id,
-                    checkoutSummary.Items, // ✅ CheckoutItemDto from checkoutSummary
+                    checkoutSummary.Items,
                     cancellationToken);
 
-                // 7. Update coupon usage if applied
+                // 7. ✅ CREATE SHIPMENTS (in same transaction!)
+                var shipments = await _shipmentService.SplitOrderIntoShipmentsAsync(order.Id);
+
+                _logger.Information(
+                    "Created order {OrderNumber} with {ShipmentCount} shipments",
+                    order.Number,
+                    shipments.Count);
+
+                // 8. Update coupon usage if applied
                 if (checkoutSummary.CouponId.HasValue)
                 {
                     await UpdateCouponUsageAsync(checkoutSummary.CouponId.Value, cancellationToken);
                 }
 
-                // ✅ COMMIT TRANSACTION - All or nothing!
-                await _unitOfWork.CommitAsync(); // ✅ No CancellationToken parameter
+                // ✅ COMMIT TRANSACTION
+                await _unitOfWork.CommitAsync();
 
-                // 8. Process payment AFTER transaction (payment can fail without rolling back order)
+                // 9. Process payment AFTER transaction
                 var paymentResult = await ProcessOrderPaymentAsync(
                     order,
                     request,
@@ -147,10 +160,10 @@ public class OrderCreationService : IOrderCreationService
                         order.Number);
                 }
 
-                // 9. Clear cart after successful order creation
+                // 10. Clear cart after successful order creation
                 await _cartService.ClearCartAsync(userId);
 
-                // 10. Return success result
+                // 11. Return success result
                 return CreateOrderResult.CreateSuccess(
                     order.Id,
                     order.Number,
@@ -159,8 +172,8 @@ public class OrderCreationService : IOrderCreationService
             }
             catch
             {
-                // ✅ ROLLBACK TRANSACTION on any error
-                await _unitOfWork.RollbackAsync(); // ✅ No CancellationToken parameter
+                // ✅ ROLLBACK TRANSACTION
+                await _unitOfWork.RollbackAsync();
                 throw;
             }
         }
@@ -174,9 +187,6 @@ public class OrderCreationService : IOrderCreationService
 
     #region Private Helper Methods
 
-    /// <summary>
-    /// Create order entity with all calculated values
-    /// </summary>
     private async Task<TbOrder> CreateOrderEntityAsync(
         string customerId,
         CreateOrderRequest request,
@@ -221,14 +231,9 @@ public class OrderCreationService : IOrderCreationService
         return order;
     }
 
-    /// <summary>
-    /// Create order detail records from checkout items
-    /// ✅ OPTIMIZED: Reuses checkout items from checkout (no duplicate database query)
-    /// ✅ FIXED: Uses CheckoutItemDto instead of CartItemDto
-    /// </summary>
     private async Task CreateOrderDetailsAsync(
         Guid orderId,
-        List<CheckoutItemDto> checkoutItems, // ✅ CheckoutItemDto from checkoutSummary
+        List<CheckoutItemDto> checkoutItems,
         CancellationToken cancellationToken)
     {
         if (checkoutItems == null || !checkoutItems.Any())
@@ -254,16 +259,12 @@ public class OrderCreationService : IOrderCreationService
             IsDeleted = false
         }).ToList();
 
-        // Create order details
         foreach (var detail in orderDetails)
         {
             await _orderDetailRepository.CreateAsync(detail, Guid.Empty, cancellationToken);
         }
     }
 
-    /// <summary>
-    /// Update coupon usage count
-    /// </summary>
     private async Task UpdateCouponUsageAsync(
         Guid couponId,
         CancellationToken cancellationToken)
@@ -282,14 +283,10 @@ public class OrderCreationService : IOrderCreationService
         catch (Exception ex)
         {
             _logger.Error(ex, "Failed to update coupon usage for {CouponId}", couponId);
-            throw; // ✅ Throw to trigger transaction rollback
+            throw;
         }
     }
 
-    /// <summary>
-    /// Process payment based on payment method type
-    /// Handles: CashOnDelivery, Wallet, Card, WalletAndCard
-    /// </summary>
     private async Task<PaymentResult> ProcessOrderPaymentAsync(
         TbOrder order,
         CreateOrderRequest request,
@@ -302,27 +299,23 @@ public class OrderCreationService : IOrderCreationService
 
             return request.PaymentMethod switch
             {
-                // 1. Cash on Delivery - No immediate payment
                 PaymentMethodType.CashOnDelivery => await ProcessCashOnDeliveryAsync(
                     order,
                     totalAmount,
                     cancellationToken),
 
-                // 2. Wallet - Deduct from wallet balance
                 PaymentMethodType.Wallet => await ProcessWalletPaymentAsync(
                     order,
                     totalAmount,
                     userId,
                     cancellationToken),
 
-                // 3. Card - Payment gateway
                 PaymentMethodType.Card => await ProcessCardPaymentAsync(
                     order,
                     totalAmount,
                     userId,
                     cancellationToken),
 
-                // 4. Mixed - Wallet first, then card
                 PaymentMethodType.WalletAndCard => await ProcessMixedPaymentAsync(
                     order,
                     totalAmount,
@@ -339,9 +332,6 @@ public class OrderCreationService : IOrderCreationService
         }
     }
 
-    /// <summary>
-    /// Process Cash on Delivery payment
-    /// </summary>
     private async Task<PaymentResult> ProcessCashOnDeliveryAsync(
         TbOrder order,
         decimal amount,
@@ -353,9 +343,6 @@ public class OrderCreationService : IOrderCreationService
             cancellationToken);
     }
 
-    /// <summary>
-    /// Process Wallet payment
-    /// </summary>
     private async Task<PaymentResult> ProcessWalletPaymentAsync(
         TbOrder order,
         decimal amount,
@@ -369,9 +356,6 @@ public class OrderCreationService : IOrderCreationService
             cancellationToken);
     }
 
-    /// <summary>
-    /// Process Card payment via gateway
-    /// </summary>
     private async Task<PaymentResult> ProcessCardPaymentAsync(
         TbOrder order,
         decimal amount,
@@ -385,9 +369,6 @@ public class OrderCreationService : IOrderCreationService
             cancellationToken);
     }
 
-    /// <summary>
-    /// Process Mixed payment (Wallet + Card)
-    /// </summary>
     private async Task<PaymentResult> ProcessMixedPaymentAsync(
         TbOrder order,
         decimal amount,
@@ -401,9 +382,6 @@ public class OrderCreationService : IOrderCreationService
             cancellationToken);
     }
 
-    /// <summary>
-    /// Generate unique order number
-    /// </summary>
     private async Task<string> GenerateOrderNumberAsync(
         CancellationToken cancellationToken)
     {

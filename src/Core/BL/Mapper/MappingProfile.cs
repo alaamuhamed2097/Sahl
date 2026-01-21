@@ -25,7 +25,7 @@ public partial class MappingProfile : Profile
         ConfigureSupportMappings();
         ConfigureReviewMappings();
         ConfigureWarehouseAndInventoryMappings();
-        ConfigureContentAndNotificationChannelMappings();
+        ConfigureNotificationChannelMappings();
         ConfigurePricingMappings();
         ConfigureCartMappings();
         ConfigureCustomerAddressMapping();
