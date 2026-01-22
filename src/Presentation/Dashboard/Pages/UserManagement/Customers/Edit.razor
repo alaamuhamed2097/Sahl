@@ -1,136 +1,105 @@
 ﻿@page "/users/customer/edit/{id:guid}"
 
-
 @using Common.Enumerations.User
-@using Common.Enumerations.VendorType
+@using Shared.DTOs.User.Customer
 @attribute [Authorize(Roles = nameof(UserRole.Admin))]
 
-<PageTitle>@ECommerceResources.Vendor</PageTitle>
+<PageTitle>@ECommerceResources.Customer</PageTitle>
 
 <div class="container-fluid p-0">
     <div class="card shadow-sm border-0">
-        <div class="card-header d-flex bg-primary  justify-content-between align-items-center">
+        <div class="card-header d-flex bg-primary justify-content-between align-items-center">
             <h4 class="modal-title text-white">
-                <i class="bi bi-plus-circle fs-3 text-white"></i>
-                ➕ @ActionsResources.Edit @ECommerceResources.Vendor
+                <i class="bi bi-pencil-square fs-3 text-white"></i>
+                ✏️ @ActionsResources.Edit @ECommerceResources.Customer
             </h4>
         </div>
-    @*     <EditForm Model="@Model" OnValidSubmit="Save">
+
+        <EditForm Model="@Model" OnValidSubmit="Save">
             <DataAnnotationsValidator />
 
             <div class="card-body p-4">
+                <!-- Personal Information -->
                 <div class="row g-3">
-                    <!-- Personal Information -->
                     <div class="col-md-6">
                         <div class="form-group">
-                            <label>@ECommerceResources.StoreName</label>
-                            <InputText type="text" placeholder="@($"{FormResources.Write} {ECommerceResources.StoreName}")"
-                                       class="form-control" @bind-Value="Model.CompanyName" />
-                            <ValidationMessage For="@(() => Model.CompanyName)" />
+                            <label>@UserResources.FirstName <span class="text-danger">*</span></label>
+                            <InputText type="text"
+                                       placeholder="@($"{FormResources.Write} {UserResources.FirstName}")"
+                                       class="form-control"
+                                       @bind-Value="Model.FirstName" />
+                            <ValidationMessage For="@(() => Model.FirstName)" />
                         </div>
                     </div>
                     <div class="col-md-6">
                         <div class="form-group">
-                            <label>@ECommerceResources.ContactName</label>
-                            <InputText type="text" placeholder="@($"{FormResources.Write} {ECommerceResources.ContactName}")"
-                                       class="form-control" @bind-Value="Model.ContactName" />
-                            <ValidationMessage For="@(() => Model.ContactName)" />
+                            <label>@UserResources.LastName <span class="text-danger">*</span></label>
+                            <InputText type="text"
+                                       placeholder="@($"{FormResources.Write} {UserResources.LastName}")"
+                                       class="form-control"
+                                       @bind-Value="Model.LastName" />
+                            <ValidationMessage For="@(() => Model.LastName)" />
                         </div>
                     </div>
                 </div>
 
-                <!-- Account Information -->
-                <div class="row g-3">
-                    <div class="col-md-6">
+                <!-- Email -->
+                <div class="row g-3 mt-2">
+                    <div class="col-md-12">
                         <div class="form-group">
-                            <label>@ECommerceResources.Address</label>
-                            <InputText type="text" placeholder="@($"{ECommerceResources.Address}")"
-                                       class="form-control" @bind-Value="Model.Address" />
-                            <ValidationMessage For="@(() => Model.Address)" />
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="form-group">
-                            <label>@ECommerceResources.PostalCode</label>
-                            <InputText type="text" placeholder="@($"{FormResources.Write} {ECommerceResources.PostalCode}")"
-                                       class="form-control" @bind-Value="Model.PostalCode" />
-                            <ValidationMessage For="@(() => Model.PostalCode)" />
+                            <label>@UserResources.Email</label>
+                            <InputText type="email"
+                                       placeholder="@($"{FormResources.Write} {UserResources.Email}")"
+                                       class="form-control"
+                                       @bind-Value="Model.Email" />
+                            <ValidationMessage For="@(() => Model.Email)" />
                         </div>
                     </div>
                 </div>
 
-                <!-- Security Information -->
-                <div class="row g-3">
-                    <div class="col-md-6">
-                        <div class="form-group">
-                            <label>@ECommerceResources.TaxNumber</label>
-                            <InputText type="text" placeholder="@($"{FormResources.Write} {ECommerceResources.TaxNumber}")"
-                                       class="form-control" @bind-Value="Model.TaxNumber" />
-                            <ValidationMessage For="@(() => Model.TaxNumber)" />
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="form-group">
-                            <label>@ECommerceResources.VendorType</label>
+                
 
-                            <InputSelect @bind-Value="Model.VendorType" class="form-control">
-                                @foreach (var item in Enum.GetValues(typeof(VendorType)))
-                                {
-                                    <option value="@item">@item</option>
-                                }
-                            </InputSelect>
-
-                            <ValidationMessage For="@(() => Model.VendorType)" />
-                        </div>
-                    </div>
-
-                    @* <div class="col-md-6">
+                <!-- Password (Optional) -->
+                <div class="row g-3 mt-2">
+                    <div class="col-md-12">
                         <div class="form-group">
-                            <label>@ECommerceResources.TaxNumber</label>
-                            <InputText type="text" placeholder="@($"{FormResources.Write} {ECommerceResources.TaxNumber}")"
-                                       class="form-control" @bind-Value="Model.VendorType" />
-                            <ValidationMessage For="@(() => Model.TaxNumber)" />
-                        </div>
-                    </div> *@
-                    @* <div class="col-md-6">
-                        <div class="form-group">
-                            <label>@ECommerceResources.VATRegistered</label>
-                            <InputText type="text" placeholder="@($"{FormResources.Write} {ECommerceResources.VATRegistered}")"
-                                       class="form-control" @bind-Value="Model.VATRegistered" />
-                            <ValidationMessage For="@(() => Model.PasswordConfirmation)" />
-                        </div>
-                    </div> *@
-        @*<div class="col-md-6">
-                        <div class="form-group form-check mt-4">
-                            <InputCheckbox @bind-Value="Model.VATRegistered" class="form-check-input" />
-                            <label class="form-check-label">@ECommerceResources.VATRegistered</label>
-
-                            <ValidationMessage For="@(() => Model.VATRegistered)" />
+                            <label>@UserResources.Password</label>
+                            <InputText type="password"
+                                       placeholder="@UserResources.ChangePassword"
+                                       class="form-control"
+                                       @bind-Value="Model.NewPassword" />
+                            <ValidationMessage For="@(() => Model.NewPassword)" />
+                            @* <small class="form-text text-muted">@UserResources.LeaveEmptyToKeepCurrentPassword</small> *@
                         </div>
                     </div>
                 </div>
             </div>
 
-            <div class="card-footer bg-light  py-3 d-flex justify-content-end gap-2">
-                <button type="button" class="btn btn-responsive btn-secondary px-4" data-dismiss="modal" @onclick="CloseModal">
-                    <i class="feather icon-x-circle me-2 ms-2"></i>   @ActionsResources.Cancel
+            <div class="card-footer bg-light py-3 d-flex justify-content-end gap-2">
+                <button type="button"
+                        class="btn btn-responsive btn-secondary px-4"
+                        @onclick="CloseModal"
+                        disabled="@isSaving">
+                    <i class="feather icon-x-circle me-2"></i>
+                    @ActionsResources.Cancel
                 </button>
-                <button type="submit" class="btn btn-primary btn-responsive text-white px-4" disabled="@isSaving">
+                <button type="submit"
+                        class="btn btn-primary btn-responsive text-white px-4"
+                        disabled="@isSaving">
                     @if (isSaving)
                     {
-                        <span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
-                        <span class="sr-only">@GeneralResources.Loading ...</span>
+                        <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                        <span>@GeneralResources.Loading...</span>
                     }
                     else
                     {
                         <span>
-                            <i class="feather icon-save me-1 ms-2"></i>
+                            <i class="feather icon-save me-2"></i>
                             @ActionsResources.Save
                         </span>
                     }
                 </button>
             </div>
         </EditForm>
-    *@
-    </div> 
+    </div>
 </div>

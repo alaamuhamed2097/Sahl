@@ -9,6 +9,7 @@ using Shared.DTOs.Customer;
 using Shared.DTOs.User.Customer;
 using Shared.DTOs.Wallet.Customer;
 using Shared.GeneralModels;
+using Shared.GeneralModels.ResultModels;
 
 namespace Dashboard.Services.Customer
 {
@@ -212,25 +213,29 @@ namespace Dashboard.Services.Customer
 				};
 			}
 		}
-
 		public async Task<ResponseModel<PaginatedDataModel<CustomerWalletTransactionsDto>>> GetWalletHistoryAsync(
-	Guid customerId,
-	BaseSearchCriteriaModel criteria)
+			Guid customerId,
+			BaseSearchCriteriaModel criteria)
 		{
 			try
 			{
-				
-				var queryString = $"?PageNumber={criteria.PageNumber}&PageSize={criteria.PageSize}";
+				// Build query string with all parameters
+				var queryString = $"?CustomerId={customerId}" +
+								 $"&PageNumber={criteria.PageNumber}" +
+								 $"&PageSize={criteria.PageSize}";
 
-				
 				if (!string.IsNullOrEmpty(criteria.SearchTerm))
 					queryString += $"&SearchTerm={Uri.EscapeDataString(criteria.SearchTerm)}";
 
-				var endpoint = $"api/v1/CustomerWalletTransaction/SearchWalletTransactions{queryString}";
+				if (!string.IsNullOrEmpty(criteria.SortBy))
+					queryString += $"&SortBy={Uri.EscapeDataString(criteria.SortBy)}";
 
-				return await _apiService.PostAsync<Guid, PaginatedDataModel<CustomerWalletTransactionsDto>>(
-					endpoint,
-					customerId);
+				if (!string.IsNullOrEmpty(criteria.SortDirection))
+					queryString += $"&SortDirection={Uri.EscapeDataString(criteria.SortDirection)}";
+
+				var endpoint = $"api/v1/CustomerWalletTransaction/search-by-admin{queryString}";
+
+				return await _apiService.GetAsync<PaginatedDataModel<CustomerWalletTransactionsDto>>(endpoint);
 			}
 			catch (Exception ex)
 			{
@@ -267,18 +272,19 @@ namespace Dashboard.Services.Customer
 		/// <summary>
 		/// Update customer information.
 		/// </summary>
-		public async Task<ResponseModel<CustomerDto>> UpdateAsync(Guid id, CustomerDto dto)
+		public async Task<ResponseModel<CustomerUpdateByAdminDto>> UpdateByAdminAsync(CustomerUpdateByAdminDto updateDto)
 		{
-			if (dto == null) throw new ArgumentNullException(nameof(dto));
+			if (updateDto == null) throw new ArgumentNullException(nameof(updateDto));
 
 			try
 			{
-				return await _apiService.PutAsync<CustomerDto, CustomerDto>(
-					$"{ApiEndpoints.Customer.Update}/{id}", dto);
+				return await _apiService.PutAsync<CustomerUpdateByAdminDto, CustomerUpdateByAdminDto>(
+					ApiEndpoints.Customer.Update, updateDto);
 			}
 			catch (Exception ex)
 			{
-				return new ResponseModel<CustomerDto>
+				
+				return new ResponseModel<CustomerUpdateByAdminDto>
 				{
 					Success = false,
 					Message = ex.Message

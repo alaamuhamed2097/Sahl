@@ -34,5 +34,7 @@ public partial class MappingProfile : Profile
         ConfigureCustomerMappings();
         ConfigureWithdrawalMethodsMappings();
         ConfigurePaymentMethodMappings();
-    }
+        ConfigureWalletMappings();
+
+	}
 }

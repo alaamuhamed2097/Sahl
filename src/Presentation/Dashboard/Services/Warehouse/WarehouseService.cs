@@ -99,6 +99,23 @@ namespace Dashboard.Services.Warehouse
 				};
 			}
 		}
+
+		public async Task<WarehouseDto?> GetMarketWarehouse()
+		{
+			try
+			{
+				var response = await _apiService.GetAsync<WarehouseDto>(
+					ApiEndpoints.Warehouse.market);
+
+				return response?.Data;
+			}
+			catch (Exception ex)
+			{
+				Console.WriteLine($"Error getting market warehouse: {ex.Message}");
+				return null;
+			}
+		}
+
 		public async Task<ResponseModel<PaginatedDataModel<WarehouseDto>>> SearchAsync(WarehouseSearchCriteriaModel criteria)
 		{
 			if (criteria == null) throw new ArgumentNullException(nameof(criteria));
@@ -106,11 +123,11 @@ namespace Dashboard.Services.Warehouse
 			try
 			{
 				
-				var queryParams = new Dictionary<string, string>
-		{
-			{ nameof(criteria.PageNumber), criteria.PageNumber.ToString() },
-			{ nameof(criteria.PageSize), criteria.PageSize.ToString() }
-		};
+					var queryParams = new Dictionary<string, string>
+					{
+						{ nameof(criteria.PageNumber), criteria.PageNumber.ToString() },
+						{ nameof(criteria.PageSize), criteria.PageSize.ToString() }
+					};
 
 				
 				if (!string.IsNullOrEmpty(criteria.SearchTerm))

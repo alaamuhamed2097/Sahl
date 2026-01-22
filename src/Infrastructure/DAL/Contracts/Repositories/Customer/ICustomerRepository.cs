@@ -40,5 +40,13 @@ namespace DAL.Contracts.Repositories.Customer
             int pageNumber,
             int pageSize,
             CancellationToken cancellationToken = default);
-    }
+        Task<PagedResult<TbCustomer>> GetPageWithUserOrdersAndWalletsAsync
+            (
+            int pageNumber,
+            int pageSize,
+            Expression<Func<TbCustomer, bool>> filter = null,
+            Func<IQueryable<TbCustomer>, IOrderedQueryable<TbCustomer>> orderBy = null,
+            CancellationToken cancellationToken = default);
+
+	}
 }

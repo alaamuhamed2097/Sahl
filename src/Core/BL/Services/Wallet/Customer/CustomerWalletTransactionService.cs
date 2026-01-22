@@ -3,6 +3,7 @@ using BL.Contracts.Service.Wallet.Customer;
 using Common.Filters;
 using DAL.Contracts.UnitOfWork;
 using DAL.Models;
+using Domains.Entities.ECommerceSystem.Customer;
 using Domains.Entities.Wallet.Customer;
 using Microsoft.EntityFrameworkCore;
 using Shared.DTOs.Wallet.Customer;
@@ -67,7 +68,61 @@ namespace BL.Services.Wallet.Customer
             return new PagedResult<CustomerWalletTransactionsDto>(dtos, totalRecords);
         }
 
-        private async Task<TbCustomerWallet?> GetWalletAsync(Guid userId)
+		public async Task<PagedResult<CustomerWalletTransactionsDto>> GetPageByAdmin(CustomerFilterQuery criteriaModel)
+		{
+			// Get User ID from Customer ID
+			var customer = await _unitOfWork.TableRepository<TbCustomer>()
+				.FindAsync(c => c.Id == criteriaModel.CustomerId);
+
+			if (customer == null)
+			{
+				return new PagedResult<CustomerWalletTransactionsDto>(
+					new List<CustomerWalletTransactionsDto>(), 0);
+			}
+
+			// Get wallet by User ID
+			var wallet = await GetWalletAsync(Guid.Parse(customer.UserId));
+
+
+			if (wallet == null)
+			{
+				return new PagedResult<CustomerWalletTransactionsDto>(
+					new List<CustomerWalletTransactionsDto>(), 0);
+			}
+
+			// Build query
+			var query = _unitOfWork.TableRepository<TbCustomerWalletTransaction>()
+				.GetQueryable()
+				.Where(x => x.WalletId == wallet.Id && !x.IsDeleted);
+
+			// Apply search filter
+			if (!string.IsNullOrEmpty(criteriaModel.SearchTerm))
+			{
+				query = query.Where(x =>
+					x.ReferenceType.Contains(criteriaModel.SearchTerm) ||
+					x.TransactionType.ToString().Contains(criteriaModel.SearchTerm) ||
+					x.Amount.ToString().Contains(criteriaModel.SearchTerm));
+			}
+
+			// Count total records (after filtering)
+			var totalRecords = await query.CountAsync();
+
+			// Apply sorting
+			query = ApplySorting(query, criteriaModel.SortBy, criteriaModel.SortDirection);
+
+			// Apply pagination
+			var pagedTransactions = await query
+				.Skip((criteriaModel.PageNumber - 1) * criteriaModel.PageSize)
+				.Take(criteriaModel.PageSize)
+				.ToListAsync();
+
+			// Map to DTOs
+			var dtos = MapToDtoList(pagedTransactions, wallet);
+
+			return new PagedResult<CustomerWalletTransactionsDto>(dtos, totalRecords);
+		}
+
+		private async Task<TbCustomerWallet?> GetWalletAsync(Guid userId)
         {
             var wallet = await _unitOfWork.TableRepository<TbCustomerWallet>()
                .GetQueryable()

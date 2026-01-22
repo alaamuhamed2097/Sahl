@@ -8,5 +8,7 @@ namespace BL.Contracts.Service.Wallet.Customer
     {
         Task<IEnumerable<CustomerWalletTransactionsDto>> GetAllTransactions(Guid userId);
         Task<PagedResult<CustomerWalletTransactionsDto>> GetPage(BaseSearchCriteriaModel criteriaModel, Guid userId);
-    }
+        Task<PagedResult<CustomerWalletTransactionsDto>> GetPageByAdmin(CustomerFilterQuery criteriaModel);
+
+	}
 }

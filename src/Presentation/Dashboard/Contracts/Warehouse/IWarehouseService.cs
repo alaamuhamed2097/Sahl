@@ -12,7 +12,9 @@ namespace Dashboard.Contracts.Warehouse
         Task<ResponseModel<IEnumerable<WarehouseDto>>> GetAllAsync();
         Task<ResponseModel<IEnumerable<WarehouseDto>>> GetActiveWarehousesAsync();
         Task<ResponseModel<WarehouseDto>> GetByIdAsync(Guid id);
-        Task<ResponseModel<PaginatedDataModel<WarehouseDto>>> SearchAsync(WarehouseSearchCriteriaModel criteria);
+        Task<WarehouseDto?> GetMarketWarehouse();
+
+		Task<ResponseModel<PaginatedDataModel<WarehouseDto>>> SearchAsync(WarehouseSearchCriteriaModel criteria);
         Task<ResponseModel<PaginatedDataModel<WarehouseDto>>> SearchVendorAsync(WarehouseSearchCriteriaModel criteria);
 		Task<ResponseModel<IEnumerable<VendorWithUserDto>>> GetActiveVendorsAsync();
 		Task<ResponseModel<WarehouseDto>> SaveAsync(WarehouseDto dto);

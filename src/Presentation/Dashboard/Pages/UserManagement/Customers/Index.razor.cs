@@ -1,3 +1,4 @@
+using Common.Enumerations.User;
 using Common.Filters;
 using Dashboard.Constants;
 using Dashboard.Contracts.Customer;
@@ -16,6 +17,8 @@ namespace Dashboard.Pages.UserManagement.Customers
         protected override string AddRoute { get; } = "/users/customer/create";
         protected override string EditRouteTemplate { get; } = "/users/customer/edit/{id}";
         protected override string SearchEndpoint { get; } = ApiEndpoints.Customer.Search;
+		
+		
 		//private BaseSearchCriteriaModel searchModel = new BaseSearchCriteriaModel
 		//{
 		//	PageNumber = 1,
@@ -34,12 +37,41 @@ namespace Dashboard.Pages.UserManagement.Customers
         [Inject] protected ICustomerService _custumerService { get; set; } = null!;
 		protected override async Task OnInitializedAsync()
 		{
-			baseUrl = ApiOptions.Value.BaseUrl;
+			//baseUrl = SearchEndpoint;
 			await Search();
 			
 		}
+		protected override async Task Search()
+		{
+			try
+			{
+				
 
-        protected override async Task<ResponseModel<IEnumerable<CustomerDto>>> GetAllItemsAsync()
+				var result = await _custumerService.SearchAsync(searchModel);
+
+				if (result.Success && result.Data != null)
+				{
+					items = result.Data.Items ?? new List<CustomerDto>();
+					
+					
+
+					StateHasChanged();
+				}
+				else
+				{
+					await ShowErrorNotification("Error", result.Message ?? "Search failed");
+				}
+			}
+			catch (Exception ex)
+			{
+				await ShowErrorNotification("Error", ex.Message);
+			}
+			finally
+			{
+				
+			}
+		}
+		protected override async Task<ResponseModel<IEnumerable<CustomerDto>>> GetAllItemsAsync()
         {
             var result = await _custumerService.GetAllAsync();
             if (result.Success)
@@ -51,25 +83,6 @@ namespace Dashboard.Pages.UserManagement.Customers
                 return result;
             }
         }
-		//protected virtual async Task SortByColumn(string columnName)
-		//{
-		//	if (searchModel.SortBy == columnName)
-		//	{
-		//		// Toggle sort direction if same column
-		//		searchModel.SortDirection = searchModel.SortDirection == "asc" ? "desc" : "asc";
-		//	}
-		//	else
-		//	{
-		//		// New column, default to ascending
-		//		searchModel.SortBy = columnName;
-		//		searchModel.SortDirection = "asc";
-		//	}
-
-		//	// Reset to first page when sorting changes
-		//	currentPage = 1;
-		//	searchModel.PageNumber = 1;
-		//	await Search();
-		//}
 		protected override async Task<string> GetItemId(CustomerDto item)
         {
             var result = await _custumerService.GetByIdAsync(item.Id);
@@ -83,7 +96,45 @@ namespace Dashboard.Pages.UserManagement.Customers
                 return string.Empty;
             }
         }
-        protected override async Task<ResponseModel<bool>> DeleteItemAsync(Guid id)
+		private string GetStatusBadgeClass(UserStateType status)
+		{
+			return status switch
+			{
+				UserStateType.Active => "bg-success",
+				UserStateType.Inactive => "bg-secondary",
+				UserStateType.Auto_Locked => "bg-warning",
+				UserStateType.Restricted => "bg-danger",
+				UserStateType.Suspended => "bg-danger",
+				UserStateType.Deleted => "bg-dark",
+				_ => "bg-light"
+			};
+		}
+
+		private string GetStatusDisplayName(UserStateType status)
+		{
+			return status switch
+			{
+				UserStateType.Active => "Active",
+				UserStateType.Inactive => "Inactive",
+				UserStateType.Auto_Locked => "Locked",
+				UserStateType.Restricted => "Restricted",
+				UserStateType.Suspended => "Suspended",
+				UserStateType.Deleted => "Deleted",
+				_ => status.ToString()
+			};
+		}
+
+		private void ViewDetails(CustomerDto customer)
+		{
+			Navigation.NavigateTo($"/users/customer/details/{customer.Id}");
+		}
+
+		private async Task GoToPage(int pageNumber)
+		{
+			searchModel.PageNumber = pageNumber;
+			await Search();
+		}
+		protected override async Task<ResponseModel<bool>> DeleteItemAsync(Guid id)
         {
             return await _custumerService.DeleteAsync(id);
         }

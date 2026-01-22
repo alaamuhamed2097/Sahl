@@ -143,11 +143,12 @@ namespace Dashboard.Pages.Warehouse
 				isLoading = true;
 				StateHasChanged();
 
-				var result = await WarehouseService.SearchAsync(platformSearchModel);
+				var result = await WarehouseService.GetMarketWarehouse();
 
-				if (result.Success && result.Data != null && result.Data.Items != null && result.Data.Items.Any())
+				if (result.Email != null )
 				{
-					platformWarehouse = result.Data.Items.FirstOrDefault();
+					platformWarehouse = result;
+					
 				}
 				else
 				{
