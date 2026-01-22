@@ -4,6 +4,7 @@ using Dashboard.Contracts;
 using Dashboard.Contracts.General;
 using Dashboard.Contracts.Merchandising;
 using Dashboard.Models.pagintion;
+using Dashboard.Pages.Base;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 using Resources;
@@ -12,7 +13,7 @@ using Shared.DTOs.Order.CouponCode;
 
 namespace Dashboard.Pages.Merchandising.CouponCode
 {
-    public partial class Details
+    public partial class Details : LocalizedComponentBase
     {
         private bool _isSaving;
         private bool _disposed;
@@ -40,7 +41,7 @@ namespace Dashboard.Pages.Merchandising.CouponCode
 
         // Category Selection
         protected List<Shared.DTOs.Catalog.Category.CategoryDto> SelectedCategories { get; set; } = new();
-        
+
         // Item Selection
         protected List<Shared.DTOs.Catalog.Item.ItemDto> SelectedItems { get; set; } = new();
 
@@ -52,7 +53,7 @@ namespace Dashboard.Pages.Merchandising.CouponCode
                 _ = LoadParticipationRequestsAsync();
             }
         }
-        
+
         protected override async Task OnInitializedAsync()
         {
             try
@@ -195,13 +196,13 @@ namespace Dashboard.Pages.Merchandising.CouponCode
                 // Load selected items if ItemBased
                 else if (Model.PromoType == CouponCodeType.ItemBased && Model.ScopeItems != null && Model.ScopeItems.Any())
                 {
-                     var scopeIds = Model.ScopeItems.Select(s => s.ScopeId).ToHashSet();
-                     // Ideally we would fetch by IDs, but service only has GetAll
-                     var response = await ItemService.GetAllAsync();
-                     if (response.Success && response.Data != null)
-                     {
-                         SelectedItems = response.Data.Where(i => scopeIds.Contains(i.Id)).ToList();
-                     }
+                    var scopeIds = Model.ScopeItems.Select(s => s.ScopeId).ToHashSet();
+                    // Ideally we would fetch by IDs, but service only has GetAll
+                    var response = await ItemService.GetAllAsync();
+                    if (response.Success && response.Data != null)
+                    {
+                        SelectedItems = response.Data.Where(i => scopeIds.Contains(i.Id)).ToList();
+                    }
                 }
 
                 StateHasChanged();

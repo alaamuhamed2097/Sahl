@@ -11,7 +11,9 @@ public interface IWarehouseService
     Task<IEnumerable<WarehouseDto>> GetAllAsync();
     Task<IEnumerable<WarehouseDto>> GetActiveWarehousesAsync();
     Task<WarehouseDto?> GetByIdAsync(Guid id);
-    Task<PagedResult<WarehouseDto>> SearchAsync(WarehouseSearchCriteriaModel criteria);
+    Task<WarehouseDto> GetMarketWahrhous();
+
+	Task<PagedResult<WarehouseDto>> SearchAsync(WarehouseSearchCriteriaModel criteria);
     Task<PagedResult<WarehouseDto>> SearchVendorAsync(WarehouseSearchCriteriaModel criteria);
     Task<bool> SaveAsync(WarehouseDto dto, Guid userId);
     Task<bool> DeleteAsync(Guid id, Guid userId);

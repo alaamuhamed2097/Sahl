@@ -1,6 +1,7 @@
 ﻿using Common.Enumerations.Review;
 using Dashboard.Contracts.General;
 using Dashboard.Contracts.Review;
+using Dashboard.Pages.Base;
 using Dashboard.Services.Review;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
@@ -10,8 +11,8 @@ using Shared.GeneralModels.SearchCriteriaModels;
 
 namespace Dashboard.Pages.ManageReviews.VendorsReviews
 {
-	public partial class Index
-	{
+	public partial class Index : LocalizedComponentBase
+    {
 		[Parameter] public Guid Id { get; set; }
 
 		[Inject] protected IVendorReviewService VendorReviewService { get; set; } = null!;

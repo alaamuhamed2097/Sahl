@@ -1,6 +1,7 @@
 ﻿@page "/country"
 @page "/country/{Id:guid}"
 @using Common.Enumerations.User
+@inherits LocalizedComponentBase
 @attribute [Authorize(Roles = nameof(UserRole.Admin))]
 
 <PageTitle>@GeneralResources.Countries</PageTitle>

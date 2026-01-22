@@ -1,6 +1,7 @@
 ﻿using Common.Filters;
 using Dashboard.Configuration;
 using Dashboard.Contracts.General;
+using Dashboard.Pages.Base;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.Extensions.Options;
@@ -10,7 +11,7 @@ using Resources.Enumerations;
 using Shared.GeneralModels;
 using System.Text;
 
-public abstract partial class BaseListPage<TDto> : ComponentBase, IDisposable
+public abstract partial class BaseListPage<TDto> : LocalizedComponentBase
     where TDto : class
 {
     private bool _scriptsLoaded = false;
@@ -78,16 +79,16 @@ public abstract partial class BaseListPage<TDto> : ComponentBase, IDisposable
         StateHasChanged();
     }
 
-	#endregion
+    #endregion
 
-	#region Navigation
+    #region Navigation
 
-	protected virtual void Add()
-	{
-		Navigation.NavigateTo(AddRoute); 
-	}
+    protected virtual void Add()
+    {
+        Navigation.NavigateTo(AddRoute);
+    }
 
-	protected virtual async Task Edit(TDto item)
+    protected virtual async Task Edit(TDto item)
     {
         var id = await GetItemId(item);
         var editRoute = EditRouteTemplate.Replace("{id}", id.ToString());

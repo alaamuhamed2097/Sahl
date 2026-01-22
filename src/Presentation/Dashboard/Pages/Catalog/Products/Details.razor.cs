@@ -5,6 +5,7 @@ using Dashboard.Contracts.ECommerce.Category;
 using Dashboard.Contracts.ECommerce.Item;
 using Dashboard.Contracts.General;
 using Dashboard.Contracts.Setting;
+using Dashboard.Pages.Base;
 using Dashboard.Pages.Catalog.Products.Components;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
@@ -22,7 +23,7 @@ using static Dashboard.Pages.Catalog.Products.Components.AttributeValuesSection;
 
 namespace Dashboard.Pages.Catalog.Products
 {
-    public partial class Details
+    public partial class Details : LocalizedComponentBase
     {
         private bool _initialized = false;
         private Guid _lastLoadedId = Guid.Empty;
@@ -173,7 +174,7 @@ namespace Dashboard.Pages.Catalog.Products
             var result = await DevelopmentSettingsService.CheckIsMultiVendorEnabledAsync();
             if (result?.Success == true)
             {
-                isMultiVendorEnabled = result.Data ;
+                isMultiVendorEnabled = result.Data;
             }
         }
 
@@ -412,7 +413,7 @@ namespace Dashboard.Pages.Catalog.Products
             isCombinationPricing = currentCategory.PricingSystemType == PricingStrategyType.CombinationBased ||
                                         currentCategory.PricingSystemType == PricingStrategyType.Hybrid;
 
-            showOfferDataSection = !isMultiVendorEnabled ;
+            showOfferDataSection = !isMultiVendorEnabled;
 
             Console.WriteLine($"📋 Offer Data Section Visibility:");
             Console.WriteLine($"   Multi-vendor: {isMultiVendorEnabled}");
@@ -423,7 +424,7 @@ namespace Dashboard.Pages.Catalog.Products
             if (showOfferDataSection)
             {
                 if (Model.defaultOfferData == null)
-                { 
+                {
                     Model.defaultOfferData = new SaveVendorItemDto
                     {
                         EstimatedDeliveryDays = 3,
@@ -692,7 +693,7 @@ namespace Dashboard.Pages.Catalog.Products
                         "Please fill in all required attributes before saving.");
                     return;
                 }
-                
+
                 // Validate offer data if section is shown
                 if (showOfferDataSection && !ValidateOfferData())
                 {
@@ -1108,8 +1109,8 @@ namespace Dashboard.Pages.Catalog.Products
         /// </summary>
         private string GetPricingStrategyMessage()
         {
-           if(!isCombinationPricing)
-           {
+            if (!isCombinationPricing)
+            {
                 if (isMultiVendorEnabled)
                 {
                     // Rule 2

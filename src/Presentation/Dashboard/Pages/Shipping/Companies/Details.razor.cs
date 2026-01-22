@@ -1,6 +1,7 @@
 ﻿using Dashboard.Configuration;
 using Dashboard.Contracts;
 using Dashboard.Contracts.General;
+using Dashboard.Pages.Base;
 using Dashboard.Services.General;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
@@ -12,7 +13,7 @@ using Shared.DTOs.ECommerce;
 
 namespace Dashboard.Pages.Shipping.Companies
 {
-    public partial class Details
+    public partial class Details : LocalizedComponentBase
     {
         private bool isSaving { get; set; }
         protected string baseUrl = string.Empty;

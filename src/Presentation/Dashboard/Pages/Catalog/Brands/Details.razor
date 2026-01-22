@@ -1,5 +1,6 @@
 ﻿@page "/brand"
 @page "/brand/{id:guid}"
+@inherits LocalizedComponentBase
 
 @using Common.Enumerations.User
 @attribute [Authorize(Roles = nameof(UserRole.Admin))]

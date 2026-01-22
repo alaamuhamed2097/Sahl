@@ -2,6 +2,7 @@ using Common.Enumerations.User;
 using Common.Enumerations.VendorStatus;
 using Dashboard.Configuration;
 using Dashboard.Contracts.Vendor;
+using Dashboard.Pages.Base;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Options;
 using Microsoft.JSInterop;
@@ -10,7 +11,7 @@ using Shared.DTOs.Vendor;
 
 namespace Dashboard.Pages.UserManagement.Vendors
 {
-    public partial class Details
+    public partial class Details : LocalizedComponentBase
     {
         [Parameter] public Guid Id { get; set; }
 

@@ -2,6 +2,7 @@
 using Dashboard.Configuration;
 using Dashboard.Contracts.Location;
 using Dashboard.Contracts.Vendor;
+using Dashboard.Pages.Base;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.Extensions.Options;
@@ -12,7 +13,7 @@ using Shared.DTOs.Vendor;
 
 namespace Dashboard.Pages.UserManagement.Vendors
 {
-    public partial class Edit
+    public partial class Edit : LocalizedComponentBase
     {
         [Parameter] public Guid Id { get; set; }
 

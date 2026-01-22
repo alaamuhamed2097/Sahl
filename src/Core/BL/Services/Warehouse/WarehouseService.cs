@@ -50,7 +50,14 @@ public class WarehouseService : BaseService<TbWarehouse, WarehouseDto>, IWarehou
         return _mapper.MapList<TbWarehouse, WarehouseDto>(warehouses).ToList();
     }
 
-    public async Task<IEnumerable<WarehouseDto>> GetActiveWarehousesAsync()
+	public async Task<WarehouseDto> GetMarketWahrhous()
+	{
+		var warehouses = await _warehouseRepository.FindAsync(x => !x.IsDeleted && x.IsDefaultPlatformWarehouse == true);
+			
+
+		return _mapper.MapModel<TbWarehouse, WarehouseDto>(warehouses);
+	}
+	public async Task<IEnumerable<WarehouseDto>> GetActiveWarehousesAsync()
     {
         var warehouses = await _warehouseRepository
             .GetAsync(x => !x.IsDeleted && x.IsActive);
@@ -89,83 +96,6 @@ public class WarehouseService : BaseService<TbWarehouse, WarehouseDto>, IWarehou
 		return warehouseDto;
 	}
 
-	//public async Task<WarehouseDto?> GetByIdAsync(Guid id)
-	//{
-	//    if (id == Guid.Empty)
-	//        throw new ArgumentNullException(nameof(id));
-
-	//    var warehouse = await _warehouseRepository.FindByIdAsync(id);
-	//    if (warehouse == null) return null;
-
-	//    return _mapper.MapModel<TbWarehouse, WarehouseDto>(warehouse);
-	//}
-	//public async Task<PagedResult<WarehouseDto>> SearchAsync(BaseSearchCriteriaModel criteriaModel)
-	//{
-	//	if (criteriaModel == null)
-	//		throw new ArgumentNullException(nameof(criteriaModel));
-
-	//	if (criteriaModel.PageNumber < 1)
-	//		throw new ArgumentOutOfRangeException(nameof(criteriaModel.PageNumber),
-	//			ValidationResources.PageNumberGreaterThanZero);
-
-	//	if (criteriaModel.PageSize < 1 || criteriaModel.PageSize > 100)
-	//		throw new ArgumentOutOfRangeException(nameof(criteriaModel.PageSize),
-	//			ValidationResources.PageSizeRange);
-
-	//	// Base filter: غير محذوف
-	//	Expression<Func<TbWarehouse, bool>> filter = x => !x.IsDeleted;
-
-	//	// Search by term (Address or Email)
-	//	var searchTerm = criteriaModel.SearchTerm?.Trim().ToLower();
-	//	if (!string.IsNullOrWhiteSpace(searchTerm))
-	//	{
-	//		filter = filter.And(x =>
-	//			(x.Address != null && x.Address.ToLower().Contains(searchTerm)) ||
-	//			(x.Email != null && x.Email.ToLower().Contains(searchTerm))
-	//		);
-	//	}
-
-	//	// Filter by IsActive
-	//	if (criteriaModel.IsActive.HasValue)
-	//	{
-	//		filter = filter.And(x => x.IsActive == criteriaModel.IsActive.Value);
-	//	}
-
-	//	// Filter by VendorId
-	//	if (criteriaModel.VendorId.HasValue)
-	//	{
-	//		filter = filter.And(x => x.VendorId == criteriaModel.VendorId.Value);
-	//	}
-
-	//	// Filter by IsDefaultPlatformWarehouse
-	//	if (criteriaModel.IsDefaultPlatformWarehouse.HasValue)
-	//	{
-	//		filter = filter.And(x => x.IsDefaultPlatformWarehouse == criteriaModel.IsDefaultPlatformWarehouse.Value);
-	//	}
-
-	//	// Get paged data with includes
-	//	var warehouses = await _warehouseRepository.GetPageAsync(
-	//		criteriaModel.PageNumber,
-	//		criteriaModel.PageSize,
-	//		filter,
-	//		orderBy: q => q.OrderByDescending(x => x.CreatedDateUtc),
-	//		includeProperties: "Vendor" // Include Vendor navigation property
-	//	);
-
-	//	// Map to DTOs
-	//	var itemsDto = warehouses.Items.Select(w => new WarehouseDto
-	//	{
-	//		Id = w.Id,
-	//		Address = w.Address,
-	//		Email = w.Email,
-	//		IsDefaultPlatformWarehouse = w.IsDefaultPlatformWarehouse,
-	//		VendorId = w.VendorId,
-	//		VendorName = w.Vendor?.Name, // احصل على اسم الـ Vendor
-	//		IsActive = w.IsActive
-	//	}).ToList();
-
-	//	return new PagedResult<WarehouseDto>(itemsDto, warehouses.TotalRecords);
-	//}
 
 	public async Task<PagedResult<WarehouseDto>> SearchAsync(WarehouseSearchCriteriaModel criteriaModel)
 	{

@@ -1,5 +1,7 @@
 ﻿using Dashboard.Configuration;
+using Dashboard.Contracts.Authentication;
 using Dashboard.Contracts.General;
+using Dashboard.Services.Authentication;
 using Dashboard.Services.General;
 using Resources.Services;
 
@@ -11,17 +13,16 @@ namespace Dashboard.Extensions
         {
             // Bind ApiSettings
             services.Configure<ApiSettings>(apiSettings =>
-        config.GetSection("ApiSettings").Bind(apiSettings));
+                config.GetSection("ApiSettings").Bind(apiSettings));
 
             // ✅ CRITICAL: In Blazor WebAssembly, HttpClient doesn't automatically send cookies
             // We use JavaScript fetch with credentials: 'include' instead
             // CookieApiService uses IJSRuntime to call JavaScript fetch, NOT HttpClient
 
             // Register CookieApiService with IJSRuntime (NOT HttpClient)
-            services.AddScoped<IApiService, CookieApiService>();
-
-            // Service For Toast
-            //services.AddBlazoredToast();
+            services.AddScoped<ITokenStorageService, TokenStorageService>();
+            services.AddScoped<ITokenRefreshService, TokenRefreshService>();
+            services.AddScoped<IApiService, RefreshableApiService>();
 
             services.AddAuthorizationCore();
 

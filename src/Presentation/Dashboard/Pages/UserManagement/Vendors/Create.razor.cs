@@ -2,6 +2,7 @@
 using Dashboard.Contracts.General;
 using Dashboard.Contracts.Location;
 using Dashboard.Contracts.Vendor;
+using Dashboard.Pages.Base;
 using Dashboard.Services.General;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
@@ -13,7 +14,7 @@ using Shared.DTOs.Vendor;
 
 namespace Dashboard.Pages.UserManagement.Vendors
 {
-    public partial class Create
+    public partial class Create : LocalizedComponentBase
     {
         protected VendorRegistrationRequestDto Model { get; set; } = new();
         private bool isSaving { get; set; }

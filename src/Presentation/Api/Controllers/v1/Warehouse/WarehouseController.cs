@@ -75,19 +75,6 @@ namespace Api.Controllers.v1.Warehouse
 			});
 		}
 
-		[HttpGet("multi-vendor-enabled")]
-		[Authorize(Roles = nameof(UserRole.Admin))]
-		public async Task<IActionResult> IsMultiVendorEnabled()
-		{
-			var isEnabled = await _warehouseService.IsMultiVendorEnabledAsync();
-
-			return Ok(new ResponseModel<bool>
-			{
-				Success = true,
-				Data = isEnabled
-			});
-		}
-
 
 		/// <summary>
 		/// Retrieves active warehouses only.
@@ -172,6 +159,22 @@ namespace Api.Controllers.v1.Warehouse
                 Data = result
             });
         }
+
+		[HttpGet("market")]
+		[Authorize(Roles = nameof(UserRole.Admin))]
+		public async Task<IActionResult> market()
+		{
+			
+			var result = await _warehouseService.GetMarketWahrhous();
+
+			return Ok(new ResponseModel<WarehouseDto>
+			{
+				Success = true,
+				Message = GetResource<NotifiAndAlertsResources>(nameof(NotifiAndAlertsResources.DataRetrieved)),
+				Data = result
+			});
+		}
+
 		[HttpGet("search-vendor")]
 		[Authorize(Roles = nameof(UserRole.Admin))]
 		public async Task<IActionResult> SearchVendor([FromQuery] WarehouseSearchCriteriaModel criteriaModel)

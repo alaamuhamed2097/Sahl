@@ -458,9 +458,139 @@ public class UserRegistrationService : IUserRegistrationService
             };
         }
     }
+	public async Task<ServiceResult<CustomerUpdateByAdminDto>> UpdateCustomerByAdminAsync(
+	CustomerUpdateByAdminDto updateDto, Guid adminId)
+	{
+		try
+		{
+			// Get the customer user
+			var user = await _userManager.FindByIdAsync(updateDto.UserId);
+			if (user == null)
+			{
+				return new ServiceResult<CustomerUpdateByAdminDto>
+				{
+					Success = false,
+					Message = UserResources.UserNotFound,
+					Errors = new List<string> { "Customer not found" }
+				};
+			}
 
-    #region Helper functions
-    private async Task<string> SaveImage(string image)
+			// Verify user is actually a customer
+			var isCustomer = await _userManager.IsInRoleAsync(user, "Customer");
+			if (!isCustomer)
+			{
+				return new ServiceResult<CustomerUpdateByAdminDto>
+				{
+					Success = false,
+					Message = "User is not a customer",
+					Errors = new List<string> { "Invalid user role" }
+				};
+			}
+
+			// Update names if provided
+			if (!string.IsNullOrWhiteSpace(updateDto.FirstName))
+			{
+				user.FirstName = updateDto.FirstName;
+			}
+
+			if (!string.IsNullOrWhiteSpace(updateDto.LastName))
+			{
+				user.LastName = updateDto.LastName;
+			}
+
+			// Update email if provided
+			if (!string.IsNullOrWhiteSpace(updateDto.Email) && updateDto.Email != user.Email)
+			{
+				var existingUserByEmail = await _userManager.Users
+					.FirstOrDefaultAsync(u => u.Email == updateDto.Email && u.Id != user.Id);
+
+				if (existingUserByEmail != null)
+				{
+					return new ServiceResult<CustomerUpdateByAdminDto>
+					{
+						Success = false,
+						Message = string.Format(UserResources.Email_Duplicate, updateDto.Email),
+						Errors = new List<string> { string.Format(UserResources.Email_Duplicate, updateDto.Email) }
+					};
+				}
+
+				user.Email = updateDto.Email;
+				user.UserName = updateDto.Email; // Update username to match email
+			}
+
+			// Track who modified the user
+			user.UpdatedBy = adminId;
+			user.UpdatedDateUtc = DateTime.UtcNow;
+
+			// Update user in database
+			var updateResult = await _userManager.UpdateAsync(user);
+			if (!updateResult.Succeeded)
+			{
+				var friendlyErrors = updateResult.Errors
+					.Select(e => GetUserFriendlyErrorMessage(e.Code))
+					.ToList();
+
+				return new ServiceResult<CustomerUpdateByAdminDto>
+				{
+					Success = false,
+					Message = NotifiAndAlertsResources.SaveFailed,
+					Errors = friendlyErrors
+				};
+			}
+
+			// Update password if provided
+			if (!string.IsNullOrWhiteSpace(updateDto.NewPassword))
+			{
+				// Remove old password
+				await _userManager.RemovePasswordAsync(user);
+
+				// Add new password
+				var passwordResult = await _userManager.AddPasswordAsync(user, updateDto.NewPassword);
+				if (!passwordResult.Succeeded)
+				{
+					var friendlyErrors = passwordResult.Errors
+						.Select(e => GetUserFriendlyErrorMessage(e.Code))
+						.ToList();
+
+					return new ServiceResult<CustomerUpdateByAdminDto>
+					{
+						Success = false,
+						Message = "User updated but password change failed",
+						Errors = friendlyErrors
+					};
+				}
+			}
+
+			_logger.Information("Customer {UserId} updated by admin {AdminId}", user.Id, adminId);
+
+			return new ServiceResult<CustomerUpdateByAdminDto>
+			{
+				Success = true,
+				Message = NotifiAndAlertsResources.SavedSuccessfully,
+				Data = new CustomerUpdateByAdminDto
+				{
+					UserId = user.Id,
+					FirstName = user.FirstName,
+					LastName = user.LastName,
+					Email = user.Email,
+				}
+			};
+		}
+		catch (Exception ex)
+		{
+			_logger.Error(ex, "Error updating customer by admin");
+			return new ServiceResult<CustomerUpdateByAdminDto>
+			{
+				Success = false,
+				Message = NotifiAndAlertsResources.SomethingWentWrong,
+				Errors = new List<string> { ex.Message }
+			};
+		}
+	}
+
+
+	#region Helper functions
+	private async Task<string> SaveImage(string image)
     {
         // Check if the file is null or empty
         if (image == null || image.Length == 0)

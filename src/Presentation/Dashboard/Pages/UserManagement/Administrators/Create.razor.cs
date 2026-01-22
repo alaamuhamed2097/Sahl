@@ -1,4 +1,5 @@
 ﻿using Dashboard.Contracts.User;
+using Dashboard.Pages.Base;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 using Resources;
@@ -6,7 +7,7 @@ using Shared.DTOs.User.Admin;
 
 namespace Dashboard.Pages.UserManagement.Administrators
 {
-    public partial class Create
+    public partial class Create : LocalizedComponentBase
     {
         protected AdminRegistrationDto Model { get; set; } = new();
         private bool isSaving { get; set; }

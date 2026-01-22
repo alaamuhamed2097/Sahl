@@ -1,4 +1,5 @@
 using Dashboard.Contracts.Currency;
+using Dashboard.Pages.Base;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 using Resources;
@@ -6,7 +7,7 @@ using Shared.DTOs.Currency;
 
 namespace Dashboard.Pages.Currency
 {
-    public partial class Details
+    public partial class Details : LocalizedComponentBase
     {
         protected bool isSaving { get; set; }
         protected CurrencyDto Model { get; set; } = new();

@@ -1,5 +1,6 @@
 ﻿using Dashboard.Configuration;
 using Dashboard.Contracts.WithdrawalMethod;
+using Dashboard.Pages.Base;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Options;
 using Microsoft.JSInterop;
@@ -8,7 +9,7 @@ using Shared.DTOs.WithdrawalMethod;
 
 namespace Dashboard.Pages.WithdrawalMethod
 {
-    public partial class Index
+    public partial class Index : LocalizedComponentBase
     {
         protected string baseUrl = string.Empty;
         protected IEnumerable<WithdrawalMethodDto>? withdrawalMethods;

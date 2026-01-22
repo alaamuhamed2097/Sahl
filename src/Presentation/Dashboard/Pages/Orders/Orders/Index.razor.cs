@@ -7,7 +7,7 @@ using Resources;
 using Shared.DTOs.Order.OrderProcessing.AdminOrder;
 using Shared.GeneralModels;
 
-namespace Dashboard.Pages.Sales.Orders
+namespace Dashboard.Pages.Orders.Orders
 {
     /// <summary>
     /// Index page for Orders list - CLEAN VERSION

@@ -1,10 +1,11 @@
-﻿using Dashboard.Providers;
+﻿using Dashboard.Pages.Base;
+using Dashboard.Providers;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 
 namespace Dashboard.Pages
 {
-    public partial class Home
+    public partial class Home : LocalizedComponentBase
     {
         // Lazy loading state
         private bool isInitialLoading = true;

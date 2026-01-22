@@ -4,6 +4,7 @@ using Dashboard.Contracts.ECommerce.Category;
 using Dashboard.Contracts.ECommerce.Item;
 using Dashboard.Contracts.Merchandising;
 using Dashboard.Contracts.Notification;
+using Dashboard.Pages.Base;
 using Microsoft.AspNetCore.Components;
 using Resources;
 using Shared.DTOs.Campaign;
@@ -13,7 +14,7 @@ using Shared.DTOs.Merchandising.Homepage;
 
 namespace Dashboard.Pages.Merchandising.HomeBlocks
 {
-    public partial class Details
+    public partial class Details : LocalizedComponentBase
     {
         [Inject] protected IAdminBlockService AdminBlockService { get; set; } = null!;
         [Inject] protected ICampaignService CampaignService { get; set; } = null!;

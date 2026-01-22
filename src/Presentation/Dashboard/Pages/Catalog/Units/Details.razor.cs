@@ -1,4 +1,5 @@
 using Dashboard.Contracts.ECommerce.Item;
+using Dashboard.Pages.Base;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 using Resources;
@@ -6,7 +7,7 @@ using Shared.DTOs.Catalog.Unit;
 
 namespace Dashboard.Pages.Catalog.Units
 {
-    public partial class Details
+    public partial class Details : LocalizedComponentBase
     {
         protected bool isSaving { get; set; }
         protected UnitDto Model { get; set; } = new() { ConversionUnitsFrom = new(), ConversionUnitsTo = new() };

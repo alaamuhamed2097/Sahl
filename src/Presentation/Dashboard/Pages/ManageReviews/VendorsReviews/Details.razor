@@ -3,6 +3,7 @@
 @using Common.Enumerations.Review
 @using Common.Enumerations.User
 @using Shared.DTOs.Review
+@inherits LocalizedComponentBase
 @attribute [Authorize(Roles = nameof(UserRole.Admin))]
 
 @* Add your resource injection here *@

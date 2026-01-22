@@ -2,6 +2,7 @@
 @page "/city/{Id:guid}"
 
 @using Common.Enumerations.User
+@inherits LocalizedComponentBase
 @attribute [Authorize(Roles = nameof(UserRole.Admin))]
 
 <PageTitle>@GeneralResources.Cities</PageTitle>

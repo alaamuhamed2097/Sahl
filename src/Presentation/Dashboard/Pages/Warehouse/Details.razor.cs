@@ -1,5 +1,6 @@
 ﻿using Dashboard.Contracts.General;
 using Dashboard.Contracts.Warehouse;
+using Dashboard.Pages.Base;
 using Dashboard.Services.General;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
@@ -10,8 +11,8 @@ using Shared.DTOs.Warehouse;
 
 namespace Dashboard.Pages.Warehouse
 {
-	public partial class Details
-	{
+	public partial class Details : LocalizedComponentBase
+    {
 		private bool isSaving { get; set; }
 		private IEnumerable<CountryInfo>? countries;
 		private bool isMultiVendorEnabled = false;

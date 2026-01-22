@@ -1,11 +1,12 @@
 ﻿@page "/couponcode/{Id:guid}"
 @page "/couponcode"
-@attribute [Authorize(Roles = nameof(UserRole.Admin))]
 @using Common.Enumerations
 @using Common.Enumerations.Order
 @using Common.Enumerations.User
 @using Shared.DTOs.Merchandising.PromoCode
 @using Shared.DTOs.Order.CouponCode
+@inherits LocalizedComponentBase
+@attribute [Authorize(Roles = nameof(UserRole.Admin))]
 
 <PageTitle>@CouponCodeResources.PromoCode - @(Id != Guid.Empty ? ActionsResources.Edit : ActionsResources.Create)</PageTitle>
 

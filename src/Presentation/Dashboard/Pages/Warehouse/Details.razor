@@ -3,6 +3,7 @@
 
 @using Common.Enumerations.User
 @using Resources
+@inherits LocalizedComponentBase
 @attribute [Authorize(Roles = nameof(UserRole.Admin))]
 
 <PageTitle>@PageTitle Warehouse</PageTitle>

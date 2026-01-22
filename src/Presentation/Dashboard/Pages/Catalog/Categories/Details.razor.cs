@@ -2,6 +2,7 @@
 using Dashboard.Configuration;
 using Dashboard.Contracts.ECommerce.Category;
 using Dashboard.Contracts.General;
+using Dashboard.Pages.Base;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.Extensions.Options;
@@ -13,7 +14,7 @@ using Shared.DTOs.Pricing;
 
 namespace Dashboard.Pages.Catalog.Categories;
 
-public partial class Details : IDisposable
+public partial class Details : LocalizedComponentBase
 {
     private IBrowserFile? selectedImage;
     private string? previewImageUrl;
@@ -198,7 +199,7 @@ public partial class Details : IDisposable
         if (attribute == null)
             return 0;
 
-        return (int) attribute?.FieldType ;
+        return (int)attribute?.FieldType;
     }
 
     // Handle attribute selection change - updated version

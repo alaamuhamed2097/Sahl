@@ -7,8 +7,8 @@
 @using Shared.GeneralModels
 @using Resources
 
+@inherits LocalizedComponentBase
 @attribute [Authorize(Roles = nameof(UserRole.Admin))]
-@implements IDisposable
 
 <PageTitle>@MerchandisingResources.CampaignItems</PageTitle>
 
@@ -135,10 +135,10 @@
                         <h5 class="text-muted">@MerchandisingResources.NoItemsFound</h5>
                         @if (string.IsNullOrEmpty(searchModel.SearchTerm))
                         {
-                            <p class="text-muted">@MerchandisingResources.AddItemsToGetStarted</p>
+                            @* <p class="text-muted">@MerchandisingResources.AddItemsToGetStarted</p>
                             <button type="button" class="btn btn-primary mt-3" @onclick="AddNewItem">
                                 <i class="fas fa-plus mx-2"></i>@ActionsResources.AddFirstItem
-                            </button>
+                            </button> *@
                         }
                         else
                         {

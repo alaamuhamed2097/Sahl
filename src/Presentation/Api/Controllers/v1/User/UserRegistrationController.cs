@@ -1,11 +1,14 @@
 ﻿using Asp.Versioning;
 using BL.Contracts.GeneralService.UserManagement;
+using BL.GeneralService.UserManagement;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Resources;
 using Shared.DTOs.User.Customer;
 using Shared.DTOs.Vendor;
 using Shared.GeneralModels;
+using Shared.GeneralModels.ResultModels;
+using System.Security.Claims;
 
 namespace Api.Controllers.v1.User
 {
@@ -91,10 +94,67 @@ namespace Api.Controllers.v1.User
             }
         }
 
-        /// <summary>
-        /// Registers a new vendor account.
-        /// </summary>
-        [HttpPost("register-vendor")]
+		/// <summary>
+		/// Update customer information by admin
+		/// </summary>
+		/// <param name="updateDto">Customer update data</param>
+		/// <returns>Updated customer information</returns>
+		[HttpPut("update-customer")]
+		[ProducesResponseType(typeof(ServiceResult<CustomerUpdateByAdminDto>), StatusCodes.Status200OK)]
+		[ProducesResponseType(StatusCodes.Status400BadRequest)]
+		[ProducesResponseType(StatusCodes.Status401Unauthorized)]
+		[ProducesResponseType(StatusCodes.Status403Forbidden)]
+		[ProducesResponseType(StatusCodes.Status404NotFound)]
+		public async Task<IActionResult> UpdateCustomer([FromBody] CustomerUpdateByAdminDto updateDto)
+		{
+			try
+			{
+				// Get admin ID from claims
+				var adminIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+				if (string.IsNullOrEmpty(adminIdClaim) || !Guid.TryParse(adminIdClaim, out var adminId))
+				{
+					return Unauthorized(new { message = "Invalid admin credentials" });
+				}
+
+				// Validate model
+				if (!ModelState.IsValid)
+				{
+					return BadRequest(new
+					{
+						success = false,
+						message = "Invalid input data",
+						errors = ModelState.Values
+							.SelectMany(v => v.Errors)
+							.Select(e => e.ErrorMessage)
+							.ToList()
+					});
+				}
+
+				var result = await _registrationService.UpdateCustomerByAdminAsync(updateDto, adminId);
+
+				if (!result.Success)
+				{
+					return BadRequest(result);
+				}
+
+				return Ok(result);
+			}
+			catch (Exception ex)
+			{
+				_logger.Error(ex, "Error in UpdateCustomer endpoint");
+				return StatusCode(500, new
+				{
+					success = false,
+					message = "An error occurred while updating customer",
+					errors = new[] { ex.Message }
+				});
+			}
+		}
+
+		/// <summary>
+		/// Registers a new vendor account.
+		/// </summary>
+		[HttpPost("register-vendor")]
         [ProducesResponseType(typeof(ResponseModel<VendorRegistrationResponseDto>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ResponseModel<string>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ResponseModel<object>), StatusCodes.Status500InternalServerError)]

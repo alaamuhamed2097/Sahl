@@ -167,9 +167,9 @@
                                                     <i class="fas fa-pen"></i> <!-- الحل الأول -->
                                                 </button>
 
-                                                <button type="button" class="btn me-2 btn-sm btn-danger" @onclick="() => Delete(item.Id)">
+                                              @*   <button type="button" class="btn me-2 btn-sm btn-danger" @onclick="() => Delete(item.Id)">
                                                     <i class="fas fa-trash"></i>
-                                                </button>
+                                                </button> *@
                                             </div>
                                         </td>
                                     </tr>
@@ -278,43 +278,4 @@
     </div>
 </div>
 
-@code {
-    private string GetStatusBadgeClass(UserStateType status)
-    {
-        return status switch
-        {
-            UserStateType.Active => "bg-success",
-            UserStateType.Inactive => "bg-secondary",
-            UserStateType.Auto_Locked => "bg-warning",
-            UserStateType.Restricted => "bg-danger",
-            UserStateType.Suspended => "bg-danger",
-            UserStateType.Deleted => "bg-dark",
-            _ => "bg-light"
-        };
-    }
 
-    private string GetStatusDisplayName(UserStateType status)
-    {
-        return status switch
-        {
-            UserStateType.Active => "Active",
-            UserStateType.Inactive => "Inactive",
-            UserStateType.Auto_Locked => "Locked",
-            UserStateType.Restricted => "Restricted",
-            UserStateType.Suspended => "Suspended",
-            UserStateType.Deleted => "Deleted",
-            _ => status.ToString()
-        };
-    }
-
-    private void ViewDetails(CustomerDto customer)
-    {
-        Navigation.NavigateTo($"/users/customer/details/{customer.Id}");
-    }
-
-    private async Task GoToPage(int pageNumber)
-    {
-        searchModel.PageNumber = pageNumber;
-        await Search();
-    }
-}

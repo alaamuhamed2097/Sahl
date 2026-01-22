@@ -1,6 +1,7 @@
 ﻿using Common.Enumerations.FieldType;
 using Dashboard.Contracts.ECommerce.Category;
 using Dashboard.Contracts.General;
+using Dashboard.Pages.Base;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 using Resources;
@@ -8,7 +9,7 @@ using Shared.DTOs.Catalog.Category;
 
 namespace Dashboard.Pages.Catalog.Attributes
 {
-    public partial class Details
+    public partial class Details : LocalizedComponentBase
     {
         private bool isSaving { get; set; }
         private Guid _lastLoadedId = Guid.Empty; // Track the last loaded ID

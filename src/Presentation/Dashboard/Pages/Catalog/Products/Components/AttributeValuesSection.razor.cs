@@ -1,13 +1,13 @@
 ﻿using Common.Enumerations.FieldType;
 using Common.Enumerations.Pricing;
+using Dashboard.Pages.Base;
 using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Components.Web;
 using Shared.DTOs.Catalog.Category;
 using Shared.DTOs.Catalog.Item;
 
 namespace Dashboard.Pages.Catalog.Products.Components
 {
-    public partial class AttributeValuesSection
+    public partial class AttributeValuesSection : LocalizedComponentBase
     {
         [Parameter]
         public List<CategoryAttributeDto> CategoryAttributes { get; set; } = new();

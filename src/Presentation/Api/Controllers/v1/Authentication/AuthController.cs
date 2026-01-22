@@ -1,6 +1,5 @@
 using Asp.Versioning;
 using BL.Contracts.GeneralService.CMS;
-using BL.Contracts.GeneralService.UserManagement;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Resources;
@@ -19,20 +18,16 @@ namespace Api.Controllers.v1.Authentication
     public class AuthController : ControllerBase
     {
         private readonly IUserAuthenticationService _authenticationService;
-        private readonly IUserRegistrationService _registrationService;
         private readonly IOAuthService _oauthService;
         private readonly Serilog.ILogger _logger;
 
         public AuthController(
             IUserAuthenticationService authenticationService,
-            IUserRegistrationService registrationService,
             IOAuthService oauthService,
             Serilog.ILogger logger)
         {
             _authenticationService = authenticationService;
-            _registrationService = registrationService;
             _oauthService = oauthService;
-            _logger = logger;
         }
 
         [HttpPost("login")]
@@ -67,9 +62,6 @@ namespace Api.Controllers.v1.Authentication
 
             if (result.Success)
             {
-                // ? NEW: Set HTTP-only cookies for tokens
-                SetAuthCookies(result.Token, result.RefreshToken);
-
                 // ? UPDATED: Return user info WITHOUT tokens in response body
                 var response = new ResponseModel<SignInResult>
                 {
@@ -127,8 +119,6 @@ namespace Api.Controllers.v1.Authentication
                     });
                 }
 
-                SetAuthCookies(result.Token, result.RefreshToken);
-
                 var response = new ResponseModel<CustomerSignInResult>
                 {
                     Data = result
@@ -174,7 +164,6 @@ namespace Api.Controllers.v1.Authentication
 
             if (result.Success)
             {
-                SetAuthCookies(result.Token, result.RefreshToken);
                 var response = new ResponseModel<VendorSignInResult>
                 {
                     Data = result
@@ -218,8 +207,6 @@ namespace Api.Controllers.v1.Authentication
 
                 if (result.Success && result.Data != null)
                 {
-                    SetAuthCookies(result.Data.Token, result.Data.RefreshToken);
-
                     var response = new ResponseModel<SignInResult>
                     {
                         Data = result.Data
@@ -283,8 +270,6 @@ namespace Api.Controllers.v1.Authentication
                         });
                     }
 
-                    SetAuthCookies(result.Data.Token, result.Data.RefreshToken);
-
                     var response = new ResponseModel<SignInResult>
                     {
                         Data = result.Data
@@ -337,8 +322,6 @@ namespace Api.Controllers.v1.Authentication
 
                 if (result.Success && result.Data != null)
                 {
-                    SetAuthCookies(result.Data.Token, result.Data.RefreshToken);
-
                     var response = new ResponseModel<SignInResult>
                     {
                         Data = result.Data
@@ -362,75 +345,6 @@ namespace Api.Controllers.v1.Authentication
                     Message = NotifiAndAlertsResources.SomethingWentWrong
                 });
             }
-        }
-
-        /// <summary>
-        /// Logs out the current user by clearing authentication cookies.
-        /// </summary>
-        /// <remarks>
-        /// API Version: 1.0+
-        /// </remarks>
-        [HttpPost("logout")]
-        [ProducesResponseType(typeof(ResponseModel<object>), StatusCodes.Status200OK)]
-        public IActionResult Logout()
-        {
-            // Clear authentication cookies
-            ClearAuthCookies();
-
-            return Ok(new ResponseModel<object>
-            {
-                Success = true,
-                Message = "Logged out successfully"
-            });
-        }
-
-        /// <summary>
-        /// Sets HTTP-only authentication cookies.
-        /// </summary>
-        private void SetAuthCookies(string accessToken, string refreshToken)
-        {
-            var cookieOptions = new CookieOptions
-            {
-                HttpOnly = true,
-                Secure = true,
-                SameSite = SameSiteMode.None,
-                Expires = DateTimeOffset.UtcNow.AddHours(1),
-                Path = "/"
-            };
-
-            var refreshCookieOptions = new CookieOptions
-            {
-                HttpOnly = true,
-                Secure = true,
-                SameSite = SameSiteMode.None,
-                Expires = DateTimeOffset.UtcNow.AddDays(7),
-                Path = "/"
-            };
-
-            Response.Cookies.Append("auth_token", accessToken, cookieOptions);
-            Response.Cookies.Append("refresh_token", refreshToken, refreshCookieOptions);
-
-            _logger.Information("Authentication cookies set successfully");
-        }
-
-        /// <summary>
-        /// Clears authentication cookies.
-        /// </summary>
-        private void ClearAuthCookies()
-        {
-            var cookieOptions = new CookieOptions
-            {
-                HttpOnly = true,
-                Secure = true,
-                SameSite = SameSiteMode.None,
-                Expires = DateTimeOffset.UtcNow.AddDays(-1),
-                Path = "/"
-            };
-
-            Response.Cookies.Delete("auth_token", cookieOptions);
-            Response.Cookies.Delete("refresh_token", cookieOptions);
-
-            _logger.Information("Authentication cookies cleared successfully");
         }
     }
 }

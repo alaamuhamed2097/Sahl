@@ -1,4 +1,5 @@
 using Dashboard.Contracts.Location;
+using Dashboard.Pages.Base;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 using Resources;
@@ -6,7 +7,7 @@ using Shared.DTOs.Location;
 
 namespace Dashboard.Pages.Location.City;
 
-public partial class Details
+public partial class Details : LocalizedComponentBase
 {
     private bool isSaving { get; set; }
 

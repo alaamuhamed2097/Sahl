@@ -1,4 +1,5 @@
 using Dashboard.Contracts.CMS;
+using Dashboard.Pages.Base;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 using Resources;
@@ -7,7 +8,7 @@ using Shared.DTOs.User;
 
 namespace Dashboard.Pages.Authentication
 {
-    public partial class ForgotPassword : ComponentBase
+    public partial class ForgotPassword : LocalizedComponentBase
     {
         private readonly ForgetPasswordRequestDto _model = new();
         private string _errorMessage = string.Empty;

@@ -2,13 +2,14 @@
 @page "/campaigns/{CampaignId}"
 
 @using Common.Enumerations.User
-@attribute [Authorize(Roles = nameof(UserRole.Admin))]
 @using Dashboard.Contracts.Campaign
 @using Dashboard.Contracts.General
 @using Microsoft.AspNetCore.Components
 @using Shared.DTOs.Campaign
 @using Shared.GeneralModels
 @using Resources
+@inherits LocalizedComponentBase
+@attribute [Authorize(Roles = nameof(UserRole.Admin))]
 
 <PageTitle>@(Model.Id == Guid.Empty ? MerchandisingResources.CreateNewCampaign : MerchandisingResources.EditCampaign)</PageTitle>
 

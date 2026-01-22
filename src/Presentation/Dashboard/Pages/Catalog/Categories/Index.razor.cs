@@ -2,15 +2,15 @@ using Common.Filters;
 using Dashboard.Constants;
 using Dashboard.Contracts.ECommerce.Category;
 using Dashboard.Contracts.General;
+using Dashboard.Pages.Base;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 using Resources;
 using Resources.Enumerations;
 using Shared.DTOs.Catalog.Category;
-using Shared.DTOs.ECommerce;
 namespace Dashboard.Pages.Catalog.Categories
 {
-    public partial class Index
+    public partial class Index : LocalizedComponentBase
     {
         private bool isMoving = false;
         protected bool IsRTL { get; set; }

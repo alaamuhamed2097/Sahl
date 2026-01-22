@@ -1,4 +1,5 @@
 ﻿using Dashboard.Contracts.User;
+using Dashboard.Pages.Base;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 using Resources;
@@ -6,7 +7,7 @@ using Shared.DTOs.User.Admin;
 
 namespace Dashboard.Pages.UserManagement.Administrators
 {
-    public partial class Edit
+    public partial class Edit : LocalizedComponentBase
     {
         [Parameter] public Guid Id { get; set; } = new();
         protected AdminProfileUpdateDto Model { get; set; } = null;
