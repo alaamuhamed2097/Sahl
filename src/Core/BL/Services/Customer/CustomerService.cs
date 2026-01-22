@@ -27,7 +27,7 @@ namespace BL.Services.Customer
 		private readonly ICustomerRepository _customerRepository;
 		private readonly IBaseMapper _mapper;
 
-		// Constructor تقليدي
+		
 		public CustomerService(
 			ICustomerRepository customerRepository,
 			IBaseMapper mapper,
@@ -48,6 +48,7 @@ namespace BL.Services.Customer
 			try
 			{
 				var customers = await _customerRepository.GetAllAsync();
+
 				var dtos = _mapper.MapList<TbCustomer, CustomerDto>(customers);
 				return new ResponseModel<IEnumerable<CustomerDto>>
 				{
@@ -191,7 +192,7 @@ namespace BL.Services.Customer
 				}
 
 				// Get paginated data WITHOUT includes first
-				var pagedResult = await _customerRepository.GetPageAsync(
+				var pagedResult = await _customerRepository.GetPageWithUserOrdersAndWalletsAsync(
 					criteriaModel.PageNumber,
 					criteriaModel.PageSize,
 					filter,
@@ -199,23 +200,8 @@ namespace BL.Services.Customer
 					cancellationToken: cancellationToken
 				);
 
-				// Now load the related entities for the items we got
-				var customerIds = pagedResult.Items.Select(x => x.Id).ToList();
-
-				var customersWithDetails = await _customerRepository
-					.GetQueryable()
-					.Include(x => x.User)
-					.Where(x => customerIds.Contains(x.Id))
-					.ToListAsync(cancellationToken);
-
-				// Sort the loaded items to match the original order
-				var orderedCustomers = customerIds
-					.Select(id => customersWithDetails.FirstOrDefault(c => c.Id == id))
-					.Where(c => c != null)
-					.ToList();
-
 				// Map to DTO
-				var itemsDto = _mapper.MapList<TbCustomer, CustomerDto>(orderedCustomers);
+				var itemsDto = _mapper.MapList<TbCustomer, CustomerDto>(pagedResult.Items);
 
 				var totalPages = (int)Math.Ceiling((double)pagedResult.TotalRecords / criteriaModel.PageSize);
 
@@ -243,67 +229,7 @@ namespace BL.Services.Customer
 				};
 			}
 		}
-		//public async Task<ResponseModel<AdvancedPagedResult<CustomerDto>>> SearchAsync(BaseSearchCriteriaModel criteriaModel)
-		//{
-		//	try
-		//	{
-		//		if (criteriaModel == null)
-		//			throw new ArgumentNullException(nameof(criteriaModel));
-
-		//		if (criteriaModel.PageNumber < 1)
-		//			throw new ArgumentOutOfRangeException(nameof(criteriaModel.PageNumber), ValidationResources.PageNumberGreaterThanZero);
-
-		//		if (criteriaModel.PageSize < 1 || criteriaModel.PageSize > 100)
-		//			throw new ArgumentOutOfRangeException(nameof(criteriaModel.PageSize), ValidationResources.PageSizeRange);
-
-		//		// Base filter
-		//		Expression<Func<TbCustomer, bool>> filter = x => !x.IsDeleted;
-
-		//		// Combine expressions manually
-		//		var searchTerm = criteriaModel.SearchTerm?.Trim().ToLower();
-		//		if (!string.IsNullOrWhiteSpace(searchTerm))
-		//		{
-		//			filter = filter.And(x =>
-		//				(x.User.FirstName != null && x.User.FirstName.ToLower().Contains(searchTerm)) ||
-		//				(x.User.LastName != null && x.User.LastName.ToLower().Contains(searchTerm)) ||
-		//				(x.User.Email != null && x.User.Email.ToLower().Contains(searchTerm))
-		//			);
-		//		}
-
-		//		var customers = await _customerRepository.GetPageWithUserAsync(
-		//			criteriaModel.PageNumber,
-		//			criteriaModel.PageSize,
-		//			filter,
-		//			orderBy: q => q.OrderByDescending(x => x.CreatedDateUtc));
-
-		//		var itemsDto = _mapper.MapList<TbCustomer, CustomerDto>(customers.Items);
-
-		//		var totalPages = (int)Math.Ceiling((double)customers.TotalRecords / criteriaModel.PageSize);
-		//		var result = new AdvancedPagedResult<CustomerDto>
-		//		{
-		//			Items = itemsDto.ToList(),
-		//			TotalRecords = customers.TotalRecords,
-		//			PageSize = criteriaModel.PageSize,
-		//			PageNumber = criteriaModel.PageNumber,
-		//			TotalPages = totalPages
-		//		};
-
-		//		return new ResponseModel<AdvancedPagedResult<CustomerDto>>
-		//		{
-		//			Success = true,
-		//			Data = result
-		//		};
-		//	}
-		//	catch (Exception ex)
-		//	{
-		//		return new ResponseModel<AdvancedPagedResult<CustomerDto>>
-		//		{
-		//			Success = false,
-		//			Message = ex.Message
-		//		};
-		//	}
-		//}
-
+		
 		/// <summary>
 		/// Save or update customer
 		/// </summary>

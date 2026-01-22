@@ -29,7 +29,8 @@ namespace Dashboard.Contracts.Customer
 		Task<ResponseModel<CustomerDto>> SaveAsync(CustomerDto Customers);
 
 		Task<ResponseModel<CustomerRegistrationResponseDto>> RegisterCustomerAsync(CustomerRegistrationDto dto);
-		Task<ResponseModel<CustomerDto>> UpdateAsync(Guid id, CustomerDto dto);
+		Task<ResponseModel<CustomerUpdateByAdminDto>> UpdateByAdminAsync(CustomerUpdateByAdminDto updateDto);
+
 		/// <summary>
 		/// Delete a Customers by ID.
 		/// </summary>

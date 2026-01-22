@@ -77,7 +77,35 @@ namespace Api.Controllers.v1.Wallet.Customer
             });
         }
 
-        [HttpGet("currentUser")]
+		[HttpGet("search-by-admin")]
+		[Authorize(Roles = nameof(UserType.Admin))]
+		public async Task<IActionResult> SearchWalletTransactionsByAdminAsync([FromQuery] CustomerFilterQuery criteria)
+		{
+			// Validate and set default pagination values if not provided
+			criteria.PageNumber = criteria.PageNumber < 1 ? 1 : criteria.PageNumber;
+			criteria.PageSize = criteria.PageSize < 1 || criteria.PageSize > 100 ? 10 : criteria.PageSize;
+
+			var result = await _walletTransactionService.GetPageByAdmin(criteria);
+
+			if (result == null || !result.Items.Any())
+			{
+				return Ok(new ResponseModel<PagedResult<CustomerWalletTransactionsDto>>
+				{
+					Success = true,
+					Message = NotifiAndAlertsResources.NoDataFound,
+					Data = result
+				});
+			}
+
+			return Ok(new ResponseModel<PagedResult<CustomerWalletTransactionsDto>>
+			{
+				Success = true,
+				Message = NotifiAndAlertsResources.DataRetrieved,
+				Data = result
+			});
+		}
+
+		[HttpGet("currentUser")]
         public async Task<IActionResult> GetByUserIdAsync()
         {
             var items = await _walletTransactionService.GetAllTransactions(GuidUserId);
