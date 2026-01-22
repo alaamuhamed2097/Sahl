@@ -1,5 +1,4 @@
 using Common.Enumerations.Payment;
-using Domains.Entities.Currency;
 using Domains.Entities.Wallet.Customer;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -22,9 +21,6 @@ namespace Domains.Entities.Order.Payment
 
         // PaymentMethod enum for quick access
         public PaymentMethodType PaymentMethodType { get; set; }
-
-        [ForeignKey("Currency")]
-        public Guid CurrencyId { get; set; }
 
         public PaymentStatus PaymentStatus { get; set; }
 
@@ -94,7 +90,6 @@ namespace Domains.Entities.Order.Payment
         // Navigation Properties
         public virtual TbOrder Order { get; set; } = null!;
         public virtual TbPaymentMethod PaymentMethod { get; set; } = null!;
-        public virtual TbCurrency Currency { get; set; } = null!;
         public virtual TbCustomerWalletTransaction? WalletTransaction { get; set; }
     }
 }

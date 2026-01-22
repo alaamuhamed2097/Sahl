@@ -65,7 +65,6 @@ public class OrderCreationService : IOrderCreationService
 
     /// <summary>
     /// Create order from cart with payment processing
-    /// ✅ FIXED: Creates shipments in same transaction as order
     /// </summary>
     public async Task<CreateOrderResult> CreateOrderAsync(
         CreateOrderRequest request,
@@ -79,14 +78,8 @@ public class OrderCreationService : IOrderCreationService
                 return CreateOrderResult.CreateFailure("Delivery address is required");
             }
 
-            // 2. Validate: Payment method is mandatory
-            if (request.PaymentMethod == PaymentMethodType.CashOnDelivery)
-            {
-                // COD doesn't require payment method setup
-            }
-            else if (request.PaymentMethod != PaymentMethodType.Wallet &&
-                     request.PaymentMethod != PaymentMethodType.Card &&
-                     request.PaymentMethod != PaymentMethodType.WalletAndCard)
+            // 2. Validate: Payment method
+            if (!Enum.IsDefined(typeof(PaymentMethodType), request.PaymentMethod))
             {
                 return CreateOrderResult.CreateFailure("Invalid payment method");
             }
@@ -126,10 +119,16 @@ public class OrderCreationService : IOrderCreationService
                 // 7. ✅ CREATE SHIPMENTS (in same transaction!)
                 var shipments = await _shipmentService.SplitOrderIntoShipmentsAsync(order.Id);
 
+                // 7.1 ✅ UPDATE ORDER SHIPPING AMOUNT
+                // Calculate total shipping from all shipments
+                order.ShippingAmount = shipments.Sum(s => s.ShippingCost);
+                await _orderRepository.UpdateAsync(order, cancellationToken);
+
                 _logger.Information(
-                    "Created order {OrderNumber} with {ShipmentCount} shipments",
+                    "Created order {OrderNumber} with {ShipmentCount} shipments | Total Shipping: {ShippingAmount}",
                     order.Number,
-                    shipments.Count);
+                    shipments.Count,
+                    order.ShippingAmount);
 
                 // 8. Update coupon usage if applied
                 if (checkoutSummary.CouponId.HasValue)
@@ -170,8 +169,9 @@ public class OrderCreationService : IOrderCreationService
                     checkoutSummary.PriceBreakdown.GrandTotal,
                     paymentResult);
             }
-            catch
+            catch (Exception ex)
             {
+                _logger.Error(ex, "Transaction failed, rolling back");
                 // ✅ ROLLBACK TRANSACTION
                 await _unitOfWork.RollbackAsync();
                 throw;
@@ -193,7 +193,7 @@ public class OrderCreationService : IOrderCreationService
         CheckoutSummaryDto checkoutSummary,
         CancellationToken cancellationToken)
     {
-        var orderNumber = await GenerateOrderNumberAsync(cancellationToken);
+        var orderNumber = GenerateOrderNumber();
 
         var order = new TbOrder
         {
@@ -382,14 +382,16 @@ public class OrderCreationService : IOrderCreationService
             cancellationToken);
     }
 
-    private async Task<string> GenerateOrderNumberAsync(
-        CancellationToken cancellationToken)
+    private string GenerateOrderNumber()
     {
         var date = DateTime.UtcNow;
         var datePrefix = date.ToString("yyyyMMdd");
-        var todayCount = await _orderRepository.CountTodayOrdersAsync(date.Date, cancellationToken);
 
-        return $"ORD-{datePrefix}-{(todayCount + 1):D6}";
+        // أول 8 حروف من GUID
+        var uniqueId = Guid.NewGuid().ToString("N").Substring(0, 8).ToUpper();
+
+        // ORD-20250121-A3F5B2C1
+        return $"ORD-{datePrefix}-{uniqueId}";
     }
 
     #endregion

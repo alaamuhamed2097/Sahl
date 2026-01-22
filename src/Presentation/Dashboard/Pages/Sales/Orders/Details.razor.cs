@@ -1,4 +1,3 @@
-using System;
 using Common.Enumerations.Order;
 using Common.Enumerations.Payment;
 using Common.Enumerations.Shipping;
@@ -15,10 +14,10 @@ using Shared.DTOs.Order.OrderProcessing.AdminOrder;
 namespace Dashboard.Pages.Sales.Orders
 {
     /// <summary>
-    /// Order Details Page - FINAL VERSION
-    /// - New ShipmentStatus enum values
-    /// - Payment summary display (Wallet/Card/COD only)
-    /// - No InvoiceId, no AllowSplitPayment, no OtherPaidAmount
+    /// FINAL Order Details - Integrated Workflow
+    /// ✅ Order status driven by shipment progress
+    /// ✅ Action buttons instead of dropdown
+    /// ✅ Proper business rules
     /// </summary>
     public partial class Details : ComponentBase
     {
@@ -32,7 +31,6 @@ namespace Dashboard.Pages.Sales.Orders
         protected Guid? ShipmentUpdatingId { get; set; }
 
         protected AdminOrderDetailsDto Order { get; set; } = new();
-        protected Dictionary<Guid, ShipmentStatus> ShipmentStatusSelections { get; } = new();
 
         [Parameter] public Guid Id { get; set; }
 
@@ -71,7 +69,6 @@ namespace Dashboard.Pages.Sales.Orders
                 if (result.Success && result.Data != null)
                 {
                     Order = result.Data;
-                    InitializeShipmentSelections();
                 }
                 else
                 {
@@ -96,77 +93,68 @@ namespace Dashboard.Pages.Sales.Orders
         }
 
         // ============================================
-        // SHIPMENT ACTIONS
+        // SHIPMENT WORKFLOW - Action Buttons
         // ============================================
 
-        private void InitializeShipmentSelections()
+        /// <summary>
+        /// Get next possible action for shipment
+        /// </summary>
+        protected string GetShipmentNextAction(ShipmentInfoDto shipment)
         {
-            ShipmentStatusSelections.Clear();
-
-            foreach (var shipment in Order.Shipments)
+            return shipment.Status switch
             {
-                ShipmentStatusSelections[shipment.ShipmentId] = shipment.Status;
-            }
-        }
-
-        protected ShipmentStatus GetSelectedShipmentStatus(Guid shipmentId)
-        {
-            if (ShipmentStatusSelections.TryGetValue(shipmentId, out var status))
-            {
-                return status;
-            }
-
-            var shipment = Order.Shipments.FirstOrDefault(s => s.ShipmentId == shipmentId);
-            return shipment?.Status ?? ShipmentStatus.PendingProcessing;
-        }
-
-        protected IEnumerable<ShipmentStatus> GetShipmentStatusOptions(ShipmentStatus current)
-        {
-            _ = current; // current status included in the returned sequence
-            return new List<ShipmentStatus>
-            {
-                ShipmentStatus.PendingProcessing,
-                ShipmentStatus.PreparingForShipment,
-                ShipmentStatus.PickedUpByCarrier,
-                ShipmentStatus.InTransitToCustomer,
-                ShipmentStatus.DeliveryAttemptFailed,
-                ShipmentStatus.DeliveredToCustomer,
-                ShipmentStatus.ReturnedToSender,
-                ShipmentStatus.CancelledByCustomer,
-                ShipmentStatus.CancelledByMarketplace
+                ShipmentStatus.PendingProcessing => "Start Processing",
+                ShipmentStatus.PreparingForShipment => "Ready for Pickup",
+                ShipmentStatus.PickedUpByCarrier => "Mark In Transit",
+                ShipmentStatus.InTransitToCustomer => "Attempt Delivery",
+                ShipmentStatus.DeliveryAttemptFailed => "Retry Delivery",
+                ShipmentStatus.DeliveredToCustomer => "Completed",
+                _ => ""
             };
         }
 
-        protected void OnShipmentStatusChanged(Guid shipmentId, ChangeEventArgs args)
+        /// <summary>
+        /// Get next status for shipment
+        /// </summary>
+        protected ShipmentStatus? GetShipmentNextStatus(ShipmentInfoDto shipment)
         {
-            if (Enum.TryParse<ShipmentStatus>(args.Value?.ToString(), out var status))
+            return shipment.Status switch
             {
-                ShipmentStatusSelections[shipmentId] = status;
-            }
+                ShipmentStatus.PendingProcessing => ShipmentStatus.PreparingForShipment,
+                ShipmentStatus.PreparingForShipment => ShipmentStatus.PickedUpByCarrier,
+                ShipmentStatus.PickedUpByCarrier => ShipmentStatus.InTransitToCustomer,
+                ShipmentStatus.InTransitToCustomer => ShipmentStatus.DeliveredToCustomer,
+                ShipmentStatus.DeliveryAttemptFailed => ShipmentStatus.InTransitToCustomer,
+                _ => null
+            };
         }
 
-        protected async Task UpdateShipmentStatusAsync(Guid shipmentId)
+        /// <summary>
+        /// Can shipment move to next status?
+        /// </summary>
+        protected bool CanShipmentMoveNext(ShipmentInfoDto shipment)
         {
-            var selectedStatus = GetSelectedShipmentStatus(shipmentId);
+            if (shipment.Status == ShipmentStatus.DeliveredToCustomer ||
+                shipment.Status == ShipmentStatus.ReturnedToSender ||
+                shipment.Status == ShipmentStatus.CancelledByCustomer ||
+                shipment.Status == ShipmentStatus.CancelledByMarketplace)
+            {
+                return false;
+            }
+
+            return GetShipmentNextStatus(shipment).HasValue;
+        }
+
+        /// <summary>
+        /// Move shipment to next status
+        /// </summary>
+        protected async Task MoveShipmentToNextStatusAsync(Guid shipmentId)
+        {
             var shipment = Order.Shipments.FirstOrDefault(s => s.ShipmentId == shipmentId);
+            if (shipment == null) return;
 
-            if (shipment == null)
-            {
-                await JSRuntime.InvokeVoidAsync("swal",
-                    ValidationResources.Failed,
-                    NotifiAndAlertsResources.SomethingWentWrong,
-                    "error");
-                return;
-            }
-
-            if (shipment.Status == selectedStatus)
-            {
-                await JSRuntime.InvokeVoidAsync("swal",
-                    NotifiAndAlertsResources.Warning,
-                    "Shipment status is already set to this value.",
-                    "info");
-                return;
-            }
+            var nextStatus = GetShipmentNextStatus(shipment);
+            if (!nextStatus.HasValue) return;
 
             try
             {
@@ -177,8 +165,8 @@ namespace Dashboard.Pages.Sales.Orders
                 {
                     OrderId = Order.OrderId,
                     ShipmentId = shipmentId,
-                    NewStatus = selectedStatus.ToString(),
-                    Notes = $"Updated by admin at {DateTime.UtcNow:g}"
+                    NewStatus = nextStatus.Value.ToString(),
+                    Notes = $"Updated by admin to {nextStatus.Value}"
                 };
 
                 var result = await ShipmentService.UpdateShipmentStatusAsync(Order.OrderId, request);
@@ -186,11 +174,118 @@ namespace Dashboard.Pages.Sales.Orders
                 if (result.Success && result.Data != null)
                 {
                     shipment.Status = result.Data.ShipmentStatus;
-                    ShipmentStatusSelections[shipmentId] = result.Data.ShipmentStatus;
+
+                    // ✅ Auto-update order status based on shipments
+                    await SyncOrderStatusWithShipmentsAsync();
 
                     await JSRuntime.InvokeVoidAsync("swal",
                         NotifiAndAlertsResources.Success,
-                        OrderResources.StatusChangedSuccessfully,
+                        "Shipment status updated successfully",
+                        "success");
+
+                    StateHasChanged();
+                }
+                else
+                {
+                    await JSRuntime.InvokeVoidAsync("swal",
+                        ValidationResources.Failed,
+                        result.Message ?? NotifiAndAlertsResources.SomethingWentWrong,
+                        "error");
+                }
+            }
+            catch (Exception ex)
+            {
+                await JSRuntime.InvokeVoidAsync("swal",
+                    ValidationResources.Error,
+                    ex.Message,
+                    "error");
+            }
+            finally
+            {
+                ShipmentUpdatingId = null;
+                StateHasChanged();
+            }
+        }
+
+        /// <summary>
+        /// Mark shipment as delivery failed
+        /// </summary>
+        protected async Task MarkShipmentDeliveryFailedAsync(Guid shipmentId)
+        {
+            var shipment = Order.Shipments.FirstOrDefault(s => s.ShipmentId == shipmentId);
+            if (shipment == null) return;
+
+            if (shipment.Status != ShipmentStatus.InTransitToCustomer)
+            {
+                await JSRuntime.InvokeVoidAsync("swal",
+                    ValidationResources.Failed,
+                    "Shipment must be in transit to mark as delivery failed",
+                    "warning");
+                return;
+            }
+
+            var reason = await JSRuntime.InvokeAsync<string>("prompt", "Enter reason for delivery failure:");
+            if (string.IsNullOrWhiteSpace(reason)) return;
+
+            await UpdateShipmentStatusDirectlyAsync(shipmentId, ShipmentStatus.DeliveryAttemptFailed, reason);
+        }
+
+        /// <summary>
+        /// Cancel shipment
+        /// </summary>
+        protected async Task CancelShipmentAsync(Guid shipmentId)
+        {
+            var shipment = Order.Shipments.FirstOrDefault(s => s.ShipmentId == shipmentId);
+            if (shipment == null) return;
+
+            if (shipment.Status == ShipmentStatus.DeliveredToCustomer)
+            {
+                await JSRuntime.InvokeVoidAsync("swal",
+                    ValidationResources.Failed,
+                    "Cannot cancel delivered shipment",
+                    "error");
+                return;
+            }
+
+            var confirmed = await JSRuntime.InvokeAsync<bool>("confirm", "Are you sure you want to cancel this shipment?");
+            if (!confirmed) return;
+
+            await UpdateShipmentStatusDirectlyAsync(shipmentId, ShipmentStatus.CancelledByMarketplace, "Cancelled by admin");
+        }
+
+        /// <summary>
+        /// Update shipment status directly
+        /// </summary>
+        private async Task UpdateShipmentStatusDirectlyAsync(Guid shipmentId, ShipmentStatus newStatus, string notes)
+        {
+            try
+            {
+                ShipmentUpdatingId = shipmentId;
+                StateHasChanged();
+
+                var request = new UpdateShipmentStatusRequest
+                {
+                    OrderId = Order.OrderId,
+                    ShipmentId = shipmentId,
+                    NewStatus = newStatus.ToString(),
+                    Notes = notes
+                };
+
+                var result = await ShipmentService.UpdateShipmentStatusAsync(Order.OrderId, request);
+
+                if (result.Success && result.Data != null)
+                {
+                    var shipment = Order.Shipments.FirstOrDefault(s => s.ShipmentId == shipmentId);
+                    if (shipment != null)
+                    {
+                        shipment.Status = result.Data.ShipmentStatus;
+                    }
+
+                    await SyncOrderStatusWithShipmentsAsync();
+
+                    await JSRuntime.InvokeVoidAsync("swal",
+                        NotifiAndAlertsResources.Success,
+                        "Shipment updated successfully",
                         "success");
                 }
                 else
@@ -215,9 +310,78 @@ namespace Dashboard.Pages.Sales.Orders
             }
         }
 
-        protected string FormatDate(DateTime? date)
+        // ============================================
+        // ORDER STATUS - Auto-sync with Shipments
+        // ============================================
+
+        /// <summary>
+        /// ✅ Sync order status based on shipment statuses
+        /// This is the KEY integration point!
+        /// </summary>
+        private async Task SyncOrderStatusWithShipmentsAsync()
         {
-            return date.HasValue ? date.Value.ToString("dd/MM/yyyy") : "--";
+            if (!Order.Shipments.Any()) return;
+
+            var allDelivered = Order.Shipments.All(s => s.Status == ShipmentStatus.DeliveredToCustomer);
+            var anyInTransit = Order.Shipments.Any(s =>
+                s.Status == ShipmentStatus.InTransitToCustomer ||
+                s.Status == ShipmentStatus.PickedUpByCarrier);
+            var anyProcessing = Order.Shipments.Any(s =>
+                s.Status == ShipmentStatus.PreparingForShipment ||
+                s.Status == ShipmentStatus.PendingProcessing);
+
+            OrderProgressStatus targetStatus;
+
+            if (allDelivered)
+            {
+                targetStatus = OrderProgressStatus.Completed;
+            }
+            else if (anyInTransit)
+            {
+                targetStatus = OrderProgressStatus.Shipped;
+            }
+            else if (anyProcessing)
+            {
+                targetStatus = OrderProgressStatus.Processing;
+            }
+            else
+            {
+                return; // No change needed
+            }
+
+            // Only update if different
+            if (Order.OrderStatus != targetStatus)
+            {
+                await ChangeOrderStatusAsync(targetStatus);
+            }
+        }
+
+        protected async Task ChangeOrderStatusAsync(OrderProgressStatus newStatus)
+        {
+            try
+            {
+                var request = new ChangeOrderStatusRequest
+                {
+                    OrderId = Order.OrderId,
+                    NewStatus = newStatus,
+                    Notes = $"Auto-updated based on shipment progress"
+                };
+
+                var result = await OrderService.ChangeOrderStatusAsync(request);
+
+                if (result.Success)
+                {
+                    Order.OrderStatus = newStatus;
+                    StateHasChanged();
+                }
+            }
+            catch (Exception ex)
+            {
+                await JSRuntime.InvokeVoidAsync("swal",
+                    ValidationResources.Error,
+                    ex.Message,
+                    "error");
+            }
         }
 
         // ============================================
@@ -250,7 +414,7 @@ namespace Dashboard.Pages.Sales.Orders
                 {
                     await JSRuntime.InvokeVoidAsync("swal",
                         ValidationResources.Failed,
-                        result.Message ?? NotifiAndAlertsResources.FailedAlert,
+                        result.Message ?? NotifiAndAlertsResources.SomethingWentWrong,
                         "error");
                 }
             }
@@ -268,29 +432,27 @@ namespace Dashboard.Pages.Sales.Orders
             }
         }
 
-        protected async Task ChangeOrderStatusAsync(OrderProgressStatus newStatus)
+        protected async Task CancelOrderAsync()
         {
             try
             {
-                var request = new ChangeOrderStatusRequest
-                {
-                    OrderId = Order.OrderId,
-                    NewStatus = newStatus,
-                    Notes = $"Status changed to {newStatus} by admin"
-                };
+                var confirmed = await JSRuntime.InvokeAsync<bool>("confirm",
+                    "Are you sure you want to cancel this order? All shipments will be cancelled.");
 
-                var result = await OrderService.ChangeOrderStatusAsync(request);
+                if (!confirmed) return;
+
+                var result = await OrderService.CancelOrderAsync(Order.OrderId, "Cancelled by admin");
 
                 if (result.Success)
                 {
-                    Order.OrderStatus = newStatus;
-
+                    Order.OrderStatus = OrderProgressStatus.Cancelled;
                     await JSRuntime.InvokeVoidAsync("swal",
                         NotifiAndAlertsResources.Success,
-                        OrderResources.StatusChangedSuccessfully,
+                        "Order cancelled successfully",
                         "success");
 
-                    StateHasChanged();
+                    // Reload to get updated shipment statuses
+                    await LoadOrderAsync(Order.OrderId);
                 }
                 else
                 {
@@ -309,224 +471,62 @@ namespace Dashboard.Pages.Sales.Orders
             }
         }
 
-        protected async Task ConfirmOrderAsync()
+        protected string FormatDate(DateTime? date)
         {
-            if (Order.OrderStatus != OrderProgressStatus.Pending)
-            {
-                await JSRuntime.InvokeVoidAsync("swal",
-                    NotifiAndAlertsResources.Failed,
-                    OrderResources.OrderMustBePending,
-                    "warning");
-                return;
-            }
-
-            await ChangeOrderStatusAsync(OrderProgressStatus.Confirmed);
-        }
-
-        protected async Task MoveToProcessingAsync()
-        {
-            if (Order.OrderStatus != OrderProgressStatus.Confirmed)
-            {
-                await JSRuntime.InvokeVoidAsync("swal",
-                    ValidationResources.Failed,
-                    OrderResources.OrderMustBeConfirmed,
-                    "warning");
-                return;
-            }
-
-            await ChangeOrderStatusAsync(OrderProgressStatus.Processing);
-        }
-
-        protected async Task MoveToShippedAsync()
-        {
-            if (Order.OrderStatus != OrderProgressStatus.Processing)
-            {
-                await JSRuntime.InvokeVoidAsync("swal",
-                    ValidationResources.Failed,
-                    OrderResources.OrderMustBeProcessing,
-                    "warning");
-                return;
-            }
-
-            await ChangeOrderStatusAsync(OrderProgressStatus.Shipped);
-        }
-
-        protected async Task MoveToDeliveredAsync()
-        {
-            if (!Order.DeliveryDate.HasValue || Order.DeliveryDate < DateTime.Now)
-            {
-                await JSRuntime.InvokeVoidAsync("swal",
-                    ValidationResources.Failed,
-                    OrderResources.SelectValidDeliveryDate,
-                    "warning");
-                return;
-            }
-
-            if (Order.OrderStatus != OrderProgressStatus.Shipped)
-            {
-                await JSRuntime.InvokeVoidAsync("swal",
-                    ValidationResources.Failed,
-                    OrderResources.OrderMustBeShipped,
-                    "warning");
-                return;
-            }
-
-            await SaveOrderAsync();
-            await ChangeOrderStatusAsync(OrderProgressStatus.Delivered);
-        }
-
-        protected async Task CancelOrderAsync()
-        {
-            try
-            {
-                var confirmed = await JSRuntime.InvokeAsync<bool>("confirm",
-                    OrderResources.ConfirmCancelOrder);
-
-                if (!confirmed) return;
-
-                var result = await OrderService.CancelOrderAsync(Order.OrderId, "Cancelled by admin");
-
-                if (result.Success)
-                {
-                    Order.OrderStatus = OrderProgressStatus.Cancelled;
-                    await JSRuntime.InvokeVoidAsync("swal",
-                        NotifiAndAlertsResources.Success,
-                        NotifiAndAlertsResources.OrderCancelledSuccessfully,
-                        "success");
-                    StateHasChanged();
-                }
-                else
-                {
-                    await JSRuntime.InvokeVoidAsync("swal",
-                        ValidationResources.Failed,
-                        result.Message ?? NotifiAndAlertsResources.FailedAlert,
-                        "error");
-                }
-            }
-            catch (Exception ex)
-            {
-                await JSRuntime.InvokeVoidAsync("swal",
-                    ValidationResources.Error,
-                    ex.Message,
-                    "error");
-            }
+            return date.HasValue ? date.Value.ToString("dd/MM/yyyy") : "--";
         }
 
         // ============================================
         // UI HELPERS
         // ============================================
 
-        protected string GetOrderStatusBadgeClass(OrderProgressStatus status)
+        protected string GetShipmentActionButtonClass(ShipmentInfoDto shipment)
         {
-            return status switch
+            return shipment.Status switch
             {
-                OrderProgressStatus.Pending => "warning",
-                OrderProgressStatus.Confirmed => "info",
-                OrderProgressStatus.Processing => "primary",
-                OrderProgressStatus.Shipped => "primary",
-                OrderProgressStatus.Delivered => "success",
-                OrderProgressStatus.Completed => "success",
-                OrderProgressStatus.Cancelled => "danger",
-                OrderProgressStatus.PaymentFailed => "danger",
-                OrderProgressStatus.RefundRequested => "warning",
-                OrderProgressStatus.Refunded => "info",
-                OrderProgressStatus.Returned => "secondary",
-                _ => "secondary"
+                ShipmentStatus.PendingProcessing => "btn-info",
+                ShipmentStatus.PreparingForShipment => "btn-primary",
+                ShipmentStatus.PickedUpByCarrier => "btn-warning",
+                ShipmentStatus.InTransitToCustomer => "btn-success",
+                ShipmentStatus.DeliveryAttemptFailed => "btn-danger",
+                _ => "btn-secondary"
             };
         }
 
-        protected string GetOrderStatusText(OrderProgressStatus status)
+        protected string GetShipmentActionIcon(ShipmentInfoDto shipment)
         {
-            return status switch
+            return shipment.Status switch
             {
-                OrderProgressStatus.Pending => OrderResources.Pending,
-                OrderProgressStatus.Confirmed => OrderResources.Accepted,
-                OrderProgressStatus.Processing => OrderResources.InProgress,
-                OrderProgressStatus.Shipped => OrderResources.Shipping,
-                OrderProgressStatus.Delivered => OrderResources.Delivered,
-                OrderProgressStatus.Completed => OrderResources.Completed,
-                OrderProgressStatus.Cancelled => OrderResources.Canceled,
-                OrderProgressStatus.PaymentFailed => OrderResources.PaymentFailed,
-                OrderProgressStatus.RefundRequested => OrderResources.RefundRequested,
-                OrderProgressStatus.Refunded => OrderResources.Refunded,
-                OrderProgressStatus.Returned => OrderResources.Returned,
-                _ => status.ToString()
+                ShipmentStatus.PendingProcessing => "fas fa-play",
+                ShipmentStatus.PreparingForShipment => "fas fa-box",
+                ShipmentStatus.PickedUpByCarrier => "fas fa-truck",
+                ShipmentStatus.InTransitToCustomer => "fas fa-shipping-fast",
+                ShipmentStatus.DeliveryAttemptFailed => "fas fa-redo",
+                _ => "fas fa-check"
             };
         }
 
-        protected string GetPaymentStatusClass(PaymentStatus status)
+        protected bool CanCancelShipment(ShipmentInfoDto shipment)
         {
-            return status switch
-            {
-                PaymentStatus.Completed => "success",
-                PaymentStatus.Pending => "warning",
-                PaymentStatus.Processing => "info",
-                PaymentStatus.Failed => "danger",
-                PaymentStatus.Cancelled => "secondary",
-                PaymentStatus.Refunded => "info",
-                PaymentStatus.PartiallyRefunded => "warning",
-                PaymentStatus.PartiallyPaid => "warning",
-                _ => "secondary"
-            };
+            return shipment.Status != ShipmentStatus.DeliveredToCustomer &&
+                   shipment.Status != ShipmentStatus.CancelledByCustomer &&
+                   shipment.Status != ShipmentStatus.CancelledByMarketplace;
         }
 
-        protected string GetPaymentStatusText(PaymentStatus status)
+        protected bool CanMarkDeliveryFailed(ShipmentInfoDto shipment)
         {
-            return status switch
-            {
-                PaymentStatus.Completed => OrderResources.Paid,
-                PaymentStatus.Pending => OrderResources.Pending,
-                PaymentStatus.Processing => OrderResources.Processing,
-                PaymentStatus.Failed => OrderResources.Failed,
-                PaymentStatus.Cancelled => OrderResources.Cancelled,
-                PaymentStatus.Refunded => OrderResources.Refunded,
-                PaymentStatus.PartiallyRefunded => OrderResources.PartiallyRefunded,
-                PaymentStatus.PartiallyPaid => OrderResources.PartiallyPaid,
-                _ => status.ToString()
-            };
+            return shipment.Status == ShipmentStatus.InTransitToCustomer;
         }
+
+        // ============================================
+        // ORDER STATUS HELPERS (for old UI compatibility)
+        // ============================================
 
         /// <summary>
-        /// FINAL VERSION - Updated with new ShipmentStatus enum
-        /// Removed AtLocalHub
+        /// Check if order can move to next status
+        /// NOTE: This is for backward compatibility with old UI
+        /// New approach: Order status auto-syncs with shipments
         /// </summary>
-        protected string GetShipmentStatusBadgeClass(ShipmentStatus status)
-        {
-            return status switch
-            {
-                ShipmentStatus.PendingProcessing => "badge bg-warning",
-                ShipmentStatus.PreparingForShipment => "badge bg-info",
-                ShipmentStatus.PickedUpByCarrier => "badge bg-primary",
-                ShipmentStatus.InTransitToCustomer => "badge bg-primary",
-                ShipmentStatus.DeliveredToCustomer => "badge bg-success",
-                ShipmentStatus.ReturnedToSender => "badge bg-danger",
-                ShipmentStatus.CancelledByCustomer => "badge bg-dark",
-                ShipmentStatus.CancelledByMarketplace => "badge bg-dark",
-                ShipmentStatus.DeliveryAttemptFailed => "badge bg-warning",
-                _ => "badge bg-secondary"
-            };
-        }
-
-        /// <summary>
-        /// FINAL VERSION - Updated with new ShipmentStatus enum
-        /// </summary>
-        protected string GetShipmentStatusText(ShipmentStatus status)
-        {
-            return status switch
-            {
-                ShipmentStatus.PendingProcessing => OrderResources.PendingProcessing,
-                ShipmentStatus.PreparingForShipment => OrderResources.PreparingForShipment,
-                ShipmentStatus.PickedUpByCarrier => OrderResources.PickedUpByCarrier,
-                ShipmentStatus.InTransitToCustomer => OrderResources.InTransit,
-                ShipmentStatus.DeliveredToCustomer => OrderResources.Delivered,
-                ShipmentStatus.ReturnedToSender => OrderResources.Returned,
-                ShipmentStatus.CancelledByCustomer => OrderResources.CancelledByCustomer,
-                ShipmentStatus.CancelledByMarketplace => OrderResources.CancelledByMarketplace,
-                ShipmentStatus.DeliveryAttemptFailed => OrderResources.DeliveryAttemptFailed,
-                _ => status.ToString()
-            };
-        }
-
         protected bool CanMoveToNextStatus()
         {
             return Order.OrderStatus switch
@@ -534,26 +534,29 @@ namespace Dashboard.Pages.Sales.Orders
                 OrderProgressStatus.Pending => true,
                 OrderProgressStatus.Confirmed => true,
                 OrderProgressStatus.Processing => true,
-                OrderProgressStatus.Shipped => Order.DeliveryDate.HasValue,
-                OrderProgressStatus.Delivered => false,
-                OrderProgressStatus.Completed => false,
-                OrderProgressStatus.Cancelled => false,
+                OrderProgressStatus.Shipped => true,
                 _ => false
             };
         }
 
+        /// <summary>
+        /// Get next status button text
+        /// </summary>
         protected string GetNextStatusButtonText()
         {
             return Order.OrderStatus switch
             {
-                OrderProgressStatus.Pending => OrderResources.ConfirmOrder,
-                OrderProgressStatus.Confirmed => OrderResources.MoveToProcessing,
-                OrderProgressStatus.Processing => OrderResources.MoveToShipping,
-                OrderProgressStatus.Shipped => OrderResources.MarkAsDelivered,
-                _ => OrderResources.NextStatus
+                OrderProgressStatus.Pending => "Confirm Order",
+                OrderProgressStatus.Confirmed => "Start Processing",
+                OrderProgressStatus.Processing => "Mark as Shipped",
+                OrderProgressStatus.Shipped => "Mark as Delivered",
+                _ => ""
             };
         }
 
+        /// <summary>
+        /// Get next status button icon
+        /// </summary>
         protected string GetNextStatusButtonIcon()
         {
             return Order.OrderStatus switch
@@ -561,110 +564,32 @@ namespace Dashboard.Pages.Sales.Orders
                 OrderProgressStatus.Pending => "fas fa-check",
                 OrderProgressStatus.Confirmed => "fas fa-cog",
                 OrderProgressStatus.Processing => "fas fa-truck",
-                OrderProgressStatus.Shipped => "fas fa-check-circle",
-                _ => "fas fa-arrow-right"
+                OrderProgressStatus.Shipped => "fas fa-box-open",
+                _ => "fas fa-check"
             };
         }
 
+        /// <summary>
+        /// Move order to next status
+        /// NOTE: This is for backward compatibility
+        /// Better approach: Let shipments drive order status
+        /// </summary>
         protected async Task MoveToNextStatusAsync()
         {
-            switch (Order.OrderStatus)
+            OrderProgressStatus? nextStatus = Order.OrderStatus switch
             {
-                case OrderProgressStatus.Pending:
-                    await ConfirmOrderAsync();
-                    break;
-                case OrderProgressStatus.Confirmed:
-                    await MoveToProcessingAsync();
-                    break;
-                case OrderProgressStatus.Processing:
-                    await MoveToShippedAsync();
-                    break;
-                case OrderProgressStatus.Shipped:
-                    await MoveToDeliveredAsync();
-                    break;
-            }
+                OrderProgressStatus.Pending => OrderProgressStatus.Confirmed,
+                OrderProgressStatus.Confirmed => OrderProgressStatus.Processing,
+                OrderProgressStatus.Processing => OrderProgressStatus.Shipped,
+                OrderProgressStatus.Shipped => OrderProgressStatus.Delivered,
+                _ => null
+            };
+
+            if (!nextStatus.HasValue) return;
+
+            await ChangeOrderStatusAsync(nextStatus.Value);
         }
 
-        // ============================================
-        // PAYMENT SUMMARY HELPERS - FINAL VERSION
-        // Only 3 payment methods: Wallet, Card, Cash
-        // ============================================
-
-        /// <summary>
-        /// Get formatted payment breakdown message
-        /// FINAL: Only shows Wallet, Card, and Cash (no Other)
-        /// </summary>
-        protected string GetPaymentBreakdownMessage()
-        {
-            var parts = new List<string>();
-
-            if (Order.WalletPaidAmount > 0)
-            {
-                parts.Add($"{OrderResources.Wallet}: {Order.WalletPaidAmount:N2} {OrderResources.Currency}");
-            }
-
-            if (Order.CardPaidAmount > 0)
-            {
-                parts.Add($"{OrderResources.Card}: {Order.CardPaidAmount:N2} {OrderResources.Currency}");
-            }
-
-            if (Order.CashPaidAmount > 0)
-            {
-                parts.Add($"{OrderResources.Cash}: {Order.CashPaidAmount:N2} {OrderResources.Currency}");
-            }
-
-            return parts.Count > 0
-                ? string.Join(" + ", parts)
-                : $"{OrderResources.Total}: {Order.TotalPaidAmount:N2} {OrderResources.Currency}";
-        }
-
-        /// <summary>
-        /// Check if order has multiple payment methods
-        /// FINAL: Only checks 3 methods
-        /// </summary>
-        protected bool HasMultiplePaymentMethods()
-        {
-            var methodCount = 0;
-
-            if (Order.WalletPaidAmount > 0) methodCount++;
-            if (Order.CardPaidAmount > 0) methodCount++;
-            if (Order.CashPaidAmount > 0) methodCount++;
-
-            return methodCount > 1;
-        }
-
-        /// <summary>
-        /// Get primary payment method name
-        /// </summary>
-        protected string GetPrimaryPaymentMethodName()
-        {
-            if (Order.WalletPaidAmount >= Order.CardPaidAmount &&
-                Order.WalletPaidAmount >= Order.CashPaidAmount)
-            {
-                return OrderResources.Wallet;
-            }
-
-            if (Order.CardPaidAmount >= Order.CashPaidAmount)
-            {
-                return OrderResources.Card;
-            }
-
-            return OrderResources.Cash;
-        }
-
-        /// <summary>
-        /// Check if order is Cash on Delivery
-        /// FINAL: Simplified logic without AllowSplitPayment
-        /// </summary>
-        protected bool IsCashOnDelivery()
-        {
-            // Order is COD if any cash amount was paid
-            return Order.CashPaidAmount > 0;
-        }
-
-        /// <summary>
-        /// Check if payment is fully completed
-        /// </summary>
         protected bool IsFullyPaid()
         {
             return Order.TotalPaidAmount >= Order.TotalAmount;
@@ -674,5 +599,68 @@ namespace Dashboard.Pages.Sales.Orders
         {
             Navigation.NavigateTo("/sales/orders");
         }
+
+        // Status badge helpers (existing methods)
+        protected string GetOrderStatusBadgeClass(OrderProgressStatus status) => status switch
+        {
+            OrderProgressStatus.Pending => "warning",
+            OrderProgressStatus.Confirmed => "info",
+            OrderProgressStatus.Processing => "primary",
+            OrderProgressStatus.Shipped => "success",
+            OrderProgressStatus.Delivered => "success",
+            OrderProgressStatus.Completed => "success",
+            OrderProgressStatus.Cancelled => "danger",
+            OrderProgressStatus.PaymentFailed => "danger",
+            _ => "secondary"
+        };
+
+        protected string GetOrderStatusText(OrderProgressStatus status) => status.ToString();
+
+        protected string GetPaymentStatusClass(PaymentStatus status) => status switch
+        {
+            PaymentStatus.Pending => "warning",
+            PaymentStatus.Processing => "info",
+            PaymentStatus.Completed => "success",
+            PaymentStatus.Failed => "danger",
+            PaymentStatus.Cancelled => "secondary",
+            PaymentStatus.Refunded => "danger",
+            PaymentStatus.PartiallyPaid => "warning",
+            _ => "secondary"
+        };
+
+        protected string GetPaymentStatusText(PaymentStatus status) => status.ToString();
+
+        protected string GetShipmentStatusBadgeClass(ShipmentStatus status)
+        {
+            var badgeClass = status switch
+            {
+                ShipmentStatus.PendingProcessing => "warning",
+                ShipmentStatus.PreparingForShipment => "info",
+                ShipmentStatus.PickedUpByCarrier => "primary",
+                ShipmentStatus.InTransitToCustomer => "primary",
+                ShipmentStatus.DeliveryAttemptFailed => "danger",
+                ShipmentStatus.DeliveredToCustomer => "success",
+                ShipmentStatus.ReturnedToSender => "warning",
+                ShipmentStatus.CancelledByCustomer => "secondary",
+                ShipmentStatus.CancelledByMarketplace => "secondary",
+                _ => "secondary"
+            };
+
+            return $"badge bg-{badgeClass}";
+        }
+
+        protected string GetShipmentStatusText(ShipmentStatus status) => status switch
+        {
+            ShipmentStatus.PendingProcessing => "Pending",
+            ShipmentStatus.PreparingForShipment => "Preparing",
+            ShipmentStatus.PickedUpByCarrier => "Picked Up",
+            ShipmentStatus.InTransitToCustomer => "In Transit",
+            ShipmentStatus.DeliveryAttemptFailed => "Delivery Failed",
+            ShipmentStatus.DeliveredToCustomer => "Delivered",
+            ShipmentStatus.ReturnedToSender => "Returned",
+            ShipmentStatus.CancelledByCustomer => "Cancelled (Customer)",
+            ShipmentStatus.CancelledByMarketplace => "Cancelled (Admin)",
+            _ => status.ToString()
+        };
     }
 }

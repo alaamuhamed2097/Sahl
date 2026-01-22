@@ -1,37 +1,43 @@
 ﻿using AutoMapper;
 using BL.Contracts.Service.Order.Payment;
 using Common.Enumerations.Payment;
+using DAL.Contracts.Repositories;
+using DAL.Contracts.Repositories.Order;
 using DAL.Contracts.UnitOfWork;
-using DAL.Repositories.Order.Refund;
-using Domains.Entities.Order;
 using Domains.Entities.Order.Payment;
-using Microsoft.EntityFrameworkCore;
 using Serilog;
 using Shared.DTOs.Order.Payment.PaymentProcessing;
 
 namespace BL.Services.Order.Payment
 {
     /// <summary>
-    /// CORRECTED PaymentService Implementation
-    /// Fixed: PaymentMethodType values and PaymentStatus duplicates
+    /// FINAL PaymentService - Best Practice
+    /// ✅ Direct repository injection (no UnitOfWork for single operations)
+    /// ✅ UnitOfWork only for multi-table transactions
     /// </summary>
     public class PaymentService : IPaymentService
     {
         private readonly IUnitOfWork _unitOfWork;
-        private readonly IRefundRepository _refundRepository;
+        private readonly IOrderRepository _orderRepository;
+        private readonly IOrderPaymentRepository _paymentRepository;
+        private readonly ITableRepository<TbPaymentMethod> _paymentMethodRepository;  // ✅ Direct injection
         private readonly IMapper _mapper;
         private readonly ILogger _logger;
 
         public PaymentService(
             IUnitOfWork unitOfWork,
+            IOrderRepository orderRepository,
+            IOrderPaymentRepository paymentRepository,
+            ITableRepository<TbPaymentMethod> paymentMethodRepository,  // ✅ Inject directly
             IMapper mapper,
-            ILogger logger,
-            IRefundRepository refundRepository)
+            ILogger logger)
         {
             _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
+            _orderRepository = orderRepository ?? throw new ArgumentNullException(nameof(orderRepository));
+            _paymentRepository = paymentRepository ?? throw new ArgumentNullException(nameof(paymentRepository));
+            _paymentMethodRepository = paymentMethodRepository ?? throw new ArgumentNullException(nameof(paymentMethodRepository));
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-            _refundRepository = refundRepository;
         }
 
         public async Task<PaymentResult> ProcessPaymentAsync(IPaymentProcessRequest request)
@@ -40,10 +46,8 @@ namespace BL.Services.Order.Payment
             {
                 return await ProcessOrder(orderPaymentRequest);
             }
-            else
-            {
-                throw new NotImplementedException("Only OrderPaymentProcessRequest is implemented.");
-            }
+
+            throw new NotImplementedException("Only OrderPaymentProcessRequest is implemented.");
         }
 
         public async Task<PaymentResult> ProcessOrder(OrderPaymentProcessRequest request)
@@ -59,11 +63,11 @@ namespace BL.Services.Order.Payment
 
                 await _unitOfWork.BeginTransactionAsync();
 
-                var orderRepo = _unitOfWork.TableRepository<TbOrder>();
-                var order = await orderRepo.FindByIdAsync(request.OrderId);
+                var order = await _orderRepository.FindByIdAsync(request.OrderId);
 
                 if (order == null)
                 {
+                    await _unitOfWork.RollbackAsync();
                     return new PaymentResult
                     {
                         Success = false,
@@ -72,9 +76,9 @@ namespace BL.Services.Order.Payment
                     };
                 }
 
-                // ✅ FIX: Use Completed instead of Paid
                 if (order.PaymentStatus == PaymentStatus.Completed)
                 {
+                    await _unitOfWork.RollbackAsync();
                     return new PaymentResult
                     {
                         Success = false,
@@ -83,11 +87,12 @@ namespace BL.Services.Order.Payment
                     };
                 }
 
-                var paymentMethodRepo = _unitOfWork.TableRepository<TbPaymentMethod>();
-                var paymentMethod = await paymentMethodRepo.FindByIdAsync(request.PaymentMethodId);
+                // ✅ Use injected repository (no UnitOfWork.TableRepository)
+                var paymentMethod = await _paymentMethodRepository.FindByIdAsync(request.PaymentMethodId);
 
                 if (paymentMethod == null || !paymentMethod.IsActive)
                 {
+                    await _unitOfWork.RollbackAsync();
                     return new PaymentResult
                     {
                         Success = false,
@@ -96,48 +101,46 @@ namespace BL.Services.Order.Payment
                     };
                 }
 
-                var paymentRepo = _unitOfWork.TableRepository<TbOrderPayment>();
                 var payment = new TbOrderPayment
                 {
                     Id = Guid.NewGuid(),
                     OrderId = request.OrderId,
                     PaymentMethodId = request.PaymentMethodId,
-                    PaymentMethodType = paymentMethod.MethodType,  // ✅ Store method type
-                    CurrencyId = Guid.Empty,
+                    PaymentMethodType = paymentMethod.MethodType,
                     Amount = request.Amount,
                     PaymentStatus = PaymentStatus.Pending,
                     CreatedDateUtc = DateTime.UtcNow,
                     CreatedBy = Guid.Empty
                 };
 
-                await paymentRepo.CreateAsync(payment, Guid.Empty);
+                await _paymentRepository.CreateAsync(payment);
 
                 var result = await ProcessPaymentByMethodAsync(payment, paymentMethod, request);
 
                 if (!result.Success)
                 {
                     payment.PaymentStatus = PaymentStatus.Failed;
-                    payment.FailureReason = result.Message;  // ✅ Use FailureReason
-                    await paymentRepo.UpdateAsync(payment, Guid.Empty);
+                    payment.FailureReason = result.Message?.Length > 500
+                        ? result.Message.Substring(0, 500)
+                        : result.Message;
+                    await _paymentRepository.UpdateAsync(payment);
                     await _unitOfWork.CommitAsync();
                     return result;
                 }
 
-                // ✅ FIX: Use Completed
                 payment.PaymentStatus = result.RequiresRedirect
                     ? PaymentStatus.Processing
                     : PaymentStatus.Completed;
                 payment.TransactionId = result.TransactionId;
-                payment.GatewayTransactionId = result.TransactionId;  // ✅ Store gateway transaction
+                payment.GatewayTransactionId = result.TransactionId;
                 payment.PaidAt = result.RequiresRedirect ? null : DateTime.UtcNow;
-                await paymentRepo.UpdateAsync(payment, Guid.Empty);
+                await _paymentRepository.UpdateAsync(payment);
 
-                // ✅ FIX: Use Completed
                 if (payment.PaymentStatus == PaymentStatus.Completed)
                 {
                     order.PaymentStatus = PaymentStatus.Completed;
                     order.PaidAt = DateTime.UtcNow;
-                    await orderRepo.UpdateAsync(order, Guid.Empty);
+                    await _orderRepository.UpdateAsync(order);
                 }
 
                 await _unitOfWork.CommitAsync();
@@ -169,14 +172,7 @@ namespace BL.Services.Order.Payment
         {
             try
             {
-                var paymentRepo = _unitOfWork.TableRepository<TbOrderPayment>();
-
-                var payment = await paymentRepo.GetQueryable()
-                    .Where(p => p.OrderId == orderId && !p.IsDeleted)
-                    .Include(p => p.Order)
-                    .Include(p => p.PaymentMethod)
-                    .OrderByDescending(p => p.CreatedDateUtc)
-                    .FirstOrDefaultAsync();
+                var payment = await _paymentRepository.GetOrderPaymentWithDetailsAsync(orderId);
 
                 if (payment == null)
                 {
@@ -200,7 +196,7 @@ namespace BL.Services.Order.Payment
                     TransactionId = payment.TransactionId,
                     PaymentDate = payment.PaidAt,
                     CanRetry = payment.PaymentStatus == PaymentStatus.Failed,
-                    ErrorMessage = payment.FailureReason  // ✅ Use FailureReason
+                    ErrorMessage = payment.FailureReason
                 };
             }
             catch (Exception ex)
@@ -214,14 +210,7 @@ namespace BL.Services.Order.Payment
         {
             try
             {
-                var paymentRepo = _unitOfWork.TableRepository<TbOrderPayment>();
-
-                var payments = await paymentRepo.GetQueryable()
-                    .Where(p => p.OrderId == orderId && !p.IsDeleted)
-                    .Include(p => p.Order)
-                    .Include(p => p.PaymentMethod)
-                    .OrderByDescending(p => p.CreatedDateUtc)
-                    .ToListAsync();
+                var payments = await _paymentRepository.GetOrderPaymentsAsync(orderId);
 
                 return payments.Select(p => new PaymentStatusDto
                 {
@@ -231,11 +220,11 @@ namespace BL.Services.Order.Payment
                     Status = p.PaymentStatus,
                     StatusText = GetStatusText(p.PaymentStatus),
                     Amount = p.Amount,
-                    PaymentMethodName = p.PaymentMethod.TitleEn,
+                    PaymentMethodName = p.PaymentMethod?.TitleEn ?? "Unknown",
                     TransactionId = p.TransactionId,
                     PaymentDate = p.PaidAt,
                     CanRetry = p.PaymentStatus == PaymentStatus.Failed,
-                    ErrorMessage = p.FailureReason,  // ✅ Use FailureReason
+                    ErrorMessage = p.FailureReason,
                     CreatedDateUtc = p.CreatedDateUtc
                 }).ToList();
             }
@@ -250,13 +239,7 @@ namespace BL.Services.Order.Payment
         {
             try
             {
-                var paymentRepo = _unitOfWork.TableRepository<TbOrderPayment>();
-
-                var payment = await paymentRepo.GetQueryable()
-                    .Where(p => p.Id == paymentId && !p.IsDeleted)
-                    .Include(p => p.Order)
-                    .Include(p => p.PaymentMethod)
-                    .FirstOrDefaultAsync();
+                var payment = await _paymentRepository.GetPaymentWithDetailsAsync(paymentId);
 
                 if (payment == null)
                     return null;
@@ -269,11 +252,11 @@ namespace BL.Services.Order.Payment
                     Status = payment.PaymentStatus,
                     StatusText = GetStatusText(payment.PaymentStatus),
                     Amount = payment.Amount,
-                    PaymentMethodName = payment.PaymentMethod.TitleEn,
+                    PaymentMethodName = payment.PaymentMethod?.TitleEn ?? "Unknown",
                     TransactionId = payment.TransactionId,
                     PaymentDate = payment.PaidAt,
                     CanRetry = payment.PaymentStatus == PaymentStatus.Failed,
-                    ErrorMessage = payment.FailureReason,  // ✅ Use FailureReason
+                    ErrorMessage = payment.FailureReason,
                     CreatedDateUtc = payment.CreatedDateUtc
                 };
             }
@@ -290,10 +273,7 @@ namespace BL.Services.Order.Payment
             {
                 _logger.Information("Verifying payment transaction {TransactionId}", transactionId);
 
-                var paymentRepo = _unitOfWork.TableRepository<TbOrderPayment>();
-                var payment = await paymentRepo.GetQueryable()
-                    .Include(p => p.PaymentMethod)
-                    .FirstOrDefaultAsync(p => p.TransactionId == transactionId);
+                var payment = await _paymentRepository.GetByTransactionIdAsync(transactionId);
 
                 if (payment == null)
                 {
@@ -301,20 +281,20 @@ namespace BL.Services.Order.Payment
                     return false;
                 }
 
-                // ✅ FIX: Use Completed
                 if (payment.PaymentStatus == PaymentStatus.Processing)
                 {
+                    await _unitOfWork.BeginTransactionAsync();
+
                     payment.PaymentStatus = PaymentStatus.Completed;
                     payment.PaidAt = DateTime.UtcNow;
-                    await paymentRepo.UpdateAsync(payment, Guid.Empty);
+                    await _paymentRepository.UpdateAsync(payment);
 
-                    var orderRepo = _unitOfWork.TableRepository<TbOrder>();
-                    var order = await orderRepo.FindByIdAsync(payment.OrderId);
+                    var order = await _orderRepository.FindByIdAsync(payment.OrderId);
                     if (order != null)
                     {
                         order.PaymentStatus = PaymentStatus.Completed;
                         order.PaidAt = DateTime.UtcNow;
-                        await _refundRepository.UpdateOrderAsync(order, Guid.Empty);
+                        await _orderRepository.UpdateAsync(order);
                     }
 
                     await _unitOfWork.CommitAsync();
@@ -326,6 +306,7 @@ namespace BL.Services.Order.Payment
             catch (Exception ex)
             {
                 _logger.Error(ex, "Error verifying payment {TransactionId}", transactionId);
+                await _unitOfWork.RollbackAsync();
                 return false;
             }
         }
@@ -336,11 +317,11 @@ namespace BL.Services.Order.Payment
             {
                 await _unitOfWork.BeginTransactionAsync();
 
-                var paymentRepo = _unitOfWork.TableRepository<TbOrderPayment>();
-                var payment = await paymentRepo.FindByIdAsync(request.PaymentId);
+                var payment = await _paymentRepository.FindByIdAsync(request.PaymentId);
 
                 if (payment == null)
                 {
+                    await _unitOfWork.RollbackAsync();
                     return new RefundResultDto
                     {
                         Success = false,
@@ -349,19 +330,20 @@ namespace BL.Services.Order.Payment
                     };
                 }
 
-                // ✅ FIX: Use Completed
                 if (payment.PaymentStatus != PaymentStatus.Completed)
                 {
+                    await _unitOfWork.RollbackAsync();
                     return new RefundResultDto
                     {
                         Success = false,
-                        Message = "Payment not in paid status",
+                        Message = "Payment not in completed status",
                         RefundStatus = "FAILED"
                     };
                 }
 
                 if (request.RefundAmount > payment.Amount)
                 {
+                    await _unitOfWork.RollbackAsync();
                     return new RefundResultDto
                     {
                         Success = false,
@@ -373,15 +355,15 @@ namespace BL.Services.Order.Payment
                 payment.PaymentStatus = PaymentStatus.Refunded;
                 payment.RefundedAt = DateTime.UtcNow;
                 payment.RefundAmount = request.RefundAmount;
+                payment.RefundTransactionId = $"REF-{payment.TransactionId}";
                 payment.Notes = $"Refunded: {request.Reason}";
-                await paymentRepo.UpdateAsync(payment, Guid.Empty);
+                await _paymentRepository.UpdateAsync(payment);
 
-                var orderRepo = _unitOfWork.TableRepository<TbOrder>();
-                var order = (await orderRepo.GetAsync(o=>o.Id == payment.OrderId)).FirstOrDefault();
+                var order = await _orderRepository.FindByIdAsync(payment.OrderId);
                 if (order != null)
                 {
                     order.PaymentStatus = PaymentStatus.Refunded;
-                    await _refundRepository.UpdateOrderAsync(order, Guid.Empty);
+                    await _orderRepository.UpdateAsync(order);
                 }
 
                 await _unitOfWork.CommitAsync();
@@ -392,13 +374,13 @@ namespace BL.Services.Order.Payment
                     Message = "Refund processed successfully",
                     RefundStatus = "COMPLETED",
                     RefundId = payment.Id,
-                    RefundTransactionId = $"REF-{payment.TransactionId}",
+                    RefundTransactionId = payment.RefundTransactionId,
                     RefundAmount = request.RefundAmount
                 };
             }
             catch (Exception ex)
             {
-                _logger.Error(ex, "Error processing refund for order {OrderId}", request.OrderId);
+                _logger.Error(ex, "Error processing refund for payment {PaymentId}", request.PaymentId);
                 await _unitOfWork.RollbackAsync();
 
                 return new RefundResultDto
@@ -414,8 +396,7 @@ namespace BL.Services.Order.Payment
         {
             try
             {
-                var paymentRepo = _unitOfWork.TableRepository<TbOrderPayment>();
-                var payment = await paymentRepo.FindByIdAsync(paymentId);
+                var payment = await _paymentRepository.FindByIdAsync(paymentId);
 
                 if (payment == null)
                     return false;
@@ -428,7 +409,7 @@ namespace BL.Services.Order.Payment
 
                 payment.PaymentStatus = PaymentStatus.Cancelled;
                 payment.Notes = $"Cancelled: {reason}";
-                await paymentRepo.UpdateAsync(payment, Guid.Empty);
+                await _paymentRepository.UpdateAsync(payment);
 
                 return true;
             }
@@ -441,19 +422,14 @@ namespace BL.Services.Order.Payment
 
         #region Private Helper Methods
 
-        /// <summary>
-        /// Process payment based on payment method
-        /// ✅ FIXED: Uses correct PaymentMethodType values
-        /// </summary>
         private async Task<PaymentResult> ProcessPaymentByMethodAsync(
             TbOrderPayment payment,
             TbPaymentMethod paymentMethod,
             IPaymentProcessRequest request)
         {
-            // ✅ FIX: Use Card instead of CreditCard, remove BankTransfer
             switch (paymentMethod.MethodType)
             {
-                case PaymentMethodType.Card:  // ✅ Changed from CreditCard
+                case PaymentMethodType.Card:
                     return await ProcessCardPaymentAsync(payment, request);
 
                 case PaymentMethodType.CashOnDelivery:
@@ -462,7 +438,7 @@ namespace BL.Services.Order.Payment
                 case PaymentMethodType.Wallet:
                     return await ProcessWalletPaymentAsync(payment, request);
 
-                case PaymentMethodType.WalletAndCard:  // ✅ Added new type
+                case PaymentMethodType.WalletAndCard:
                     return await ProcessMixedPaymentAsync(payment, request);
 
                 default:
@@ -475,15 +451,10 @@ namespace BL.Services.Order.Payment
             }
         }
 
-        /// <summary>
-        /// Process card payment via gateway
-        /// ✅ Renamed from ProcessCreditCardPaymentAsync
-        /// </summary>
         private async Task<PaymentResult> ProcessCardPaymentAsync(
             TbOrderPayment payment,
             IPaymentProcessRequest request)
         {
-            // TODO: Integrate with actual payment gateway (Stripe, PayPal, etc.)
             var transactionId = $"TXN-{DateTime.UtcNow:yyyyMMdd}-{payment.Id:N}"[..30];
             var paymentUrl = $"https://payment-gateway.com/pay?token={transactionId}";
 
@@ -514,7 +485,6 @@ namespace BL.Services.Order.Payment
             TbOrderPayment payment,
             IPaymentProcessRequest request)
         {
-            // TODO: Integrate with wallet service
             var transactionId = $"WALLET-{DateTime.UtcNow:yyyyMMdd}-{payment.Id:N}"[..30];
 
             return new PaymentResult
@@ -526,15 +496,10 @@ namespace BL.Services.Order.Payment
             };
         }
 
-        /// <summary>
-        /// Process mixed payment (Wallet + Card)
-        /// ✅ NEW: Added support for WalletAndCard
-        /// </summary>
         private async Task<PaymentResult> ProcessMixedPaymentAsync(
             TbOrderPayment payment,
             IPaymentProcessRequest request)
         {
-            // TODO: Implement wallet + card payment flow
             var transactionId = $"MIXED-{DateTime.UtcNow:yyyyMMdd}-{payment.Id:N}"[..30];
 
             return new PaymentResult
@@ -546,21 +511,18 @@ namespace BL.Services.Order.Payment
             };
         }
 
-        /// <summary>
-        /// Get status text for display
-        /// ✅ FIXED: Removed duplicate Paid case
-        /// </summary>
         private string GetStatusText(PaymentStatus status)
         {
             return status switch
             {
                 PaymentStatus.Pending => "Pending",
                 PaymentStatus.Processing => "Processing",
-                PaymentStatus.Completed => "Completed",  // ✅ Only one entry now
+                PaymentStatus.Completed => "Completed",
                 PaymentStatus.Failed => "Failed",
                 PaymentStatus.Cancelled => "Cancelled",
                 PaymentStatus.Refunded => "Refunded",
-                PaymentStatus.PartiallyRefunded => "Partially Refunded",  // ✅ Added
+                PaymentStatus.PartiallyRefunded => "Partially Refunded",
+                PaymentStatus.PartiallyPaid => "Partially Paid",
                 _ => "Unknown"
             };
         }

@@ -24,6 +24,8 @@ namespace Api.Extensions.Services
             services.AddScoped<ICustomerAddressService, CustomerAddressService>();
             services.AddScoped<IVendorWarehouseService, VendorWarehouseService>();
             services.AddScoped<IAdminOrderService, AdminOrderService>();
+            services.AddScoped<ICustomerOrderService, CustomerOrderService>();
+            services.AddScoped<IVendorOrderService, VendorOrderService>();
             services.AddScoped<ICustomerAddressService, CustomerAddressService>();
 
             services.AddScoped<IWishlistService, WishlistService>();
