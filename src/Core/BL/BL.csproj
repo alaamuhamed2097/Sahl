@@ -35,7 +35,6 @@
 
 	<ItemGroup>
 	  <Folder Include="Mapper\Wallet\Vendor\" />
-	  <Folder Include="Services\CouponCode\" />
 	  <Folder Include="Tests\UserManagement\" />
 	</ItemGroup>
 

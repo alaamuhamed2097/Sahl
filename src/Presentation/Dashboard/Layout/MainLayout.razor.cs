@@ -81,7 +81,7 @@ namespace Dashboard.Layout
             ResourceManager.ChangeLanguage();
             var languageCode = ResourceManager.GetCultureName(ResourceManager.CurrentLanguage);
             await JSRuntime.InvokeVoidAsync("localization.setLanguage", languageCode);
-            Navigation.NavigateTo(Navigation.Uri, forceLoad: true);
+            Navigation.NavigateTo(Navigation.Uri, forceLoad: false);
         }
 
         // Handler for notification received event

@@ -3,6 +3,7 @@ using Common.Enumerations.Payment;
 using Common.Enumerations.Shipping;
 using Dashboard.Configuration;
 using Dashboard.Contracts.Order;
+using Dashboard.Pages.Base;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Options;
 using Microsoft.JSInterop;
@@ -19,7 +20,7 @@ namespace Dashboard.Pages.Sales.Orders
     /// ✅ Action buttons instead of dropdown
     /// ✅ Proper business rules
     /// </summary>
-    public partial class Details : ComponentBase
+    public partial class Details : LocalizedComponentBase
     {
         // ============================================
         // PROPERTIES
