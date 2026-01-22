@@ -52,8 +52,6 @@ public class OrderPaymentProcessor : IOrderPaymentProcessor
     {
         try
         {
-            var baseCurrency = await _currencyService.GetBaseCurrencyAsync();
-            
             // Get COD payment method ID by type
             var codPaymentMethod = await _paymentMethodService.GetPaymentMethodByTypeAsync(
                 PaymentMethodType.CashOnDelivery);
@@ -74,7 +72,6 @@ public class OrderPaymentProcessor : IOrderPaymentProcessor
                 Amount = amount,
                 PaymentStatus = PaymentStatus.Pending,
                 TransactionId = $"COD-{DateTime.UtcNow:yyyyMMdd}-{Guid.NewGuid():N}"[..30],
-                CurrencyId = baseCurrency.Id,
                 CreatedDateUtc = DateTime.UtcNow,
                 CreatedBy = Guid.Empty,
                 IsDeleted = false,
@@ -105,8 +102,6 @@ public class OrderPaymentProcessor : IOrderPaymentProcessor
     {
         try
         {
-            var baseCurrency = await _currencyService.GetBaseCurrencyAsync();
-            
             // Get wallet payment method ID by type
             var walletPaymentMethod = await _paymentMethodService.GetPaymentMethodByTypeAsync(
                 PaymentMethodType.Wallet);
@@ -148,7 +143,6 @@ public class OrderPaymentProcessor : IOrderPaymentProcessor
                 PaymentStatus = PaymentStatus.Completed,
                 TransactionId = $"WALLET-{DateTime.UtcNow:yyyyMMdd}-{Guid.NewGuid():N}"[..30],
                 PaidAt = DateTime.UtcNow,
-                CurrencyId = baseCurrency.Id,
                 CreatedDateUtc = DateTime.UtcNow,
                 CreatedBy = Guid.Empty,
                 IsDeleted = false
@@ -184,8 +178,6 @@ public class OrderPaymentProcessor : IOrderPaymentProcessor
     {
         try
         {
-            var baseCurrency = await _currencyService.GetBaseCurrencyAsync();
-            
             // Get payment method ID by type
             var cardPaymentMethod = await _paymentMethodService.GetPaymentMethodByTypeAsync(
                 PaymentMethodType.Card);
@@ -205,7 +197,6 @@ public class OrderPaymentProcessor : IOrderPaymentProcessor
                 PaymentMethodType = PaymentMethodType.Card,
                 Amount = amount,
                 PaymentStatus = PaymentStatus.Pending,
-                CurrencyId = baseCurrency.Id,
                 CreatedDateUtc = DateTime.UtcNow,
                 CreatedBy = Guid.Empty,
                 IsDeleted = false
@@ -283,8 +274,6 @@ public class OrderPaymentProcessor : IOrderPaymentProcessor
     {
         try
         {
-            var baseCurrency = await _currencyService.GetBaseCurrencyAsync();
-            
             // Get wallet and card payment methods
             var walletPaymentMethod = await _paymentMethodService.GetPaymentMethodByTypeAsync(
                 PaymentMethodType.Wallet);
@@ -343,7 +332,6 @@ public class OrderPaymentProcessor : IOrderPaymentProcessor
                 PaymentStatus = PaymentStatus.Completed,
                 TransactionId = $"WALLET-{DateTime.UtcNow:yyyyMMdd}-{Guid.NewGuid():N}"[..30],
                 PaidAt = DateTime.UtcNow,
-                CurrencyId = baseCurrency.Id,
                 CreatedDateUtc = DateTime.UtcNow,
                 CreatedBy = Guid.Empty,
                 IsDeleted = false
@@ -374,7 +362,6 @@ public class OrderPaymentProcessor : IOrderPaymentProcessor
                 PaymentMethodType = PaymentMethodType.Card,
                 Amount = cardAmount,
                 PaymentStatus = PaymentStatus.Pending,
-                CurrencyId = baseCurrency.Id,
                 CreatedDateUtc = DateTime.UtcNow,
                 CreatedBy = Guid.Empty,
                 IsDeleted = false

@@ -32,16 +32,10 @@ namespace DAL.Configurations
                 .HasForeignKey(x => x.PaymentMethodId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            builder.HasOne(x => x.Currency)
-                .WithMany()
-                .HasForeignKey(x => x.CurrencyId)
-                .OnDelete(DeleteBehavior.Restrict);
-
             // Indexes
             builder.HasIndex(e => e.OrderId).HasDatabaseName("IX_OrderPayments_OrderId");
             builder.HasIndex(e => e.PaymentStatus).HasDatabaseName("IX_OrderPayments_Status");
             builder.HasIndex(e => e.PaymentMethodId).HasDatabaseName("IX_OrderPayments_PaymentMethodId");
-            builder.HasIndex(e => e.CurrencyId).HasDatabaseName("IX_OrderPayments_CurrencyId");
         }
     }
 }

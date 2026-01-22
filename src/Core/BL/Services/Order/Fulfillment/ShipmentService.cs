@@ -193,17 +193,16 @@ public class ShipmentService : IShipmentService
             // ==================== FIX ROUNDING ERRORS ====================
             await AdjustShipmentTotalsForRoundingAsync(order, createdShipments);
 
-            // ==================== UPDATE ORDER SHIPPING AMOUNT ====================
-            order.ShippingAmount = createdShipments.Sum(s => s.ShippingCost);
-
-            var orderRepo = _unitOfWork.TableRepository<TbOrder>();
-            await orderRepo.UpdateAsync(order, Guid.Empty);
+            // ==================== CALCULATE SHIPPING AMOUNT ====================
+            // ⚠️ NOTE: Don't update order here! It's already being tracked in the transaction.
+            // The caller (OrderCreationService) will update the order with shipping amount.
+            var totalShippingAmount = createdShipments.Sum(s => s.ShippingCost);
 
             _logger.Information(
                 "Successfully split order {OrderId} into {Count} shipments | Total Shipping: {ShippingAmount}",
                 orderId,
                 createdShipments.Count,
-                order.ShippingAmount
+                totalShippingAmount
             );
 
             return _mapper.Map<List<ShipmentDto>>(createdShipments);
