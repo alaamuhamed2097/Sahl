@@ -378,13 +378,14 @@ namespace Dashboard.Constants
             public const string Get = "api/v1/Warehouse";
             public const string GetActive = "api/v1/Warehouse/active";
             public const string Search = "api/v1/Warehouse/search";
+            public const string market = "api/v1/Warehouse/market";
             public const string SearchVendor = "api/v1/Warehouse/search-vendor";
             public const string withUsers = "api/v1/Warehouse/vendors-select";
             public const string Save = "api/v1/Warehouse/save";
             public const string Delete = "api/v1/Warehouse/delete";
             public const string ToggleStatus = "api/v1/Warehouse/toggle-status";
             public const string GetVendors = "api/v1/Warehouse/vendors";
-            public const string IsMultiVendorEnabled = "api/v1/Warehouse/multi-vendor-enabled";
+            public const string IsMultiVendorEnabled = "api/v1/development-settings/multi-vendor-enabled";
         }
 
         // Vendor Warehouse endpoints

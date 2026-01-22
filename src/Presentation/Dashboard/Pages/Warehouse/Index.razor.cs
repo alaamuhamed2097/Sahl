@@ -15,7 +15,7 @@ namespace Dashboard.Pages.Warehouse
 
 		// Tab management
 		private string activeTab = "platform";
-		private bool isMultiVendorEnabled = true;
+		private bool isMultiVendorEnabled = false;
 		private bool isLoading = false;
 
 		// Sorting properties
@@ -143,11 +143,11 @@ namespace Dashboard.Pages.Warehouse
 				isLoading = true;
 				StateHasChanged();
 
-				var result = await WarehouseService.SearchAsync(platformSearchModel);
+				var result = await WarehouseService.GetMarketWarehouse();
 
-				if (result.Success && result.Data != null && result.Data.Items != null && result.Data.Items.Any())
+				if (result.Email != null )
 				{
-					platformWarehouse = result.Data.Items.FirstOrDefault();
+					platformWarehouse = result;
 					
 				}
 				else

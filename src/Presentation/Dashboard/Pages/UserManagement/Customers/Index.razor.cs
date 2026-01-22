@@ -51,25 +51,6 @@ namespace Dashboard.Pages.UserManagement.Customers
                 return result;
             }
         }
-		//protected virtual async Task SortByColumn(string columnName)
-		//{
-		//	if (searchModel.SortBy == columnName)
-		//	{
-		//		// Toggle sort direction if same column
-		//		searchModel.SortDirection = searchModel.SortDirection == "asc" ? "desc" : "asc";
-		//	}
-		//	else
-		//	{
-		//		// New column, default to ascending
-		//		searchModel.SortBy = columnName;
-		//		searchModel.SortDirection = "asc";
-		//	}
-
-		//	// Reset to first page when sorting changes
-		//	currentPage = 1;
-		//	searchModel.PageNumber = 1;
-		//	await Search();
-		//}
 		protected override async Task<string> GetItemId(CustomerDto item)
         {
             var result = await _custumerService.GetByIdAsync(item.Id);
