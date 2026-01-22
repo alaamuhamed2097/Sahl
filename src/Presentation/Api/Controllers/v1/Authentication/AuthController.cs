@@ -19,15 +19,19 @@ namespace Api.Controllers.v1.Authentication
     {
         private readonly IUserAuthenticationService _authenticationService;
         private readonly IOAuthService _oauthService;
+        private readonly IUserTokenService _tokenService;
         private readonly Serilog.ILogger _logger;
 
         public AuthController(
             IUserAuthenticationService authenticationService,
             IOAuthService oauthService,
+            IUserTokenService userTokenService,
             Serilog.ILogger logger)
         {
             _authenticationService = authenticationService;
+            _tokenService = userTokenService;
             _oauthService = oauthService;
+            _logger = logger;
         }
 
         [HttpPost("login")]
@@ -343,6 +347,99 @@ namespace Api.Controllers.v1.Authentication
                 {
                     Success = false,
                     Message = NotifiAndAlertsResources.SomethingWentWrong
+                });
+            }
+        }
+
+        // أضف هذا الـ endpoint في AuthController.cs
+
+        [HttpPost("refresh")]
+        [ProducesResponseType(typeof(ResponseModel<RefreshTokenResponseDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ResponseModel<string>), StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> RefreshToken([FromBody] RefreshTokenRequestDto request)
+        {
+            if (!ModelState.IsValid ||
+                string.IsNullOrEmpty(request.Email) ||
+                string.IsNullOrEmpty(request.RefreshToken))
+            {
+                return Ok(new ResponseModel<RefreshTokenResponseDto>
+                {
+                    Success = false,
+                    Message = "Email and refresh token are required"
+                });
+            }
+
+            try
+            {
+                var clientType = Request.Headers.ContainsKey("X-Platform")
+                    ? Request.Headers["X-Platform"].ToString().ToLower()
+                    : "website";
+
+                // Validate the refresh token
+                var validationResult = await _tokenService.ValidateRefreshTokenAsync(
+                    new RefreshTokenRequestDto
+                    {
+                        Email = request.Email,
+                        RefreshToken = request.RefreshToken
+                    },
+                    clientType
+                );
+
+                if (!validationResult.Success)
+                {
+                    return Ok(new ResponseModel<RefreshTokenResponseDto>
+                    {
+                        Success = false,
+                        Message = validationResult.Message ?? "Invalid or expired refresh token"
+                    });
+                }
+
+                // Generate new access token
+                var newAccessToken = await _tokenService.GenerateJwtTokenAsync(
+                    validationResult.UserId,
+                    validationResult.UserRoles
+                );
+
+                if (!newAccessToken.Success)
+                {
+                    return Ok(new ResponseModel<RefreshTokenResponseDto>
+                    {
+                        Success = false,
+                        Message = "Failed to generate new access token"
+                    });
+                }
+
+                // Generate new refresh token (optional - for token rotation)
+                var regenerateResult = await _tokenService.RegenerateRefreshTokenAsync(
+                    new RefreshTokenRequestDto
+                    {
+                        Email = request.Email,
+                        RefreshToken = request.RefreshToken
+                    },
+                    clientType
+                );
+
+                var response = new ResponseModel<RefreshTokenResponseDto>
+                {
+                    Data = new RefreshTokenResponseDto
+                    {
+                        AccessToken = newAccessToken.Token,
+                        RefreshToken = regenerateResult.Success
+                            ? regenerateResult.RefreshToken
+                            : request.RefreshToken // Use old one if regeneration fails
+                    }
+                };
+
+                response.SetSuccessMessage("Token refreshed successfully");
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex, "Token refresh error");
+                return Ok(new ResponseModel<RefreshTokenResponseDto>
+                {
+                    Success = false,
+                    Message = "An error occurred while refreshing token"
                 });
             }
         }

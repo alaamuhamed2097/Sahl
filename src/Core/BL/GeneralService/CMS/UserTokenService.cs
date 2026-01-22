@@ -163,7 +163,7 @@ public class UserTokenService : IUserTokenService
         return refreshToken;
     }
 
-    public async Task<ValidateRefreshTokenResult> ValidateRefreshTokenAsync(RefreshTokenDto refreshTokenDto, string clientType)
+    public async Task<ValidateRefreshTokenResult> ValidateRefreshTokenAsync(RefreshTokenRequestDto refreshTokenDto, string clientType)
     {
         // Retrieve the user based on their email
         var user = await _userManager.FindByEmailAsync(refreshTokenDto.Email);
@@ -212,7 +212,7 @@ public class UserTokenService : IUserTokenService
     }
 
     // Regenerate Refresh Token (using the old one)
-    public async Task<RegenerateRefreshTokenResult> RegenerateRefreshTokenAsync(RefreshTokenDto refreshTokenDto, string clientType)
+    public async Task<RegenerateRefreshTokenResult> RegenerateRefreshTokenAsync(RefreshTokenRequestDto refreshTokenDto, string clientType)
     {
         // Validate the old refresh token
         var validationResult = await ValidateRefreshTokenAsync(refreshTokenDto, clientType);
