@@ -19,12 +19,12 @@ namespace Dashboard.Services.CMS
     public class CookieAuthenticationService : IAuthenticationService
     {
         private readonly IApiService _apiService;
-        private readonly CookieAuthenticationStateProvider _authStateProvider;
+        private readonly TokenAuthenticationStateProvider _authStateProvider;
         private readonly IJSRuntime _jsRuntime;
 
         public CookieAuthenticationService(
             IApiService apiService,
-            CookieAuthenticationStateProvider authStateProvider,
+            TokenAuthenticationStateProvider authStateProvider,
             IJSRuntime jsRuntime)
         {
             _apiService = apiService;

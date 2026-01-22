@@ -27,7 +27,7 @@ namespace Dashboard.Layout
         [Inject] protected IJSRuntime JSRuntime { get; set; } = null!;
         [Inject] protected LanguageService LanguageService { get; set; } = null!;
         [Inject] protected IOptions<ApiSettings> ApiOptions { get; set; } = default!;
-        [Inject] protected CookieAuthenticationStateProvider CookieAuthenticationStateProvider { get; set; } = null!;
+        [Inject] protected TokenAuthenticationStateProvider TokenAuthenticationStateProvider { get; set; } = null!;
         [Inject] protected ISettingService SettingService { get; set; } = null!;
 
         protected override async Task OnInitializedAsync()
@@ -60,7 +60,7 @@ namespace Dashboard.Layout
 
         protected async Task LogOut()
         {
-            await CookieAuthenticationStateProvider.MarkUserAsLoggedOut();
+            await TokenAuthenticationStateProvider.MarkUserAsLoggedOut();
             Navigation.NavigateTo("/login", true);
         }
 

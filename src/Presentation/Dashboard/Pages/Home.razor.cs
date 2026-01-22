@@ -12,12 +12,12 @@ namespace Dashboard.Pages
 
         [Inject] protected NavigationManager Navigation { get; set; } = null!;
         [Inject] protected IJSRuntime JS { get; set; } = null!;
-        [Inject] protected CookieAuthenticationStateProvider CookieAuthenticationStateProvider { get; set; } = null!;
+        [Inject] protected TokenAuthenticationStateProvider TokenAuthenticationStateProvider { get; set; } = null!;
 
         protected override async Task OnInitializedAsync()
         {
             // Simulate initial loading with a minimal delay for optimal UX
-            await Task.Delay(300);
+            //await Task.Delay(300);
             isInitialLoading = false;
             await base.OnInitializedAsync();
         }
@@ -45,7 +45,7 @@ namespace Dashboard.Pages
 
         protected async Task LogOut()
         {
-            await CookieAuthenticationStateProvider.MarkUserAsLoggedOut();
+            await TokenAuthenticationStateProvider.MarkUserAsLoggedOut();
             Navigation.NavigateTo("/login", true);
         }
     }
