@@ -3,6 +3,7 @@
 @using Microsoft.AspNetCore.Authorization
 @using Resources
 @using Shared.DTOs.Setting
+@inherits LocalizedComponentBase
 @attribute [Authorize(Roles = nameof(UserRole.Admin))]
 
 <PageTitle>@GeneralResources.SystemSettings</PageTitle>

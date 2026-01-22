@@ -1,4 +1,5 @@
 ﻿using Dashboard.Contracts.Customer;
+using Dashboard.Pages.Base;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 using Resources;
@@ -6,8 +7,8 @@ using Shared.DTOs.User.Customer;
 
 namespace Dashboard.Pages.UserManagement.Customers
 {
-	public partial class Edit
-	{
+	public partial class Edit : LocalizedComponentBase
+    {
 		[Parameter] public Guid Id { get; set; }
 
 		protected CustomerUpdateByAdminDto Model { get; set; } = new();

@@ -1,16 +1,14 @@
 using Common.Enumerations.Order;
-using Common.Enumerations.Payment;
 using Common.Filters;
 using Dashboard.Constants;
 using Dashboard.Contracts.Order;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 using Resources;
-using Shared.DTOs.Order.OrderProcessing;
 using Shared.DTOs.Order.Payment.Refund;
 using Shared.GeneralModels;
 
-namespace Dashboard.Pages.Sales.Orders.Refunds
+namespace Dashboard.Pages.Orders.Orders.Refunds
 {
     public partial class Index : BaseListPage<RefundRequestDto>
     {
@@ -131,7 +129,7 @@ namespace Dashboard.Pages.Sales.Orders.Refunds
             {
                 if (int.TryParse(e.Value.ToString(), out int statusValue))
                 {
-                    searchModel.Status = statusValue == 0 ? null : (RefundStatus) statusValue;
+                    searchModel.Status = statusValue == 0 ? null : (RefundStatus)statusValue;
                     currentPage = 1;
                     searchModel.PageNumber = 1;
                     await Search();

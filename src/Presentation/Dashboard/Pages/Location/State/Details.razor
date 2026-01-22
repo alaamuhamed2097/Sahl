@@ -1,6 +1,7 @@
 ﻿@page "/state"
 @page "/state/{Id:guid}"
 @using Common.Enumerations.User
+@inherits LocalizedComponentBase
 @attribute [Authorize(Roles = nameof(UserRole.Admin))]
 
 <PageTitle>@GeneralResources.States</PageTitle>

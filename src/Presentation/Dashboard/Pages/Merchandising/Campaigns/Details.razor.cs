@@ -1,17 +1,17 @@
 using Common.Enumerations.User;
 using Dashboard.Contracts.Campaign;
 using Dashboard.Contracts.Notification;
+using Dashboard.Pages.Base;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
-using Resources;
 using Shared.DTOs.Campaign;
 using Shared.GeneralModels;
 
 namespace Dashboard.Pages.Merchandising.Campaigns
 {
     [Authorize(Roles = nameof(UserRole.Admin))]
-    public partial class Details
+    public partial class Details : LocalizedComponentBase
     {
         private bool IsLoading { get; set; }
         private bool IsSaving { get; set; }
@@ -144,7 +144,7 @@ namespace Dashboard.Pages.Merchandising.Campaigns
                         BadgeColor = Model.BadgeColor
                     };
 
-                    response = await CampaignService.UpdateCampaignAsync( updateDto);
+                    response = await CampaignService.UpdateCampaignAsync(updateDto);
                     if (response.Success)
                     {
                         await NotificationService.ShowSuccessAsync("Campaign updated successfully!");

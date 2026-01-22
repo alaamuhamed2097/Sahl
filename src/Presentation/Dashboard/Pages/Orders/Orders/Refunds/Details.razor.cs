@@ -1,21 +1,17 @@
 using Common.Enumerations.Order;
 using Dashboard.Configuration;
-using Dashboard.Contracts;
 using Dashboard.Contracts.General;
 using Dashboard.Contracts.Order;
+using Dashboard.Pages.Base;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Options;
 using Microsoft.JSInterop;
 using Resources;
-using Resources.Enumerations;
-using Shared.DTOs.ECommerce;
-using Shared.DTOs.Location;
 using Shared.DTOs.Order.Payment.Refund;
-using Shared.ResultModels.Refund;
 
-namespace Dashboard.Pages.Sales.Orders.Refunds
+namespace Dashboard.Pages.Orders.Orders.Refunds
 {
-    public partial class Details
+    public partial class Details : LocalizedComponentBase
     {
         protected string baseUrl = string.Empty;
         private bool isSaving { get; set; }
@@ -135,7 +131,7 @@ namespace Dashboard.Pages.Sales.Orders.Refunds
         {
             return reason switch
             {
-                RefundReason.DefectiveProduct =>OrderResources.DefectiveProduct,
+                RefundReason.DefectiveProduct => OrderResources.DefectiveProduct,
                 RefundReason.WrongItemShipped => OrderResources.WrongItemShipped,
                 RefundReason.ItemNotAsDescribed => OrderResources.ItemNotAsDescribed,
                 RefundReason.DamagedDuringShipping => OrderResources.DamagedDuringShipping,
@@ -319,7 +315,7 @@ namespace Dashboard.Pages.Sales.Orders.Refunds
                     return;
                 }
 
-                if(ApprovedItemsCountInput <= 0)
+                if (ApprovedItemsCountInput <= 0)
                 {
                     await JSRuntime.InvokeVoidAsync("swal",
                         ValidationResources.Failed,

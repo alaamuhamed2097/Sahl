@@ -1,6 +1,7 @@
 ﻿@page "/users/administrators/edit/{id:guid}"
 
 @using Common.Enumerations.User
+@inherits LocalizedComponentBase
 @attribute [Authorize(Roles = nameof(UserRole.Admin))]
 
 <div class="container-fluid p-0">

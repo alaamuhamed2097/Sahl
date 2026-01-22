@@ -3,6 +3,7 @@
 @using Common.Enumerations.User
 @using Common.Enumerations.VendorType
 @using Common.Enumerations.IdentificationType
+@inherits LocalizedComponentBase
 @attribute [Authorize(Roles = nameof(UserRole.Admin))]
 
 <PageTitle>@ECommerceResources.Vendor</PageTitle>

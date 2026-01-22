@@ -1,5 +1,6 @@
 @page "/users/customer/details/{id:guid}"
 
+@inherits LocalizedComponentBase
 @attribute [Authorize(Roles = nameof(UserRole.Admin))]
 @using Common.Enumerations.User
 @using Shared.DTOs.Customer

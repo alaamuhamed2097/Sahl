@@ -2,6 +2,7 @@
 using Dashboard.Configuration;
 using Dashboard.Contracts.General;
 using Dashboard.Contracts.WithdrawalMethod;
+using Dashboard.Pages.Base;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.Extensions.Options;
@@ -12,7 +13,7 @@ using Shared.DTOs.WithdrawelMethod;
 
 namespace Dashboard.Pages.WithdrawalMethod
 {
-    public partial class Details
+    public partial class Details : LocalizedComponentBase
     {
         private bool isSaving { get; set; }
         protected string baseUrl = string.Empty;

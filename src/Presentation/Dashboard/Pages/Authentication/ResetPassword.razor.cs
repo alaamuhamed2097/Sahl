@@ -1,4 +1,5 @@
 using Dashboard.Contracts.CMS;
+using Dashboard.Pages.Base;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 using Resources;
@@ -9,7 +10,7 @@ using System.Diagnostics.CodeAnalysis;
 namespace Dashboard.Pages.Authentication
 {
     [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)]
-    public partial class ResetPassword : ComponentBase
+    public partial class ResetPassword : LocalizedComponentBase
     {
         private readonly ResetPasswordWithCodeDto _model = new();
         private string _errorMessage = string.Empty;

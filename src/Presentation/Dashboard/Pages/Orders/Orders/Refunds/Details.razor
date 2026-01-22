@@ -1,13 +1,14 @@
 @page "/sales/refunds/{id:guid?}"
 @page "/refunds/{id:guid?}"
 
-@attribute [Authorize(Roles = nameof(UserRole.Admin))]
 @using Common.Enumerations
 @using Common.Enumerations.FieldType
 @using Common.Enumerations.Order
 @using Common.Enumerations.Payment
 @using Common.Enumerations.User
 @using Shared.DTOs.User
+@inherits LocalizedComponentBase
+@attribute [Authorize(Roles = nameof(UserRole.Admin))]
 
 <PageTitle>@OrderResources.RefundDetails</PageTitle>
 

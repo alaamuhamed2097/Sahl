@@ -1,6 +1,7 @@
 @page "/users/administrators/create"
 
 @using Common.Enumerations.User
+@inherits LocalizedComponentBase
 @attribute [Authorize(Roles = nameof(UserRole.Admin))]
 
 <PageTitle>@UserResources.AddAdmin</PageTitle>

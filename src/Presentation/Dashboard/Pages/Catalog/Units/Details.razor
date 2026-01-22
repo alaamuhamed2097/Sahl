@@ -3,6 +3,7 @@
 
 @using Common.Enumerations.User
 @using Shared.DTOs.Catalog.Unit
+@inherits LocalizedComponentBase
 @attribute [Authorize(Roles = nameof(UserRole.Admin))]
 
 <PageTitle>@ECommerceResources.Units</PageTitle>

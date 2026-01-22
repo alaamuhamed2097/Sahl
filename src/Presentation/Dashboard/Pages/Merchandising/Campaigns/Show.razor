@@ -7,8 +7,8 @@
 @using Shared.GeneralModels
 @using Resources
 
+@inherits LocalizedComponentBase
 @attribute [Authorize(Roles = nameof(UserRole.Admin))]
-@implements IDisposable
 
 <PageTitle>@MerchandisingResources.CampaignItems</PageTitle>
 

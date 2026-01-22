@@ -1,5 +1,6 @@
 using Dashboard.Contracts.CMS;
 using Dashboard.Models;
+using Dashboard.Pages.Base;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 using Resources;
@@ -9,7 +10,7 @@ using System.Diagnostics.CodeAnalysis;
 namespace Dashboard.Pages.Authentication
 {
     [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)]
-    public partial class Register : ComponentBase
+    public partial class Register : LocalizedComponentBase
     {
         private readonly RegisterRequestModel _model = new();
         private string _errorMessage = string.Empty;

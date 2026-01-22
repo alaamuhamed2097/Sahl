@@ -1,6 +1,7 @@
 ﻿using Common.Enumerations.Review;
 using Common.Enumerations.VendorStatus;
 using Dashboard.Contracts.Review;
+using Dashboard.Pages.Base;
 using Dashboard.Services.Review;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
@@ -9,8 +10,8 @@ using Shared.DTOs.Review;
 
 namespace Dashboard.Pages.ManageReviews.VendorsReviews
 {
-	public partial class Details
-	{
+	public partial class Details : LocalizedComponentBase
+    {
 		[Parameter] public Guid Id { get; set; }
 
 		[Inject] protected IVendorReviewService VendorReviewService { get; set; } = null!;

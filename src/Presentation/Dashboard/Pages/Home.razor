@@ -1,6 +1,7 @@
 ﻿@page "/"
 @page "/home"
 @page "/dashboard"
+@inherits LocalizedComponentBase
 
 @attribute [Authorize(Roles = "Admin")]
 @using Common.Enumerations.User

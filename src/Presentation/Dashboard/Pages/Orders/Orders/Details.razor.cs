@@ -12,7 +12,7 @@ using Shared.DTOs.Order.Fulfillment.Shipment;
 using Shared.DTOs.Order.OrderProcessing;
 using Shared.DTOs.Order.OrderProcessing.AdminOrder;
 
-namespace Dashboard.Pages.Sales.Orders
+namespace Dashboard.Pages.Orders.Orders
 {
     /// <summary>
     /// FINAL Order Details - Integrated Workflow

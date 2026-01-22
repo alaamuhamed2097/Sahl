@@ -3,6 +3,7 @@
 @using Common.Enumerations.FieldType
 @using Common.Enumerations.User
 @attribute [Authorize(Roles = nameof(UserRole.Admin))]
+@inherits LocalizedComponentBase
 
 <PageTitle>@GeneralResources.WithdrawalMethods</PageTitle>
 

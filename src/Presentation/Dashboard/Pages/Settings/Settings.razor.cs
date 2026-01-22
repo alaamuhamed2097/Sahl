@@ -1,6 +1,7 @@
 using Dashboard.Configuration;
 using Dashboard.Contracts.General;
 using Dashboard.Contracts.Setting;
+using Dashboard.Pages.Base;
 using Dashboard.Services.General;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
@@ -13,7 +14,7 @@ using Shared.DTOs.Setting;
 
 namespace Dashboard.Pages.Settings
 {
-    public partial class Settings : ComponentBase, IDisposable
+    public partial class Settings : LocalizedComponentBase
     {
         [Inject] private ISettingService SettingService { get; set; } = null!;
         [Inject] private IJSRuntime JSRuntime { get; set; } = null!;

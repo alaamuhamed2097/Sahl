@@ -1,5 +1,6 @@
 ﻿@page "/WithdrawalMethods"
 @using Common.Enumerations.User
+@inherits LocalizedComponentBase
 @attribute [Authorize(Roles = nameof(UserRole.Admin))]
 
 <div class="container-fluid p-0">

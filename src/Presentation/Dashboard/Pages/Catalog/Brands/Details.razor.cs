@@ -2,6 +2,7 @@ using Common.Enumerations.User;
 using Dashboard.Configuration;
 using Dashboard.Contracts.Brand;
 using Dashboard.Contracts.General;
+using Dashboard.Pages.Base;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
@@ -15,7 +16,7 @@ using Shared.DTOs.Brand;
 namespace Dashboard.Pages.Catalog.Brands
 {
     [Authorize(Roles = nameof(UserRole.Admin))]
-    public partial class Details
+    public partial class Details : LocalizedComponentBase
     {
         private bool isSaving { get; set; }
         protected string baseUrl = string.Empty;
