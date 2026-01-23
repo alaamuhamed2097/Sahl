@@ -140,7 +140,7 @@
                                 <li class="nav-item">
                                     <NavLink href="/warehouses" class="nav-link" Match="NavLinkMatch.Prefix" onclick="closeNavMenu()">
                                         <span class="pcoded-micon"><i class="fas fa-warehouse"></i></span>
-                                        <span class="pcoded-mtext">@GeneralResources.Warehouses</span>
+                                        <span class="pcoded-mtext">@OrderResources.WarehouseManagement</span>
                                     </NavLink>
                                 </li>
                                 <li class="nav-item">
@@ -206,7 +206,7 @@
                         </li>
 
                         <!-- 🎨 Content & CMS -->
-                        <li data-username="content" class="nav-item pcoded-hasmenu @(IsSubmenuOpen("content") ? "pcoded-trigger" : "")">
+                       @*  <li data-username="content" class="nav-item pcoded-hasmenu @(IsSubmenuOpen("content") ? "pcoded-trigger" : "")">
                             <a href="javascript:void(0)" class="nav-link" @onclick="ToggleContentSubmenu">
                                 <span class="pcoded-micon"><i class="fas fa-file-alt"></i></span>
                                 <span class="pcoded-mtext">@GeneralResources.ContentManagement</span>
@@ -219,21 +219,9 @@
                                         <span class="pcoded-mtext">@GeneralResources.StaticPages</span>
                                     </NavLink>
                                 </li>
-                                <li class="nav-item">
-                                    <NavLink href="/content/areas" class="nav-link" Match="NavLinkMatch.Prefix" onclick="closeNavMenu()">
-                                        <span class="pcoded-micon"><i class="fas fa-th-large"></i></span>
-                                        <span class="pcoded-mtext">@GeneralResources.ContentAreas</span>
-                                    </NavLink>
-                                </li>
-                                <li class="nav-item">
-                                    <NavLink href="/content/media" class="nav-link" Match="NavLinkMatch.Prefix" onclick="closeNavMenu()">
-                                        <span class="pcoded-micon"><i class="fas fa-photo-video"></i></span>
-                                        <span class="pcoded-mtext">@GeneralResources.MediaLibrary</span>
-                                    </NavLink>
-                                </li>
                             </ul>
                         </li>
-
+ *@
                         <!-- 💰 Financial -->
                         <li data-username="financial" class="nav-item">
                             <NavLink href="/withdrawalmethods" class="nav-link" Match="NavLinkMatch.Prefix" onclick="closeNavMenu()">

@@ -690,44 +690,176 @@ public class ShipmentService : IShipmentService
                 order.TotalPaidAmount
             );
         }
-        catch (Exception ex)
+        catch (Exception)
         {
-            _logger.Error(ex, "Error updating payment summary for order {OrderId}", orderId);
+            _logger.Error(
+                "Error updating payment summary for order {OrderId}",
+                orderId
+            );
+            throw;
         }
     }
 
-    private async Task CheckOrderCompletionAsync(Guid orderId)
+    /// <summary>
+    /// ✅ ENHANCED: Sync order status based on ALL shipments
+    /// Called after ANY shipment status change
+    /// </summary>
+    private async Task SyncOrderStatusWithShipmentsAsync(Guid orderId)
     {
         try
         {
             var shipmentRepo = _unitOfWork.TableRepository<TbOrderShipment>();
             var shipments = await shipmentRepo.GetAsync(s => s.OrderId == orderId);
 
+            if (!shipments.Any()) return;
+
+            var orderRepo = _unitOfWork.TableRepository<TbOrder>();
+            var order = await orderRepo.FindByIdAsync(orderId);
+
+            if (order == null) return;
+
+            // Skip if order is already in terminal state
+            if (order.OrderStatus == Common.Enumerations.Order.OrderProgressStatus.Completed ||
+                order.OrderStatus == Common.Enumerations.Order.OrderProgressStatus.Cancelled)
+            {
+                return;
+            }
+
+            // Calculate order status based on shipments
             var allDelivered = shipments.All(s => s.ShipmentStatus == ShipmentStatus.DeliveredToCustomer);
+            var allCancelled = shipments.All(s =>
+                s.ShipmentStatus == ShipmentStatus.CancelledByCustomer ||
+                s.ShipmentStatus == ShipmentStatus.CancelledByMarketplace);
+            var anyInTransit = shipments.Any(s =>
+                s.ShipmentStatus == ShipmentStatus.InTransitToCustomer ||
+                s.ShipmentStatus == ShipmentStatus.PickedUpByCarrier);
+            var anyProcessing = shipments.Any(s =>
+                s.ShipmentStatus == ShipmentStatus.PreparingForShipment ||
+                s.ShipmentStatus == ShipmentStatus.PendingProcessing);
+
+            Common.Enumerations.Order.OrderProgressStatus? targetStatus = null;
 
             if (allDelivered)
             {
-                var orderRepo = _unitOfWork.TableRepository<TbOrder>();
-                var order = await orderRepo.FindByIdAsync(orderId);
+                targetStatus = Common.Enumerations.Order.OrderProgressStatus.Completed;
+                order.OrderDeliveryDate = DateTime.UtcNow;
+            }
+            else if (allCancelled)
+            {
+                targetStatus = Common.Enumerations.Order.OrderProgressStatus.Cancelled;
+            }
+            else if (anyInTransit)
+            {
+                targetStatus = Common.Enumerations.Order.OrderProgressStatus.Shipped;
+            }
+            else if (anyProcessing)
+            {
+                targetStatus = Common.Enumerations.Order.OrderProgressStatus.Processing;
+            }
 
-                if (order != null && order.OrderStatus != Common.Enumerations.Order.OrderProgressStatus.Completed)
-                {
-                    order.OrderStatus = Common.Enumerations.Order.OrderProgressStatus.Completed;
-                    order.OrderDeliveryDate = DateTime.UtcNow;
-                    order.UpdatedDateUtc = DateTime.UtcNow;
+            // Update order status if changed
+            if (targetStatus.HasValue && order.OrderStatus != targetStatus.Value)
+            {
+                order.OrderStatus = targetStatus.Value;
+                order.UpdatedDateUtc = DateTime.UtcNow;
 
-                    await orderRepo.UpdateAsync(order, Guid.Empty);
+                await orderRepo.UpdateAsync(order, Guid.Empty);
 
-                    _logger.Information(
-                        "Order {OrderId} marked as completed - all shipments delivered",
-                        orderId
-                    );
-                }
+                _logger.Information(
+                    "Order {OrderId} status auto-updated to {NewStatus} based on shipment progress",
+                    orderId,
+                    targetStatus.Value
+                );
             }
         }
         catch (Exception ex)
         {
-            _logger.Error(ex, "Error checking order completion for {OrderId}", orderId);
+            _logger.Error(ex, "Error syncing order status with shipments for {OrderId}", orderId);
         }
+    }
+
+    /// <summary>
+    /// ✅ NEW: Update all shipments when order status changes
+    /// Called when order status is changed manually
+    /// </summary>
+    public async Task SyncShipmentsWithOrderStatusAsync(Guid orderId, Common.Enumerations.Order.OrderProgressStatus newOrderStatus)
+    {
+        try
+        {
+            var shipmentRepo = _unitOfWork.TableRepository<TbOrderShipment>();
+            var shipments = await shipmentRepo.GetAsync(s => s.OrderId == orderId);
+
+            if (!shipments.Any()) return;
+
+            ShipmentStatus? targetShipmentStatus = newOrderStatus switch
+            {
+                Common.Enumerations.Order.OrderProgressStatus.Confirmed => ShipmentStatus.PendingProcessing,
+                Common.Enumerations.Order.OrderProgressStatus.Processing => ShipmentStatus.PreparingForShipment,
+                Common.Enumerations.Order.OrderProgressStatus.Shipped => ShipmentStatus.PickedUpByCarrier,
+                Common.Enumerations.Order.OrderProgressStatus.Delivered => ShipmentStatus.DeliveredToCustomer,
+                Common.Enumerations.Order.OrderProgressStatus.Cancelled => ShipmentStatus.CancelledByMarketplace,
+                _ => null
+            };
+
+            if (!targetShipmentStatus.HasValue) return;
+
+            // Update all shipments
+            var historyRepo = _unitOfWork.TableRepository<TbShipmentStatusHistory>();
+            var utcNow = DateTime.UtcNow;
+
+            foreach (var shipment in shipments)
+            {
+                // Skip if shipment is already in target state or terminal state
+                if (shipment.ShipmentStatus == targetShipmentStatus.Value ||
+                    shipment.ShipmentStatus == ShipmentStatus.DeliveredToCustomer ||
+                    shipment.ShipmentStatus == ShipmentStatus.ReturnedToSender)
+                {
+                    continue;
+                }
+
+                var oldStatus = shipment.ShipmentStatus;
+                shipment.ShipmentStatus = targetShipmentStatus.Value;
+                shipment.UpdatedDateUtc = utcNow;
+
+                // Update delivery date if applicable
+                if (targetShipmentStatus == ShipmentStatus.DeliveredToCustomer)
+                {
+                    shipment.ActualDeliveryDate = utcNow;
+                }
+
+                await shipmentRepo.UpdateAsync(shipment, Guid.Empty);
+
+                // Create history entry
+                var history = new TbShipmentStatusHistory
+                {
+                    Id = Guid.NewGuid(),
+                    ShipmentId = shipment.Id,
+                    Status = targetShipmentStatus.Value,
+                    StatusDate = utcNow,
+                    Notes = $"Auto-updated from {oldStatus} due to order status change to {newOrderStatus}",
+                    CreatedDateUtc = utcNow
+                };
+
+                await historyRepo.CreateAsync(history, Guid.Empty);
+
+                _logger.Information(
+                    "Shipment {ShipmentId} auto-updated from {OldStatus} to {NewStatus} due to order status change",
+                    shipment.Id,
+                    oldStatus,
+                    targetShipmentStatus.Value
+                );
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.Error(ex, "Error syncing shipments with order status for {OrderId}", orderId);
+            throw;
+        }
+    }
+
+    private async Task CheckOrderCompletionAsync(Guid orderId)
+    {
+        // ✅ Use the new comprehensive sync method
+        await SyncOrderStatusWithShipmentsAsync(orderId);
     }
 }
