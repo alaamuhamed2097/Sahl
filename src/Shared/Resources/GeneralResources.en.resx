@@ -1389,5 +1389,10 @@
 	<data name="NotSet" xml:space="preserve">
     <value>Not Set</value>
 </data>
-
+	<data name="Write" xml:space="preserve">
+    <value>Write</value>
+</data>
+	<data name="Ok" xml:space="preserve">
+    <value>Ok</value>
+</data>
 </root>

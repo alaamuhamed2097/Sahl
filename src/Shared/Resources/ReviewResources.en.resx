@@ -1,597 +1,408 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <root>
-	<!-- 
-		Microsoft ResX Schema
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
 
-		Version 1.3
-
-		The primary goals of this format is to allow a simple XML format 
-		that is mostly human readable. The generation and parsing of the 
-		various data types are done through the TypeConverter classes 
-		associated with the data types.
-
-		Example:
-
-		... ado.net/XML headers & schema ...
-		<resheader name="resmimetype">text/microsoft-resx</resheader>
-		<resheader name="version">1.3</resheader>
-		<resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
-		<resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
-		<data name="Name1">this is my long string</data>
-		<data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
-		<data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
-			[base64 mime encoded serialized .NET Framework object]
-		</data>
-		<data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
-			[base64 mime encoded string representing a byte array form of the .NET Framework object]
-		</data>
-
-		There are any number of "resheader" rows that contain simple 
-		name/value pairs.
-
-		Each data row contains a name, and value. The row also contains a 
-		type or mimetype. Type corresponds to a .NET class that support 
-		text/value conversion through the TypeConverter architecture. 
-		Classes that don't support this are serialized and stored with the 
-		mimetype set.
-
-		The mimetype is used for serialized objects, and tells the 
-		ResXResourceReader how to depersist the object. This is currently not 
-		extensible. For a given mimetype the value must be set accordingly:
-
-		Note - application/x-microsoft.net.object.binary.base64 is the format 
-		that the ResXResourceWriter will generate, however the reader can 
-		read any of the formats listed below.
-
-		mimetype: application/x-microsoft.net.object.binary.base64
-		value   : The object must be serialized with 
-			: System.Serialization.Formatters.Binary.BinaryFormatter
-			: and then encoded with base64 encoding.
-
-		mimetype: application/x-microsoft.net.object.soap.base64
-		value   : The object must be serialized with 
-			: System.Runtime.Serialization.Formatters.Soap.SoapFormatter
-			: and then encoded with base64 encoding.
-
-		mimetype: application/x-microsoft.net.object.bytearray.base64
-		value   : The object must be serialized into a byte array 
-			: using a System.ComponentModel.TypeConverter
-			: and then encoded with base64 encoding.
-	-->
-	
-	<xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
-		<xsd:element name="root" msdata:IsDataSet="true">
-			<xsd:complexType>
-				<xsd:choice maxOccurs="unbounded">
-					<xsd:element name="data">
-						<xsd:complexType>
-							<xsd:sequence>
-								<xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
-								<xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
-							</xsd:sequence>
-							<xsd:attribute name="name" type="xsd:string" msdata:Ordinal="1" />
-							<xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
-							<xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
-						</xsd:complexType>
-					</xsd:element>
-					<xsd:element name="resheader">
-						<xsd:complexType>
-							<xsd:sequence>
-								<xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
-							</xsd:sequence>
-							<xsd:attribute name="name" type="xsd:string" use="required" />
-						</xsd:complexType>
-					</xsd:element>
-				</xsd:choice>
-			</xsd:complexType>
-		</xsd:element>
-	</xsd:schema>
-	<resheader name="resmimetype">
-		<value>text/microsoft-resx</value>
-	</resheader>
-	<resheader name="version">
-		<value>1.3</value>
-	</resheader>
-	<resheader name="reader">
-		<value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.3500.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-	</resheader>
-	<resheader name="writer">
-		<value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.3500.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-	</resheader>
-
-	<!-- Item Reviews -->
-	<data name="ItemReviews">
-		<value>Item Reviews</value>
-	</data>
-	<data name="ReviewDetails">
-		<value>Review Details</value>
-	</data>
-	<data name="CustomerName">
-		<value>Customer Name</value>
-	</data>
-	<data name="Rating">
-		<value>Rating</value>
-	</data>
-	<data name="ReviewComment">
-		<value>Review Comment</value>
-	</data>
-	<data name="ReviewImages">
-		<value>Review Images</value>
-	</data>
-
-	<!-- Status -->
-	<data name="Pending">
-		<value>Pending</value>
-	</data>
-	<data name="Approved">
-		<value>Approved</value>
-	</data>
-	<data name="Rejected">
-		<value>Rejected</value>
-	</data>
-
-	<!-- Actions -->
-	<data name="Approve">
-		<value>Approve</value>
-	</data>
-	<data name="Reject">
-		<value>Reject</value>
-	</data>
-	<data name="ConfirmApproveReview">
-		<value>Are you sure you want to approve this review?</value>
-	</data>
-	<data name="ConfirmRejectReview">
-		<value>Are you sure you want to reject this review?</value>
-	</data>
-	<data name="ReviewApprovedSuccessfully">
-		<value>Review approved successfully</value>
-	</data>
-	<data name="ReviewRejectedSuccessfully">
-		<value>Review rejected successfully</value>
-	</data>
-
-	<!-- Information -->
-	<data name="CustomerInformation">
-		<value>Customer Information</value>
-	</data>
-	<data name="ItemInformation">
-		<value>Item Information</value>
-	</data>
-
-	<!-- Reply -->
-	<data name="AdminReply">
-		<value>Admin Reply</value>
-	</data>
-	<data name="AddReply">
-		<value>Add Reply</value>
-	</data>
-	<data name="EnterYourReply">
-		<value>Enter your reply...</value>
-	</data>
-	<data name="ReplyAddedSuccessfully">
-		<value>Reply added successfully</value>
-	</data>
-
-	<!-- Statistics -->
-	<data name="TotalReviews">
-		<value>Total Reviews</value>
-	</data>
-	<data name="AverageRating">
-		<value>Average Rating</value>
-	</data>
-	<data name="PendingReviews">
-		<value>Pending Reviews</value>
-	</data>
-	<data name="ApprovedReviews">
-		<value>Approved Reviews</value>
-	</data>
-	<data name="RejectedReviews">
-		<value>Rejected Reviews</value>
-	</data>
-
-	<!-- Filter -->
-	<data name="FilterByStatus">
-		<value>Filter by Status</value>
-	</data>
-	<data name="FilterByRating">
-		<value>Filter by Rating</value>
-	</data>
-	<data name="AllReviews">
-		<value>All Reviews</value>
-	</data>
-
-	<!-- Messages -->
-	<data name="NoReviewsFound">
-		<value>No reviews found</value>
-	</data>
-	<data name="ReviewDeletedSuccessfully">
-		<value>Review deleted successfully</value>
-	</data>
-	<data name="ErrorLoadingReviews">
-		<value>Error loading reviews</value>
-	</data>
-
-	<!-- Additional -->
-	<data name="ViewAllReviews">
-		<value>View All Reviews</value>
-	</data>
-	<data name="ManageReviews">
-		<value>Manage Reviews</value>
-	</data>
-	<data name="ReviewManagement">
-		<value>Review Management</value>
-	</data>
-	<data name="Stars">
-		<value>Stars</value>
-	</data>
-	<data name="NoCommentProvided">
-		<value>No comment provided</value>
-	</data>
-	<data name="VerifiedPurchase">
-		<value>Verified Purchase</value>
-	</data>
-	<data name="ReviewTitle">
-		<value>Review Title</value>
-	</data>
-	<data name="CustomerEmail">
-		<value>Customer Email</value>
-	</data>
-	<data name="ReviewNumber">
-		<value>Review Number</value>
-	</data>
-	<data name="HelpfulVotes">
-		<value>Helpful Votes</value>
-	</data>
-	<data name="ReviewText">
-		<value>Review Text</value>
-	</data>
-	<!-- Review Reports -->
-	<data name="ReviewReports">
-		<value>Review Reports</value>
-	</data>
-	<data name="ReviewReportDetails">
-		<value>Review Report Details</value>
-	</data>
-	<data name="ReportID">
-		<value>Report ID</value>
-	</data>
-	<data name="ReviewID">
-		<value>Review ID</value>
-	</data>
-	<data name="ReporterID">
-		<value>Reporter ID</value>
-	</data>
-	<data name="ReportReason">
-		<value>Report Reason</value>
-	</data>
-	<data name="ReportDetails">
-		<value>Report Details</value>
-	</data>
-	<data name="ReportStatus">
-		<value>Report Status</value>
-	</data>
-	<data name="RelatedReports">
-		<value>Related Reports</value>
-	</data>
-
-	<!-- Report Reasons -->
-	<data name="Spam">
-		<value>Spam</value>
-	</data>
-	<data name="OffensiveLanguage">
-		<value>Offensive Language</value>
-	</data>
-	<data name="HateSpeech">
-		<value>Hate Speech</value>
-	</data>
-	<data name="FakeReview">
-		<value>Fake Review</value>
-	</data>
-	<data name="IrrelevantContent">
-		<value>Irrelevant Content</value>
-	</data>
-	<data name="Duplicate">
-		<value>Duplicate</value>
-	</data>
-	<data name="Other">
-		<value>Other</value>
-	</data>
-
-	<!-- Report Status -->
-	<data name="Reviewed">
-		<value>Reviewed</value>
-	</data>
-	<data name="Resolved">
-		<value>Resolved</value>
-	</data>
-
-	<!-- Report Actions -->
-	<data name="ResolveReport">
-		<value>Resolve Report</value>
-	</data>
-	<data name="MarkAsFlagged">
-		<value>Mark as Flagged</value>
-	</data>
-	<data name="ViewReport">
-		<value>View Report</value>
-	</data>
-	<data name="ConfirmResolveReport">
-		<value>Are you sure you want to resolve this report?</value>
-	</data>
-	<data name="ConfirmMarkAsFlagged">
-		<value>Are you sure you want to flag this review?</value>
-	</data>
-	<data name="ReportResolvedSuccessfully">
-		<value>Report resolved successfully</value>
-	</data>
-	<data name="ReviewFlaggedSuccessfully">
-		<value>Review flagged successfully</value>
-	</data>
-
-	<!-- Filter -->
-	<data name="FilterByReportStatus">
-		<value>Filter by Report Status</value>
-	</data>
-	<data name="AllReports">
-		<value>All Reports</value>
-	</data>
-	<data name="PendingReports">
-		<value>Pending Reports</value>
-	</data>
-	<data name="ReviewedReports">
-		<value>Reviewed Reports</value>
-	</data>
-	<data name="ResolvedReports">
-		<value>Resolved Reports</value>
-	</data>
-
-	<!-- Messages -->
-	<data name="NoReportsFound">
-		<value>No reports found</value>
-	</data>
-	<data name="ErrorLoadingReports">
-		<value>Error loading reports</value>
-	</data>
-	<data name="ReportDeletedSuccessfully">
-		<value>Report deleted successfully</value>
-	</data>
-
-	<!-- Additional -->
-	<data name="ManageReports">
-		<value>Manage Reports</value>
-	</data>
-	<data name="ReportManagement">
-		<value>Report Management</value>
-	</data>
-	<data name="TotalReports">
-		<value>Total Reports</value>
-	</data>
-	<data name="ReportedBy">
-		<value>Reported By</value>
-	</data>
-	<data name="ReportedOn">
-		<value>Reported On</value>
-	</data>
-	<data name="Flagged">
-		<value>Flagged</value>
-	</data>
-	<data name="VendorReviewManagement" xml:space="preserve">
-    <value>Vendor Review Management</value>
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="ItemReviews" xml:space="preserve">
+    <value>Item Reviews</value>
   </data>
-	<data name="VendorReviews" xml:space="preserve">
-    <value>Vendor Reviews</value>
+  <data name="ReviewDetails" xml:space="preserve">
+    <value>Review Details</value>
   </data>
-	<data name="VendorReviewDetails" xml:space="preserve">
-    <value>Vendor Review Details</value>
-  </data>
-
-	<!-- Entity Names -->
-
-	<data name="VendorID" xml:space="preserve">
-    <value>Vendor ID</value>
-  </data>
-	<data name="CustomerName" xml:space="preserve">
+  <data name="CustomerName" xml:space="preserve">
     <value>Customer Name</value>
   </data>
-	<data name="CustomerID" xml:space="preserve">
-    <value>Customer ID</value>
-  </data>
-	<data name="CustomerEmail" xml:space="preserve">
-    <value>Customer Email</value>
-  </data>
-	<data name="OrderDetailID" xml:space="preserve">
-    <value>Order Detail ID</value>
-  </data>
-
-	<!-- Review Fields -->
-	<data name="ReviewID" xml:space="preserve">
-    <value>Review ID</value>
-  </data>
-	<data name="ReviewNumber" xml:space="preserve">
-    <value>Review Number</value>
-  </data>
-	<data name="ReviewTitle" xml:space="preserve">
-    <value>Review Title</value>
-  </data>
-	<data name="ReviewText" xml:space="preserve">
-    <value>Review Text</value>
-  </data>
-	<data name="Rating" xml:space="preserve">
+  <data name="Rating" xml:space="preserve">
     <value>Rating</value>
   </data>
-	<data name="HelpfulVotes" xml:space="preserve">
-    <value>Helpful Votes</value>
+  <data name="ReviewComment" xml:space="preserve">
+    <value>Review Comment</value>
   </data>
-
-	<!-- Status -->
-	<data name="Status" xml:space="preserve">
-    <value>Status</value>
+  <data name="ReviewImages" xml:space="preserve">
+    <value>Review Images</value>
   </data>
-	<data name="Pending" xml:space="preserve">
+  <data name="Pending" xml:space="preserve">
     <value>Pending</value>
   </data>
-	<data name="Approved" xml:space="preserve">
+  <data name="Approved" xml:space="preserve">
     <value>Approved</value>
   </data>
-	<data name="Rejected" xml:space="preserve">
+  <data name="Rejected" xml:space="preserve">
     <value>Rejected</value>
   </data>
-	<data name="Flagged" xml:space="preserve">
-    <value>Flagged</value>
-  </data>
-	<data name="Reviewed" xml:space="preserve">
-    <value>Reviewed</value>
-  </data>
-	<data name="Resolved" xml:space="preserve">
-    <value>Resolved</value>
-  </data>
-
-	<!-- Verification -->
-	<data name="VerifiedPurchase" xml:space="preserve">
-    <value>Verified Purchase</value>
-  </data>
-	<data name="NotVerifiedPurchase" xml:space="preserve">
-    <value>Not Verified Purchase</value>
-  </data>
-	<data name="IsEdited" xml:space="preserve">
-    <value>Is Edited</value>
-  </data>
-	<data name="Verified" xml:space="preserve">
-    <value>Verified</value>
-  </data>
-	<data name="NotVerified" xml:space="preserve">
-    <value>Not Verified</value>
-  </data>
-
-	<!-- Actions -->
-	<data name="Approve" xml:space="preserve">
+  <data name="Approve" xml:space="preserve">
     <value>Approve</value>
   </data>
-	<data name="Reject" xml:space="preserve">
+  <data name="Reject" xml:space="preserve">
     <value>Reject</value>
   </data>
-	<data name="MarkAsFlagged" xml:space="preserve">
-    <value>Mark as Flagged</value>
-  </data>
-
-	<!-- Confirmations -->
-	<data name="ConfirmApproveReview" xml:space="preserve">
+  <data name="ConfirmApproveReview" xml:space="preserve">
     <value>Are you sure you want to approve this review?</value>
   </data>
-	<data name="ConfirmRejectReview" xml:space="preserve">
+  <data name="ConfirmRejectReview" xml:space="preserve">
     <value>Are you sure you want to reject this review?</value>
   </data>
-	<data name="ConfirmMarkAsFlagged" xml:space="preserve">
-    <value>Are you sure you want to mark this review as flagged?</value>
-  </data>
-	<data name="ConfirmResolveReport" xml:space="preserve">
-    <value>Are you sure you want to resolve this report?</value>
-  </data>
-
-	<!-- Success Messages -->
-	<data name="ReviewApprovedSuccessfully" xml:space="preserve">
+  <data name="ReviewApprovedSuccessfully" xml:space="preserve">
     <value>Review approved successfully!</value>
   </data>
-	<data name="ReviewRejectedSuccessfully" xml:space="preserve">
+  <data name="ReviewRejectedSuccessfully" xml:space="preserve">
     <value>Review rejected successfully!</value>
   </data>
-	<data name="ReviewFlaggedSuccessfully" xml:space="preserve">
-    <value>Review flagged successfully!</value>
+  <data name="CustomerInformation" xml:space="preserve">
+    <value>Customer Information</value>
   </data>
-	<data name="ReportResolvedSuccessfully" xml:space="preserve">
-    <value>Report resolved successfully!</value>
+  <data name="ItemInformation" xml:space="preserve">
+    <value>Item Information</value>
   </data>
-
-	<!-- Additional Information -->
-	<data name="AdditionalInformation" xml:space="preserve">
-    <value>Additional Information</value>
+  <data name="AdminReply" xml:space="preserve">
+    <value>Admin Reply</value>
   </data>
-	<data name="ReviewReports" xml:space="preserve">
+  <data name="AddReply" xml:space="preserve">
+    <value>Add Reply</value>
+  </data>
+  <data name="EnterYourReply" xml:space="preserve">
+    <value>Enter your reply...</value>
+  </data>
+  <data name="ReplyAddedSuccessfully" xml:space="preserve">
+    <value>Reply added successfully</value>
+  </data>
+  <data name="TotalReviews" xml:space="preserve">
+    <value>Total  reviews found.</value>
+  </data>
+  <data name="AverageRating" xml:space="preserve">
+    <value>Average Rating</value>
+  </data>
+  <data name="PendingReviews" xml:space="preserve">
+    <value>Pending Reviews</value>
+  </data>
+  <data name="ApprovedReviews" xml:space="preserve">
+    <value>Approved Reviews</value>
+  </data>
+  <data name="RejectedReviews" xml:space="preserve">
+    <value>Rejected Reviews</value>
+  </data>
+  <data name="FilterByStatus" xml:space="preserve">
+    <value>Filter by Status</value>
+  </data>
+  <data name="FilterByRating" xml:space="preserve">
+    <value>Filter by Rating</value>
+  </data>
+  <data name="AllReviews" xml:space="preserve">
+    <value>All Reviews</value>
+  </data>
+  <data name="NoReviewsFound" xml:space="preserve">
+    <value>No reviews found</value>
+  </data>
+  <data name="ReviewDeletedSuccessfully" xml:space="preserve">
+    <value>Review deleted successfully</value>
+  </data>
+  <data name="ErrorLoadingReviews" xml:space="preserve">
+    <value>Error loading reviews</value>
+  </data>
+  <data name="ViewAllReviews" xml:space="preserve">
+    <value>View All Reviews</value>
+  </data>
+  <data name="ManageReviews" xml:space="preserve">
+    <value>Manage Reviews</value>
+  </data>
+  <data name="ReviewManagement" xml:space="preserve">
+    <value>Review Management</value>
+  </data>
+  <data name="Stars" xml:space="preserve">
+    <value>Stars</value>
+  </data>
+  <data name="NoCommentProvided" xml:space="preserve">
+    <value>No comment provided</value>
+  </data>
+  <data name="VerifiedPurchase" xml:space="preserve">
+    <value>Verified Purchase</value>
+  </data>
+  <data name="ReviewTitle" xml:space="preserve">
+    <value>Review Title</value>
+  </data>
+  <data name="CustomerEmail" xml:space="preserve">
+    <value>Customer Email</value>
+  </data>
+  <data name="ReviewNumber" xml:space="preserve">
+    <value>Review Number</value>
+  </data>
+  <data name="HelpfulVotes" xml:space="preserve">
+    <value>Helpful Votes</value>
+  </data>
+  <data name="ReviewText" xml:space="preserve">
+    <value>Review Text</value>
+  </data>
+  <data name="ReviewReports" xml:space="preserve">
     <value>Review Reports</value>
   </data>
-	<data name="NoReportsFound" xml:space="preserve">
-    <value>No Reports Found</value>
+  <data name="ReviewReportDetails" xml:space="preserve">
+    <value>Review Report Details</value>
   </data>
-	<data name="ReportReason" xml:space="preserve">
+  <data name="ReportID" xml:space="preserve">
+    <value>Report ID</value>
+  </data>
+  <data name="ReviewID" xml:space="preserve">
+    <value>Review ID</value>
+  </data>
+  <data name="ReporterID" xml:space="preserve">
+    <value>Reporter ID</value>
+  </data>
+  <data name="ReportReason" xml:space="preserve">
     <value>Report Reason</value>
   </data>
-	<data name="ReportStatus" xml:space="preserve">
+  <data name="ReportDetails" xml:space="preserve">
+    <value>Report Details</value>
+  </data>
+  <data name="ReportStatus" xml:space="preserve">
     <value>Report Status</value>
   </data>
-
-	<!-- Report Reasons -->
-	<data name="Spam" xml:space="preserve">
+  <data name="RelatedReports" xml:space="preserve">
+    <value>Related Reports</value>
+  </data>
+  <data name="Spam" xml:space="preserve">
     <value>Spam</value>
   </data>
-	<data name="OffensiveLanguage" xml:space="preserve">
+  <data name="OffensiveLanguage" xml:space="preserve">
     <value>Offensive Language</value>
   </data>
-	<data name="HateSpeech" xml:space="preserve">
+  <data name="HateSpeech" xml:space="preserve">
     <value>Hate Speech</value>
   </data>
-	<data name="FakeReview" xml:space="preserve">
+  <data name="FakeReview" xml:space="preserve">
     <value>Fake Review</value>
   </data>
-	<data name="IrrelevantContent" xml:space="preserve">
+  <data name="IrrelevantContent" xml:space="preserve">
     <value>Irrelevant Content</value>
   </data>
-	<data name="Duplicate" xml:space="preserve">
+  <data name="Duplicate" xml:space="preserve">
     <value>Duplicate</value>
   </data>
-	<data name="Other" xml:space="preserve">
+  <data name="Other" xml:space="preserve">
     <value>Other</value>
   </data>
-	<!-- ReviewResources.resx -->
-	<data name="VendorReviewManagement" xml:space="preserve">
-  <value>Vendor Review Management</value>
-</data>
-	<data name="VendorReviews" xml:space="preserve">
-  <value>Vendor Reviews</value>
-</data>
-	<data name="TotalReviews" xml:space="preserve">
-  <value>Total {0} reviews found.</value>
-</data>
-	<data name="CustomerName" xml:space="preserve">
-  <value>Customer Name</value>
-</data>
-	<data name="VendorName" xml:space="preserve">
-  <value>Vendor Name</value>
-</data>
-	<data name="Rating" xml:space="preserve">
-  <value>Rating</value>
-</data>
-	<data name="ReviewText" xml:space="preserve">
-  <value>Review Text</value>
-</data>
-	<data name="Status" xml:space="preserve">
-  <value>Status</value>
-</data>
-	<data name="VerifiedPurchase" xml:space="preserve">
-  <value>Verified Purchase</value>
-</data>
-	<data name="NotVerifiedPurchase" xml:space="preserve">
-  <value>Not Verified Purchase</value>
-</data>
-	<data name="Pending" xml:space="preserve">
-  <value>Pending</value>
-</data>
-	<data name="Approved" xml:space="preserve">
-  <value>Approved</value>
-</data>
-	<data name="Rejected" xml:space="preserve">
-  <value>Rejected</value>
-</data>
-	<data name="Approve" xml:space="preserve">
-  <value>Approve</value>
-</data>
-	<data name="Reject" xml:space="preserve">
-  <value>Reject</value>
-</data>
-	<data name="Vendor" xml:space="preserve">
-  <value>Vendor</value>
-</data>
-	<data name="Status" xml:space="preserve">
-  <value>Status</value>
-</data>
-
+  <data name="Reviewed" xml:space="preserve">
+    <value>Reviewed</value>
+  </data>
+  <data name="Resolved" xml:space="preserve">
+    <value>Resolved</value>
+  </data>
+  <data name="ResolveReport" xml:space="preserve">
+    <value>Resolve Report</value>
+  </data>
+  <data name="MarkAsFlagged" xml:space="preserve">
+    <value>Mark as Flagged</value>
+  </data>
+  <data name="ViewReport" xml:space="preserve">
+    <value>View Report</value>
+  </data>
+  <data name="ConfirmResolveReport" xml:space="preserve">
+    <value>Are you sure you want to resolve this report?</value>
+  </data>
+  <data name="ConfirmMarkAsFlagged" xml:space="preserve">
+    <value>Are you sure you want to mark this review as flagged?</value>
+  </data>
+  <data name="ReportResolvedSuccessfully" xml:space="preserve">
+    <value>Report resolved successfully!</value>
+  </data>
+  <data name="ReviewFlaggedSuccessfully" xml:space="preserve">
+    <value>Review flagged successfully!</value>
+  </data>
+  <data name="FilterByReportStatus" xml:space="preserve">
+    <value>Filter by Report Status</value>
+  </data>
+  <data name="AllReports" xml:space="preserve">
+    <value>All Reports</value>
+  </data>
+  <data name="PendingReports" xml:space="preserve">
+    <value>Pending Reports</value>
+  </data>
+  <data name="ReviewedReports" xml:space="preserve">
+    <value>Reviewed Reports</value>
+  </data>
+  <data name="ResolvedReports" xml:space="preserve">
+    <value>Resolved Reports</value>
+  </data>
+  <data name="NoReportsFound" xml:space="preserve">
+    <value>No Reports Found</value>
+  </data>
+  <data name="ErrorLoadingReports" xml:space="preserve">
+    <value>Error loading reports</value>
+  </data>
+  <data name="ReportDeletedSuccessfully" xml:space="preserve">
+    <value>Report deleted successfully</value>
+  </data>
+  <data name="ManageReports" xml:space="preserve">
+    <value>Manage Reports</value>
+  </data>
+  <data name="ReportManagement" xml:space="preserve">
+    <value>Report Management</value>
+  </data>
+  <data name="TotalReports" xml:space="preserve">
+    <value>Total Reports</value>
+  </data>
+  <data name="ReportedBy" xml:space="preserve">
+    <value>Reported By</value>
+  </data>
+  <data name="ReportedOn" xml:space="preserve">
+    <value>Reported On</value>
+  </data>
+  <data name="Flagged" xml:space="preserve">
+    <value>Flagged</value>
+  </data>
+  <data name="VendorReviewManagement" xml:space="preserve">
+    <value>Vendor Review Management</value>
+  </data>
+  <data name="VendorReviews" xml:space="preserve">
+    <value>Vendor Reviews</value>
+  </data>
+  <data name="VendorReviewDetails" xml:space="preserve">
+    <value>Vendor Review Details</value>
+  </data>
+  <data name="VendorID" xml:space="preserve">
+    <value>Vendor ID</value>
+  </data>
+  <data name="CustomerID" xml:space="preserve">
+    <value>Customer ID</value>
+  </data>
+  <data name="OrderDetailID" xml:space="preserve">
+    <value>Order Detail ID</value>
+  </data>
+  <data name="NotVerifiedPurchase" xml:space="preserve">
+    <value>Not Verified Purchase</value>
+  </data>
+  <data name="IsEdited" xml:space="preserve">
+    <value>Is Edited</value>
+  </data>
+  <data name="Verified" xml:space="preserve">
+    <value>Verified</value>
+  </data>
+  <data name="NotVerified" xml:space="preserve">
+    <value>Not Verified</value>
+  </data>
+  <data name="AdditionalInformation" xml:space="preserve">
+    <value>Additional Information</value>
+  </data>
+  <data name="VendorName" xml:space="preserve">
+    <value>Vendor Name</value>
+  </data>
+  <data name="Vendor" xml:space="preserve">
+    <value>Vendor</value>
+  </data>
+  <data name="Status" xml:space="preserve">
+    <value>Status</value>
+  </data>
 </root>

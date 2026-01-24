@@ -73,7 +73,7 @@
 
                     <!-- Page Size -->
                     <li class="nav-item">
-                      
+
                     </li>
 
                     <!-- Export -->
@@ -112,20 +112,20 @@
                                     <i class="@GetSortIconClass("Email")"></i>
                                 </th>
 
-                                <th class="text-center" >
-                                    Status
+                                <th class="text-center">
+                                    @ECommerceResources.Status
                                 </th>
 
                                 <th class="text-center">
-                                    Orders
+                                    @ECommerceResources.Orders
                                 </th>
 
                                 <th class="text-center">
-                                    Wallet Balance
+                                    @ECommerceResources.WalletBalance
                                 </th>
 
-                                <th class="text-center"  @onclick='() => SortByColumn("LastLogin")'>
-                                    Last Login
+                                <th class="text-center cursor-pointer" @onclick='() => SortByColumn("LastLogin")'>
+                                    @ECommerceResources.LastLogin
                                     <i class="@GetSortIconClass("LastLogin")"></i>
                                 </th>
 
@@ -153,7 +153,7 @@
                                             <span class="text-success fw-bold">@item.WalletBalance.ToString("C")</span>
                                         </td>
                                         <td class="text-center align-middle">
-                                            @(item.LastLoginDate?.ToString("g") ?? "Never")
+                                            @(item.LastLoginDate?.ToString("g") ?? @ECommerceResources.Never)
                                         </td>
                                         <td class="text-center m-r-10 align-middle">
                                             <div class="btn-group" role="group">
@@ -162,12 +162,12 @@
                                                     <i class="fas fa-eye"></i>
                                                 </button>
 
-                                                <!-- Edit Button - جرب واحدة من هذه -->
+                                                <!-- Edit Button -->
                                                 <button type="button" class="btn me-2 btn-sm btn-warning" @onclick="() => Edit(item)">
-                                                    <i class="fas fa-pen"></i> <!-- الحل الأول -->
+                                                    <i class="fas fa-pen"></i>
                                                 </button>
 
-                                              @*   <button type="button" class="btn me-2 btn-sm btn-danger" @onclick="() => Delete(item.Id)">
+                                                @*   <button type="button" class="btn me-2 btn-sm btn-danger" @onclick="() => Delete(item.Id)">
                                                     <i class="fas fa-trash"></i>
                                                 </button> *@
                                             </div>
@@ -210,26 +210,26 @@
 
                                     <div class="row my-2">
                                         <div class="col-6">
-                                            <small class="text-muted">Orders:</small>
+                                            <small class="text-muted">@ECommerceResources.Orders:</small>
                                             <p class="mb-0 fw-bold">@item.OrderCount</p>
                                         </div>
                                         <div class="col-6 text-end">
-                                            <small class="text-muted">Wallet:</small>
+                                            <small class="text-muted">@ECommerceResources.Wallet:</small>
                                             <p class="mb-0 fw-bold text-success">@item.WalletBalance.ToString("C")</p>
                                         </div>
                                     </div>
 
-                                    <small class="text-muted">Last Login: @(item.LastLoginDate?.ToString("g") ?? "Never")</small>
+                                    <small class="text-muted">@ECommerceResources.LastLogin: @(item.LastLoginDate?.ToString("g") ?? @ECommerceResources.Never)</small>
 
                                     <div class="d-grid gap-2 mt-3">
                                         <button class="btn btn-sm btn-primary" @onclick="() => ViewDetails(item)">
-                                            <i class="fas fa-eye"></i> View Profile
+                                            <i class="fas fa-eye"></i> @ECommerceResources.ViewProfile
                                         </button>
                                         <button class="btn btn-sm btn-warning" @onclick="() => Edit(item)">
-                                            <i class="fas fa-edit"></i> Edit
+                                            <i class="fas fa-edit"></i> @ActionsResources.Edit
                                         </button>
                                         <button class="btn btn-sm btn-danger" @onclick="() => Delete(item.Id)">
-                                            <i class="fas fa-trash"></i> Delete
+                                            <i class="fas fa-trash"></i> @ActionsResources.Delete
                                         </button>
                                     </div>
                                 </div>
@@ -252,10 +252,10 @@
                 <nav aria-label="Page navigation" class="mt-4">
                     <ul class="pagination justify-content-center">
                         <li class="page-item @(currentPage == 1 ? "disabled" : "")">
-                            <button class="page-link" @onclick="() => GoToPage(1)">First</button>
+                            <button class="page-link" @onclick="() => GoToPage(1)">@ECommerceResources.First</button>
                         </li>
                         <li class="page-item @(currentPage == 1 ? "disabled" : "")">
-                            <button class="page-link" @onclick="() => GoToPage(currentPage - 1)">Previous</button>
+                            <button class="page-link" @onclick="() => GoToPage(currentPage - 1)">@ECommerceResources.Previous</button>
                         </li>
 
                         @for (int i = Math.Max(1, currentPage - 2); i <= Math.Min(totalPages, currentPage + 2); i++)
@@ -266,10 +266,10 @@
                         }
 
                         <li class="page-item @(currentPage == totalPages ? "disabled" : "")">
-                            <button class="page-link" @onclick="() => GoToPage(currentPage + 1)">Next</button>
+                            <button class="page-link" @onclick="() => GoToPage(currentPage + 1)">@ECommerceResources.Next</button>
                         </li>
                         <li class="page-item @(currentPage == totalPages ? "disabled" : "")">
-                            <button class="page-link" @onclick="() => GoToPage(totalPages)">Last</button>
+                            <button class="page-link" @onclick="() => GoToPage(totalPages)">@ECommerceResources.Last</button>
                         </li>
                     </ul>
                 </nav>
@@ -277,5 +277,3 @@
         </div>
     </div>
 </div>
-
-

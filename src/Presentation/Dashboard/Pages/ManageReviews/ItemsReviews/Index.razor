@@ -7,7 +7,7 @@
 @inherits BaseListPage<ResponseItemReviewDto>
 @attribute [Authorize(Roles = nameof(UserRole.Admin))] *@
 
-<PageTitle>@ReviewResources.ReviewManagement</PageTitle>
+<PageTitle>@ECommerceResources.ReviewManagement</PageTitle>
 
 <style>
     .cursor-pointer {
@@ -33,7 +33,7 @@
 <div class="container-fluid p-0">
     <div class="card shadow-sm border-0">
         <div class="card-header bg-primary text-white py-3 d-flex justify-content-between align-items-center">
-            <h5 class="mb-0 fw-semibold text-white">⭐ @ReviewResources.ItemReviews</h5>
+            <h5 class="mb-0 fw-semibold text-white">⭐ @ECommerceResources.ItemReviews</h5>
         </div>
         <div class="card-body">
             <div class="dt-responsive table-responsive">
@@ -78,9 +78,9 @@
                             </button>
                             <ul class="dropdown-menu" aria-labelledby="statusFilter">
                                 <li><a class="dropdown-item @(selectedStatus == "All" ? "active" : "")" href="javascript:void(0)" @onclick='() => FilterByStatus(null)'>@GeneralResources.All</a></li>
-                                <li><a class="dropdown-item @(selectedStatus == "Pending" ? "active" : "")" href="javascript:void(0)" @onclick='() => FilterByStatus(ReviewStatus.Pending)'>@ReviewResources.Pending</a></li>
-                                <li><a class="dropdown-item @(selectedStatus == "Approved" ? "active" : "")" href="javascript:void(0)" @onclick='() => FilterByStatus(ReviewStatus.Approved)'>@ReviewResources.Approved</a></li>
-                                <li><a class="dropdown-item @(selectedStatus == "Rejected" ? "active" : "")" href="javascript:void(0)" @onclick='() => FilterByStatus(ReviewStatus.Rejected)'>@ReviewResources.Rejected</a></li>
+                                <li><a class="dropdown-item @(selectedStatus == "Pending" ? "active" : "")" href="javascript:void(0)" @onclick='() => FilterByStatus(ReviewStatus.Pending)'>@ECommerceResources.Pending</a></li>
+                                <li><a class="dropdown-item @(selectedStatus == "Approved" ? "active" : "")" href="javascript:void(0)" @onclick='() => FilterByStatus(ReviewStatus.Approved)'>@ECommerceResources.Approved</a></li>
+                                <li><a class="dropdown-item @(selectedStatus == "Rejected" ? "active" : "")" href="javascript:void(0)" @onclick='() => FilterByStatus(ReviewStatus.Rejected)'>@ECommerceResources.Rejected</a></li>
                             </ul>
                         </div>
 
@@ -105,21 +105,21 @@
                             <thead class="bg-light">
                                 <tr>
                                     <th class="cursor-pointer" @onclick='() => SortByColumn("ReviewNumber")'>
-                                        @ReviewResources.ReviewNumber
+                                        @ECommerceResources.ReviewNumber
                                         <i class="@GetSortIconClass("ReviewNumber") ms-1"></i>
                                     </th>
-                                  
+
                                     <th class="cursor-pointer" @onclick='() => SortByColumn("CustomerEmail")'>
-                                        @ReviewResources.CustomerEmail
+                                        @ECommerceResources.CustomerEmail
                                         <i class="@GetSortIconClass("CustomerEmail") ms-1"></i>
                                     </th>
-                                    <th class="text-center">@ReviewResources.Rating</th>
-                                    <th class="text-center">@ReviewResources.HelpfulVotes</th>
+                                    <th class="text-center">@ECommerceResources.Rating</th>
+                                    <th class="text-center">@ECommerceResources.HelpfulVotes</th>
                                     <th class="cursor-pointer" @onclick='() => SortByColumn("ReviewTitle")'>
-                                        @ReviewResources.ReviewTitle
+                                        @ECommerceResources.ReviewTitle
                                         <i class="@GetSortIconClass("ReviewTitle") ms-1"></i>
                                     </th>
-                                    <th class="text-center">Reports</th>
+                                    <th class="text-center">@ECommerceResources.Reports</th>
                                     <th class="text-center" style="width: 30%;">@ECommerceResources.Actions</th>
                                 </tr>
                             </thead>
@@ -132,7 +132,7 @@
                                             <td class="text-center">
                                                 <span class="badge bg-secondary">@item.ReviewNumber</span>
                                             </td>
-                                          
+
                                             <td>
                                                 @if (!string.IsNullOrEmpty(item.CustomerName))
                                                 {
@@ -176,13 +176,13 @@
                                                 <!-- زر الموافقة -->
                                                 @* <button class="btn btn-success btn-sm" @onclick="() => ApproveReview(item.Id)">
                                                     <i class="fas fa-check me-2"></i>
-                                                    <span class="d-none d-md-inline">@ReviewResources.Approve</span>
+                                                    <span class="d-none d-md-inline">@ECommerceResources.Approve</span>
                                                 </button> *@
 
                                                 <!-- زر الرفض -->
                                                 <button class="btn btn-danger btn-sm" @onclick="() => RejectReview(item.Id)">
                                                     <i class="fas fa-times me-2"></i>
-                                                    <span class="d-none d-md-inline">@ReviewResources.Reject</span>
+                                                    <span class="d-none d-md-inline">@ECommerceResources.Reject</span>
                                                 </button>
 
                                                 @* <!-- زر الحذف -->

@@ -6,17 +6,17 @@
 @inherits LocalizedComponentBase
 @attribute [Authorize(Roles = nameof(UserRole.Admin))]
 
-<PageTitle>@PageTitle Warehouse</PageTitle>
+<PageTitle>@ECommerceResources.Warehouse</PageTitle>
 
 <div class="container-fluid p-0">
     <div class="card shadow-sm border-0">
         <div class="card-header d-flex justify-content-between bg-primary align-items-center">
             <h4 class="modal-title text-white mb-0">
                 <i class="fas fa-@(IsPlatformWarehouse ? "building" : "store") me-2"></i>
-                @PageTitle @(IsPlatformWarehouse ? "Platform" : "Vendor") Warehouse
+                @PageTitle @(IsPlatformWarehouse? @ECommerceResources.Platform: @ECommerceResources.Vendor) @ECommerceResources.Warehouse
             </h4>
             <span class="badge bg-light text-primary">
-                @(IsPlatformWarehouse ? "Platform" : "Vendor") Warehouse
+                @(IsPlatformWarehouse? @ECommerceResources.Platform: @ECommerceResources.Vendor) @ECommerceResources.Warehouse
             </span>
         </div>
 
@@ -25,22 +25,12 @@
 
             <div class="card-body p-4">
 
-                @* <!-- Debug Info -->
-                <div class="alert alert-warning mb-3">
-                    <strong>Debug Info:</strong><br />
-                    Model.Id: @Model.Id<br />
-                    IsVendorWarehouse: @IsVendorWarehouse<br />
-                    IsEditMode: @IsEditMode<br />
-                    Type: @Type<br />
-                    Vendors Count: @(vendors?.Count() ?? 0)
-                </div> *@
-
                 <!-- Warehouse Type Info (Read-only for edit) -->
                 @if (Model.Id != Guid.Empty)
                 {
                     <div class="alert alert-info mb-4">
                         <i class="fas fa-info-circle me-2"></i>
-                        This is a <strong>@(IsPlatformWarehouse ? "Platform" : "Vendor")</strong> warehouse
+                        @ECommerceResources.ThisIsA <strong>@(IsPlatformWarehouse? ECommerceResources.Platform: ECommerceResources.Vendor)</strong> @ECommerceResources.Warehouse
                     </div>
                 }
 
@@ -54,12 +44,12 @@
                             <div class="col-md-12 mb-3">
                                 <label class="form-label">
                                     <i class="fas fa-store me-2"></i>
-                                    Add Vendor: <span class="text-danger">*</span>
+                                    @ECommerceResources.AddVendor: <span class="text-danger">*</span>
                                 </label>
                                 <select class="form-control select2"
                                         value="@(Model.VendorId?.ToString() ?? Guid.Empty.ToString())"
                                         @onchange="OnVendorSelectionChanged">
-                                    <option value="@Guid.Empty.ToString()">@OrderResources.SelectVendor</option>
+                                    <option value="@Guid.Empty.ToString()">@ECommerceResources.SelectVendor</option>
                                     @if (vendors != null && vendors.Any())
                                     {
                                         @foreach (var vendor in vendors)
@@ -72,12 +62,12 @@
                                     }
                                     else
                                     {
-                                        <option disabled>No vendors available</option>
+                                        <option disabled>@ECommerceResources.NoVendorsAvailable</option>
                                     }
                                 </select>
                                 @if (showVendorValidation)
                                 {
-                                    <div class="text-danger small mt-1">Please select a vendor</div>
+                                    <div class="text-danger small mt-1">@ECommerceResources.PleaseSelectVendor</div>
                                 }
                             </div>
                         </div>
@@ -89,7 +79,7 @@
                             <div class="col-md-12 mb-3">
                                 <label class="form-label">
                                     <i class="fas fa-envelope me-2"></i>
-                                    Vendor Email:
+                                    @ECommerceResources.VendorEmail:
                                 </label>
                                 <InputText class="form-control"
                                            @bind-Value="Model.Email"
@@ -127,18 +117,18 @@
                                 <div class="card-body">
                                     <h6 class="card-subtitle mb-2 text-muted">
                                         <i class="fas fa-info-circle me-2"></i>
-                                        Warehouse Information
+                                        @ECommerceResources.WarehouseInformation
                                     </h6>
                                     <p class="card-text mb-1">
-                                        <strong>Type:</strong>
+                                        <strong>@ECommerceResources.Type:</strong>
                                         <span class="badge bg-@(IsPlatformWarehouse ? "primary" : "info")">
-                                            @(IsPlatformWarehouse ? "Platform" : "Vendor")
+                                            @(IsPlatformWarehouse? @ECommerceResources.Platform: @ECommerceResources.Vendor)
                                         </span>
                                     </p>
                                     <p class="card-text mb-0">
-                                        <strong>Status:</strong>
+                                        <strong>@ECommerceResources.Status:</strong>
                                         <span class="badge bg-@(Model.IsActive ? "success" : "secondary")">
-                                            @(Model.IsActive ? "Active" : "Inactive")
+                                            @(Model.IsActive? @GeneralResources.Active: @GeneralResources.Inactive)
                                         </span>
                                     </p>
                                 </div>

@@ -7,14 +7,14 @@
 @attribute [Authorize(Roles = nameof(UserRole.Admin))]
 @inherits BaseListPage<WarehouseDto>
 
-<PageTitle>Warehouse Management</PageTitle>
+<PageTitle>@ECommerceResources.WarehouseManagement</PageTitle>
 
 <div class="container-fluid p-0">
     <div class="card shadow-sm border-0">
         <div class="card-header bg-primary text-white py-3">
             <h5 class="mb-0 fw-semibold text-white">
                 <i class="fas fa-warehouse me-2"></i>
-                Warehouse Management
+                @ECommerceResources.WarehouseManagement
             </h5>
         </div>
 
@@ -27,7 +27,7 @@
                             type="button"
                             @onclick="SwitchToPlatform">
                         <i class="fas fa-building me-2"></i>
-                        Platform Warehouse Details
+                        @ECommerceResources.PlatformWarehouseDetails
                     </button>
                 </li>
 
@@ -38,7 +38,7 @@
                                 type="button"
                                 @onclick="SwitchToVendor">
                             <i class="fas fa-store me-2"></i>
-                            Vendor Warehouses
+                            @ECommerceResources.VendorWarehouses
                         </button>
                     </li>
                 }
@@ -57,11 +57,11 @@
                                 <div class="card-header bg-light d-flex justify-content-between align-items-center">
                                     <h6 class="mb-0">
                                         <i class="fas fa-info-circle me-2"></i>
-                                        Platform Warehouse Information
+                                        @ECommerceResources.PlatformWarehouseInformation
                                     </h6>
                                     <button class="btn btn-sm btn-primary" @onclick="() => Edit(platformWarehouse)">
                                         <i class="feather icon-edit me-1"></i>
-                                        Edit Details
+                                        @ECommerceResources.EditDetails
                                     </button>
                                 </div>
 
@@ -72,10 +72,10 @@
                                             <div class="border rounded p-3 bg-light">
                                                 <h6 class="text-muted mb-3">
                                                     <i class="fas fa-map-marker-alt me-2"></i>
-                                                    Address
+                                                    @FormResources.Address
                                                 </h6>
                                                 <p class="mb-0 fs-5">
-                                                    @(platformWarehouse.Address ?? "No address specified")
+                                                    @(platformWarehouse.Address ?? @ECommerceResources.NoAddressSpecified)
                                                 </p>
                                             </div>
                                         </div>
@@ -85,35 +85,35 @@
                                             <div class="border rounded p-3">
                                                 <h6 class="text-muted mb-3">
                                                     <i class="fas fa-toggle-on me-2"></i>
-                                                    Status
+                                                    @ECommerceResources.Status
                                                 </h6>
                                                 <div class="d-flex align-items-center justify-content-between">
                                                     <span class="badge bg-@(platformWarehouse.IsActive ? "success" : "secondary") fs-6 px-3 py-2">
                                                         <i class="fas fa-@(platformWarehouse.IsActive ? "check" : "times")-circle me-1"></i>
-                                                        @(platformWarehouse.IsActive ? "Active" : "Inactive")
+                                                        @(platformWarehouse.IsActive? @GeneralResources.Active: @GeneralResources.Inactive)
                                                     </span>
                                                     <button class="btn btn-sm btn-@(platformWarehouse.IsActive ? "warning" : "success")"
                                                             @onclick="() => ShowToggleStatusConfirmation(platformWarehouse)">
                                                         <i class="feather icon-power me-1"></i>
-                                                        @(platformWarehouse.IsActive ? "Deactivate" : "Activate")
+                                                        @(platformWarehouse.IsActive? @ActionsResources.Deactivate: @ActionsResources.Activate)
                                                     </button>
                                                 </div>
                                             </div>
                                         </div>
 
-                                        <!-- Additional Info Section (if needed) -->
+                                        <!-- Additional Info Section -->
                                         <div class="col-md-6">
                                             <div class="border rounded p-3">
                                                 <h6 class="text-muted mb-3">
                                                     <i class="fas fa-info-circle me-2"></i>
-                                                    Additional Information
+                                                    @ECommerceResources.AdditionalInformation
                                                 </h6>
                                                 <p class="mb-1">
-                                                    <strong>Warehouse Type:</strong> Platform
+                                                    <strong>@ECommerceResources.WarehouseType:</strong> @ECommerceResources.Platform
                                                 </p>
-                                                <p class="mb-0">
-                                                    <strong>ID:</strong> @platformWarehouse.Id
-                                                </p>
+                                                @* <p class="mb-0">
+                                                    <strong>ID:</strong> @platformWarehouse.
+                                                </p> *@
                                             </div>
                                         </div>
                                     </div>
@@ -125,9 +125,9 @@
                             <!-- Loading State -->
                             <div class="text-center py-5">
                                 <div class="spinner-border text-primary" role="status">
-                                    <span class="visually-hidden">Loading...</span>
+                                    <span class="visually-hidden">@GeneralResources.Loading...</span>
                                 </div>
-                                <p class="mt-3 text-muted">Loading warehouse details...</p>
+                                <p class="mt-3 text-muted">@ECommerceResources.LoadingWarehouseDetails...</p>
                             </div>
                         }
                         else
@@ -135,10 +135,10 @@
                             <!-- No Warehouse State -->
                             <div class="text-center py-5">
                                 <i class="fas fa-warehouse fa-3x text-muted mb-3"></i>
-                                <p class="text-muted mb-3">No platform warehouse found</p>
+                                <p class="text-muted mb-3">@ECommerceResources.NoPlatformWarehouseFound</p>
                                 <button class="btn btn-success" @onclick="CreatePlatformWarehouse">
                                     <i class="feather icon-plus-circle me-1"></i>
-                                    Create Platform Warehouse
+                                    @ECommerceResources.CreatePlatformWarehouse
                                 </button>
                             </div>
                         }
@@ -173,7 +173,7 @@
                             <!-- Vendor Filter -->
                             <div class="col-md-2">
                                 <select class="form-select" @onchange="OnVendorFilterChanged" value="@(selectedVendorId?.ToString() ?? "")">
-                                    <option value="">All Vendors</option>
+                                    <option value="">@ECommerceResources.AllVendors</option>
                                     @if (vendors != null)
                                     {
                                         @foreach (var vendor in vendors)
@@ -187,19 +187,19 @@
                             <!-- Status Filter -->
                             <div class="col-md-2">
                                 <select class="form-select" @onchange="OnFilterChanged" value="@(vendorSearchModel.IsActive.HasValue ? (vendorSearchModel.IsActive.Value ? "active" : "inactive") : "")">
-                                    <option value="">All Status</option>
-                                    <option value="active">Active Only</option>
-                                    <option value="inactive">Inactive Only</option>
+                                    <option value="">@ECommerceResources.AllStatus</option>
+                                    <option value="active">@ECommerceResources.ActiveOnly</option>
+                                    <option value="inactive">@ECommerceResources.InactiveOnly</option>
                                 </select>
                             </div>
 
                             <!-- Page Size -->
                             <div class="col-md-2">
                                 <select class="form-select" @onchange="OnPageSizeChanged" value="@vendorSearchModel.PageSize">
-                                    <option value="10">10 per page</option>
-                                    <option value="15">15 per page</option>
-                                    <option value="20">20 per page</option>
-                                    <option value="30">30 per page</option>
+                                    <option value="10">10 @ECommerceResources.PerPage</option>
+                                    <option value="15">15 @ECommerceResources.PerPage</option>
+                                    <option value="20">20 @ECommerceResources.PerPage</option>
+                                    <option value="30">30 @ECommerceResources.PerPage</option>
                                 </select>
                             </div>
 
@@ -212,17 +212,17 @@
                                                 type="button"
                                                 data-bs-toggle="dropdown">
                                             <i class="fas fa-file-export me-1"></i>
-                                            Export
+                                            @ActionsResources.Export
                                         </button>
                                         <ul class="dropdown-menu">
                                             <li>
                                                 <a class="dropdown-item" href="javascript:void(0)" @onclick="ExportToExcel">
-                                                    <i class="far fa-file-excel me-1"></i>Excel
+                                                    <i class="far fa-file-excel me-1"></i>@GeneralResources.Excel
                                                 </a>
                                             </li>
                                             <li>
                                                 <a class="dropdown-item" href="javascript:void(0)" @onclick="ExportToPrint">
-                                                    <i class="fas fa-print me-1"></i>Print
+                                                    <i class="fas fa-print me-1"></i>@ActionsResources.Print
                                                 </a>
                                             </li>
                                         </ul>
@@ -231,7 +231,7 @@
                                     <!-- Add Button -->
                                     <button class="btn btn-success" @onclick="AddWarehouse">
                                         <i class="feather icon-plus-circle me-1"></i>
-                                        Add
+                                        @ActionsResources.Add
                                     </button>
                                 </div>
                             </div>
@@ -283,18 +283,18 @@
                 {
                     <button type="button" class="btn btn-secondary" @onclick="CloseAlert">
                         <i class="fas fa-times me-1"></i>
-                        Cancel
+                        @ActionsResources.Cancel
                     </button>
                     <button type="button" class="btn btn-@alertButtonClass" @onclick="ConfirmAction">
                         <i class="fas fa-check me-1"></i>
-                        Confirm
+                        @ECommerceResources.Confirm
                     </button>
                 }
                 else
                 {
                     <button type="button" class="btn btn-primary" @onclick="CloseAlert">
                         <i class="fas fa-check me-1"></i>
-                        OK
+                        @GeneralResources.Ok
                     </button>
                 }
             </div>
@@ -305,13 +305,12 @@
 @code {
     // Alert properties
     private bool showAlert = false;
-    private string alertType = "info"; // info, success, warning, danger
+    private string alertType = "info";
     private string alertTitle = "";
     private string alertMessage = "";
     private string alertButtonClass = "primary";
     private Action? pendingAction = null;
 
-    // Methods for showing alerts
     private void ShowAlert(string type, string title, string message, string buttonClass = "primary")
     {
         alertType = type;
@@ -347,14 +346,13 @@
         CloseAlert();
     }
 
-    // Wrapper method for toggle status with confirmation
     private void ShowToggleStatusConfirmation(WarehouseDto warehouse)
     {
-        string action = warehouse.IsActive ? "deactivate" : "activate";
-        string message = $"Are you sure you want to {action} this warehouse?";
+        string action = warehouse.IsActive ? @ActionsResources.Deactivate.ToLower() : @ActionsResources.Activate.ToLower();
+        string message = $"{@ECommerceResources.AreYouSureYouWantTo} {action} {@ECommerceResources.ThisWarehouse}?";
 
         ShowConfirmationAlert(
-            "Confirm Action",
+            @ECommerceResources.ConfirmAction,
             message,
             () => ToggleStatus(warehouse),
             warehouse.IsActive ? "warning" : "success"
@@ -373,23 +371,23 @@
                             @if (showVendorColumn)
                             {
                                 <th class="text-center sortable-header" @onclick='() => SortByColumn("VendorName")' style="cursor: pointer;">
-                                    Vendor Name
+                                    @ECommerceResources.VendorName
                                     <i class="@GetSortIcon("VendorName") ms-1"></i>
                                 </th>
                                 <th class="text-center sortable-header" @onclick='() => SortByColumn("Email")' style="cursor: pointer;">
-                                    Vendor Email
+                                    @ECommerceResources.VendorEmail
                                     <i class="@GetSortIcon("Email") ms-1"></i>
                                 </th>
                             }
                             <th class="text-center sortable-header" @onclick='() => SortByColumn("Address")' style="cursor: pointer;">
-                                Address
+                                @FormResources.Address
                                 <i class="@GetSortIcon("Address") ms-1"></i>
                             </th>
                             <th class="text-center sortable-header" @onclick='() => SortByColumn("IsActive")' style="cursor: pointer;">
-                                Status
+                                @ECommerceResources.Status
                                 <i class="@GetSortIcon("IsActive") ms-1"></i>
                             </th>
-                            <th class="text-center">Actions</th>
+                            <th class="text-center">@ECommerceResources.Actions</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -427,7 +425,7 @@
                                     <td class="text-center align-middle">
                                         <span class="badge bg-@(item.IsActive ? "success" : "secondary")">
                                             <i class="fas fa-@(item.IsActive ? "check" : "times")-circle me-1"></i>
-                                            @(item.IsActive ? "Active" : "Inactive")
+                                            @(item.IsActive? @GeneralResources.Active: @GeneralResources.Inactive)
                                         </span>
                                     </td>
 
@@ -453,7 +451,7 @@
                                 <td colspan="@(showVendorColumn ? "6" : "4")" class="text-center py-5">
                                     <div class="text-muted">
                                         <i class="fas fa-warehouse fa-3x mb-3"></i>
-                                        <p class="mb-0">No warehouses found</p>
+                                        <p class="mb-0">@ECommerceResources.NoWarehousesFound</p>
                                     </div>
                                 </td>
                             </tr>
@@ -477,7 +475,7 @@
                                     <div>
                                         <h6 class="mb-1">
                                             <i class="fas fa-user me-1"></i>
-                                            @(item.VendorName ?? "Unknown")
+                                            @(item.VendorName ?? @ECommerceResources.Unknown)
                                         </h6>
                                         @if (!string.IsNullOrEmpty(item.Email))
                                         {
@@ -489,7 +487,7 @@
                                     </div>
                                 }
                                 <span class="badge bg-@(item.IsActive ? "success" : "secondary")">
-                                    @(item.IsActive ? "Active" : "Inactive")
+                                    @(item.IsActive? @GeneralResources.Active: @GeneralResources.Inactive)
                                 </span>
                             </div>
 
@@ -501,13 +499,13 @@
                             <div class="d-flex gap-2">
                                 <button class="btn btn-primary btn-sm flex-fill"
                                         @onclick="() => Edit(item)">
-                                    <i class="feather icon-edit me-1"></i>Edit
+                                    <i class="feather icon-edit me-1"></i>@ActionsResources.Edit
                                 </button>
 
                                 <button class="btn btn-@(item.IsActive ? "warning" : "success") btn-sm flex-fill"
                                         @onclick="() => ShowToggleStatusConfirmation(item)">
                                     <i class="feather icon-power me-1"></i>
-                                    @(item.IsActive ? "Deactivate" : "Activate")
+                                    @(item.IsActive? @ActionsResources.Deactivate: @ActionsResources.Activate)
                                 </button>
                             </div>
                         </div>
@@ -518,7 +516,7 @@
             {
                 <div class="text-center py-5">
                     <i class="fas fa-warehouse fa-3x text-muted mb-3"></i>
-                    <p class="text-muted">No warehouses found</p>
+                    <p class="text-muted">@ECommerceResources.NoWarehousesFound</p>
                 </div>
             }
         </div>
@@ -534,7 +532,7 @@
 
             <div class="d-flex justify-content-between align-items-center mt-4">
                 <div class="text-muted small">
-                    Showing @startRecord to @endRecord of @totalRecords entries
+                    @ECommerceResources.Showing @startRecord @ECommerceResources.To @endRecord @ECommerceResources.Of @totalRecords @ECommerceResources.Entries
                 </div>
 
                 <nav>

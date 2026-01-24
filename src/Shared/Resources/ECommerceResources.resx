@@ -1014,4 +1014,413 @@
 	<data name="CurrencySymbol" xml:space="preserve">
     <value>EGP</value>
   </data>
+	<!-- Arabic Resources (ECommerceResources.ar.resx) -->
+	<data name="ReviewManagement" xml:space="preserve">
+  <value>إدارة المراجعات</value>
+</data>
+	<data name="ItemReviews" xml:space="preserve">
+  <value>مراجعات المنتجات</value>
+</data>
+	<data name="ReviewNumber" xml:space="preserve">
+  <value>رقم المراجعة</value>
+</data>
+	<data name="CustomerEmail" xml:space="preserve">
+  <value>بريد العميل</value>
+</data>
+	<data name="Rating" xml:space="preserve">
+  <value>التقييم</value>
+</data>
+	<data name="HelpfulVotes" xml:space="preserve">
+  <value>التصويتات المفيدة</value>
+</data>
+	<data name="ReviewTitle" xml:space="preserve">
+  <value>عنوان المراجعة</value>
+</data>
+	<data name="Reports" xml:space="preserve">
+  <value>التقارير</value>
+</data>
+	<data name="Pending" xml:space="preserve">
+  <value>قيد الانتظار</value>
+</data>
+	<data name="Approved" xml:space="preserve">
+  <value>موافق عليها</value>
+</data>
+	<data name="Rejected" xml:space="preserve">
+  <value>مرفوضة</value>
+</data>
+	<data name="Approve" xml:space="preserve">
+  <value>موافقة</value>
+</data>
+	<data name="Reject" xml:space="preserve">
+  <value>رفض</value>
+</data>
+
+	<!-- موارد تفاصيل المراجعة -->
+	<data name="ReviewDetails" xml:space="preserve">
+    <value>تفاصيل المراجعة</value>
+  </data>
+	<data name="MarkAsFlagged" xml:space="preserve">
+    <value>وضع علامة كمشبوهة</value>
+  </data>
+	<data name="ReviewReports" xml:space="preserve">
+    <value>تقارير المراجعة</value>
+  </data>
+	<data name="ReportReason" xml:space="preserve">
+    <value>سبب التقرير</value>
+  </data>
+	<data name="ReportStatus" xml:space="preserve">
+    <value>حالة التقرير</value>
+  </data>
+	<data name="CreatedDate" xml:space="preserve">
+    <value>تاريخ الإنشاء</value>
+  </data>
+	<data name="Reviewed" xml:space="preserve">
+    <value>تمت المراجعة</value>
+  </data>
+	<data name="Resolved" xml:space="preserve">
+    <value>تم الحل</value>
+  </data>
+	<data name="NoReportsFound" xml:space="preserve">
+    <value>لم يتم العثور على تقارير</value>
+  </data>
+	<data name="ReviewText" xml:space="preserve">
+    <value>نص المراجعه</value>
+  </data>
+
+	<!-- موارد موجودة (أضفها إذا لم تكن موجودة) -->
+	<data name="Actions" xml:space="preserve">
+    <value>الإجراءات</value>
+  </data>
+	<data name="Orders" xml:space="preserve">
+    <value>الطلبات</value>
+  </data>
+	<data name="OrderID" xml:space="preserve">
+    <value>رقم الطلب</value>
+  </data>
+	<data name="PaymentStatus" xml:space="preserve">
+    <value>حالة الدفع</value>
+  </data>
+	<data name="Paid" xml:space="preserve">
+    <value>مدفوع</value>
+  </data>
+
+	<data name="Customers" xml:space="preserve">
+    <value>العملاء</value>
+  </data>
+	<data name="Name" xml:space="preserve">
+    <value>الاسم</value>
+  </data>
+	<data name="Email" xml:space="preserve">
+    <value>البريد الإلكتروني</value>
+  </data>
+	<data name="Actions" xml:space="preserve">
+    <value>الإجراءات</value>
+  </data>
+
+	<!-- الموارد الجديدة من الملف -->
+	<data name="Status" xml:space="preserve">
+    <value>الحالة</value>
+  </data>
+	<data name="Orders" xml:space="preserve">
+    <value>الطلبات</value>
+  </data>
+	<data name="WalletBalance" xml:space="preserve">
+    <value>رصيد المحفظة</value>
+  </data>
+	<data name="LastLogin" xml:space="preserve">
+    <value>آخر تسجيل دخول</value>
+  </data>
+	<data name="Never" xml:space="preserve">
+    <value>لم يسجل دخول بعد</value>
+  </data>
+	<data name="ViewProfile" xml:space="preserve">
+    <value>عرض الملف الشخصي</value>
+  </data>
+	<data name="Wallet" xml:space="preserve">
+    <value>المحفظة</value>
+  </data>
+	<data name="First" xml:space="preserve">
+    <value>الأولى</value>
+  </data>
+	<data name="Previous" xml:space="preserve">
+    <value>السابقة</value>
+  </data>
+	<data name="Next" xml:space="preserve">
+    <value>التالية</value>
+  </data>
+	<data name="Last" xml:space="preserve">
+    <value>الأخيرة</value>
+  </data>
+
+	<!-- إدارة العملاء -->
+	<data name="Customer" xml:space="preserve">
+    <value>عميل</value>
+  </data>
+	<data name="Customers" xml:space="preserve">
+    <value>العملاء</value>
+  </data>
+	<data name="AddCustomer" xml:space="preserve">
+    <value>إضافة عميل</value>
+  </data>
+	<data name="EditCustomer" xml:space="preserve">
+    <value>تعديل عميل</value>
+  </data>
+	<data name="CustomerDetails" xml:space="preserve">
+    <value>تفاصيل العميل</value>
+  </data>
+	<data name="CustomerProfile" xml:space="preserve">
+    <value>الملف الشخصي للعميل</value>
+  </data>
+	<data name="BackToCustomers" xml:space="preserve">
+    <value>العودة للعملاء</value>
+  </data>
+
+	<!-- المعلومات الشخصية -->
+	<data name="FirstName" xml:space="preserve">
+    <value>الاسم الأول</value>
+  </data>
+	<data name="LastName" xml:space="preserve">
+    <value>اسم العائلة</value>
+  </data>
+	<data name="Name" xml:space="preserve">
+    <value>الاسم</value>
+  </data>
+	<data name="Email" xml:space="preserve">
+    <value>البريد الإلكتروني</value>
+  </data>
+	<data name="PhoneCode" xml:space="preserve">
+    <value>كود الهاتف</value>
+  </data>
+	<data name="PhoneNumber" xml:space="preserve">
+    <value>رقم الهاتف</value>
+  </data>
+
+	<!-- الأمان -->
+	<data name="Password" xml:space="preserve">
+    <value>كلمة المرور</value>
+  </data>
+	<data name="ConfirmPassword" xml:space="preserve">
+    <value>تأكيد كلمة المرور</value>
+  </data>
+	<data name="ChangePassword" xml:space="preserve">
+    <value>تغيير كلمة المرور</value>
+  </data>
+	<data name="PasswordMinLength" xml:space="preserve">
+    <value>يجب أن تكون كلمة المرور 6 أحرف على الأقل</value>
+  </data>
+
+	<!-- الحالة والمعلومات -->
+	<data name="Status" xml:space="preserve">
+    <value>الحالة</value>
+  </data>
+	<data name="Actions" xml:space="preserve">
+    <value>الإجراءات</value>
+  </data>
+	<data name="Optional" xml:space="preserve">
+    <value>اختياري</value>
+  </data>
+	<data name="Notes" xml:space="preserve">
+    <value>ملاحظات</value>
+  </data>
+
+	<!-- الطلبات -->
+	<data name="Orders" xml:space="preserve">
+    <value>الطلبات</value>
+  </data>
+	<data name="OrderHistory" xml:space="preserve">
+    <value>سجل الطلبات</value>
+  </data>
+	<data name="OrderNumber" xml:space="preserve">
+    <value>رقم الطلب</value>
+  </data>
+	<data name="TotalOrders" xml:space="preserve">
+    <value>إجمالي الطلبات</value>
+  </data>
+	<data name="NoOrdersFound" xml:space="preserve">
+    <value>لم يتم العثور على طلبات</value>
+  </data>
+
+	<!-- المحفظة -->
+	<data name="Wallet" xml:space="preserve">
+    <value>المحفظة</value>
+  </data>
+	<data name="WalletBalance" xml:space="preserve">
+    <value>رصيد المحفظة</value>
+  </data>
+	<data name="WalletHistory" xml:space="preserve">
+    <value>سجل المحفظة</value>
+  </data>
+	<data name="CurrentBalance" xml:space="preserve">
+    <value>الرصيد الحالي</value>
+  </data>
+	<data name="AvailableBalance" xml:space="preserve">
+    <value>الرصيد المتاح</value>
+  </data>
+	<data name="PendingBalance" xml:space="preserve">
+    <value>الرصيد المعلق</value>
+  </data>
+	<data name="NoWalletTransactionsFound" xml:space="preserve">
+    <value>لم يتم العثور على معاملات في المحفظة</value>
+  </data>
+
+	<!-- المعاملات -->
+	<data name="TransactionType" xml:space="preserve">
+    <value>نوع المعاملة</value>
+  </data>
+	<data name="Amount" xml:space="preserve">
+    <value>المبلغ</value>
+  </data>
+	<data name="Fee" xml:space="preserve">
+    <value>الرسوم</value>
+  </data>
+
+	<!-- التواريخ والأوقات -->
+	<data name="Date" xml:space="preserve">
+    <value>التاريخ</value>
+  </data>
+	<data name="LastLogin" xml:space="preserve">
+    <value>آخر تسجيل دخول</value>
+  </data>
+	<data name="Never" xml:space="preserve">
+    <value>لم يسجل دخول بعد</value>
+  </data>
+
+	<!-- عام -->
+	<data name="Total" xml:space="preserve">
+    <value>الإجمالي</value>
+  </data>
+	<data name="ViewProfile" xml:space="preserve">
+    <value>عرض الملف الشخصي</value>
+  </data>
+
+	<!-- ترقيم الصفحات -->
+	<data name="First" xml:space="preserve">
+    <value>الأولى</value>
+  </data>
+	<data name="Previous" xml:space="preserve">
+    <value>السابقة</value>
+  </data>
+	<data name="Next" xml:space="preserve">
+    <value>التالية</value>
+  </data>
+	<data name="Last" xml:space="preserve">
+    <value>الأخيرة</value>
+  </data>
+
+	<data name="Showing" xml:space="preserve">
+    <value>عرض</value>
+  </data>
+	<data name="To" xml:space="preserve">
+    <value>إلى</value>
+  </data>
+	<data name="Of" xml:space="preserve">
+    <value>من</value>
+  </data>
+	<data name="Entries" xml:space="preserve">
+    <value>سجل</value>
+  </data>
+	<data name="PerPage" xml:space="preserve">
+    <value>لكل صفحة</value>
+  </data>
+
+	<!-- إدارة المستودعات -->
+	<data name="Warehouse" xml:space="preserve">
+    <value>مستودع</value>
+  </data>
+	<data name="WarehouseManagement" xml:space="preserve">
+    <value>إدارة المستودعات</value>
+  </data>
+	<data name="PlatformWarehouseDetails" xml:space="preserve">
+    <value>تفاصيل مستودع المنصة</value>
+  </data>
+	<data name="VendorWarehouses" xml:space="preserve">
+    <value>مستودعات الموردين</value>
+  </data>
+	<data name="PlatformWarehouseInformation" xml:space="preserve">
+    <value>معلومات مستودع المنصة</value>
+  </data>
+	<data name="EditDetails" xml:space="preserve">
+    <value>تعديل التفاصيل</value>
+  </data>
+	<data name="NoAddressSpecified" xml:space="preserve">
+    <value>لم يتم تحديد عنوان</value>
+  </data>
+	<data name="AdditionalInformation" xml:space="preserve">
+    <value>معلومات إضافية</value>
+  </data>
+	<data name="WarehouseType" xml:space="preserve">
+    <value>نوع المستودع</value>
+  </data>
+	<data name="Platform" xml:space="preserve">
+    <value>المنصة</value>
+  </data>
+	<data name="LoadingWarehouseDetails" xml:space="preserve">
+    <value>جاري تحميل تفاصيل المستودع...</value>
+  </data>
+	<data name="NoPlatformWarehouseFound" xml:space="preserve">
+    <value>لم يتم العثور على مستودع للمنصة</value>
+  </data>
+	<data name="CreatePlatformWarehouse" xml:space="preserve">
+    <value>إنشاء مستودع المنصة</value>
+  </data>
+	<data name="AllVendors" xml:space="preserve">
+    <value>جميع الموردين</value>
+  </data>
+	<data name="AllStatus" xml:space="preserve">
+    <value>جميع الحالات</value>
+  </data>
+	<data name="ActiveOnly" xml:space="preserve">
+    <value>النشط فقط</value>
+  </data>
+	<data name="InactiveOnly" xml:space="preserve">
+    <value>غير النشط فقط</value>
+  </data>
+	<data name="Confirm" xml:space="preserve">
+    <value>تأكيد</value>
+  </data>
+	<data name="ConfirmAction" xml:space="preserve">
+    <value>تأكيد الإجراء</value>
+  </data>
+	<data name="AreYouSureYouWantTo" xml:space="preserve">
+    <value>هل أنت متأكد أنك تريد</value>
+  </data>
+	<data name="ThisWarehouse" xml:space="preserve">
+    <value>هذا المستودع</value>
+  </data>
+	<data name="VendorName" xml:space="preserve">
+    <value>اسم المورد</value>
+  </data>
+	<data name="VendorEmail" xml:space="preserve">
+    <value>بريد المورد الإلكتروني</value>
+  </data>
+	<data name="NoWarehousesFound" xml:space="preserve">
+    <value>لم يتم العثور على مستودعات</value>
+  </data>
+	<data name="Unknown" xml:space="preserve">
+    <value>غير معروف</value>
+  </data>
+	<data name="Vendor" xml:space="preserve">
+    <value>المورد</value>
+  </data>
+	<data name="ThisIsA" xml:space="preserve">
+    <value>هذا</value>
+  </data>
+	<data name="AddVendor" xml:space="preserve">
+    <value>إضافة مورد</value>
+  </data>
+	<data name="SelectVendor" xml:space="preserve">
+    <value>اختر المورد</value>
+  </data>
+	<data name="NoVendorsAvailable" xml:space="preserve">
+    <value>لا يوجد موردين متاحين</value>
+  </data>
+	<data name="PleaseSelectVendor" xml:space="preserve">
+    <value>يرجى اختيار مورد</value>
+  </data>
+	<data name="WarehouseInformation" xml:space="preserve">
+    <value>معلومات المستودع</value>
+  </data>
+	<data name="Type" xml:space="preserve">
+    <value>النوع</value>
+  </data>
 </root>

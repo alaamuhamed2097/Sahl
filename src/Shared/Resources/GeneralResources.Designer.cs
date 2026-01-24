@@ -2230,6 +2230,15 @@ namespace Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to موافق.
+        /// </summary>
+        public static string Ok {
+            get {
+                return ResourceManager.GetString("Ok", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to كلمة المرور القديمة.
         /// </summary>
         public static string OldPassword {
@@ -3801,6 +3810,15 @@ namespace Resources {
         public static string Words {
             get {
                 return ResourceManager.GetString("Words", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to كتابة.
+        /// </summary>
+        public static string Write {
+            get {
+                return ResourceManager.GetString("Write", resourceCulture);
             }
         }
         

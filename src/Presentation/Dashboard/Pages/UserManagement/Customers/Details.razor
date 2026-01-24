@@ -6,13 +6,13 @@
 @using Shared.DTOs.Customer
 @using Dashboard.Pages.UserManagement.Customers
 
-<PageTitle>Customer Details</PageTitle>
+<PageTitle>@ECommerceResources.CustomerDetails</PageTitle>
 
 <div class="container-fluid">
 	<div class="row mb-4">
 		<div class="col-12">
 			<button class="btn btn-secondary mb-3" @onclick="GoBack">
-				<i class="fas fa-arrow-left"></i> Back to Customers
+				<i class="fas fa-arrow-left"></i> @ECommerceResources.BackToCustomers
 			</button>
 		</div>
 	</div>
@@ -21,7 +21,7 @@
 	{
 		<div class="text-center">
 			<div class="spinner-border text-primary" role="status">
-				<span class="visually-hidden">Loading...</span>
+				<span class="visually-hidden">@GeneralResources.Loading...</span>
 			</div>
 		</div>
 	}
@@ -32,89 +32,51 @@
 			<div class="col-lg-4">
 				<div class="card shadow-sm mb-4">
 					<div class="card-header bg-primary text-white">
-						<h5 class="mb-0">Customer Profile</h5>
+						<h5 class="mb-0">@ECommerceResources.CustomerProfile</h5>
 					</div>
 					<div class="card-body">
 						<div class="text-center mb-3">
 							<i class="fas fa-user-circle text-primary" style="font-size: 4rem;"></i>
 						</div>
-						
+
 						<h4 class="text-center mb-3">@Customer.FirstName @Customer.LastName</h4>
-						
+
 						<div class="mb-3">
-							<label class="form-label fw-bold">Status:</label>
+							<label class="form-label fw-bold">@ECommerceResources.Status:</label>
 							<span class="@GetStatusBadgeClass(CurrentUserStatus)">
 								@GetStatusDisplayName(CurrentUserStatus)
 							</span>
 						</div>
 
 						<div class="mb-3">
-							<label class="form-label fw-bold">Email:</label>
+							<label class="form-label fw-bold">@ECommerceResources.Email:</label>
 							<p class="text-break">@Customer.Email</p>
 						</div>
 
 						<div class="mb-3">
-							<label class="form-label fw-bold">Last Login:</label>
-							<p>@(Customer.LastLoginDate?.ToString("g") ?? "Never")</p>
+							<label class="form-label fw-bold">@ECommerceResources.LastLogin:</label>
+							<p>@(Customer.LastLoginDate?.ToString("g") ?? @ECommerceResources.Never)</p>
 						</div>
 
 						<div class="mb-3">
-							<label class="form-label fw-bold">Wallet Balance:</label>
+							<label class="form-label fw-bold">@ECommerceResources.WalletBalance:</label>
 							<p class="text-success fw-bold">@Customer.WalletBalance.ToString("C")</p>
 						</div>
 
 						<div class="mb-3">
-							<label class="form-label fw-bold">Total Orders:</label>
+							<label class="form-label fw-bold">@ECommerceResources.TotalOrders:</label>
 							<p>@Customer.OrderCount</p>
 						</div>
 
 						@if (!string.IsNullOrEmpty(Customer.Notes))
 						{
 							<div class="mb-3">
-								<label class="form-label fw-bold">Notes:</label>
+								<label class="form-label fw-bold">@ECommerceResources.Notes:</label>
 								<p>@Customer.Notes</p>
 							</div>
 						}
 					</div>
 				</div>
-
-				<!-- Account Actions -->
-				@* <div class="card shadow-sm">
-					<div class="card-header bg-warning text-dark">
-						<h5 class="mb-0">Account Actions</h5>
-					</div>
-					<div class="card-body">
-						<div class="d-grid gap-2">
-							@if (CurrentUserStatus != UserStateType.Active)
-							{
-								<button class="btn btn-success btn-sm" @onclick="ActivateAccount">
-									<i class="fas fa-check-circle"></i> Activate Account
-								</button>
-							}
-
-							@if (CurrentUserStatus != UserStateType.Auto_Locked)
-							{
-								<button class="btn btn-warning btn-sm" @onclick="LockAccount">
-									<i class="fas fa-lock"></i> Lock Account
-								</button>
-							}
-
-							@if (CurrentUserStatus != UserStateType.Suspended)
-							{
-								<button class="btn btn-danger btn-sm" @onclick="SuspendAccount">
-									<i class="fas fa-ban"></i> Suspend Account
-								</button>
-							}
-
-							@if (CurrentUserStatus != UserStateType.Restricted)
-							{
-								<button class="btn btn-info btn-sm" @onclick="RestrictAccount">
-									<i class="fas fa-user-slash"></i> Restrict Account
-								</button>
-							}
-						</div>
-					</div>
-				</div> *@
 			</div>
 
 			<!-- Details Panel -->
@@ -126,139 +88,34 @@
 								<button class="nav-link @(ActiveTab == "orders" ? "active" : "")"
 										type="button"
 										@onclick="@(() => SetActiveTab("orders"))">
-									<i class="fas fa-shopping-bag"></i> Order History
+									<i class="fas fa-shopping-bag"></i> @ECommerceResources.OrderHistory
 								</button>
 							</li>
 							<li class="nav-item">
 								<button class="nav-link @(ActiveTab == "wallet" ? "active" : "")"
 										type="button"
 										@onclick="@(() => SetActiveTab("wallet"))">
-									<i class="fas fa-wallet"></i> Wallet History
+									<i class="fas fa-wallet"></i> @ECommerceResources.WalletHistory
 								</button>
 							</li>
 						</ul>
 					</div>
 
 					<div class="card-body">
-						@* @if (ActiveTab == "profile")
-						{
-							<div class="tab-pane active">
-								<h6 class="mb-3">Customer Information</h6>
-								<dl class="row">
-									<dt class="col-sm-4">Customer ID:</dt>
-									<dd class="col-sm-8">@Customer.Id</dd>
-
-									<dt class="col-sm-4">User ID:</dt>
-									<dd class="col-sm-8">@(Customer.UserId ?? "N/A")</dd>
-
-									<dt class="col-sm-4">First Name:</dt>
-									<dd class="col-sm-8">@Customer.FirstName</dd>
-
-									<dt class="col-sm-4">Last Name:</dt>
-									<dd class="col-sm-8">@Customer.LastName</dd>
-
-									<dt class="col-sm-4">Email Address:</dt>
-									<dd class="col-sm-8">@Customer.Email</dd>
-
-									<dt class="col-sm-4">Account Status:</dt>
-									<dd class="col-sm-8">
-										<span class="@GetStatusBadgeClass(CurrentUserStatus)">
-											@GetStatusDisplayName(CurrentUserStatus)
-										</span>
-									</dd>
-								</dl>
-							</div>
-						} *@
-						@*  @if (ActiveTab == "orders")
-						{
-							<div class="tab-pane active">
-								<h6 class="mb-3">Order History</h6>
-								@if (OrderHistory.Any())
-								{
-									<div class="table-responsive">
-										<table class="table table-striped table-hover">
-											<thead class="table-light">
-												<tr>
-													<th>Order #</th>
-													<th>Date</th>
-													<th>Total</th>
-													<th>Status</th>
-												</tr>
-											</thead>
-											<tbody>
-												@foreach (var order in OrderHistory)
-												{
-													<tr>
-														<td colspan="4" class="text-center text-muted">@order.OrderNumber</td>
-														<td colspan="4" class="text-center text-muted">@order.OrderDate</td>
-														<td colspan="4" class="text-center text-muted">@order.TotalAmount</td>
-														<td colspan="4" class="text-center text-muted">@order.Status</td>
-													</tr>
-												}
-											</tbody>
-										</table>
-									</div>
-								}
-								else
-								{
-									<div class="alert alert-info">
-										<i class="fas fa-info-circle"></i> No orders found
-									</div>
-								}
-							</div>
-						}
-						else if (ActiveTab == "wallet")
-						{
-							<div class="tab-pane active">
-								<h6 class="mb-3">Wallet History</h6>
-								<div class="alert alert-primary">
-									<strong>Current Balance:</strong> @Customer.WalletBalance.ToString("C")
-								</div>
-								@if (WalletHistory.Any())
-								{
-									<div class="table-responsive">
-										<table class="table table-striped table-hover">
-											<thead class="table-light">
-												<tr>
-													<th>Date</th>
-													<th>Type</th>
-													<th>Amount</th>
-													<th>Balance</th>
-												</tr>
-											</thead>
-											<tbody>
-												@foreach (var transaction in WalletHistory)
-												{
-													<tr>
-														<td colspan="4" class="text-center text-muted">Transaction data available from API</td>
-													</tr>
-												}
-											</tbody>
-										</table>
-									</div>
-								}
-								else
-								{
-									<div class="alert alert-info">
-										<i class="fas fa-info-circle"></i> No wallet transactions found
-									</div>
-								}
-							</div>
-						} *@
 						@if (ActiveTab == "orders")
 						{
 							<div class="tab-pane active">
-								<h6 class="mb-3">Order History</h6>
+								<h6 class="mb-3">@ECommerceResources.OrderHistory</h6>
 								@if (OrderHistory.Any())
 								{
 									<div class="table-responsive">
 										<table class="table table-striped table-hover">
 											<thead class="table-light">
 												<tr>
-													<th>Order #</th>
-													<th>Date</th>
-													<th>Total</th>
-													<th>Status</th>
+													<th>@ECommerceResources.OrderNumber</th>
+													<th>@ECommerceResources.Date</th>
+													<th>@ECommerceResources.Total</th>
+													<th>@ECommerceResources.Status</th>
 												</tr>
 											</thead>
 											<tbody>
@@ -280,7 +137,7 @@
 								else
 								{
 									<div class="alert alert-info">
-										<i class="fas fa-info-circle"></i> No orders found
+										<i class="fas fa-info-circle"></i> @ECommerceResources.NoOrdersFound
 									</div>
 								}
 							</div>
@@ -288,9 +145,9 @@
 						@if (ActiveTab == "wallet")
 						{
 							<div class="tab-pane active">
-								<h6 class="mb-3">Wallet History</h6>
+								<h6 class="mb-3">@ECommerceResources.WalletHistory</h6>
 								<div class="alert alert-primary">
-									<strong>Current Balance:</strong> @Customer.WalletBalance.ToString("C")
+									<strong>@ECommerceResources.CurrentBalance:</strong> @Customer.WalletBalance.ToString("C")
 								</div>
 								@if (WalletHistory.Any())
 								{
@@ -298,13 +155,13 @@
 										<table class="table table-striped table-hover">
 											<thead class="table-light">
 												<tr>
-													<th>Date</th>
-													<th>Transaction Type</th>
-													<th>Amount</th>
-													<th>Fee</th>
-													<th>Status</th>
-													<th>Available Balance</th>
-													<th>Pending Balance</th>
+													<th>@ECommerceResources.Date</th>
+													<th>@ECommerceResources.TransactionType</th>
+													<th>@ECommerceResources.Amount</th>
+													<th>@ECommerceResources.Fee</th>
+													<th>@ECommerceResources.Status</th>
+													<th>@ECommerceResources.AvailableBalance</th>
+													<th>@ECommerceResources.PendingBalance</th>
 												</tr>
 											</thead>
 											<tbody>
@@ -337,7 +194,7 @@
 								else
 								{
 									<div class="alert alert-info">
-										<i class="fas fa-info-circle"></i> No wallet transactions found
+										<i class="fas fa-info-circle"></i> @ECommerceResources.NoWalletTransactionsFound
 									</div>
 								}
 							</div>

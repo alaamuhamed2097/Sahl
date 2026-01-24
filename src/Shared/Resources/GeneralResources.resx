@@ -1389,5 +1389,10 @@
 	<data name="NotSet" xml:space="preserve">
     <value>غير محدد</value>
 </data>
-
+	<data name="Write" xml:space="preserve">
+    <value>كتابة</value>
+</data>
+	<data name="Ok" xml:space="preserve">
+    <value>موافق</value>
+</data>
 </root>
