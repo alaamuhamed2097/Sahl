@@ -6,7 +6,7 @@
 @using Shared.DTOs.Review
 @inherits BaseListPage<ResponseItemReviewDto>
 @attribute [Authorize(Roles = nameof(UserRole.Admin))] *@
-
+@inherits LocalizedComponentBase
 <PageTitle>@ECommerceResources.ReviewManagement</PageTitle>
 
 <style>
