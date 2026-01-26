@@ -18,12 +18,11 @@ namespace Shared.DTOs.User.Customer
         [EmailAddress(ErrorMessage = "Invalid email format")]
         public string? Email { get; set; }
 
-        [Required(ErrorMessage = "Phone code is required")]
-        [StringLength(5, MinimumLength = 1)]
-        [RegularExpression(@"^\+?[0-9]{1,5}$", ErrorMessage = "Invalid phone code format")]
-        public string PhoneCode { get; set; } = null!;
+		[Required(ErrorMessageResourceName = "FieldRequired", ErrorMessageResourceType = typeof(ValidationResources))]
+		[MaxLength(4, ErrorMessageResourceName = "OutOfMaxLength", ErrorMessageResourceType = typeof(ValidationResources))]
+		public string PhoneCode { get; set; } = null!;
 
-        [Required(ErrorMessage = "Phone number is required")]
+		[Required(ErrorMessage = "Phone number is required")]
         [StringLength(15, MinimumLength = 6)]
         [RegularExpression(@"^[0-9\s\(\)\-\+]{6,15}$", ErrorMessage = "Invalid phone number format")]
         [PhoneNumber(nameof(PhoneCode), ErrorMessageResourceName = "InvalidPhoneNumber", ErrorMessageResourceType = typeof(ValidationResources))]
