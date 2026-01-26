@@ -95,7 +95,6 @@
                 </ul>
 
                 <!-- Desktop View -->
-                <div class="d-none d-md-block">
                     <div style="overflow-x: auto;">
                         <table id="order-table" class="text-center table table-sm table-hover mb-0">
                             <thead class="table-light">
@@ -176,68 +175,78 @@
                             </tbody>
                         </table>
                     </div>
+                    <!-- Pagination -->
+                    <div class="pagination-wrapper d-flex flex-column justify-content-end flex-grow-1">
+                        <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mt-4 pagination-container" dir="ltr">
+                            <div class="text-muted small">
+                                @string.Format(
+                                ActionsResources.ShowingEntries,
+                                                                ((currentPage - 1) * searchModel.PageSize + 1),
+                                                                Math.Min(currentPage * searchModel.PageSize, totalRecords),
+                                                                totalRecords
+                                                                )
+                            </div>
 
-                    @* Pagination - From BaseListPage *@
-                    <div class="d-flex justify-content-between align-items-center mt-3">
-                        <div class="text-muted small">
-                            @ActionsResources.Showing @StartRecord @ActionsResources.To @EndRecord @ActionsResources.Of @totalRecords
-                        </div>
+                            <nav aria-label="Pagination">
+                                <ul class="pagination pagination-sm mb-0 shadow-sm rounded-3 overflow-hidden">
+                                    <li class="page-item @(currentPage == 1 ? "disabled" : "")">
+                                        <a class="page-link" @onclick="() => GoToPage(1)" title="@ActionsResources.First">
+                                            <i class="fas fa-angle-double-left"></i>
+                                        </a>
+                                    </li>
 
-                        <nav aria-label="Pagination">
-                            <ul class="pagination pagination-sm mb-0 shadow-sm rounded-3 overflow-hidden">
-                                <li class="page-item @(currentPage == 1 ? "disabled" : "")">
-                                    <a class="page-link" href="javascript:void(0)" @onclick="() => GoToPage(1)">
-                                        <i class="fas fa-angle-double-left"></i>
-                                    </a>
-                                </li>
-                                <li class="page-item @(currentPage == 1 ? "disabled" : "")">
-                                    <a class="page-link" href="javascript:void(0)" @onclick="() => GoToPage(currentPage - 1)">
-                                        <i class="fas fa-angle-left"></i>
-                                    </a>
-                                </li>
+                                    <li class="page-item @(currentPage == 1 ? "disabled" : "")">
+                                        <a class="page-link" @onclick="() => GoToPage(currentPage - 1)">
+                                            <i class="fas fa-angle-left"></i>
+                                        </a>
+                                    </li>
 
-                                @{
-                                    const int maxVisiblePages = 5;
+                                    @{
+                                                                        const int maxVisiblePages = 5;
                                     int startPage = Math.Max(1, currentPage - 2);
                                     int endPage = Math.Min(totalPages, startPage + maxVisiblePages - 1);
                                     if (endPage - startPage + 1 < maxVisiblePages)
                                     {
                                         startPage = Math.Max(1, endPage - maxVisiblePages + 1);
                                     }
-                                }
+                                                                        }
 
-                                @if (startPage > 1)
-                                {
-                                    <li class="page-item disabled"><span class="page-link">...</span></li>
-                                }
+                                    @if (startPage > 1)
+                                    {
+                                        <li class="page-item disabled"><span class="page-link">...</span></li>
+                                    }
 
-                                @for (int pag = startPage; pag <= endPage; pag++)
-                                {
-                                    int pageNumber = pag;
-                                    <li class="page-item @(pag == currentPage ? "active" : "")">
-                                        <a class="page-link fw-bold" href="javascript:void(0)" @onclick="() => GoToPage(pageNumber)">@pag</a>
+                                    @for (int pag = startPage; pag <= endPage; pag++)
+                                    {
+                                        int pageNumber = pag;
+                                        <li class="page-item @(pag == currentPage ? "active" : "")">
+                                            <a class="page-link fw-bold" @onclick="() => GoToPage(pageNumber)">@pag</a>
+                                        </li>
+                                    }
+
+                                    @if (endPage < totalPages)
+                                    {
+                                        <li class="page-item disabled"><span class="page-link">...</span></li>
+                                    }
+
+                                    <li class="page-item @(currentPage == totalPages ? "disabled" : "")">
+                                        <a class="page-link" @onclick="() => GoToPage(currentPage + 1)">
+                                            <i class="fas fa-angle-right"></i>
+                                        </a>
                                     </li>
-                                }
 
-                                @if (endPage < totalPages)
-                                {
-                                    <li class="page-item disabled"><span class="page-link">...</span></li>
-                                }
-
-                                <li class="page-item @(currentPage == totalPages ? "disabled" : "")">
-                                    <a class="page-link" href="javascript:void(0)" @onclick="() => GoToPage(currentPage + 1)">
-                                        <i class="fas fa-angle-right"></i>
-                                    </a>
-                                </li>
-                                <li class="page-item @(currentPage == totalPages ? "disabled" : "")">
-                                    <a class="page-link" href="javascript:void(0)" @onclick="() => GoToPage(totalPages)">
-                                        <i class="fas fa-angle-double-right"></i>
-                                    </a>
-                                </li>
-                            </ul>
-                        </nav>
+                                    <li class="page-item @(currentPage == totalPages ? "disabled" : "")">
+                                        <a class="page-link" @onclick="() => GoToPage(totalPages)" title="@ActionsResources.Last">
+                                            <i class="fas fa-angle-double-right"></i>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </nav>
+                        </div>
                     </div>
-                </div>
+
+                
+                
 
                 <!-- MOBILE VIEW -->
                 <div class="d-md-none">

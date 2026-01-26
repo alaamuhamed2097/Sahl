@@ -12,7 +12,7 @@
         <div class="card-header d-flex bg-primary justify-content-between align-items-center">
             <h4 class="modal-title text-white">
                 <i class="bi bi-pencil-square fs-3 text-white"></i>
-                ✏️ @ActionsResources.Edit @ECommerceResources.Customer
+                ✏️ @ECommerceResources.EditCustomer
             </h4>
         </div>
 
@@ -24,9 +24,9 @@
                 <div class="row g-3">
                     <div class="col-md-6">
                         <div class="form-group">
-                            <label>@UserResources.FirstName <span class="text-danger">*</span></label>
+                            <label>@ECommerceResources.FirstName <span class="text-danger">*</span></label>
                             <InputText type="text"
-                                       placeholder="@($"{FormResources.Write} {UserResources.FirstName}")"
+                                       placeholder="@($"{GeneralResources.Write} {ECommerceResources.FirstName}")"
                                        class="form-control"
                                        @bind-Value="Model.FirstName" />
                             <ValidationMessage For="@(() => Model.FirstName)" />
@@ -34,9 +34,9 @@
                     </div>
                     <div class="col-md-6">
                         <div class="form-group">
-                            <label>@UserResources.LastName <span class="text-danger">*</span></label>
+                            <label>@ECommerceResources.LastName <span class="text-danger">*</span></label>
                             <InputText type="text"
-                                       placeholder="@($"{FormResources.Write} {UserResources.LastName}")"
+                                       placeholder="@($"{GeneralResources.Write} {ECommerceResources.LastName}")"
                                        class="form-control"
                                        @bind-Value="Model.LastName" />
                             <ValidationMessage For="@(() => Model.LastName)" />
@@ -48,9 +48,9 @@
                 <div class="row g-3 mt-2">
                     <div class="col-md-12">
                         <div class="form-group">
-                            <label>@UserResources.Email</label>
+                            <label>@ECommerceResources.Email</label>
                             <InputText type="email"
-                                       placeholder="@($"{FormResources.Write} {UserResources.Email}")"
+                                       placeholder="@($"{GeneralResources.Write} {ECommerceResources.Email}")"
                                        class="form-control"
                                        @bind-Value="Model.Email" />
                             <ValidationMessage For="@(() => Model.Email)" />
@@ -58,19 +58,16 @@
                     </div>
                 </div>
 
-                
-
                 <!-- Password (Optional) -->
                 <div class="row g-3 mt-2">
                     <div class="col-md-12">
                         <div class="form-group">
-                            <label>@UserResources.Password</label>
+                            <label>@ECommerceResources.Password</label>
                             <InputText type="password"
-                                       placeholder="@UserResources.ChangePassword"
+                                       placeholder="@ECommerceResources.ChangePassword"
                                        class="form-control"
                                        @bind-Value="Model.NewPassword" />
                             <ValidationMessage For="@(() => Model.NewPassword)" />
-                            @* <small class="form-text text-muted">@UserResources.LeaveEmptyToKeepCurrentPassword</small> *@
                         </div>
                     </div>
                 </div>

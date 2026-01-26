@@ -1032,4 +1032,412 @@
   <data name="Total" xml:space="preserve">
     <value>Total</value>
   </data>
+	<!-- English Resources (ECommerceResources.resx) -->
+	<data name="ReviewManagement" xml:space="preserve">
+  <value>Review Management</value>
+</data>
+	<data name="ItemReviews" xml:space="preserve">
+  <value>Item Reviews</value>
+</data>
+	<data name="ReviewNumber" xml:space="preserve">
+  <value>Review Number</value>
+</data>
+	<data name="CustomerEmail" xml:space="preserve">
+  <value>Customer Email</value>
+</data>
+	<data name="Rating" xml:space="preserve">
+  <value>Rating</value>
+</data>
+	<data name="HelpfulVotes" xml:space="preserve">
+  <value>Helpful Votes</value>
+</data>
+	<data name="ReviewTitle" xml:space="preserve">
+  <value>Review Title</value>
+</data>
+	<data name="Reports" xml:space="preserve">
+  <value>Reports</value>
+</data>
+	<data name="Pending" xml:space="preserve">
+  <value>Pending</value>
+</data>
+	<data name="Approved" xml:space="preserve">
+  <value>Approved</value>
+</data>
+	<data name="Rejected" xml:space="preserve">
+  <value>Rejected</value>
+</data>
+	<data name="Approve" xml:space="preserve">
+  <value>Approve</value>
+</data>
+	<data name="Reject" xml:space="preserve">
+  <value>Reject</value>
+</data>
+	<!-- Review Details Resources -->
+	<data name="ReviewDetails" xml:space="preserve">
+    <value>Review Details</value>
+  </data>
+	<data name="MarkAsFlagged" xml:space="preserve">
+    <value>Mark as Flagged</value>
+  </data>
+	<data name="ReviewReports" xml:space="preserve">
+    <value>Review Reports</value>
+  </data>
+	<data name="ReportReason" xml:space="preserve">
+    <value>Report Reason</value>
+  </data>
+	<data name="ReportStatus" xml:space="preserve">
+    <value>Report Status</value>
+  </data>
+	<data name="CreatedDate" xml:space="preserve">
+    <value>Created Date</value>
+  </data>
+	<data name="Reviewed" xml:space="preserve">
+    <value>Reviewed</value>
+  </data>
+	<data name="Resolved" xml:space="preserve">
+    <value>Resolved</value>
+  </data>
+	<data name="NoReportsFound" xml:space="preserve">
+    <value>No Reports Found</value>
+  </data>
+	<data name="ReviewText" xml:space="preserve">
+    <value>Review Text</value>
+  </data>
+
+	<!-- Existing Resources (Add if not present) -->
+	<data name="Actions" xml:space="preserve">
+    <value>Actions</value>
+  </data>
+	<data name="Orders" xml:space="preserve">
+    <value>Orders</value>
+  </data>
+	<data name="OrderID" xml:space="preserve">
+    <value>Order ID</value>
+  </data>
+	<data name="PaymentStatus" xml:space="preserve">
+    <value>Payment Status</value>
+  </data>
+	<data name="Paid" xml:space="preserve">
+    <value>Paid</value>
+  </data>
+
+	<!-- Existing Resources -->
+	<data name="Customers" xml:space="preserve">
+    <value>Customers</value>
+  </data>
+	<data name="Name" xml:space="preserve">
+    <value>Name</value>
+  </data>
+	<data name="Email" xml:space="preserve">
+    <value>Email</value>
+  </data>
+	<data name="Actions" xml:space="preserve">
+    <value>Actions</value>
+  </data>
+
+	<!-- New Resources from the File -->
+	<data name="Status" xml:space="preserve">
+    <value>Status</value>
+  </data>
+	<data name="Orders" xml:space="preserve">
+    <value>Orders</value>
+  </data>
+	<data name="WalletBalance" xml:space="preserve">
+    <value>Wallet Balance</value>
+  </data>
+	<data name="LastLogin" xml:space="preserve">
+    <value>Last Login</value>
+  </data>
+	<data name="Never" xml:space="preserve">
+    <value>Never</value>
+  </data>
+	<data name="ViewProfile" xml:space="preserve">
+    <value>View Profile</value>
+  </data>
+	<data name="Wallet" xml:space="preserve">
+    <value>Wallet</value>
+  </data>
+	<data name="First" xml:space="preserve">
+    <value>First</value>
+  </data>
+	<data name="Previous" xml:space="preserve">
+    <value>Previous</value>
+  </data>
+	<data name="Next" xml:space="preserve">
+    <value>Next</value>
+  </data>
+	<data name="Last" xml:space="preserve">
+    <value>Last</value>
+  </data>
+
+	<!-- Customer Management -->
+	<data name="Customer" xml:space="preserve">
+    <value>Customer</value>
+  </data>
+	<data name="Customers" xml:space="preserve">
+    <value>Customers</value>
+  </data>
+	<data name="AddCustomer" xml:space="preserve">
+    <value>Add Customer</value>
+  </data>
+	<data name="EditCustomer" xml:space="preserve">
+    <value>Edit Customer</value>
+  </data>
+	<data name="CustomerDetails" xml:space="preserve">
+    <value>Customer Details</value>
+  </data>
+	<data name="CustomerProfile" xml:space="preserve">
+    <value>Customer Profile</value>
+  </data>
+	<data name="BackToCustomers" xml:space="preserve">
+    <value>Back to Customers</value>
+  </data>
+
+	<!-- Personal Information -->
+	<data name="FirstName" xml:space="preserve">
+    <value>First Name</value>
+  </data>
+	<data name="LastName" xml:space="preserve">
+    <value>Last Name</value>
+  </data>
+	<data name="Name" xml:space="preserve">
+    <value>Name</value>
+  </data>
+	<data name="Email" xml:space="preserve">
+    <value>Email</value>
+  </data>
+	<data name="PhoneCode" xml:space="preserve">
+    <value>Phone Code</value>
+  </data>
+	<data name="PhoneNumber" xml:space="preserve">
+    <value>Phone Number</value>
+  </data>
+
+	<!-- Security -->
+	<data name="Password" xml:space="preserve">
+    <value>Password</value>
+  </data>
+	<data name="ConfirmPassword" xml:space="preserve">
+    <value>Confirm Password</value>
+  </data>
+	<data name="ChangePassword" xml:space="preserve">
+    <value>Change Password</value>
+  </data>
+	<data name="PasswordMinLength" xml:space="preserve">
+    <value>Password must be at least 6 characters</value>
+  </data>
+
+	<!-- Status & Information -->
+	<data name="Status" xml:space="preserve">
+    <value>Status</value>
+  </data>
+	<data name="Actions" xml:space="preserve">
+    <value>Actions</value>
+  </data>
+	<data name="Optional" xml:space="preserve">
+    <value>Optional</value>
+  </data>
+	<data name="Notes" xml:space="preserve">
+    <value>Notes</value>
+  </data>
+
+	<!-- Orders -->
+	<data name="Orders" xml:space="preserve">
+    <value>Orders</value>
+  </data>
+	<data name="OrderHistory" xml:space="preserve">
+    <value>Order History</value>
+  </data>
+	<data name="OrderNumber" xml:space="preserve">
+    <value>Order #</value>
+  </data>
+	<data name="TotalOrders" xml:space="preserve">
+    <value>Total Orders</value>
+  </data>
+	<data name="NoOrdersFound" xml:space="preserve">
+    <value>No orders found</value>
+  </data>
+
+	<!-- Wallet -->
+	<data name="Wallet" xml:space="preserve">
+    <value>Wallet</value>
+  </data>
+	<data name="WalletBalance" xml:space="preserve">
+    <value>Wallet Balance</value>
+  </data>
+	<data name="WalletHistory" xml:space="preserve">
+    <value>Wallet History</value>
+  </data>
+	<data name="CurrentBalance" xml:space="preserve">
+    <value>Current Balance</value>
+  </data>
+	<data name="AvailableBalance" xml:space="preserve">
+    <value>Available Balance</value>
+  </data>
+	<data name="PendingBalance" xml:space="preserve">
+    <value>Pending Balance</value>
+  </data>
+	<data name="NoWalletTransactionsFound" xml:space="preserve">
+    <value>No wallet transactions found</value>
+  </data>
+
+	<!-- Transaction -->
+	<data name="TransactionType" xml:space="preserve">
+    <value>Transaction Type</value>
+  </data>
+	<data name="Amount" xml:space="preserve">
+    <value>Amount</value>
+  </data>
+	<data name="Fee" xml:space="preserve">
+    <value>Fee</value>
+  </data>
+
+	<!-- Dates & Times -->
+	<data name="Date" xml:space="preserve">
+    <value>Date</value>
+  </data>
+	<data name="LastLogin" xml:space="preserve">
+    <value>Last Login</value>
+  </data>
+	<data name="Never" xml:space="preserve">
+    <value>Never</value>
+  </data>
+
+	<!-- General -->
+	<data name="Total" xml:space="preserve">
+    <value>Total</value>
+  </data>
+	<data name="ViewProfile" xml:space="preserve">
+    <value>View Profile</value>
+  </data>
+
+	<!-- Pagination -->
+	<data name="First" xml:space="preserve">
+    <value>First</value>
+  </data>
+	<data name="Previous" xml:space="preserve">
+    <value>Previous</value>
+  </data>
+	<data name="Next" xml:space="preserve">
+    <value>Next</value>
+  </data>
+	<data name="Last" xml:space="preserve">
+    <value>Last</value>
+  </data>
+	<data name="Showing" xml:space="preserve">
+    <value>Showing</value>
+  </data>
+	<data name="To" xml:space="preserve">
+    <value>to</value>
+  </data>
+	<data name="Of" xml:space="preserve">
+    <value>of</value>
+  </data>
+	<data name="Entries" xml:space="preserve">
+    <value>entries</value>
+  </data>
+	<data name="PerPage" xml:space="preserve">
+    <value>per page</value>
+  </data>
+
+	<!-- Warehouse Management -->
+	<data name="Warehouse" xml:space="preserve">
+    <value>Warehouse</value>
+  </data>
+	<data name="WarehouseManagement" xml:space="preserve">
+    <value>Warehouse Management</value>
+  </data>
+	<data name="PlatformWarehouseDetails" xml:space="preserve">
+    <value>Platform Warehouse Details</value>
+  </data>
+	<data name="VendorWarehouses" xml:space="preserve">
+    <value>Vendor Warehouses</value>
+  </data>
+	<data name="PlatformWarehouseInformation" xml:space="preserve">
+    <value>Platform Warehouse Information</value>
+  </data>
+	<data name="EditDetails" xml:space="preserve">
+    <value>Edit Details</value>
+  </data>
+	<data name="NoAddressSpecified" xml:space="preserve">
+    <value>No address specified</value>
+  </data>
+	<data name="AdditionalInformation" xml:space="preserve">
+    <value>Additional Information</value>
+  </data>
+	<data name="WarehouseType" xml:space="preserve">
+    <value>Warehouse Type</value>
+  </data>
+	<data name="Platform" xml:space="preserve">
+    <value>Platform</value>
+  </data>
+	<data name="LoadingWarehouseDetails" xml:space="preserve">
+    <value>Loading warehouse details...</value>
+  </data>
+	<data name="NoPlatformWarehouseFound" xml:space="preserve">
+    <value>No platform warehouse found</value>
+  </data>
+	<data name="CreatePlatformWarehouse" xml:space="preserve">
+    <value>Create Platform Warehouse</value>
+  </data>
+	<data name="AllVendors" xml:space="preserve">
+    <value>All Vendors</value>
+  </data>
+	<data name="AllStatus" xml:space="preserve">
+    <value>All Status</value>
+  </data>
+	<data name="ActiveOnly" xml:space="preserve">
+    <value>Active Only</value>
+  </data>
+	<data name="InactiveOnly" xml:space="preserve">
+    <value>Inactive Only</value>
+  </data>
+	<data name="Confirm" xml:space="preserve">
+    <value>Confirm</value>
+  </data>
+	<data name="ConfirmAction" xml:space="preserve">
+    <value>Confirm Action</value>
+  </data>
+	<data name="AreYouSureYouWantTo" xml:space="preserve">
+    <value>Are you sure you want to</value>
+  </data>
+	<data name="ThisWarehouse" xml:space="preserve">
+    <value>this warehouse</value>
+  </data>
+	<data name="VendorName" xml:space="preserve">
+    <value>Vendor Name</value>
+  </data>
+	<data name="VendorEmail" xml:space="preserve">
+    <value>Vendor Email</value>
+  </data>
+	<data name="NoWarehousesFound" xml:space="preserve">
+    <value>No warehouses found</value>
+  </data>
+	<data name="Unknown" xml:space="preserve">
+    <value>Unknown</value>
+  </data>
+	<data name="Vendor" xml:space="preserve">
+    <value>Vendor</value>
+  </data>
+	<data name="ThisIsA" xml:space="preserve">
+    <value>This is a</value>
+  </data>
+	<data name="AddVendor" xml:space="preserve">
+    <value>Add Vendor</value>
+  </data>
+	<data name="SelectVendor" xml:space="preserve">
+    <value>Select Vendor</value>
+  </data>
+	<data name="NoVendorsAvailable" xml:space="preserve">
+    <value>No vendors available</value>
+  </data>
+	<data name="PleaseSelectVendor" xml:space="preserve">
+    <value>Please select a vendor</value>
+  </data>
+	<data name="WarehouseInformation" xml:space="preserve">
+    <value>Warehouse Information</value>
+  </data>
+	<data name="Type" xml:space="preserve">
+    <value>Type</value>
+  </data>
 </root>

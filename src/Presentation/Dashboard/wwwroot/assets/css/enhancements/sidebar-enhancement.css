@@ -4,148 +4,134 @@
 
 /* Sidebar الرئيسي - تدرج محسّن */
 .pcoded-navbar {
-    background: linear-gradient(180deg, 
-        #0d5449 0%, 
-        #0a4439 50%, 
-        #083a30 100%) !important;
-    box-shadow: 
-        4px 0 20px rgba(0, 0, 0, 0.15),
-        inset -1px 0 0 rgba(255, 255, 255, 0.05) !important;
+    background: linear-gradient(180deg, #0d5449 0%, #0a4439 50%, #083a30 100%) !important;
+    box-shadow: 4px 0 20px rgba(0, 0, 0, 0.15), inset -1px 0 0 rgba(255, 255, 255, 0.05) !important;
     position: relative;
 }
 
-/* تأثير Overlay للعمق */
-.pcoded-navbar::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    right: 0;
-    width: 2px;
-    height: 100%;
-    background: linear-gradient(
-        180deg,
-        transparent 0%,
-        rgba(255, 255, 255, 0.1) 50%,
-        transparent 100%
-    );
-    pointer-events: none;
-}
+    /* تأثير Overlay للعمق */
+    .pcoded-navbar::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 2px;
+        height: 100%;
+        background: linear-gradient( 180deg, transparent 0%, rgba(255, 255, 255, 0.1) 50%, transparent 100% );
+        pointer-events: none;
+    }
 
-/* تحسين منطقة اللوغو */
-.pcoded-navbar .navbar-brand {
-    background: rgba(0, 0, 0, 0.15) !important;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-    padding: 20px !important;
-    margin-bottom: 12px;
-    transition: all 0.3s ease;
-}
+    /* تحسين منطقة اللوغو */
+    .pcoded-navbar .navbar-brand {
+        background: rgba(0, 0, 0, 0.15) !important;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        padding: 20px !important;
+        margin-bottom: 12px;
+        transition: all 0.3s ease;
+    }
 
-.pcoded-navbar .navbar-brand:hover {
-    background: rgba(0, 0, 0, 0.25) !important;
-}
+        .pcoded-navbar .navbar-brand:hover {
+            background: rgba(0, 0, 0, 0.25) !important;
+        }
 
-/* تحسين عناصر القائمة */
-.pcoded-navbar .pcoded-inner-navbar li a {
-    color: rgba(255, 255, 255, 0.85) !important;
-    padding: 12px 10px !important;
-    margin: 5px 15px !important;
-    border-radius: 10px !important;
-    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
-    font-weight: 500;
-    font-size: 15px;
-    position: relative;
-    overflow: hidden;
-}
+    /* تحسين عناصر القائمة */
+    .pcoded-navbar .pcoded-inner-navbar li a {
+        color: rgba(255, 255, 255, 0.85) !important;
+        padding: 12px 10px !important;
+        margin: 5px !important;
+        border-radius: 10px !important;
+        transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
+        font-weight: 500;
+        font-size: 15px;
+        position: relative;
+        overflow: hidden;
+    }
 
 
-/* Hover Effect محسّن */
-.pcoded-navbar .pcoded-inner-navbar li a:hover {
-    background: rgba(16, 185, 129, 0.15) !important;
-    color: #ffffff !important;
-    transform: translateX(-3px);
-    padding-right: 26px !important;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-}
+        /* Hover Effect محسّن */
+        .pcoded-navbar .pcoded-inner-navbar li a:hover {
+            background: rgba(16, 185, 129, 0.15) !important;
+            color: #ffffff !important;
+            transform: translateX(-3px);
+            padding-right: 26px !important;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
 
-.pcoded-navbar .pcoded-inner-navbar li a:hover::before {
-    width: 4px;
-}
+            .pcoded-navbar .pcoded-inner-navbar li a:hover::before {
+                width: 4px;
+            }
 
-/* العنصر النشط - تصميم بارز */
-.pcoded-navbar .pcoded-inner-navbar ul.pcoded-submenu li.active > a,
-.pcoded-navbar .pcoded-inner-navbar ul.pcoded-submenu li.pcoded-trigger > a {
-    background: linear-gradient(90deg, 
-        rgba(16, 185, 129, 0.25) 0%, 
-        rgba(16, 185, 129, 0.15) 100%) !important;
-    color: #ffffff !important;
-    box-shadow: 
-        0 4px 16px rgba(16, 185, 129, 0.3),
-        inset 0 0 0 1px rgba(255, 255, 255, 0.1) !important;
-    font-weight: 700;
-    border-right: 4px solid var(--success) !important;
-}
+    /* العنصر النشط - تصميم بارز */
+    .pcoded-navbar .pcoded-inner-navbar ul.pcoded-submenu li.active > a,
+    .pcoded-navbar .pcoded-inner-navbar ul.pcoded-submenu li.pcoded-trigger > a {
+        background: linear-gradient(90deg, rgba(16, 185, 129, 0.25) 0%, rgba(16, 185, 129, 0.15) 100%) !important;
+        color: #ffffff !important;
+        box-shadow: 0 4px 16px rgba(16, 185, 129, 0.3), inset 0 0 0 1px rgba(255, 255, 255, 0.1) !important;
+        font-weight: 700;
+        border-right: 4px solid var(--success) !important;
+    }
 
 
-/* تحسين الأيقونات */
-.pcoded-navbar .pcoded-inner-navbar li a i,
-.pcoded-navbar .pcoded-inner-navbar li a .feather {
-    font-size: 22px !important;
-    margin-left: 16px !important;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
-}
+    /* تحسين الأيقونات */
+    .pcoded-navbar .pcoded-inner-navbar li a i,
+    .pcoded-navbar .pcoded-inner-navbar li a .feather {
+        font-size: 22px !important;
+        margin-left: 0px !important;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+    }
 
-/* تأثير الأيقونة عند النشاط */
-.pcoded-navbar .pcoded-inner-navbar li.active > a i,
-.pcoded-navbar .pcoded-inner-navbar li a:hover i {
-    transform: scale(1.15);
-    filter: drop-shadow(0 0 8px rgba(16, 185, 129, 0.5));
-}
+    /* تأثير الأيقونة عند النشاط */
+    .pcoded-navbar .pcoded-inner-navbar li.active > a i,
+    .pcoded-navbar .pcoded-inner-navbar li a:hover i {
+        transform: scale(1.15);
+        filter: drop-shadow(0 0 8px rgba(16, 185, 129, 0.5));
+    }
 
-/* تحسين القوائم الفرعية */
-.pcoded-navbar .pcoded-submenu {
-    background: rgba(0, 0, 0, 0.25) !important;
-    border-radius: 10px;
-    margin: 5px 15px;
-    padding: 8px 0;
-    border: 1px solid rgba(255, 255, 255, 0.05);
-}
+    /* تحسين القوائم الفرعية */
+    .pcoded-navbar .pcoded-submenu {
+        background: rgba(0, 0, 0, 0.25) !important;
+        border-radius: 10px;
+        margin: 5px 15px;
+        padding: 8px 0;
+        border: 1px solid rgba(255, 255, 255, 0.05);
+    }
 
-.pcoded-navbar .pcoded-submenu li a {
-    padding: 10px 16px 10px 52px !important;
-    font-size: 14px;
-    margin: 3px 10px !important;
-}
+        .pcoded-navbar .pcoded-submenu li a {
+            padding: 10px 16px 10px 52px !important;
+            font-size: 14px;
+            margin: 3px 10px !important;
+        }
 
 
-/* السهم للقوائم القابلة للطي */
-.pcoded-navbar .pcoded-inner-navbar li.pcoded-hasmenu > a .pcoded-mcaret {
-    transition: transform 0.3s ease;
-}
+    /* السهم للقوائم القابلة للطي */
+    .pcoded-navbar .pcoded-inner-navbar li.pcoded-hasmenu > a .pcoded-mcaret {
+        transition: transform 0.3s ease;
+    }
 
-.pcoded-navbar .pcoded-inner-navbar li.pcoded-hasmenu.pcoded-trigger > a .pcoded-mcaret {
-    transform: rotate(90deg);
-}
+    .pcoded-navbar .pcoded-inner-navbar li.pcoded-hasmenu.pcoded-trigger > a .pcoded-mcaret {
+        transform: rotate(90deg);
+    }
 
-/* تحسين Scrollbar */
-.pcoded-navbar .navbar-content::-webkit-scrollbar {
-    width: 6px;
-}
+    /* تحسين Scrollbar */
+    .pcoded-navbar .navbar-content::-webkit-scrollbar {
+        width: 6px;
+    }
 
-.pcoded-navbar .navbar-content::-webkit-scrollbar-track {
-    background: rgba(0, 0, 0, 0.2);
-    border-radius: 10px;
-}
+    .pcoded-navbar .navbar-content::-webkit-scrollbar-track {
+        background: rgba(0, 0, 0, 0.2);
+        border-radius: 10px;
+    }
 
-.pcoded-navbar .navbar-content::-webkit-scrollbar-thumb {
-    background: rgba(255, 255, 255, 0.2);
-    border-radius: 10px;
-    transition: background 0.3s ease;
-}
+    .pcoded-navbar .navbar-content::-webkit-scrollbar-thumb {
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 10px;
+        transition: background 0.3s ease;
+    }
 
-.pcoded-navbar .navbar-content::-webkit-scrollbar-thumb:hover {
-    background: rgba(255, 255, 255, 0.3);
-}
+        .pcoded-navbar .navbar-content::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
 
 /* Badge للإشعارات (إذا وجد) */
 .nav-badge {
@@ -167,6 +153,7 @@
         transform: scale(1);
         box-shadow: 0 2px 8px rgba(239, 68, 68, 0.4);
     }
+
     50% {
         transform: scale(1.1);
         box-shadow: 0 4px 12px rgba(239, 68, 68, 0.6);
@@ -178,16 +165,16 @@
     .pcoded-navbar {
         width: 260px !important;
     }
-    
-    .pcoded-navbar .pcoded-inner-navbar li a {
-        padding: 10px 15px !important;
-        margin: 4px 10px !important;
-    }
-    
-    .pcoded-navbar .pcoded-inner-navbar li a i {
-        font-size: 20px !important;
-        margin-left: 12px !important;
-    }
+
+        .pcoded-navbar .pcoded-inner-navbar li a {
+            padding: 10px 15px !important;
+            margin: 4px 10px !important;
+        }
+
+            .pcoded-navbar .pcoded-inner-navbar li a i {
+                font-size: 20px !important;
+                margin-left: 12px !important;
+            }
 }
 
 /* ===================================
@@ -209,7 +196,7 @@
     }
 
         [dir="ltr"] .pcoded-navbar .pcoded-submenu li a {
-            padding: 10px 16px 10px 52px !important;
+            padding: 10px 16px 10px 15px !important;
             margin: 3px 10px !important;
             display: flex !important;
             align-items: center !important;
@@ -220,16 +207,9 @@
             [dir="ltr"] .pcoded-navbar .pcoded-submenu li a i,
             [dir="ltr"] .pcoded-navbar .pcoded-submenu li a .feather,
             [dir="ltr"] .pcoded-navbar .pcoded-submenu li a .pcoded-micon {
-                margin-right: 14px !important;
                 margin-left: 0 !important;
                 font-size: 18px !important;
             }
-
-/* إصلاح القائمة الرئيسية */
-[dir="ltr"] .pcoded-navbar .pcoded-inner-navbar > li > a {
-    padding: 12px 20px !important;
-    margin: 5px 15px !important;
-}
 
     [dir="ltr"] .pcoded-navbar .pcoded-inner-navbar > li > a i,
     [dir="ltr"] .pcoded-navbar .pcoded-inner-navbar > li > a .feather {
@@ -310,13 +290,12 @@
 
 /* التأكد من أن العربية تعمل بشكل صحيح */
 [dir="rtl"] .pcoded-navbar .pcoded-submenu li a {
-    padding: 10px 52px 10px 16px !important;
+    padding: 10px 15px 10px 16px !important;
 }
 
     [dir="rtl"] .pcoded-navbar .pcoded-submenu li a i,
     [dir="rtl"] .pcoded-navbar .pcoded-submenu li a .feather,
     [dir="rtl"] .pcoded-navbar .pcoded-submenu li a .pcoded-micon {
-        margin-left: 14px !important;
         margin-right: 0 !important;
     }
 
