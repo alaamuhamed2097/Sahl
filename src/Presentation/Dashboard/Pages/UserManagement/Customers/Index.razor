@@ -155,22 +155,22 @@
                                         <td class="text-center align-middle">
                                             @(item.LastLoginDate?.ToString("g") ?? @ECommerceResources.Never)
                                         </td>
-                                        <td class="text-center m-r-10 align-middle">
-                                            <div class="btn-group" role="group">
-                                                <!-- View Button -->
-                                                <button type="button" class="btn me-2 btn-sm btn-primary" @onclick="() => ViewDetails(item)">
-                                                    <i class="fas fa-eye"></i>
+                                        <td class="text-center m-l-10 align-baseline">
+                                                <button type="button" class="btn me-2 btn-sm btn-warning" @onclick="() => Edit(item)">
+                                                <i class="fas fa-pen mx-2"></i>
                                                 </button>
+                                                <button type="button" class="btn me-2 btn-sm btn-primary" @onclick="() => ViewDetails(item)">
+                                                <i class="fas fa-eye mx-2"></i>
+                                                </button>
+                                            @* <div class="btn-group" role="group">
+                                                <!-- View Button -->
 
                                                 <!-- Edit Button -->
-                                                <button type="button" class="btn me-2 btn-sm btn-warning" @onclick="() => Edit(item)">
-                                                    <i class="fas fa-pen"></i>
-                                                </button>
 
-                                                @*   <button type="button" class="btn me-2 btn-sm btn-danger" @onclick="() => Delete(item.Id)">
+                                                 <button type="button" class="btn me-2 btn-sm btn-danger" @onclick="() => Delete(item.Id)">
                                                     <i class="fas fa-trash"></i>
-                                                </button> *@
-                                            </div>
+                                                </button> 
+                                            </div> *@
                                         </td>
                                     </tr>
                                 }

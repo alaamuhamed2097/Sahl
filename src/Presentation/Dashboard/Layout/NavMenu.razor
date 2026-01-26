@@ -260,7 +260,7 @@
                 <AuthorizeView Roles="@nameof(UserRole.Vendor)">
                     <Authorized>
 
-                        <!-- 📦 Orders & Rewards -->
+                        @* <!-- 📦 Orders & Rewards -->
                         <li data-username="vendor-orders-rewards" class="nav-item pcoded-hasmenu @(IsSubmenuOpen("vendor-orders-rewards") ? "pcoded-trigger" : "")">
                             <a href="javascript:void(0)" class="nav-link" @onclick="ToggleVendorOrdersRewardsSubmenu">
                                 <span class="pcoded-micon"><i class="fas fa-box-open"></i></span>
@@ -310,7 +310,7 @@
                                     </NavLink>
                                 </li>
                             </ul>
-                        </li>
+                        </li> *@
 
                     </Authorized>
                 </AuthorizeView>

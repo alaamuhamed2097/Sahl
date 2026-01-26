@@ -37,14 +37,15 @@
                             </div>
                         </EditForm>
 
-                        <div class="d-flex align-items-center gap-2">
+                        <!-- Page Size -->
+                        <div class="d-flex align-items-center gap-2 ms-auto">
                             <select class="form-select rounded-3 shadow-sm border-light text-primary fw-bold text-center custom-dropdown"
-                                    style="width: 130px; height: 40px; padding-right: 30px;"
+                                    style="width: 100px; height: 40px; padding-right: 30px;"
                                     @onchange="OnPageSizeChanged">
-                                <option value="10">10</option>
-                                <option value="15">15</option>
-                                <option value="20">20</option>
-                                <option value="30">30</option>
+                                <option value="10" selected="@(searchModel.PageSize == 10)">10</option>
+                                <option value="15" selected="@(searchModel.PageSize == 15)">15</option>
+                                <option value="20" selected="@(searchModel.PageSize == 20)">20</option>
+                                <option value="30" selected="@(searchModel.PageSize == 30)">30</option>
                             </select>
                         </div>
                     </li>

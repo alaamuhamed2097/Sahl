@@ -338,9 +338,9 @@
 					<div class="d-flex align-items-center flex-grow-1">
 						@if (HasChildren(node))
 						{
-							<button class="btn btn-sm btn-outline-primary me-3 expand-btn"
+							<button class="btn btn-sm btn-outline-primary mx-3 expand-btn"
 									@onclick="() => ToggleExpansion(node.Category.Id)">
-								<i class="fas @(IsExpanded(node.Category.Id) ? "fa-minus" : "fa-plus") me-0"></i>
+								<i class="fas @(IsExpanded(node.Category.Id) ? "fa-minus" : "fa-plus") mx-2"></i>
 							</button>
 						}
 						else
