@@ -1,4 +1,5 @@
 ﻿using Common.Enumerations.Settings;
+using Shared.DTOs.Order.Payment.Refund;
 using Shared.DTOs.Setting;
 using Shared.GeneralModels;
 
@@ -26,5 +27,10 @@ namespace Dashboard.Contracts.Setting
 
 		// Get All Settings for UI
 		Task<ResponseModel<SystemSettingsViewModelDto>> GetAllSettingsAsync();
+
+		Task<ResponseModel<IEnumerable<RefundRequestDto>>> GetAllRefundsAsync();
+		Task<ResponseModel<RefundRequestDto>> GetRefundByIdAsync(Guid refundId);
+		Task<ResponseModel<RefundRequestDto>> GetRefundByOrderDetailIdAsync(Guid orderDetailId);
+		Task<ResponseModel<bool>> UpdateRefundStatusAsync(UpdateRefundStatusDto dto);
 	}
 }

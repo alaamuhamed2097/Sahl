@@ -22,7 +22,7 @@ namespace Dashboard.Services.Setting
 
 		#region Get Settings by Type
 
-		public async Task<ResponseModel<decimal>> GetDecimalSettingAsync(SystemSettingKey key)
+		public async Task<ResponseModel<decimal>> GetDecimalSettingAsync(SystemSettingKey key) //-
 		{
 			try
 			{
