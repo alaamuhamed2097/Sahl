@@ -1,10 +1,7 @@
 ﻿using Api.Controllers.v1.Base;
 using Asp.Versioning;
-using AutoMapper;
 using BL.Contracts.Service.Merchandising;
 using Common.Enumerations.User;
-using Domains.Entities.Merchandising.HomePage;
-using Domains.Entities.Merchandising.HomePageBlocks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Shared.DTOs.Merchandising.Homepage;
@@ -24,12 +21,10 @@ namespace Api.Controllers.v1.Merchandising
     public class AdminBlockController : BaseController
     {
         private readonly IAdminBlockService _adminBlockService;
-        private readonly IMapper _mapper;
 
-        public AdminBlockController(IAdminBlockService adminBlockService, IMapper mapper)
+        public AdminBlockController(IAdminBlockService adminBlockService)
         {
             _adminBlockService = adminBlockService;
-            _mapper = mapper;
         }
 
         /// <summary>
@@ -67,14 +62,12 @@ namespace Api.Controllers.v1.Merchandising
 
             try
             {
-                var block = _mapper.Map<TbHomepageBlock>(blockDto);
                 var userId = GetUserId();
-                var createdBlock = await _adminBlockService.CreateBlockAsync(block, userId);
-                var createdBlockDto = _mapper.Map<AdminBlockCreateDto>(createdBlock);
+                var createdBlockDto = await _adminBlockService.CreateBlockAsync(blockDto, userId);
 
                 return CreatedAtAction(
                     nameof(GetBlock),
-                    new { blockId = createdBlock.Id },
+                    new { blockId = createdBlockDto.Id },
                     new ResponseModel<AdminBlockCreateDto>
                     {
                         Success = true,
@@ -114,9 +107,9 @@ namespace Api.Controllers.v1.Merchandising
         [ProducesResponseType(typeof(ResponseModel<object>), StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetBlock(Guid blockId)
         {
-            var block = await _adminBlockService.GetBlockByIdAsync(blockId);
+            var blockDto = await _adminBlockService.GetBlockByIdAsync(blockId);
 
-            if (block == null)
+            if (blockDto == null)
             {
                 return NotFound(new ResponseModel<object>
                 {
@@ -126,7 +119,6 @@ namespace Api.Controllers.v1.Merchandising
                 });
             }
 
-            var blockDto = _mapper.Map<AdminBlockCreateDto>(block);
             return Ok(new ResponseModel<AdminBlockCreateDto>
             {
                 Success = true,
@@ -148,15 +140,7 @@ namespace Api.Controllers.v1.Merchandising
         {
             try
             {
-                var blocks = await _adminBlockService.GetAllBlocksAsync();
-                
-                if (blocks == null)
-                {
-                    blocks = new List<TbHomepageBlock>();
-                }
-
-                // Map entities to DTOs
-                var blockDtos = _mapper.Map<List<AdminBlockListDto>>(blocks);
+                var blockDtos = await _adminBlockService.GetAllBlocksAsync();
 
                 return Ok(new ResponseModel<List<AdminBlockListDto>>
                 {
@@ -184,7 +168,7 @@ namespace Api.Controllers.v1.Merchandising
         /// Update Homepage Block
         /// </summary>
         [HttpPut("{blockId}")]
-        [ProducesResponseType(typeof(ResponseModel<AdminBlockListDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ResponseModel<AdminBlockCreateDto>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ResponseModel<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ResponseModel<object>), StatusCodes.Status404NotFound)]
         public async Task<IActionResult> UpdateBlock(
@@ -203,13 +187,10 @@ namespace Api.Controllers.v1.Merchandising
 
             try
             {
-                var block = _mapper.Map<TbHomepageBlock>(blockDto);
-                block.Id = blockId; // Ensure the correct ID is used
                 var userId = GetUserId();
-                var updatedBlock = await _adminBlockService.UpdateBlockAsync(block, userId);
-                var updatedBlockDto = _mapper.Map<AdminBlockListDto>(updatedBlock);
+                var updatedBlockDto = await _adminBlockService.UpdateBlockAsync(blockId, blockDto, userId);
 
-                return Ok(new ResponseModel<AdminBlockListDto>
+                return Ok(new ResponseModel<AdminBlockCreateDto>
                 {
                     Success = true,
                     StatusCode = StatusCodes.Status200OK,
@@ -292,7 +273,7 @@ namespace Api.Controllers.v1.Merchandising
             [FromBody] dynamic request)
         {
             int newOrder;
-            
+
             // Handle both raw int and { newOrder: value } formats
             if (request is int intValue)
             {
@@ -346,23 +327,25 @@ namespace Api.Controllers.v1.Merchandising
         /// Add Product to Block
         /// </summary>
         [HttpPost("{blockId}/products")]
-        [ProducesResponseType(typeof(ResponseModel<TbBlockItem>), StatusCodes.Status201Created)]
+        [ProducesResponseType(typeof(ResponseModel<AdminBlockItemDto>), StatusCodes.Status201Created)]
         [ProducesResponseType(typeof(ResponseModel<object>), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> AddProductToBlock(
             Guid blockId,
-            [FromBody] TbBlockItem blockProduct)
+            [FromBody] AdminBlockItemDto blockProductDto)
         {
             try
             {
-                blockProduct.HomepageBlockId = blockId;
                 var userId = GetUserId();
-
-                var created = await _adminBlockService.AddProductToBlockAsync(blockProduct, userId);
+                var created = await _adminBlockService.AddProductToBlockAsync(
+                    blockId,
+                    blockProductDto.ItemId,
+                    blockProductDto.DisplayOrder,
+                    userId);
 
                 return CreatedAtAction(
                     nameof(GetBlock),
                     new { blockId = blockId },
-                    new ResponseModel<TbBlockItem>
+                    new ResponseModel<AdminBlockItemDto>
                     {
                         Success = true,
                         StatusCode = StatusCodes.Status201Created,
@@ -427,12 +410,12 @@ namespace Api.Controllers.v1.Merchandising
         /// Get Block Products
         /// </summary>
         [HttpGet("{blockId}/products")]
-        [ProducesResponseType(typeof(ResponseModel<List<TbBlockItem>>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ResponseModel<List<AdminBlockItemDto>>), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetBlockProducts(Guid blockId)
         {
             var products = await _adminBlockService.GetBlockProductsAsync(blockId);
 
-            return Ok(new ResponseModel<List<TbBlockItem>>
+            return Ok(new ResponseModel<List<AdminBlockItemDto>>
             {
                 Success = true,
                 StatusCode = StatusCodes.Status200OK,
@@ -447,22 +430,25 @@ namespace Api.Controllers.v1.Merchandising
         /// Add Category to Block
         /// </summary>
         [HttpPost("{blockId}/categories")]
-        [ProducesResponseType(typeof(ResponseModel<TbBlockCategory>), StatusCodes.Status201Created)]
+        [ProducesResponseType(typeof(ResponseModel<AdminBlockCategoryDto>), StatusCodes.Status201Created)]
         public async Task<IActionResult> AddCategoryToBlock(
             Guid blockId,
-            [FromBody] TbBlockCategory blockCategory)
+            [FromBody] AdminBlockCategoryDto blockCategoryDto)
         {
             try
             {
-                blockCategory.HomepageBlockId = blockId;
                 var userId = GetUserId();
 
-                var created = await _adminBlockService.AddCategoryToBlockAsync(blockCategory, userId);
+                var created = await _adminBlockService.AddCategoryToBlockAsync(
+                    blockId,
+                    blockCategoryDto.CategoryId,
+                    blockCategoryDto.DisplayOrder,
+                    userId);
 
                 return CreatedAtAction(
                     nameof(GetBlock),
                     new { blockId = blockId },
-                    new ResponseModel<TbBlockCategory>
+                    new ResponseModel<AdminBlockCategoryDto>
                     {
                         Success = true,
                         StatusCode = StatusCodes.Status201Created,

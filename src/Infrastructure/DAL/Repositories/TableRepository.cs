@@ -280,7 +280,7 @@ namespace DAL.Repositories
                 model.IsDeleted = existingEntity.IsDeleted;
                 model.CreatedDateUtc = existingEntity.CreatedDateUtc;
 
-                _dbContext.Entry(model).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
+                _dbContext.Entry(model).State = EntityState.Modified;
                 var result = await _dbContext.SaveChangesAsync(cancellationToken) > 0;
 
                 if (!result)

@@ -7,12 +7,12 @@ namespace DAL.Configurations
     /// <summary>
     /// Entity configuration for TbBlockProduct
     /// </summary>
-    public class BlockProductConfiguration : IEntityTypeConfiguration<TbBlockItem>
+    public class BlockItemConfiguration : IEntityTypeConfiguration<TbBlockItem>
     {
         public void Configure(EntityTypeBuilder<TbBlockItem> entity)
         {
             // Table name
-            entity.ToTable("TbBlockProducts");
+            entity.ToTable("TbBlockItems");
 
             // Property configurations
             entity.Property(e => e.DisplayOrder)
