@@ -1,5 +1,4 @@
-﻿using Domains.Entities.Merchandising.HomePage;
-using Domains.Entities.Merchandising.HomePageBlocks;
+﻿using Shared.DTOs.Merchandising.Homepage;
 
 namespace BL.Contracts.Service.Merchandising;
 
@@ -11,27 +10,23 @@ public interface IAdminBlockService
 {
     // === Block Management ===
 
-    Task<TbHomepageBlock> CreateBlockAsync(TbHomepageBlock block, Guid userId);
-    Task<TbHomepageBlock> UpdateBlockAsync(TbHomepageBlock block, Guid userId);
+    Task<AdminBlockCreateDto> CreateBlockAsync(AdminBlockCreateDto blockDto, Guid userId);
+    Task<AdminBlockCreateDto> UpdateBlockAsync(Guid blockId, AdminBlockCreateDto blockDto, Guid userId);
     Task<bool> DeleteBlockAsync(Guid blockId, Guid userId);
-    Task<TbHomepageBlock?> GetBlockByIdAsync(Guid blockId);
-    Task<List<TbHomepageBlock>> GetAllBlocksAsync();
+    Task<AdminBlockCreateDto?> GetBlockByIdAsync(Guid blockId);
+    Task<List<AdminBlockListDto>> GetAllBlocksAsync();
     Task<bool> UpdateDisplayOrderAsync(Guid blockId, int newOrder, Guid userId);
 
     // === Product Management ===
 
-    Task<TbBlockItem> AddProductToBlockAsync(TbBlockItem blockProduct, Guid userId);
+    Task<AdminBlockItemDto> AddProductToBlockAsync(Guid blockId, Guid itemId, int displayOrder, Guid userId);
     Task<bool> RemoveProductFromBlockAsync(Guid blockProductId, Guid userId);
-    Task<List<TbBlockItem>> GetBlockProductsAsync(Guid blockId);
+    Task<List<AdminBlockItemDto>> GetBlockProductsAsync(Guid blockId);
     Task<bool> UpdateProductDisplayOrderAsync(Guid blockProductId, int newOrder, Guid userId);
 
     // === Category Management ===
 
-    Task<TbBlockCategory> AddCategoryToBlockAsync(TbBlockCategory blockCategory, Guid userId);
+    Task<AdminBlockCategoryDto> AddCategoryToBlockAsync(Guid blockId, Guid categoryId, int displayOrder, Guid userId);
     Task<bool> RemoveCategoryFromBlockAsync(Guid blockCategoryId, Guid userId);
-    Task<List<TbBlockCategory>> GetBlockCategoriesAsync(Guid blockId);
-
-    // === Validation ===
-
-    Task<bool> ValidateBlockConfigurationAsync(TbHomepageBlock block);
+    Task<List<AdminBlockCategoryDto>> GetBlockCategoriesAsync(Guid blockId);
 }

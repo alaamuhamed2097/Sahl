@@ -1,4 +1,5 @@
 using AutoMapper;
+using Common.Enumerations.Merchandising;
 using Domains.Entities.Merchandising.HomePage;
 using Domains.Entities.Merchandising.HomePageBlocks;
 using Shared.DTOs.Merchandising.Homepage;
@@ -19,7 +20,43 @@ namespace BL.Mapper.Merchandising
 
             // TbHomepageBlock to AdminBlockCreateDto
             CreateMap<TbHomepageBlock, AdminBlockCreateDto>()
-                .ReverseMap();
+                .ForMember(dest => dest.Items, opt => opt.MapFrom(src => src.BlockItems))
+                .ForMember(dest => dest.Categories, opt => opt.MapFrom(src => src.BlockCategories))
+                .ReverseMap()
+                .ForMember(dest => dest.BlockItems, opt => opt.MapFrom((src, dest, destMember, context) =>
+                {
+                    // Only map items if Type is ManualItems
+                    if (!string.IsNullOrEmpty(src.Type) && 
+                        (src.Type.Equals("ManualItems", StringComparison.OrdinalIgnoreCase) || 
+                         src.Type == "1") && 
+                        src.Items != null && src.Items.Any())
+                    {
+                        return src.Items.Select(item => new TbBlockItem
+                        {
+                            ItemId = item.ItemId,
+                            DisplayOrder = item.DisplayOrder,
+                            HomepageBlockId = dest.Id
+                        }).ToList();
+                    }
+                    return new List<TbBlockItem>();
+                }))
+                .ForMember(dest => dest.BlockCategories, opt => opt.MapFrom((src, dest, destMember, context) =>
+                {
+                    // Only map categories if Type is ManualCategories
+                    if (!string.IsNullOrEmpty(src.Type) && 
+                        (src.Type.Equals("ManualCategories", StringComparison.OrdinalIgnoreCase) || 
+                         src.Type == "2") && 
+                        src.Categories != null && src.Categories.Any())
+                    {
+                        return src.Categories.Select(cat => new TbBlockCategory
+                        {
+                            CategoryId = cat.CategoryId,
+                            DisplayOrder = cat.DisplayOrder,
+                            HomepageBlockId = dest.Id
+                        }).ToList();
+                    }
+                    return new List<TbBlockCategory>();
+                }));
 
             // TbBlockItem to AdminBlockItemDto
             CreateMap<TbBlockItem, AdminBlockItemDto>()

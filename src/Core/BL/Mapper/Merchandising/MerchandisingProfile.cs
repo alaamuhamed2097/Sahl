@@ -1,4 +1,5 @@
 ﻿using Domains.Entities.Campaign;
+using Domains.Entities.Catalog.Category;
 using Domains.Entities.Catalog.Item.ItemAttributes;
 using Domains.Entities.Merchandising.HomePage;
 using Shared.DTOs.Campaign;
@@ -32,6 +33,13 @@ public partial class MappingProfile
                 src.Category != null ? src.Category.TitleEn : null))
             .ForMember(dest => dest.ImageUrl, opt => opt.MapFrom(src =>
                 src.Category != null ? src.Category.ImageUrl : null));
+
+        // Direct TbCategory to CategoryCardDto mapping
+        CreateMap<TbCategory, CategoryCardDto>()
+            .ForMember(dest => dest.CategoryId, opt => opt.MapFrom(src => src.Id))
+            .ForMember(dest => dest.NameAr, opt => opt.MapFrom(src => src.TitleAr))
+            .ForMember(dest => dest.NameEn, opt => opt.MapFrom(src => src.TitleEn))
+            .ForMember(dest => dest.ImageUrl, opt => opt.MapFrom(src => src.ImageUrl));
 
         // Item Combination to Product Card - null-safe with ThumbnailImage
         CreateMap<TbItemCombination, ItemCardDto>()

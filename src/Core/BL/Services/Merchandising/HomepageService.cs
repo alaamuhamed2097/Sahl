@@ -55,7 +55,7 @@ public class HomepageService : IHomepageService
 
     /// <summary>
     /// Get complete homepage with all blocks (preview with limited items)
-    /// Categories blocks will not include category details - use GetBlockCategoriesAsync instead
+    /// Categories blocks will include category details
     /// </summary>
     public async Task<GetHomepageResponse> GetHomepageAsync(string? userId)
     {
@@ -64,13 +64,25 @@ public class HomepageService : IHomepageService
 
         foreach (var block in blocks)
         {
-            // For category blocks, just map the block without categories
+            // For category blocks, load categories
             if (block.Type == HomepageBlockType.ManualCategories)
             {
                 var dto = _mapper.MapModel<TbHomepageBlock, HomepageBlockDto>(block);
                 dto.Products = new List<ItemCardDto>();
-                dto.Categories = new List<CategoryCardDto>();
-                dto.TotalCategoryCount = await GetBlockCategoriesCountAsync(block.Id);
+                
+                // Load categories for the block
+                var blockCategories = await _blockCategoryRepository.GetAsync(
+                    predicate: bc => bc.HomepageBlockId == block.Id && !bc.IsDeleted,
+                    orderBy: q => q.OrderBy(bc => bc.DisplayOrder),
+                    includeProperties: "Category"
+                );
+
+                var categoryList = blockCategories.ToList();
+                dto.Categories = categoryList
+                    .Select(bc => _mapper.MapModel<TbCategory, CategoryCardDto>(bc.Category))
+                    .ToList();
+                dto.TotalCategoryCount = categoryList.Count;
+                
                 blockDtos.Add(dto);
             }
             else
