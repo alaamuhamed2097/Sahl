@@ -3,6 +3,7 @@ using Domains.Entities.Catalog.Item.ItemAttributes;
 using Domains.Procedures;
 using Domains.Views.Item;
 using Shared.DTOs.Catalog.Item;
+using Shared.DTOs.Merchandising.Homepage;
 using Shared.GeneralModels.Models;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -102,6 +103,23 @@ public partial class MappingProfile
         // Item images
         CreateMap<TbItemImage, ItemImageDto>()
             .ReverseMap();
+
+        CreateMap<TbItem, ItemCardDto>()
+    .ForMember(dest => dest.ItemId, opt => opt.MapFrom(src => src.Id))
+    .ForMember(dest => dest.ItemCombinationId, opt => opt.Ignore()) // Set separately if needed
+    .ForMember(dest => dest.NameAr, opt => opt.MapFrom(src => src.TitleAr))
+    .ForMember(dest => dest.NameEn, opt => opt.MapFrom(src => src.TitleEn))
+    .ForMember(dest => dest.MainImageUrl, opt => opt.MapFrom(src => src.ThumbnailImage))
+    .ForMember(dest => dest.Rating, opt => opt.MapFrom(src => src.AverageRating))
+    .ForMember(dest => dest.IsAvailable, opt => opt.MapFrom(src => src.IsActive))
+    .ForMember(dest => dest.InStock, opt => opt.Ignore()) // Need to determine from inventory
+    .ForMember(dest => dest.Price, opt => opt.MapFrom(src => src.BasePrice ?? 0))
+    .ForMember(dest => dest.OriginalPrice, opt => opt.MapFrom(src => src.BasePrice ?? 0))
+    .ForMember(dest => dest.DiscountPercentage, opt => opt.Ignore()) // Calculate separately
+    .ForMember(dest => dest.IsDefault, opt => opt.Ignore()) // Set based on logic
+    .ForMember(dest => dest.IsBuyBoxWinner, opt => opt.Ignore()) // Set based on BuyBox logic
+    .ForMember(dest => dest.CampaignBadgeAr, opt => opt.Ignore()) // Set from campaign data
+    .ForMember(dest => dest.CampaignBadgeEn, opt => opt.Ignore()); // Set from campaign data
     }
 
     private static List<ItemImageDto> DeserializeItemImages(string json)

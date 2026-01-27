@@ -1,4 +1,4 @@
-@page "/sales/orders/{id:guid}"
+@page "/order/orders/{id:guid}"
 @page "/orders/{id:guid}"
 
 @attribute [Authorize(Roles = nameof(UserRole.Admin))]
@@ -10,6 +10,7 @@
 @using Dashboard.Pages.Base
 @using Shared.DTOs.Order.OrderProcessing.AdminOrder
 @inherits LocalizedComponentBase
+@inject IJSRuntime JS
 
 <PageTitle>@OrderResources.OrderDetails - #@Order.OrderNumber</PageTitle>
 
@@ -84,443 +85,13 @@ else
             </div>
         </div>
 
-        <div class="row g-4">
-            @* Left Column: Order Details *@
-            <div class="col-lg-8">
-
-                @* Customer Information Card *@
-                <div class="card shadow-sm border-0 mb-4">
-                    <div class="card-header bg-gradient-primary text-white py-3">
-                        <h5 class="mb-0 fw-bold d-flex align-items-center gap-2">
-                            <i class="fas fa-user"></i>
-                            @OrderResources.CustomerInformation
-                        </h5>
-                    </div>
-                    <div class="card-body">
-                        <div class="row g-3">
-                            <div class="col-md-6">
-                                <div class="info-box">
-                                    <label class="text-muted small mb-1 d-flex align-items-center gap-1">
-                                        <i class="fas fa-user-circle text-primary"></i>
-                                        @OrderResources.CustomerName
-                                    </label>
-                                    <div class="fw-bold fs-5">@Order.Customer.CustomerFullName</div>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="info-box">
-                                    <label class="text-muted small mb-1 d-flex align-items-center gap-1">
-                                        <i class="fas fa-envelope text-primary"></i>
-                                        @FormResources.Email
-                                    </label>
-                                    <div class="fw-bold">
-                                        <a href="mailto:@Order.Customer.Email" class="text-decoration-none text-primary">
-                                            @Order.Customer.Email
-                                        </a>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="info-box">
-                                    <label class="text-muted small mb-1 d-flex align-items-center gap-1">
-                                        <i class="fas fa-phone text-primary"></i>
-                                        @FormResources.PhoneNumber
-                                    </label>
-                                    <div class="fw-bold">
-                                        <a href="tel:@(Order.Customer.PhoneCode + Order.Customer.Phone)" class="text-decoration-none text-primary">
-                                            @Order.Customer.PhoneCode @Order.Customer.Phone
-                                        </a>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                @* Order Items Card *@
-                <div class="card shadow-sm border-0 mb-4">
-                    <div class="card-header bg-gradient-success text-white py-3">
-                        <h5 class="mb-0 fw-bold d-flex align-items-center gap-2">
-                            <i class="fas fa-box"></i>
-                            @* ✅ API DTO property *@
-                            @OrderResources.OrderItems (@Order.Items.Count)
-                        </h5>
-                    </div>
-                    <div class="card-body p-0">
-                        @if (Order.Items.Any())
-                        {
-                            <div class="table-responsive">
-                                <table class="table table-hover mb-0">
-                                    <thead class="table-light">
-                                        <tr>
-                                            <th class="text-center" style="width: 80px;">@FormResources.Image</th>
-                                            <th>@OrderResources.Item</th>
-                                            <th class="text-center">@OrderResources.Vendor</th>
-                                            <th class="text-center">@OrderResources.Quantity</th>
-                                            <th class="text-end">@FormResources.Price</th>
-                                            <th class="text-end">@OrderResources.Subtotal</th>
-                                            <th class="text-center">@OrderResources.Status</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @* ✅ Iterate API DTO collection *@
-                                        @foreach (var item in Order.Items)
-                                        {
-                                            <tr>
-                                                <td class="text-center">
-                                                    @if (!string.IsNullOrEmpty(item.ItemImage))
-                                                    {
-                                                        <img src="@($"{BaseUrl}/{item.ItemImage}")"
-                                                             alt="@item.ItemName"
-                                                             class="rounded"
-                                                             style="width: 50px; height: 50px; object-fit: cover;" />
-                                                    }
-                                                    else
-                                                    {
-                                                        <div class="bg-light rounded d-flex align-items-center justify-content-center"
-                                                             style="width: 50px; height: 50px;">
-                                                            <i class="fas fa-image text-muted"></i>
-                                                        </div>
-                                                    }
-                                                </td>
-                                                <td>
-                                                    @* ✅ API DTO properties *@
-                                                    <div class="fw-bold">@item.ItemName</div>
-                                                    <small class="text-muted">@item.VendorName</small>
-                                                </td>
-                                                <td class="text-center">
-                                                    <span class="badge bg-info">@item.VendorName</span>
-                                                </td>
-                                                <td class="text-center">
-                                                    <span class="badge bg-secondary fs-6">@item.Quantity</span>
-                                                </td>
-                                                <td class="text-end">
-                                                    <span dir="ltr">$@item.UnitPrice.ToString("F2")</span>
-                                                </td>
-                                                <td class="text-end fw-bold">
-                                                    <span dir="ltr">$@item.SubTotal.ToString("F2")</span>
-                                                </td>
-                                                <td class="text-center">
-                                                    <span class="@GetShipmentStatusBadgeClass(item.ShipmentStatus)">
-                                                        @GetShipmentStatusText(item.ShipmentStatus)
-                                                    </span>
-                                                </td>
-                                            </tr>
-                                        }
-                                    </tbody>
-                                    <tfoot class="table-light">
-                                        @* ✅ API DTO properties *@
-                                        <tr>
-                                            <td colspan="5" class="text-end fw-bold">@OrderResources.Subtotal:</td>
-                                            <td class="text-end fw-bold" dir="ltr">$@Order.SubTotal.ToString("F2")</td>
-                                            <td></td>
-                                        </tr>
-                                        @if (Order.DiscountAmount > 0)
-                                        {
-                                            <tr>
-                                                <td colspan="5" class="text-end fw-bold text-success">@OrderResources.Discount:</td>
-                                                <td class="text-end fw-bold text-success" dir="ltr">-$@Order.DiscountAmount.ToString("F2")</td>
-                                                <td></td>
-                                            </tr>
-                                        }
-                                        <tr>
-                                            <td colspan="5" class="text-end fw-bold">@OrderResources.Tax:</td>
-                                            <td class="text-end fw-bold" dir="ltr">$@Order.TaxAmount.ToString("F2")</td>
-                                            <td></td>
-                                        </tr>
-                                        <tr>
-                                            <td colspan="5" class="text-end fw-bold">@OrderResources.Shipping:</td>
-                                            <td class="text-end fw-bold" dir="ltr">$@Order.ShippingAmount.ToString("F2")</td>
-                                            <td></td>
-                                        </tr>
-                                        <tr class="table-primary">
-                                            <td colspan="5" class="text-end fw-bold fs-5">@OrderResources.TotalAmount:</td>
-                                            <td class="text-end fw-bold fs-5 text-primary" dir="ltr">$@Order.TotalAmount.ToString("F2")</td>
-                                            <td></td>
-                                        </tr>
-                                    </tfoot>
-                                </table>
-                            </div>
-                        }
-                        else
-                        {
-                            <div class="text-center py-5">
-                                <i class="fas fa-box-open text-muted" style="font-size: 48px;"></i>
-                                <p class="text-muted mt-3">@NotifiAndAlertsResources.NoDataFound</p>
-                            </div>
-                        }
-                    </div>
-                </div>
-
-                @* Shipments Card *@
-                <div class="card shadow-sm border-0 mb-4">
-                    <div class="card-header bg-gradient-info text-white py-3">
-                        <h5 class="mb-0 fw-bold d-flex align-items-center gap-2">
-                            <i class="fas fa-shipping-fast"></i>
-                            Shipments (@Order.Shipments.Count)
-                        </h5>
-                    </div>
-                    <div class="card-body p-0">
-                        @if (Order.Shipments.Any())
-                        {
-                            <div class="table-responsive">
-                                <table class="table table-hover mb-0">
-                                    <thead class="table-light">
-                                        <tr>
-                                            <th style="width: 200px;">Shipment #</th>
-                                            <th class="text-center" style="width: 150px;">Status</th>
-                                            <th class="text-center" style="width: 150px;">Tracking</th>
-                                            <th class="text-center" style="width: 120px;">ETA</th>
-                                            <th class="text-center" style="width: 120px;">Delivered</th>
-                                            <th class="text-end">Actions</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @foreach (var shipment in Order.Shipments)
-                                        {
-                                            <tr>
-                                                <td>
-                                                    <div class="fw-bold text-primary">@shipment.ShipmentNumber</div>
-                                                    <small class="text-muted">
-                                                        <i class="fas fa-hashtag"></i> @shipment.ShipmentId.ToString().Substring(0, 8)...
-                                                    </small>
-                                                </td>
-                                                <td class="text-center">
-                                                    <span class="@GetShipmentStatusBadgeClass(shipment.Status)">
-                                                        @GetShipmentStatusText(shipment.Status)
-                                                    </span>
-                                                </td>
-                                                <td class="text-center">
-                                                    @if (!string.IsNullOrWhiteSpace(shipment.TrackingNumber))
-                                                    {
-                                                        <code class="text-primary">@shipment.TrackingNumber</code>
-                                                    }
-                                                    else
-                                                    {
-                                                        <span class="text-muted">--</span>
-                                                    }
-                                                </td>
-                                                <td class="text-center">
-                                                    @if (shipment.EstimatedDeliveryDate.HasValue)
-                                                    {
-                                                        <small>@FormatDate(shipment.EstimatedDeliveryDate)</small>
-                                                    }
-                                                    else
-                                                    {
-                                                        <span class="text-muted">--</span>
-                                                    }
-                                                </td>
-                                                <td class="text-center">
-                                                    @if (shipment.ActualDeliveryDate.HasValue)
-                                                    {
-                                                        <small class="text-success fw-bold">
-                                                            @FormatDate(shipment.ActualDeliveryDate)
-                                                        </small>
-                                                    }
-                                                    else
-                                                    {
-                                                        <span class="text-muted">--</span>
-                                                    }
-                                                </td>
-                                                <td class="text-end">
-                                                    <div class="btn-group" role="group">
-                                                        @* ✅ Primary Action: Move to Next Status *@
-                                                        @if (CanShipmentMoveNext(shipment))
-                                                        {
-                                                            <button class="btn btn-sm @GetShipmentActionButtonClass(shipment)"
-                                                                    @onclick="() => MoveShipmentToNextStatusAsync(shipment.ShipmentId)"
-                                                                    disabled="@(ShipmentUpdatingId == shipment.ShipmentId)"
-                                                                    title="@GetShipmentNextAction(shipment)">
-                                                                @if (ShipmentUpdatingId == shipment.ShipmentId)
-                                                                {
-                                                                    <span class="spinner-border spinner-border-sm"></span>
-                                                                }
-                                                                else
-                                                                {
-                                                                    <i class="@GetShipmentActionIcon(shipment)"></i>
-                                                                }
-                                                                <span class="d-none d-lg-inline ms-1">@GetShipmentNextAction(shipment)</span>
-                                                            </button>
-                                                        }
-
-                                                        @* ✅ Secondary Actions Dropdown *@
-                                                        @if (CanMarkDeliveryFailed(shipment) || CanCancelShipment(shipment))
-                                                        {
-                                                            <button class="btn btn-sm btn-outline-secondary dropdown-toggle dropdown-toggle-split"
-                                                                    type="button"
-                                                                    data-bs-toggle="dropdown"
-                                                                    aria-expanded="false"
-                                                                    disabled="@(ShipmentUpdatingId == shipment.ShipmentId)">
-                                                                <span class="visually-hidden">Toggle Dropdown</span>
-                                                            </button>
-                                                            <ul class="dropdown-menu dropdown-menu-end">
-                                                                @if (CanMarkDeliveryFailed(shipment))
-                                                                {
-                                                                    <li>
-                                                                        <a class="dropdown-item text-warning"
-                                                                           @onclick="() => MarkShipmentDeliveryFailedAsync(shipment.ShipmentId)"
-                                                                           href="javascript:void(0)">
-                                                                            <i class="fas fa-exclamation-triangle me-2"></i>
-                                                                            Mark Delivery Failed
-                                                                        </a>
-                                                                    </li>
-                                                                }
-                                                                @if (CanCancelShipment(shipment))
-                                                                {
-                                                                    <li>
-                                                                        <a class="dropdown-item text-danger"
-                                                                           @onclick="() => CancelShipmentAsync(shipment.ShipmentId)"
-                                                                           href="javascript:void(0)">
-                                                                            <i class="fas fa-times me-2"></i>
-                                                                            Cancel Shipment
-                                                                        </a>
-                                                                    </li>
-                                                                }
-                                                            </ul>
-                                                        }
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                        }
-                                    </tbody>
-                                </table>
-                            </div>
-
-                            @* Shipment Progress Summary *@
-                            <div class="card-footer bg-light">
-                                <div class="row text-center">
-                                    <div class="col-md-3">
-                                        <div class="small text-muted">Pending</div>
-                                        <div class="fw-bold text-warning">
-                                            @Order.Shipments.Count(s => s.Status == ShipmentStatus.PendingProcessing ||
-                                            s.Status == ShipmentStatus.PreparingForShipment)
-                                </div>
-                            </div>
-                            <div class="col-md-3">
-                                <div class="small text-muted">In Transit</div>
-                                <div class="fw-bold text-primary">
-                                    @Order.Shipments.Count(s => s.Status == ShipmentStatus.PickedUpByCarrier ||
-                                                                        s.Status == ShipmentStatus.InTransitToCustomer)
-                                </div>
-                            </div>
-                            <div class="col-md-3">
-                                <div class="small text-muted">Delivered</div>
-                                <div class="fw-bold text-success">
-                                    @Order.Shipments.Count(s => s.Status == ShipmentStatus.DeliveredToCustomer)
-                                </div>
-                            </div>
-                            <div class="col-md-3">
-                                <div class="small text-muted">Issues</div>
-                                <div class="fw-bold text-danger">
-                                    @Order.Shipments.Count(s => s.Status == ShipmentStatus.DeliveryAttemptFailed ||
-                                                                        s.Status == ShipmentStatus.ReturnedToSender ||
-                                                                        s.Status == ShipmentStatus.CancelledByCustomer ||
-                                                                        s.Status == ShipmentStatus.CancelledByMarketplace)
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                                        }
-                        else
-                        {
-                            <div class="text-center py-5 text-muted">
-                                <i class="fas fa-box-open" style="font-size: 48px;"></i>
-                                <p class="mt-3">No shipments found</p>
-                            </div>
-                        }
-                    </div>
-                </div>
-
-                @* Shipping Address Card *@
-                <div class="card shadow-sm border-0 mb-4">
-                    <div class="card-header bg-gradient-info text-white py-3">
-                        <h5 class="mb-0 fw-bold d-flex align-items-center gap-2">
-                            <i class="fas fa-map-marker-alt"></i>
-                            @OrderResources.ShippingInformation
-                        </h5>
-                    </div>
-                    <div class="card-body">
-                        <div class="row g-3">
-                            <div class="col-12">
-                                <div class="info-box">
-                                    <label class="text-muted small mb-1 d-flex align-items-center gap-1">
-                                        <i class="fas fa-user text-info"></i>
-                                        @OrderResources.RecipientName
-                                    </label>
-                                    @* ✅ API DTO property *@
-                                    <div class="fw-bold">@Order.DeliveryAddress.RecipientName</div>
-                                </div>
-                            </div>
-                            <div class="col-12">
-                                <div class="info-box">
-                                    <label class="text-muted small mb-1 d-flex align-items-center gap-1">
-                                        <i class="fas fa-location-arrow text-info"></i>
-                                        @FormResources.Address
-                                    </label>
-                                    @* ✅ API DTO property *@
-                                    <div class="fw-bold">@Order.DeliveryAddress.Address</div>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="info-box">
-                                    <label class="text-muted small mb-1">@FormResources.City</label>
-                                    @* ✅ API DTO property *@
-                                    <div class="fw-bold">@Order.DeliveryAddress.CityNameEn</div>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="info-box">
-                                    <label class="text-muted small mb-1">@FormResources.State</label>
-                                    @* ✅ API DTO property *@
-                                    <div class="fw-bold">@Order.DeliveryAddress.StateNameEn</div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                @* Payment Info Card *@
-                @if (Order.PaymentInfo != null)
-                {
-                    <div class="card shadow-sm border-0 mb-4">
-                        <div class="card-header bg-gradient-warning text-white py-3">
-                            <h5 class="mb-0 fw-bold d-flex align-items-center gap-2">
-                                <i class="fas fa-credit-card"></i>
-                                @OrderResources.PaymentInformation
-                            </h5>
-                        </div>
-                        <div class="card-body">
-                            <div class="row g-3">
-                                <div class="col-md-6">
-                                    <label class="text-muted small">@OrderResources.PaymentMethod:</label>
-                                    @* ✅ API DTO property *@
-                                    <div class="fw-bold">@Order.PaymentInfo.PaymentMethod</div>
-                                </div>
-                                <div class="col-md-6">
-                                    <label class="text-muted small">@OrderResources.TransactionId:</label>
-                                    @* ✅ API DTO property *@
-                                    <code>@Order.PaymentInfo.TransactionId</code>
-                                </div>
-                                @if (Order.PaymentInfo.PaymentDate.HasValue)
-                                {
-                                    <div class="col-md-6">
-                                        <label class="text-muted small">@OrderResources.PaymentDate:</label>
-                                        <div>@Order.PaymentInfo.PaymentDate.Value.ToString("dd/MM/yyyy hh:mm tt")</div>
-                                    </div>
-                                }
-                            </div>
-                        </div>
-                    </div>
-                }
-
-            </div>
-
-            @* Right Column: Actions & Summary *@
-            <div class="col-lg-4">
-                @if (Order.OrderStatus != OrderProgressStatus.Cancelled)
-                {
-                    @* Status Control Card *@
-                    <div class="card shadow-sm border-0 mb-4">
+        @* Actions & Summary Section (Full Width at Top) *@
+        <div class="row g-4 mb-4">
+            @if (Order.OrderStatus != OrderProgressStatus.Cancelled)
+            {
+                @* Status Control Card *@
+                <div class="col-lg-6">
+                    <div class="card shadow-sm border-0 h-100">
                         <div class="card-header bg-gradient-warning text-white py-3">
                             <h5 class="mb-0 fw-bold d-flex align-items-center gap-2">
                                 <i class="fas fa-cogs"></i>
@@ -541,18 +112,6 @@ else
                                 @if (Order.OrderStatus != OrderProgressStatus.Cancelled &&
                                                         Order.OrderStatus != OrderProgressStatus.Completed)
                                 {
-                                    <button class="btn btn-outline-primary" @onclick="SaveOrderAsync" disabled="@IsSaving">
-                                        @if (IsSaving)
-                                        {
-                                            <span class="spinner-border spinner-border-sm me-1"></span>
-                                        }
-                                        else
-                                        {
-                                            <i class="fas fa-save me-1"></i>
-                                        }
-                                        @ActionsResources.Save
-                                    </button>
-
                                     <button class="btn btn-outline-danger" @onclick="CancelOrderAsync">
                                         <i class="fas fa-times me-1"></i>
                                         @OrderResources.CancelOrder
@@ -561,10 +120,12 @@ else
                             </div>
                         </div>
                     </div>
-                }
+                </div>
+            }
 
-                @* Order Summary Card *@
-                <div class="card shadow-sm border-0 mb-4">
+            @* Order Summary Card *@
+            <div class="col-lg-@(Order.OrderStatus != OrderProgressStatus.Cancelled ? "6" : "12")">
+                <div class="card shadow-sm border-0 h-100">
                     <div class="card-header bg-gradient-secondary text-white py-3">
                         <h5 class="mb-0 fw-bold d-flex align-items-center gap-2">
                             <i class="fas fa-file-invoice-dollar"></i>
@@ -572,7 +133,6 @@ else
                         </h5>
                     </div>
                     <div class="card-body">
-                        @* ✅ API DTO properties *@
                         <div class="summary-row">
                             <span>@OrderResources.Subtotal:</span>
                             <strong dir="ltr">$@Order.SubTotal.ToString("F2")</strong>
@@ -609,18 +169,668 @@ else
                         {
                             <div class="mt-3 pt-3 border-top">
                                 <small class="text-muted d-block mb-1">@FormResources.Notes:</small>
-                                <p class="small">@Order.OrderNotes</p>
+                                <p class="small mb-0">@Order.OrderNotes</p>
                             </div>
                         }
                     </div>
                 </div>
+            </div>
+        </div>
+
+        @* Tabs Section (Full Width) *@
+        <div class="row">
+            <div class="col-12">
+
+                @* Tabs Navigation *@
+                <ul class="nav nav-tabs nav-tabs-custom mb-0" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link @(ActiveTab == "customer" ? "active" : "")"
+                                type="button"
+                                @onclick='() => SetActiveTab("customer")'>
+                            <i class="fas fa-user me-2"></i>
+                            @OrderResources.CustomerInformation
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link @(ActiveTab == "items" ? "active" : "")"
+                                type="button"
+                                @onclick='() => SetActiveTab("items")'>
+                            <i class="fas fa-box me-2"></i>
+                            @OrderResources.OrderItems
+                            <span class="badge bg-primary ms-1">@Order.Items.Count</span>
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link @(ActiveTab == "shipments" ? "active" : "")"
+                                type="button"
+                                @onclick='() => SetActiveTab("shipments")'>
+                            <i class="fas fa-shipping-fast me-2"></i>
+                            @OrderResources.Shipments
+                            <span class="badge bg-info ms-1">@Order.Shipments.Count</span>
+                        </button>
+                    </li>
+                </ul>
+
+                @* Tabs Content *@
+                <div class="tab-content-wrapper">
+
+                    @* Customer Information Tab *@
+                    @if (ActiveTab == "customer")
+                    {
+                        <div class="tab-pane-custom active">
+                            <div class="card shadow-sm border-0 mb-4">
+                                <div class="card-body">
+                                    <div class="row g-3">
+                                        <div class="col-md-6">
+                                            <div class="info-box">
+                                                <label class="text-muted small mb-1 d-flex align-items-center gap-1">
+                                                    <i class="fas fa-user-circle text-primary"></i>
+                                                    @OrderResources.CustomerName
+                                                </label>
+                                                <div class="fw-bold fs-5">@Order.Customer.CustomerFullName</div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="info-box">
+                                                <label class="text-muted small mb-1 d-flex align-items-center gap-1">
+                                                    <i class="fas fa-envelope text-primary"></i>
+                                                    @FormResources.Email
+                                                </label>
+                                                <div class="fw-bold">
+                                                    <a href="mailto:@Order.Customer.Email" class="text-decoration-none text-primary">
+                                                        @Order.Customer.Email
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="info-box">
+                                                <label class="text-muted small mb-1 d-flex align-items-center gap-1">
+                                                    <i class="fas fa-phone text-primary"></i>
+                                                    @FormResources.PhoneNumber
+                                                </label>
+                                                <div class="fw-bold">
+                                                    <a href="tel:@(Order.Customer.PhoneCode + Order.Customer.Phone)" class="text-decoration-none text-primary">
+                                                        @Order.Customer.PhoneCode @Order.Customer.Phone
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            @* Shipping Address Card *@
+                            <div class="card shadow-sm border-0 mb-4">
+                                <div class="card-header bg-gradient-info text-white py-3">
+                                    <h5 class="mb-0 fw-bold d-flex align-items-center gap-2">
+                                        <i class="fas fa-map-marker-alt"></i>
+                                        @OrderResources.ShippingInformation
+                                    </h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row g-3">
+                                        <div class="col-12">
+                                            <div class="info-box">
+                                                <label class="text-muted small mb-1 d-flex align-items-center gap-1">
+                                                    <i class="fas fa-user text-info"></i>
+                                                    @OrderResources.RecipientName
+                                                </label>
+                                                <div class="fw-bold">@Order.DeliveryAddress.RecipientName</div>
+                                            </div>
+                                        </div>
+                                        <div class="col-12">
+                                            <div class="info-box">
+                                                <label class="text-muted small mb-1 d-flex align-items-center gap-1">
+                                                    <i class="fas fa-location-arrow text-info"></i>
+                                                    @FormResources.Address
+                                                </label>
+                                                <div class="fw-bold">@Order.DeliveryAddress.Address</div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="info-box">
+                                                <label class="text-muted small mb-1">@FormResources.City</label>
+                                                <div class="fw-bold">@Order.DeliveryAddress.CityNameEn</div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="info-box">
+                                                <label class="text-muted small mb-1">@FormResources.State</label>
+                                                <div class="fw-bold">@Order.DeliveryAddress.StateNameEn</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            @* Payment Info Card *@
+                            @if (Order.PaymentInfo != null)
+                            {
+                                <div class="card shadow-sm border-0 mb-4">
+                                    <div class="card-header bg-gradient-warning text-white py-3">
+                                        <h5 class="mb-0 fw-bold d-flex align-items-center gap-2">
+                                            <i class="fas fa-credit-card"></i>
+                                            @OrderResources.PaymentInformation
+                                        </h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="row g-3">
+                                            <div class="col-md-6">
+                                                <label class="text-muted small">@OrderResources.PaymentMethod:</label>
+                                                <div class="fw-bold">@Order.PaymentInfo.PaymentMethod</div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label class="text-muted small">@OrderResources.TransactionId:</label>
+                                                <code>@Order.PaymentInfo.TransactionId</code>
+                                            </div>
+                                            @if (Order.PaymentInfo.PaymentDate.HasValue)
+                                            {
+                                                <div class="col-md-6">
+                                                    <label class="text-muted small">@OrderResources.PaymentDate:</label>
+                                                    <div>@Order.PaymentInfo.PaymentDate.Value.ToString("dd/MM/yyyy hh:mm tt")</div>
+                                                </div>
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    }
+
+                    @* Order Items Tab *@
+                    @if (ActiveTab == "items")
+                    {
+                        <div class="tab-pane-custom active">
+                            <div class="card shadow-sm border-0 mb-4">
+                                <div class="card-body p-0">
+                                    @if (Order.Items.Any())
+                                    {
+                                        <div class="table-responsive">
+                                            <table class="table table-hover mb-0">
+                                                <thead class="table-light">
+                                                    <tr>
+                                                        <th class="text-center" style="width: 80px;">@FormResources.Image</th>
+                                                        <th>@OrderResources.Item</th>
+                                                        <th class="text-center">@OrderResources.Vendor</th>
+                                                        <th class="text-center">@OrderResources.Quantity</th>
+                                                        <th class="text-end">@FormResources.Price</th>
+                                                        <th class="text-end">@OrderResources.Subtotal</th>
+                                                        <th class="text-center">@OrderResources.Status</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    @foreach (var item in Order.Items)
+                                                    {
+                                                        <tr>
+                                                            <td class="text-center">
+                                                                @if (!string.IsNullOrEmpty(item.ItemImage))
+                                                                {
+                                                                    <img src="@($"{BaseUrl}/{item.ItemImage}")"
+                                                                         alt="@item.ItemName"
+                                                                         class="rounded"
+                                                                         style="width: 50px; height: 50px; object-fit: cover;" />
+                                                                }
+                                                                else
+                                                                {
+                                                                    <div class="bg-light rounded d-flex align-items-center justify-content-center"
+                                                                         style="width: 50px; height: 50px;">
+                                                                        <i class="fas fa-image text-muted"></i>
+                                                                    </div>
+                                                                }
+                                                            </td>
+                                                            <td>
+                                                                <div class="fw-bold">@item.ItemName</div>
+                                                                <small class="text-muted">@item.VendorName</small>
+                                                            </td>
+                                                            <td class="text-center">
+                                                                <span class="badge bg-info">@item.VendorName</span>
+                                                            </td>
+                                                            <td class="text-center">
+                                                                <span class="badge bg-secondary fs-6">@item.Quantity</span>
+                                                            </td>
+                                                            <td class="text-end">
+                                                                <span dir="ltr">$@item.UnitPrice.ToString("F2")</span>
+                                                            </td>
+                                                            <td class="text-end fw-bold">
+                                                                <span dir="ltr">$@item.SubTotal.ToString("F2")</span>
+                                                            </td>
+                                                            <td class="text-center">
+                                                                <span class="@GetShipmentStatusBadgeClass(item.ShipmentStatus)">
+                                                                    @GetShipmentStatusText(item.ShipmentStatus)
+                                                                </span>
+                                                            </td>
+                                                        </tr>
+                                                    }
+                                                </tbody>
+                                                <tfoot class="table-light">
+                                                    <tr>
+                                                        <td colspan="5" class="text-end fw-bold">@OrderResources.Subtotal:</td>
+                                                        <td class="text-end fw-bold" dir="ltr">$@Order.SubTotal.ToString("F2")</td>
+                                                        <td></td>
+                                                    </tr>
+                                                    @if (Order.DiscountAmount > 0)
+                                                    {
+                                                        <tr>
+                                                            <td colspan="5" class="text-end fw-bold text-success">@OrderResources.Discount:</td>
+                                                            <td class="text-end fw-bold text-success" dir="ltr">-$@Order.DiscountAmount.ToString("F2")</td>
+                                                            <td></td>
+                                                        </tr>
+                                                    }
+                                                    <tr>
+                                                        <td colspan="5" class="text-end fw-bold">@OrderResources.Tax:</td>
+                                                        <td class="text-end fw-bold" dir="ltr">$@Order.TaxAmount.ToString("F2")</td>
+                                                        <td></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td colspan="5" class="text-end fw-bold">@OrderResources.Shipping:</td>
+                                                        <td class="text-end fw-bold" dir="ltr">$@Order.ShippingAmount.ToString("F2")</td>
+                                                        <td></td>
+                                                    </tr>
+                                                    <tr class="table-primary">
+                                                        <td colspan="5" class="text-end fw-bold fs-5">@OrderResources.TotalAmount:</td>
+                                                        <td class="text-end fw-bold fs-5 text-primary" dir="ltr">$@Order.TotalAmount.ToString("F2")</td>
+                                                        <td></td>
+                                                    </tr>
+                                                </tfoot>
+                                            </table>
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <div class="text-center py-5">
+                                            <i class="fas fa-box-open text-muted" style="font-size: 48px;"></i>
+                                            <p class="text-muted mt-3">@NotifiAndAlertsResources.NoDataFound</p>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    }
+
+                    @* Shipments Tab *@
+                    @if (ActiveTab == "shipments")
+                    {
+                        <div class="tab-pane-custom active">
+                            @if (Order.Shipments.Any())
+                            {
+                                @* Shipment Cards View *@
+                                <div class="row g-3">
+                                    @foreach (var shipment in Order.Shipments)
+                                    {
+                                        <div class="col-12">
+                                            <div class="card shadow-sm border-0 shipment-card">
+                                                <div class="card-body">
+                                                    <div class="row align-items-center g-3">
+                                                        @* Shipment Number & ID *@
+                                                        <div class="col-lg-3 col-md-6">
+                                                            <div class="shipment-info-section">
+                                                                <label class="text-muted small mb-1 d-flex align-items-center gap-1">
+                                                                    <i class="fas fa-hashtag text-primary"></i>
+                                                                    @OrderResources.ShipmentNumber
+                                                                </label>
+                                                                <div class="fw-bold text-primary mb-1">@shipment.ShipmentNumber</div>
+                                                            </div>
+                                                        </div>
+
+                                                        @* Status *@
+                                                        <div class="col-lg-2 col-md-6">
+                                                            <div class="shipment-info-section">
+                                                                <label class="text-muted small mb-1 d-flex align-items-center gap-1">
+                                                                    <i class="fas fa-info-circle text-primary"></i>
+                                                                    @OrderResources.Status
+                                                                </label>
+                                                                <span class="@GetShipmentStatusBadgeClass(shipment.Status)">
+                                                                    @GetShipmentStatusText(shipment.Status)
+                                                                </span>
+                                                            </div>
+                                                        </div>
+
+                                                        @* Tracking Number *@
+                                                        <div class="col-lg-2 col-md-6">
+                                                            <div class="shipment-info-section">
+                                                                <label class="text-muted small mb-1 d-flex align-items-center gap-1">
+                                                                    <i class="fas fa-barcode text-primary"></i>
+                                                                    @OrderResources.Tracking
+                                                                </label>
+                                                                @if (!string.IsNullOrWhiteSpace(shipment.TrackingNumber))
+                                                                {
+                                                                    <code class="tracking-code">@shipment.TrackingNumber</code>
+                                                                }
+                                                                else
+                                                                {
+                                                                    <span class="text-muted small">@OrderResources.NotAddedYet</span>
+                                                                }
+                                                            </div>
+                                                        </div>
+
+                                                        @* Estimated Delivery *@
+                                                        <div class="col-lg-2 col-md-6">
+                                                            <div class="shipment-info-section">
+                                                                <label class="text-muted small mb-1 d-flex align-items-center gap-1">
+                                                                    <i class="fas fa-calendar-alt text-primary"></i>
+                                                                    @OrderResources.ETA
+                                                                </label>
+                                                                @if (shipment.EstimatedDeliveryDate.HasValue)
+                                                                {
+                                                                    <div class="small fw-bold">@FormatDate(shipment.EstimatedDeliveryDate)</div>
+                                                                }
+                                                                else
+                                                                {
+                                                                    <span class="text-muted small">@OrderResources.NotSpecified</span>
+                                                                }
+                                                            </div>
+                                                        </div>
+
+                                                        @* Actions *@
+                                                        <div class="col-lg-3 col-md-12">
+                                                            <div class="shipment-info-section">
+                                                                <label class="text-muted small mb-1 d-flex align-items-center gap-1">
+                                                                    <i class="fas fa-cogs text-primary"></i>
+                                                                    @ActionsResources.Actions
+                                                                </label>
+                                                                <div class="d-flex gap-2 flex-wrap">
+                                                                    @* Primary Action Button *@
+                                                                    @if (CanShipmentMoveNext(shipment))
+                                                                    {
+                                                                        <button class="btn btn-sm @GetShipmentActionButtonClass(shipment)"
+                                                                                @onclick="() => MoveShipmentToNextStatusAsync(shipment.ShipmentId)"
+                                                                                disabled="@(ShipmentUpdatingId == shipment.ShipmentId)"
+                                                                                title="@GetShipmentNextAction(shipment)">
+                                                                            @if (ShipmentUpdatingId == shipment.ShipmentId)
+                                                                            {
+                                                                                <span class="spinner-border spinner-border-sm me-1"></span>
+                                                                                <span>@OrderResources.Updating</span>
+                                                                            }
+                                                                            else
+                                                                            {
+                                                                                <i class="@GetShipmentActionIcon(shipment) me-1"></i>
+                                                                                <span>@GetShipmentNextAction(shipment)</span>
+                                                                            }
+                                                                        </button>
+                                                                    }
+
+                                                                    @* Cancel Shipment Button - Direct *@
+                                                                    @if (CanCancelShipment(shipment))
+                                                                    {
+                                                                        <button class="btn btn-sm btn-danger"
+                                                                                @onclick="() => CancelShipmentAsync(shipment.ShipmentId)"
+                                                                                disabled="@(ShipmentUpdatingId == shipment.ShipmentId)"
+                                                                                title="@OrderResources.CancelShipment">
+                                                                            @if (ShipmentUpdatingId == shipment.ShipmentId)
+                                                                            {
+                                                                                <span class="spinner-border spinner-border-sm me-1"></span>
+                                                                            }
+                                                                            else
+                                                                            {
+                                                                                <i class="fas fa-times me-1"></i>
+                                                                            }
+                                                                            <span class="d-none d-lg-inline">@OrderResources.Cancel</span>
+                                                                        </button>
+                                                                    }
+
+                                                                    @* Mark Delivery Failed - Dropdown *@
+                                                                    @if (CanMarkDeliveryFailed(shipment))
+                                                                    {
+                                                                        <div class="dropdown">
+                                                                            <button class="btn btn-sm btn-outline-warning"
+                                                                                    type="button"
+                                                                                    @onclick="() => ToggleDropdown(shipment.ShipmentId)"
+                                                                                    disabled="@(ShipmentUpdatingId == shipment.ShipmentId)">
+                                                                                <i class="fas fa-ellipsis-v"></i>
+                                                                            </button>
+                                                                            @if (OpenDropdownId == shipment.ShipmentId)
+                                                                            {
+                                                                                <ul class="dropdown-menu dropdown-menu-end show">
+                                                                                    <li>
+                                                                                        <a class="dropdown-item text-warning"
+                                                                                           @onclick="() => { MarkShipmentDeliveryFailedAsync(shipment.ShipmentId); CloseDropdown(); }"
+                                                                                           href="javascript:void(0)">
+                                                                                            <i class="fas fa-exclamation-triangle me-2"></i>
+                                                                                            @OrderResources.MarkDeliveryFailed
+                                                                                        </a>
+                                                                                    </li>
+                                                                                </ul>
+                                                                            }
+                                                                        </div>
+                                                                    }
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    @* Delivered Date (if exists) *@
+                                                    @if (shipment.ActualDeliveryDate.HasValue)
+                                                    {
+                                                        <div class="row mt-3 pt-3 border-top">
+                                                            <div class="col-12">
+                                                                <div class="alert alert-success mb-0 py-2">
+                                                                    <i class="fas fa-check-circle me-2"></i>
+                                                                    <strong>@OrderResources.DeliveredSuccessfullyOn:</strong>
+                                                                    <span class="ms-2">@FormatDate(shipment.ActualDeliveryDate)</span>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    }
+
+                                                    @* Items Count *@
+                                                    @if (shipment.ItemIds != null && shipment.ItemIds.Any())
+                                                    {
+                                                        <div class="row mt-2">
+                                                            <div class="col-12">
+                                                                <small class="text-muted">
+                                                                    <i class="fas fa-box me-1"></i>
+                                                                    @OrderResources.NumberOfItems: <strong>@shipment.ItemIds.Count</strong>
+                                                                </small>
+                                                            </div>
+                                                        </div>
+                                                    }
+                                                </div>
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
+
+                                @* Shipment Progress Summary *@
+                                <div class="card shadow-sm border-0 mt-4">
+                                    <div class="card-header bg-gradient-info text-white py-3">
+                                        <h6 class="mb-0 fw-bold d-flex align-items-center gap-2">
+                                            <i class="fas fa-chart-pie"></i>
+                                            @OrderResources.ShipmentSummary
+                                        </h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="row text-center g-3">
+                                            <div class="col-6 col-md-3">
+                                                <div class="summary-stat">
+                                                    <div class="stat-icon bg-warning bg-opacity-10 text-warning">
+                                                        <i class="fas fa-clock text-white"></i>
+                                                    </div>
+                                                    <div class="stat-value text-warning">
+                                                        @Order.Shipments.Count(s => s.Status == ShipmentStatus.PendingProcessing ||
+                                                        s.Status == ShipmentStatus.PreparingForShipment)
+                                        </div>
+                                        <div class="stat-label">@OrderResources.Pending</div>
+                                    </div>
+                                </div>
+                                <div class="col-6 col-md-3">
+                                    <div class="summary-stat">
+                                        <div class="stat-icon bg-primary bg-opacity-10 text-primary">
+                                            <i class="fas fa-shipping-fast text-white"></i>
+                                        </div>
+                                        <div class="stat-value text-primary">
+                                            @Order.Shipments.Count(s => s.Status == ShipmentStatus.PickedUpByCarrier ||
+                                                                                        s.Status == ShipmentStatus.InTransitToCustomer)
+                                        </div>
+                                        <div class="stat-label">@OrderResources.InTransit</div>
+                                    </div>
+                                </div>
+                                <div class="col-6 col-md-3">
+                                    <div class="summary-stat">
+                                        <div class="stat-icon bg-success bg-opacity-10 text-success">
+                                            <i class="fas fa-check-circle text-white"></i>
+                                        </div>
+                                        <div class="stat-value text-success">
+                                            @Order.Shipments.Count(s => s.Status == ShipmentStatus.DeliveredToCustomer)
+                                        </div>
+                                        <div class="stat-label">@OrderResources.Delivered</div>
+                                    </div>
+                                </div>
+                                <div class="col-6 col-md-3">
+                                    <div class="summary-stat">
+                                        <div class="stat-icon bg-danger bg-opacity-10 text-danger">
+                                            <i class="fas fa-exclamation-triangle text-white"></i>
+                                        </div>
+                                        <div class="stat-value text-danger">
+                                            @Order.Shipments.Count(s => s.Status == ShipmentStatus.DeliveryAttemptFailed ||
+                                                                                        s.Status == ShipmentStatus.ReturnedToSender ||
+                                                                                        s.Status == ShipmentStatus.CancelledByCustomer ||
+                                                                                        s.Status == ShipmentStatus.CancelledByMarketplace)
+                                        </div>
+                                        <div class="stat-label">@OrderResources.Issues</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                                        }
+                            else
+                            {
+                                <div class="card shadow-sm border-0">
+                                    <div class="card-body text-center py-5 text-muted">
+                                        <i class="fas fa-box-open" style="font-size: 64px; opacity: 0.3;"></i>
+                                        <p class="mt-3 mb-0 fs-5">@OrderResources.NoShipmentsFound</p>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    }
+
+                </div>
+                @* End of Tabs Content *@
 
             </div>
         </div>
     </div>
 }
 
+@code {
+    private string ActiveTab = "customer";
+    private Guid? OpenDropdownId = null;
+
+    private void SetActiveTab(string tabName)
+    {
+        ActiveTab = tabName;
+        StateHasChanged();
+    }
+
+    private void ToggleDropdown(Guid shipmentId)
+    {
+        OpenDropdownId = OpenDropdownId == shipmentId ? null : shipmentId;
+        StateHasChanged();
+    }
+
+    private void CloseDropdown()
+    {
+        OpenDropdownId = null;
+        StateHasChanged();
+    }
+}
+
 <style>
+    /* Custom Tabs Styling */
+    .nav-tabs-custom {
+        border-bottom: 2px solid #dee2e6;
+        background: #f8f9fa;
+        padding: 0.5rem 1rem 0;
+        border-radius: 8px 8px 0 0;
+    }
+
+        .nav-tabs-custom .nav-link {
+            border: none;
+            border-bottom: 3px solid transparent;
+            color: #6c757d;
+            font-weight: 500;
+            padding: 0.75rem 1.5rem;
+            margin-bottom: -2px;
+            transition: all 0.3s ease;
+            background: transparent;
+            cursor: pointer;
+        }
+
+            .nav-tabs-custom .nav-link:hover {
+                border-bottom-color: #0d6efd;
+                color: #0d6efd;
+                background: rgba(13, 110, 253, 0.05);
+            }
+
+            .nav-tabs-custom .nav-link.active {
+                color: #0d6efd;
+                border-bottom-color: #0d6efd;
+                background: white;
+                font-weight: 600;
+            }
+
+            .nav-tabs-custom .nav-link i {
+                font-size: 0.9rem;
+            }
+
+        .nav-tabs-custom .badge {
+            font-size: 0.7rem;
+            padding: 0.25rem 0.5rem;
+            vertical-align: middle;
+        }
+
+    .tab-content-wrapper {
+        background: white;
+        border: 1px solid #dee2e6;
+        border-top: none;
+        border-radius: 0 0 8px 8px;
+        padding: 1.5rem;
+        min-height: 400px;
+    }
+
+    .tab-pane-custom {
+        animation: fadeIn 0.3s ease-in;
+    }
+
+    @@keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* Responsive tabs */
+    @@media (max-width: 768px) {
+        .nav-tabs-custom {
+            padding: 0.5rem 0.5rem 0;
+        }
+
+            .nav-tabs-custom .nav-link {
+                padding: 0.5rem 0.75rem;
+                font-size: 0.875rem;
+            }
+
+                .nav-tabs-custom .nav-link i {
+                    font-size: 0.8rem;
+                }
+
+            .nav-tabs-custom .badge {
+                font-size: 0.65rem;
+                padding: 0.2rem 0.4rem;
+            }
+
+        .tab-content-wrapper {
+            padding: 1rem;
+        }
+    }
+
     .order-info-bar {
         display: grid;
         grid-template-columns: repeat(4, 1fr);
@@ -704,6 +914,8 @@ else
         font-size: 1.25rem;
         font-weight: 700;
         color: #0d6efd;
+        margin-top: 0.5rem;
+        border-top: 2px solid #dee2e6;
     }
 
     .coupon-code {
@@ -759,5 +971,135 @@ else
             .card-footer .col-md-3:last-child {
                 border-bottom: none;
             }
+    }
+
+    /* Shipment Cards Styling */
+    .shipment-card {
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+        border: 1px solid #e9ecef !important;
+    }
+
+        .shipment-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1) !important;
+        }
+
+    .shipment-info-section {
+        min-height: 60px;
+    }
+
+        .shipment-info-section label {
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+    .tracking-code {
+        background: #e7f3ff;
+        border: 1px solid #b3d9ff;
+        border-radius: 4px;
+        padding: 0.25rem 0.5rem;
+        font-size: 0.875rem;
+        color: #0d6efd;
+        font-weight: 600;
+    }
+
+    /* Summary Stats */
+    .summary-stat {
+        padding: 1rem;
+        text-align: center;
+    }
+
+    .stat-icon {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 0.75rem;
+        font-size: 1.5rem;
+    }
+
+    .stat-value {
+        font-size: 2rem;
+        font-weight: 700;
+        line-height: 1;
+        margin-bottom: 0.5rem;
+    }
+
+    .stat-label {
+        font-size: 0.875rem;
+        color: #6c757d;
+        font-weight: 500;
+    }
+
+    /* Dropdown Menu Fix */
+    .dropdown {
+        position: relative;
+    }
+
+    .dropdown-menu {
+        position: absolute;
+        top: 100%;
+        right: 0;
+        z-index: 1000;
+        min-width: 200px;
+        padding: 0.5rem 0;
+        margin: 0.125rem 0 0;
+        background-color: #fff;
+        border: 1px solid rgba(0, 0, 0, 0.15);
+        border-radius: 0.375rem;
+        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.175);
+    }
+
+        .dropdown-menu.show {
+            display: block;
+        }
+
+    .dropdown-item {
+        display: block;
+        width: 100%;
+        padding: 0.5rem 1rem;
+        clear: both;
+        font-weight: 400;
+        color: #212529;
+        text-align: inherit;
+        white-space: nowrap;
+        background-color: transparent;
+        border: 0;
+        cursor: pointer;
+        transition: background-color 0.15s ease-in-out;
+    }
+
+        .dropdown-item:hover,
+        .dropdown-item:focus {
+            background-color: #f8f9fa;
+        }
+
+        .dropdown-item.text-warning:hover {
+            background-color: #fff3cd;
+        }
+
+        .dropdown-item.text-danger:hover {
+            background-color: #f8d7da;
+        }
+
+    /* Responsive Adjustments */
+    @@media (max-width: 991px) {
+        .shipment-info-section {
+            min-height: auto;
+            margin-bottom: 1rem;
+        }
+
+        .stat-icon {
+            width: 40px;
+            height: 40px;
+            font-size: 1.25rem;
+        }
+
+        .stat-value {
+            font-size: 1.5rem;
+        }
     }
 </style>

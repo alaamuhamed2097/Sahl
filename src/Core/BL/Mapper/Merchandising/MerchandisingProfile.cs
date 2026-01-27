@@ -1,7 +1,6 @@
 ﻿using Domains.Entities.Campaign;
 using Domains.Entities.Catalog.Item.ItemAttributes;
 using Domains.Entities.Merchandising.HomePage;
-using Domains.Entities.Merchandising.HomePageBlocks;
 using Shared.DTOs.Campaign;
 using Shared.DTOs.Merchandising.Homepage;
 

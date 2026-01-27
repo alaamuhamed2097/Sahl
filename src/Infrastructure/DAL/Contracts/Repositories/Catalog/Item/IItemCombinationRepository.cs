@@ -8,34 +8,21 @@ namespace DAL.Contracts.Repositories.Catalog.Item
     /// </summary>
     public interface IItemCombinationRepository : ITableRepository<TbItemCombination>
     {
-        /// <summary>
-        /// Get default combinations for multiple items
-        /// </summary>
         Task<List<TbItemCombination>> GetDefaultCombinationsAsync(List<Guid> itemIds);
 
-        /// <summary>
-        /// Get best sellers item IDs
-        /// </summary>
-        Task<List<Guid>> GetBestSellersAsync(int limit);
+        // Dynamic queries with offset
+        Task<List<Guid>> GetBestSellersAsync(int limit, int offset = 0);
+        Task<List<Guid>> GetNewArrivalsAsync(int limit, int offset = 0);
+        Task<List<Guid>> GetTopRatedAsync(int limit, int offset = 0);
+        Task<List<Guid>> GetTrendingAsync(int limit, int offset = 0);
+        Task<List<Guid>> GetMostWishlistedAsync(int limit, int offset = 0);
 
-        /// <summary>
-        /// Get new arrivals item IDs
-        /// </summary>
-        Task<List<Guid>> GetNewArrivalsAsync(int limit);
+        // Count methods
+        Task<int> GetBestSellersCountAsync();
+        Task<int> GetMostWishlistedCountAsync();
 
-        /// <summary>
-        /// Get top rated item IDs
-        /// </summary>
-        Task<List<Guid>> GetTopRatedAsync(int limit);
-
-        /// <summary>
-        /// Get trending item IDs (most viewed)
-        /// </summary>
-        Task<List<Guid>> GetTrendingAsync(int limit);
-
-        /// <summary>
-        /// Get most wishlisted item IDs
-        /// </summary>
-        Task<List<Guid>> GetMostWishlistedAsync(int limit);
+        Task<int> GetNewArrivalsCountAsync();
+        Task<int> GetTopRatedCountAsync();
+        Task<int> GetTrendingCountAsync();
     }
 }

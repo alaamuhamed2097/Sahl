@@ -7,13 +7,8 @@ namespace BL.Contracts.Service.Merchandising;
 /// </summary>
 public interface IHomepageService
 {
-    /// <summary>
-    /// Get complete homepage with all blocks
-    /// </summary>
     Task<GetHomepageResponse> GetHomepageAsync(string? userId);
-
-    /// <summary>
-    /// Get single block by ID
-    /// </summary>
-    Task<HomepageBlockDto?> GetBlockByIdAsync(Guid blockId);
+    Task<HomepageBlockDto?> GetBlockByIdAsync(Guid blockId, int pageNumber = 1, int pageSize = 20);
+    Task<BlockItemsPagedResponse> GetBlockItemsAsync(Guid blockId, string? userId, int pageNumber = 1, int pageSize = 20);
+    Task<BlockCategoriesPagedResponse> GetBlockCategoriesAsync(Guid blockId, int pageNumber = 1, int pageSize = 20);
 }

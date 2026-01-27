@@ -20,7 +20,7 @@ namespace DAL.Configurations
 
             // Relationships
             entity.HasOne(e => e.HomepageBlock)
-                .WithMany(b => b.BlockProducts)
+                .WithMany(b => b.BlockItems)
                 .HasForeignKey(e => e.HomepageBlockId)
                 .OnDelete(DeleteBehavior.Cascade);
 

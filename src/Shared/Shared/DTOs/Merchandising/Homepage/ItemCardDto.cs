@@ -2,7 +2,6 @@
 {
     /// <summary>
     /// Item card for homepage blocks
-    /// NO DOMAIN REFERENCES - Pure DTO for Blazor compatibility
     /// </summary>
     public class ItemCardDto
     {
@@ -17,6 +16,15 @@
         public decimal? Rating { get; set; }
         public bool IsAvailable { get; set; }
         public bool InStock { get; set; }
+
+        // Pricing properties
+        public decimal Price { get; set; }
+        public decimal OriginalPrice { get; set; }
+        public decimal DiscountPercentage { get; set; }
+
+        // Additional properties
+        public bool IsDefault { get; set; }
+        public bool IsBuyBoxWinner { get; set; }
 
         // Bilingual badge
         public string? CampaignBadgeAr { get; set; }

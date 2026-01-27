@@ -1,4 +1,5 @@
 using Domains.Entities.Catalog.Item;
+using Domains.Entities.Merchandising.HomePage;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 

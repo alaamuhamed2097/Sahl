@@ -21,8 +21,8 @@ namespace Dashboard.Pages.Orders.Orders
         // ============================================
 
         protected override string EntityName { get; } = ECommerceResources.Orders;
-        protected override string AddRoute { get; } = "/sales/orders/create";
-        protected override string EditRouteTemplate { get; } = "/sales/orders/{id}";
+        protected override string AddRoute { get; } = "/order/orders/create";
+        protected override string EditRouteTemplate { get; } = "/order/orders/{id}";
         protected override string SearchEndpoint { get; } = ApiEndpoints.Order.Search;
 
         /// <summary>

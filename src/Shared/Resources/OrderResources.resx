@@ -1,351 +1,338 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <root>
-	<!-- 
-		Microsoft ResX Schema
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
 
-		Version 1.3
-
-		The primary goals of this format is to allow a simple XML format 
-		that is mostly human readable. The generation and parsing of the 
-		various data types are done through the TypeConverter classes 
-		associated with the data types.
-
-		Example:
-
-		... ado.net/XML headers & schema ...
-		<resheader name="resmimetype">text/microsoft-resx</resheader>
-		<resheader name="version">1.3</resheader>
-		<resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
-		<resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
-		<data name="Name1">this is my long string</data>
-		<data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
-		<data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
-			[base64 mime encoded serialized .NET Framework object]
-		</data>
-		<data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
-			[base64 mime encoded string representing a byte array form of the .NET Framework object]
-		</data>
-
-		There are any number of "resheader" rows that contain simple 
-		name/value pairs.
-
-		Each data row contains a name, and value. The row also contains a 
-		type or mimetype. Type corresponds to a .NET class that support 
-		text/value conversion through the TypeConverter architecture. 
-		Classes that don't support this are serialized and stored with the 
-		mimetype set.
-
-		The mimetype is used for serialized objects, and tells the 
-		ResXResourceReader how to depersist the object. This is currently not 
-		extensible. For a given mimetype the value must be set accordingly:
-
-		Note - application/x-microsoft.net.object.binary.base64 is the format 
-		that the ResXResourceWriter will generate, however the reader can 
-		read any of the formats listed below.
-
-		mimetype: application/x-microsoft.net.object.binary.base64
-		value   : The object must be serialized with 
-			: System.Serialization.Formatters.Binary.BinaryFormatter
-			: and then encoded with base64 encoding.
-
-		mimetype: application/x-microsoft.net.object.soap.base64
-		value   : The object must be serialized with 
-			: System.Runtime.Serialization.Formatters.Soap.SoapFormatter
-			: and then encoded with base64 encoding.
-
-		mimetype: application/x-microsoft.net.object.bytearray.base64
-		value   : The object must be serialized into a byte array 
-			: using a System.ComponentModel.TypeConverter
-			: and then encoded with base64 encoding.
-	-->
-	
-	<xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
-		<xsd:element name="root" msdata:IsDataSet="true">
-			<xsd:complexType>
-				<xsd:choice maxOccurs="unbounded">
-					<xsd:element name="data">
-						<xsd:complexType>
-							<xsd:sequence>
-								<xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
-								<xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
-							</xsd:sequence>
-							<xsd:attribute name="name" type="xsd:string" msdata:Ordinal="1" />
-							<xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
-							<xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
-						</xsd:complexType>
-					</xsd:element>
-					<xsd:element name="resheader">
-						<xsd:complexType>
-							<xsd:sequence>
-								<xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
-							</xsd:sequence>
-							<xsd:attribute name="name" type="xsd:string" use="required" />
-						</xsd:complexType>
-					</xsd:element>
-				</xsd:choice>
-			</xsd:complexType>
-		</xsd:element>
-	</xsd:schema>
-	<resheader name="resmimetype">
-		<value>text/microsoft-resx</value>
-	</resheader>
-	<resheader name="version">
-		<value>1.3</value>
-	</resheader>
-	<resheader name="reader">
-		<value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.3500.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-	</resheader>
-	<resheader name="writer">
-		<value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.3500.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-	</resheader>
-	<data name="WarehouseManagement" xml:space="preserve">
-  <value>إدارة المخازن</value>
-</data>
-
-	<data name="Warehouses" xml:space="preserve">
-  <value>المخازن</value>
-</data>
-
-	<data name="SelectVendor" xml:space="preserve">
-  <value>اختر البائع</value>
-</data>
-
-	<data name="AddWarehouse" xml:space="preserve">
-  <value>إضافة مخزن</value>
-</data>
-
-	<data name="EditWarehouse" xml:space="preserve">
-  <value>تعديل المخزن</value>
-</data>
-
-	<data name="OrderNumber" xml:space="preserve">
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="WarehouseManagement" xml:space="preserve">
+    <value>إدارة المخازن</value>
+  </data>
+  <data name="Warehouses" xml:space="preserve">
+    <value>المخازن</value>
+  </data>
+  <data name="SelectVendor" xml:space="preserve">
+    <value>اختر البائع</value>
+  </data>
+  <data name="AddWarehouse" xml:space="preserve">
+    <value>إضافة مخزن</value>
+  </data>
+  <data name="EditWarehouse" xml:space="preserve">
+    <value>تعديل المخزن</value>
+  </data>
+  <data name="OrderNumber" xml:space="preserve">
     <value>رقم الطلب</value>
-</data>
-	<data name="CustomerInformation" xml:space="preserve">
+  </data>
+  <data name="CustomerInformation" xml:space="preserve">
     <value>معلومات العميل</value>
-</data>
-	<data name="CustomerName" xml:space="preserve">
+  </data>
+  <data name="CustomerName" xml:space="preserve">
     <value>اسم العميل</value>
-</data>
-	<data name="CustomerType" xml:space="preserve">
+  </data>
+  <data name="CustomerType" xml:space="preserve">
     <value>نوع العميل</value>
-</data>
-	<data name="ShippingInformation" xml:space="preserve">
+  </data>
+  <data name="ShippingInformation" xml:space="preserve">
     <value>معلومات الشحن</value>
-</data>
-	<data name="ExpectedDelivery" xml:space="preserve">
+  </data>
+  <data name="ExpectedDelivery" xml:space="preserve">
     <value>التاريخ المتوقع للتسليم</value>
-</data>
-	<data name="ShippingCost" xml:space="preserve">
+  </data>
+  <data name="ShippingCost" xml:space="preserve">
     <value>تكلفة الشحن</value>
-</data>
-	<data name="Shipments" xml:space="preserve">
+  </data>
+  <data name="Shipments" xml:space="preserve">
     <value>الشحنات</value>
-</data>
-	<data name="TrackingNumber" xml:space="preserve">
+  </data>
+  <data name="TrackingNumber" xml:space="preserve">
     <value>رقم التتبع</value>
-</data>
-	<data name="ShipmentTotal" xml:space="preserve">
+  </data>
+  <data name="ShipmentTotal" xml:space="preserve">
     <value>إجمالي الشحنة</value>
-</data>
-	<data name="ViewHistory" xml:space="preserve">
+  </data>
+  <data name="ViewHistory" xml:space="preserve">
     <value>عرض السجل</value>
-</data>
-	<data name="NoShipments" xml:space="preserve">
+  </data>
+  <data name="NoShipments" xml:space="preserve">
     <value>لا توجد شحنات</value>
-</data>
-	<data name="NoShipmentsYet" xml:space="preserve">
+  </data>
+  <data name="NoShipmentsYet" xml:space="preserve">
     <value>لم يتم إنشاء شحنات لهذا الطلب بعد</value>
-</data>
-	<data name="Products" xml:space="preserve">
+  </data>
+  <data name="Products" xml:space="preserve">
     <value>المنتجات</value>
-</data>
-	<data name="NoProducts" xml:space="preserve">
+  </data>
+  <data name="NoProducts" xml:space="preserve">
     <value>لا توجد منتجات</value>
-</data>
-	<data name="NoProductsInOrder" xml:space="preserve">
+  </data>
+  <data name="NoProductsInOrder" xml:space="preserve">
     <value>لا توجد منتجات في هذا الطلب</value>
-</data>
-	<data name="OrderSummary" xml:space="preserve">
+  </data>
+  <data name="OrderSummary" xml:space="preserve">
     <value>ملخص الطلب</value>
-</data>
-	<data name="Subtotal" xml:space="preserve">
+  </data>
+  <data name="Subtotal" xml:space="preserve">
     <value>المجموع الفرعي</value>
-</data>
-	<data name="PaymentInformation" xml:space="preserve">
+  </data>
+  <data name="PaymentInformation" xml:space="preserve">
     <value>معلومات الدفع</value>
-</data>
-	<data name="PaymentMethod" xml:space="preserve">
+  </data>
+  <data name="PaymentMethod" xml:space="preserve">
     <value>طريقة الدفع</value>
-</data>
-	<data name="InvoiceNumber" xml:space="preserve">
+  </data>
+  <data name="InvoiceNumber" xml:space="preserve">
     <value>رقم الفاتورة</value>
-</data>
-	<data name="CreatedDate" xml:space="preserve">
+  </data>
+  <data name="CreatedDate" xml:space="preserve">
     <value>تاريخ الإنشاء</value>
-</data>
-	<data name="AwaitingConfirmation" xml:space="preserve">
+  </data>
+  <data name="AwaitingConfirmation" xml:space="preserve">
     <value>في انتظار التأكيد</value>
-</data>
-	<data name="Processing" xml:space="preserve">
+  </data>
+  <data name="Processing" xml:space="preserve">
     <value>جاري المعالجة</value>
-</data>
-	<data name="OnTheWay" xml:space="preserve">
+  </data>
+  <data name="OnTheWay" xml:space="preserve">
     <value>في الطريق</value>
-</data>
-	<data name="DeliveryDate" xml:space="preserve">
+  </data>
+  <data name="DeliveryDate" xml:space="preserve">
     <value>تاريخ التسليم</value>
-</data>
-	<data name="RefundRequest" xml:space="preserve">
+  </data>
+  <data name="RefundRequest" xml:space="preserve">
     <value>طلب استرجاع</value>
-</data>
-	<data name="RefundApproved" xml:space="preserve">
+  </data>
+  <data name="RefundApproved" xml:space="preserve">
     <value>تم الموافقة على الاسترجاع</value>
-</data>
-	<data name="RefundRejected" xml:space="preserve">
+  </data>
+  <data name="RefundRejected" xml:space="preserve">
     <value>تم رفض الاسترجاع</value>
-</data>
-	<data name="RefundAmount" xml:space="preserve">
+  </data>
+  <data name="RefundAmount" xml:space="preserve">
     <value>مبلغ الاسترجاع</value>
-</data>
-	<data name="AddComment" xml:space="preserve">
+  </data>
+  <data name="AddComment" xml:space="preserve">
     <value>أضف تعليق</value>
-</data>
-	<data name="Failed" xml:space="preserve">
+  </data>
+  <data name="Failed" xml:space="preserve">
     <value>فشل</value>
-</data>
-	<data name="Refunded" xml:space="preserve">
+  </data>
+  <data name="Refunded" xml:space="preserve">
     <value>مسترجع</value>
-</data>
-	<data name="Free" xml:space="preserve">
+  </data>
+  <data name="Free" xml:space="preserve">
     <value>مجاني</value>
-</data>
-	<data name="Shipping" xml:space="preserve">
+  </data>
+  <data name="Shipping" xml:space="preserve">
     <value>الشحن</value>
-</data>
-	<data name="Paid" xml:space="preserve">
+  </data>
+  <data name="Paid" xml:space="preserve">
     <value>مدفوع</value>
-</data>
-	<data name="Pending" xml:space="preserve">
+  </data>
+  <data name="Pending" xml:space="preserve">
     <value>قيد الانتظار</value>
-</data>
-	<data name="BackToOrders" xml:space="preserve">
+  </data>
+  <data name="BackToOrders" xml:space="preserve">
     <value>العودة إلى الطلبات</value>
-</data>
-
-	<data name="OrderItems" xml:space="preserve">
+  </data>
+  <data name="OrderItems" xml:space="preserve">
     <value>عناصر الطلب</value>
-</data>
-
-	<data name="OrderControl" xml:space="preserve">
+  </data>
+  <data name="OrderControl" xml:space="preserve">
     <value>التحكم في الطلب</value>
-</data>
-
-	<data name="CurrentStatus" xml:space="preserve">
+  </data>
+  <data name="CurrentStatus" xml:space="preserve">
     <value>الحالة الحالية</value>
-</data>
-
-	<data name="StartProcessing" xml:space="preserve">
+  </data>
+  <data name="StartProcessing" xml:space="preserve">
     <value>بدء المعالجة</value>
-</data>
-
-	<data name="MoveToShipping" xml:space="preserve">
+  </data>
+  <data name="MoveToShipping" xml:space="preserve">
     <value>الانتقال إلى الشحن</value>
-</data>
-
-	<data name="MarkAsDelivered" xml:space="preserve">
+  </data>
+  <data name="MarkAsDelivered" xml:space="preserve">
     <value>تحديد كمُسلّم</value>
-</data>
-
-	<data name="OrderCompleted" xml:space="preserve">
+  </data>
+  <data name="OrderCompleted" xml:space="preserve">
     <value>تم إكمال الطلب</value>
-</data>
-
-	<data name="OrderRejected" xml:space="preserve">
+  </data>
+  <data name="OrderRejected" xml:space="preserve">
     <value>تم رفض الطلب</value>
-</data>
-
-	<data name="OrderProgress" xml:space="preserve">
+  </data>
+  <data name="OrderProgress" xml:space="preserve">
     <value>تقدم الطلب</value>
-</data>
-	<data name="OrderStatus" xml:space="preserve">
+  </data>
+  <data name="OrderStatus" xml:space="preserve">
     <value>حالة الطلب</value>
-</data>
-
-	<data name="Accepted" xml:space="preserve">
+  </data>
+  <data name="Accepted" xml:space="preserve">
     <value>مقبول</value>
-</data>
-
-	<data name="InProgress" xml:space="preserve">
+  </data>
+  <data name="InProgress" xml:space="preserve">
     <value>قيد التنفيذ</value>
-</data>
-
-	<data name="Delivered" xml:space="preserve">
+  </data>
+  <data name="Delivered" xml:space="preserve">
     <value>تم التسليم</value>
-</data>
-
-	<data name="Completed" xml:space="preserve">
+  </data>
+  <data name="Completed" xml:space="preserve">
     <value>مكتمل</value>
-</data>
-
-	<data name="Canceled" xml:space="preserve">
+  </data>
+  <data name="Canceled" xml:space="preserve">
     <value>ملغى</value>
-</data>
-
-	<data name="Returned" xml:space="preserve">
+  </data>
+  <data name="Returned" xml:space="preserve">
     <value>مرتجع</value>
-</data>
-
-	<data name="PaymentFailed" xml:space="preserve">
+  </data>
+  <data name="PaymentFailed" xml:space="preserve">
     <value>فشل الدفع</value>
-</data>
-
-	<data name="RefundRequested" xml:space="preserve">
+  </data>
+  <data name="RefundRequested" xml:space="preserve">
     <value>تم طلب الاسترجاع</value>
-</data>
-<data name="OrderMustBeConfirmed" xml:space="preserve">
+  </data>
+  <data name="OrderMustBeConfirmed" xml:space="preserve">
     <value>يجب تأكيد الطلب أولاً</value>
-</data>
-
-<data name="OrderMustBeProcessing" xml:space="preserve">
+  </data>
+  <data name="OrderMustBeProcessing" xml:space="preserve">
     <value>يجب أن يكون الطلب قيد المعالجة</value>
-</data>
-
-<data name="SelectValidDeliveryDate" xml:space="preserve">
+  </data>
+  <data name="SelectValidDeliveryDate" xml:space="preserve">
     <value>يرجى اختيار تاريخ تسليم صالح</value>
-</data>
-
-<data name="OrderMustBeShipped" xml:space="preserve">
+  </data>
+  <data name="OrderMustBeShipped" xml:space="preserve">
     <value>يجب شحن الطلب أولاً</value>
-</data>
-
-<data name="Confirmed" xml:space="preserve">
+  </data>
+  <data name="Confirmed" xml:space="preserve">
     <value>مؤكد</value>
-</data>
-
-<data name="Cancelled" xml:space="preserve">
+  </data>
+  <data name="Cancelled" xml:space="preserve">
     <value>ملغى</value>
-</data>
-
-<data name="Shipped" xml:space="preserve">
+  </data>
+  <data name="Shipped" xml:space="preserve">
     <value>تم الشحن</value>
-</data>
-
-<data name="InTransit" xml:space="preserve">
+  </data>
+  <data name="InTransit" xml:space="preserve">
     <value>قيد النقل</value>
-</data>
-
-<data name="OutForDelivery" xml:space="preserve">
+  </data>
+  <data name="OutForDelivery" xml:space="preserve">
     <value>خرج للتسليم</value>
-</data>
-
-<data name="PartiallyPaid" xml:space="preserve">
+  </data>
+  <data name="PartiallyPaid" xml:space="preserve">
     <value>مدفوع جزئياً</value>
-</data>
-
-<data name="PartiallyRefunded" xml:space="preserve">
+  </data>
+  <data name="PartiallyRefunded" xml:space="preserve">
     <value>مسترجع جزئياً</value>
-</data>
+  </data>
   <data name="Refunds" xml:space="preserve">
     <value>الاسترجاعات</value>
   </data>
@@ -353,315 +340,390 @@
     <value>حالة الاسترجاع</value>
   </data>
   <data name="ItemsCount" xml:space="preserve">
-  <value>عدد العناصر</value>
-</data>
+    <value>عدد العناصر</value>
+  </data>
   <data name="RequestedDate" xml:space="preserve">
-  <value>تاريخ الطلب</value>
-</data>
+    <value>تاريخ الطلب</value>
+  </data>
   <data name="RefundNumber" xml:space="preserve">
-  <value>رقم الاسترداد</value>
-</data>
+    <value>رقم الاسترداد</value>
+  </data>
   <data name="Closed" xml:space="preserve">
-  <value>مغلق</value>
-</data>
+    <value>مغلق</value>
+  </data>
   <data name="Inspecting" xml:space="preserve">
-  <value>قيد الفحص</value>
-</data>
+    <value>قيد الفحص</value>
+  </data>
   <data name="ItemReceived" xml:space="preserve">
-  <value>تم استلام المنتج</value>
-</data>
+    <value>تم استلام المنتج</value>
+  </data>
   <data name="ItemShippedBack" xml:space="preserve">
-  <value>تم شحن المنتج مجددًا</value>
-</data>
+    <value>تم شحن المنتج مجددًا</value>
+  </data>
   <data name="InfoApproved" xml:space="preserve">
-  <value>تم اعتماد المعلومات</value>
-</data>
+    <value>تم اعتماد المعلومات</value>
+  </data>
   <data name="NeedMoreInfo" xml:space="preserve">
-  <value>يُحتاج إلى مزيد من المعلومات</value>
-</data>
+    <value>يُحتاج إلى مزيد من المعلومات</value>
+  </data>
   <data name="Opened" xml:space="preserve">
-  <value>مفتوح</value>
-</data>
+    <value>مفتوح</value>
+  </data>
   <data name="AllRefundStatus" xml:space="preserve">
-  <value>جميع حالات الاسترداد</value>
-</data>
+    <value>جميع حالات الاسترداد</value>
+  </data>
   <data name="AdminNotes" xml:space="preserve">
-  <value>ملاحظات المشرف</value>
-</data>
+    <value>ملاحظات المشرف</value>
+  </data>
   <data name="RejectionReason" xml:space="preserve">
-  <value>سبب الرفض</value>
-</data>
+    <value>سبب الرفض</value>
+  </data>
   <data name="CloseRefund" xml:space="preserve">
-  <value>إغلاق الاسترداد</value>
-</data>
+    <value>إغلاق الاسترداد</value>
+  </data>
   <data name="RefundSuccessful" xml:space="preserve">
-  <value>تم استرداد الأموال بنجاح</value>
-</data>
+    <value>تم استرداد الأموال بنجاح</value>
+  </data>
   <data name="RefundCompleted" xml:space="preserve">
-  <value>اكتمل استرداد الأموال</value>
-</data>
+    <value>اكتمل استرداد الأموال</value>
+  </data>
   <data name="ProcessRefund" xml:space="preserve">
-  <value>معالجة استرداد الأموال</value>
-</data>
+    <value>معالجة استرداد الأموال</value>
+  </data>
   <data name="TransactionId" xml:space="preserve">
-  <value>رقم المعاملة</value>
-</data>
+    <value>رقم المعاملة</value>
+  </data>
   <data name="ApproveRefund" xml:space="preserve">
-  <value>اعتماد استرداد الأموال</value>
-</data>
+    <value>اعتماد استرداد الأموال</value>
+  </data>
   <data name="InspectingItem" xml:space="preserve">
-  <value>فحص المنتج</value>
-</data>
+    <value>فحص المنتج</value>
+  </data>
   <data name="MarkAsReceived" xml:space="preserve">
-  <value>وضع علامة "مستلم"</value>
-</data>
+    <value>وضع علامة "مستلم"</value>
+  </data>
   <data name="MarkAsShipped" xml:space="preserve">
-  <value>وضع علامة "تم الشحن"</value>
-</data>
+    <value>وضع علامة "تم الشحن"</value>
+  </data>
   <data name="WaitingForReturn" xml:space="preserve">
-  <value>في انتظار الإرجاع</value>
-</data>
+    <value>في انتظار الإرجاع</value>
+  </data>
   <data name="ApproveInfo" xml:space="preserve">
-  <value>اعتماد المعلومات</value>
-</data>
+    <value>اعتماد المعلومات</value>
+  </data>
   <data name="ReviewingRequest" xml:space="preserve">
-  <value>قيد مراجعة الطلب</value>
-</data>
+    <value>قيد مراجعة الطلب</value>
+  </data>
   <data name="StartReview" xml:space="preserve">
-  <value>بدء المراجعة</value>
-</data>
+    <value>بدء المراجعة</value>
+  </data>
   <data name="RefundRequestReceived" xml:space="preserve">
-  <value>تم استلام طلب الاسترداد</value>
-</data>
+    <value>تم استلام طلب الاسترداد</value>
+  </data>
   <data name="RefundWorkflow" xml:space="preserve">
-  <value>سير عمل استرداد الأموال</value>
-</data>
+    <value>سير عمل استرداد الأموال</value>
+  </data>
   <data name="RejectAfterInspection" xml:space="preserve">
-  <value>رفض بعد الفحص</value>
-</data>
+    <value>رفض بعد الفحص</value>
+  </data>
   <data name="EnterTrackingNumber" xml:space="preserve">
-  <value>أدخل رقم التتبع</value>
-</data>
+    <value>أدخل رقم التتبع</value>
+  </data>
   <data name="RequestMoreInfo" xml:space="preserve">
-  <value>طلب مزيد من المعلومات</value>
-</data>
+    <value>طلب مزيد من المعلومات</value>
+  </data>
   <data name="Details" xml:space="preserve">
-  <value>التفاصيل</value>
-</data>
+    <value>التفاصيل</value>
+  </data>
   <data name="ReturnShippingCost" xml:space="preserve">
-  <value>تكلفة شحن الإرجاع</value>
-</data>
+    <value>تكلفة شحن الإرجاع</value>
+  </data>
   <data name="ApprovedItems" xml:space="preserve">
-  <value>العناصر المعتمدة</value>
-</data>
+    <value>العناصر المعتمدة</value>
+  </data>
   <data name="RequestedItems" xml:space="preserve">
-  <value>العناصر المطلوبة</value>
-</data>
+    <value>العناصر المطلوبة</value>
+  </data>
   <data name="RefundReason" xml:space="preserve">
-  <value>سبب الاسترداد</value>
-</data>
+    <value>سبب الاسترداد</value>
+  </data>
   <data name="RefundInformation" xml:space="preserve">
-  <value>معلومات الاسترداد</value>
-</data>
+    <value>معلومات الاسترداد</value>
+  </data>
   <data name="RequestDate" xml:space="preserve">
-  <value>تاريخ الطلب</value>
-</data>
+    <value>تاريخ الطلب</value>
+  </data>
   <data name="VendorName" xml:space="preserve">
-  <value>اسم البائع</value>
-</data>
+    <value>اسم البائع</value>
+  </data>
   <data name="RefundDetails" xml:space="preserve">
-  <value>تفاصيل الاسترداد</value>
-</data>
+    <value>تفاصيل الاسترداد</value>
+  </data>
   <data name="TrackingNumberRequired" xml:space="preserve">
-  <value>رقم التتبع مطلوب</value>
-</data>
+    <value>رقم التتبع مطلوب</value>
+  </data>
   <data name="InvalidStatusTransition" xml:space="preserve">
-  <value>انتقال الحالة غير صحيح</value>
-</data>
+    <value>انتقال الحالة غير صحيح</value>
+  </data>
   <data name="InvalidRefundAmount" xml:space="preserve">
-  <value>مبلغ الاسترداد غير صالح</value>
-</data>
+    <value>مبلغ الاسترداد غير صالح</value>
+  </data>
   <data name="TransactionIdRequired" xml:space="preserve">
-  <value>معرف المعاملة مطلوب</value>
-</data>
+    <value>معرف المعاملة مطلوب</value>
+  </data>
   <data name="RefundClosedSuccessfully" xml:space="preserve">
-  <value>تم إغلاق الاسترداد بنجاح</value>
-</data>
-	<data name="OrderID" xml:space="preserve">
-  <value>رقم الطلب</value>
-</data>
-
-	<data name="CustomerEmail" xml:space="preserve">
-  <value>البريد الإلكتروني للعميل</value>
-</data>
-
-	<data name="OrderDate" xml:space="preserve">
-  <value>تاريخ الطلب</value>
-</data>
-
-	<data name="ItemsCount" xml:space="preserve">
-  <value>عدد العناصر</value>
-</data>
-
-	<data name="StatusChangedSuccessfully" xml:space="preserve">
-  <value>تم تغيير حالة الطلب بنجاح</value>
-</data>
-
-	<data name="ConfirmCancelOrder" xml:space="preserve">
-  <value>هل أنت متأكد من إلغاء هذا الطلب؟</value>
-</data>
-
-	<data name="ConfirmOrder" xml:space="preserve">
-  <value>تأكيد الطلب</value>
-</data>
-
-	<data name="MoveToProcessing" xml:space="preserve">
-  <value>نقل إلى المعالجة</value>
-</data>
-
-	<data name="NextStatus" xml:space="preserve">
-  <value>الحالة التالية</value>
-</data>
-	<data name="OrderDetails" xml:space="preserve">
-  <value>تفاصيل الطلب</value>
-</data>
-
-	<data name="OrderMustBePending" xml:space="preserve">
-  <value>يجب أن يكون الطلب في حالة قيد الانتظار</value>
-</data>
-
-	<data name="Status" xml:space="preserve">
-  <value>الحالة</value>
-</data>
-
-	<data name="PaymentStatus" xml:space="preserve">
-  <value>حالة الدفع</value>
-</data>
-
-	<data name="Item" xml:space="preserve">
-  <value>العنصر</value>
-</data>
-
-	<data name="Vendor" xml:space="preserve">
-  <value>المورد</value>
-</data>
-
-	<data name="Quantity" xml:space="preserve">
-  <value>الكمية</value>
-</data>
-
-	<data name="Discount" xml:space="preserve">
-  <value>الخصم</value>
-</data>
-
-	<data name="Tax" xml:space="preserve">
-  <value>الضريبة</value>
-</data>
-
-	<data name="TotalAmount" xml:space="preserve">
-  <value>المبلغ الإجمالي</value>
-</data>
-
-	<data name="RecipientName" xml:space="preserve">
-  <value>اسم المستلم</value>
-</data>
-
-	<data name="PaymentDate" xml:space="preserve">
-  <value>تاريخ الدفع</value>
-</data>
-
-	<data name="CancelOrder" xml:space="preserve">
-  <value>إلغاء الطلب</value>
-</data>
-
-	<data name="CouponCode" xml:space="preserve">
-  <value>كود الخصم</value>
-</data>
-	<data name="PendingProcessing" xml:space="preserve">
-  <value>قيد المعالجة</value>
-</data>
-	<data name="PreparingForShipment" xml:space="preserve">
-  <value>جارٍ التحضير للشحن</value>
-</data>
-	<data name="PickedUpByCarrier" xml:space="preserve">
-  <value>تم الاستلام من شركة الشحن</value>
-</data>
-	<data name="AtLocalHub" xml:space="preserve">
-  <value>في مركز التوزيع المحلي</value>
-</data>
-	<data name="DeliveryAttemptFailed" xml:space="preserve">
-  <value>فشلت محاولة التسليم</value>
-</data>
-	<data name="CancelledByCustomer" xml:space="preserve">
-  <value>تم الإلغاء من قبل العميل</value>
-</data>
-	<data name="CancelledByMarketplace" xml:space="preserve">
-  <value>تم الإلغاء من قبل المنصة</value>
-</data>
-
-	<data name="Card" xml:space="preserve">
-  <value>بطاقة</value>
-</data>
-	<data name="Cash" xml:space="preserve">
-  <value>نقدًا</value>
-</data>
-	<data name="Wallet" xml:space="preserve">
-  <value>محفظة</value>
-</data>
-	<data name="Other" xml:space="preserve">
-  <value>أخرى</value>
-</data>
-	<data name="Currency" xml:space="preserve">
-  <value>العملة</value>
-</data>
-	<data name="Total" xml:space="preserve">
-  <value>الإجمالي</value>
-</data>
-
-
+    <value>تم إغلاق الاسترداد بنجاح</value>
+  </data>
+  <data name="OrderID" xml:space="preserve">
+    <value>رقم الطلب</value>
+  </data>
+  <data name="CustomerEmail" xml:space="preserve">
+    <value>البريد الإلكتروني للعميل</value>
+  </data>
+  <data name="OrderDate" xml:space="preserve">
+    <value>تاريخ الطلب</value>
+  </data>
+  <data name="StatusChangedSuccessfully" xml:space="preserve">
+    <value>تم تغيير حالة الطلب بنجاح</value>
+  </data>
+  <data name="ConfirmCancelOrder" xml:space="preserve">
+    <value>هل أنت متأكد من إلغاء هذا الطلب؟</value>
+  </data>
+  <data name="ConfirmOrder" xml:space="preserve">
+    <value>تأكيد الطلب</value>
+  </data>
+  <data name="MoveToProcessing" xml:space="preserve">
+    <value>نقل إلى المعالجة</value>
+  </data>
+  <data name="NextStatus" xml:space="preserve">
+    <value>الحالة التالية</value>
+  </data>
+  <data name="OrderDetails" xml:space="preserve">
+    <value>تفاصيل الطلب</value>
+  </data>
+  <data name="OrderMustBePending" xml:space="preserve">
+    <value>يجب أن يكون الطلب في حالة قيد الانتظار</value>
+  </data>
+  <data name="Status" xml:space="preserve">
+    <value>الحالة</value>
+  </data>
+  <data name="PaymentStatus" xml:space="preserve">
+    <value>حالة الدفع</value>
+  </data>
+  <data name="Item" xml:space="preserve">
+    <value>العنصر</value>
+  </data>
+  <data name="Vendor" xml:space="preserve">
+    <value>المورد</value>
+  </data>
+  <data name="Quantity" xml:space="preserve">
+    <value>الكمية</value>
+  </data>
+  <data name="Discount" xml:space="preserve">
+    <value>الخصم</value>
+  </data>
+  <data name="Tax" xml:space="preserve">
+    <value>الضريبة</value>
+  </data>
+  <data name="TotalAmount" xml:space="preserve">
+    <value>المبلغ الإجمالي</value>
+  </data>
+  <data name="RecipientName" xml:space="preserve">
+    <value>اسم المستلم</value>
+  </data>
+  <data name="PaymentDate" xml:space="preserve">
+    <value>تاريخ الدفع</value>
+  </data>
+  <data name="CancelOrder" xml:space="preserve">
+    <value>إلغاء الطلب</value>
+  </data>
+  <data name="CouponCode" xml:space="preserve">
+    <value>كود الخصم</value>
+  </data>
+  <data name="PendingProcessing" xml:space="preserve">
+    <value>قيد المعالجة</value>
+  </data>
+  <data name="PreparingForShipment" xml:space="preserve">
+    <value>جارٍ التحضير للشحن</value>
+  </data>
+  <data name="PickedUpByCarrier" xml:space="preserve">
+    <value>تم الاستلام من شركة الشحن</value>
+  </data>
+  <data name="AtLocalHub" xml:space="preserve">
+    <value>في مركز التوزيع المحلي</value>
+  </data>
+  <data name="DeliveryAttemptFailed" xml:space="preserve">
+    <value>فشلت محاولة التسليم</value>
+  </data>
+  <data name="CancelledByCustomer" xml:space="preserve">
+    <value>تم الإلغاء من قبل العميل</value>
+  </data>
+  <data name="CancelledByMarketplace" xml:space="preserve">
+    <value>تم الإلغاء من قبل المنصة</value>
+  </data>
+  <data name="Card" xml:space="preserve">
+    <value>بطاقة</value>
+  </data>
+  <data name="Cash" xml:space="preserve">
+    <value>نقدًا</value>
+  </data>
+  <data name="Wallet" xml:space="preserve">
+    <value>محفظة</value>
+  </data>
   <data name="Other" xml:space="preserve">
-  <value>أخرى</value>
-</data>
+    <value>أخرى</value>
+  </data>
+  <data name="Currency" xml:space="preserve">
+    <value>العملة</value>
+  </data>
+  <data name="Total" xml:space="preserve">
+    <value>الإجمالي</value>
+  </data>
   <data name="QualityNotSatisfactory" xml:space="preserve">
-  <value>الجودة غير مرضية</value>
-</data>
+    <value>الجودة غير مرضية</value>
+  </data>
   <data name="MissingParts" xml:space="preserve">
-  <value>أجزاء مفقودة</value>
-</data>
+    <value>أجزاء مفقودة</value>
+  </data>
   <data name="LateDelivery" xml:space="preserve">
-  <value>توصيل متأخر</value>
-</data>
+    <value>توصيل متأخر</value>
+  </data>
   <data name="BetterPriceFound" xml:space="preserve">
-  <value>تم العثور على سعر أفضل</value>
-</data>
+    <value>تم العثور على سعر أفضل</value>
+  </data>
   <data name="OrderedByMistake" xml:space="preserve">
-  <value>تم الطلب بالخطأ</value>
-</data>
+    <value>تم الطلب بالخطأ</value>
+  </data>
   <data name="ChangedMind" xml:space="preserve">
-  <value>غيرت رأيي</value>
-</data>
+    <value>غيرت رأيي</value>
+  </data>
   <data name="DamagedDuringShipping" xml:space="preserve">
-  <value>تم تلف المنتج أثناء الشحن</value>
-</data>
+    <value>تم تلف المنتج أثناء الشحن</value>
+  </data>
   <data name="ItemNotAsDescribed" xml:space="preserve">
-  <value>المنتج ليس كما هو موضح</value>
-</data>
+    <value>المنتج ليس كما هو موضح</value>
+  </data>
   <data name="WrongItemShipped" xml:space="preserve">
-  <value>تم شحن منتج خاطئ</value>
-</data>
+    <value>تم شحن منتج خاطئ</value>
+  </data>
   <data name="DefectiveProduct" xml:space="preserve">
-  <value>منتج معيب</value>
-</data>
+    <value>منتج معيب</value>
+  </data>
   <data name="VendorInformation" xml:space="preserve">
-  <value>معلومات البائع</value>
-</data>
+    <value>معلومات البائع</value>
+  </data>
   <data name="RefundSummary" xml:space="preserve">
-  <value>ملخص الاسترداد</value>
-</data>
+    <value>ملخص الاسترداد</value>
+  </data>
   <data name="ApprovedItemsRequired" xml:space="preserve">
-  <value>مطلوب عنصر معتمد على الأقل</value>
-</data>
+    <value>مطلوب عنصر معتمد على الأقل</value>
+  </data>
   <data name="RejectionReasonRequiredForRefund" xml:space="preserve">
-  <value>سبب الرفض مطلوب عند رفض طلب الاسترداد</value>
-</data>
+    <value>سبب الرفض مطلوب عند رفض طلب الاسترداد</value>
+  </data>
+  <data name="ReadyForPickup" xml:space="preserve">
+    <value>جاهز للاستلام</value>
+  </data>
+  <data name="MarkInTransit" xml:space="preserve">
+    <value>تعيين قيد التوصيل</value>
+  </data>
+  <data name="AttemptDelivery" xml:space="preserve">
+    <value>محاولة التوصيل</value>
+  </data>
+  <data name="RetryDelivery" xml:space="preserve">
+    <value>إعادة محاولة التوصيل</value>
+  </data>
+  <data name="ShipmentMustBeInTransitToMarkFailed" xml:space="preserve">
+    <value>يجب أن تكون الشحنة قيد التوصيل لتعيينها كفاشلة</value>
+  </data>
+  <data name="EnterReasonForDeliveryFailure" xml:space="preserve">
+    <value>يرجى إدخال سبب فشل التوصيل</value>
+  </data>
+  <data name="ShipmentStatusUpdatedSuccessfully" xml:space="preserve">
+    <value>تم تحديث حالة الشحنة بنجاح</value>
+  </data>
+  <data name="UpdatedByAdmin" xml:space="preserve">
+    <value>تم التحديث بواسطة المشرف</value>
+  </data>
+  <data name="AutoUpdatedBasedOnShipmentProgress" xml:space="preserve">
+    <value>تم التحديث تلقائيًا بناءً على تقدم الشحنة</value>
+  </data>
+  <data name="CannotCancelDeliveredShipment" xml:space="preserve">
+    <value>لا يمكن إلغاء شحنة تم تسليمها</value>
+  </data>
+  <data name="ConfirmCancelShipment" xml:space="preserve">
+    <value>هل أنت متأكد أنك تريد إلغاء هذه الشحنة؟</value>
+  </data>
+  <data name="CancelledByAdmin" xml:space="preserve">
+    <value>تم الإلغاء بواسطة المشرف</value>
+  </data>
+  <data name="CancelledAdmin" xml:space="preserve">
+    <value>تم الإلغاء بواسطة المشرف</value>
+  </data>
+  <data name="CancelledCustomer" xml:space="preserve">
+    <value>تم الإلغاء بواسطة العميل</value>
+  </data>
+  <data name="OrderCancelledSuccessfully" xml:space="preserve">
+    <value>تم إلغاء الطلب بنجاح</value>
+  </data>
+  <data name="ShipmentUpdatedSuccessfully" xml:space="preserve">
+    <value>تم تحديث الشحنة بنجاح</value>
+  </data>
+  <data name="Preparing" xml:space="preserve">
+    <value>قيد التحضير</value>
+  </data>
+  <data name="PickedUp" xml:space="preserve">
+    <value>تم الاستلام</value>
+  </data>
+  <data name="DeliveryFailed" xml:space="preserve">
+    <value>فشل التوصيل</value>
+  </data>
+  <data name="CancelShipment" xml:space="preserve">
+    <value>إلغاء الشحنة</value>
+  </data>
+  <data name="DeliveredDate" xml:space="preserve">
+    <value>تاريخ التسليم</value>
+  </data>
+  <data name="ETA" xml:space="preserve">
+    <value>وقت التسليم المتوقع</value>
+  </data>
+  <data name="Issues" xml:space="preserve">
+    <value>المشاكل</value>
+  </data>
+  <data name="MarkDeliveryFailed" xml:space="preserve">
+    <value>تعيين التوصيل كفاشل</value>
+  </data>
+  <data name="NoShipmentsFound" xml:space="preserve">
+    <value>لا توجد شحنات</value>
+  </data>
+  <data name="ShipmentNumber" xml:space="preserve">
+    <value>رقم الشحنة</value>
+  </data>
+  <data name="ToggleDropdown" xml:space="preserve">
+    <value>فتح القائمة</value>
+  </data>
+  <data name="Tracking" xml:space="preserve">
+    <value>التتبع</value>
+  </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>إلغاء</value>
+  </data>
+  <data name="DeliveredSuccessfullyOn" xml:space="preserve">
+    <value>تم التوصيل بنجاح في:</value>
+  </data>
+  <data name="NotAddedYet" xml:space="preserve">
+    <value>لم يتم الإضافة بعد</value>
+  </data>
+  <data name="NotSpecified" xml:space="preserve">
+    <value>غير محدد</value>
+  </data>
+  <data name="NumberOfItems" xml:space="preserve">
+    <value>عدد المنتجات:</value>
+  </data>
+  <data name="Updating" xml:space="preserve">
+    <value>جاري التحديث...</value>
+  </data>
+  <data name="ShipmentSummary" xml:space="preserve">
+    <value>ملخص الشحنات</value>
+  </data>
 </root>
