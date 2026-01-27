@@ -4,6 +4,7 @@ using DAL.Contracts.Repositories.Order;
 using Domains.Entities.Offer;
 using Domains.Entities.Order.Cart;
 using Serilog;
+using Shared.DTOs.Catalog.Item;
 using Shared.DTOs.Order.Cart;
 
 namespace BL.Services.Order.Cart;
@@ -23,6 +24,7 @@ public class CartService : ICartService
         _combinationPricingRepository = combinationPricingRepository ?? throw new ArgumentNullException(nameof(combinationPricingRepository));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
+
 
     public async Task<CartSummaryDto> GetCartSummaryAsync(string customerId)
     {
@@ -415,74 +417,169 @@ public class CartService : ICartService
             throw;
         }
     }
+	private async Task<CartSummaryDto> MapToCartSummaryDtoAsync(TbShoppingCart cart)
+	{
+		if (cart == null || cart.Id == Guid.Empty)
+			return new CartSummaryDto
+			{
+				CartId = Guid.Empty,
+				Items = new(),
+				SubTotal = 0m,
+				ShippingEstimate = 0m,
+				TaxEstimate = 0m,
+				TotalEstimate = 0m,
+				ItemCount = 0
+			};
 
-    /// <summary>
+		var items = new List<CartItemDto>();
+
+		if (cart.Items != null)
+		{
+			foreach (var ci in cart.Items.Where(i => !i.IsDeleted))
+			{
+				var pricing = ci.OfferCombinationPricing;
+
+				if (pricing == null)
+				{
+					_logger.Error($"Pricing not found for offer combination pricing ID {ci.OfferCombinationPricingId}");
+					throw new InvalidOperationException($"Pricing not found for offer combination pricing ID {ci.OfferCombinationPricingId}");
+				}
+
+				var originalPrice = pricing.Price;
+				var currentPrice = pricing.SalesPrice;
+				var isAvailable = pricing.AvailableQuantity >= ci.Quantity;
+
+				// Map الـ Attributes مع إنشاء List<AttributeValueFilterDto>
+				var attributes = ci.Item?.ItemAttributes?
+					.Where(a => !a.IsDeleted)
+					.OrderBy(a => a.DisplayOrder)
+					.Select(attr => new AttributeFilterDto
+					{
+						AttributeId = attr.AttributeId,
+						NameAr = attr.TitleAr,
+						NameEn = attr.TitleEn,
+						DisplayOrder = attr.DisplayOrder,
+						Values = new List<AttributeValueFilterDto> 
+						{
+						new AttributeValueFilterDto
+						{
+							ValueId = attr.Id, 
+                            ValueAr = attr.Value,
+							ValueEn = attr.Value,
+							Count = 1
+						}
+						}
+					})
+					.ToList() ?? new List<AttributeFilterDto>();
+
+				items.Add(new CartItemDto
+				{
+					Id = ci.Id,
+					ItemId = ci.ItemId,
+					ItemNameAr = ci.Item?.TitleAr,
+					ItemNameEn = ci.Item?.TitleEn,
+					OfferCombinationPricingId = ci.OfferCombinationPricingId,
+                    ItemCombinationId = ci.OfferCombinationPricing.ItemCombinationId,
+					SellerName = ci.OfferCombinationPricing?.Offer?.Vendor?.StoreName,
+					UnitOriginalPrice = originalPrice,
+					Quantity = ci.Quantity,
+					UnitPrice = currentPrice,
+					SubTotal = currentPrice * ci.Quantity,
+					IsAvailable = isAvailable,
+					ImageUrl = ci.Item?.ThumbnailImage,
+					Attributes = attributes
+				});
+			}
+		}
+
+		var subTotal = items.Sum(i => i.SubTotal);
+		var shippingEstimate = items.Any() ? 50m : 0m;
+		var taxRate = 0.14m;
+		var taxEstimate = subTotal * taxRate;
+
+		return new CartSummaryDto
+		{
+			CartId = cart.Id,
+			Items = items,
+			SubTotal = subTotal,
+			ShippingEstimate = shippingEstimate,
+			TaxEstimate = taxEstimate,
+			TotalEstimate = subTotal + shippingEstimate + taxEstimate,
+			ItemCount = items.Sum(i => i.Quantity)
+		};
+	}/// <summary>
+	
+    
+    
+    
     /// FIXED: Now correctly maps OfferCombinationPricingId from cart items
-    /// </summary>
-    private async Task<CartSummaryDto> MapToCartSummaryDtoAsync(TbShoppingCart cart)
-    {
-        if (cart == null || cart.Id == Guid.Empty)
-            return new CartSummaryDto
-            {
-                CartId = Guid.Empty,
-                Items = new(),
-                SubTotal = 0m,
-                ShippingEstimate = 0m,
-                TaxEstimate = 0m,
-                TotalEstimate = 0m,
-                ItemCount = 0
-            };
+	 /// </summary>
+	//private async Task<CartSummaryDto> MapToCartSummaryDtoAsync(TbShoppingCart cart)
+	//{
+	//    if (cart == null || cart.Id == Guid.Empty)
+	//        return new CartSummaryDto
+	//        {
+	//            CartId = Guid.Empty,
+	//            Items = new(),
+	//            SubTotal = 0m,
+	//            ShippingEstimate = 0m,
+	//            TaxEstimate = 0m,
+	//            TotalEstimate = 0m,
+	//            ItemCount = 0
+	//        };
 
-        var items = new List<CartItemDto>();
+	//    var items = new List<CartItemDto>();
 
-        if (cart.Items != null)
-        {
-            foreach (var ci in cart.Items.Where(i => !i.IsDeleted))
-            {
-                var pricing = ci.OfferCombinationPricing; //await _combinationPricingRepository.FindByIdAsync(ci.OfferCombinationPricingId);
+	//    if (cart.Items != null)
+	//    {
+	//        foreach (var ci in cart.Items.Where(i => !i.IsDeleted))
+	//        {
+	//            var pricing = ci.OfferCombinationPricing; //await _combinationPricingRepository.FindByIdAsync(ci.OfferCombinationPricingId);
 
-                if (pricing == null)
-                {
-                    _logger.Error($"Pricing not found for offer combination pricing ID {ci.OfferCombinationPricingId}");
-                    throw new InvalidOperationException($"Pricing not found for offer combination pricing ID {ci.OfferCombinationPricingId}");
-                }
+	//            if (pricing == null)
+	//            {
+	//                _logger.Error($"Pricing not found for offer combination pricing ID {ci.OfferCombinationPricingId}");
+	//                throw new InvalidOperationException($"Pricing not found for offer combination pricing ID {ci.OfferCombinationPricingId}");
+	//            }
 
-                var originalPrice = pricing.Price;
-                var currentPrice = pricing.SalesPrice;
-                var isAvailable = pricing.AvailableQuantity >= ci.Quantity;
+	//            var originalPrice = pricing.Price;
+	//            var currentPrice = pricing.SalesPrice;
+	//            var isAvailable = pricing.AvailableQuantity >= ci.Quantity;
 
-                items.Add(new CartItemDto
-                {
-                    Id = ci.Id,
-                    ItemId = ci.ItemId,
-                    ItemNameAr = ci.Item?.TitleAr,
-                    ItemNameEn = ci.Item?.TitleEn,
-                    OfferCombinationPricingId = ci.OfferCombinationPricingId,
-                    SellerName = ci.OfferCombinationPricing?.Offer?.Vendor?.StoreName,
-                    UnitOriginalPrice = originalPrice,
-                    Quantity = ci.Quantity,
-                    UnitPrice = currentPrice,
-                    SubTotal = currentPrice * ci.Quantity,
-                    IsAvailable = isAvailable,
-                    ImageUrl = ci.Item?.ThumbnailImage
-                });
-            }
-        }
+	//            items.Add(new CartItemDto
+	//            {
+	//                Id = ci.Id,
+	//                ItemId = ci.ItemId,
+	//                ItemNameAr = ci.Item?.TitleAr,
+	//                ItemNameEn = ci.Item?.TitleEn,
+	//                OfferCombinationPricingId = ci.OfferCombinationPricingId,
+	//                SellerName = ci.OfferCombinationPricing?.Offer?.Vendor?.StoreName,
+	//                UnitOriginalPrice = originalPrice,
+	//                Quantity = ci.Quantity,
+	//                UnitPrice = currentPrice,
+	//                SubTotal = currentPrice * ci.Quantity,
+	//                IsAvailable = isAvailable,
+	//                ImageUrl = ci.Item?.ThumbnailImage
+	//            });
+	//        }
+	//    }
 
-        var subTotal = items.Sum(i => i.SubTotal);
-        var shippingEstimate = items.Any() ? 50m : 0m;
-        var taxRate = 0.14m;
-        var taxEstimate = subTotal * taxRate;
+	//    var subTotal = items.Sum(i => i.SubTotal);
+	//    var shippingEstimate = items.Any() ? 50m : 0m;
+	//    var taxRate = 0.14m;
+	//    var taxEstimate = subTotal * taxRate;
 
-        return new CartSummaryDto
-        {
-            CartId = cart.Id,
-            Items = items,
-            SubTotal = subTotal,
-            ShippingEstimate = shippingEstimate,
-            TaxEstimate = taxEstimate,
-            TotalEstimate = subTotal + shippingEstimate + taxEstimate,
-            ItemCount = items.Sum(i => i.Quantity)
-        };
-    }
+	//    return new CartSummaryDto
+	//    {
+	//        CartId = cart.Id,
+	//        Items = items,
+	//        SubTotal = subTotal,
+	//        ShippingEstimate = shippingEstimate,
+	//        TaxEstimate = taxEstimate,
+	//        TotalEstimate = subTotal + shippingEstimate + taxEstimate,
+	//        ItemCount = items.Sum(i => i.Quantity)
+	//    };
+	//}
+
+
 }
