@@ -1,7 +1,10 @@
 ﻿using Common.Enumerations.Settings;
+using Common.Filters;
 using Dashboard.Constants;
 using Dashboard.Contracts.General;
 using Dashboard.Contracts.Setting;
+using Dashboard.Models.pagintion;
+using Shared.DTOs.Order.Payment.Refund;
 using Shared.DTOs.Setting;
 using Shared.GeneralModels;
 
@@ -362,382 +365,123 @@ namespace Dashboard.Services.Setting
 		}
 
 		#endregion
+		#region refund Management
+
+	
+		public async Task<ResponseModel<PaginatedDataModel<RefundRequestDto>>> GetAllRefundsAsync()
+		{
+			try
+			{
+				// بناء الـ query string
+				var criteria = new RefundSearchCriteria
+				{
+					PageNumber = 1,
+					PageSize = 1000 // أو int.MaxValue لو عاوز كل الداتا
+				};
+
+				var queryString = $"PageNumber={criteria.PageNumber}&PageSize={criteria.PageSize}";
+
+				// لو عندك filters إضافية، أضفها هنا
+				// if (!string.IsNullOrEmpty(criteria.SearchTerm))
+				//     queryString += $"&SearchTerm={Uri.EscapeDataString(criteria.SearchTerm)}";
+				// if (criteria.RefundStatus.HasValue)
+				//     queryString += $"&RefundStatus={(int)criteria.RefundStatus}";
+				// if (criteria.FromDate.HasValue)
+				//     queryString += $"&FromDate={criteria.FromDate.Value:yyyy-MM-dd}";
+				// if (criteria.ToDate.HasValue)
+				//     queryString += $"&ToDate={criteria.ToDate.Value:yyyy-MM-dd}";
+
+				string url = $"{ApiEndpoints.Refund.Search}?{queryString}";
+
+				var response = await _apiService.GetAsync<ResponseModel<PaginatedDataModel<RefundRequestDto>>>(url);
+
+				if (!response.Success || response.Data == null)
+				{
+					return new ResponseModel<PaginatedDataModel<RefundRequestDto>>
+					{
+						Success = false,
+						Message = response.Message ?? "Error retrieving refunds",
+						StatusCode = response.StatusCode,
+					};
+				}
+
+				return new ResponseModel<PaginatedDataModel<RefundRequestDto>>
+				{
+					Success = true,
+					Message = response.Message,
+					Data = response.Data.Data,
+					StatusCode = response.StatusCode
+				};
+			}
+			catch (Exception ex)
+			{
+				_logger.LogError(ex, "Error getting all refunds");
+				return new ResponseModel<PaginatedDataModel<RefundRequestDto>>
+				{
+					Success = false,
+					Message = ex.Message,
+					StatusCode = 500
+				};
+			}
+		}
+		public async Task<ResponseModel<RefundRequestDto>> GetRefundByIdAsync(Guid refundId)
+		{
+			try
+			{
+				return await _apiService.GetAsync<RefundRequestDto>(
+					ApiEndpoints.Refund.GetById(refundId)
+				);
+			}
+			catch (Exception ex)
+			{
+				_logger.LogError(ex, "Error getting refund by ID: {RefundId}", refundId);
+				return new ResponseModel<RefundRequestDto>
+				{
+					Success = false,
+					Message = ex.Message
+				};
+			}
+		}
+
+		public async Task<ResponseModel<RefundRequestDto>> GetRefundByOrderDetailIdAsync(Guid orderDetailId)
+		{
+			try
+			{
+				return await _apiService.GetAsync<RefundRequestDto>(
+					ApiEndpoints.Refund.GetByOrderId(orderDetailId)
+				);
+			}
+			catch (Exception ex)
+			{
+				_logger.LogError(ex, "Error getting refund by order detail ID: {OrderDetailId}", orderDetailId);
+				return new ResponseModel<RefundRequestDto>
+				{
+					Success = false,
+					Message = ex.Message
+				};
+			}
+		}
+
+		public async Task<ResponseModel<bool>> UpdateRefundStatusAsync(UpdateRefundStatusDto dto)
+		{
+			try
+			{
+				return await _apiService.PostAsync<UpdateRefundStatusDto, bool>(
+					ApiEndpoints.Refund.ChangeStatus,
+					dto
+				);
+			}
+			catch (Exception ex)
+			{
+				_logger.LogError(ex, "Error updating refund status");
+				return new ResponseModel<bool>
+				{
+					Success = false,
+					Message = ex.Message
+				};
+			}
+		}
+		#endregion
+
 	}
 }
-
-
-//using Common.Enumerations.Settings;
-//using Dashboard.Contracts.Setting;
-//using Shared.DTOs.Setting;
-//using Shared.GeneralModels;
-//using System.Net.Http.Json;
-
-//namespace Dashboard.Services.Setting
-//{
-//	public class SystemSettingsService : ISystemSettingsService
-//	{
-//		private readonly HttpClient _httpClient;
-//		private readonly ILogger<SystemSettingsService> _logger;
-//		private const string BaseEndpoint = "api/v1/SystemSettings";
-
-//		public SystemSettingsService(
-//			HttpClient httpClient,
-//			ILogger<SystemSettingsService> logger)
-//		{
-//			_httpClient = httpClient;
-//			_logger = logger;
-//		}
-
-//		#region Get Settings by Type
-
-//		public async Task<ResponseModel<decimal>> GetDecimalSettingAsync(SystemSettingKey key)
-//		{
-//			try
-//			{
-//				var response = await _httpClient.GetFromJsonAsync<ResponseModel<decimal>>(
-//					$"{BaseEndpoint}/decimal/{(int)key}");
-//				return response ?? new ResponseModel<decimal> { Success = false };
-//			}
-//			catch (Exception ex)
-//			{
-//				_logger.LogError(ex, "Error getting decimal setting {Key}", key);
-//				return new ResponseModel<decimal>
-//				{
-//					Success = false,
-//					Message = ex.Message
-//				};
-//			}
-//		}
-
-//		public async Task<ResponseModel<int>> GetIntSettingAsync(SystemSettingKey key)
-//		{
-//			try
-//			{
-//				var response = await _httpClient.GetFromJsonAsync<ResponseModel<int>>(
-//					$"{BaseEndpoint}/int/{(int)key}");
-//				return response ?? new ResponseModel<int> { Success = false };
-//			}
-//			catch (Exception ex)
-//			{
-//				_logger.LogError(ex, "Error getting int setting {Key}", key);
-//				return new ResponseModel<int>
-//				{
-//					Success = false,
-//					Message = ex.Message
-//				};
-//			}
-//		}
-
-//		public async Task<ResponseModel<bool>> GetBoolSettingAsync(SystemSettingKey key)
-//		{
-//			try
-//			{
-//				var response = await _httpClient.GetFromJsonAsync<ResponseModel<bool>>(
-//					$"{BaseEndpoint}/bool/{(int)key}");
-//				return response ?? new ResponseModel<bool> { Success = false };
-//			}
-//			catch (Exception ex)
-//			{
-//				_logger.LogError(ex, "Error getting bool setting {Key}", key);
-//				return new ResponseModel<bool>
-//				{
-//					Success = false,
-//					Message = ex.Message
-//				};
-//			}
-//		}
-
-//		public async Task<ResponseModel<string>> GetStringSettingAsync(SystemSettingKey key)
-//		{
-//			try
-//			{
-//				var response = await _httpClient.GetFromJsonAsync<ResponseModel<string>>(
-//					$"{BaseEndpoint}/string/{(int)key}");
-//				return response ?? new ResponseModel<string> { Success = false };
-//			}
-//			catch (Exception ex)
-//			{
-//				_logger.LogError(ex, "Error getting string setting {Key}", key);
-//				return new ResponseModel<string>
-//				{
-//					Success = false,
-//					Message = ex.Message
-//				};
-//			}
-//		}
-
-//		public async Task<ResponseModel<DateTime>> GetDateTimeSettingAsync(SystemSettingKey key)
-//		{
-//			try
-//			{
-//				var response = await _httpClient.GetFromJsonAsync<ResponseModel<DateTime>>(
-//					$"{BaseEndpoint}/datetime/{(int)key}");
-//				return response ?? new ResponseModel<DateTime> { Success = false };
-//			}
-//			catch (Exception ex)
-//			{
-//				_logger.LogError(ex, "Error getting datetime setting {Key}", key);
-//				return new ResponseModel<DateTime>
-//				{
-//					Success = false,
-//					Message = ex.Message
-//				};
-//			}
-//		}
-
-//		#endregion
-
-//		#region Update Settings
-
-//		public async Task<ResponseModel<bool>> UpdateSettingAsync(UpdateSystemSettingDto dto)
-//		{
-//			try
-//			{
-//				var response = await _httpClient.PutAsJsonAsync($"{BaseEndpoint}/update", dto);
-
-//				if (response.IsSuccessStatusCode)
-//				{
-//					var result = await response.Content.ReadFromJsonAsync<ResponseModel<bool>>();
-//					return result ?? new ResponseModel<bool> { Success = false };
-//				}
-
-//				return new ResponseModel<bool>
-//				{
-//					Success = false,
-//					Message = $"Request failed with status code: {response.StatusCode}"
-//				};
-//			}
-//			catch (Exception ex)
-//			{
-//				_logger.LogError(ex, "Error updating setting {Key}", dto.Key);
-//				return new ResponseModel<bool>
-//				{
-//					Success = false,
-//					Message = ex.Message
-//				};
-//			}
-//		}
-
-//		public async Task<ResponseModel<bool>> UpdateSettingsBatchAsync(List<UpdateSystemSettingDto> dtos)
-//		{
-//			try
-//			{
-//				var response = await _httpClient.PutAsJsonAsync($"{BaseEndpoint}/update-batch", dtos);
-
-//				if (response.IsSuccessStatusCode)
-//				{
-//					var result = await response.Content.ReadFromJsonAsync<ResponseModel<bool>>();
-//					return result ?? new ResponseModel<bool> { Success = false };
-//				}
-
-//				return new ResponseModel<bool>
-//				{
-//					Success = false,
-//					Message = $"Request failed with status code: {response.StatusCode}"
-//				};
-//			}
-//			catch (Exception ex)
-//			{
-//				_logger.LogError(ex, "Error updating settings batch");
-//				return new ResponseModel<bool>
-//				{
-//					Success = false,
-//					Message = ex.Message
-//				};
-//			}
-//		}
-
-//		#endregion
-
-//		#region Specific Business Settings
-
-//		public async Task<ResponseModel<decimal>> GetTaxRateAsync()
-//		{
-//			try
-//			{
-//				var response = await _httpClient.GetFromJsonAsync<ResponseModel<decimal>>(
-//					$"{BaseEndpoint}/tax-rate");
-//				return response ?? new ResponseModel<decimal> { Success = false };
-//			}
-//			catch (Exception ex)
-//			{
-//				_logger.LogError(ex, "Error getting tax rate");
-//				return new ResponseModel<decimal>
-//				{
-//					Success = false,
-//					Message = ex.Message
-//				};
-//			}
-//		}
-
-//		public async Task<ResponseModel<decimal>> GetFreeShippingThresholdAsync()
-//		{
-//			try
-//			{
-//				var response = await _httpClient.GetFromJsonAsync<ResponseModel<decimal>>(
-//					$"{BaseEndpoint}/free-shipping-threshold");
-//				return response ?? new ResponseModel<decimal> { Success = false };
-//			}
-//			catch (Exception ex)
-//			{
-//				_logger.LogError(ex, "Error getting free shipping threshold");
-//				return new ResponseModel<decimal>
-//				{
-//					Success = false,
-//					Message = ex.Message
-//				};
-//			}
-//		}
-
-//		public async Task<ResponseModel<bool>> IsCashOnDeliveryEnabledAsync()
-//		{
-//			try
-//			{
-//				var response = await _httpClient.GetFromJsonAsync<ResponseModel<bool>>(
-//					$"{BaseEndpoint}/cash-on-delivery-enabled");
-//				return response ?? new ResponseModel<bool> { Success = false };
-//			}
-//			catch (Exception ex)
-//			{
-//				_logger.LogError(ex, "Error checking cash on delivery status");
-//				return new ResponseModel<bool>
-//				{
-//					Success = false,
-//					Message = ex.Message
-//				};
-//			}
-//		}
-
-//		public async Task<ResponseModel<bool>> IsMaintenanceModeAsync()
-//		{
-//			try
-//			{
-//				var response = await _httpClient.GetFromJsonAsync<ResponseModel<bool>>(
-//					$"{BaseEndpoint}/maintenance-mode");
-//				return response ?? new ResponseModel<bool> { Success = false };
-//			}
-//			catch (Exception ex)
-//			{
-//				_logger.LogError(ex, "Error checking maintenance mode");
-//				return new ResponseModel<bool>
-//				{
-//					Success = false,
-//					Message = ex.Message
-//				};
-//			}
-//		}
-
-//		public async Task<ResponseModel<decimal>> GetMinimumOrderAmountAsync()
-//		{
-//			try
-//			{
-//				var response = await _httpClient.GetFromJsonAsync<ResponseModel<decimal>>(
-//					$"{BaseEndpoint}/minimum-order-amount");
-//				return response ?? new ResponseModel<decimal> { Success = false };
-//			}
-//			catch (Exception ex)
-//			{
-//				_logger.LogError(ex, "Error getting minimum order amount");
-//				return new ResponseModel<decimal>
-//				{
-//					Success = false,
-//					Message = ex.Message
-//				};
-//			}
-//		}
-
-//		#endregion
-
-//		#region Get All Settings
-
-//		public async Task<ResponseModel<SystemSettingsViewModelDto>> GetAllSettingsAsync()
-//		{
-//			try
-//			{
-//				var viewModel = new SystemSettingsViewModelDto();
-
-//				// Tax Settings
-//				var taxRate = await GetDecimalSettingAsync(SystemSettingKey.OrderTaxPercentage);
-//				if (taxRate.Success) viewModel.OrderTaxPercentage = taxRate.Data;
-
-//				var taxIncluded = await GetBoolSettingAsync(SystemSettingKey.TaxIncludedInPrice);
-//				if (taxIncluded.Success) viewModel.TaxIncludedInPrice = taxIncluded.Data;
-
-//				// Shipping Settings
-//				var shippingAmount = await GetDecimalSettingAsync(SystemSettingKey.ShippingAmount);
-//				if (shippingAmount.Success) viewModel.ShippingAmount = shippingAmount.Data;
-
-//				var freeShipping = await GetDecimalSettingAsync(SystemSettingKey.FreeShippingThreshold);
-//				if (freeShipping.Success) viewModel.FreeShippingThreshold = freeShipping.Data;
-
-//				var shippingPerKg = await GetDecimalSettingAsync(SystemSettingKey.ShippingPerKg);
-//				if (shippingPerKg.Success) viewModel.ShippingPerKg = shippingPerKg.Data;
-
-//				var deliveryDays = await GetIntSettingAsync(SystemSettingKey.EstimatedDeliveryDays);
-//				if (deliveryDays.Success) viewModel.EstimatedDeliveryDays = deliveryDays.Data;
-
-//				// Order Settings
-//				var extraCost = await GetDecimalSettingAsync(SystemSettingKey.OrderExtraCost);
-//				if (extraCost.Success) viewModel.OrderExtraCost = extraCost.Data;
-
-//				var minOrder = await GetDecimalSettingAsync(SystemSettingKey.MinimumOrderAmount);
-//				if (minOrder.Success) viewModel.MinimumOrderAmount = minOrder.Data;
-
-//				var maxOrder = await GetDecimalSettingAsync(SystemSettingKey.MaximumOrderAmount);
-//				if (maxOrder.Success) viewModel.MaximumOrderAmount = maxOrder.Data;
-
-//				var cancelPeriod = await GetIntSettingAsync(SystemSettingKey.OrderCancellationPeriodHours);
-//				if (cancelPeriod.Success) viewModel.OrderCancellationPeriodHours = cancelPeriod.Data;
-
-//				// Payment Settings
-//				var paymentEnabled = await GetBoolSettingAsync(SystemSettingKey.PaymentGatewayEnabled);
-//				if (paymentEnabled.Success) viewModel.PaymentGatewayEnabled = paymentEnabled.Data;
-
-//				var codEnabled = await GetBoolSettingAsync(SystemSettingKey.CashOnDeliveryEnabled);
-//				if (codEnabled.Success) viewModel.CashOnDeliveryEnabled = codEnabled.Data;
-
-//				// Business Settings
-//				var maintenance = await GetBoolSettingAsync(SystemSettingKey.MaintenanceMode);
-//				if (maintenance.Success) viewModel.MaintenanceMode = maintenance.Data;
-
-//				var guestCheckout = await GetBoolSettingAsync(SystemSettingKey.AllowGuestCheckout);
-//				if (guestCheckout.Success) viewModel.AllowGuestCheckout = guestCheckout.Data;
-
-//				// Notification Settings
-//				var emailNotif = await GetBoolSettingAsync(SystemSettingKey.EmailNotificationsEnabled);
-//				if (emailNotif.Success) viewModel.EmailNotificationsEnabled = emailNotif.Data;
-
-//				var smsNotif = await GetBoolSettingAsync(SystemSettingKey.SmsNotificationsEnabled);
-//				if (smsNotif.Success) viewModel.SmsNotificationsEnabled = smsNotif.Data;
-
-//				// Security Settings
-//				var maxLogin = await GetIntSettingAsync(SystemSettingKey.MaxLoginAttempts);
-//				if (maxLogin.Success) viewModel.MaxLoginAttempts = maxLogin.Data;
-
-//				var sessionTimeout = await GetIntSettingAsync(SystemSettingKey.SessionTimeoutMinutes);
-//				if (sessionTimeout.Success) viewModel.SessionTimeoutMinutes = sessionTimeout.Data;
-
-//				var passwordLength = await GetIntSettingAsync(SystemSettingKey.PasswordMinLength);
-//				if (passwordLength.Success) viewModel.PasswordMinLength = passwordLength.Data;
-
-//				return new ResponseModel<SystemSettingsViewModelDto>
-//				{
-//					Success = true,
-//					Data = viewModel,
-//					Message = "Settings loaded successfully"
-//				};
-//			}
-//			catch (Exception ex)
-//			{
-//				_logger.LogError(ex, "Error loading all settings");
-//				return new ResponseModel<SystemSettingsViewModelDto>
-//				{
-//					Success = false,
-//					Message = ex.Message
-//				};
-//			}
-//		}
-
-//		#endregion
-//	}
-//}
