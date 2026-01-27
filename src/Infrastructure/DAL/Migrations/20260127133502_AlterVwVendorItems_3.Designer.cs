@@ -4,6 +4,7 @@ using DAL.ApplicationContext;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DAL.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260127133502_AlterVwVendorItems_3")]
+    partial class AlterVwVendorItems_3
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -3832,7 +3835,62 @@ namespace DAL.Migrations
                     b.ToTable("TbHomePageSlider", (string)null);
                 });
 
-            modelBuilder.Entity("Domains.Entities.Merchandising.HomePage.TbHomepageBlock", b =>
+            modelBuilder.Entity("Domains.Entities.Merchandising.HomePageBlocks.TbBlockItem", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier")
+                        .HasDefaultValueSql("NEWID()");
+
+                    b.Property<Guid>("CreatedBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedDateUtc")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2(2)")
+                        .HasDefaultValueSql("GETUTCDATE()");
+
+                    b.Property<int>("DisplayOrder")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0);
+
+                    b.Property<Guid>("HomepageBlockId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<Guid>("ItemId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("UpdatedBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("UpdatedDateUtc")
+                        .HasColumnType("datetime2(2)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DisplayOrder");
+
+                    b.HasIndex("HomepageBlockId");
+
+                    b.HasIndex("IsDeleted");
+
+                    b.HasIndex("ItemId");
+
+                    b.HasIndex("HomepageBlockId", "DisplayOrder");
+
+                    b.HasIndex("HomepageBlockId", "ItemId")
+                        .IsUnique();
+
+                    b.ToTable("TbBlockProducts", (string)null);
+                });
+
+            modelBuilder.Entity("Domains.Entities.Merchandising.HomePageBlocks.TbHomepageBlock", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -3929,61 +3987,6 @@ namespace DAL.Migrations
                     b.HasIndex("IsVisible", "DisplayOrder");
 
                     b.ToTable("TbHomepageBlocks", (string)null);
-                });
-
-            modelBuilder.Entity("Domains.Entities.Merchandising.HomePageBlocks.TbBlockItem", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier")
-                        .HasDefaultValueSql("NEWID()");
-
-                    b.Property<Guid>("CreatedBy")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("CreatedDateUtc")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2(2)")
-                        .HasDefaultValueSql("GETUTCDATE()");
-
-                    b.Property<int>("DisplayOrder")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValue(0);
-
-                    b.Property<Guid>("HomepageBlockId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<bool>("IsDeleted")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(false);
-
-                    b.Property<Guid>("ItemId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid?>("UpdatedBy")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime?>("UpdatedDateUtc")
-                        .HasColumnType("datetime2(2)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("DisplayOrder");
-
-                    b.HasIndex("HomepageBlockId");
-
-                    b.HasIndex("IsDeleted");
-
-                    b.HasIndex("ItemId");
-
-                    b.HasIndex("HomepageBlockId", "DisplayOrder");
-
-                    b.HasIndex("HomepageBlockId", "ItemId")
-                        .IsUnique();
-
-                    b.ToTable("TbBlockProducts", (string)null);
                 });
 
             modelBuilder.Entity("Domains.Entities.Merchandising.TbUserItemView", b =>
@@ -6576,23 +6579,7 @@ namespace DAL.Migrations
 
                     b.HasIndex("IsDeleted");
 
-                    b.HasIndex("IsMultiVendorSystem")
-                        .HasDatabaseName("IX_TbDevelopmentSettings_IsMultiVendorSystem");
-
-                    b.ToTable("TbDevelopmentSettings", t =>
-                        {
-                            t.HasCheckConstraint("CK_TbDevelopmentSettings_SingleRow", "Id = '11111111-1111-1111-1111-111111111111'");
-                        });
-
-                    b.HasData(
-                        new
-                        {
-                            Id = new Guid("11111111-1111-1111-1111-111111111111"),
-                            CreatedBy = new Guid("00000000-0000-0000-0000-000000000000"),
-                            CreatedDateUtc = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            IsDeleted = false,
-                            IsMultiVendorSystem = true
-                        });
+                    b.ToTable("TbDevelopmentSettings");
                 });
 
             modelBuilder.Entity("Domains.Entities.Setting.TbGeneralSettings", b =>
@@ -10105,7 +10092,7 @@ namespace DAL.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Domains.Entities.Merchandising.HomePage.TbHomepageBlock", "HomepageBlock")
+                    b.HasOne("Domains.Entities.Merchandising.HomePageBlocks.TbHomepageBlock", "HomepageBlock")
                         .WithMany("BlockCategories")
                         .HasForeignKey("HomepageBlockId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -10116,19 +10103,10 @@ namespace DAL.Migrations
                     b.Navigation("HomepageBlock");
                 });
 
-            modelBuilder.Entity("Domains.Entities.Merchandising.HomePage.TbHomepageBlock", b =>
-                {
-                    b.HasOne("Domains.Entities.Campaign.TbCampaign", "Campaign")
-                        .WithMany("HomepageBlocks")
-                        .HasForeignKey("CampaignId");
-
-                    b.Navigation("Campaign");
-                });
-
             modelBuilder.Entity("Domains.Entities.Merchandising.HomePageBlocks.TbBlockItem", b =>
                 {
-                    b.HasOne("Domains.Entities.Merchandising.HomePage.TbHomepageBlock", "HomepageBlock")
-                        .WithMany("BlockItems")
+                    b.HasOne("Domains.Entities.Merchandising.HomePageBlocks.TbHomepageBlock", "HomepageBlock")
+                        .WithMany("BlockProducts")
                         .HasForeignKey("HomepageBlockId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -10142,6 +10120,15 @@ namespace DAL.Migrations
                     b.Navigation("HomepageBlock");
 
                     b.Navigation("Item");
+                });
+
+            modelBuilder.Entity("Domains.Entities.Merchandising.HomePageBlocks.TbHomepageBlock", b =>
+                {
+                    b.HasOne("Domains.Entities.Campaign.TbCampaign", "Campaign")
+                        .WithMany("HomepageBlocks")
+                        .HasForeignKey("CampaignId");
+
+                    b.Navigation("Campaign");
                 });
 
             modelBuilder.Entity("Domains.Entities.Merchandising.TbUserItemView", b =>
@@ -11066,11 +11053,11 @@ namespace DAL.Migrations
                     b.Navigation("Orders");
                 });
 
-            modelBuilder.Entity("Domains.Entities.Merchandising.HomePage.TbHomepageBlock", b =>
+            modelBuilder.Entity("Domains.Entities.Merchandising.HomePageBlocks.TbHomepageBlock", b =>
                 {
                     b.Navigation("BlockCategories");
 
-                    b.Navigation("BlockItems");
+                    b.Navigation("BlockProducts");
                 });
 
             modelBuilder.Entity("Domains.Entities.Notification.TbNotification", b =>

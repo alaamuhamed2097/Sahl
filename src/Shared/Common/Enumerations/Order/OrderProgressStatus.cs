@@ -1,8 +1,5 @@
 namespace Common.Enumerations.Order
 {
-    /// <summary>
-    /// Order progress status enum - UPDATED with all values
-    /// </summary>
     public enum OrderProgressStatus
     {
         Pending = 0,

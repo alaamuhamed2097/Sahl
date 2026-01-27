@@ -121,7 +121,21 @@ namespace Dashboard.Constants
             public const string ChangeRefundStatus = "api/v1/refunds/changeRefundStatus";
             public const string Delete = "api/v1/refunds/delete";
             public const string Search = "api/v1/refunds/search";
-        }
+
+			private const string Base = "api/v1/Refund";
+
+			// Get endpoints
+			public const string search = $"{Base}/search";
+			public static string GetById(Guid id) => $"{Base}/{id}";
+			public static string GetByOrderId(Guid orderId) => $"{Base}/order/{orderId}";
+
+			// Update endpoint
+			public const string ChangeStatus = $"{Base}/changeRefundStatus";
+
+			// Optional: Statistics endpoint (if you want to add dashboard stats later)
+			public const string GetStatistics = $"{Base}/statistics";
+			public const string GetPendingCount = $"{Base}/pending-count";
+		}
 
         public static class Unit
         {
@@ -335,7 +349,9 @@ namespace Dashboard.Constants
             public const string MaintenanceMode = $"{Base}/maintenance-mode";
             public const string MinimumOrderAmount = $"{Base}/minimum-order-amount";
         }
-        public static class DevelopmentSettings
+
+		
+		public static class DevelopmentSettings
         {
             public const string Get = "api/v1/development-settings";
             public const string IsMultiVendorEnabled = "api/v1/development-settings/multi-vendor-enabled";

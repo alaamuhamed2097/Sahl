@@ -31,17 +31,17 @@ namespace DAL.Repositories.Merchandising
                 var now = DateTime.UtcNow;
 
                 return await _dbContext.TbHomepageBlocks
-                    .AsNoTracking()
-                    .Include(b => b.Campaign)
-                    .Include(b => b.BlockProducts.Where(p => !p.IsDeleted))
-                        .ThenInclude(p => p.Item)
-                    .Include(b => b.BlockCategories.Where(c => !c.IsDeleted))
-                        .ThenInclude(c => c.Category)
-                    .Where(b => b.IsVisible && !b.IsDeleted)
-                    .Where(b => (b.VisibleFrom == null || b.VisibleFrom <= now) &&
-                               (b.VisibleTo == null || b.VisibleTo >= now))
-                    .OrderBy(b => b.DisplayOrder)
-                    .ToListAsync();
+                           .AsNoTracking()
+                           .Include(b => b.Campaign)
+                           .Include(b => b.BlockItems)
+                               .ThenInclude(p => p.Item)
+                           .Include(b => b.BlockCategories)
+                               .ThenInclude(c => c.Category)
+                           .Where(b => b.IsVisible && !b.IsDeleted)
+                           .Where(b => (b.VisibleFrom == null || b.VisibleFrom <= now) &&
+                                      (b.VisibleTo == null || b.VisibleTo >= now))
+                           .OrderBy(b => b.DisplayOrder)
+                           .ToListAsync();
             }
             catch (Exception ex)
             {
@@ -60,7 +60,7 @@ namespace DAL.Repositories.Merchandising
                 return await _dbContext.TbHomepageBlocks
                     .AsNoTracking()
                     .Include(b => b.Campaign)
-                    .Include(b => b.BlockProducts.Where(p => !p.IsDeleted))
+                    .Include(b => b.BlockItems.Where(p => !p.IsDeleted))
                         .ThenInclude(p => p.Item)
                             .ThenInclude(i => i.ItemImages)
                     .Include(b => b.BlockCategories.Where(c => !c.IsDeleted))

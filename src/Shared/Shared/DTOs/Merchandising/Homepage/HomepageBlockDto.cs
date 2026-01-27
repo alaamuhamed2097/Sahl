@@ -28,5 +28,9 @@
         // Content
         public List<ItemCardDto> Products { get; set; } = new();
         public List<CategoryCardDto> Categories { get; set; } = new();
+
+        // Counts
+        public int TotalProductCount { get; set; }
+        public int? TotalCategoryCount { get; set; }
     }
 }

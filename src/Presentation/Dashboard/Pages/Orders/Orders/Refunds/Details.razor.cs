@@ -526,7 +526,7 @@ namespace Dashboard.Pages.Orders.Orders.Refunds
         /// </summary>
         protected void NavigateToList()
         {
-            Navigation.NavigateTo("/sales/refunds");
+            Navigation.NavigateTo("/order/refunds");
         }
     }
 }

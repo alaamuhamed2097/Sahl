@@ -7,6 +7,12 @@
 		public decimal OrderTaxPercentage { get; set; }
 		public int RefundAllowedDays { get; set; }
 
+		// Refund Settings
+		public bool AutoApproveRefunds { get; set; }
+		public decimal RefundProcessingFee { get; set; }
+		public int RefundProcessingDays { get; set; }
+		public bool AllowPartialRefunds { get; set; }
+
 		//// Shipping Settings
 		//public decimal ShippingAmount { get; set; }
 		//public decimal FreeShippingThreshold { get; set; }

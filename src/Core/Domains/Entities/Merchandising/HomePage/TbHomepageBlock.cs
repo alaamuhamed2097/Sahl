@@ -1,9 +1,9 @@
 ﻿using Common.Enumerations.Merchandising;
 using Domains.Entities.Campaign;
-using Domains.Entities.Merchandising.HomePage;
+using Domains.Entities.Merchandising.HomePageBlocks;
 using System.ComponentModel.DataAnnotations;
 
-namespace Domains.Entities.Merchandising.HomePageBlocks
+namespace Domains.Entities.Merchandising.HomePage
 {
     public class TbHomepageBlock : BaseEntity
     {
@@ -53,7 +53,7 @@ namespace Domains.Entities.Merchandising.HomePageBlocks
         public string? ViewAllLinkTitleEn { get; set; }
 
         // === Products (لو Manual) ===
-        public ICollection<TbBlockItem> BlockProducts { get; set; }
+        public ICollection<TbBlockItem> BlockItems { get; set; }
 
         // === Categories (لو CategoryShowcase) ===
         public ICollection<TbBlockCategory> BlockCategories { get; set; }

@@ -13,8 +13,8 @@ namespace Dashboard.Pages.Orders.Orders.Refunds
     public partial class Index : BaseListPage<RefundRequestDto>
     {
         protected override string EntityName { get; } = OrderResources.Refunds;
-        protected override string AddRoute { get; } = $"/sales/refunds";
-        protected override string EditRouteTemplate { get; } = "/sales/refunds/{id}";
+        protected override string AddRoute { get; } = $"/order/refunds";
+        protected override string EditRouteTemplate { get; } = "/order/refunds/{id}";
         protected override string SearchEndpoint { get; } = ApiEndpoints.Refund.Search;
         protected new RefundSearchCriteria searchModel { get; set; } = new();
         protected override Dictionary<string, Func<RefundRequestDto, object>> ExportColumns { get; } =

@@ -1395,4 +1395,7 @@
 	<data name="Ok" xml:space="preserve">
     <value>موافق</value>
 </data>
+	<data name="Refund" xml:space="preserve">
+    <value>Refund</value>
+</data>
 </root>

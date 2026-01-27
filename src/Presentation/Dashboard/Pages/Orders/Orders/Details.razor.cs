@@ -104,12 +104,12 @@ namespace Dashboard.Pages.Orders.Orders
         {
             return shipment.Status switch
             {
-                ShipmentStatus.PendingProcessing => "Start Processing",
-                ShipmentStatus.PreparingForShipment => "Ready for Pickup",
-                ShipmentStatus.PickedUpByCarrier => "Mark In Transit",
-                ShipmentStatus.InTransitToCustomer => "Attempt Delivery",
-                ShipmentStatus.DeliveryAttemptFailed => "Retry Delivery",
-                ShipmentStatus.DeliveredToCustomer => "Completed",
+                ShipmentStatus.PendingProcessing => OrderResources.StartProcessing,
+                ShipmentStatus.PreparingForShipment => OrderResources.ReadyForPickup,
+                ShipmentStatus.PickedUpByCarrier => OrderResources.MarkInTransit,
+                ShipmentStatus.InTransitToCustomer => OrderResources.AttemptDelivery,
+                ShipmentStatus.DeliveryAttemptFailed => OrderResources.RetryDelivery,
+                ShipmentStatus.DeliveredToCustomer => OrderResources.Completed,
                 _ => ""
             };
         }
@@ -167,7 +167,7 @@ namespace Dashboard.Pages.Orders.Orders
                     OrderId = Order.OrderId,
                     ShipmentId = shipmentId,
                     NewStatus = nextStatus.Value.ToString(),
-                    Notes = $"Updated by admin to {nextStatus.Value}"
+                    Notes = string.Format(OrderResources.UpdatedByAdmin, nextStatus.Value)
                 };
 
                 var result = await ShipmentService.UpdateShipmentStatusAsync(Order.OrderId, request);
@@ -181,7 +181,7 @@ namespace Dashboard.Pages.Orders.Orders
 
                     await JSRuntime.InvokeVoidAsync("swal",
                         NotifiAndAlertsResources.Success,
-                        "Shipment status updated successfully",
+                        OrderResources.ShipmentStatusUpdatedSuccessfully,
                         "success");
 
                     StateHasChanged();
@@ -220,12 +220,12 @@ namespace Dashboard.Pages.Orders.Orders
             {
                 await JSRuntime.InvokeVoidAsync("swal",
                     ValidationResources.Failed,
-                    "Shipment must be in transit to mark as delivery failed",
+                    OrderResources.ShipmentMustBeInTransitToMarkFailed,
                     "warning");
                 return;
             }
 
-            var reason = await JSRuntime.InvokeAsync<string>("prompt", "Enter reason for delivery failure:");
+            var reason = await JSRuntime.InvokeAsync<string>("prompt", OrderResources.EnterReasonForDeliveryFailure);
             if (string.IsNullOrWhiteSpace(reason)) return;
 
             await UpdateShipmentStatusDirectlyAsync(shipmentId, ShipmentStatus.DeliveryAttemptFailed, reason);
@@ -243,15 +243,15 @@ namespace Dashboard.Pages.Orders.Orders
             {
                 await JSRuntime.InvokeVoidAsync("swal",
                     ValidationResources.Failed,
-                    "Cannot cancel delivered shipment",
+                    OrderResources.CannotCancelDeliveredShipment,
                     "error");
                 return;
             }
 
-            var confirmed = await JSRuntime.InvokeAsync<bool>("confirm", "Are you sure you want to cancel this shipment?");
+            var confirmed = await JSRuntime.InvokeAsync<bool>("confirm", OrderResources.ConfirmCancelShipment);
             if (!confirmed) return;
 
-            await UpdateShipmentStatusDirectlyAsync(shipmentId, ShipmentStatus.CancelledByMarketplace, "Cancelled by admin");
+            await UpdateShipmentStatusDirectlyAsync(shipmentId, ShipmentStatus.CancelledByMarketplace, OrderResources.CancelledByAdmin);
         }
 
         /// <summary>
@@ -286,7 +286,7 @@ namespace Dashboard.Pages.Orders.Orders
 
                     await JSRuntime.InvokeVoidAsync("swal",
                         NotifiAndAlertsResources.Success,
-                        "Shipment updated successfully",
+                        OrderResources.ShipmentUpdatedSuccessfully,
                         "success");
                 }
                 else
@@ -365,7 +365,7 @@ namespace Dashboard.Pages.Orders.Orders
                 {
                     OrderId = Order.OrderId,
                     NewStatus = newStatus,
-                    Notes = $"Auto-updated based on shipment progress"
+                    Notes = OrderResources.AutoUpdatedBasedOnShipmentProgress
                 };
 
                 var result = await OrderService.ChangeOrderStatusAsync(request);
@@ -438,18 +438,18 @@ namespace Dashboard.Pages.Orders.Orders
             try
             {
                 var confirmed = await JSRuntime.InvokeAsync<bool>("confirm",
-                    "Are you sure you want to cancel this order? All shipments will be cancelled.");
+                    OrderResources.ConfirmCancelOrder);
 
                 if (!confirmed) return;
 
-                var result = await OrderService.CancelOrderAsync(Order.OrderId, "Cancelled by admin");
+                var result = await OrderService.CancelOrderAsync(Order.OrderId, OrderResources.CancelledByAdmin);
 
                 if (result.Success)
                 {
                     Order.OrderStatus = OrderProgressStatus.Cancelled;
                     await JSRuntime.InvokeVoidAsync("swal",
                         NotifiAndAlertsResources.Success,
-                        "Order cancelled successfully",
+                        OrderResources.OrderCancelledSuccessfully,
                         "success");
 
                     // Reload to get updated shipment statuses
@@ -547,10 +547,10 @@ namespace Dashboard.Pages.Orders.Orders
         {
             return Order.OrderStatus switch
             {
-                OrderProgressStatus.Pending => "Confirm Order",
-                OrderProgressStatus.Confirmed => "Start Processing",
-                OrderProgressStatus.Processing => "Mark as Shipped",
-                OrderProgressStatus.Shipped => "Mark as Delivered",
+                OrderProgressStatus.Pending => OrderResources.ConfirmOrder,
+                OrderProgressStatus.Confirmed => OrderResources.StartProcessing,
+                //OrderProgressStatus.Processing => OrderResources.MarkAsShipped,
+                //OrderProgressStatus.Shipped => OrderResources.MarkAsDelivered,
                 _ => ""
             };
         }
@@ -598,7 +598,7 @@ namespace Dashboard.Pages.Orders.Orders
 
         protected void NavigateToList()
         {
-            Navigation.NavigateTo("/sales/orders");
+            Navigation.NavigateTo("/order/orders");
         }
 
         // Status badge helpers (existing methods)
@@ -652,15 +652,15 @@ namespace Dashboard.Pages.Orders.Orders
 
         protected string GetShipmentStatusText(ShipmentStatus status) => status switch
         {
-            ShipmentStatus.PendingProcessing => "Pending",
-            ShipmentStatus.PreparingForShipment => "Preparing",
-            ShipmentStatus.PickedUpByCarrier => "Picked Up",
-            ShipmentStatus.InTransitToCustomer => "In Transit",
-            ShipmentStatus.DeliveryAttemptFailed => "Delivery Failed",
-            ShipmentStatus.DeliveredToCustomer => "Delivered",
-            ShipmentStatus.ReturnedToSender => "Returned",
-            ShipmentStatus.CancelledByCustomer => "Cancelled (Customer)",
-            ShipmentStatus.CancelledByMarketplace => "Cancelled (Admin)",
+            ShipmentStatus.PendingProcessing => OrderResources.Pending,
+            ShipmentStatus.PreparingForShipment => OrderResources.Preparing,
+            ShipmentStatus.PickedUpByCarrier => OrderResources.PickedUp,
+            ShipmentStatus.InTransitToCustomer => OrderResources.InTransit,
+            ShipmentStatus.DeliveryAttemptFailed => OrderResources.DeliveryFailed,
+            ShipmentStatus.DeliveredToCustomer => OrderResources.Delivered,
+            ShipmentStatus.ReturnedToSender => OrderResources.Returned,
+            ShipmentStatus.CancelledByCustomer => OrderResources.CancelledCustomer,
+            ShipmentStatus.CancelledByMarketplace => OrderResources.CancelledAdmin,
             _ => status.ToString()
         };
     }

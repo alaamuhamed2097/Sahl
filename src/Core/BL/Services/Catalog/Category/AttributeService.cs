@@ -17,6 +17,8 @@ using Shared.ResultModels;
 using System.Linq.Expressions;
 
 namespace BL.Services.Catalog.Category;
+/* The `AttributeService` class in C# provides methods for managing attributes and their options,
+including pagination, saving, deleting, and updating display orders. */
 
 public class AttributeService : BaseService<TbAttribute, AttributeDto>, IAttributeService
 {

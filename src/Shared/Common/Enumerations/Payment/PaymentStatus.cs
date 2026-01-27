@@ -1,9 +1,5 @@
 ﻿namespace Common.Enumerations.Payment;
 
-/// <summary>
-/// Payment status enum
-/// CORRECTED: Removed duplicate Failed value, fixed numbering
-/// </summary>
 public enum PaymentStatus
 {
     /// <summary>

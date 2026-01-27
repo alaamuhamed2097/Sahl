@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Shared.DTOs.Merchandising.Homepage;
 using Shared.GeneralModels;
+using System.Security.Claims;
 
 namespace Api.Controllers.v1.Merchandising
 {
@@ -42,6 +43,33 @@ namespace Api.Controllers.v1.Merchandising
                 Message = "Homepage loaded successfully.",
                 Data = response
             });
+        }
+
+        /// <summary>
+        /// Get block items with pagination (for items blocks only)
+        /// </summary>
+        [HttpGet("blocks/{blockId}/items")]
+        public async Task<IActionResult> GetBlockItems(
+            Guid blockId,
+            [FromQuery] int pageNumber = 1,
+            [FromQuery] int pageSize = 20)
+        {
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var result = await _homepageService.GetBlockItemsAsync(blockId, userId, pageNumber, pageSize);
+            return Ok(result);
+        }
+
+        /// <summary>
+        /// Get block categories with pagination (for category blocks only)
+        /// </summary>
+        [HttpGet("blocks/{blockId}/categories")]
+        public async Task<IActionResult> GetBlockCategories(
+            Guid blockId,
+            [FromQuery] int pageNumber = 1,
+            [FromQuery] int pageSize = 20)
+        {
+            var result = await _homepageService.GetBlockCategoriesAsync(blockId, pageNumber, pageSize);
+            return Ok(result);
         }
     }
 }

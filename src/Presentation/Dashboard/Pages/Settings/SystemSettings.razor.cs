@@ -1,462 +1,576 @@
 ﻿
+using Common.Enumerations.Order;
 using Common.Enumerations.Settings;
+using Dashboard.Contracts.Order;
 using Dashboard.Contracts.Setting;
 using Dashboard.Pages.Base;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
+using Shared.DTOs.Order.Payment.Refund;
 using Shared.DTOs.Setting;
 
 namespace Dashboard.Pages.Settings
 {
-    public partial class SystemSettings : LocalizedComponentBase
-    {
-        [Inject] private ISystemSettingsService SystemSettingsService { get; set; } = null!;
-        [Inject] private IJSRuntime JSRuntime { get; set; } = null!;
-        [Inject] private ILogger<SystemSettings> Logger { get; set; } = null!;
+	public partial class SystemSettings : LocalizedComponentBase
+	{
+		[Inject] private ISystemSettingsService SystemSettingsService { get; set; } = null!;
+		[Inject] private IRefundService RefundService { get; set; } = null!;
+		[Inject] private IJSRuntime JSRuntime { get; set; } = null!;
+		[Inject] private ILogger<SystemSettings> Logger { get; set; } = null!;
 
-        // Component state
-        protected SystemSettingsViewModelDto Model { get; set; } = new();
-        protected bool IsLoading { get; set; } = true;
-        protected bool IsSaving { get; set; } = false;
-        protected string ErrorMessage { get; set; } = string.Empty;
-        protected string SuccessMessage { get; set; } = string.Empty;
-        protected string ActiveTab { get; set; } = "tax";
+		// Component state - Settings
+		protected SystemSettingsViewModelDto Model { get; set; } = new();
+		protected bool IsLoading { get; set; } = true;
+		protected bool IsSaving { get; set; } = false;
+		protected string ErrorMessage { get; set; } = string.Empty;
+		protected string SuccessMessage { get; set; } = string.Empty;
+		protected string ActiveTab { get; set; } = "tax";
 
-        protected override async Task OnInitializedAsync()
-        {
-            await LoadSettings();
-        }
+		// Component state - Refunds
+		protected List<RefundRequestDto> AllRefunds { get; set; } = new();
+		protected List<RefundRequestDto> FilteredRefunds { get; set; } = new();
+		protected RefundRequestDto? SelectedRefund { get; set; }
+		protected bool IsLoadingRefunds { get; set; } = false;
+		protected RefundStatus SelectedRefundStatus { get; set; }
+		protected string SearchRefundOrderId { get; set; } = string.Empty;
+		protected int PendingRefundsCount { get; set; } = 0;
 
-        private async Task LoadSettings()
-        {
-            try
-            {
-                IsLoading = true;
-                ErrorMessage = string.Empty;
+		protected override async Task OnInitializedAsync()
+		{
+			await LoadSettings();
+			await LoadRefunds();
+		}
 
-                var result = await SystemSettingsService.GetAllSettingsAsync();
+		private async Task LoadSettings()
+		{
+			try
+			{
+				IsLoading = true;
+				ErrorMessage = string.Empty;
 
-                if (result.Success && result.Data != null)
-                {
-                    Model = result.Data;
-                }
-                else
-                {
-                    ErrorMessage = result.Message ?? "Failed to load settings";
-                    Model = GetDefaultSettings();
-                }
-            }
-            catch (Exception ex)
-            {
-                Logger.LogError(ex, "Error loading system settings");
-                ErrorMessage = "An unexpected error occurred while loading settings";
-                Model = GetDefaultSettings();
-            }
-            finally
-            {
-                IsLoading = false;
-                StateHasChanged();
-            }
-        }
+				var result = await SystemSettingsService.GetAllSettingsAsync();
 
-        protected async Task SaveSettings()
-        {
-            try
-            {
-                IsSaving = true;
-                ErrorMessage = string.Empty;
-                SuccessMessage = string.Empty;
-                StateHasChanged();
+				if (result.Success && result.Data != null)
+				{
+					Model = result.Data;
+				}
+				else
+				{
+					ErrorMessage = result.Message ?? "Failed to load settings";
+					Model = GetDefaultSettings();
+				}
+			}
+			catch (Exception ex)
+			{
+				Logger.LogError(ex, "Error loading system settings");
+				ErrorMessage = "An unexpected error occurred while loading settings";
+				Model = GetDefaultSettings();
+			}
+			finally
+			{
+				IsLoading = false;
+				StateHasChanged();
+			}
+		}
 
-                var updates = new List<UpdateSystemSettingDto>
-                {
-                    // Tax Settings
-                   new()
-                    {
-                        key = SystemSettingKey.OrderTaxPercentage,
-                        value = Model.OrderTaxPercentage.ToString(),
-                        dataType = SystemSettingDataType.Decimal,
-                        category = SystemSettingCategory.Tax
-                    },
-                    new()
-                    {
-                        key = SystemSettingKey.TaxIncludedInPrice,
-                        value = Model.TaxIncludedInPrice.ToString(),
-                        dataType = SystemSettingDataType.Boolean,
-                        category = SystemSettingCategory.Tax
-                    },
-                    new()
-                    {
-                        key = SystemSettingKey.RefundAllowedDays,
-                        value = Model.RefundAllowedDays.ToString(),
-                        dataType = SystemSettingDataType.Integer,
-                        category = SystemSettingCategory.RefundAllowedDays
-                    },
-     //               // Shipping Settings
+		protected async Task LoadRefunds()
+		{
+			try
+			{
+				IsLoadingRefunds = true;
+				StateHasChanged();
 
-     //               new() { key = SystemSettingKey.ShippingAmount, value = Model.ShippingAmount.ToString() },
-					//new() { key = SystemSettingKey.FreeShippingThreshold, value = Model.FreeShippingThreshold.ToString() },
-					//new() { key = SystemSettingKey.ShippingPerKg, value = Model.ShippingPerKg.ToString() },
-					//new() { key = SystemSettingKey.EstimatedDeliveryDays, value = Model.EstimatedDeliveryDays.ToString() },
+				var result = await SystemSettingsService.GetAllRefundsAsync();
 
-     //               // Order Settings
-     //               new() { key = SystemSettingKey.OrderExtraCost, value = Model.OrderExtraCost.ToString() },
-					//new() { key = SystemSettingKey.MinimumOrderAmount, value = Model.MinimumOrderAmount.ToString() },
-					//new() { key = SystemSettingKey.MaximumOrderAmount, value = Model.MaximumOrderAmount.ToString() },
-					//new() { key = SystemSettingKey.OrderCancellationPeriodHours, value = Model.OrderCancellationPeriodHours.ToString() },
+				if (result.Success && result.Data != null)
+				{
+					AllRefunds = result.Data.Items.ToList();
+					FilterRefunds();
+					PendingRefundsCount = AllRefunds.Count(r => r.RefundStatus == RefundStatus.Open);
+				}
+				else
+				{
+					AllRefunds = new List<RefundRequestDto>();
+					FilteredRefunds = new List<RefundRequestDto>();
+					PendingRefundsCount = 0;
+				}
+			}
+			catch (Exception ex)
+			{
+				Logger.LogError(ex, "Error loading refund requests");
+				AllRefunds = new List<RefundRequestDto>();
+				FilteredRefunds = new List<RefundRequestDto>();
+				PendingRefundsCount = 0;
+			}
+			finally
+			{
+				IsLoadingRefunds = false;
+				StateHasChanged();
+			}
+		}
 
-     //               // Payment Settings
-     //               new() { key = SystemSettingKey.PaymentGatewayEnabled, value = Model.PaymentGatewayEnabled.ToString() },
-					//new() { key = SystemSettingKey.CashOnDeliveryEnabled, value = Model.CashOnDeliveryEnabled.ToString() },
+		protected void FilterRefunds()
+		{
+			FilteredRefunds = AllRefunds;
 
-     //               // Business Settings
-     //               new() { key = SystemSettingKey.MaintenanceMode, value = Model.MaintenanceMode.ToString() },
-					//new() { key = SystemSettingKey.AllowGuestCheckout, value = Model.AllowGuestCheckout.ToString() },
+			// Filter by status
+			if (SelectedRefundStatus == RefundStatus.Open)
+			{
+				FilteredRefunds = FilteredRefunds
+					.Where(r => r.RefundStatus == SelectedRefundStatus)
+					.ToList();
+			}
 
-     //               // Notification Settings
-     //               new() { key = SystemSettingKey.EmailNotificationsEnabled, value = Model.EmailNotificationsEnabled.ToString() },
-					//new() { key = SystemSettingKey.SmsNotificationsEnabled, value = Model.SmsNotificationsEnabled.ToString() },
+			// Filter by order ID
+			if (!string.IsNullOrEmpty(SearchRefundOrderId))
+			{
+				FilteredRefunds = FilteredRefunds
+					.Where(r => r.OrderDetailId.ToString().Contains(SearchRefundOrderId, StringComparison.OrdinalIgnoreCase))
+					.ToList();
+			}
 
-     //               // Security Settings
-     //               new() { key = SystemSettingKey.MaxLoginAttempts, value = Model.MaxLoginAttempts.ToString() },
-					//new() { key = SystemSettingKey.SessionTimeoutMinutes, value = Model.SessionTimeoutMinutes.ToString() },
-					//new() { key = SystemSettingKey.PasswordMinLength, value = Model.PasswordMinLength.ToString() }
+			StateHasChanged();
+		}
+
+		protected async Task ApproveRefund(Guid refundId)
+		{
+			var confirmed = await JSRuntime.InvokeAsync<bool>("confirm",
+				"Are you sure you want to approve this refund request?");
+
+			if (!confirmed) return;
+
+			try
+			{
+				var updateDto = new UpdateRefundStatusDto
+				{
+					RefundId = refundId,
+					NewStatus = RefundStatus.Approved,
 				};
 
-                var result = await SystemSettingsService.UpdateSettingsBatchAsync(updates);
+				var result = await SystemSettingsService.UpdateRefundStatusAsync(updateDto);
 
-                if (result.Success)
-                {
-                    SuccessMessage = "Settings saved successfully!";
-                    await ShowSuccessNotification("Success", SuccessMessage);
-                }
-                else
-                {
-                    ErrorMessage = result.Message ?? "Failed to save settings";
-                    await ShowErrorNotification("Error", ErrorMessage);
-                }
-            }
-            catch (Exception ex)
-            {
-                Logger.LogError(ex, "Error saving system settings");
-                ErrorMessage = "An unexpected error occurred while saving settings";
-                await ShowErrorNotification("Error", ErrorMessage);
-            }
-            finally
-            {
-                IsSaving = false;
-                StateHasChanged();
-            }
-        }
+				if (result.Success)
+				{
+					SuccessMessage = "Refund request approved successfully!";
+					await ShowSuccessNotification("Success", SuccessMessage);
+					await LoadRefunds();
+					CloseRefundModal();
+				}
+				else
+				{
+					ErrorMessage = result.Message ?? "Failed to approve refund request";
+					await ShowErrorNotification("Error", ErrorMessage);
+				}
+			}
+			catch (Exception ex)
+			{
+				Logger.LogError(ex, "Error approving refund request");
+				ErrorMessage = "An unexpected error occurred while approving the refund";
+				await ShowErrorNotification("Error", ErrorMessage);
+			}
+		}
 
-        protected async Task ResetToDefaults()
-        {
-            var confirmed = await JSRuntime.InvokeAsync<bool>("confirm",
-                "Are you sure you want to reset all settings to their default values? This action cannot be undone.");
+		protected async Task RejectRefund(Guid refundId)
+		{
+			var reason = await JSRuntime.InvokeAsync<string>("prompt",
+				"Please provide a reason for rejecting this refund request:");
 
-            if (confirmed)
-            {
-                Model = GetDefaultSettings();
-                SuccessMessage = "Settings have been reset to defaults. Don't forget to save!";
-                ErrorMessage = string.Empty;
-                StateHasChanged();
-            }
-        }
+			if (string.IsNullOrWhiteSpace(reason)) return;
 
-        protected void SetActiveTab(string tabName)
-        {
-            ActiveTab = tabName;
-            StateHasChanged();
-        }
+			try
+			{
+				var updateDto = new UpdateRefundStatusDto
+				{
+					RefundId = refundId,
+					NewStatus = RefundStatus.Rejected,
+				};
 
-        protected string GetTabClass(string tabName)
-        {
-            return ActiveTab == tabName ? "nav-link active" : "nav-link";
-        }
+				var result = await SystemSettingsService.UpdateRefundStatusAsync(updateDto);
 
-        private SystemSettingsViewModelDto GetDefaultSettings()
-        {
-            return new SystemSettingsViewModelDto
-            {
-                // Tax Settings
-                OrderTaxPercentage = 0,
-                RefundAllowedDays = 0,
-                TaxIncludedInPrice = false,
+				if (result.Success)
+				{
+					SuccessMessage = "Refund request rejected successfully!";
+					await ShowSuccessNotification("Success", SuccessMessage);
+					await LoadRefunds();
+					CloseRefundModal();
+				}
+				else
+				{
+					ErrorMessage = result.Message ?? "Failed to reject refund request";
+					await ShowErrorNotification("Error", ErrorMessage);
+				}
+			}
+			catch (Exception ex)
+			{
+				Logger.LogError(ex, "Error rejecting refund request");
+				ErrorMessage = "An unexpected error occurred while rejecting the refund";
+				await ShowErrorNotification("Error", ErrorMessage);
+			}
+		}
 
-                //// Shipping Settings
-                //ShippingAmount = 0,
-                //FreeShippingThreshold = 100,
-                //ShippingPerKg = 5,
-                //EstimatedDeliveryDays = 3,
+		protected void ViewRefundDetails(RefundRequestDto refund)
+		{
+			SelectedRefund = refund;
+			StateHasChanged();
+		}
 
-                //// Order Settings
-                //OrderExtraCost = 0,
-                //MinimumOrderAmount = 10,
-                //MaximumOrderAmount = 10000,
-                //OrderCancellationPeriodHours = 24,
+		protected void CloseRefundModal()
+		{
+			SelectedRefund = null;
+			StateHasChanged();
+		}
 
-                //// Payment Settings
-                //PaymentGatewayEnabled = true,
-                //CashOnDeliveryEnabled = true,
+		protected string GetStatusBadgeClass(string status)
+		{
+			return status?.ToLower() switch
+			{
+				"pending" => "bg-warning text-dark",
+				"approved" => "bg-success",
+				"rejected" => "bg-danger",
+				"completed" => "bg-info",
+				_ => "bg-secondary"
+			};
+		}
 
-                //// Business Settings
-                //MaintenanceMode = false,
-                //AllowGuestCheckout = true,
+		protected async Task SaveSettings()
+		{
+			try
+			{
+				IsSaving = true;
+				ErrorMessage = string.Empty;
+				SuccessMessage = string.Empty;
+				StateHasChanged();
 
-                //// Notification Settings
-                //EmailNotificationsEnabled = true,
-                //SmsNotificationsEnabled = false,
+				var updates = new List<UpdateSystemSettingDto>
+				{
+                    // Tax Settings
+                   new()
+					{
+						key = SystemSettingKey.OrderTaxPercentage,
+						value = Model.OrderTaxPercentage.ToString(),
+						dataType = SystemSettingDataType.Decimal,
+						category = SystemSettingCategory.Tax
+					},
+					new()
+					{
+						key = SystemSettingKey.TaxIncludedInPrice,
+						value = Model.TaxIncludedInPrice.ToString(),
+						dataType = SystemSettingDataType.Boolean,
+						category = SystemSettingCategory.Tax
+					},
+					new()
+					{
+						key = SystemSettingKey.RefundAllowedDays,
+						value = Model.RefundAllowedDays.ToString(),
+						dataType = SystemSettingDataType.Integer,
+						category = SystemSettingCategory.RefundAllowedDays
+					},
+				};
 
-                //// Security Settings
-                //MaxLoginAttempts = 5,
-                //SessionTimeoutMinutes = 30,
-                //PasswordMinLength = 8
-            };
-        }
+				var result = await SystemSettingsService.UpdateSettingsBatchAsync(updates);
 
-        private async Task ShowErrorNotification(string title, string message)
-        {
-            await JSRuntime.InvokeVoidAsync("swal", title, message, "error");
-        }
+				if (result.Success)
+				{
+					SuccessMessage = "Settings saved successfully!";
+					await ShowSuccessNotification("Success", SuccessMessage);
+				}
+				else
+				{
+					ErrorMessage = result.Message ?? "Failed to save settings";
+					await ShowErrorNotification("Error", ErrorMessage);
+				}
+			}
+			catch (Exception ex)
+			{
+				Logger.LogError(ex, "Error saving system settings");
+				ErrorMessage = "An unexpected error occurred while saving settings";
+				await ShowErrorNotification("Error", ErrorMessage);
+			}
+			finally
+			{
+				IsSaving = false;
+				StateHasChanged();
+			}
+		}
 
-        private async Task ShowSuccessNotification(string title, string message)
-        {
-            await JSRuntime.InvokeVoidAsync("swal", title, message, "success");
-        }
-    }
+		protected async Task ResetToDefaults()
+		{
+			var confirmed = await JSRuntime.InvokeAsync<bool>("confirm",
+				"Are you sure you want to reset all settings to their default values? This action cannot be undone.");
+
+			if (confirmed)
+			{
+				Model = GetDefaultSettings();
+				SuccessMessage = "Settings have been reset to defaults. Don't forget to save!";
+				ErrorMessage = string.Empty;
+				StateHasChanged();
+			}
+		}
+
+		protected void SetActiveTab(string tabName)
+		{
+			ActiveTab = tabName;
+
+			// Load refunds when switching to refund tab
+			if (tabName == "refund" && !AllRefunds.Any())
+			{
+				_ = LoadRefunds();
+			}
+
+			StateHasChanged();
+		}
+
+		protected string GetTabClass(string tabName)
+		{
+			return ActiveTab == tabName ? "nav-link active" : "nav-link";
+		}
+
+		private SystemSettingsViewModelDto GetDefaultSettings()
+		{
+			return new SystemSettingsViewModelDto
+			{
+				// Tax Settings
+				OrderTaxPercentage = 0,
+				RefundAllowedDays = 0,
+				TaxIncludedInPrice = false,
+			};
+		}
+
+		private async Task ShowErrorNotification(string title, string message)
+		{
+			await JSRuntime.InvokeVoidAsync("swal", title, message, "error");
+		}
+
+		private async Task ShowSuccessNotification(string title, string message)
+		{
+			await JSRuntime.InvokeVoidAsync("swal", title, message, "success");
+		}
+	}
 }
+
+//using Common.Enumerations.Settings;
 //using Dashboard.Contracts.Setting;
+//using Dashboard.Pages.Base;
 //using Microsoft.AspNetCore.Components;
 //using Microsoft.JSInterop;
-//using Resources;
 //using Shared.DTOs.Setting;
-//using Common.Enumerations.Settings;
 
 //namespace Dashboard.Pages.Settings
 //{
-//	public partial class SystemSettings : ComponentBase
-//	{
-//		[Inject] private ISystemSettingsService SystemSettingsService { get; set; } = null!;
-//		[Inject] private IJSRuntime JSRuntime { get; set; } = null!;
-//		[Inject] private ILogger<SystemSettings> Logger { get; set; } = null!;
+//    public partial class SystemSettings : LocalizedComponentBase
+//    {
+//        [Inject] private ISystemSettingsService SystemSettingsService { get; set; } = null!;
+//        [Inject] private IJSRuntime JSRuntime { get; set; } = null!;
+//        [Inject] private ILogger<SystemSettings> Logger { get; set; } = null!;
 
-//		// Component state
-//		protected SystemSettingsViewModelDto Model { get; set; } = new();
-//		protected bool IsLoading { get; set; } = true;
-//		protected bool IsSaving { get; set; } = false;
-//		protected string ErrorMessage { get; set; } = string.Empty;
-//		protected string SuccessMessage { get; set; } = string.Empty;
-//		protected string ActiveTab { get; set; } = "tax";
+//        // Component state
+//        protected SystemSettingsViewModelDto Model { get; set; } = new();
+//        protected bool IsLoading { get; set; } = true;
+//        protected bool IsSaving { get; set; } = false;
+//        protected string ErrorMessage { get; set; } = string.Empty;
+//        protected string SuccessMessage { get; set; } = string.Empty;
+//        protected string ActiveTab { get; set; } = "tax";
 
-//		protected override async Task OnInitializedAsync()
-//		{
-//			await LoadSettings();
-//		}
+//        protected override async Task OnInitializedAsync()
+//        {
+//            await LoadSettings();
+//        }
 
-//		private async Task LoadSettings()
-//		{
-//			try
-//			{
-//				IsLoading = true;
-//				ErrorMessage = string.Empty;
+//        private async Task LoadSettings()
+//        {
+//            try
+//            {
+//                IsLoading = true;
+//                ErrorMessage = string.Empty;
 
-//				var result = await SystemSettingsService.GetAllSettingsAsync();
+//                var result = await SystemSettingsService.GetAllSettingsAsync();
 
-//				if (result.Success && result.Data != null)
-//				{
-//					Model = result.Data;
-//				}
-//				else
-//				{
-//					ErrorMessage = result.Message ?? "Failed to load settings";
-//					Model = GetDefaultSettings();
-//				}
-//			}
-//			catch (Exception ex)
-//			{
-//				Logger.LogError(ex, "Error loading system settings");
-//				ErrorMessage = "An unexpected error occurred while loading settings";
-//				Model = GetDefaultSettings();
-//			}
-//			finally
-//			{
-//				IsLoading = false;
-//				StateHasChanged();
-//			}
-//		}
+//                if (result.Success && result.Data != null)
+//                {
+//                    Model = result.Data;
+//                }
+//                else
+//                {
+//                    ErrorMessage = result.Message ?? "Failed to load settings";
+//                    Model = GetDefaultSettings();
+//                }
+//            }
+//            catch (Exception ex)
+//            {
+//                Logger.LogError(ex, "Error loading system settings");
+//                ErrorMessage = "An unexpected error occurred while loading settings";
+//                Model = GetDefaultSettings();
+//            }
+//            finally
+//            {
+//                IsLoading = false;
+//                StateHasChanged();
+//            }
+//        }
 
-//		#region Save Methods for Each Tab
+//        protected async Task SaveSettings()
+//        {
+//            try
+//            {
+//                IsSaving = true;
+//                ErrorMessage = string.Empty;
+//                SuccessMessage = string.Empty;
+//                StateHasChanged();
 
-//		protected async Task SaveTaxSettings()
-//		{
-//			await SaveSettingsGroup("Tax Settings", new List<UpdateSystemSettingDto>
-//			{
-//				new() { Key = SystemSettingKey.OrderTaxPercentage, value = Model.OrderTaxPercentage.ToString() },
-//				new() { Key = SystemSettingKey.TaxIncludedInPrice, value = Model.TaxIncludedInPrice.ToString() }
-//			});
-//		}
+//                var updates = new List<UpdateSystemSettingDto>
+//                {
+//                    // Tax Settings
+//                   new()
+//                    {
+//                        key = SystemSettingKey.OrderTaxPercentage,
+//                        value = Model.OrderTaxPercentage.ToString(),
+//                        dataType = SystemSettingDataType.Decimal,
+//                        category = SystemSettingCategory.Tax
+//                    },
+//                    new()
+//                    {
+//                        key = SystemSettingKey.TaxIncludedInPrice,
+//                        value = Model.TaxIncludedInPrice.ToString(),
+//                        dataType = SystemSettingDataType.Boolean,
+//                        category = SystemSettingCategory.Tax
+//                    },
+//                    new()
+//                    {
+//                        key = SystemSettingKey.RefundAllowedDays,
+//                        value = Model.RefundAllowedDays.ToString(),
+//                        dataType = SystemSettingDataType.Integer,
+//                        category = SystemSettingCategory.RefundAllowedDays
+//                    },
+//     //               // Shipping Settings
 
-//		protected async Task SaveShippingSettings()
-//		{
-//			await SaveSettingsGroup("Shipping Settings", new List<UpdateSystemSettingDto>
-//			{
-//				new() { Key = SystemSettingKey.ShippingAmount, value = Model.ShippingAmount.ToString() },
-//				new() { Key = SystemSettingKey.FreeShippingThreshold, value = Model.FreeShippingThreshold.ToString() },
-//				new() { Key = SystemSettingKey.ShippingPerKg, value = Model.ShippingPerKg.ToString() },
-//				new() { Key = SystemSettingKey.EstimatedDeliveryDays, value = Model.EstimatedDeliveryDays.ToString() }
-//			});
-//		}
+//     //               new() { key = SystemSettingKey.ShippingAmount, value = Model.ShippingAmount.ToString() },
+//					//new() { key = SystemSettingKey.FreeShippingThreshold, value = Model.FreeShippingThreshold.ToString() },
+//					//new() { key = SystemSettingKey.ShippingPerKg, value = Model.ShippingPerKg.ToString() },
+//					//new() { key = SystemSettingKey.EstimatedDeliveryDays, value = Model.EstimatedDeliveryDays.ToString() },
 
-//		protected async Task SaveOrderSettings()
-//		{
-//			await SaveSettingsGroup("Order Settings", new List<UpdateSystemSettingDto>
-//			{
-//				new() { Key = SystemSettingKey.OrderExtraCost, value = Model.OrderExtraCost.ToString() },
-//				new() { Key = SystemSettingKey.MinimumOrderAmount, value = Model.MinimumOrderAmount.ToString() },
-//				new() { Key = SystemSettingKey.MaximumOrderAmount, value = Model.MaximumOrderAmount.ToString() },
-//				new() { Key = SystemSettingKey.OrderCancellationPeriodHours, value = Model.OrderCancellationPeriodHours.ToString() }
-//			});
-//		}
+//     //               // Order Settings
+//     //               new() { key = SystemSettingKey.OrderExtraCost, value = Model.OrderExtraCost.ToString() },
+//					//new() { key = SystemSettingKey.MinimumOrderAmount, value = Model.MinimumOrderAmount.ToString() },
+//					//new() { key = SystemSettingKey.MaximumOrderAmount, value = Model.MaximumOrderAmount.ToString() },
+//					//new() { key = SystemSettingKey.OrderCancellationPeriodHours, value = Model.OrderCancellationPeriodHours.ToString() },
 
-//		protected async Task SavePaymentSettings()
-//		{
-//			await SaveSettingsGroup("Payment Settings", new List<UpdateSystemSettingDto>
-//			{
-//				new() { Key = SystemSettingKey.PaymentGatewayEnabled, value = Model.PaymentGatewayEnabled.ToString() },
-//				new() { Key = SystemSettingKey.CashOnDeliveryEnabled, value = Model.CashOnDeliveryEnabled.ToString() }
-//			});
-//		}
+//     //               // Payment Settings
+//     //               new() { key = SystemSettingKey.PaymentGatewayEnabled, value = Model.PaymentGatewayEnabled.ToString() },
+//					//new() { key = SystemSettingKey.CashOnDeliveryEnabled, value = Model.CashOnDeliveryEnabled.ToString() },
 
-//		protected async Task SaveBusinessSettings()
-//		{
-//			await SaveSettingsGroup("Business Settings", new List<UpdateSystemSettingDto>
-//			{
-//				new() { Key = SystemSettingKey.MaintenanceMode, value = Model.MaintenanceMode.ToString() },
-//				new() { Key = SystemSettingKey.AllowGuestCheckout, value = Model.AllowGuestCheckout.ToString() }
-//			});
-//		}
+//     //               // Business Settings
+//     //               new() { key = SystemSettingKey.MaintenanceMode, value = Model.MaintenanceMode.ToString() },
+//					//new() { key = SystemSettingKey.AllowGuestCheckout, value = Model.AllowGuestCheckout.ToString() },
 
-//		protected async Task SaveNotificationSettings()
-//		{
-//			await SaveSettingsGroup("Notification Settings", new List<UpdateSystemSettingDto>
-//			{
-//				new() { Key = SystemSettingKey.EmailNotificationsEnabled, value = Model.EmailNotificationsEnabled.ToString() },
-//				new() { Key = SystemSettingKey.SmsNotificationsEnabled, value = Model.SmsNotificationsEnabled.ToString() }
-//			});
-//		}
+//     //               // Notification Settings
+//     //               new() { key = SystemSettingKey.EmailNotificationsEnabled, value = Model.EmailNotificationsEnabled.ToString() },
+//					//new() { key = SystemSettingKey.SmsNotificationsEnabled, value = Model.SmsNotificationsEnabled.ToString() },
 
-//		protected async Task SaveSecuritySettings()
-//		{
-//			await SaveSettingsGroup("Security Settings", new List<UpdateSystemSettingDto>
-//			{
-//				new() { Key = SystemSettingKey.MaxLoginAttempts, value = Model.MaxLoginAttempts.ToString() },
-//				new() { Key = SystemSettingKey.SessionTimeoutMinutes, value = Model.SessionTimeoutMinutes.ToString() },
-//				new() { Key = SystemSettingKey.PasswordMinLength, value = Model.PasswordMinLength.ToString() }
-//			});
-//		}
+//     //               // Security Settings
+//     //               new() { key = SystemSettingKey.MaxLoginAttempts, value = Model.MaxLoginAttempts.ToString() },
+//					//new() { key = SystemSettingKey.SessionTimeoutMinutes, value = Model.SessionTimeoutMinutes.ToString() },
+//					//new() { key = SystemSettingKey.PasswordMinLength, value = Model.PasswordMinLength.ToString() }
+//				};
 
-//		#endregion
+//                var result = await SystemSettingsService.UpdateSettingsBatchAsync(updates);
 
-//		#region Helper Methods
+//                if (result.Success)
+//                {
+//                    SuccessMessage = "Settings saved successfully!";
+//                    await ShowSuccessNotification("Success", SuccessMessage);
+//                }
+//                else
+//                {
+//                    ErrorMessage = result.Message ?? "Failed to save settings";
+//                    await ShowErrorNotification("Error", ErrorMessage);
+//                }
+//            }
+//            catch (Exception ex)
+//            {
+//                Logger.LogError(ex, "Error saving system settings");
+//                ErrorMessage = "An unexpected error occurred while saving settings";
+//                await ShowErrorNotification("Error", ErrorMessage);
+//            }
+//            finally
+//            {
+//                IsSaving = false;
+//                StateHasChanged();
+//            }
+//        }
 
-//		private async Task SaveSettingsGroup(string groupName, List<UpdateSystemSettingDto> updates)
-//		{
-//			try
-//			{
-//				IsSaving = true;
-//				ErrorMessage = string.Empty;
-//				SuccessMessage = string.Empty;
-//				StateHasChanged();
+//        protected async Task ResetToDefaults()
+//        {
+//            var confirmed = await JSRuntime.InvokeAsync<bool>("confirm",
+//                "Are you sure you want to reset all settings to their default values? This action cannot be undone.");
 
-//				var result = await SystemSettingsService.UpdateSettingsBatchAsync(updates);
+//            if (confirmed)
+//            {
+//                Model = GetDefaultSettings();
+//                SuccessMessage = "Settings have been reset to defaults. Don't forget to save!";
+//                ErrorMessage = string.Empty;
+//                StateHasChanged();
+//            }
+//        }
 
-//				if (result.Success)
-//				{
-//					SuccessMessage = $"{groupName} saved successfully!";
-//					await ShowSuccessNotification("Success", SuccessMessage);
-//				}
-//				else
-//				{
-//					ErrorMessage = result.Message ?? $"Failed to save {groupName}";
-//					await ShowErrorNotification("Error", ErrorMessage);
-//				}
-//			}
-//			catch (Exception ex)
-//			{
-//				Logger.LogError(ex, "Error saving {GroupName}", groupName);
-//				ErrorMessage = $"An unexpected error occurred while saving {groupName}";
-//				await ShowErrorNotification("Error", ErrorMessage);
-//			}
-//			finally
-//			{
-//				IsSaving = false;
-//				StateHasChanged();
-//			}
-//		}
+//        protected void SetActiveTab(string tabName)
+//        {
+//            ActiveTab = tabName;
+//            StateHasChanged();
+//        }
 
-//		protected void SetActiveTab(string tabName)
-//		{
-//			ActiveTab = tabName;
-//			// Clear messages when switching tabs
-//			ErrorMessage = string.Empty;
-//			SuccessMessage = string.Empty;
-//			StateHasChanged();
-//		}
+//        protected string GetTabClass(string tabName)
+//        {
+//            return ActiveTab == tabName ? "nav-link active" : "nav-link";
+//        }
 
-//		protected string GetTabClass(string tabName)
-//		{
-//			return ActiveTab == tabName ? "nav-link active" : "nav-link";
-//		}
+//        private SystemSettingsViewModelDto GetDefaultSettings()
+//        {
+//            return new SystemSettingsViewModelDto
+//            {
+//                // Tax Settings
+//                OrderTaxPercentage = 0,
+//                RefundAllowedDays = 0,
+//                TaxIncludedInPrice = false,
 
-//		private SystemSettingsViewModelDto GetDefaultSettings()
-//		{
-//			return new SystemSettingsViewModelDto
-//			{
-//				// Tax Settings
-//				OrderTaxPercentage = 0,
-//				TaxIncludedInPrice = false,
+//                //// Shipping Settings
+//                //ShippingAmount = 0,
+//                //FreeShippingThreshold = 100,
+//                //ShippingPerKg = 5,
+//                //EstimatedDeliveryDays = 3,
 
-//				// Shipping Settings
-//				ShippingAmount = 0,
-//				FreeShippingThreshold = 100,
-//				ShippingPerKg = 5,
-//				EstimatedDeliveryDays = 3,
+//                //// Order Settings
+//                //OrderExtraCost = 0,
+//                //MinimumOrderAmount = 10,
+//                //MaximumOrderAmount = 10000,
+//                //OrderCancellationPeriodHours = 24,
 
-//				// Order Settings
-//				OrderExtraCost = 0,
-//				MinimumOrderAmount = 10,
-//				MaximumOrderAmount = 10000,
-//				OrderCancellationPeriodHours = 24,
+//                //// Payment Settings
+//                //PaymentGatewayEnabled = true,
+//                //CashOnDeliveryEnabled = true,
 
-//				// Payment Settings
-//				PaymentGatewayEnabled = true,
-//				CashOnDeliveryEnabled = true,
+//                //// Business Settings
+//                //MaintenanceMode = false,
+//                //AllowGuestCheckout = true,
 
-//				// Business Settings
-//				MaintenanceMode = false,
-//				AllowGuestCheckout = true,
+//                //// Notification Settings
+//                //EmailNotificationsEnabled = true,
+//                //SmsNotificationsEnabled = false,
 
-//				// Notification Settings
-//				EmailNotificationsEnabled = true,
-//				SmsNotificationsEnabled = false,
+//                //// Security Settings
+//                //MaxLoginAttempts = 5,
+//                //SessionTimeoutMinutes = 30,
+//                //PasswordMinLength = 8
+//            };
+//        }
 
-//				// Security Settings
-//				MaxLoginAttempts = 5,
-//				SessionTimeoutMinutes = 30,
-//				PasswordMinLength = 8
-//			};
-//		}
+//        private async Task ShowErrorNotification(string title, string message)
+//        {
+//            await JSRuntime.InvokeVoidAsync("swal", title, message, "error");
+//        }
 
-//		private async Task ShowErrorNotification(string title, string message)
-//		{
-//			await JSRuntime.InvokeVoidAsync("swal", title, message, "error");
-//		}
-
-//		private async Task ShowSuccessNotification(string title, string message)
-//		{
-//			await JSRuntime.InvokeVoidAsync("swal", title, message, "success");
-//		}
-
-//		#endregion
-//	}
+//        private async Task ShowSuccessNotification(string title, string message)
+//        {
+//            await JSRuntime.InvokeVoidAsync("swal", title, message, "success");
+//        }
+//    }
 //}
