@@ -3,6 +3,7 @@
 @using Microsoft.AspNetCore.Authorization
 @using Resources
 @using Shared.DTOs.Setting
+
 @inherits LocalizedComponentBase
 @attribute [Authorize(Roles = nameof(UserRole.Admin))]
 
@@ -65,58 +66,26 @@
                 <div class="card-body">
                     <!-- Navigation Tabs -->
                     <ul class="nav nav-tabs mb-4" id="systemSettingsTabs" role="tablist">
-                        <li class="nav-item" role="presentation">
+                        @* <li class="nav-item" role="presentation">
                             <button class="@GetTabClass("tax")" @onclick='() => SetActiveTab("tax")' type="button">
                                 <i class="fas fa-file-invoice-dollar me-2"></i>
                                 @GeneralResources.TaxSettings
                             </button>
-                        </li>
-                        <li class="nav-item" role="presentation">
+                        </li> *@
+                        @* <li class="nav-item" role="presentation">
                             <button class="@GetTabClass("refund")" @onclick='() => SetActiveTab("refund")' type="button">
-                                <i class="fas fa-file-invoice-dollar me-2"></i>
-                                Refund
+                                <i class="fas fa-undo me-2"></i>
+                                @GeneralResources.Refund
+                                @if (PendingRefundsCount > 0)
+                                {
+                                    <span class="badge bg-danger ms-2">@PendingRefundsCount</span>
+                                }
                             </button>
-                        </li>
-                        <li class="nav-item" role="presentation">
-                            <button class="@GetTabClass("shipping")" @onclick='() => SetActiveTab("shipping")' type="button">
-                                <i class="fas fa-shipping-fast me-2"></i>
-                                @GeneralResources.ShippingSettings
-                            </button>
-                        </li>
-                        <li class="nav-item" role="presentation">
-                            <button class="@GetTabClass("order")" @onclick='() => SetActiveTab("order")' type="button">
-                                <i class="fas fa-shopping-cart me-2"></i>
-                                @GeneralResources.OrderSettings
-                            </button>
-                        </li>
-                        <li class="nav-item" role="presentation">
-                            <button class="@GetTabClass("payment")" @onclick='() => SetActiveTab("payment")' type="button">
-                                <i class="fas fa-credit-card me-2"></i>
-                                @GeneralResources.PaymentSettings
-                            </button>
-                        </li>
-                        <li class="nav-item" role="presentation">
-                            <button class="@GetTabClass("business")" @onclick='() => SetActiveTab("business")' type="button">
-                                <i class="fas fa-briefcase me-2"></i>
-                                @GeneralResources.BusinessSettings
-                            </button>
-                        </li>
-                        <li class="nav-item" role="presentation">
-                            <button class="@GetTabClass("notification")" @onclick='() => SetActiveTab("notification")' type="button">
-                                <i class="fas fa-bell me-2"></i>
-                                @GeneralResources.NotificationSettings
-                            </button>
-                        </li>
-                        <li class="nav-item" role="presentation">
-                            <button class="@GetTabClass("security")" @onclick='() => SetActiveTab("security")' type="button">
-                                <i class="fas fa-shield-alt me-2"></i>
-                                @GeneralResources.SecuritySettings
-                            </button>
-                        </li>
+                        </li> *@
                     </ul>
 
                     <!-- Tab Content -->
-                    <div class="tab-content">
+                    <div class="">
                         <!-- Tax Settings Tab -->
                         <div class="@($"tab-pane {(ActiveTab == "tax" ? "show active" : "")}")" id="tax">
                             <div class="row">
@@ -169,451 +138,180 @@
 
                         <!-- Refund Settings Tab -->
                         <div class="@($"tab-pane {(ActiveTab == "refund" ? "show active" : "")}")" id="refund">
-                            <div class="row">
+                            <!-- Refund Settings Section -->
+                            <div class="row mb-4">
                                 <div class="col-md-6">
-                                    <div class="card border-0 bg-light">
-                                        <div class="card-header bg-transparent">
-                                            <h6 class="mb-0">
-                                                @* <i class="fas fa-percentage me-2"></i> *@
-                                                RefundAllowedDays
-                                            </h6>
-                                        </div>
-                                        <div class="card-body">
-                                            <div class="form-group mb-3">
-                                                <label class="form-label">RefundAllowedDays</label>
-                                                <div class="input-group">
-                                                    <span class="input-group-text">
-                                                        @* <i class="fas fa-percentage"></i> *@
-                                                        </span>
-                                                    <InputNumber class="form-control" @bind-Value="Model.RefundAllowedDays" min="0" max="100" step="0.1" />
-                                                    @* <span class="input-group-text">%</span> *@
-                                                </div>
-                                                <ValidationMessage For="@(() => Model.RefundAllowedDays)" />
-                                                <small class="form-text text-muted">RefundAllowedDays</small>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                @* <div class="col-md-6">
-                                    <div class="card border-0 bg-light">
-                                        <div class="card-header bg-transparent">
-                                            <h6 class="mb-0">
-                                                <i class="fas fa-toggle-on me-2"></i>
-                                                @GeneralResources.TaxIncludedInPrice
-                                            </h6>
-                                        </div>
-                                        <div class="card-body">
-                                            <div class="form-group mb-3">
-                                                <div class="form-check form-switch">
-                                                    <InputCheckbox class="form-check-input" @bind-Value="Model.TaxIncludedInPrice" id="taxIncluded" />
-                                                    <label class="form-check-label" for="taxIncluded">
-                                                        @GeneralResources.TaxIncludedInPrice
-                                                    </label>
-                                                </div>
-                                                <small class="form-text text-muted">@GeneralResources.TaxIncludedHelpText</small>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div> *@
-                            </div>
-                        </div>
-                        <!-- Shipping Settings Tab -->
-                        @* <div class="@($"tab-pane {(ActiveTab == "shipping" ? "show active" : "")}")" id="shipping">
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <div class="card border-0 bg-light mb-3">
-                                        <div class="card-header bg-transparent">
-                                            <h6 class="mb-0">
-                                                <i class="fas fa-truck me-2"></i>
-                                                @ECommerceResources.ShippingAmount
-                                            </h6>
-                                        </div>
-                                        <div class="card-body">
-                                            <div class="form-group mb-0">
-                                                <label class="form-label">@ECommerceResources.ShippingAmount</label>
-                                                <div class="input-group">
-                                                    <span class="input-group-text"><i class="fas fa-dollar-sign"></i></span>
-                                                    <InputNumber class="form-control" @bind-Value="Model.ShippingAmount" min="0" step="0.1" />
-                                                </div>
-                                                <ValidationMessage For="@(() => Model.ShippingAmount)" />
-                                                <small class="form-text text-muted">@GeneralResources.ShippingAmountHelpText</small>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div class="card border-0 bg-light">
-                                        <div class="card-header bg-transparent">
-                                            <h6 class="mb-0">
-                                                <i class="fas fa-weight me-2"></i>
-                                                @GeneralResources.ShippingPerKg
-                                            </h6>
-                                        </div>
-                                        <div class="card-body">
-                                            <div class="form-group mb-0">
-                                                <label class="form-label">@GeneralResources.ShippingPerKg</label>
-                                                <div class="input-group">
-                                                    <span class="input-group-text"><i class="fas fa-dollar-sign"></i></span>
-                                                    <InputNumber class="form-control" @bind-Value="Model.ShippingPerKg" min="0" step="0.1" />
-                                                    <span class="input-group-text">/kg</span>
-                                                </div>
-                                                <ValidationMessage For="@(() => Model.ShippingPerKg)" />
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="col-md-6">
-                                    <div class="card border-0 bg-light mb-3">
-                                        <div class="card-header bg-transparent">
-                                            <h6 class="mb-0">
-                                                <i class="fas fa-gift me-2"></i>
-                                                @GeneralResources.FreeShippingThreshold
-                                            </h6>
-                                        </div>
-                                        <div class="card-body">
-                                            <div class="form-group mb-0">
-                                                <label class="form-label">@GeneralResources.FreeShippingThreshold</label>
-                                                <div class="input-group">
-                                                    <span class="input-group-text"><i class="fas fa-dollar-sign"></i></span>
-                                                    <InputNumber class="form-control" @bind-Value="Model.FreeShippingThreshold" min="0" step="0.1" />
-                                                </div>
-                                                <ValidationMessage For="@(() => Model.FreeShippingThreshold)" />
-                                                <small class="form-text text-muted">@GeneralResources.FreeShippingHelpText</small>
-                                            </div>
-                                        </div>
-                                    </div>
-
                                     <div class="card border-0 bg-light">
                                         <div class="card-header bg-transparent">
                                             <h6 class="mb-0">
                                                 <i class="fas fa-calendar-alt me-2"></i>
-                                                @GeneralResources.EstimatedDeliveryDays
+                                                Refund Allowed Days
                                             </h6>
                                         </div>
                                         <div class="card-body">
-                                            <div class="form-group mb-0">
-                                                <label class="form-label">@GeneralResources.EstimatedDeliveryDays</label>
+                                            <div class="form-group mb-3">
+                                                <label class="form-label">Number of Days</label>
                                                 <div class="input-group">
-                                                    <span class="input-group-text"><i class="fas fa-calendar"></i></span>
-                                                    <InputNumber class="form-control" @bind-Value="Model.EstimatedDeliveryDays" min="1" />
-                                                    <span class="input-group-text">days</span>
+                                                    <span class="input-group-text">
+                                                        <i class="fas fa-calendar"></i>
+                                                    </span>
+                                                    <InputNumber class="form-control" @bind-Value="Model.RefundAllowedDays" min="0" max="365" step="1" />
+                                                    <span class="input-group-text">Days</span>
                                                 </div>
-                                                <ValidationMessage For="@(() => Model.EstimatedDeliveryDays)" />
+                                                <ValidationMessage For="@(() => Model.RefundAllowedDays)" />
+                                                <small class="form-text text-muted">Maximum number of days after purchase to request a refund</small>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                        </div>
 
-                        <!-- Order Settings Tab -->
-                        <div class="@($"tab-pane {(ActiveTab == "order" ? "show active" : "")}")" id="order">
+                                <div class="col-md-6">
+                                    <div class="card border-0 bg-light">
+                                        <div class="card-header bg-transparent">
+                                            <h6 class="mb-0">
+                                                <i class="fas fa-info-circle me-2"></i>
+                                                Refund Policy
+                                            </h6>
+                                        </div>
+                                        <div class="card-body">
+                                            <p class="mb-2"><strong>Current Settings:</strong></p>
+                                            <ul class="list-unstyled">
+                                                <li class="mb-2">
+                                                    <i class="fas fa-check-circle text-success me-2"></i>
+                                                    Customers can request refunds within <strong>@Model.RefundAllowedDays days</strong>
+                                                </li>
+                                                <li class="mb-2">
+                                                    <i class="fas fa-user-shield text-primary me-2"></i>
+                                                    All refund requests require admin approval
+                                                </li>
+                                                <li>
+                                                    <i class="fas fa-bell text-warning me-2"></i>
+                                                    Pending requests: <strong>@PendingRefundsCount</strong>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            @* <hr class="my-4" />
+                            uiugiuguguiguigigui
+                            <!-- Refund Requests Section -->
                             <div class="row">
-                                <div class="col-md-6">
-                                    <div class="card border-0 bg-light mb-3">
-                                        <div class="card-header bg-transparent">
-                                            <h6 class="mb-0">
-                                                <i class="fas fa-plus-circle me-2"></i>
-                                                @ECommerceResources.OrderExtraCost
-                                            </h6>
+                                <div class="col-12">
+                                    <div class="d-flex justify-content-between align-items-center mb-3">
+                                        <h5 class="mb-0">
+                                            <i class="fas fa-list-alt me-2"></i>
+                                            Refund Requests Management
+                                        </h5>
+                                        <button type="button" class="btn btn-sm btn-secondary" @onclick="LoadRefunds">
+                                            <i class="fas fa-sync me-2"></i>
+                                            Refresh
+                                        </button>
+                                    </div>
+
+                                    <!-- Filter Section -->
+                                    <div class="row mb-3">
+                                        <div class="col-md-4">
+                                            <label class="form-label">Filter by Status</label>
+                                            <select class="form-select form-select-sm" @bind="SelectedRefundStatus" @bind:after="FilterRefunds">
+                                                <option value="">All Statuses</option>
+                                                <option value="Pending">Pending</option>
+                                                <option value="Approved">Approved</option>
+                                                <option value="Rejected">Rejected</option>
+                                                <option value="Completed">Completed</option>
+                                            </select>
                                         </div>
-                                        <div class="card-body">
-                                            <div class="form-group mb-0">
-                                                <label class="form-label">@ECommerceResources.OrderExtraCost</label>
-                                                <div class="input-group">
-                                                    <span class="input-group-text"><i class="fas fa-dollar-sign"></i></span>
-                                                    <InputNumber class="form-control" @bind-Value="Model.OrderExtraCost" min="0" step="0.1" />
-                                                </div>
-                                                <ValidationMessage For="@(() => Model.OrderExtraCost)" />
-                                                <small class="form-text text-muted">@GeneralResources.OrderExtraCostHelpText</small>
-                                            </div>
+                                        <div class="col-md-4">
+                                            <label class="form-label">Search by Order ID</label>
+                                            <input type="text" class="form-control form-control-sm" @bind="SearchRefundOrderId" @bind:after="FilterRefunds" placeholder="Enter Order ID..." />
                                         </div>
                                     </div>
 
-                                    <div class="card border-0 bg-light">
-                                        <div class="card-header bg-transparent">
-                                            <h6 class="mb-0">
-                                                <i class="fas fa-arrow-up me-2"></i>
-                                                @GeneralResources.MaximumOrderAmount
-                                            </h6>
-                                        </div>
-                                        <div class="card-body">
-                                            <div class="form-group mb-0">
-                                                <label class="form-label">@GeneralResources.MaximumOrderAmount</label>
-                                                <div class="input-group">
-                                                    <span class="input-group-text"><i class="fas fa-dollar-sign"></i></span>
-                                                    <InputNumber class="form-control" @bind-Value="Model.MaximumOrderAmount" min="0" step="0.1" />
-                                                </div>
-                                                <ValidationMessage For="@(() => Model.MaximumOrderAmount)" />
+                                    @if (IsLoadingRefunds)
+                                    {
+                                        <div class="text-center py-4">
+                                            <div class="spinner-border spinner-border-sm text-primary" role="status">
+                                                <span class="visually-hidden">Loading refunds...</span>
                                             </div>
+                                            <p class="mt-2">Loading refund requests...</p>
                                         </div>
-                                    </div>
-                                </div>
-
-                                <div class="col-md-6">
-                                    <div class="card border-0 bg-light mb-3">
-                                        <div class="card-header bg-transparent">
-                                            <h6 class="mb-0">
-                                                <i class="fas fa-arrow-down me-2"></i>
-                                                @GeneralResources.MinimumOrderAmount
-                                            </h6>
+                                    }
+                                    else if (FilteredRefunds == null || !FilteredRefunds.Any())
+                                    {
+                                        <div class="alert alert-info">
+                                            <i class="fas fa-info-circle me-2"></i>
+                                            No refund requests found
                                         </div>
-                                        <div class="card-body">
-                                            <div class="form-group mb-0">
-                                                <label class="form-label">@GeneralResources.MinimumOrderAmount</label>
-                                                <div class="input-group">
-                                                    <span class="input-group-text"><i class="fas fa-dollar-sign"></i></span>
-                                                    <InputNumber class="form-control" @bind-Value="Model.MinimumOrderAmount" min="0" step="0.1" />
-                                                </div>
-                                                <ValidationMessage For="@(() => Model.MinimumOrderAmount)" />
-                                            </div>
+                                    }
+                                    else
+                                    {
+                                        <div class="table-responsive">
+                                            <table class="table table-hover table-sm">
+                                                <thead class="table-light">
+                                                    <tr>
+                                                        <th>Request ID</th>
+                                                        <th>Order ID</th>
+                                                        <th>Customer</th>
+                                                        <th>Amount</th>
+                                                        <th>Reason</th>
+                                                        <th>Status</th>
+                                                        <th>Request Date</th>
+                                                        <th>Actions</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    @foreach (var refund in FilteredRefunds)
+                                                    {
+                                                        <tr>
+                                                            <td>
+                                                                <small class="text-muted">@refund.Id.ToString().Substring(0, 8)...</small>
+                                                            </td>
+                                                            <td>
+                                                                <small class="text-muted">@refund.OrderDetailId.ToString().Substring(0, 8)...</small>
+                                                            </td>
+                                                            <td>refund.CustomerName</td>
+                                                            <td>
+                                                                <strong>@refund.RefundAmount.ToString("C")</strong>
+                                                            </td>
+                                                            <td>
+                                                                <small>@(refund.RejectionReason?.Length > 30 ? refund.RejectionReason.Substring(0, 30) + "..." : refund.RejectionReason)</small>
+                                                            </td>
+                                                            <td>
+                                                                <span class="badge GetStatusBadgeClass(refund.RefundStatus)">
+                                                                    @refund.RefundStatus
+                                                                </span>
+                                                            </td>
+                                                            <td>
+                                                                <small>@refund.RefundedDateUTC</small>
+                                                            </td>
+                                                            <td>
+                                                                <div class="btn-group btn-group-sm">
+                                                                    <button type="button" class="btn btn-info btn-sm" @onclick="() => ViewRefundDetails(refund)">
+                                                                        <i class="fas fa-eye"></i>
+                                                                    </button>
+                                                                    @* @if (refund.RefundStatus ==1)
+                                                                    { 
+                                                                        <button type="button" class="btn btn-success btn-sm" @onclick="() => ApproveRefund(refund.Id)">
+                                                                            <i class="fas fa-check"></i>
+                                                                        </button>
+                                                                        <button type="button" class="btn btn-danger btn-sm" @onclick="() => RejectRefund(refund.Id)">
+                                                                            <i class="fas fa-times"></i>
+                                                                        </button>
+                                                                    @* } 
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                    }
+                                                </tbody>
+                                            </table>
                                         </div>
-                                    </div>
-
-                                    <div class="card border-0 bg-light">
-                                        <div class="card-header bg-transparent">
-                                            <h6 class="mb-0">
-                                                <i class="fas fa-clock me-2"></i>
-                                                @GeneralResources.OrderCancellationPeriod
-                                            </h6>
-                                        </div>
-                                        <div class="card-body">
-                                            <div class="form-group mb-0">
-                                                <label class="form-label">@GeneralResources.OrderCancellationPeriod</label>
-                                                <div class="input-group">
-                                                    <span class="input-group-text"><i class="fas fa-clock"></i></span>
-                                                    <InputNumber class="form-control" @bind-Value="Model.OrderCancellationPeriodHours" min="0" />
-                                                    <span class="input-group-text">hours</span>
-                                                </div>
-                                                <ValidationMessage For="@(() => Model.OrderCancellationPeriodHours)" />
-                                                <small class="form-text text-muted">@GeneralResources.CancellationPeriodHelpText</small>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Payment Settings Tab -->
-                        <div class="@($"tab-pane {(ActiveTab == "payment" ? "show active" : "")}")" id="payment">
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <div class="card border-0 bg-light">
-                                        <div class="card-header bg-transparent">
-                                            <h6 class="mb-0">
-                                                <i class="fas fa-credit-card me-2"></i>
-                                                @GeneralResources.PaymentGateway
-                                            </h6>
-                                        </div>
-                                        <div class="card-body">
-                                            <div class="form-group mb-3">
-                                                <div class="form-check form-switch">
-                                                    <InputCheckbox class="form-check-input" @bind-Value="Model.PaymentGatewayEnabled" id="paymentGateway" />
-                                                    <label class="form-check-label" for="paymentGateway">
-                                                        @GeneralResources.EnablePaymentGateway
-                                                    </label>
-                                                </div>
-                                                <small class="form-text text-muted">@GeneralResources.PaymentGatewayHelpText</small>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="col-md-6">
-                                    <div class="card border-0 bg-light">
-                                        <div class="card-header bg-transparent">
-                                            <h6 class="mb-0">
-                                                <i class="fas fa-money-bill-wave me-2"></i>
-                                                @GeneralResources.CashOnDelivery
-                                            </h6>
-                                        </div>
-                                        <div class="card-body">
-                                            <div class="form-group mb-3">
-                                                <div class="form-check form-switch">
-                                                    <InputCheckbox class="form-check-input" @bind-Value="Model.CashOnDeliveryEnabled" id="cashOnDelivery" />
-                                                    <label class="form-check-label" for="cashOnDelivery">
-                                                        @GeneralResources.EnableCashOnDelivery
-                                                    </label>
-                                                </div>
-                                                <small class="form-text text-muted">@GeneralResources.CashOnDeliveryHelpText</small>
-                                            </div>
-                                        </div>
-                                    </div>
+                                    }
                                 </div>
                             </div>
+                       *@
                         </div>
-
-                        <!-- Business Settings Tab -->
-                        <div class="@($"tab-pane {(ActiveTab == "business" ? "show active" : "")}")" id="business">
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <div class="card border-0 bg-light">
-                                        <div class="card-header bg-transparent">
-                                            <h6 class="mb-0">
-                                                <i class="fas fa-tools me-2"></i>
-                                                @GeneralResources.MaintenanceMode
-                                            </h6>
-                                        </div>
-                                        <div class="card-body">
-                                            <div class="form-group mb-3">
-                                                <div class="form-check form-switch">
-                                                    <InputCheckbox class="form-check-input" @bind-Value="Model.MaintenanceMode" id="maintenanceMode" />
-                                                    <label class="form-check-label" for="maintenanceMode">
-                                                        @GeneralResources.EnableMaintenanceMode
-                                                    </label>
-                                                </div>
-                                                <small class="form-text text-muted text-danger">
-                                                    <i class="fas fa-exclamation-triangle me-1"></i>
-                                                    @GeneralResources.MaintenanceModeWarning
-                                                </small>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="col-md-6">
-                                    <div class="card border-0 bg-light">
-                                        <div class="card-header bg-transparent">
-                                            <h6 class="mb-0">
-                                                <i class="fas fa-user-check me-2"></i>
-                                                @GeneralResources.GuestCheckout
-                                            </h6>
-                                        </div>
-                                        <div class="card-body">
-                                            <div class="form-group mb-3">
-                                                <div class="form-check form-switch">
-                                                    <InputCheckbox class="form-check-input" @bind-Value="Model.AllowGuestCheckout" id="guestCheckout" />
-                                                    <label class="form-check-label" for="guestCheckout">
-                                                        @GeneralResources.AllowGuestCheckout
-                                                    </label>
-                                                </div>
-                                                <small class="form-text text-muted">@GeneralResources.GuestCheckoutHelpText</small>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Notification Settings Tab -->
-                        <div class="@($"tab-pane {(ActiveTab == "notification" ? "show active" : "")}")" id="notification">
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <div class="card border-0 bg-light">
-                                        <div class="card-header bg-transparent">
-                                            <h6 class="mb-0">
-                                                <i class="fas fa-envelope me-2"></i>
-                                                @GeneralResources.EmailNotifications
-                                            </h6>
-                                        </div>
-                                        <div class="card-body">
-                                            <div class="form-group mb-3">
-                                                <div class="form-check form-switch">
-                                                    <InputCheckbox class="form-check-input" @bind-Value="Model.EmailNotificationsEnabled" id="emailNotif" />
-                                                    <label class="form-check-label" for="emailNotif">
-                                                        @GeneralResources.EnableEmailNotifications
-                                                    </label>
-                                                </div>
-                                                <small class="form-text text-muted">@GeneralResources.EmailNotifHelpText</small>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="col-md-6">
-                                    <div class="card border-0 bg-light">
-                                        <div class="card-header bg-transparent">
-                                            <h6 class="mb-0">
-                                                <i class="fas fa-sms me-2"></i>
-                                                @GeneralResources.SMSNotifications
-                                            </h6>
-                                        </div>
-                                        <div class="card-body">
-                                            <div class="form-group mb-3">
-                                                <div class="form-check form-switch">
-                                                    <InputCheckbox class="form-check-input" @bind-Value="Model.SmsNotificationsEnabled" id="smsNotif" />
-                                                    <label class="form-check-label" for="smsNotif">
-                                                        @GeneralResources.EnableSMSNotifications
-                                                    </label>
-                                                </div>
-                                                <small class="form-text text-muted">@GeneralResources.SMSNotifHelpText</small>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Security Settings Tab -->
-                        <div class="@($"tab-pane {(ActiveTab == "security" ? "show active" : "")}")" id="security">
-                            <div class="row">
-                                <div class="col-md-4">
-                                    <div class="card border-0 bg-light">
-                                        <div class="card-header bg-transparent">
-                                            <h6 class="mb-0">
-                                                <i class="fas fa-lock me-2"></i>
-                                                @GeneralResources.MaxLoginAttempts
-                                            </h6>
-                                        </div>
-                                        <div class="card-body">
-                                            <div class="form-group mb-0">
-                                                <label class="form-label">@GeneralResources.MaxLoginAttempts</label>
-                                                <div class="input-group">
-                                                    <span class="input-group-text"><i class="fas fa-lock"></i></span>
-                                                    <InputNumber class="form-control" @bind-Value="Model.MaxLoginAttempts" min="1" max="10" />
-                                                </div>
-                                                <ValidationMessage For="@(() => Model.MaxLoginAttempts)" />
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="col-md-4">
-                                    <div class="card border-0 bg-light">
-                                        <div class="card-header bg-transparent">
-                                            <h6 class="mb-0">
-                                                <i class="fas fa-clock me-2"></i>
-                                                @GeneralResources.SessionTimeout
-                                            </h6>
-                                        </div>
-                                        <div class="card-body">
-                                            <div class="form-group mb-0">
-                                                <label class="form-label">@GeneralResources.SessionTimeout</label>
-                                                <div class="input-group">
-                                                    <span class="input-group-text"><i class="fas fa-clock"></i></span>
-                                                    <InputNumber class="form-control" @bind-Value="Model.SessionTimeoutMinutes" min="5" />
-                                                    <span class="input-group-text">min</span>
-                                                </div>
-                                                <ValidationMessage For="@(() => Model.SessionTimeoutMinutes)" />
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="col-md-4">
-                                    <div class="card border-0 bg-light">
-                                        <div class="card-header bg-transparent">
-                                            <h6 class="mb-0">
-                                                <i class="fas fa-key me-2"></i>
-                                                @GeneralResources.PasswordMinLength
-                                            </h6>
-                                        </div>
-                                        <div class="card-body">
-                                            <div class="form-group mb-0">
-                                                <label class="form-label">@GeneralResources.PasswordMinLength</label>
-                                                <div class="input-group">
-                                                    <span class="input-group-text"><i class="fas fa-key"></i></span>
-                                                    <InputNumber class="form-control" @bind-Value="Model.PasswordMinLength" min="6" max="20" />
-                                                </div>
-                                                <ValidationMessage For="@(() => Model.PasswordMinLength)" />
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                     *@
+                 
                     
                     </div>
                 </div>
@@ -621,6 +319,88 @@
         }
     </div>
 </div>
+
+<!-- Refund Details Modal -->
+@if (SelectedRefund != null)
+{
+    <div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.5);">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title">
+                        <i class="fas fa-info-circle me-2"></i>
+                        Refund Request Details
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" @onclick="CloseRefundModal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="fw-bold">Request ID:</label>
+                            <p>@SelectedRefund.Id</p>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="fw-bold">Order ID:</label>
+                            <p>@SelectedRefund.OrderDetailId</p>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="fw-bold">Customer Name:</label>
+                            <p>SelectedRefund.CustomerName</p>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="fw-bold">Amount:</label>
+                            <p class="text-success fs-5">@SelectedRefund.RefundAmount.ToString("C")</p>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="fw-bold">Status:</label>
+                            <p>
+                                <span class="badge GetStatusBadgeClass(SelectedRefund.RefundStatus)">
+                                    @SelectedRefund.RefundStatus
+                                </span>
+                            </p>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="fw-bold">Request Date:</label>
+                            <p>@SelectedRefund.RefundedDateUTC</p>
+                        </div>
+                        @if (SelectedRefund.RefundedDateUTC.HasValue)
+                        {
+                            <div class="col-md-6 mb-3">
+                                <label class="fw-bold">Processed Date:</label>
+                                <p>@SelectedRefund.RefundedDateUTC.Value.ToString("dd/MM/yyyy HH:mm")</p>
+                            </div>
+                        }
+                        <div class="col-12 mb-3">
+                            <label class="fw-bold">Reason:</label>
+                            <p>@SelectedRefund.RefundReason</p>
+                        </div>
+                        @if (!string.IsNullOrEmpty(SelectedRefund.AdminNotes))
+                        {
+                            <div class="col-12 mb-3">
+                                <label class="fw-bold">Admin Notes:</label>
+                                <p>@SelectedRefund.AdminNotes</p>
+                            </div>
+                        }
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    @* @if (SelectedRefund.RefundStatus == 1 )
+                    { *@
+                        <button type="button" class="btn btn-success" @onclick="() => ApproveRefund(SelectedRefund.Id)">
+                            <i class="fas fa-check me-2"></i>
+                            Approve
+                        </button>
+                        <button type="button" class="btn btn-danger" @onclick="() => RejectRefund(SelectedRefund.Id)">
+                            <i class="fas fa-times me-2"></i>
+                            Reject
+                        </button>
+                    @* } *@
+                    <button type="button" class="btn btn-secondary" @onclick="CloseRefundModal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
 
 <style>
     .nav-tabs .nav-link {
@@ -647,4 +427,15 @@
         .card:hover {
             box-shadow: 0 0.125rem 0.5rem rgba(0, 0, 0, 0.1);
         }
+
+    .table th {
+        font-weight: 600;
+        font-size: 0.875rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .modal.show {
+        display: block;
+    }
 </style>

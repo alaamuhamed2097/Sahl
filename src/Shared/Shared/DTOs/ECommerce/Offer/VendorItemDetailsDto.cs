@@ -8,7 +8,8 @@ namespace Shared.DTOs.ECommerce.Offer
     {
         // Offer basic fields
         public Guid VendorItemId { get; set; }
-        public DateTime CreatedDateUtc { get; set; }
+		public Guid VendorItemPricingId { get; set; }
+		public DateTime CreatedDateUtc { get; set; }
         public int? EstimatedDeliveryDays { get; set; }
         public int FulfillmentType { get; set; }
 		public OfferVisibilityScope VisibilityScope { get; set; }
