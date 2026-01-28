@@ -522,8 +522,8 @@ namespace Dashboard.Constants
             public const string Get = Base;
             public const string GetById = $"{Base}";
             public const string GetAll = $"{Base}/all";
-            public const string Create = $"{Base}/create";
-            public const string Update = $"{Base}/update";
+            public const string Create = $"{Base}/save";
+            public const string Update = $"{Base}/save";
             public const string Delete = $"{Base}";
         }
 

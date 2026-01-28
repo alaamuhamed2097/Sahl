@@ -18,7 +18,7 @@ namespace Api.Controllers.v1.Review.VendorReview
 	[ApiController]
 	[ApiVersion("1.0")]
 	[Route("api/v{version:apiVersion}/[controller]")]
-	[Authorize(Roles = $"{nameof(UserRole.Customer)},{nameof(UserRole.Admin)},{nameof(UserRole.Vendor)}")]
+	//[Authorize(Roles = $"{nameof(UserRole.Customer)},{nameof(UserRole.Admin)},{nameof(UserRole.Vendor)}")]
 	public class VendorReviewController : BaseController
 	{
 		private readonly IVendorReviewService _reviewService;

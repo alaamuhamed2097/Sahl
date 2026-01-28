@@ -18,10 +18,13 @@ namespace Dashboard.Pages.HomePageSlider
         private IBrowserFile? selectedImage;
         private string? previewImageUrl;
         protected const long MaxFileSize = 5 * 1024 * 1024; // 5MB
-        protected List<HomePageSliderDto> AllMainBanners { get; set; } = new();
+		private bool isImageProcessing { get; set; }
+		[Inject] protected IHomePageSliderService SliderService { get; set; } = null!;
+		protected List<HomePageSliderDto> AllMainBanners { get; set; } = new();
         protected HomePageSliderDto Model { get; set; } = new();
+		private string? oldImagePath;
 
-        [Parameter] public Guid Id { get; set; }
+		[Parameter] public Guid Id { get; set; }
 
         [Inject] private IJSRuntime JSRuntime { get; set; } = default!;
         [Inject] protected NavigationManager Navigation { get; set; } = null!;
@@ -102,69 +105,158 @@ namespace Dashboard.Pages.HomePageSlider
             //Model.StartDate >= todayUtc && Model.EndDate > Model.StartDate;
             return true;
         }
+		protected async Task Save()
+		{
+			if (isSaving || isImageProcessing) return;
 
-        protected async Task Save()
-        {
-            try
-            {
-                // Validate date range before saving
-                if (!IsValidDateRange())
-                {
-                    await JSRuntime.InvokeVoidAsync("swal",
-                        ValidationResources.Failed,
-                        //ValidationResources.InvalidDateRange,
-                        "error");
-                    return;
-                }
+			try
+			{
+				isSaving = true;
+				StateHasChanged();
 
-                // Validate image
-                if (string.IsNullOrEmpty(Model.ImageUrl))
-                {
-                    await JSRuntime.InvokeVoidAsync("swal",
-                        ValidationResources.Failed,
-                        ValidationResources.ImageRequired,
-                        "error");
-                    return;
-                }
+				// Validate required fields
+				if (string.IsNullOrWhiteSpace(Model.ImageUrl))
+				{
+					await JSRuntime.InvokeVoidAsync("swal",
+						ValidationResources.Failed,
+						ValidationResources.ImageRequired,
+						"error");
+					return;
+				}
 
-                isSaving = true;
-                StateHasChanged();
+				if (string.IsNullOrWhiteSpace(Model.TitleAr))
+				{
+					await JSRuntime.InvokeVoidAsync("swal",
+						ValidationResources.Failed,
+						"Title is required",
+						"error");
+					return;
+				}
 
-                var result = await MainBannerService.SaveAsync(Model);
+				// Validate and adjust display order
+				await ValidateAndAdjustDisplayOrder();
 
-                isSaving = false;
-                if (result.Success)
-                {
-                    await JSRuntime.InvokeVoidAsync("swal",
-                        ValidationResources.Done,
-                        NotifiAndAlertsResources.SavedSuccessfully,
-                        "success");
+				var result = await SliderService.SaveAsync(Model);
 
-                    await Task.Delay(1000);
-                    await CloseModal();
-                }
-                else
-                {
-                    await JSRuntime.InvokeVoidAsync("swal",
-                        ValidationResources.Failed,
-                        result.Message ?? NotifiAndAlertsResources.SaveFailed,
-                        "error");
-                }
-            }
-            catch (Exception ex)
-            {
-                await JSRuntime.InvokeVoidAsync("swal",
-                    ValidationResources.Error,
-                    ex.Message,
-                    "error");
-            }
-            finally
-            {
-                isSaving = false;
-            }
-        }
+				if (result.Success)
+				{
+					await JSRuntime.InvokeVoidAsync("swal",
+						ValidationResources.Done,
+						NotifiAndAlertsResources.SavedSuccessfully,
+						"success");
 
-        protected async Task Edit(Guid id)
+					await LoadAllSliders();
+
+					ResetModel();
+					previewImageUrl = null;
+					oldImagePath = null;
+					selectedImage = null;
+
+					StateHasChanged();
+				}
+				else
+				{
+					await JSRuntime.InvokeVoidAsync("swal",
+						ValidationResources.Failed,
+						result.Message ?? NotifiAndAlertsResources.SaveFailed,
+						"error");
+				}
+			}
+			catch (Exception ex)
+			{
+				await JSRuntime.InvokeVoidAsync("swal",
+					ValidationResources.Error,
+					ex.Message,
+					"error");
+			}
+			finally
+			{
+				isSaving = false;
+				await CloseModal();
+			}
+		}
+
+		//protected async Task Save()
+		//{
+		//    try
+		//    {
+		//        // Validate date range before saving
+		//        if (!IsValidDateRange())
+		//        {
+		//            await JSRuntime.InvokeVoidAsync("swal",
+		//                ValidationResources.Failed,
+		//                //ValidationResources.InvalidDateRange,
+		//                "error");
+		//            return;
+		//        }
+
+		//        // Validate image
+		//        if (string.IsNullOrEmpty(Model.ImageUrl))
+		//        {
+		//            await JSRuntime.InvokeVoidAsync("swal",
+		//                ValidationResources.Failed,
+		//                ValidationResources.ImageRequired,
+		//                "error");
+		//            return;
+		//        }
+
+		//        isSaving = true;
+		//        StateHasChanged();
+
+		//        var result = await MainBannerService.SaveAsync(Model);
+
+		//        isSaving = false;
+		//        if (result.Success)
+		//        {
+		//            await JSRuntime.InvokeVoidAsync("swal",
+		//                ValidationResources.Done,
+		//                NotifiAndAlertsResources.SavedSuccessfully,
+		//                "success");
+
+		//            await Task.Delay(1000);
+		//            await CloseModal();
+		//        }
+		//        else
+		//        {
+		//            await JSRuntime.InvokeVoidAsync("swal",
+		//                ValidationResources.Failed,
+		//                result.Message ?? NotifiAndAlertsResources.SaveFailed,
+		//                "error");
+		//        }
+		//    }
+		//    catch (Exception ex)
+		//    {
+		//        await JSRuntime.InvokeVoidAsync("swal",
+		//            ValidationResources.Error,
+		//            ex.Message,
+		//            "error");
+		//    }
+		//    finally
+		//    {
+		//        isSaving = false;
+		//    }
+		//}
+		protected async Task LoadAllSliders()
+		{
+			try
+			{
+				var result = await SliderService.GetAllAsync();
+				AllMainBanners = result.Data?.OrderBy(x => x.DisplayOrder).ToList() ?? new List<HomePageSliderDto>();
+				StateHasChanged(); // تحديث الواجهة
+			}
+			catch (Exception ex)
+			{
+				Console.WriteLine($"Error loading sliders: {ex.Message}");
+			}
+		}
+		private void ResetModel()
+		{
+			Model = new HomePageSliderDto
+			{
+				DisplayOrder = GetNextDisplayOrder(),
+			};
+		}
+		protected async Task Edit(Guid id)
         {
             try
             {
