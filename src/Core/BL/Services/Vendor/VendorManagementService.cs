@@ -373,7 +373,7 @@ public class VendorManagementService : BaseService<TbVendor, VendorDto>, IVendor
             var webpImage = _imageProcessingService.ConvertToWebP(resizedImage);
 
             // Upload the WebP image to the specified location
-            var imagePath = await _fileUploadService.UploadFileAsync(webpImage, "Images/IdAndPassports");
+            var imagePath = await _fileUploadService.UploadFileAsync(webpImage, "Images/Vendors");
 
             // Return the path of the uploaded image
             return imagePath;

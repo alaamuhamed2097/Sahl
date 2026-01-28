@@ -406,7 +406,7 @@ public class UserProfileService : IUserProfileService
             var webpImage = _imageProcessingService.ConvertToWebP(resizedImage);
 
             // Upload the WebP image to the specified location
-            var imagePath = await _fileUploadService.UploadFileAsync(webpImage, "Images/UserProfile");
+            var imagePath = await _fileUploadService.UploadFileAsync(webpImage, "Images/UsersProfile");
 
             // Return the path of the uploaded image
             return imagePath;

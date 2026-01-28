@@ -676,7 +676,7 @@ public class ItemService : BaseService<TbItem, ItemDto>, IItemService
             var webpImage = _imageProcessingService.ConvertToWebP(resizedImage);
 
             // Upload the WebP image to the specified location
-            var imagePath = await _fileUploadService.UploadFileAsync(webpImage, "Images");
+            var imagePath = await _fileUploadService.UploadFileAsync(webpImage, "Images/Items");
 
             // Return the path of the uploaded image
             return imagePath;
