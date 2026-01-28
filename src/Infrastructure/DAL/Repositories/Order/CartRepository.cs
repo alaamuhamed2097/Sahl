@@ -410,41 +410,45 @@ namespace DAL.Repositories.Order
             }
         }
 
-        /// <summary>
-        /// Get cart with all items and related data in single query
-        /// </summary>
-        public async Task<TbShoppingCart> GetCartWithItemsAsync(
-            string customerId,
-            CancellationToken cancellationToken = default)
-        {
-            try
-            {
-                var cart = await _dbContext.Set<TbShoppingCart>()
-                    .Include(c => c.Items.Where(i => !i.IsDeleted))
-                        .ThenInclude(i => i.Item)
-                    .Include(c => c.Items.Where(i => !i.IsDeleted))
-                        .ThenInclude(i => i.OfferCombinationPricing)
-                            .ThenInclude(ocp => ocp.Offer)
-                                .ThenInclude(o => o.Vendor)
-                    .AsSplitQuery()
-                    .AsNoTracking()
-                    .FirstOrDefaultAsync(c =>
-                        c.UserId == customerId && !c.IsDeleted,
-                        cancellationToken);
+		/// <summary>
+		/// Get cart with all items and related data in single query
+		/// </summary>
+		public async Task<TbShoppingCart> GetCartWithItemsAsync(
+		  string customerId,
+		  CancellationToken cancellationToken = default)
+		{
+			try
+			{
+				var cart = await _dbContext.Set<TbShoppingCart>()
+					.Include(c => c.Items.Where(i => !i.IsDeleted))
+						.ThenInclude(i => i.Item)
+							.ThenInclude(item => item.ItemAttributes)
+					.Include(c => c.Items.Where(i => !i.IsDeleted))
+						.ThenInclude(i => i.OfferCombinationPricing)
+							.ThenInclude(ocp => ocp.ItemCombination) 
+					.Include(c => c.Items.Where(i => !i.IsDeleted))
+						.ThenInclude(i => i.OfferCombinationPricing)
+							.ThenInclude(ocp => ocp.Offer)
+								.ThenInclude(o => o.Vendor)
+					.AsSplitQuery()
+					.AsNoTracking()
+					.FirstOrDefaultAsync(c =>
+						c.UserId == customerId && !c.IsDeleted,
+						cancellationToken);
 
-                return cart ?? new TbShoppingCart { Id = Guid.Empty };
-            }
-            catch (Exception ex)
-            {
-                _logger.Error(ex, $"Error getting cart with items for customer {customerId}");
-                throw new DataAccessException($"Failed to retrieve cart with items", ex, _logger);
-            }
-        }
+				return cart ?? new TbShoppingCart { Id = Guid.Empty };
+			}
+			catch (Exception ex)
+			{
+				_logger.Error(ex, $"Error getting cart with items for customer {customerId}");
+				throw new DataAccessException($"Failed to retrieve cart with items", ex, _logger);
+			}
+		}
 
-        /// <summary>
-        /// Merge carts (useful for guest to logged-in user conversion)
-        /// </summary>
-        public async Task<CartTransactionResult> MergeCartsAsync(
+		/// <summary>
+		/// Merge carts (useful for guest to logged-in user conversion)
+		/// </summary>
+		public async Task<CartTransactionResult> MergeCartsAsync(
             string sourceCustomerId,
             string targetCustomerId,
             CancellationToken cancellationToken = default)
