@@ -1,3 +1,4 @@
+using Dashboard.Constants;
 using Dashboard.Contracts.Brand;
 using Microsoft.AspNetCore.Components;
 using Resources;
@@ -14,7 +15,7 @@ namespace Dashboard.Pages.Catalog.Brands
         protected override string EntityName => BrandResources.BrandManagement;
         protected override string AddRoute => $"/brand";
         protected override string EditRouteTemplate => "/brand/{id}";
-        protected override string SearchEndpoint => "api/Brand/search";
+        protected override string SearchEndpoint => ApiEndpoints.Brand.Search;
 
         // Export columns configuration
         protected override Dictionary<string, Func<BrandDto, object>> ExportColumns => new()
@@ -23,7 +24,6 @@ namespace Dashboard.Pages.Catalog.Brands
             { $"{FormResources.EnglishName}", item => item.NameEn },
             { $"{FormResources.ArabicName}", item => item.NameAr },
             { BrandResources.WebsiteUrl, item => item.WebsiteUrl ?? "-" },
-            { BrandResources.IsFavorite, item => item.IsFavorite ? GeneralResources.Yes : GeneralResources.No },
             { BrandResources.DisplayOrder, item => item.DisplayOrder }
         };
 
@@ -50,28 +50,6 @@ namespace Dashboard.Pages.Catalog.Brands
             return await Task.FromResult(item.Id.ToString());
         }
 
-        // Custom methods specific to brands
-        protected async Task ToggleFavorite(BrandDto brand)
-        {
-            try
-            {
-                var result = await BrandService.MarkAsFavoriteAsync(brand.Id);
-                if (result.Success)
-                {
-                    await ShowSuccessNotification(BrandResources.FavoriteStatusUpdatedSuccessfully);
-                    await Search(); // Refresh the list
-                }
-                else
-                {
-                    await ShowErrorNotification(ValidationResources.Error, result.Message ?? BrandResources.FailedToUpdateFavoriteStatus);
-                }
-            }
-            catch (Exception)
-            {
-                await ShowErrorNotification(ValidationResources.Error, BrandResources.ErrorUpdatingFavoriteStatus);
-            }
-        }
-
         protected async Task OnFilterChanged(ChangeEventArgs e)
         {
             var filterValue = e.Value?.ToString();
@@ -83,7 +61,6 @@ namespace Dashboard.Pages.Catalog.Brands
             {
                 items = filterValue switch
                 {
-                    "favorites" => items.Where(b => b.IsFavorite),
                     "withWebsite" => items.Where(b => !string.IsNullOrEmpty(b.WebsiteUrl)),
                     "recent" => items.Where(b => b.CreatedDateUtc >= DateTime.UtcNow.AddDays(-30)),
                     _ => items

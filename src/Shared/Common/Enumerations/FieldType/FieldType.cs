@@ -11,5 +11,6 @@
         MultiSelectList = 7,
         Email = 8,
         PhoneNumber = 9,
+        Color = 10,
     }
 }

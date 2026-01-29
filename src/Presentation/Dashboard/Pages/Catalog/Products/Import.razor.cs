@@ -63,7 +63,7 @@ namespace Dashboard.Pages.Catalog.Products
                 var brandsResult = await BrandService.GetAllAsync();
                 if (brandsResult?.Success == true)
                 {
-                    brands = brandsResult.Data?.ToDictionary(b => b.Id, b => b.Title) ?? new();
+                    brands = brandsResult.Data?.ToDictionary(b => b.Id, b => b.Name) ?? new();
                 }
 
                 // Load units

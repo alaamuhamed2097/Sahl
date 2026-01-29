@@ -70,6 +70,7 @@ namespace DAL.ApplicationContext
                 await SeedLocationAsync(context);
                 await SeedUserAsync(userManager);
                 await SeedSettingAsync(context);
+                await WithdrawalMethodSeedData.SeedWithdrawalMethodsAsync(context); // Add this line
 
                 Console.WriteLine("[SeedDataAsync] Completed successfully!");
             }
@@ -246,7 +247,7 @@ namespace DAL.ApplicationContext
                     var result = await userManager.CreateAsync(VendorUser, "Vendor123456");
                     if (result.Succeeded)
                     {
-                        await userManager.AddToRoleAsync(VendorUser,nameof(UserType.Vendor));
+                        await userManager.AddToRoleAsync(VendorUser, nameof(UserType.Vendor));
                         Console.WriteLine("[SeedUserAsync] Created Vendor user");
                         var vendorEntity = new TbVendor()
                         {
@@ -263,10 +264,10 @@ namespace DAL.ApplicationContext
                             IdentificationType = IdentificationType.NationalId,
                             IsRealEstateRegistered = false,
                             PhoneCode = "+20",
-                            PhoneNumber ="111111111",
+                            PhoneNumber = "111111111",
                             PostalCode = "5345455",
                             Status = VendorStatus.Approved,
-                            CreatedBy =Guid.Empty,
+                            CreatedBy = Guid.Empty,
                             CreatedDateUtc = DateTime.UtcNow,
                             IsDeleted = false,
                             CityId = seedVendorCityId

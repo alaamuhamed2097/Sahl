@@ -34,22 +34,6 @@
                     </div>
                 </div>
 
-                <!-- Title Fields -->
-                <div class="row">
-                    <div class="col-md-6 mb-3">
-                        <label class="form-label">@BrandResources.TitleAr:</label>
-                        <InputText class="form-control" @bind-Value="Model.TitleAr"
-                                   placeholder="@String.Format(FormResources.Placeholder, BrandResources.TitleAr)" />
-                        <ValidationMessage For="@(() => Model.TitleAr)" />
-                    </div>
-                    <div class="col-md-6 mb-3">
-                        <label class="form-label">@BrandResources.TitleEn:</label>
-                        <InputText class="form-control" @bind-Value="Model.TitleEn"
-                                   placeholder="@String.Format(FormResources.Placeholder, BrandResources.TitleEn)" />
-                        <ValidationMessage For="@(() => Model.TitleEn)" />
-                    </div>
-                </div>
-
                 <!-- Description Fields -->
                 <div class="row">
                     <div class="col-md-6 mb-3">
@@ -78,12 +62,6 @@
                         <label class="form-label">@BrandResources.DisplayOrder:</label>
                         <InputNumber class="form-control" @bind-Value="Model.DisplayOrder" />
                         <ValidationMessage For="@(() => Model.DisplayOrder)" />
-                    </div>
-                    <div class="col-md-3 mb-3">
-                        <div class="form-check mt-4">
-                            <InputCheckbox class="form-check-input" @bind-Value="Model.IsFavorite" />
-                            <label class="form-check-label">@BrandResources.MarkAsFavorite</label>
-                        </div>
                     </div>
                 </div>
 

@@ -143,6 +143,12 @@ namespace Dashboard.Pages.Catalog.Products.Components
                             Console.WriteLine($"✅ Loaded Date - {categoryAttr.Title}: {dateValue:yyyy-MM-dd}");
                         }
                     }
+                    else if (categoryAttr.FieldType == FieldType.Color)
+                    {
+                        // Color values are stored as hex strings (e.g., #FF5733)
+                        _nonPricingAttributeValues[itemAttr.AttributeId] = itemAttr.Value;
+                        Console.WriteLine($"✅ Loaded Color - {categoryAttr.Title}: {itemAttr.Value}");
+                    }
                     else
                     {
                         // Text field
@@ -339,6 +345,11 @@ namespace Dashboard.Pages.Catalog.Products.Components
                 {
                     _nonPricingAttributeValues[attr.AttributeId] = _nonPricingDateValues[attr.AttributeId]?.ToString("yyyy-MM-dd") ?? "";
                     Console.WriteLine($"📦 Date - {attr.Title}: {_nonPricingAttributeValues[attr.AttributeId]}");
+                }
+                else if (attr.FieldType == FieldType.Color)
+                {
+                    // Color values are already in _nonPricingAttributeValues as hex strings
+                    Console.WriteLine($"📦 Color - {attr.Title}: {_nonPricingAttributeValues[attr.AttributeId]}");
                 }
                 else
                 {

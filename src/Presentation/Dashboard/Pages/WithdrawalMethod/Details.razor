@@ -9,9 +9,9 @@
 
 <div class="container-fluid p-0">
 	<div class="card shadow-sm border-0">
-		<div class="card-header d-flex justify-content-between align-items-center">
-			<h4 class="modal-title" id="countryModalTitle">
-				@(Model.Id == Guid.Empty ? ActionsResources.Add : ActionsResources.Edit)
+		<div class="card-header d-flex justify-content-between bg-primary align-items-center">
+			<h4 class="modal-title text-white">
+				@(Model.Id == Guid.Empty ? $"➕ {ActionsResources.Add}" : $"✏️ {ActionsResources.Edit}") @GeneralResources.WithdrawalMethod
 			</h4>
 		</div>
 

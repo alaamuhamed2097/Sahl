@@ -83,12 +83,15 @@ public class BrandService : BaseService<TbBrand, BrandDto>, IBrandService
         Expression<Func<TbBrand, bool>> filter = x => !x.IsDeleted;
 
         // Search term filter
-        var searchTerm = criteriaModel.SearchTerm?.Trim().ToLower();
+        var searchTerm = criteriaModel.SearchTerm?.Trim();
         if (!string.IsNullOrWhiteSpace(searchTerm))
         {
+            // SQL Server is usually case-insensitive by default. 
+            // Using .Contains() directly allows for SARGable queries if the database collation is Case-Insensitive.
+            // Using .ToLower() on the column expression prevents index usage.
             filter = filter.And(x =>
-                x.NameEn != null && x.NameEn.ToLower().Contains(searchTerm) ||
-                x.NameAr != null && x.NameAr.ToLower().Contains(searchTerm)
+                x.NameEn.Contains(searchTerm) ||
+                x.NameAr.Contains(searchTerm)
             );
         }
 
