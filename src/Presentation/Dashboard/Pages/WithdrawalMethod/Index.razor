@@ -4,12 +4,15 @@
 @attribute [Authorize(Roles = nameof(UserRole.Admin))]
 
 <div class="container-fluid p-0">
-    <div class="card shadow-sm border-0">
-        <div class="card-header d-flex justify-content-between align-items-center">
-            <h4 class="mb-3">@GeneralResources.WithdrawalMethods</h4>
-            <button class="btn btn-success" @onclick="Add">
-                <i class="feather icon-plus-circle me-2"></i>
-                @ActionsResources.Add
+	<div class="card shadow-sm border-0">
+		<div class="card-header bg-primary text-white py-3 d-flex justify-content-between align-items-center">
+            <h5 class="mb-0 fw-semibold text-white">💳 @GeneralResources.WithdrawalMethods</h5>
+		</div>
+         
+        <div class="d-flex mt-4 ms-3 me-3 @(ResourceManager.CurrentLanguage == Language.Arabic ? "justify-content-end" : "justify-content-start") gap-2">
+            <button class="btn btn-success  px-3 shadow-sm" @onclick="Add">
+                <i class="feather icon-plus-circle "></i>
+                <span class="fw-bold">@ActionsResources.Add</span>
             </button>
         </div>
 

@@ -23,7 +23,7 @@ namespace Shared.DTOs.Catalog.Category
         public string Title
         => ResourceManager.CurrentLanguage == Language.Arabic ? TitleAr : TitleEn;
 
-        [Range((int)FieldType.Text, (int)FieldType.MultiSelectList, ErrorMessageResourceName = "FieldRequired", ErrorMessageResourceType = typeof(ValidationResources))]
+        [Range((int)FieldType.Text, (int)FieldType.Color, ErrorMessageResourceName = "FieldRequired", ErrorMessageResourceType = typeof(ValidationResources))]
         public FieldType FieldType { get; set; }
 
         //[Required(ErrorMessageResourceName = "FieldRequired", ErrorMessageResourceType = typeof(ValidationResources))]

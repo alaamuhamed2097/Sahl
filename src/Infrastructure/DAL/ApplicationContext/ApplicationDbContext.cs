@@ -1,5 +1,4 @@
 ﻿using Domains.Entities.Base;
-using Domains.Entities.BrandManagement;
 using Domains.Entities.BuyBox;
 using Domains.Entities.Campaign;
 using Domains.Entities.Catalog.Attribute;
@@ -194,11 +193,6 @@ namespace DAL.ApplicationContext
         public DbSet<TbProductVisibilityRule> TbProductVisibilityRules { get; set; }
         public DbSet<TbSuppressionReason> TbSuppressionReasons { get; set; }
         public DbSet<TbVisibilityLog> TbVisibilityLogs { get; set; }
-
-        // Brand Management Advanced
-        public DbSet<TbBrandRegistrationRequest> TbBrandRegistrationRequests { get; set; }
-        public DbSet<TbBrandDocument> TbBrandDocuments { get; set; }
-        public DbSet<TbAuthorizedDistributor> TbAuthorizedDistributors { get; set; }
 
         // Offer Management
         public DbSet<TbOffer> TbOffers { get; set; }

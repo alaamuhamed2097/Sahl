@@ -32,6 +32,9 @@ namespace DAL.Configurations
 
             entity.HasIndex(e => e.DisplayOrder)
                .IsUnique(false);
+
+            entity.HasIndex(e => e.NameEn);
+            entity.HasIndex(e => e.NameAr);
         }
     }
 }

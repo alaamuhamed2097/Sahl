@@ -20,17 +20,6 @@ namespace Shared.DTOs.Brand
         [JsonIgnore]
         public string Name => ResourceManager.CurrentLanguage == Language.Arabic ? NameAr : NameEn;
 
-
-        [StringLength(100, ErrorMessageResourceName = "OutOfMaxLength", ErrorMessageResourceType = typeof(ValidationResources))]
-        public string? TitleEn { get; set; }
-
-        [StringLength(100, ErrorMessageResourceName = "OutOfMaxLength", ErrorMessageResourceType = typeof(ValidationResources))]
-        public string? TitleAr { get; set; }
-
-        [JsonIgnore]
-        public string? Title => ResourceManager.CurrentLanguage == Language.Arabic ? TitleAr : TitleEn;
-
-
         [StringLength(100, ErrorMessageResourceName = "OutOfMaxLength", ErrorMessageResourceType = typeof(ValidationResources))]
         public string? DescriptionEn { get; set; }
 
@@ -39,8 +28,6 @@ namespace Shared.DTOs.Brand
 
         [JsonIgnore]
         public string? Description => ResourceManager.CurrentLanguage == Language.Arabic ? DescriptionAr : DescriptionEn;
-
-        public bool IsFavorite { get; set; } = false;
 
         public int DisplayOrder { get; set; } = 0;
 

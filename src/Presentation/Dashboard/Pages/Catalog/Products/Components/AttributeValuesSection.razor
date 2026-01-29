@@ -103,9 +103,27 @@
                                             <option value="">@FormResources.Select</option>
                                             @foreach (var option in attribute.AttributeOptions.OrderBy(o => o.DisplayOrder))
                                             {
-                                                <option value="@option.Id.ToString()">@option.Title</option>
+                                                @if (attribute.FieldType == FieldType.Color && !string.IsNullOrEmpty(option.Value))
+                                                {
+                                                    <option value="@option.Id.ToString()">⬤ @option.Value</option>
+                                                }
+                                                else
+                                                {
+                                                    <option value="@option.Id.ToString()">@option.Title</option>
+                                                }
                                             }
                                         </select>
+                                        @if (attribute.FieldType == FieldType.Color && !string.IsNullOrEmpty(_nonPricingAttributeValues[attribute.AttributeId]))
+                                        {
+                                            var selectedOption = attribute.AttributeOptions.FirstOrDefault(o => o.Id.ToString() == _nonPricingAttributeValues[attribute.AttributeId]);
+                                            @if (selectedOption != null && !string.IsNullOrEmpty(selectedOption.Value))
+                                            {
+                                                <div class="mt-2 d-flex align-items-center gap-2">
+                                                    <div style="width: 40px; height: 40px; border-radius: 6px; border: 2px solid #dee2e6; background-color: @selectedOption.Value;"></div>
+                                                    <span class="text-muted">@selectedOption.Value</span>
+                                                </div>
+                                            }
+                                        }
                                     </div>
                                 }
                             }
@@ -150,6 +168,26 @@
                                         <label class="form-check-label" for="checkbox_@(attribute.AttributeId)">
                                             Check this option
                                         </label>
+                                    </div>
+                                }
+                                else if (attribute.FieldType == FieldType.Color)
+                                {
+                                    <div class="d-flex align-items-center gap-2">
+                                        <input type="color"
+                                               class="form-control form-control-color"
+                                               style="width: 80px; height: 40px;"
+                                               id="color_@(attribute.AttributeId)"
+                                               @bind="_nonPricingAttributeValues[attribute.AttributeId]"
+                                               @bind:event="oninput"
+                                               @bind:after="NotifyValuesChanged" />
+                                        <input type="text"
+                                               class="form-control"
+                                               placeholder="#000000"
+                                               @bind="_nonPricingAttributeValues[attribute.AttributeId]"
+                                               @bind:event="oninput"
+                                               @bind:after="NotifyValuesChanged"
+                                               maxlength="7"
+                                               pattern="^#[0-9A-Fa-f]{6}$" />
                                     </div>
                                 }
                                 else

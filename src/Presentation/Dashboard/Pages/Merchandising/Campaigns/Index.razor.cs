@@ -1,4 +1,5 @@
 ﻿using Common.Filters;
+using Dashboard.Constants;
 using Dashboard.Contracts.Campaign;
 using Microsoft.AspNetCore.Components;
 using Shared.DTOs.Campaign;
@@ -17,7 +18,7 @@ namespace Dashboard.Pages.Merchandising.Campaigns
         protected override string EntityName { get; } = "Campaign";
         protected override string AddRoute { get; } = "/campaigns/new";
         protected override string EditRouteTemplate { get; } = "/campaigns/{id}";
-        protected override string SearchEndpoint { get; } = "api/v1/campaign/search";
+        protected override string SearchEndpoint { get; } = ApiEndpoints.Campaign.Search;
 
         protected override Dictionary<string, Func<CampaignDto, object>> ExportColumns { get; } =
             new()

@@ -5,18 +5,19 @@ namespace Domains.Entities.Catalog.Attribute
 {
     public class TbAttributeOption : BaseEntity
     {
-        [Required]
         [MaxLength(100)]
-        public string TitleAr { get; set; } = null!;
+        public string? TitleAr { get; set; }
 
-        [Required]
         [MaxLength(100)]
-        public string TitleEn { get; set; } = null!;
+        public string? TitleEn { get; set; }
 
         [Required]
         [Range(1, 999, ErrorMessage = "DisplayOrder must be between 1 and 999.")]
         [Column("DisplayOrder")]
         public int DisplayOrder { get; set; }
+
+        [MaxLength(200)]
+        public string? Value { get; set; }
 
         [Required]
         public Guid AttributeId { get; set; }

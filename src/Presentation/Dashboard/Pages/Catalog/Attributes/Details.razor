@@ -50,6 +50,7 @@
                                             FieldType.CheckBox => ECommerceResources.CheckBox,
                                             FieldType.List => ECommerceResources.List,
                                             FieldType.MultiSelectList => ECommerceResources.MultiSelectList,
+                                            FieldType.Color => "Color",
                                             _ => type.ToString()
                                         })
                                 </option>
@@ -74,7 +75,7 @@
                 </div>
 
                 <!-- Attributes options section -->
-                @if (Model.FieldType == FieldType.MultiSelectList || Model.FieldType == FieldType.List && Model.AttributeOptions != null)
+                @if ((Model.FieldType == FieldType.MultiSelectList || Model.FieldType == FieldType.List || Model.FieldType == FieldType.Color) && Model.AttributeOptions != null)
                 {
                     <div class="row mt-4">
                         <div class="col-12">
@@ -113,16 +114,36 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                            <!-- Arabic Title -->
-                                            <div class="col-md-4">
-                                                <label class="form-label small text-muted mb-1">@FormResources.ArabicTitle</label>
-                                                <input type="text" class="form-control" @bind-value="con.TitleAr" />
-                                            </div>
-                                            <!-- English Title -->
-                                            <div class="col-md-4">
-                                                <label class="form-label small text-muted mb-1">@FormResources.EnglishTitle</label>
-                                                <input type="text" class="form-control" @bind-value="con.TitleEn" />
-                                            </div>
+                                            @if (Model.FieldType == FieldType.Color)
+                                            {
+                                                <!-- Color Preview -->
+                                                <div class="col-md-2 d-flex justify-content-center align-items-center mt-3">
+                                                    <div style="width: 50px; height: 50px; border-radius: 8px; border: 2px solid #dee2e6; background-color: @(string.IsNullOrEmpty(con.Value) ? "#ffffff" : con.Value);"></div>
+                                                </div>
+                                                <!-- Color Picker -->
+                                                <div class="col-md-3">
+                                                    <label class="form-label small text-muted mb-1">Color Picker</label>
+                                                    <input type="color" class="form-control form-control-color w-100" @bind-value="con.Value" style="height: 50px;" />
+                                                </div>
+                                                <!-- Hex Code Input -->
+                                                <div class="col-md-4">
+                                                    <label class="form-label small text-muted mb-1">Hex Code</label>
+                                                    <input type="text" class="form-control" @bind-value="con.Value" placeholder="#000000" maxlength="7" pattern="^#[0-9A-Fa-f]{6}$" />
+                                                </div>
+                                            }
+                                            else
+                                            {
+                                                <!-- Arabic Title -->
+                                                <div class="col-md-4">
+                                                    <label class="form-label small text-muted mb-1">@FormResources.ArabicTitle</label>
+                                                    <input type="text" class="form-control" @bind-value="con.TitleAr" />
+                                                </div>
+                                                <!-- English Title -->
+                                                <div class="col-md-4">
+                                                    <label class="form-label small text-muted mb-1">@FormResources.EnglishTitle</label>
+                                                    <input type="text" class="form-control" @bind-value="con.TitleEn" />
+                                                </div>
+                                            }
                                             <!-- Delete Button -->
                                             <div class="col-md-2 d-flex justify-content-center align-content-center me-4 mt-4">
                                                 <button type="button" class="btn btn-danger btn-sm mt-3 " title="@ActionsResources.Delete" @onclick="() => RemoveOption(index)">
