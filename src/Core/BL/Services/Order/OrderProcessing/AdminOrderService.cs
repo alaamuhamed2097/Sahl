@@ -408,24 +408,22 @@ public class AdminOrderService : IAdminOrderService
             .FirstOrDefault()?.ShipmentStatus ?? Common.Enumerations.Shipping.ShipmentStatus.PendingProcessing;
     }
 
+    /// <summary>
+    /// Admin can only manually change order status: Processing→Shipped and Shipped→Delivered.
+    /// Confirmed, Processing (as target), and Cancelled are set by system (payment/shipments).
+    /// </summary>
     private bool IsValidStatusTransition(OrderProgressStatus current, OrderProgressStatus target)
     {
         if (current == target) return true;
 
-        var validTransitions = new Dictionary<OrderProgressStatus, List<OrderProgressStatus>>
+        // Only allow manual admin transitions: Processing → Shipped, Shipped → Delivered
+        var allowedManualTransitions = new Dictionary<OrderProgressStatus, List<OrderProgressStatus>>
         {
-            [OrderProgressStatus.Pending] = new() { OrderProgressStatus.Confirmed, OrderProgressStatus.Cancelled },
-            [OrderProgressStatus.Confirmed] = new() { OrderProgressStatus.Processing, OrderProgressStatus.Cancelled },
-            [OrderProgressStatus.Processing] = new() { OrderProgressStatus.Shipped, OrderProgressStatus.Cancelled },
-            [OrderProgressStatus.Shipped] = new() { OrderProgressStatus.Delivered, OrderProgressStatus.Returned },
-            [OrderProgressStatus.Delivered] = new() { OrderProgressStatus.Completed, OrderProgressStatus.Returned },
-            [OrderProgressStatus.Completed] = new() { OrderProgressStatus.Returned },
-            [OrderProgressStatus.Cancelled] = new(),
-            [OrderProgressStatus.Returned] = new() { OrderProgressStatus.Refunded },
-            [OrderProgressStatus.Refunded] = new()
+            [OrderProgressStatus.Processing] = new() { OrderProgressStatus.Shipped },
+            [OrderProgressStatus.Shipped] = new() { OrderProgressStatus.Delivered }
         };
 
-        return validTransitions.ContainsKey(current) &&
-               validTransitions[current].Contains(target);
+        return allowedManualTransitions.ContainsKey(current) &&
+               allowedManualTransitions[current].Contains(target);
     }
 }

@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using BL.Contracts.Service.Merchandising;
 using Common.Enumerations.Merchandising;
 using DAL.Contracts.Repositories.Merchandising;
@@ -392,6 +392,36 @@ public class AdminBlockService : IAdminBlockService
                 if (!block.PersonalizationSource.HasValue)
                 {
                     errors.Add("Personalization source is required for Personalized blocks");
+                }
+                break;
+
+            case HomepageBlockType.ManualItems:
+            case HomepageBlockType.ManualCategories:
+                int selectionCount = block.Type == HomepageBlockType.ManualItems
+                    ? (block.BlockItems?.Count ?? 0)
+                    : (block.BlockCategories?.Count ?? 0);
+
+                switch (block.Layout)
+                {
+                    case BlockLayout.Featured:
+                    case BlockLayout.FullWidth:
+                        if (selectionCount != 1)
+                        {
+                            errors.Add("For Featured Showcase or Full-Width Banner, exactly one product or category must be selected.");
+                        }
+                        break;
+                    case BlockLayout.TwoRows:
+                        if (selectionCount < 1 || selectionCount > 2)
+                        {
+                            errors.Add("For Two-Row Grid, between 1 and 2 products or categories must be selected.");
+                        }
+                        break;
+                    case BlockLayout.Compact:
+                        if (selectionCount < 1 || selectionCount > 4)
+                        {
+                            errors.Add("For Compact Grid, between 1 and 4 products or categories must be selected.");
+                        }
+                        break;
                 }
                 break;
         }

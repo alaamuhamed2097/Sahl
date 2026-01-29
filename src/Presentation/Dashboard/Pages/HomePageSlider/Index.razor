@@ -1,8 +1,9 @@
-﻿@page "/HomePageSlider"
+@page "/HomePageSlider"
 @* @page "/HomePageSlider/Add" *@
 @* @page "/HomePageSlider/Edit/{Id:guid}" *@
 
 @using Shared.DTOs.HomeSlider
+@using Resources
 @inherits BaseListPage<HomePageSliderDto>
 
 <PageTitle>@GeneralResources.HomePageSlider</PageTitle>
@@ -85,18 +86,24 @@
                         <table id="slider-table" class="table table-striped table-hover mb-0">
                             <thead class="bg-light">
                                 <tr>
+                                    <th class="text-center align-middle" style="width: 80px;">@MerchandisingResources.Order</th>
                                     <th class="text-center align-middle" style="width: 150px;">@ECommerceResources.SliderImage</th>
                                     <th class="text-center align-middle">@ECommerceResources.SliderTitle</th>
                                     <th class="text-center align-middle" style="width: 120px;">@ECommerceResources.DisplayOrder</th>
-                                    <th class="text-center align-middle" style="width: 150px;">@ActionsResources.Actions</th>
+                                    <th class="text-center align-middle" style="width: 220px;">@ActionsResources.Actions</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 @if (items != null && items.Any())
                                 {
-                                    @foreach (var item in items.OrderBy(b => b.DisplayOrder))
+                                    var orderedSliders = items.OrderBy(b => b.DisplayOrder).ToList();
+                                    @for (var idx = 0; idx < orderedSliders.Count; idx++)
                                     {
+                                        var item = orderedSliders[idx];
                                         <tr>
+                                            <td class="text-center align-middle">
+                                                <span class="badge bg-secondary">@(idx + 1)</span>
+                                            </td>
                                             <td class="text-center align-middle">
                                                 <img src="@($"{baseUrl}/{item.ImageUrl}")"
                                                      class="rounded shadow-sm"
@@ -112,6 +119,18 @@
                                                 <span class="badge bg-info fs-6">@item.DisplayOrder</span>
                                             </td>
                                             <td class="text-center align-middle">
+                                                <button class="btn btn-warning btn-sm mx-1"
+                                                        title="@MerchandisingResources.MoveUp"
+                                                        @onclick='async () => await MoveSliderUp(item)'
+                                                        disabled="@(isSaving || isMoving)">
+                                                    <i class="feather icon-arrow-up m-0"></i>
+                                                </button>
+                                                <button class="btn btn-warning btn-sm mx-1"
+                                                        title="@MerchandisingResources.MoveDown"
+                                                        @onclick='async () => await MoveSliderDown(item)'
+                                                        disabled="@(isSaving || isMoving)">
+                                                    <i class="feather icon-arrow-down m-0"></i>
+                                                </button>
                                                 <button class="btn btn-primary btn-sm mx-1"
                                                         title="@ActionsResources.Edit"
                                                         @onclick="() => Edit(item.Id)"
@@ -131,7 +150,7 @@
                                 else
                                 {
                                     <tr>
-                                        <td colspan="4" class="text-center py-5">
+                                        <td colspan="5" class="text-center py-5">
                                             <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
                                             <p class="text-muted">@NotifiAndAlertsResources.NoDataFound</p>
                                         </td>
@@ -284,16 +303,6 @@
                             <label class="form-label fw-semibold">@FormResources.Title *</label>
                             <InputText @bind-Value="Model.TitleAr" class="form-control" placeholder="العنوان بالعربية" />
                             <ValidationMessage For="@(() => Model.TitleAr)" />
-                        </div>
-
-                        <!-- Display Order -->
-                        <div class="col-md-6">
-                            <label class="form-label fw-semibold">@ECommerceResources.DisplayOrder *</label>
-                            <InputNumber @bind-Value="Model.DisplayOrder"
-                                         @bind-Value:after="OnDisplayOrderChanged"
-                                         class="form-control"
-                                         min="1" />
-                            <small class="text-muted">Current max order: @(AllSliders.Any() ? AllSliders.Max(x => x.DisplayOrder) : 0)</small>
                         </div>
 
                         <!-- Buttons -->

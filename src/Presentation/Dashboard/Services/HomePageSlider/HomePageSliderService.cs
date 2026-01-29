@@ -1,4 +1,4 @@
-﻿using Dashboard.Constants;
+using Dashboard.Constants;
 using Dashboard.Contracts.General;
 using Dashboard.Contracts.HomePageSlider;
 using Resources;
@@ -97,6 +97,25 @@ namespace Dashboard.Services.HomePageSlider
 				};
 			}
 		}
-	}
 
+		/// <summary>
+		/// Update slider display order.
+		/// </summary>
+		public async Task<ResponseModel<bool>> UpdateDisplayOrderAsync(Guid sliderId, int newOrder)
+		{
+			try
+			{
+				var request = new { newOrder };
+				return await _apiService.PutAsync<object, bool>(ApiEndpoints.HomePageSlider.UpdateDisplayOrder(sliderId), request);
+			}
+			catch (Exception ex)
+			{
+				return new ResponseModel<bool>
+				{
+					Success = false,
+					Message = ex.Message
+				};
+			}
+		}
+	}
 }

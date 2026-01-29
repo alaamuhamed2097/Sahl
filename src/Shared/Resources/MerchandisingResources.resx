@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!-- 
     Microsoft ResX Schema 
@@ -470,6 +470,15 @@
   </data>
   <data name="ErrorSavingBlock" xml:space="preserve">
     <value>حدث خطأ أثناء حفظ البلوك</value>
+  </data>
+  <data name="LayoutValidationFeaturedFullWidth" xml:space="preserve">
+    <value>لعرض الواجهة المميز أو البانر بعرض كامل، يجب اختيار منتج أو فئة واحد فقط.</value>
+  </data>
+  <data name="LayoutValidationTwoRowGrid" xml:space="preserve">
+    <value>لشبكة الصفين، يجب اختيار بين 1 و 2 منتج أو فئة.</value>
+  </data>
+  <data name="LayoutValidationCompactGrid" xml:space="preserve">
+    <value>لشبكة المضغوطة، يجب اختيار بين 1 و 4 منتج أو فئة.</value>
   </data>
   <data name="SelectType" xml:space="preserve">
     <value>اختر النوع</value>

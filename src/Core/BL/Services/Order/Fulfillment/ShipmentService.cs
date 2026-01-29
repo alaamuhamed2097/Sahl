@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using BL.Contracts.Service.Order.Fulfillment;
 using Common.Enumerations.Fulfillment;
 using Common.Enumerations.Payment;
@@ -292,6 +292,13 @@ public class ShipmentService : IShipmentService
             }
 
             var oldStatus = shipment.ShipmentStatus;
+            if (!IsValidShipmentStatusTransition(oldStatus, status))
+            {
+                throw new InvalidOperationException(
+                    $"Invalid shipment status transition from {oldStatus} to {status}. " +
+                    "Workflow: Pending/Preparing → PickedUpByCarrier → InTransitToCustomer → DeliveredToCustomer.");
+            }
+
             shipment.ShipmentStatus = status;
 
             // Update specific fields based on status
@@ -333,11 +340,8 @@ public class ShipmentService : IShipmentService
                 status
             );
 
-            // Check if all shipments for this order are delivered
-            if (status == ShipmentStatus.DeliveredToCustomer)
-            {
-                await CheckOrderCompletionAsync(shipment.OrderId);
-            }
+            // Sync order status with shipments after any shipment status change
+            await CheckOrderCompletionAsync(shipment.OrderId);
 
             return _mapper.Map<ShipmentDto>(shipment);
         }
@@ -698,6 +702,32 @@ public class ShipmentService : IShipmentService
             );
             throw;
         }
+    }
+
+    /// <summary>
+    /// Shipment workflow starts from PickedUpByCarrier: Pending/Preparing jump to PickedUpByCarrier,
+    /// then PickedUpByCarrier → InTransitToCustomer → DeliveredToCustomer (or DeliveryAttemptFailed / Cancelled).
+    /// </summary>
+    private static bool IsValidShipmentStatusTransition(ShipmentStatus current, ShipmentStatus target)
+    {
+        if (current == target) return true;
+
+        var allowedTransitions = new Dictionary<ShipmentStatus, List<ShipmentStatus>>
+        {
+            [ShipmentStatus.PendingProcessing] = new() { ShipmentStatus.PickedUpByCarrier },
+            [ShipmentStatus.PreparingForShipment] = new() { ShipmentStatus.PickedUpByCarrier },
+            [ShipmentStatus.PickedUpByCarrier] = new() { ShipmentStatus.InTransitToCustomer },
+            [ShipmentStatus.InTransitToCustomer] = new()
+            {
+                ShipmentStatus.DeliveredToCustomer,
+                ShipmentStatus.DeliveryAttemptFailed,
+                ShipmentStatus.CancelledByMarketplace
+            },
+            [ShipmentStatus.DeliveryAttemptFailed] = new() { ShipmentStatus.InTransitToCustomer }
+            // Terminal: DeliveredToCustomer, ReturnedToSender, CancelledByCustomer, CancelledByMarketplace - no transitions
+        };
+
+        return allowedTransitions.ContainsKey(current) && allowedTransitions[current].Contains(target);
     }
 
     /// <summary>

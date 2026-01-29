@@ -113,6 +113,12 @@ namespace Dashboard.Pages.Merchandising.HomeBlocks
 
         protected async Task HandleSubmit()
         {
+            if (!ValidateSelectionCountByLayout(out var layoutError))
+            {
+                await NotificationService.ShowErrorAsync(layoutError!);
+                return;
+            }
+
             IsSaving = true;
 
             try
@@ -152,6 +158,53 @@ namespace Dashboard.Pages.Merchandising.HomeBlocks
             {
                 IsSaving = false;
             }
+        }
+
+        /// <summary>
+        /// Validates that the number of selected items/categories matches the layout requirements.
+        /// Featured/FullWidth: exactly 1; Two-Row Grid: 1–2; Compact Grid: 1–4.
+        /// </summary>
+        protected bool ValidateSelectionCountByLayout(out string? errorMessage)
+        {
+            errorMessage = null;
+
+            if (formModel.Type != HomepageBlockType.ManualItems.ToString() &&
+                formModel.Type != HomepageBlockType.ManualCategories.ToString())
+            {
+                return true;
+            }
+
+            int count = formModel.Type == HomepageBlockType.ManualItems.ToString()
+                ? (formModel.Items?.Count ?? 0)
+                : (formModel.Categories?.Count ?? 0);
+
+            switch (formModel.Layout)
+            {
+                case BlockLayout.Featured:
+                case BlockLayout.FullWidth:
+                    if (count != 1)
+                    {
+                        errorMessage = MerchandisingResources.LayoutValidationFeaturedFullWidth;
+                        return false;
+                    }
+                    break;
+                case BlockLayout.TwoRows:
+                    if (count < 1 || count > 2)
+                    {
+                        errorMessage = MerchandisingResources.LayoutValidationTwoRowGrid;
+                        return false;
+                    }
+                    break;
+                case BlockLayout.Compact:
+                    if (count < 1 || count > 4)
+                    {
+                        errorMessage = MerchandisingResources.LayoutValidationCompactGrid;
+                        return false;
+                    }
+                    break;
+            }
+
+            return true;
         }
 
         protected void OnCampaignSelected(ChangeEventArgs e)

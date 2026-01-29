@@ -525,6 +525,7 @@ namespace Dashboard.Constants
             public const string Create = $"{Base}/save";
             public const string Update = $"{Base}/save";
             public const string Delete = $"{Base}";
+            public static string UpdateDisplayOrder(Guid sliderId) => $"{Base}/{sliderId}/display-order";
         }
 
         public static class ReviewReport

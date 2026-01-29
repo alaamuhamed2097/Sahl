@@ -1,4 +1,4 @@
-﻿using Dashboard.Configuration;
+using Dashboard.Configuration;
 using Dashboard.Contracts.General;
 using Dashboard.Contracts.HomePageSlider;
 using Dashboard.Pages.Base;
@@ -297,24 +297,7 @@ namespace Dashboard.Pages.HomePageSlider
             return Model.DisplayOrder;
         }
 
-        private void OnDisplayOrderChanged()
-        {
-            // Validate and adjust display order
-            var maxOrder = AllMainBanners.Any() ? AllMainBanners.Max(c => c.DisplayOrder) : 0;
-
-            if (Model.DisplayOrder <= 0)
-            {
-                Model.DisplayOrder = 1;
-            }
-            else if (Model.DisplayOrder > maxOrder + 1)
-            {
-                Model.DisplayOrder = maxOrder + 1;
-            }
-
-            StateHasChanged();
-        }
-
-        private int GetNextDisplayOrder()
+        protected int GetNextDisplayOrder()
         {
             return AllMainBanners.Any() ? AllMainBanners.Max(c => c.DisplayOrder) + 1 : 1;
         }

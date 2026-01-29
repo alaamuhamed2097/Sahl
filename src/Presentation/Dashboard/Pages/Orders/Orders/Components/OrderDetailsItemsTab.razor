@@ -1,0 +1,118 @@
+@using Common.Enumerations.Shipping
+@using Shared.DTOs.Order.OrderProcessing.AdminOrder
+
+<div class="tab-pane-custom active">
+    <div class="card shadow-sm border-0">
+        <div class="card-header bg-gradient-success text-white py-3">
+            <h5 class="mb-0 fw-bold d-flex align-items-center gap-2">
+                <i class="fas fa-list-ul"></i>
+                @OrderResources.OrderItems
+                <span class="badge bg-light text-dark ms-2">@Order.Items.Count @OrderResources.OrderItems</span>
+            </h5>
+        </div>
+        <div class="card-body p-0">
+            @if (Order.Items.Any())
+            {
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th style="width: 80px;">@FormResources.Image</th>
+                                <th>@OrderResources.Item</th>
+                                <th class="text-center" style="width: 100px;">@OrderResources.Quantity</th>
+                                <th class="text-end" style="width: 120px;">@FormResources.Price</th>
+                                <th class="text-end" style="width: 120px;">@OrderResources.Subtotal</th>
+                                <th class="text-center" style="width: 150px;">@OrderResources.Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Order.Items)
+                            {
+                                <tr>
+                                    <td>
+                                        @if (!string.IsNullOrEmpty(item.ItemImage))
+                                        {
+                                            <img src="@(BaseUrl + item.ItemImage)"
+                                                 alt="@item.Title"
+                                                 class="img-thumbnail"
+                                                 style="width: 60px; height: 60px; object-fit: cover;" />
+                                        }
+                                        else
+                                        {
+                                            <div class="bg-light d-flex align-items-center justify-content-center"
+                                                 style="width: 60px; height: 60px;">
+                                                <i class="fas fa-image text-muted"></i>
+                                            </div>
+                                        }
+                                    </td>
+                                    <td>
+                                        <div class="fw-bold">@item.Title</div>
+                                    </td>
+                                    <td class="text-center">
+                                        <span class="badge bg-primary">@item.Quantity</span>
+                                    </td>
+                                                            <td class="text-end">
+                                                                <span dir="ltr">@FormatCurrency(item.UnitPrice)</span>
+                                                            </td>
+                                                            <td class="text-end fw-bold">
+                                                                <span dir="ltr">@FormatCurrency(item.SubTotal)</span>
+                                                            </td>
+                                    <td class="text-center">
+                                        <span class="@GetShipmentStatusBadgeClass(item.ShipmentStatus)">
+                                            @GetShipmentStatusText(item.ShipmentStatus)
+                                        </span>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                        <tfoot class="table-light">
+                            <tr>
+                                <td colspan="4" class="text-end fw-bold">@OrderResources.Subtotal:</td>
+                                <td class="text-end fw-bold" dir="ltr">@FormatCurrency(Order.SubTotal)</td>
+                                <td></td>
+                            </tr>
+                            @if (Order.DiscountAmount > 0)
+                            {
+                                <tr>
+                                    <td colspan="4" class="text-end fw-bold text-success">@OrderResources.Discount:</td>
+                                    <td class="text-end fw-bold text-success" dir="ltr">-@FormatCurrency(Order.DiscountAmount)</td>
+                                    <td></td>
+                                </tr>
+                            }
+                            <tr>
+                                <td colspan="4" class="text-end fw-bold">@OrderResources.Tax:</td>
+                                <td class="text-end fw-bold" dir="ltr">@FormatCurrency(Order.TaxAmount)</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td colspan="4" class="text-end fw-bold">@OrderResources.Shipping:</td>
+                                <td class="text-end fw-bold" dir="ltr">@FormatCurrency(Order.ShippingAmount)</td>
+                                <td></td>
+                            </tr>
+                            <tr class="table-primary">
+                                <td colspan="4" class="text-end fw-bold fs-5">@OrderResources.TotalAmount:</td>
+                                <td class="text-end fw-bold fs-5 text-primary" dir="ltr">@FormatCurrency(Order.TotalAmount)</td>
+                                <td></td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <div class="text-center py-5">
+                    <i class="fas fa-box-open text-muted" style="font-size: 48px;"></i>
+                    <p class="text-muted mt-3">@NotifiAndAlertsResources.NoDataFound</p>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter] public AdminOrderDetailsDto Order { get; set; } = null!;
+    [Parameter] public string BaseUrl { get; set; } = string.Empty;
+    [Parameter] public Func<decimal, string> FormatCurrency { get; set; } = null!;
+    [Parameter] public Func<ShipmentStatus, string> GetShipmentStatusBadgeClass { get; set; } = null!;
+    [Parameter] public Func<ShipmentStatus, string> GetShipmentStatusText { get; set; } = null!;
+}

@@ -2,6 +2,7 @@ using Common.Enumerations.Order;
 using Common.Enumerations.Payment;
 using Common.Enumerations.Shipping;
 using Dashboard.Configuration;
+using Dashboard.Contracts.General;
 using Dashboard.Contracts.Order;
 using Dashboard.Pages.Base;
 using Microsoft.AspNetCore.Components;
@@ -33,6 +34,16 @@ namespace Dashboard.Pages.Orders.Orders
         [Inject] protected IOrderService OrderService { get; set; } = null!;
         [Inject] protected IShipmentService ShipmentService { get; set; } = null!;
         [Inject] protected IOptions<ApiSettings> ApiOptions { get; set; } = default!;
+        [Inject] private IResourceLoaderService ResourceLoaderService { get; set; } = null!;
+
+        protected override Task OnAfterRenderAsync(bool firstRender)
+        {
+            if (firstRender)
+            {
+                ResourceLoaderService.LoadStyleSheet("css/order-details.css");
+            }
+            return Task.CompletedTask;
+        }
 
         // ============================================
         // UI STATE FOR TABS
@@ -43,6 +54,18 @@ namespace Dashboard.Pages.Orders.Orders
         {
             ActiveTab = tab;
             StateHasChanged();
+        }
+
+        protected Task OnTabChangedAsync(string tab)
+        {
+            SetActiveTab(tab);
+            return Task.CompletedTask;
+        }
+
+        protected Task ToggleDropdownAsync(Guid shipmentId)
+        {
+            ToggleDropdown(shipmentId);
+            return Task.CompletedTask;
         }
 
         // ============================================
@@ -79,12 +102,17 @@ namespace Dashboard.Pages.Orders.Orders
         // LOAD ORDER DATA
         // ============================================
 
-        protected async Task LoadOrderAsync(Guid orderId)
+        /// <param name="orderId">Order ID to load</param>
+        /// <param name="silentRefresh">If true, refresh order data without showing loading spinner (e.g. after shipment update)</param>
+        protected async Task LoadOrderAsync(Guid orderId, bool silentRefresh = false)
         {
             try
             {
-                IsLoading = true;
-                StateHasChanged();
+                if (!silentRefresh)
+                {
+                    IsLoading = true;
+                    StateHasChanged();
+                }
 
                 var result = await OrderService.GetOrderByIdAsync(orderId);
 
@@ -109,7 +137,10 @@ namespace Dashboard.Pages.Orders.Orders
             }
             finally
             {
-                IsLoading = false;
+                if (!silentRefresh)
+                {
+                    IsLoading = false;
+                }
                 StateHasChanged();
             }
         }
@@ -144,14 +175,15 @@ namespace Dashboard.Pages.Orders.Orders
         // ============================================
 
         /// <summary>
-        /// Get next possible action for shipment
+        /// Get next possible action for shipment.
+        /// Workflow starts from PickedUpByCarrier: Pending/Preparing jump to PickedUpByCarrier, then InTransit → Delivered.
         /// </summary>
         protected string GetShipmentNextAction(ShipmentInfoDto shipment)
         {
             return shipment.Status switch
             {
-                ShipmentStatus.PendingProcessing => OrderResources.StartProcessing,
-                ShipmentStatus.PreparingForShipment => OrderResources.ReadyForPickup,
+                ShipmentStatus.PendingProcessing => OrderResources.PickedUpByCarrier,
+                ShipmentStatus.PreparingForShipment => OrderResources.PickedUpByCarrier,
                 ShipmentStatus.PickedUpByCarrier => OrderResources.MarkInTransit,
                 ShipmentStatus.InTransitToCustomer => OrderResources.AttemptDelivery,
                 ShipmentStatus.DeliveryAttemptFailed => OrderResources.RetryDelivery,
@@ -161,13 +193,14 @@ namespace Dashboard.Pages.Orders.Orders
         }
 
         /// <summary>
-        /// Get next status for shipment
+        /// Get next status for shipment.
+        /// Pending/Preparing jump directly to PickedUpByCarrier; then PickedUp → InTransit → Delivered.
         /// </summary>
         protected ShipmentStatus? GetShipmentNextStatus(ShipmentInfoDto shipment)
         {
             return shipment.Status switch
             {
-                ShipmentStatus.PendingProcessing => ShipmentStatus.PreparingForShipment,
+                ShipmentStatus.PendingProcessing => ShipmentStatus.PickedUpByCarrier,
                 ShipmentStatus.PreparingForShipment => ShipmentStatus.PickedUpByCarrier,
                 ShipmentStatus.PickedUpByCarrier => ShipmentStatus.InTransitToCustomer,
                 ShipmentStatus.InTransitToCustomer => ShipmentStatus.DeliveredToCustomer,
@@ -222,8 +255,8 @@ namespace Dashboard.Pages.Orders.Orders
                 {
                     shipment.Status = result.Data.ShipmentStatus;
 
-                    // ✅ Auto-update order status based on shipments
-                    await SyncOrderStatusWithShipmentsAsync();
+                    // Backend syncs order status when shipment changes; refresh order so UI shows it
+                    await LoadOrderAsync(Order.OrderId, silentRefresh: true);
 
                     await JSRuntime.InvokeVoidAsync("swal",
                         NotifiAndAlertsResources.Success,
@@ -283,7 +316,8 @@ namespace Dashboard.Pages.Orders.Orders
                         shipment.Status = result.Data.ShipmentStatus;
                     }
 
-                    await SyncOrderStatusWithShipmentsAsync();
+                    // Backend syncs order status when shipment changes; refresh order so UI shows it
+                    await LoadOrderAsync(Order.OrderId, silentRefresh: true);
 
                     await JSRuntime.InvokeVoidAsync("swal",
                         NotifiAndAlertsResources.Success,
@@ -341,6 +375,9 @@ namespace Dashboard.Pages.Orders.Orders
                     {
                         shipment.Status = result.Data.ShipmentStatus;
                     }
+
+                    // Backend syncs order status when shipment changes; refresh order so UI shows it
+                    await LoadOrderAsync(Order.OrderId, silentRefresh: true);
 
                     await JSRuntime.InvokeVoidAsync("swal",
                         NotifiAndAlertsResources.Success,
@@ -522,6 +559,16 @@ namespace Dashboard.Pages.Orders.Orders
             return date.HasValue ? date.Value.ToString("dd/MM/yyyy") : "--";
         }
 
+        protected string FormatDateTime(DateTime? date)
+        {
+            return date.HasValue ? date.Value.ToString("dd MMM yyyy, hh:mm tt", System.Globalization.CultureInfo.InvariantCulture) : "--";
+        }
+
+        protected string FormatCurrency(decimal value)
+        {
+            return "$" + value.ToString("N2", System.Globalization.CultureInfo.InvariantCulture);
+        }
+
         // ============================================
         // UI HELPERS
         // ============================================
@@ -531,7 +578,7 @@ namespace Dashboard.Pages.Orders.Orders
             return shipment.Status switch
             {
                 ShipmentStatus.PendingProcessing => "btn-info",
-                ShipmentStatus.PreparingForShipment => "btn-primary",
+                ShipmentStatus.PreparingForShipment => "btn-info",
                 ShipmentStatus.PickedUpByCarrier => "btn-warning",
                 ShipmentStatus.InTransitToCustomer => "btn-success",
                 ShipmentStatus.DeliveryAttemptFailed => "btn-danger",
@@ -543,8 +590,8 @@ namespace Dashboard.Pages.Orders.Orders
         {
             return shipment.Status switch
             {
-                ShipmentStatus.PendingProcessing => "fas fa-play",
-                ShipmentStatus.PreparingForShipment => "fas fa-box",
+                ShipmentStatus.PendingProcessing => "fas fa-truck",
+                ShipmentStatus.PreparingForShipment => "fas fa-truck",
                 ShipmentStatus.PickedUpByCarrier => "fas fa-truck",
                 ShipmentStatus.InTransitToCustomer => "fas fa-shipping-fast",
                 ShipmentStatus.DeliveryAttemptFailed => "fas fa-redo",
@@ -569,46 +616,39 @@ namespace Dashboard.Pages.Orders.Orders
         // ============================================
 
         /// <summary>
-        /// Check if order can move to next status
-        /// NOTE: This is for backward compatibility with old UI
-        /// New approach: Order status auto-syncs with shipments
+        /// Admin can manually change order status only for Processing→Shipped and Shipped→Delivered.
+        /// Confirmed, Processing (as target), and Cancelled are set by system (payment/shipments).
         /// </summary>
         protected bool CanMoveToNextStatus()
         {
             return Order.OrderStatus switch
             {
-                OrderProgressStatus.Pending => true,
-                OrderProgressStatus.Confirmed => true,
-                OrderProgressStatus.Processing => true,
-                OrderProgressStatus.Shipped => true,
+                OrderProgressStatus.Processing => true,  // → Shipped
+                OrderProgressStatus.Shipped => true,    // → Delivered
                 _ => false
             };
         }
 
         /// <summary>
-        /// Get next status button text
+        /// Get next status button text (only for manually allowed transitions).
         /// </summary>
         protected string GetNextStatusButtonText()
         {
             return Order.OrderStatus switch
             {
-                OrderProgressStatus.Pending => OrderResources.ConfirmOrder,
-                OrderProgressStatus.Confirmed => OrderResources.StartProcessing,
-                //OrderProgressStatus.Processing => OrderResources.MarkAsShipped,
-                //OrderProgressStatus.Shipped => OrderResources.MarkAsDelivered,
+                OrderProgressStatus.Processing => OrderResources.MarkAsShipped,
+                OrderProgressStatus.Shipped => OrderResources.MarkAsDelivered,
                 _ => ""
             };
         }
 
         /// <summary>
-        /// Get next status button icon
+        /// Get next status button icon.
         /// </summary>
         protected string GetNextStatusButtonIcon()
         {
             return Order.OrderStatus switch
             {
-                OrderProgressStatus.Pending => "fas fa-check",
-                OrderProgressStatus.Confirmed => "fas fa-cog",
                 OrderProgressStatus.Processing => "fas fa-truck",
                 OrderProgressStatus.Shipped => "fas fa-box-open",
                 _ => "fas fa-check"
@@ -616,16 +656,13 @@ namespace Dashboard.Pages.Orders.Orders
         }
 
         /// <summary>
-        /// Move order to next status
-        /// NOTE: This is for backward compatibility
-        /// Better approach: Let shipments drive order status
+        /// Move order to next status (manual admin action).
+        /// Only Processing→Shipped and Shipped→Delivered are allowed.
         /// </summary>
         protected async Task MoveToNextStatusAsync()
         {
             OrderProgressStatus? nextStatus = Order.OrderStatus switch
             {
-                OrderProgressStatus.Pending => OrderProgressStatus.Confirmed,
-                OrderProgressStatus.Confirmed => OrderProgressStatus.Processing,
                 OrderProgressStatus.Processing => OrderProgressStatus.Shipped,
                 OrderProgressStatus.Shipped => OrderProgressStatus.Delivered,
                 _ => null

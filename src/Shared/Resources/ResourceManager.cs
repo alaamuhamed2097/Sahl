@@ -55,6 +55,7 @@ namespace Resources
             CouponCodeResources.Culture = culture;
             MerchandisingResources.Culture = culture;
             OrderResources.Culture = culture;
+            ReviewResources.Culture = culture;
         }
 
         public static void ChangeLanguage()

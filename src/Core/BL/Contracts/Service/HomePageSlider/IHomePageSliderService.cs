@@ -1,4 +1,4 @@
-﻿using BL.Contracts.Service.Base;
+using BL.Contracts.Service.Base;
 using Common.Filters;
 using DAL.Models;
 using Domains.Entities.Merchandising.HomePage;
@@ -18,5 +18,9 @@ namespace BL.Contracts.Service.HomePageSlider
 			CancellationToken cancellationToken = default);
 		Task<bool> Save(HomePageSliderDto dto, Guid userId);
 		Task<bool> Delete(Guid id, Guid userId);
+		/// <summary>
+		/// Update a slider's display order.
+		/// </summary>
+		Task<bool> UpdateDisplayOrderAsync(Guid sliderId, int newOrder, Guid userId);
 	}
 }

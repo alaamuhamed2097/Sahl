@@ -1,4 +1,4 @@
-﻿using Dashboard.Configuration;
+using Dashboard.Configuration;
 using Dashboard.Contracts.General;
 using Dashboard.Contracts.HomePageSlider;
 using Microsoft.AspNetCore.Components;
@@ -14,6 +14,7 @@ namespace Dashboard.Pages.HomePageSlider
 	public partial class Index : BaseListPage<HomePageSliderDto>
 	{
 		private bool isSaving { get; set; }
+		private bool isMoving { get; set; }
 		private bool isImageProcessing { get; set; }
 		private string baseUrl = string.Empty;
 		private IBrowserFile? selectedImage;
@@ -389,21 +390,59 @@ namespace Dashboard.Pages.HomePageSlider
 			}
 		}
 
-		// ========== Display Order Management ==========
-		private void OnDisplayOrderChanged()
+		// ========== Display Order (arrows on list) ==========
+		protected async Task MoveSliderUp(HomePageSliderDto slider)
 		{
-			var maxOrder = AllSliders.Any() ? AllSliders.Max(c => c.DisplayOrder) : 0;
-
-			if (Model.DisplayOrder <= 0)
+			var ordered = AllSliders.OrderBy(x => x.DisplayOrder).ToList();
+			var idx = ordered.FindIndex(x => x.Id == slider.Id);
+			if (idx <= 0)
 			{
-				Model.DisplayOrder = 1;
+				await JSRuntime.InvokeVoidAsync("swal", ValidationResources.Failed, "Slider is already at the top", "info");
+				return;
 			}
-			else if (Model.DisplayOrder > maxOrder + 1)
-			{
-				Model.DisplayOrder = maxOrder + 1;
-			}
+			var previous = ordered[idx - 1];
+			await SwapDisplayOrders(slider, previous);
+		}
 
+		protected async Task MoveSliderDown(HomePageSliderDto slider)
+		{
+			var ordered = AllSliders.OrderBy(x => x.DisplayOrder).ToList();
+			var idx = ordered.FindIndex(x => x.Id == slider.Id);
+			if (idx < 0 || idx >= ordered.Count - 1)
+			{
+				await JSRuntime.InvokeVoidAsync("swal", ValidationResources.Failed, "Slider is already at the bottom", "info");
+				return;
+			}
+			var next = ordered[idx + 1];
+			await SwapDisplayOrders(slider, next);
+		}
+
+		private async Task SwapDisplayOrders(HomePageSliderDto a, HomePageSliderDto b)
+		{
+			if (isMoving) return;
+			isMoving = true;
 			StateHasChanged();
+			try
+			{
+				var orderA = a.DisplayOrder;
+				var orderB = b.DisplayOrder;
+				var r1 = await SliderService.UpdateDisplayOrderAsync(a.Id, orderB);
+				var r2 = await SliderService.UpdateDisplayOrderAsync(b.Id, orderA);
+				if (r1.Success && r2.Success)
+				{
+					await JSRuntime.InvokeVoidAsync("swal", ValidationResources.Done, NotifiAndAlertsResources.SavedSuccessfully, "success");
+					await LoadAllSliders();
+				}
+				else
+				{
+					await JSRuntime.InvokeVoidAsync("swal", ValidationResources.Failed, r1.Message ?? r2.Message ?? NotifiAndAlertsResources.SaveFailed, "error");
+				}
+			}
+			finally
+			{
+				isMoving = false;
+				StateHasChanged();
+			}
 		}
 
 		private int GetNextDisplayOrder()

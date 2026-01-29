@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!-- 
     Microsoft ResX Schema 
@@ -470,6 +470,15 @@
   </data>
   <data name="ErrorSavingBlock" xml:space="preserve">
     <value>Error saving block</value>
+  </data>
+  <data name="LayoutValidationFeaturedFullWidth" xml:space="preserve">
+    <value>For Featured Showcase or Full-Width Banner, exactly one product or category must be selected.</value>
+  </data>
+  <data name="LayoutValidationTwoRowGrid" xml:space="preserve">
+    <value>For Two-Row Grid, between 1 and 2 products or categories must be selected.</value>
+  </data>
+  <data name="LayoutValidationCompactGrid" xml:space="preserve">
+    <value>For Compact Grid, between 1 and 4 products or categories must be selected.</value>
   </data>
   <data name="SelectType" xml:space="preserve">
     <value>Select Type</value>

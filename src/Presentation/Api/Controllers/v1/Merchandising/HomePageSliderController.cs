@@ -1,4 +1,4 @@
-﻿using Api.Controllers.v1.Base;
+using Api.Controllers.v1.Base;
 using Asp.Versioning;
 using BL.Contracts.Service.HomePageSlider;
 using Common.Enumerations.User;
@@ -203,6 +203,66 @@ namespace Api.Controllers.v1.Merchandising
 					Message = ex.Message
 				});
 			}
+		}
+
+		/// <summary>
+		/// Update slider display order
+		/// </summary>
+		/// <remarks>
+		/// API Version: 1.0+
+		/// Requires Admin role.
+		/// </remarks>
+		[HttpPatch("{sliderId}/display-order")]
+		[HttpPut("{sliderId}/display-order")]
+		[Authorize(Roles = nameof(UserRole.Admin))]
+		[ProducesResponseType(StatusCodes.Status200OK)]
+		[ProducesResponseType(StatusCodes.Status400BadRequest)]
+		[ProducesResponseType(StatusCodes.Status404NotFound)]
+		public async Task<IActionResult> UpdateDisplayOrder(Guid sliderId, [FromBody] dynamic request)
+		{
+			int newOrder;
+			if (request is int intValue)
+			{
+				newOrder = intValue;
+			}
+			else if (request is System.Text.Json.JsonElement jsonElement)
+			{
+				if (jsonElement.TryGetProperty("newOrder", out var newOrderProp))
+					newOrder = newOrderProp.GetInt32();
+				else
+					newOrder = jsonElement.GetInt32();
+			}
+			else
+			{
+				return BadRequest(new ResponseModel<string>
+				{
+					Success = false,
+					Message = "Invalid display order format"
+				});
+			}
+
+			var slider = await _homePageSliderService.FindByIdAsync(sliderId);
+			if (slider == null)
+				return NotFound(new ResponseModel<string>
+				{
+					Success = false,
+					Message = NotifiAndAlertsResources.NoDataFound
+				});
+
+			var result = await _homePageSliderService.UpdateDisplayOrderAsync(sliderId, newOrder, GuidUserId);
+			if (!result)
+				return BadRequest(new ResponseModel<string>
+				{
+					Success = false,
+					Message = NotifiAndAlertsResources.SaveFailed
+				});
+
+			return Ok(new ResponseModel<bool>
+			{
+				Success = true,
+				Message = NotifiAndAlertsResources.ItemUpdated,
+				Data = true
+			});
 		}
 
 		/// <summary>
