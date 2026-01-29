@@ -19,6 +19,7 @@ namespace Shared.DTOs.Vendor
         public VendorType VendorType { get; set; }
         public string StoreName { get; set; } = null!;
         public bool IsRealEstateRegistered { get; set; }
+        public string LogoPath { get; set; } 
 
         public string Address { get; set; } = null!;
         public string PostalCode { get; set; } = null!;

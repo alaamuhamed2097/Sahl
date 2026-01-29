@@ -1,125 +1,151 @@
 ﻿@page "/HomePageSlider"
+@* @page "/HomePageSlider/Add" *@
+@* @page "/HomePageSlider/Edit/{Id:guid}" *@
 
 @using Shared.DTOs.HomeSlider
 @inherits BaseListPage<HomePageSliderDto>
+
 <PageTitle>@GeneralResources.HomePageSlider</PageTitle>
 
 <div class="container-fluid p-0">
-    <div class="card shadow-sm border-0">
-        <div class="card-header bg-primary text-white py-3 d-flex justify-content-between align-items-center">
-            <h5 class="mb-0 fw-semibold">@GeneralResources.HomePageSlider</h5>
-        </div>
-        <div class="card-body">
-            <div class="dt-responsive table-responsive">
-                <!-- Filtration start -->
-                <ul class="navbar-nav d-flex flex-row align-items-center gap-3 mb-2 px-0 w-100">
-                    <li class="nav-item col-md-6 w-auto d-flex flex-row align-items-center gap-3">
-                        <EditForm Model="searchModel" OnSubmit="@Search">
-                            <!-- Search Box -->
-                            <div class="search-container">
-                                <div class="input-group search-box">
-                                    <input type="text"
-                                           @bind="searchModel.SearchTerm"
-                                           id="searchInput"
-                                           class="form-control search-input"
-                                           placeholder="@ActionsResources.Search" />
-                                    <button type="submit"
-                                            class="btn btn-search">
-                                        <i class="fas fa-search"></i>
-                                    </button>
+    <!-- Main List View -->
+    @if (Id == Guid.Empty)
+    {
+        <div class="card shadow-sm border-0">
+            <div class="card-header bg-primary text-white py-3 d-flex justify-content-between align-items-center">
+                <h5 class="mb-0 fw-semibold">
+                    <i class="fas fa-images me-2"></i>@GeneralResources.HomePageSlider
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="dt-responsive table-responsive">
+                    <!-- Filtration start -->
+                    <ul class="navbar-nav d-flex flex-row align-items-center gap-3 mb-3 px-0 w-100">
+                        <li class="nav-item col-md-6 w-auto d-flex flex-row align-items-center gap-3">
+                            <EditForm Model="searchModel" OnSubmit="@Search">
+                                <!-- Search Box -->
+                                <div class="search-container">
+                                    <div class="input-group search-box">
+                                        <input type="text"
+                                               @bind="searchModel.SearchTerm"
+                                               id="searchInput"
+                                               class="form-control search-input"
+                                               placeholder="@ActionsResources.Search" />
+                                        <button type="submit" class="btn btn-search">
+                                            <i class="fas fa-search"></i>
+                                        </button>
+                                    </div>
                                 </div>
+                            </EditForm>
+
+                            <!-- Page Size -->
+                            <div class="d-flex align-items-center gap-2">
+                                <label class="form-label fw-semibold mb-0">@ActionsResources.Show</label>
+                                <select class="form-select rounded-3 shadow-sm border-light text-primary fw-bold text-center"
+                                        style="width: 100px; height: 38px;"
+                                        @onchange="OnPageSizeChanged">
+                                    <option value="10">10</option>
+                                    <option value="15">15</option>
+                                    <option value="20">20</option>
+                                    <option value="30">30</option>
+                                </select>
                             </div>
-                        </EditForm>
-
-                        <!-- Page Size -->
-                        <div class="d-flex align-items-center gap-2">
-                            <label class="form-label fw-semibold mb-0">@ActionsResources.Show</label>
-                            <select class="form-select rounded-3 shadow-sm border-light text-primary fw-bold text-center"
-                                    style="width: 100px; height: 38px; padding-right: 16px;"
-                                    @onchange="OnPageSizeChanged">
-                                <option value="10">10</option>
-                                <option value="15">15</option>
-                                <option value="20">20</option>
-                                <option value="30">30</option>
-                            </select>
-                        </div>
-                    </li>
-                    <li class="nav-item ms-auto d-flex flex-row align-items-center gap-2">
-                        <!-- Add Button -->
-                        <button class="btn btn-success" @onclick="Add">
-                            <i class="feather icon-plus-circle me-2"></i>
-                            <span class="fw-bold">@ActionsResources.Add</span>
-                        </button>
-                        <!-- Export Buttons -->
-                        <div class="dropdown">
-                            <button class="btn btn-info" type="button" id="exportDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                                <i class="fas fa-file-export me-2"></i>
-                                <span class="fw-bold">@ActionsResources.Export</span>
+                        </li>
+                        <li class="nav-item ms-auto d-flex flex-row align-items-center gap-2">
+                            <!-- Add Button -->
+                            <button class="btn btn-success" @onclick="Add" disabled="@isSaving">
+                                <i class="feather icon-plus-circle me-2"></i>
+                                <span class="fw-bold">@ActionsResources.Add</span>
                             </button>
-                            <ul class="dropdown-menu" aria-labelledby="exportDropdown">
-                                <li><a class="dropdown-item" href="javascript:void(0)" @onclick="ExportToExcel"><i class="far fa-file-excel mx-2"></i>Excel</a></li>
-                                <li><a class="dropdown-item" href="javascript:void(0)" @onclick="ExportToPrint"><i class="fas fa-print mx-2"></i>Print</a></li>
-                            </ul>
-                        </div>
+                            <!-- Export Buttons -->
+                            <div class="dropdown">
+                                <button class="btn btn-info" type="button" id="exportDropdown"
+                                        data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="fas fa-file-export me-2"></i>
+                                    <span class="fw-bold">@ActionsResources.Export</span>
+                                </button>
+                                <ul class="dropdown-menu" aria-labelledby="exportDropdown">
+                                    <li>
+                                        <a class="dropdown-item" href="javascript:void(0)" @onclick="ExportToExcel">
+                                            <i class="far fa-file-excel mx-2"></i>Excel
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item" href="javascript:void(0)" @onclick="ExportToPrint">
+                                            <i class="fas fa-print mx-2"></i>Print
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </li>
+                    </ul>
 
-                   
-                    </li>
-                </ul>
-                <!-- Table -->
-                <div class="table-responsive border rounded-3">
-                    <table id="slider-table" class="table table-striped table-hover mb-0">
-                        <thead class="bg-light">
-                            <tr>
-                                <th class="text-center align-middle">@ECommerceResources.SliderImage</th>
-                                <th class="text-center align-middle">@ECommerceResources.SliderTitle</th>
-                                <th class="text-center align-middle">@ECommerceResources.DisplayOrder</th>
-                                <th class="text-center align-middle">ActionsResources.Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @if (items != null && items.Any())
-                            {
-                                @foreach (var item in items.OrderBy(b => b.DisplayOrder))
+                    <!-- Table -->
+                    <div class="table-responsive border rounded-3">
+                        <table id="slider-table" class="table table-striped table-hover mb-0">
+                            <thead class="bg-light">
+                                <tr>
+                                    <th class="text-center align-middle" style="width: 150px;">@ECommerceResources.SliderImage</th>
+                                    <th class="text-center align-middle">@ECommerceResources.SliderTitle</th>
+                                    <th class="text-center align-middle" style="width: 120px;">@ECommerceResources.DisplayOrder</th>
+                                    <th class="text-center align-middle" style="width: 150px;">@ActionsResources.Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (items != null && items.Any())
+                                {
+                                    @foreach (var item in items.OrderBy(b => b.DisplayOrder))
+                                    {
+                                        <tr>
+                                            <td class="text-center align-middle">
+                                                <img src="@($"{baseUrl}/{item.ImageUrl}")"
+                                                     class="rounded shadow-sm"
+                                                     width="120"
+                                                     height="60"
+                                                     style="object-fit: cover;"
+                                                     alt="Slider" />
+                                            </td>
+                                            <td class="text-center align-middle">
+                                                @(string.IsNullOrWhiteSpace(item.Title) ? "-" : item.Title)
+                                            </td>
+                                            <td class="text-center align-middle">
+                                                <span class="badge bg-info fs-6">@item.DisplayOrder</span>
+                                            </td>
+                                            <td class="text-center align-middle">
+                                                <button class="btn btn-primary btn-sm mx-1"
+                                                        title="@ActionsResources.Edit"
+                                                        @onclick="() => Edit(item.Id)"
+                                                        disabled="@isSaving">
+                                                    <i class="fas fa-pencil-alt m-0"></i>
+                                                </button>
+                                                <button class="btn btn-danger btn-sm mx-1"
+                                                        title="@ActionsResources.Delete"
+                                                        @onclick="() => Delete(item.Id)"
+                                                        disabled="@isSaving">
+                                                    <i class="feather icon-trash-2 m-0"></i>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    }
+                                }
+                                else
                                 {
                                     <tr>
-                                        <td class="text-center align-middle">
-                                            <img src="@($"{baseUrl}/{item.ImageUrl}")" class="rounded" width="80" height="40" style="object-fit: cover;" alt="Slider" />
-                                        </td>
-                                        <td class="text-center align-middle">
-                                            @(string.IsNullOrWhiteSpace(item.Title) ? "-" : item.Title)
-                                        </td>
-                                        <td class="text-center align-middle">
-                                            <span class="badge bg-info">@item.DisplayOrder</span>
-                                        </td>
-                                        <td class="text-center align-middle">
-                                            <button class="btn btn-primary btn-sm mx-1" title="@ActionsResources.Edit" @onclick="() => Edit(item)">
-                                                <i class="fas fa-pencil-alt m-0"></i>
-                                            </button>
-                                            <button class="btn btn-danger btn-sm mx-1" title="@ActionsResources.Delete" @onclick="() => Delete(item.Id)">
-                                                <i class="feather icon-trash-2 m-0"></i>
-                                            </button>
+                                        <td colspan="4" class="text-center py-5">
+                                            <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
+                                            <p class="text-muted">@NotifiAndAlertsResources.NoDataFound</p>
                                         </td>
                                     </tr>
                                 }
-                            }
-                            else
-                            {
-                                <tr>
-                                    <td colspan="4" class="text-center py-4">
-                                        <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
-                                        <p class="text-muted">@NotifiAndAlertsResources.NoDataFound</p>
-                                    </td>
-                                </tr>
-                            }
-                        </tbody>
-                    </table>
-                </div>
+                                                    </tbody>
+                                                </table>
+                                            </div>
 
-                <!-- Pagination start -->
-                <div class="d-none d-lg-flex justify-content-between mt-3" dir="ltr">
-                    <div class="d-flex align-items-center">
-                        <span class="text-muted">
-                            @string.Format(ActionsResources.ShowingEntries,
+                                            <!-- Pagination -->
+                                            <div class="d-none d-lg-flex justify-content-between mt-3" dir="ltr">
+                                                <div class="d-flex align-items-center">
+                                                    <span class="text-muted">
+                                                        @string.Format(ActionsResources.ShowingEntries,
                                                         ((currentPage - 1) * searchModel.PageSize + 1),
                                                         Math.Min(currentPage * searchModel.PageSize, totalRecords),
                                                         totalRecords)
@@ -127,71 +153,178 @@
                     </div>
                     <nav>
                         <ul class="pagination mb-0">
-                            <!-- First Button -->
                             <li class="page-item @(currentPage == 1 ? "disabled" : "")">
-                                <a class="page-link cursor-pointer" @onclick="() => GoToPage(1)" title="@ActionsResources.First">
+                                <a class="page-link cursor-pointer" @onclick="() => GoToPage(1)">
                                     <i class="fas fa-angle-double-left"></i>
                                 </a>
                             </li>
-
-                            <!-- Previous Button -->
                             <li class="page-item @(currentPage == 1 ? "disabled" : "")">
                                 <a class="page-link cursor-pointer" @onclick="() => GoToPage(currentPage - 1)">
                                     @ActionsResources.Previous
                                 </a>
                             </li>
-
-                            <!-- Dynamic Page Numbers -->
                             @{
-                                                        const int maxVisiblePages = 5;
-                            int startPage = Math.Max(1, currentPage - 2);
-                            int endPage = Math.Min(totalPages, startPage + maxVisiblePages - 1);
-                            if (endPage - startPage + 1 < maxVisiblePages)
-                            {
-                                startPage = Math.Max(1, endPage - maxVisiblePages + 1);
-                            }
-                                                        }
-
-                            @if (startPage > 1)
-                            {
-                                <li class="page-item disabled">
-                                    <a class="page-link cursor-pointer">...</a>
+                                    const int maxVisiblePages = 5;
+                                    int startPage = Math.Max(1, currentPage - 2);
+                                    int endPage = Math.Min(totalPages, startPage + maxVisiblePages - 1);
+                                    if (endPage - startPage + 1 < maxVisiblePages)
+                                    {
+                                        startPage = Math.Max(1, endPage - maxVisiblePages + 1);
+                                    }
+                                }
+                                @if (startPage > 1)
+                                {
+                                    <li class="page-item disabled">
+                                        <a class="page-link">...</a>
+                                    </li>
+                                }
+                                @for (int pag = startPage; pag <= endPage; pag++)
+                                {
+                                    int pageNumber = pag;
+                                    <li class="page-item @(pag == currentPage ? "active" : "")">
+                                        <a class="page-link cursor-pointer" @onclick="() => GoToPage(pageNumber)">@pag</a>
+                                    </li>
+                                }
+                                @if (endPage < totalPages)
+                                {
+                                    <li class="page-item disabled">
+                                        <a class="page-link">...</a>
+                                    </li>
+                                }
+                                <li class="page-item @(currentPage == totalPages ? "disabled" : "")">
+                                    <a class="page-link cursor-pointer" @onclick="() => GoToPage(currentPage + 1)">
+                                        @ActionsResources.Next
+                                    </a>
                                 </li>
-                            }
-
-                            @for (int pag = startPage; pag <= endPage; pag++)
-                            {
-                                int pageNumber = pag;
-                                <li class="page-item @(pag == currentPage ? "active" : "")">
-                                    <a class="page-link cursor-pointer" @onclick="() => GoToPage(pageNumber)">@pag</a>
+                                <li class="page-item @(currentPage == totalPages ? "disabled" : "")">
+                                    <a class="page-link cursor-pointer" @onclick="() => GoToPage(totalPages)">
+                                        <i class="fas fa-angle-double-right"></i>
+                                    </a>
                                 </li>
-                            }
-
-                            @if (endPage < totalPages)
-                            {
-                                <li class="page-item disabled">
-                                    <a class="page-link cursor-pointer">...</a>
-                                </li>
-                            }
-
-                            <!-- Next Button -->
-                            <li class="page-item @(currentPage == totalPages ? "disabled" : "")">
-                                <a class="page-link cursor-pointer" @onclick="() => GoToPage(currentPage + 1)">
-                                    @ActionsResources.Next
-                                </a>
-                            </li>
-
-                            <!-- Last Button -->
-                            <li class="page-item @(currentPage == totalPages ? "disabled" : "")">
-                                <a class="page-link cursor-pointer" @onclick="() => GoToPage(totalPages)" title="@ActionsResources.Last">
-                                    <i class="fas fa-angle-double-right"></i>
-                                </a>
-                            </li>
-                        </ul>
-                    </nav>
+                            </ul>
+                        </nav>
+                    </div>
                 </div>
-                <!-- Pagination end -->
             </div>
         </div>
-    </div>
+    }
+    else
+    {
+        <!-- Add/Edit Form -->
+        <div class="card shadow-sm border-0">
+            <div class="card-header bg-primary text-white py-3">
+                <h5 class="mb-0 fw-semibold">
+                    <i class="fas @(Model.Id == Guid.Empty ? "fa-plus" : "fa-edit") me-2"></i>
+                    @(Model.Id == Guid.Empty ? ActionsResources.Add : ActionsResources.Edit) @GeneralResources.HomePageSlider
+                </h5>
+            </div>
+            <div class="card-body">
+                <EditForm Model="@Model" OnValidSubmit="Save">
+                    <DataAnnotationsValidator />
+
+                    <div class="row g-3">
+                        <!-- Image Upload Section -->
+                        <div class="col-12">
+                            <div class="card border-light">
+                                <div class="card-header bg-light">
+                                    <h6 class="mb-0">
+                                        <i class="fas fa-image me-2"></i>Slider Image *
+                                    </h6>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <InputFile OnChange="HandleSelectedImage"
+                                                       class="form-control"
+                                                       accept="image/*"
+                                                       disabled="@(isSaving || isImageProcessing)" />
+                                            <small class="text-muted d-block mt-2">
+                                                <i class="fas fa-info-circle"></i>
+                                                Recommended size: 1920x920 pixels. Max size: 5MB.
+                                                Formats: JPG, PNG, WebP
+                                            </small>
+                                            @if (isImageProcessing)
+                                            {
+                                                <div class="alert alert-info mt-2">
+                                                    <i class="fas fa-spinner fa-spin me-2"></i>Processing image...
+                                                </div>
+                                            }
+                                        </div>
+                                        <div class="col-md-6">
+                                            @if (!string.IsNullOrEmpty(previewImageUrl))
+                                            {
+                                                <div class="position-relative">
+                                                    <img src="@previewImageUrl"
+                                                         class="img-fluid rounded border"
+                                                         alt="Preview"
+                                                         style="max-height: 200px; width: 100%; object-fit: cover;" />
+                                                    <button type="button"
+                                                            class="btn btn-danger btn-sm position-absolute top-0 end-0 m-2"
+                                                            @onclick="RemoveImage"
+                                                            disabled="@(isSaving || isImageProcessing)">
+                                                        <i class="fas fa-times"></i>
+                                                    </button>
+                                                </div>
+                                            }
+                                            else
+                                            {
+                                                <div class="text-center p-4 border rounded bg-light">
+                                                    <i class="fas fa-image fa-3x text-muted mb-2"></i>
+                                                    <p class="text-muted mb-0">No image selected</p>
+                                                </div>
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Title -->
+                        <div class="col-md-12">
+                            <label class="form-label fw-semibold">@FormResources.Title *</label>
+                            <InputText @bind-Value="Model.TitleAr" class="form-control" placeholder="العنوان بالعربية" />
+                            <ValidationMessage For="@(() => Model.TitleAr)" />
+                        </div>
+
+                        <!-- Display Order -->
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">@ECommerceResources.DisplayOrder *</label>
+                            <InputNumber @bind-Value="Model.DisplayOrder"
+                                         @bind-Value:after="OnDisplayOrderChanged"
+                                         class="form-control"
+                                         min="1" />
+                            <small class="text-muted">Current max order: @(AllSliders.Any() ? AllSliders.Max(x => x.DisplayOrder) : 0)</small>
+                        </div>
+
+                        <!-- Buttons -->
+                        <div class="col-12">
+                            <hr />
+                            <div class="d-flex justify-content-end gap-2">
+                                <button type="button"
+                                        class="btn btn-secondary"
+                                        @onclick="CloseModal"
+                                        disabled="@isSaving">
+                                    <i class="fas fa-times me-2"></i>@ActionsResources.Cancel
+                                </button>
+                                <button type="submit"
+                                        class="btn btn-primary"
+                                        disabled="@(isSaving || isImageProcessing)">
+                                    @if (isSaving)
+                                    {
+                                        <span class="spinner-border spinner-border-sm me-2" role="status"></span>
+                                        <span>@ActionsResources.Save...</span>
+                                    }
+                                    else
+                                    {
+                                        <i class="fas fa-save me-2"></i>
+                                        <span>@ActionsResources.Save</span>
+                                    }
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </EditForm>
+            </div>
+        </div>
+    }
 </div>

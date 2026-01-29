@@ -43,7 +43,7 @@ namespace Dashboard.Services.HomePageSlider
 		{
 			try
 			{
-				return await _apiService.GetAsync<HomePageSliderDto>($"{ApiEndpoints.HomePageSlider.Get}/{id}");
+				return await _apiService.GetAsync<HomePageSliderDto>($"{ApiEndpoints.HomePageSlider.GetById}/{id}");
 			}
 			catch (Exception ex)
 			{
@@ -65,7 +65,7 @@ namespace Dashboard.Services.HomePageSlider
 
 			try
 			{
-				return await _apiService.PostAsync<HomePageSliderDto, bool>($"{ApiEndpoints.HomePageSlider.Create}", mainBannerDto);
+				return await _apiService.PostAsync<HomePageSliderDto, bool>($"{ApiEndpoints.HomePageSlider.Create}", mainBannerDto); 
 			}
 			catch (Exception ex)
 			{
@@ -85,7 +85,7 @@ namespace Dashboard.Services.HomePageSlider
 		{
 			try
 			{
-				return await _apiService.PostAsync<Guid, bool>($"{ApiEndpoints.HomePageSlider.Delete}", id);
+				return await _apiService.DeleteAsync< bool>($"{ApiEndpoints.HomePageSlider.Delete}/ {id}");
 			}
 			catch (Exception ex)
 			{

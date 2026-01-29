@@ -319,7 +319,7 @@ namespace BL.Services.WithdrawalMethod
                 var webpImage = _imageProcessingService.ConvertToWebP(resizedImage);
 
                 // Upload and return path
-                return await _fileUploadService.UploadFileAsync(webpImage, Path.Combine("Images", "WithdrawalMethods"));
+                return await _fileUploadService.UploadFileAsync(webpImage, "Images/WithdrawalMethod");
             }
             catch (Exception ex)
             {

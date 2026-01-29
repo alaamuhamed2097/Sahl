@@ -37,7 +37,10 @@ public partial class MappingProfile
             .ForMember(
                 desc => desc.AdministratorLastName,
                 opt => opt.MapFrom(src => src.User.LastName))
-            .ForMember(
+			.ForMember(
+				desc => desc.LogoPath,
+				opt => opt.MapFrom(src => src.User.ProfileImagePath))
+			.ForMember(
                 desc => desc.CountryName,
                 opt => opt.MapFrom(src => src.City.State.Country.TitleEn)
             )

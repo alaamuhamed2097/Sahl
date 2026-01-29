@@ -617,7 +617,7 @@ public class UserRegistrationService : IUserRegistrationService
             var webpImage = _imageProcessingService.ConvertToWebP(resizedImage);
 
             // Upload the WebP image to the specified location
-            var imagePath = await _fileUploadService.UploadFileAsync(webpImage, "Images/IdAndPassports");
+            var imagePath = await _fileUploadService.UploadFileAsync(webpImage, "Images/UserProfile");
 
             // Return the path of the uploaded image
             return imagePath;

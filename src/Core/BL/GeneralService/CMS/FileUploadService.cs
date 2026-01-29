@@ -50,7 +50,7 @@ public class FileUploadService : IFileUploadService
     public async Task<string> UploadFileAsync(byte[] fileBytes, string folderName)
     {
         // Create the uploads folder if it doesn't exist
-        var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads", folderName);
+        var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", folderName);
         if (!Directory.Exists(uploadsFolder))
         {
             Directory.CreateDirectory(uploadsFolder);
@@ -63,7 +63,7 @@ public class FileUploadService : IFileUploadService
         // Write the file bytes to the specified path
         await File.WriteAllBytesAsync(filePath, fileBytes);
 
-        var finalPath = Path.Combine("uploads", folderName, uniqueFileName);
+        var finalPath = Path.Combine(folderName, uniqueFileName);
         return finalPath.Replace('\\', '/');
     }
 

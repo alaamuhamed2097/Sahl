@@ -13,12 +13,10 @@ namespace BL.Contracts.Service.HomePageSlider
         /// Get all active sliders within current date range
         /// </summary>
         Task<IEnumerable<HomePageSliderDto>> GetAllSliders();
-
-
 		Task<PagedResult<HomePageSliderDto>> GetPage(
-	BaseSearchCriteriaModel criteriaModel,
-	CancellationToken cancellationToken = default);
-		//Task<bool> Save(HomePageSliderDto dto, Guid userId);
-		//Task<bool> Delete(Guid id, Guid userId);
+			BaseSearchCriteriaModel criteriaModel,
+			CancellationToken cancellationToken = default);
+		Task<bool> Save(HomePageSliderDto dto, Guid userId);
+		Task<bool> Delete(Guid id, Guid userId);
 	}
 }

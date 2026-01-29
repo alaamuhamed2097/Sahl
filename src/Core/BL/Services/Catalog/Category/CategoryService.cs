@@ -302,9 +302,9 @@ public class CategoryService : BaseService<TbCategory, CategoryDto>, ICategorySe
 
             // Handle file uploads
             if (_fileUploadService.ValidateFile(dto.ImageUrl).isValid)
-                dto.ImageUrl = await SaveImageSync(dto.ImageUrl);
+                dto.ImageUrl = await SaveImageSync(dto.ImageUrl, 800 ,600);
             if (_fileUploadService.ValidateFile(dto.Icon).isValid)
-                dto.Icon = await SaveImageSync(dto.Icon);
+                dto.Icon = await SaveImageSync(dto.Icon, 400,400);
 
             // Entity mapping 
             TbCategory entity = _mapper.MapModel<CategoryDto, TbCategory>(dto);
@@ -910,7 +910,8 @@ public class CategoryService : BaseService<TbCategory, CategoryDto>, ICategorySe
             Children = childrenDtos.ToList()
         };
     }
-    private async Task<string> SaveImageSync(string image)
+    private async Task<string> SaveImageSync(string image, int width ,
+	int height)
     {
         // Check if the file is null or empty
         if (image == null || image.Length == 0)
@@ -931,13 +932,13 @@ public class CategoryService : BaseService<TbCategory, CategoryDto>, ICategorySe
             var imageBytes = await _fileUploadService.GetFileBytesAsync(image);
 
             // Resize the image
-            var resizedImage = _imageProcessingService.ResizeImage(imageBytes, 1024, 1024);
+            var resizedImage = _imageProcessingService.ResizeImage(imageBytes, width, height);
 
             // Convert the resized image to WebP format
             var webpImage = _imageProcessingService.ConvertToWebP(resizedImage);
 
             // Upload the WebP image to the specified location
-            var imagePath = await _fileUploadService.UploadFileAsync(webpImage, "Images");
+            var imagePath = await _fileUploadService.UploadFileAsync(webpImage, "Images/Categories");
 
             // Return the path of the uploaded image
             return imagePath;
