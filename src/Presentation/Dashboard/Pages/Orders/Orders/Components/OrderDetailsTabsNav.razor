@@ -1,0 +1,36 @@
+@using Shared.DTOs.Order.OrderProcessing.AdminOrder
+
+<ul class="nav nav-tabs nav-tabs-custom mb-0" role="tablist">
+    <li class="nav-item" role="presentation">
+        <button class="nav-link @(ActiveTab == "customer" ? "active" : "")"
+                type="button"
+                @onclick='() => SetActiveTab.InvokeAsync("customer")'>
+            <i class="fas fa-user me-2"></i>
+            @OrderResources.CustomerInformation
+        </button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link @(ActiveTab == "items" ? "active" : "")"
+                type="button"
+                @onclick='() => SetActiveTab.InvokeAsync("items")'>
+            <i class="fas fa-box me-2"></i>
+            @OrderResources.OrderItems
+            <span class="badge bg-primary ms-1">@Order.Items.Count</span>
+        </button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link @(ActiveTab == "shipments" ? "active" : "")"
+                type="button"
+                @onclick='() => SetActiveTab.InvokeAsync("shipments")'>
+            <i class="fas fa-shipping-fast me-2"></i>
+            @OrderResources.Shipments
+            <span class="badge bg-info ms-1">@Order.Shipments.Count</span>
+        </button>
+    </li>
+</ul>
+
+@code {
+    [Parameter] public string ActiveTab { get; set; } = "customer";
+    [Parameter] public EventCallback<string> SetActiveTab { get; set; }
+    [Parameter] public AdminOrderDetailsDto Order { get; set; } = null!;
+}

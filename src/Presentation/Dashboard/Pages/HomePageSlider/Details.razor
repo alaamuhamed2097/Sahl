@@ -1,4 +1,4 @@
-﻿@page "/HomePageSlider/Add"
+@page "/HomePageSlider/Add"
 @page "/HomePageSlider/Edit/{Id:guid}"
 @inherits LocalizedComponentBase
 
@@ -86,37 +86,13 @@
                             }
                         </div>
                     </div>
-                    <div class="row align-items-center">
-                        <div class="col-md-6">
-                            <label class="form-label fw-semibold">@FormResources.DisplayOrder</label>
-                            <div class="input-group">
-                                <InputNumber class="form-control"
-                                             @bind-Value="Model.DisplayOrder"
-                                             @onchange="OnDisplayOrderChanged"
-                                             min="1" />
-                            </div>
-                            <small class="text-muted">@FormResources.DisplayOrderHint</small>
+                    <div class="row mt-2">
+                        <div class="col-12">
+                            <small class="text-muted">
+                                <i class="feather icon-info me-1"></i>
+                                @(Model.Id == Guid.Empty ? string.Format(FormResources.NewEntityOrderInfo, GetNextDisplayOrder(), ECommerceResources.MainBanner) : "Order can be changed using the arrows on the slider list.")
+                            </small>
                         </div>
-
-                        @if (Model.Id != Guid.Empty)
-                        {
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label fw-semibold">@ECommerceResources.CurrentPosition</label>
-                                <div class="alert alert-info py-2 mb-0">
-                                    <i class="feather icon-info me-1"></i>
-                                    @string.Format(FormResources.DisplayOrderStatus, Model.DisplayOrder, AllMainBanners.Count)
-                                </div>
-                            </div>
-                        }
-                        else
-                        {
-                            <div class="col-md-6 mt-2">
-                                <div class="alert alert-success py-2 mb-0">
-                                    <i class="feather icon-info me-1"></i>
-                                    @string.Format(FormResources.NewEntityOrderInfo, Model.DisplayOrder, ECommerceResources.MainBanner)
-                                </div>
-                            </div>
-                        }
                     </div>
                 </div>
             </div>

@@ -1,4 +1,5 @@
-﻿using Dashboard.Configuration;
+using Dashboard.Configuration;
+using Dashboard.Constants;
 using Dashboard.Contracts.Authentication;
 using Microsoft.Extensions.Options;
 using Microsoft.JSInterop;
@@ -72,8 +73,8 @@ public class TokenRefreshService : ITokenRefreshService
                 };
             }
 
-            // Call refresh endpoint
-            var refreshUrl = $"{_baseUrl}api/Auth/refresh";
+            // Call refresh endpoint without Bearer token (expired token would cause 401 before reaching refresh logic)
+            var refreshUrl = _baseUrl + ApiEndpoints.Auth.Refresh;
 
             var requestBody = new
             {
@@ -82,7 +83,7 @@ public class TokenRefreshService : ITokenRefreshService
             };
 
             var response = await _jsRuntime.InvokeAsync<FetchResponse>(
-                "httpClientHelper.fetchWithCredentials",
+                "httpClientHelper.fetchWithoutAuth",
                 refreshUrl,
                 "POST",
                 requestBody,
@@ -91,9 +92,7 @@ public class TokenRefreshService : ITokenRefreshService
 
             if (!response.Ok)
             {
-                // Token refresh failed - user needs to login again
                 await _tokenStorage.ClearTokensAsync();
-
                 return new TokenRefreshResult
                 {
                     Success = false,
@@ -109,7 +108,6 @@ public class TokenRefreshService : ITokenRefreshService
 
             if (result?.Success == true && !string.IsNullOrEmpty(result.Data?.AccessToken))
             {
-                // Store new tokens
                 await _tokenStorage.SetTokensAsync(
                     result.Data.AccessToken,
                     result.Data.RefreshToken ?? refreshToken,
@@ -124,19 +122,23 @@ public class TokenRefreshService : ITokenRefreshService
                 };
             }
 
+            // Backend returned 200 but Success: false or invalid payload - clear tokens and require login
+            await _tokenStorage.ClearTokensAsync();
             return new TokenRefreshResult
             {
                 Success = false,
                 RequiresLogin = true,
-                Message = "Invalid refresh response"
+                Message = result?.Message ?? "Invalid refresh response"
             };
         }
         catch (Exception ex)
         {
             Console.WriteLine($"[TokenRefresh] Error: {ex.Message}");
+            await _tokenStorage.ClearTokensAsync();
             return new TokenRefreshResult
             {
                 Success = false,
+                RequiresLogin = true,
                 Message = ex.Message
             };
         }

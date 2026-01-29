@@ -562,5 +562,8 @@
 	<data name="OrderCancelledSuccessfully" xml:space="preserve">
   <value>Order cancelled successfully</value>
 </data>
+	<data name="OperationCompletedSuccessfully" xml:space="preserve">
+  <value>Operation completed successfully</value>
+</data>
 
 </root>

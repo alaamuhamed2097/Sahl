@@ -1,6 +1,6 @@
-using BL.Contracts.Service.Order.OrderProcessing;
-using BL.Contracts.Service.Order.Fulfillment;
 using BL.Contracts.GeneralService;
+using BL.Contracts.Service.Order.Fulfillment;
+using BL.Contracts.Service.Order.OrderProcessing;
 using Common.Enumerations.Order;
 using DAL.Contracts.Repositories.Order;
 using Domains.Entities.Order;
@@ -138,13 +138,27 @@ public class AdminOrderService : IAdminOrderService
                     Status = s.ShipmentStatus,
                     TrackingNumber = s.TrackingNumber,
                     EstimatedDeliveryDate = _dateTimeService.ConvertToLocalTime(s.EstimatedDeliveryDate),
-                    ActualDeliveryDate = _dateTimeService.ConvertToLocalTime(s.ActualDeliveryDate)
+                    ActualDeliveryDate = _dateTimeService.ConvertToLocalTime(s.ActualDeliveryDate),
+                    Items = s.Items.Select(si => new ShipmentItemDto
+                    {
+                        Id = si.Id,
+                        ShipmentId = si.ShipmentId,
+                        ItemId = si.ItemId,
+                        ItemName = si.Item?.TitleEn ?? "",
+                        TitleAr = si.Item?.TitleAr ?? "",
+                        TitleEn = si.Item?.TitleEn ?? "",
+                        ItemImage = si.Item?.ThumbnailImage,
+                        ItemCombinationId = si.ItemCombinationId,
+                        Quantity = si.Quantity,
+                        UnitPrice = si.UnitPrice,
+                        SubTotal = si.SubTotal
+                    }).ToList()
                 }).ToList(),
                 PaymentInfo = new PaymentInfoDto
                 {
                     Status = order.PaymentStatus,
-                    PaymentMethod = order.OrderPayments.FirstOrDefault()?.PaymentMethod.ToString() ?? "",
-                    // ✅ FIXED: Use OrderNumber instead of InvoiceId
+                    // Use PaymentMethodType enum which is always populated
+                    PaymentMethod = order.OrderPayments.FirstOrDefault()?.PaymentMethodType.ToString() ?? "Not Specified",
                     TransactionId = order.Number,
                     PaymentDate = _dateTimeService.ConvertToLocalTime(order.PaidAt),
                     Amount = order.Price
@@ -368,7 +382,8 @@ public class AdminOrderService : IAdminOrderService
         {
             OrderDetailId = od.Id,
             ItemId = od.ItemId,
-            ItemName = od.Item?.TitleEn ?? "",
+            TitleAr = od.Item?.TitleAr ?? "",
+            TitleEn = od.Item?.TitleEn ?? "",
             ItemImage = od.Item?.ThumbnailImage ?? "",
             VendorId = od.VendorId,
             VendorName = od.Vendor?.StoreName ?? "",
@@ -393,24 +408,22 @@ public class AdminOrderService : IAdminOrderService
             .FirstOrDefault()?.ShipmentStatus ?? Common.Enumerations.Shipping.ShipmentStatus.PendingProcessing;
     }
 
+    /// <summary>
+    /// Admin can only manually change order status: Processing→Shipped and Shipped→Delivered.
+    /// Confirmed, Processing (as target), and Cancelled are set by system (payment/shipments).
+    /// </summary>
     private bool IsValidStatusTransition(OrderProgressStatus current, OrderProgressStatus target)
     {
         if (current == target) return true;
 
-        var validTransitions = new Dictionary<OrderProgressStatus, List<OrderProgressStatus>>
+        // Only allow manual admin transitions: Processing → Shipped, Shipped → Delivered
+        var allowedManualTransitions = new Dictionary<OrderProgressStatus, List<OrderProgressStatus>>
         {
-            [OrderProgressStatus.Pending] = new() { OrderProgressStatus.Confirmed, OrderProgressStatus.Cancelled },
-            [OrderProgressStatus.Confirmed] = new() { OrderProgressStatus.Processing, OrderProgressStatus.Cancelled },
-            [OrderProgressStatus.Processing] = new() { OrderProgressStatus.Shipped, OrderProgressStatus.Cancelled },
-            [OrderProgressStatus.Shipped] = new() { OrderProgressStatus.Delivered, OrderProgressStatus.Returned },
-            [OrderProgressStatus.Delivered] = new() { OrderProgressStatus.Completed, OrderProgressStatus.Returned },
-            [OrderProgressStatus.Completed] = new() { OrderProgressStatus.Returned },
-            [OrderProgressStatus.Cancelled] = new(),
-            [OrderProgressStatus.Returned] = new() { OrderProgressStatus.Refunded },
-            [OrderProgressStatus.Refunded] = new()
+            [OrderProgressStatus.Processing] = new() { OrderProgressStatus.Shipped },
+            [OrderProgressStatus.Shipped] = new() { OrderProgressStatus.Delivered }
         };
 
-        return validTransitions.ContainsKey(current) &&
-               validTransitions[current].Contains(target);
+        return allowedManualTransitions.ContainsKey(current) &&
+               allowedManualTransitions[current].Contains(target);
     }
 }

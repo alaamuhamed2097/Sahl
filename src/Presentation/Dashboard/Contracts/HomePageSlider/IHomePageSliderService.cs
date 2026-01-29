@@ -1,4 +1,4 @@
-﻿using Shared.DTOs.HomeSlider;
+using Shared.DTOs.HomeSlider;
 using Shared.GeneralModels;
 
 namespace Dashboard.Contracts.HomePageSlider
@@ -9,5 +9,6 @@ namespace Dashboard.Contracts.HomePageSlider
 		Task<ResponseModel<IEnumerable<HomePageSliderDto>>> GetAllAsync();
 		Task<ResponseModel<HomePageSliderDto>> GetByIdAsync(Guid id);
 		Task<ResponseModel<bool>> SaveAsync(HomePageSliderDto mainBannerDto);
+		Task<ResponseModel<bool>> UpdateDisplayOrderAsync(Guid sliderId, int newOrder);
 	}
 }

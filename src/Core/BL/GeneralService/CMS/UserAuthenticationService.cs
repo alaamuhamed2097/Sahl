@@ -1,4 +1,4 @@
-﻿using BL.Contracts.GeneralService;
+using BL.Contracts.GeneralService;
 using BL.Contracts.GeneralService.CMS;
 using BL.Contracts.Service.Vendor;
 using BL.Utils;
@@ -154,6 +154,7 @@ public class UserAuthenticationService : IUserAuthenticationService
                 Success = true,
                 FirstName = user.FirstName,
                 LastName = user.LastName,
+                Email = user.Email,
                 ProfileImagePath = user.ProfileImagePath ?? "uploads/Images/ProfileImages/Vendor/default.png",
                 Token = tokenResult.Token,
                 RefreshToken = refreshToken,

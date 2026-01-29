@@ -102,7 +102,7 @@
 											<div class="d-flex justify-content-center">
 												@if (!string.IsNullOrEmpty(item.ThumbnailImage))
 												{
-													<img src="@baseUrl/@item.ThumbnailImage"
+													<img src="@(baseUrl + @item.ThumbnailImage)"
 														 class="rounded-2 object-fit-cover border"
 														 style="width: 70px; height: 70px;"
 														 alt="Product image" />

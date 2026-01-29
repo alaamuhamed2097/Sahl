@@ -1,4 +1,5 @@
 using Dashboard.Constants;
+using Dashboard.Contracts.Authentication;
 using Dashboard.Contracts.CMS;
 using Dashboard.Contracts.General;
 using Dashboard.Models;
@@ -20,15 +21,18 @@ namespace Dashboard.Services.CMS
     {
         private readonly IApiService _apiService;
         private readonly TokenAuthenticationStateProvider _authStateProvider;
+        private readonly ITokenStorageService _tokenStorage;
         private readonly IJSRuntime _jsRuntime;
 
         public CookieAuthenticationService(
             IApiService apiService,
             TokenAuthenticationStateProvider authStateProvider,
+            ITokenStorageService tokenStorage,
             IJSRuntime jsRuntime)
         {
             _apiService = apiService;
             _authStateProvider = authStateProvider;
+            _tokenStorage = tokenStorage;
             _jsRuntime = jsRuntime;
         }
 
@@ -47,20 +51,21 @@ namespace Dashboard.Services.CMS
 
             if (response.Success && response.Data != null)
             {
-                // ? CRITICAL FIX: Store token in localStorage for Bearer authentication
                 if (!string.IsNullOrEmpty(response.Data.Token))
                 {
                     try
                     {
-                        await _jsRuntime.InvokeVoidAsync("localStorage.setItem", "authToken", response.Data.Token);
+                        await _tokenStorage.SetTokensAsync(
+                            response.Data.Token,
+                            response.Data.RefreshToken ?? string.Empty,
+                            response.Data.Email ?? model.Identifier);
                     }
                     catch (Exception ex)
                     {
-                        Console.WriteLine($"[CookieAuthService] ? Failed to store token: {ex.Message}");
+                        Console.WriteLine($"[CookieAuthService] Failed to store tokens: {ex.Message}");
                     }
                 }
 
-                // Notify auth state provider
                 await _authStateProvider.MarkUserAsAuthenticated();
 
                 return new ResponseModel<SignInResult>
@@ -86,16 +91,18 @@ namespace Dashboard.Services.CMS
 
             if (response.Success && response.Data != null)
             {
-                // Store token in localStorage for Bearer authentication
                 if (!string.IsNullOrEmpty(response.Data.Token))
                 {
                     try
                     {
-                        await _jsRuntime.InvokeVoidAsync("localStorage.setItem", "authToken", response.Data.Token);
+                        await _tokenStorage.SetTokensAsync(
+                            response.Data.Token,
+                            response.Data.RefreshToken ?? string.Empty,
+                            response.Data.Email ?? string.Empty);
                     }
                     catch (Exception ex)
                     {
-                        Console.WriteLine($"[CookieAuthService] ? Failed to store token: {ex.Message}");
+                        Console.WriteLine($"[CookieAuthService] Failed to store tokens: {ex.Message}");
                     }
                 }
 
@@ -122,20 +129,21 @@ namespace Dashboard.Services.CMS
 
             if (response.Success && response.Data != null)
             {
-                // Store token in localStorage
                 if (!string.IsNullOrEmpty(response.Data.Token))
                 {
                     try
                     {
-                        await _jsRuntime.InvokeVoidAsync("localStorage.setItem", "authToken", response.Data.Token);
+                        await _tokenStorage.SetTokensAsync(
+                            response.Data.Token,
+                            response.Data.RefreshToken ?? string.Empty,
+                            response.Data.Email ?? string.Empty);
                     }
                     catch (Exception ex)
                     {
-                        Console.WriteLine($"[CookieAuthService] ? Failed to store token: {ex.Message}");
+                        Console.WriteLine($"[CookieAuthService] Failed to store tokens: {ex.Message}");
                     }
                 }
 
-                // Notify auth state provider
                 await _authStateProvider.MarkUserAsAuthenticated();
 
                 return new ResponseModel<SignInResult>
@@ -161,20 +169,21 @@ namespace Dashboard.Services.CMS
 
             if (response.Success && response.Data != null)
             {
-                // Store token in localStorage
                 if (!string.IsNullOrEmpty(response.Data.Token))
                 {
                     try
                     {
-                        await _jsRuntime.InvokeVoidAsync("localStorage.setItem", "authToken", response.Data.Token);
+                        await _tokenStorage.SetTokensAsync(
+                            response.Data.Token,
+                            response.Data.RefreshToken ?? string.Empty,
+                            response.Data.Email ?? string.Empty);
                     }
                     catch (Exception ex)
                     {
-                        Console.WriteLine($"[CookieAuthService] ? Failed to store token: {ex.Message}");
+                        Console.WriteLine($"[CookieAuthService] Failed to store tokens: {ex.Message}");
                     }
                 }
 
-                // Notify auth state provider
                 await _authStateProvider.MarkUserAsAuthenticated();
 
                 return new ResponseModel<SignInResult>
@@ -194,17 +203,15 @@ namespace Dashboard.Services.CMS
 
         public async Task Logout()
         {
-            // Clear token from localStorage
             try
             {
-                await _jsRuntime.InvokeVoidAsync("localStorage.removeItem", "authToken");
+                await _tokenStorage.ClearTokensAsync();
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"[CookieAuthService] ? Failed to remove token: {ex.Message}");
+                Console.WriteLine($"[CookieAuthService] Failed to clear tokens: {ex.Message}");
             }
 
-            // The API will clear the cookies
             await _authStateProvider.MarkUserAsLoggedOut();
         }
 

@@ -5,7 +5,7 @@ using Resources;
 using Shared.DTOs.Catalog.Unit;
 using Shared.GeneralModels;
 
-namespace Dashboard.Services.ECommerce.Item
+namespace Dashboard.Services.Catalog.Item
 {
     public class UnitService : IUnitService
     {

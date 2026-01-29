@@ -1,4 +1,4 @@
-﻿using BL.Contracts.GeneralService.CMS;
+using BL.Contracts.GeneralService.CMS;
 using BL.Contracts.IMapper;
 using BL.Contracts.Service.HomePageSlider;
 using BL.Extensions;
@@ -304,6 +304,17 @@ namespace BL.Services.HomeSlider
 				_logger.Error(ex, "Error deleting home page slider {SliderId}", id);
 				return false;
 			}
+		}
+
+		public async Task<bool> UpdateDisplayOrderAsync(Guid sliderId, int newOrder, Guid userId)
+		{
+			var entity = await _baseRepository.FindByIdAsync(sliderId);
+			if (entity == null)
+				return false;
+
+			entity.DisplayOrder = newOrder;
+			var result = await _baseRepository.SaveAsync(entity, userId);
+			return result.Success;
 		}
 
 		// ===== HELPER METHODS =====

@@ -1,34 +1,75 @@
-using Dashboard.Constants;
+﻿using Dashboard.Constants;
 using Dashboard.Contracts.ECommerce.Item;
 using Dashboard.Contracts.General;
 using Resources;
-using Shared.DTOs.ECommerce.Offer;
+using Shared.DTOs.Catalog.Item;
 using Shared.GeneralModels;
+using Shared.Parameters;
 
-namespace Dashboard.Services.ECommerce.Item
+namespace Dashboard.Services.Catalog.Item
 {
-    public class ItemConditionService : IItemConditionService
+    public class ItemService : IItemService
     {
         private readonly IApiService _apiService;
 
-        public ItemConditionService(IApiService apiService)
+        public ItemService(IApiService apiService)
         {
             _apiService = apiService;
         }
 
         /// <summary>
-        /// Get all item conditions with optional filters.
+        /// Get all items with optional filters.
         /// </summary>
-        public async Task<ResponseModel<IEnumerable<VendorItemConditionDto>>> GetAllAsync()
+        public async Task<ResponseModel<IEnumerable<ItemDto>>> GetAllAsync()
         {
             try
             {
-                return await _apiService.GetAsync<IEnumerable<VendorItemConditionDto>>($"{ApiEndpoints.ItemCondition.Get}");
+                return await _apiService.GetAsync<IEnumerable<ItemDto>>($"{ApiEndpoints.Item.Get}");
             }
             catch (Exception ex)
             {
                 // Log error here
-                return new ResponseModel<IEnumerable<VendorItemConditionDto>>
+                return new ResponseModel<IEnumerable<ItemDto>>
+                {
+                    Success = false,
+                    Message = ex.Message
+                };
+            }
+        }
+
+        public async Task<ResponseModel<ItemDto>> GetByIdAsync(Guid id)
+        {
+            try
+            {
+                return await _apiService.GetAsync<ItemDto>($"{ApiEndpoints.Item.Get}/{id}");
+            }
+            catch (Exception ex)
+            {
+                // Log error here
+                return new ResponseModel<ItemDto>
+                {
+                    Success = false,
+                    Message = ex.Message
+                };
+
+            }
+        }
+
+        /// <summary>
+        /// Save or update an item.
+        /// </summary>
+        public async Task<ResponseModel<bool>> SaveAsync(ItemDto item)
+        {
+            if (item == null) throw new ArgumentNullException(nameof(item));
+
+            try
+            {
+                return await _apiService.PostAsync<ItemDto, bool>($"{ApiEndpoints.Item.Save}", item);
+            }
+            catch (Exception ex)
+            {
+                // Log error here
+                return new ResponseModel<bool>
                 {
                     Success = false,
                     Message = ex.Message
@@ -37,18 +78,20 @@ namespace Dashboard.Services.ECommerce.Item
         }
 
         /// <summary>
-        /// Get item condition by ID.
+        /// Update status of an item.
         /// </summary>
-        public async Task<ResponseModel<VendorItemConditionDto>> GetByIdAsync(Guid id)
+        public async Task<ResponseModel<bool>> UpdateStatusAsync(UpdateItemVisibilityRequest updateItemVisibility)
         {
+            if (updateItemVisibility == null) throw new ArgumentNullException(nameof(updateItemVisibility));
+
             try
             {
-                return await _apiService.GetAsync<VendorItemConditionDto>($"{ApiEndpoints.ItemCondition.Get}/{id}");
+                return await _apiService.PostAsync<UpdateItemVisibilityRequest, bool>($"{ApiEndpoints.Item.UpdateStatus}", updateItemVisibility);
             }
             catch (Exception ex)
             {
                 // Log error here
-                return new ResponseModel<VendorItemConditionDto>
+                return new ResponseModel<bool>
                 {
                     Success = false,
                     Message = ex.Message
@@ -57,35 +100,13 @@ namespace Dashboard.Services.ECommerce.Item
         }
 
         /// <summary>
-        /// Save or update a item condition.
+        /// Delete an item by ID.
         /// </summary>
-        public async Task<ResponseModel<VendorItemConditionDto>> SaveAsync(VendorItemConditionDto itemCondition)
-        {
-            if (itemCondition == null) throw new ArgumentNullException(nameof(itemCondition));
-
-            try
-            {
-                return await _apiService.PostAsync<VendorItemConditionDto, VendorItemConditionDto>($"{ApiEndpoints.ItemCondition.Save}", itemCondition); ;
-            }
-            catch (Exception ex)
-            {
-                // Log error here
-                return new ResponseModel<VendorItemConditionDto>
-                {
-                    Success = false,
-                    Message = ex.Message
-                };
-            }
-        }
-
-        /// <summary>
-        /// Delete a item condition by ID.
-        /// </summary>
-        public async Task<ResponseModel<bool>> DeleteAsync(Guid id)
+        public async Task<ResponseModel<bool>> DeleteAsync(Guid itemId)
         {
             try
             {
-                var result = await _apiService.PostAsync<Guid, ResponseModel<bool>>($"{ApiEndpoints.ItemCondition.Delete}", id);
+                var result = await _apiService.PostAsync<Guid, bool>($"{ApiEndpoints.Item.Delete}", itemId);
                 if (result.Success)
                 {
                     return new ResponseModel<bool>
@@ -94,7 +115,6 @@ namespace Dashboard.Services.ECommerce.Item
                         Message = result.Message
                     };
                 }
-
                 return new ResponseModel<bool>
                 {
                     Success = false,
@@ -112,6 +132,5 @@ namespace Dashboard.Services.ECommerce.Item
                 };
             }
         }
-
     }
 }

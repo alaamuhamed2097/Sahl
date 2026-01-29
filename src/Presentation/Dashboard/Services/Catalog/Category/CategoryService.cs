@@ -5,7 +5,7 @@ using Resources;
 using Shared.DTOs.Catalog.Category;
 using Shared.GeneralModels;
 
-namespace Dashboard.Services.ECommerce.Category
+namespace Dashboard.Services.Catalog.Category
 {
     public class CategoryService : ICategoryService
     {

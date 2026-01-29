@@ -1,4 +1,6 @@
 ﻿using Common.Enumerations.Shipping;
+using Resources;
+using Resources.Enumerations;
 
 namespace Shared.DTOs.Order.OrderProcessing.AdminOrder
 {
@@ -6,7 +8,9 @@ namespace Shared.DTOs.Order.OrderProcessing.AdminOrder
     {
         public Guid OrderDetailId { get; set; }
         public Guid ItemId { get; set; }
-        public string ItemName { get; set; } = null!;
+        public string TitleAr { get; set; } = null!;
+        public string TitleEn { get; set; } = null!;
+        public string Title => ResourceManager.CurrentLanguage == Language.Arabic ? TitleAr : TitleEn;
         public string ItemImage { get; set; } = null!;
         public Guid VendorId { get; set; }
         public string VendorName { get; set; } = null!;

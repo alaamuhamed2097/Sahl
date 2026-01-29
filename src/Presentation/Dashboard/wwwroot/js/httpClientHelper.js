@@ -57,6 +57,42 @@ window.httpClientHelper = {
         }
     },
 
+    // Fetch without Authorization header (for refresh token endpoint - avoids sending expired token)
+    fetchWithoutAuth: async function (url, method, body, headers) {
+        try {
+            const options = {
+                method: method || 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    ...headers
+                }
+            };
+
+            if (body && method !== 'GET' && method !== 'HEAD') {
+                options.body = JSON.stringify(body);
+            }
+
+            const response = await fetch(url, options);
+            const responseText = await response.text();
+
+            return {
+                ok: response.ok,
+                status: response.status,
+                statusText: response.statusText,
+                body: responseText
+            };
+        } catch (error) {
+            console.error('[HttpClientHelper] fetchWithoutAuth Error:', error);
+            return {
+                ok: false,
+                status: 0,
+                statusText: error.message || 'Network error',
+                body: ''
+            };
+        }
+    },
+
     // Set authentication state flag in localStorage
     setAuthState: function (isAuthenticated) {
         try {

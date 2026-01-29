@@ -7,6 +7,7 @@ namespace Dashboard.Constants
         public static class Auth
         {
             public const string Login = "api/v1/Auth/login";
+            public const string Refresh = "api/v1/Auth/refresh";
         }
 
         public static class UserAuthentication
@@ -525,6 +526,7 @@ namespace Dashboard.Constants
             public const string Create = $"{Base}/save";
             public const string Update = $"{Base}/save";
             public const string Delete = $"{Base}";
+            public static string UpdateDisplayOrder(Guid sliderId) => $"{Base}/{sliderId}/display-order";
         }
 
         public static class ReviewReport

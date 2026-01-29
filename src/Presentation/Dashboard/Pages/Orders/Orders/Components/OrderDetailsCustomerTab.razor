@@ -1,0 +1,169 @@
+@using Shared.DTOs.Order.OrderProcessing.AdminOrder
+
+<div class="tab-pane-custom active">
+    <div class="card shadow-sm border-0 mb-4">
+        <div class="card-header bg-gradient-primary text-white py-3">
+            <h5 class="mb-0 fw-bold d-flex align-items-center gap-2">
+                <i class="fas fa-user"></i>
+                @OrderResources.CustomerInformation
+            </h5>
+        </div>
+        <div class="card-body">
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <div class="info-box">
+                        <label class="text-muted small mb-1 d-flex align-items-center gap-1">
+                            <i class="fas fa-user-circle text-primary"></i>
+                            @OrderResources.CustomerName
+                        </label>
+                        <div class="fw-bold fs-5">@Order.Customer.CustomerFullName</div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="info-box">
+                        <label class="text-muted small mb-1 d-flex align-items-center gap-1">
+                            <i class="fas fa-envelope text-primary"></i>
+                            @FormResources.Email
+                        </label>
+                        <div class="fw-bold">
+                            <a href="mailto:@Order.Customer.Email" class="text-decoration-none text-primary">
+                                @Order.Customer.Email
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="info-box">
+                        <label class="text-muted small mb-1 d-flex align-items-center gap-1">
+                            <i class="fas fa-phone text-primary"></i>
+                            @FormResources.PhoneNumber
+                        </label>
+                        <div class="fw-bold">
+                            <a href="tel:@(Order.Customer.PhoneCode + Order.Customer.Phone)" class="text-decoration-none text-primary">
+                                @Order.Customer.PhoneCode @Order.Customer.Phone
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card shadow-sm border-0 mb-4">
+        <div class="card-header bg-gradient-info text-white py-3">
+            <h5 class="mb-0 fw-bold d-flex align-items-center gap-2">
+                <i class="fas fa-map-marker-alt"></i>
+                @OrderResources.ShippingInformation
+            </h5>
+        </div>
+        <div class="card-body">
+            <div class="row g-3">
+                <div class="col-12">
+                    <div class="info-box">
+                        <label class="text-muted small mb-1 d-flex align-items-center gap-1">
+                            <i class="fas fa-user text-info"></i>
+                            @OrderResources.RecipientName
+                        </label>
+                        <div class="fw-bold">@Order.DeliveryAddress.RecipientName</div>
+                    </div>
+                </div>
+                <div class="col-12">
+                    <div class="info-box">
+                        <label class="text-muted small mb-1 d-flex align-items-center gap-1">
+                            <i class="fas fa-location-arrow text-info"></i>
+                            @FormResources.Address
+                        </label>
+                        <div class="fw-bold">@Order.DeliveryAddress.Address</div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="info-box">
+                        <label class="text-muted small mb-1">@FormResources.City</label>
+                        <div class="fw-bold">@Order.DeliveryAddress.CityNameEn</div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="info-box">
+                        <label class="text-muted small mb-1">@FormResources.State</label>
+                        <div class="fw-bold">@Order.DeliveryAddress.StateNameEn</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @if (Order.PaymentInfo != null)
+    {
+        <div class="card shadow-sm border-0 mb-4">
+            <div class="card-header bg-gradient-warning text-white py-3">
+                <h5 class="mb-0 fw-bold d-flex align-items-center gap-2">
+                    <i class="fas fa-credit-card"></i>
+                    @OrderResources.PaymentInformation
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="text-muted small">@OrderResources.PaymentMethod:</label>
+                        <div class="fw-bold">@GetPaymentMethodDisplay()</div>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="text-muted small">@OrderResources.TransactionId:</label>
+                        <code>@Order.PaymentInfo.TransactionId</code>
+                    </div>
+                    @if (Order.PaymentInfo.PaymentDate.HasValue)
+                    {
+                        <div class="col-md-6">
+                            <label class="text-muted small">@OrderResources.PaymentDate:</label>
+                            <div>@FormatDateTime(Order.PaymentInfo.PaymentDate)</div>
+                        </div>
+                    }
+                </div>
+
+                <div class="mt-3 pt-3 border-top">
+                    <h6 class="text-muted mb-3">@OrderResources.PaymentDetails</h6>
+                    <div class="row g-2">
+                        @if (Order.WalletPaidAmount > 0)
+                        {
+                            <div class="col-md-4">
+                                <div class="payment-breakdown-item">
+                                    <small class="text-muted d-block"><i class="fas fa-wallet me-1"></i>@OrderResources.Wallet</small>
+                                    <strong dir="ltr">@FormatCurrency(Order.WalletPaidAmount)</strong>
+                                </div>
+                            </div>
+                        }
+                        @if (Order.CardPaidAmount > 0)
+                        {
+                            <div class="col-md-4">
+                                <div class="payment-breakdown-item">
+                                    <small class="text-muted d-block"><i class="fas fa-credit-card me-1"></i>@OrderResources.Card</small>
+                                    <strong dir="ltr">@FormatCurrency(Order.CardPaidAmount)</strong>
+                                </div>
+                            </div>
+                        }
+                        @if (Order.CashPaidAmount > 0)
+                        {
+                            <div class="col-md-4">
+                                <div class="payment-breakdown-item">
+                                    <small class="text-muted d-block"><i class="fas fa-money-bill-wave me-1"></i>@OrderResources.Cash</small>
+                                    <strong dir="ltr">@FormatCurrency(Order.CashPaidAmount)</strong>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                    <div class="payment-total mt-3 pt-2 border-top">
+                        <span>@OrderResources.TotalAmount:</span>
+                        <strong class="text-primary" dir="ltr">@FormatCurrency(Order.TotalPaidAmount)</strong>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+@code {
+    [Parameter] public AdminOrderDetailsDto Order { get; set; } = null!;
+    [Parameter] public Func<string> GetPaymentMethodDisplay { get; set; } = null!;
+    [Parameter] public Func<DateTime?, string> FormatDateTime { get; set; } = null!;
+    [Parameter] public Func<decimal, string> FormatCurrency { get; set; } = null!;
+}

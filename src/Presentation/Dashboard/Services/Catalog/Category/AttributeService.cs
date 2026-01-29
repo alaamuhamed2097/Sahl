@@ -6,7 +6,7 @@ using Shared.DTOs.Catalog.Category;
 using Shared.GeneralModels;
 using Shared.ResultModels;
 
-namespace Dashboard.Services.ECommerce.Category
+namespace Dashboard.Services.Catalog.Category
 {
     public class AttributeService : IAttributeService
     {

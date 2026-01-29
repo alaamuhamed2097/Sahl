@@ -1,0 +1,70 @@
+@using Common.Enumerations.Order
+@using Common.Enumerations.Payment
+@using Shared.DTOs.Order.OrderProcessing.AdminOrder
+
+<div class="card shadow-sm border-0 mb-4">
+    <div class="card-header d-flex flex-wrap justify-content-between bg-primary align-items-center py-3 gap-3">
+        <h4 class="modal-title text-white mb-0 d-flex align-items-center gap-2">
+            <i class="fas fa-shopping-cart"></i>
+            <span class="d-none d-md-inline">@OrderResources.OrderDetails - </span>
+            <span class="fw-bold">#@Order.OrderNumber</span>
+        </h4>
+        <button type="button" class="btn btn-light btn-sm" @onclick="OnBackClick">
+            <i class="fas fa-arrow-left me-1"></i>
+            @ActionsResources.Back
+        </button>
+    </div>
+
+    <div class="order-info-bar">
+        <div class="info-item">
+            <div class="info-icon">
+                <i class="fas fa-hashtag"></i>
+            </div>
+            <div class="info-content">
+                <small class="info-label">@OrderResources.OrderNumber</small>
+                <strong class="info-value text-primary">@Order.OrderNumber</strong>
+            </div>
+        </div>
+        <div class="info-item">
+            <div class="info-icon">
+                <i class="fas fa-calendar"></i>
+            </div>
+            <div class="info-content">
+                <small class="info-label">@FormResources.Date</small>
+                <strong class="info-value">@FormatDateTime(Order.OrderDate)</strong>
+            </div>
+        </div>
+        <div class="info-item">
+            <div class="info-icon">
+                <i class="fas fa-tasks"></i>
+            </div>
+            <div class="info-content">
+                <small class="info-label">@OrderResources.Status</small>
+                <span class="badge bg-@GetOrderStatusBadgeClass(Order.OrderStatus) fs-6">
+                    @GetOrderStatusText(Order.OrderStatus)
+                </span>
+            </div>
+        </div>
+        <div class="info-item">
+            <div class="info-icon">
+                <i class="fas fa-credit-card"></i>
+            </div>
+            <div class="info-content">
+                <small class="info-label">@OrderResources.PaymentStatus</small>
+                <span class="badge bg-@GetPaymentStatusClass(Order.PaymentStatus) fs-6">
+                    @GetPaymentStatusText(Order.PaymentStatus)
+                </span>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter] public AdminOrderDetailsDto Order { get; set; } = null!;
+    [Parameter] public EventCallback OnBackClick { get; set; }
+    [Parameter] public Func<DateTime?, string> FormatDateTime { get; set; } = null!;
+    [Parameter] public Func<OrderProgressStatus, string> GetOrderStatusBadgeClass { get; set; } = null!;
+    [Parameter] public Func<OrderProgressStatus, string> GetOrderStatusText { get; set; } = null!;
+    [Parameter] public Func<PaymentStatus, string> GetPaymentStatusClass { get; set; } = null!;
+    [Parameter] public Func<PaymentStatus, string> GetPaymentStatusText { get; set; } = null!;
+}
