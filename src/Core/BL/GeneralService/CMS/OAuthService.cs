@@ -278,7 +278,7 @@ public class OAuthService : IOAuthService
                 {
                     FirstName = user.FirstName,
                     LastName = user.LastName,
-                    //Email = user.Email,
+                    Email = user.Email,
                     ProfileImagePath = user.ProfileImagePath,
                     Token = tokenResult.Token,
                     RefreshToken = refreshToken,

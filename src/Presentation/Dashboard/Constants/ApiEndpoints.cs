@@ -7,6 +7,7 @@ namespace Dashboard.Constants
         public static class Auth
         {
             public const string Login = "api/v1/Auth/login";
+            public const string Refresh = "api/v1/Auth/refresh";
         }
 
         public static class UserAuthentication

@@ -355,14 +355,14 @@ namespace Api.Controllers.v1.Authentication
 
         [HttpPost("refresh")]
         [ProducesResponseType(typeof(ResponseModel<RefreshTokenResponseDto>), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(ResponseModel<string>), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<IActionResult> RefreshToken([FromBody] RefreshTokenRequestDto request)
         {
             if (!ModelState.IsValid ||
                 string.IsNullOrEmpty(request.Email) ||
                 string.IsNullOrEmpty(request.RefreshToken))
             {
-                return Ok(new ResponseModel<RefreshTokenResponseDto>
+                return Unauthorized(new ResponseModel<RefreshTokenResponseDto>
                 {
                     Success = false,
                     Message = "Email and refresh token are required"
@@ -375,7 +375,6 @@ namespace Api.Controllers.v1.Authentication
                     ? Request.Headers["X-Platform"].ToString().ToLower()
                     : "website";
 
-                // Validate the refresh token
                 var validationResult = await _tokenService.ValidateRefreshTokenAsync(
                     new RefreshTokenRequestDto
                     {
@@ -387,14 +386,13 @@ namespace Api.Controllers.v1.Authentication
 
                 if (!validationResult.Success)
                 {
-                    return Ok(new ResponseModel<RefreshTokenResponseDto>
+                    return Unauthorized(new ResponseModel<RefreshTokenResponseDto>
                     {
                         Success = false,
                         Message = validationResult.Message ?? "Invalid or expired refresh token"
                     });
                 }
 
-                // Generate new access token
                 var newAccessToken = await _tokenService.GenerateJwtTokenAsync(
                     validationResult.UserId,
                     validationResult.UserRoles
@@ -402,14 +400,13 @@ namespace Api.Controllers.v1.Authentication
 
                 if (!newAccessToken.Success)
                 {
-                    return Ok(new ResponseModel<RefreshTokenResponseDto>
+                    return Unauthorized(new ResponseModel<RefreshTokenResponseDto>
                     {
                         Success = false,
                         Message = "Failed to generate new access token"
                     });
                 }
 
-                // Generate new refresh token (optional - for token rotation)
                 var regenerateResult = await _tokenService.RegenerateRefreshTokenAsync(
                     new RefreshTokenRequestDto
                     {
@@ -426,7 +423,7 @@ namespace Api.Controllers.v1.Authentication
                         AccessToken = newAccessToken.Token,
                         RefreshToken = regenerateResult.Success
                             ? regenerateResult.RefreshToken
-                            : request.RefreshToken // Use old one if regeneration fails
+                            : request.RefreshToken
                     }
                 };
 
@@ -436,7 +433,7 @@ namespace Api.Controllers.v1.Authentication
             catch (Exception ex)
             {
                 _logger.Error(ex, "Token refresh error");
-                return Ok(new ResponseModel<RefreshTokenResponseDto>
+                return Unauthorized(new ResponseModel<RefreshTokenResponseDto>
                 {
                     Success = false,
                     Message = "An error occurred while refreshing token"
