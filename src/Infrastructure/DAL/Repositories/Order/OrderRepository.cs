@@ -242,6 +242,10 @@ public class OrderRepository : TableRepository<TbOrder>, IOrderRepository
                     .ThenInclude(od => od.Vendor)
                 .Include(o => o.TbOrderShipments)
                     .ThenInclude(s => s.Items)
+                        .ThenInclude(si => si.Item)
+                .Include(o => o.TbOrderShipments)
+                    .ThenInclude(s => s.Items)
+                        .ThenInclude(si => si.OrderDetail)
                 .Include(o => o.OrderPayments)
                 .FirstOrDefaultAsync(cancellationToken);
         }

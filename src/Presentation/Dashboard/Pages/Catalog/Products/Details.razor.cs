@@ -18,7 +18,6 @@ using Shared.DTOs.Catalog.Item;
 using Shared.DTOs.Catalog.Unit;
 using Shared.DTOs.ECommerce.Offer;
 using Shared.DTOs.Media;
-using static Dashboard.Pages.Catalog.Products.Components.AttributeValuesSection;
 
 
 namespace Dashboard.Pages.Catalog.Products
@@ -80,11 +79,8 @@ namespace Dashboard.Pages.Catalog.Products
         protected List<CategoryAttributeDto> categoryAttributes = new();
         private List<BrandDto> brands = new();
         protected bool isLoadingAttributes = false;
-        private Dictionary<Guid, string> _optionDisplayMap = new();
         private Dictionary<Guid, List<string>> attributeValues = new();
         private Dictionary<Guid, string> nonPricingAttributeValues = new();
-        private Dictionary<Guid, List<string>> pricingAttributeValues = new();
-        private Dictionary<Guid, Dictionary<string, PriceModifierInfo>> attributeValuePriceModifiers = new();
         private AttributeValuesSection attributeValuesSectionRef;
 
         protected override async Task OnInitializedAsync()

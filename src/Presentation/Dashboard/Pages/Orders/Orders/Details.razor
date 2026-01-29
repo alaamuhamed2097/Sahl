@@ -219,6 +219,12 @@ else
                     {
                         <div class="tab-pane-custom active">
                             <div class="card shadow-sm border-0 mb-4">
+                                <div class="card-header bg-gradient-primary text-white py-3">
+                                    <h5 class="mb-0 fw-bold d-flex align-items-center gap-2">
+                                        <i class="fas fa-user"></i>
+                                        @OrderResources.CustomerInformation
+                                    </h5>
+                                </div>
                                 <div class="card-body">
                                     <div class="row g-3">
                                         <div class="col-md-6">
@@ -318,7 +324,7 @@ else
                                         <div class="row g-3">
                                             <div class="col-md-6">
                                                 <label class="text-muted small">@OrderResources.PaymentMethod:</label>
-                                                <div class="fw-bold">@Order.PaymentInfo.PaymentMethod</div>
+                                                <div class="fw-bold">@GetPaymentMethodDisplay()</div>
                                             </div>
                                             <div class="col-md-6">
                                                 <label class="text-muted small">@OrderResources.TransactionId:</label>
@@ -332,6 +338,44 @@ else
                                                 </div>
                                             }
                                         </div>
+
+                                        @* Payment Breakdown *@
+                                        <div class="mt-3 pt-3 border-top">
+                                            <h6 class="text-muted mb-3">@OrderResources.PaymentDetails</h6>
+                                            <div class="row g-2">
+                                                @if (Order.WalletPaidAmount > 0)
+                                                {
+                                                    <div class="col-md-4">
+                                                        <div class="payment-breakdown-item">
+                                                            <small class="text-muted d-block"><i class="fas fa-wallet me-1"></i>@OrderResources.Wallet</small>
+                                                            <strong dir="ltr">$@Order.WalletPaidAmount.ToString("F2")</strong>
+                                                        </div>
+                                                    </div>
+                                                }
+                                                @if (Order.CardPaidAmount > 0)
+                                                {
+                                                    <div class="col-md-4">
+                                                        <div class="payment-breakdown-item">
+                                                            <small class="text-muted d-block"><i class="fas fa-credit-card me-1"></i>@OrderResources.Card</small>
+                                                            <strong dir="ltr">$@Order.CardPaidAmount.ToString("F2")</strong>
+                                                        </div>
+                                                    </div>
+                                                }
+                                                @if (Order.CashPaidAmount > 0)
+                                                {
+                                                    <div class="col-md-4">
+                                                        <div class="payment-breakdown-item">
+                                                            <small class="text-muted d-block"><i class="fas fa-money-bill-wave me-1"></i>@OrderResources.Cash</small>
+                                                            <strong dir="ltr">$@Order.CashPaidAmount.ToString("F2")</strong>
+                                                        </div>
+                                                    </div>
+                                                }
+                                            </div>
+                                            <div class="payment-total mt-3 pt-2 border-top">
+                                                <span>@OrderResources.TotalAmount:</span>
+                                                <strong class="text-primary" dir="ltr">$@Order.TotalPaidAmount.ToString("F2")</strong>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             }
@@ -342,52 +386,54 @@ else
                     @if (ActiveTab == "items")
                     {
                         <div class="tab-pane-custom active">
-                            <div class="card shadow-sm border-0 mb-4">
+                            <div class="card shadow-sm border-0">
+                                <div class="card-header bg-gradient-success text-white py-3">
+                                    <h5 class="mb-0 fw-bold d-flex align-items-center gap-2">
+                                        <i class="fas fa-list-ul"></i>
+                                        @OrderResources.OrderItems
+                                        <span class="badge bg-light text-dark ms-2">@Order.Items.Count @OrderResources.OrderItems</span>
+                                    </h5>
+                                </div>
                                 <div class="card-body p-0">
                                     @if (Order.Items.Any())
                                     {
                                         <div class="table-responsive">
-                                            <table class="table table-hover mb-0">
+                                            <table class="table table-hover align-middle mb-0">
                                                 <thead class="table-light">
                                                     <tr>
-                                                        <th class="text-center" style="width: 80px;">@FormResources.Image</th>
+                                                        <th style="width: 80px;">@FormResources.Image</th>
                                                         <th>@OrderResources.Item</th>
-                                                        <th class="text-center">@OrderResources.Vendor</th>
-                                                        <th class="text-center">@OrderResources.Quantity</th>
-                                                        <th class="text-end">@FormResources.Price</th>
-                                                        <th class="text-end">@OrderResources.Subtotal</th>
-                                                        <th class="text-center">@OrderResources.Status</th>
+                                                        <th class="text-center" style="width: 100px;">@OrderResources.Quantity</th>
+                                                        <th class="text-end" style="width: 120px;">@FormResources.Price</th>
+                                                        <th class="text-end" style="width: 120px;">@OrderResources.Subtotal</th>
+                                                        <th class="text-center" style="width: 150px;">@OrderResources.Status</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
                                                     @foreach (var item in Order.Items)
                                                     {
                                                         <tr>
-                                                            <td class="text-center">
+                                                            <td>
                                                                 @if (!string.IsNullOrEmpty(item.ItemImage))
                                                                 {
-                                                                    <img src="@($"{BaseUrl}/{item.ItemImage}")"
-                                                                         alt="@item.ItemName"
-                                                                         class="rounded"
-                                                                         style="width: 50px; height: 50px; object-fit: cover;" />
+                                                                    <img src="@(BaseUrl + item.ItemImage)"
+                                                                         alt="@item.Title"
+                                                                         class="img-thumbnail"
+                                                                         style="width: 60px; height: 60px; object-fit: cover;" />
                                                                 }
                                                                 else
                                                                 {
-                                                                    <div class="bg-light rounded d-flex align-items-center justify-content-center"
-                                                                         style="width: 50px; height: 50px;">
+                                                                    <div class="bg-light d-flex align-items-center justify-content-center"
+                                                                         style="width: 60px; height: 60px;">
                                                                         <i class="fas fa-image text-muted"></i>
                                                                     </div>
                                                                 }
                                                             </td>
                                                             <td>
-                                                                <div class="fw-bold">@item.ItemName</div>
-                                                                <small class="text-muted">@item.VendorName</small>
+                                                                <div class="fw-bold">@item.Title</div>
                                                             </td>
                                                             <td class="text-center">
-                                                                <span class="badge bg-info">@item.VendorName</span>
-                                                            </td>
-                                                            <td class="text-center">
-                                                                <span class="badge bg-secondary fs-6">@item.Quantity</span>
+                                                                <span class="badge bg-primary">@item.Quantity</span>
                                                             </td>
                                                             <td class="text-end">
                                                                 <span dir="ltr">$@item.UnitPrice.ToString("F2")</span>
@@ -405,30 +451,30 @@ else
                                                 </tbody>
                                                 <tfoot class="table-light">
                                                     <tr>
-                                                        <td colspan="5" class="text-end fw-bold">@OrderResources.Subtotal:</td>
+                                                        <td colspan="4" class="text-end fw-bold">@OrderResources.Subtotal:</td>
                                                         <td class="text-end fw-bold" dir="ltr">$@Order.SubTotal.ToString("F2")</td>
                                                         <td></td>
                                                     </tr>
                                                     @if (Order.DiscountAmount > 0)
                                                     {
                                                         <tr>
-                                                            <td colspan="5" class="text-end fw-bold text-success">@OrderResources.Discount:</td>
+                                                            <td colspan="4" class="text-end fw-bold text-success">@OrderResources.Discount:</td>
                                                             <td class="text-end fw-bold text-success" dir="ltr">-$@Order.DiscountAmount.ToString("F2")</td>
                                                             <td></td>
                                                         </tr>
                                                     }
                                                     <tr>
-                                                        <td colspan="5" class="text-end fw-bold">@OrderResources.Tax:</td>
+                                                        <td colspan="4" class="text-end fw-bold">@OrderResources.Tax:</td>
                                                         <td class="text-end fw-bold" dir="ltr">$@Order.TaxAmount.ToString("F2")</td>
                                                         <td></td>
                                                     </tr>
                                                     <tr>
-                                                        <td colspan="5" class="text-end fw-bold">@OrderResources.Shipping:</td>
+                                                        <td colspan="4" class="text-end fw-bold">@OrderResources.Shipping:</td>
                                                         <td class="text-end fw-bold" dir="ltr">$@Order.ShippingAmount.ToString("F2")</td>
                                                         <td></td>
                                                     </tr>
                                                     <tr class="table-primary">
-                                                        <td colspan="5" class="text-end fw-bold fs-5">@OrderResources.TotalAmount:</td>
+                                                        <td colspan="4" class="text-end fw-bold fs-5">@OrderResources.TotalAmount:</td>
                                                         <td class="text-end fw-bold fs-5 text-primary" dir="ltr">$@Order.TotalAmount.ToString("F2")</td>
                                                         <td></td>
                                                     </tr>
@@ -449,6 +495,7 @@ else
                     }
 
                     @* Shipments Tab *@
+
                     @if (ActiveTab == "shipments")
                     {
                         <div class="tab-pane-custom active">
@@ -487,37 +534,19 @@ else
                                                         </div>
 
                                                         @* Tracking Number *@
-                                                        <div class="col-lg-2 col-md-6">
+                                                        <div class="col-lg-4 col-md-6">
                                                             <div class="shipment-info-section">
                                                                 <label class="text-muted small mb-1 d-flex align-items-center gap-1">
                                                                     <i class="fas fa-barcode text-primary"></i>
-                                                                    @OrderResources.Tracking
+                                                                    @OrderResources.TrackingNumber
                                                                 </label>
-                                                                @if (!string.IsNullOrWhiteSpace(shipment.TrackingNumber))
+                                                                @if (!string.IsNullOrEmpty(shipment.TrackingNumber))
                                                                 {
                                                                     <code class="tracking-code">@shipment.TrackingNumber</code>
                                                                 }
                                                                 else
                                                                 {
-                                                                    <span class="text-muted small">@OrderResources.NotAddedYet</span>
-                                                                }
-                                                            </div>
-                                                        </div>
-
-                                                        @* Estimated Delivery *@
-                                                        <div class="col-lg-2 col-md-6">
-                                                            <div class="shipment-info-section">
-                                                                <label class="text-muted small mb-1 d-flex align-items-center gap-1">
-                                                                    <i class="fas fa-calendar-alt text-primary"></i>
-                                                                    @OrderResources.ETA
-                                                                </label>
-                                                                @if (shipment.EstimatedDeliveryDate.HasValue)
-                                                                {
-                                                                    <div class="small fw-bold">@FormatDate(shipment.EstimatedDeliveryDate)</div>
-                                                                }
-                                                                else
-                                                                {
-                                                                    <span class="text-muted small">@OrderResources.NotSpecified</span>
+                                                                    <span class="text-muted">-</span>
                                                                 }
                                                             </div>
                                                         </div>
@@ -539,12 +568,12 @@ else
                                                                                 title="@GetShipmentNextAction(shipment)">
                                                                             @if (ShipmentUpdatingId == shipment.ShipmentId)
                                                                             {
-                                                                                <span class="spinner-border spinner-border-sm me-1"></span>
+                                                                                <span class="spinner-border spinner-border-sm mx-1"></span>
                                                                                 <span>@OrderResources.Updating</span>
                                                                             }
                                                                             else
                                                                             {
-                                                                                <i class="@GetShipmentActionIcon(shipment) me-1"></i>
+                                                                                <i class="@GetShipmentActionIcon(shipment) mx-1"></i>
                                                                                 <span>@GetShipmentNextAction(shipment)</span>
                                                                             }
                                                                         </button>
@@ -563,7 +592,7 @@ else
                                                                             }
                                                                             else
                                                                             {
-                                                                                <i class="fas fa-times me-1"></i>
+                                                                                <i class="fas fa-times mx-1"></i>
                                                                             }
                                                                             <span class="d-none d-lg-inline">@OrderResources.Cancel</span>
                                                                         </button>
@@ -599,29 +628,80 @@ else
                                                         </div>
                                                     </div>
 
-                                                    @* Delivered Date (if exists) *@
-                                                    @if (shipment.ActualDeliveryDate.HasValue)
+
+
+                                                    @* Items in this Shipment - IMPORTANT SECTION *@
+                                                    @if (shipment.Items != null && shipment.Items.Any())
                                                     {
                                                         <div class="row mt-3 pt-3 border-top">
                                                             <div class="col-12">
-                                                                <div class="alert alert-success mb-0 py-2">
-                                                                    <i class="fas fa-check-circle me-2"></i>
-                                                                    <strong>@OrderResources.DeliveredSuccessfullyOn:</strong>
-                                                                    <span class="ms-2">@FormatDate(shipment.ActualDeliveryDate)</span>
+                                                                <h6 class="text-muted mb-3">
+                                                                    <i class="fas fa-box me-2"></i>
+                                                                    @OrderResources.OrderItems: <strong>@shipment.Items.Count</strong>
+                                                                </h6>
+
+                                                                @* Items Table *@
+                                                                <div class="table-responsive">
+                                                                    <table class="table table-sm table-hover mb-0">
+                                                                        <thead class="table-light">
+                                                                            <tr>
+                                                                                <th style="width: 60px;">@FormResources.Image</th>
+                                                                                <th>@OrderResources.Item</th>
+                                                                                <th class="text-center" style="width: 100px;">@OrderResources.Quantity</th>
+                                                                                <th class="text-end" style="width: 100px;">@FormResources.Price</th>
+                                                                                <th class="text-end" style="width: 100px;">@OrderResources.Subtotal</th>
+                                                                            </tr>
+                                                                        </thead>
+                                                                        <tbody>
+                                                                            @foreach (var item in shipment.Items)
+                                                                            {
+                                                                                <tr>
+                                                                                    <td>
+                                                                                        @if (!string.IsNullOrEmpty(item.ItemImage))
+                                                                                        {
+                                                                                            <img src="@(BaseUrl + item.ItemImage)"
+                                                                                                 alt="@item.ItemName"
+                                                                                                 class="img-thumbnail"
+                                                                                                 style="width: 50px; height: 50px; object-fit: cover;" />
+                                                                                        }
+                                                                                        else
+                                                                                        {
+                                                                                            <div class="bg-light d-flex align-items-center justify-content-center"
+                                                                                                 style="width: 50px; height: 50px;">
+                                                                                                <i class="fas fa-image text-muted"></i>
+                                                                                            </div>
+                                                                                        }
+                                                                                    </td>
+                                                                                    <td>
+                                                                                        <div class="fw-bold">@item.ItemName</div>
+                                                                                        @if (!string.IsNullOrEmpty(item.TitleAr) && item.TitleAr != item.ItemName)
+                                                                                        {
+                                                                                            <small class="text-muted">@item.TitleAr</small>
+                                                                                        }
+                                                                                    </td>
+                                                                                    <td class="text-center">
+                                                                                        <span class="badge bg-secondary">@item.Quantity</span>
+                                                                                    </td>
+                                                                                    <td class="text-end">
+                                                                                        <span dir="ltr">$@item.UnitPrice.ToString("F2")</span>
+                                                                                    </td>
+                                                                                    <td class="text-end fw-bold">
+                                                                                        <span dir="ltr">$@item.SubTotal.ToString("F2")</span>
+                                                                                    </td>
+                                                                                </tr>
+                                                                            }
+                                                                        </tbody>
+                                                                    </table>
                                                                 </div>
                                                             </div>
                                                         </div>
                                                     }
-
-                                                    @* Items Count *@
-                                                    @if (shipment.ItemIds != null && shipment.ItemIds.Any())
+                                                    else
                                                     {
-                                                        <div class="row mt-2">
-                                                            <div class="col-12">
-                                                                <small class="text-muted">
-                                                                    <i class="fas fa-box me-1"></i>
-                                                                    @OrderResources.NumberOfItems: <strong>@shipment.ItemIds.Count</strong>
-                                                                </small>
+                                                        <div class="row mt-3 pt-3 border-top">
+                                                            <div class="col-12 text-center text-muted py-3">
+                                                                <i class="fas fa-box-open me-2"></i>
+                                                                @NotifiAndAlertsResources.NoDataFound
                                                             </div>
                                                         </div>
                                                     }
@@ -697,71 +777,108 @@ else
                             else
                             {
                                 <div class="card shadow-sm border-0">
-                                    <div class="card-body text-center py-5 text-muted">
-                                        <i class="fas fa-box-open" style="font-size: 64px; opacity: 0.3;"></i>
-                                        <p class="mt-3 mb-0 fs-5">@OrderResources.NoShipmentsFound</p>
+                                    <div class="card-body text-center py-5">
+                                        <i class="fas fa-shipping-fast text-muted" style="font-size: 48px;"></i>
+                                        <p class="text-muted mt-3 mb-0">@NotifiAndAlertsResources.NoDataFound</p>
                                     </div>
                                 </div>
                             }
                         </div>
                     }
-
                 </div>
-                @* End of Tabs Content *@
-
             </div>
         </div>
     </div>
 }
 
-@code {
-    private string ActiveTab = "customer";
-    private Guid? OpenDropdownId = null;
-
-    private void SetActiveTab(string tabName)
-    {
-        ActiveTab = tabName;
-        StateHasChanged();
-    }
-
-    private void ToggleDropdown(Guid shipmentId)
-    {
-        OpenDropdownId = OpenDropdownId == shipmentId ? null : shipmentId;
-        StateHasChanged();
-    }
-
-    private void CloseDropdown()
-    {
-        OpenDropdownId = null;
-        StateHasChanged();
-    }
-}
-
 <style>
-    /* Custom Tabs Styling */
+    .table-responsive{
+        min-height:auto !important;
+    }
+
+    .order-info-bar {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 1rem;
+        padding: 1.5rem;
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        border-radius: 0 0 8px 8px;
+    }
+
+    .info-item {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 1rem;
+        background: white;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+        .info-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+    .info-icon {
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%);
+        color: white;
+        border-radius: 8px;
+        font-size: 1.25rem;
+    }
+
+    .info-content {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .info-label {
+        display: block;
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        color: #6c757d;
+        margin-bottom: 0.25rem;
+    }
+
+    .info-value {
+        display: block;
+        font-size: 1rem;
+        font-weight: 600;
+        color: #212529;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
     .nav-tabs-custom {
-        border-bottom: 2px solid #dee2e6;
-        background: #f8f9fa;
-        padding: 0.5rem 1rem 0;
+        background: white;
+        border-bottom: 3px solid #dee2e6;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
         border-radius: 8px 8px 0 0;
+        padding: 0.5rem 1rem 0;
     }
 
         .nav-tabs-custom .nav-link {
+            color: #6c757d;
             border: none;
             border-bottom: 3px solid transparent;
-            color: #6c757d;
-            font-weight: 500;
             padding: 0.75rem 1.5rem;
-            margin-bottom: -2px;
+            font-weight: 500;
             transition: all 0.3s ease;
-            background: transparent;
-            cursor: pointer;
+            border-radius: 8px 8px 0 0;
         }
 
             .nav-tabs-custom .nav-link:hover {
-                border-bottom-color: #0d6efd;
                 color: #0d6efd;
-                background: rgba(13, 110, 253, 0.05);
+                background: #f8f9fa;
+                border-bottom-color: #dee2e6;
             }
 
             .nav-tabs-custom .nav-link.active {
@@ -771,27 +888,19 @@ else
                 font-weight: 600;
             }
 
-            .nav-tabs-custom .nav-link i {
-                font-size: 0.9rem;
-            }
-
-        .nav-tabs-custom .badge {
-            font-size: 0.7rem;
-            padding: 0.25rem 0.5rem;
-            vertical-align: middle;
-        }
+                .nav-tabs-custom .nav-link.active .badge {
+                    background: #0d6efd !important;
+                }
 
     .tab-content-wrapper {
         background: white;
-        border: 1px solid #dee2e6;
-        border-top: none;
         border-radius: 0 0 8px 8px;
         padding: 1.5rem;
-        min-height: 400px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
     }
 
     .tab-pane-custom {
-        animation: fadeIn 0.3s ease-in;
+        animation: fadeIn 0.3s ease;
     }
 
     @@keyframes fadeIn {
@@ -804,76 +913,6 @@ else
             opacity: 1;
             transform: translateY(0);
         }
-    }
-
-    /* Responsive tabs */
-    @@media (max-width: 768px) {
-        .nav-tabs-custom {
-            padding: 0.5rem 0.5rem 0;
-        }
-
-            .nav-tabs-custom .nav-link {
-                padding: 0.5rem 0.75rem;
-                font-size: 0.875rem;
-            }
-
-                .nav-tabs-custom .nav-link i {
-                    font-size: 0.8rem;
-                }
-
-            .nav-tabs-custom .badge {
-                font-size: 0.65rem;
-                padding: 0.2rem 0.4rem;
-            }
-
-        .tab-content-wrapper {
-            padding: 1rem;
-        }
-    }
-
-    .order-info-bar {
-        display: grid;
-        grid-template-columns: repeat(4, 1fr);
-        gap: 1rem;
-        padding: 1.5rem;
-        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-        border-bottom: 1px solid #dee2e6;
-    }
-
-    .info-item {
-        display: flex;
-        align-items: center;
-        gap: 0.75rem;
-    }
-
-    .info-icon {
-        width: 40px;
-        height: 40px;
-        background: white;
-        border-radius: 8px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: #0d6efd;
-        font-size: 1.25rem;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    }
-
-    .info-content {
-        flex: 1;
-    }
-
-    .info-label {
-        display: block;
-        font-size: 0.75rem;
-        color: #6c757d;
-        margin-bottom: 0.25rem;
-    }
-
-    .info-value {
-        display: block;
-        font-size: 0.875rem;
-        color: #212529;
     }
 
     .info-box {
@@ -1084,6 +1123,24 @@ else
         .dropdown-item.text-danger:hover {
             background-color: #f8d7da;
         }
+
+    /* Payment Breakdown Styling */
+    .payment-breakdown-item {
+        padding: 0.75rem;
+        background: #f8f9fa;
+        border-radius: 6px;
+        text-align: center;
+    }
+
+    .payment-total {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.75rem;
+        background: #e7f3ff;
+        border-radius: 6px;
+        font-size: 1.1rem;
+    }
 
     /* Responsive Adjustments */
     @@media (max-width: 991px) {

@@ -10,6 +10,6 @@ namespace Shared.DTOs.Order.Fulfillment.Shipment
         public string? TrackingNumber { get; set; }
         public DateTime? EstimatedDeliveryDate { get; set; }
         public DateTime? ActualDeliveryDate { get; set; }
-        public List<Guid> ItemIds { get; set; } = new();
+        public List<ShipmentItemDto> Items { get; set; } = new();
     }
 }

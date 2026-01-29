@@ -726,4 +726,53 @@
   <data name="ShipmentSummary" xml:space="preserve">
     <value>Shipment Summary</value>
   </data>
+<data name="UnitPrice" xml:space="preserve">
+  <value>Unit Price</value>
+</data>
+<data name="TotalPaid" xml:space="preserve">
+  <value>Total Paid</value>
+</data>
+<data name="ShipmentStatus" xml:space="preserve">
+  <value>Shipment Status</value>
+</data>
+<data name="ShipmentCancelledSuccessfully" xml:space="preserve">
+  <value>Shipment cancelled successfully</value>
+</data>
+<data name="ShipmentCancelledByAdmin" xml:space="preserve">
+  <value>Shipment cancelled by admin</value>
+</data>
+<data name="PaymentBreakdown" xml:space="preserve">
+  <value>Payment Breakdown</value>
+</data>
+<data name="OrderCancelledByAdmin" xml:space="preserve">
+  <value>Order cancelled by admin</value>
+</data>
+<data name="ItemsInShipment" xml:space="preserve">
+  <value>Items in Shipment</value>
+</data>
+<data name="Items" xml:space="preserve">
+  <value>Items</value>
+</data>
+<data name="DeliveryMarkedAsFailed" xml:space="preserve">
+  <value>Delivery marked as failed</value>
+</data>
+<data name="DeliveryAttemptFailedByAdmin" xml:space="preserve">
+  <value>Delivery attempt failed by admin</value>
+</data>
+<data name="Combination" xml:space="preserve">
+  <value>Combination</value>
+</data>
+<data name="NotAvailable" xml:space="preserve">
+  <value>Not available</value>
+</data>
+<data name="NoShipmentsFound" xml:space="preserve">
+  <value>No shipments found</value>
+</data>
+<data name="NoItemsInShipment" xml:space="preserve">
+  <value>No items in shipment</value>
+</data>
+<data name="PaymentDetails" xml:space="preserve">
+  <value>Payment Details</value>
+</data>
+
 </root>

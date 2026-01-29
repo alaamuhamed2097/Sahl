@@ -131,8 +131,8 @@ public class CustomerOrderService : ICustomerOrderService
                 PaymentInfo = new PaymentInfoDto
                 {
                     Status = order.PaymentStatus,
-                    PaymentMethod = order.OrderPayments.FirstOrDefault()?.PaymentMethod.ToString() ?? "",
-                    // FIXED: Use OrderNumber instead of InvoiceId
+                    // Use PaymentMethodType enum which is always populated
+                    PaymentMethod = order.OrderPayments.FirstOrDefault()?.PaymentMethodType.ToString() ?? "Not Specified",
                     TransactionId = order.Number,
                     PaymentDate = order.PaidAt,
                     Amount = order.Price
@@ -158,7 +158,21 @@ public class CustomerOrderService : ICustomerOrderService
                     Status = s.ShipmentStatus,
                     TrackingNumber = s.TrackingNumber,
                     EstimatedDeliveryDate = s.EstimatedDeliveryDate,
-                    ActualDeliveryDate = s.ActualDeliveryDate
+                    ActualDeliveryDate = s.ActualDeliveryDate,
+                    Items = s.Items.Select(si => new ShipmentItemDto
+                    {
+                        Id = si.Id,
+                        ShipmentId = si.ShipmentId,
+                        ItemId = si.ItemId,
+                        ItemName = si.Item?.TitleEn ?? "",
+                        TitleAr = si.Item?.TitleAr ?? "",
+                        TitleEn = si.Item?.TitleEn ?? "",
+                        ItemImage = si.Item?.ThumbnailImage,
+                        ItemCombinationId = si.ItemCombinationId,
+                        Quantity = si.Quantity,
+                        UnitPrice = si.UnitPrice,
+                        SubTotal = si.SubTotal
+                    }).ToList()
                 }).ToList(),
                 CanCancel = CanCancelOrder(order.OrderStatus),
                 CanRequestRefund = CanRequestRefund(order.OrderStatus, order.CreatedDateUtc),

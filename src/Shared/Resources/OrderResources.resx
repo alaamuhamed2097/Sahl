@@ -726,4 +726,53 @@
   <data name="ShipmentSummary" xml:space="preserve">
     <value>ملخص الشحنات</value>
   </data>
+	<data name="UnitPrice" xml:space="preserve">
+  <value>سعر الوحدة</value>
+</data>
+<data name="TotalPaid" xml:space="preserve">
+  <value>إجمالي المبلغ المدفوع</value>
+</data>
+<data name="ShipmentStatus" xml:space="preserve">
+  <value>حالة الشحنة</value>
+</data>
+<data name="ShipmentCancelledSuccessfully" xml:space="preserve">
+  <value>تم إلغاء الشحنة بنجاح</value>
+</data>
+<data name="ShipmentCancelledByAdmin" xml:space="preserve">
+  <value>تم إلغاء الشحنة بواسطة المشرف</value>
+</data>
+<data name="PaymentBreakdown" xml:space="preserve">
+  <value>تفاصيل الدفع</value>
+</data>
+<data name="OrderCancelledByAdmin" xml:space="preserve">
+  <value>تم إلغاء الطلب بواسطة المشرف</value>
+</data>
+<data name="ItemsInShipment" xml:space="preserve">
+  <value>العناصر في الشحنة</value>
+</data>
+<data name="Items" xml:space="preserve">
+  <value>العناصر</value>
+</data>
+<data name="DeliveryMarkedAsFailed" xml:space="preserve">
+  <value>تم تحديد التسليم كفاشل</value>
+</data>
+<data name="DeliveryAttemptFailedByAdmin" xml:space="preserve">
+  <value>فشلت محاولة التسليم بواسطة المشرف</value>
+</data>
+<data name="Combination" xml:space="preserve">
+  <value>تجميعة</value>
+</data>
+	<data name="NotAvailable" xml:space="preserve">
+  <value>غير متوفر</value>
+</data>
+	<data name="NoShipmentsFound" xml:space="preserve">
+  <value>لم يتم العثور على شحنات</value>
+</data>
+	<data name="NoItemsInShipment" xml:space="preserve">
+  <value>لا توجد عناصر في الشحنة</value>
+</data>
+	<data name="PaymentDetails" xml:space="preserve">
+  <value>تفاصيل الدفع</value>
+</data>
+
 </root>

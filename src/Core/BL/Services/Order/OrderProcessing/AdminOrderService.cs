@@ -1,6 +1,6 @@
-using BL.Contracts.Service.Order.OrderProcessing;
-using BL.Contracts.Service.Order.Fulfillment;
 using BL.Contracts.GeneralService;
+using BL.Contracts.Service.Order.Fulfillment;
+using BL.Contracts.Service.Order.OrderProcessing;
 using Common.Enumerations.Order;
 using DAL.Contracts.Repositories.Order;
 using Domains.Entities.Order;
@@ -138,13 +138,27 @@ public class AdminOrderService : IAdminOrderService
                     Status = s.ShipmentStatus,
                     TrackingNumber = s.TrackingNumber,
                     EstimatedDeliveryDate = _dateTimeService.ConvertToLocalTime(s.EstimatedDeliveryDate),
-                    ActualDeliveryDate = _dateTimeService.ConvertToLocalTime(s.ActualDeliveryDate)
+                    ActualDeliveryDate = _dateTimeService.ConvertToLocalTime(s.ActualDeliveryDate),
+                    Items = s.Items.Select(si => new ShipmentItemDto
+                    {
+                        Id = si.Id,
+                        ShipmentId = si.ShipmentId,
+                        ItemId = si.ItemId,
+                        ItemName = si.Item?.TitleEn ?? "",
+                        TitleAr = si.Item?.TitleAr ?? "",
+                        TitleEn = si.Item?.TitleEn ?? "",
+                        ItemImage = si.Item?.ThumbnailImage,
+                        ItemCombinationId = si.ItemCombinationId,
+                        Quantity = si.Quantity,
+                        UnitPrice = si.UnitPrice,
+                        SubTotal = si.SubTotal
+                    }).ToList()
                 }).ToList(),
                 PaymentInfo = new PaymentInfoDto
                 {
                     Status = order.PaymentStatus,
-                    PaymentMethod = order.OrderPayments.FirstOrDefault()?.PaymentMethod.ToString() ?? "",
-                    // ✅ FIXED: Use OrderNumber instead of InvoiceId
+                    // Use PaymentMethodType enum which is always populated
+                    PaymentMethod = order.OrderPayments.FirstOrDefault()?.PaymentMethodType.ToString() ?? "Not Specified",
                     TransactionId = order.Number,
                     PaymentDate = _dateTimeService.ConvertToLocalTime(order.PaidAt),
                     Amount = order.Price
@@ -368,7 +382,8 @@ public class AdminOrderService : IAdminOrderService
         {
             OrderDetailId = od.Id,
             ItemId = od.ItemId,
-            ItemName = od.Item?.TitleEn ?? "",
+            TitleAr = od.Item?.TitleAr ?? "",
+            TitleEn = od.Item?.TitleEn ?? "",
             ItemImage = od.Item?.ThumbnailImage ?? "",
             VendorId = od.VendorId,
             VendorName = od.Vendor?.StoreName ?? "",
